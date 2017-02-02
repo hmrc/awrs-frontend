@@ -1,0 +1,140 @@
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import utils.CountryCodes
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+
+@(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+
+@implicitFormInstance = @{ Some(groupMemberForm) }
+@businessType = @{request.getBusinessType.fold("")(x=>x)}
+@pageScripts = {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+<script type="text/javascript"
+        src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+}
+
+@actionRoute = @{
+  isEditMode match {
+    case true => controllers.routes.GroupMemberController.saveAndReturn(groupMemberId, isNewRecord)
+    case false => controllers.routes.GroupMemberController.saveAndContinue(groupMemberId, isNewRecord)
+  }
+}
+
+@ctaMessage = @{
+  isEditMode match {
+    case true => Messages("awrs.generic.save_return")
+    case false => Messages("awrs.generic.save_continue")
+  }
+}
+
+@includes.awrs_main(title = Messages("awrs.group_member.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLinkHelper(BackLinkParams(
+            sectionName = groupMembersName
+        ))
+        @errorSummaryTemplate(groupMemberForm)
+        @awrsProgressHelper(businessType, groupMembersName)
+        <h1 id="group-member-heading" class="heading-xlarge">@Messages("awrs.group_member.top_heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalIntSuffix(groupMemberId + 1))</h1>
+
+        <p id="group-member-lead-paragraph" class="lede">@Messages("awrs.group_member.lead_paragraph")</p>
+
+        @form(action = actionRoute){
+            @awrsInputTypeText(
+                InputTypeTextParams(
+                    groupMemberForm("companyNames.businessName"),
+                    inputId = "companyNames.businessName",
+                    label = Messages("awrs.business_directors.business_name"),
+                    labelHighlight = true,
+                    maxLength = AwrsFieldConfig.companyNameLen.toString,
+                    required = true
+                )
+            )
+            <div class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        groupMemberForm("companyNames.doYouHaveTradingName"),
+                        Seq("Yes" -> Messages("awrs.generic.yes"),
+                            "No" -> Messages("awrs.generic.no")),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
+                        legend = Messages("awrs.generic.do_they_have_trading_name")
+                    )
+                )
+                <div id="companyNames.doYouHaveTradingName-yes-content">
+                @awrsInputTypeText(
+                    InputTypeTextParams(
+                        groupMemberForm("companyNames.tradingName"),
+                        inputId = "companyNames.tradingName",
+                        label = Messages("awrs.generic.trading_name"),
+                        maxLength = AwrsFieldConfig.tradingNameLen.toString,
+                        required = true,
+                        labelHighlight = true,
+                        wrapperClass = "panel-indent"
+                    )
+                )
+                </div>
+            </div>
+            <div id="address-group">
+                <h2 class="heading-medium">@Messages("awrs.generic.registered_address")</h2>
+                @awrsAddressHelper(groupMemberForm("address"),
+                    AddressHelperParams()
+                )
+            </div>
+            <h2 class="heading-medium">@Messages("awrs.generic.company_reg_details")</h2>
+            @awrsIdUTRHelper(
+                businessType,
+                None,
+                groupMemberForm("utr"),
+                youOrThey = "they"
+            )
+            @awrsIdCRNHelper(
+                None,
+                groupMemberForm("companyRegDetails.companyRegistrationNumber"),
+                dateField = Some(groupMemberForm("companyRegDetails.dateOfIncorporation")),
+                youOrThey = "they"
+            )
+            @awrsIdVRNHelper(
+                groupMemberForm("doYouHaveVRN"),
+                groupMemberForm("vrn"),
+                youOrThey = "they"
+            )
+            @if(!isEditMode){
+                <div class="form-group">
+                    @awrsInputTypeRadioGroup(
+                        InputTypeRadioGroupParams(
+                            groupMemberForm("addAnotherGrpMember"),
+                            Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                                Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                            legend = Messages("awrs.group_member.addAnother"),
+                            legendId = "addAnotherGrpMember",
+                            fieldSetAttributes = "id=addAnotherGrpMember_field",
+                            fieldSetClass = "inline"
+                        )
+                    )
+                </div>
+            } else {
+                <input type="hidden" name="addAnotherGrpMember" value="No">
+            }
+            @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                sectionName = groupMembersName,
+                sectionEntryId = groupMemberId,
+                submitText = ctaMessage,
+                submitId = "save-and-continue"
+            ))
+        }
+    </div>
+</div>
+
+}
+
+
+
+

@@ -1,0 +1,13 @@
+@(text_1: String, text_2: String, submissionOrResubmissionDate: Option[String] = None)(implicit request: Request[AnyRef], messages: Messages )
+
+@import views.html.helpers._
+
+<div class="alert-complete" role="alert">
+    <h1 id="confirmation">
+        <img height="24" width="24" aria-label="Application completed." src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="">
+        <span class="heading-large">@Messages(text_1) @request.session.get("businessName").getOrElse("")<br/></span>
+        <span class="confirmation-description">@Messages(text_2)
+        @if(submissionOrResubmissionDate.isDefined){<br/>@submissionOrResubmissionDate}
+        </span>
+    </h1>
+</div>

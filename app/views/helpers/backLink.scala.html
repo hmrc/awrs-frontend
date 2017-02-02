@@ -1,0 +1,13 @@
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+
+@(backUrl :String = controllers.routes.IndexController.showLastLocation().toString, alwaysShow: Boolean = false)(implicit viewApplicationType: ViewApplicationType = LinearViewMode,messages: Messages)
+@{
+    (isOneViewMode, alwaysShow) match {
+        case (true, true) =>
+            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a></p>
+        case (false, _) =>
+            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a></p>
+        case _ =>
+    }
+}

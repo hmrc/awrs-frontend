@@ -1,0 +1,93 @@
+@(partner : Partner)(implicit messages : Messages)
+@import views.view_application.ViewApplicationHelper._
+@import forms.AWRSEnums._
+
+@* UTR *@
+@partner.doYouHaveUTR match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_partnership_UTR"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@partner.utr match {
+    case Some(utr) => {
+        @table_row(
+            Messages("awrs.generic.UTR_number"),
+            utr
+        )
+    }
+    case _ => {}
+}
+
+@* Nino *@
+@partner.doYouHaveNino match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_NINO"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@partner.nino match {
+    case Some(nino) => {
+        @table_row(
+            Messages("awrs.generic.NINO"),
+            nino
+        )
+    }
+    case _ => {}
+}
+
+
+@* CRN *@
+@partner.isBusinessIncorporated match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_company_reg"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@partner.companyRegDetails match {
+    case Some(data) => {
+        @table_row(
+            Messages("awrs.generic.company_reg"),
+            data.companyRegistrationNumber
+        )
+        @table_row(
+            Messages("awrs.generic.date_of_incorporation"),
+            data.dateOfIncorporation.toString("dd MMMM yyyy")
+        )
+    }
+    case _ => {}
+}
+
+@* VRN *@
+@partner.doYouHaveVRN match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_VAT"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@partner.vrn match {
+    case Some(vrn) => {
+        @table_row(
+            Messages("awrs.generic.VAT_registration_number"),
+            vrn
+        )
+    }
+    case _ => {}
+}
+

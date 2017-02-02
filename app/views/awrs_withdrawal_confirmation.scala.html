@@ -1,0 +1,36 @@
+@import views.helpers.InputTypeRadioGroupParams
+@(withdrawalConfirmationForm: Form[models.WithdrawalConfirmation])(implicit request: Request[AnyRef], messages: Messages )
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+
+@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+@includes.awrs_main(Messages("awrs.withdrawal.confirm_page.heading"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+
+<div class="grid">
+    @backLink(backUrl = controllers.routes.WithdrawalController.showWithdrawalReasons.toString)
+    <div class="grid grid-2-3">
+        @errorSummaryTemplate(withdrawalConfirmationForm)
+        <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@Messages("awrs.withdrawal.confirm_page.heading")</h1>
+        @form(action = controllers.routes.WithdrawalController.submitConfirmWithdrawal) {
+            <div id="withdrawal-confirmation" class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        withdrawalConfirmationForm("confirmation"),
+                        Seq("Yes" -> Messages("awrs.generic.yes"),
+                            "No" -> Messages("awrs.generic.no")),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=confirmation_field",
+                        legend = Messages("awrs.withdrawal.confirm_page.heading"),
+                        legendClass = "visuallyhidden"
+                    )
+                )
+            </div>
+            @awrsWarningHelper(declarationTxt = Messages("awrs.generic.wait_info", Messages("awrs.generic.wait_info_withdraw")), id = "confirmation-yes-content")
+            @awrsSubmitButton(Messages("awrs.generic.confirmation.button"))(id = "withdraw-application", classAttr = "button")
+        }
+    </div>
+</div>
+}
+

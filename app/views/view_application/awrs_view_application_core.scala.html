@@ -1,0 +1,52 @@
+@import views.view_application.helpers.OneViewMode
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import services.DataCacheKeys._
+@import views.html.view_application.subviews._
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.html.helpers._
+
+@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages)
+
+@businessLegalEntity = @{
+    cache.getBusinessType.get.legalEntity.get
+}
+
+@businessName = @{
+    cache.getBusinessCustomerDetails match {
+        case Some(businessCustomerDetails) => Some(businessCustomerDetails.businessName)
+        case _ => None
+    }
+}
+
+@getHeading = @{ (sectionName: String) => getSectionDisplayName(sectionName, businessLegalEntity) }
+<div id="back-link">
+    @backLink(alwaysShow = true)
+</div>
+<div class="alert alert--info alert--info__light" role="alert">
+    <p class="alert__message">@Messages("awrs.view_application.status_colon") @status</p>
+</div>
+<h1 class="heading-xlarge">@Messages("awrs.view_application.heading", businessName.fold("")(x => x))</h1>
+
+@awrsPrintLink()
+
+@subview_business_details(getHeading(businessDetailsName), cache.getBusinessDetails, businessName)
+@subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity))
+@subview_place_of_business(getHeading(placeOfBusinessName), cache.getPlaceOfBusiness)
+@subview_business_contacts(getHeading(businessContactsName), cache.getBusinessContacts, cache.getBusinessCustomerDetails)
+@subview_group_member_details(getHeading(groupMembersName), cache.getGroupMembers)
+@subview_partner_details(getHeading(partnersName), cache.getPartners)
+@subview_additional_premises(getHeading(additionalBusinessPremisesName), cache.getAdditionalBusinessPremises)
+@subview_business_directors(getHeading(businessDirectorsName), cache.getBusinessDirectors, businessLegalEntity)
+@subview_trading_activity(getHeading(tradingActivityName), cache.getTradingActivity)
+@subview_products(getHeading(productsName), cache.getProducts)
+@subview_suppliers(getHeading(suppliersName), cache.getSuppliers)
+@subview_application_declaration(getHeading(applicationDeclarationName), cache.getApplicationDeclaration)
+
+<div id="back-link-bottom">
+    @backLink(alwaysShow = true)
+</div>
+
+
+

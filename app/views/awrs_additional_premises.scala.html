@@ -1,0 +1,107 @@
+@import uk.gov.hmrc.play.views.html._
+@import views.view_application.helpers._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import utils.AwrsFieldConfig
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+
+@(businessPremisesForm: Form[models.AdditionalBusinessPremises], businessPremisesId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent] , viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+
+    @implicitFormInstance = @{
+        Some(businessPremisesForm)
+    }
+
+    @pageScripts = {
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+    }
+
+    @actionRoute = @{
+        isEditMode match {
+            case true => controllers.routes.AdditionalPremisesController.saveAndReturn(businessPremisesId, isNewRecord)
+            case false => controllers.routes.AdditionalPremisesController.saveAndContinue(businessPremisesId, isNewRecord)
+        }
+    }
+
+    @ctaMessage = @{
+        isEditMode match {
+            case true => Messages("awrs.generic.save_return")
+            case false => Messages("awrs.generic.save_continue")
+        }
+    }
+
+    @includes.awrs_main(title = Messages("awrs.additional-premises.page_title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+        <div class="grid">
+            <div class="grid grid-2-3">
+                @backLinkHelper(BackLinkParams(
+                    sectionName = additionalBusinessPremisesName,
+                    sectionEntryId = businessPremisesId
+                ))
+                @errorSummaryTemplate(businessPremisesForm)
+                @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
+                <h1 id="additional-premises-title" class="heading-xlarge">@{
+                    businessPremisesId match {
+                        case 1 if !isEditMode => Messages("awrs.additional-premises.top-heading.first")
+                        case id               => Messages("awrs.additional-premises.top-heading", headingPrefix(enter = "awrs.generic.tell_us_about", edit = "awrs.generic.edit", isNewRecord = isNewRecord), ordinalIntSuffix(businessPremisesId))
+                    }
+                }</h1>
+
+                <p id="additional-premises-subtext" class="lede">@Messages("awrs.additional-premises.subtext")</p>
+
+                @form(action = actionRoute) {
+
+                    @if(isEditMode() || businessPremisesId > 1) {
+                        <input type="hidden" name="additionalPremises" value="Yes">
+                    } else {
+                        <div id="diffAddress" class="form-group">
+                        @awrsInputTypeRadioGroup(
+                            InputTypeRadioGroupParams(
+                                businessPremisesForm("additionalPremises"),
+                                Seq("Yes" -> Messages("awrs.generic.yes"),
+                                    "No" -> Messages("awrs.generic.no")),
+                                legend = Messages("awrs.additional-premises.top-heading.first"),
+                                legendClass = "visuallyhidden",
+                                fieldSetClass = "inline",
+                                fieldSetAttributes = "id=additionalPremises_field"
+                            )
+                        )
+                        </div>
+                    }
+                    <div id="additionalPremises-yes-content">
+                        @awrsAddressHelper(
+                            businessPremisesForm("additionalAddress"),
+                            AddressHelperParams()
+                        )
+
+                        @if(isEditMode()) {
+                            <input type="hidden" name="addAnother" value="No">
+                        } else {
+                            <div id="addAnother" class="form-group">
+                            @awrsInputTypeRadioGroup(
+                                InputTypeRadioGroupParams(
+                                    businessPremisesForm("addAnother"),
+                                    Seq("Yes" -> Messages("awrs.generic.yes"),
+                                        "No" -> Messages("awrs.generic.no")
+                                    ),
+                                    legend = Messages("awrs.additional-premises.do_you_have_additional_addresses"),
+                                    legendId = "addAnother-legend",
+                                    fieldSetAttributes = "id=addAnother_field",
+                                    fieldSetClass = "inline"
+                                )
+                            )
+                            </div>
+                        }
+                    </div>
+                    @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                        sectionName = additionalBusinessPremisesName,
+                        sectionEntryId = businessPremisesId,
+                        submitText = ctaMessage,
+                        submitId = "save-and-continue"
+                    ))
+                }
+            </div>
+        </div>
+    }
+

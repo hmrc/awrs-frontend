@@ -1,0 +1,49 @@
+@(params: views.helpers.DateHelperParams)(implicit messages: Messages)
+
+@import views.html.helper.FieldElements
+@import views.html.helpers._
+@import views.helpers._
+@import _root_.forms.validation.util._
+@import _root_.forms.validation.util.ErrorMessageInterpreter._
+@import _root_.forms.validation.util.ErrorMessageLookup._
+
+@fieldErrors = @{ ErrorMessageInterpreter.getFieldErrorsByName(params.fieldName)(Some(params.formItem)) }
+@legend = {
+    @params.label match {
+        case Some(label) => {<legend>@label</legend>}
+        case _ => {}
+    }
+}
+@formHint = {
+    @params.hintText match {
+        case Some(formHint) => {<span @if(params.hintTextId.nonEmpty){id="@params.hintTextId"} class="form-hint">@formHint</span>}
+        case _ => {}
+    }
+}
+@groupClass = @{
+    params.groupClass match {
+        case Some(groupClass) => groupClass
+        case _ => ""
+    }
+}
+@wrapperClass = @{
+    params.wrapperClass match {
+        case Some(wrapperClass) => wrapperClass
+        case _ => ""
+    }
+}
+@divId = @{
+    params.fieldName.replaceAll(" [.]", "_")
+}
+<div>
+    <div id="@{divId}_field" class="form-field touch @groupClass @wrapperClass @if(fieldErrors.nonEmpty) { form-field--error}">
+        @legend
+        <div class="form-date">
+            @formHint
+            @commonHelper(params.formItem(params.fieldName), fieldErrors)
+            <div class="no-touch native-date-picker form-date" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0"}>
+                @dateFieldsContent(params.formItem, params.fieldName)
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+@(deRegistrationForm: Form[models.DeRegistrationDate])(implicit request: Request[AnyRef], messages: Messages )
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers._
+@import views.html.helpers._
+
+@hintText = {
+<span aria-hidden="true">@Messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@Messages("awrs.generic.date_hint.reader")</span>
+}
+
+@includes.awrs_main(title = Messages("awrs.de_registration.page_title"), userLoggedIn = true) {
+
+@backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
+@errorSummaryTemplate(deRegistrationForm)
+
+
+<div class="grid">
+    <div class="grid grid-2-3">
+        <h1 id="de_registration-heading" class="heading-xlarge">@Messages("awrs.de_registration.heading")</h1>
+        <p class="lede">@Messages("awrs.de_registration.lede")</p>
+        @form(action = controllers.routes.DeRegistrationController.submitDate) {
+            <div class="form-group">
+                @awrsDateField(
+                    DateHelperParams(
+                        formItem = deRegistrationForm,
+                        fieldName = "proposedEndDate",
+                        hintText = hintText,
+                        hintTextId  = "de_registration-hint"
+                    )
+                )
+            </div>
+            @awrsSubmitButton(Messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+        }
+    </div>
+</div>
+}

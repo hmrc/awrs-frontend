@@ -1,0 +1,31 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+
+@(someHeading: Option[String],
+  someModel: Option[models.ApplicationDeclaration]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent],  messages : Messages)
+
+@wrapperId = @{SubviewIds.applicationDeclarationId}
+
+@content(model : models.ApplicationDeclaration) = {
+    <table class="view-application" @tabIndexHelper()>
+    @table_row(
+        Messages("awrs.application_declaration.declaration_name_hint", "sending"),
+        model.declarationName
+    )
+    @table_row(
+        Messages("awrs.application_declaration.declaration_role_hint", "sending"),
+        model.declarationRole
+    )
+    </table>
+}
+
+
+@(someHeading, someModel) match {
+    case (Some(heading), Some(model)) => {
+        @subview_core(heading, wrapperId)(content(model))
+    }
+    case _ => {}
+}

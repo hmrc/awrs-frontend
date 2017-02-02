@@ -1,0 +1,58 @@
+@import views.html.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers.ViewApplicationType
+
+@(heading: String, headingId: String, href: String = "#", sectionName: Option[String] = None)(content: Html, preContent: Option[Html] = None, postContent: Option[Html] = None)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent],  messages : Messages)
+
+@headerType = {
+    @viewApplicationType match {
+        case views.view_application.helpers.OneViewMode =>{
+            <div id="headerType"><h2 class="heading-large">@heading</h2></div>
+        }
+        case _ => {
+            <h1 class="heading-xlarge">@heading</h1>
+        }
+    }
+}
+
+@oneViewModeLink = {
+    <div id="headerLink"><a class="back-to-top-link print-hidden" href="#">@Messages("awrs.view_application.back_to_top")</a></div>
+}
+
+@editLinks = {
+    <div class="form-group">
+        <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.return_to_app_summary")</a>
+    </div>
+}
+
+@tabValue = {
+    @isOneViewMode match {
+        case true => {tabindex="0"}
+        case _ => {}
+    }
+}
+
+<div id="@headingId" class="form-group view-application-section" @tabValue>
+        @backLink(backUrl = controllers.routes.IndexController.showIndex().url)
+        @awrsProgressHelper(request.getBusinessType, sectionName)
+        @headerType
+        @dynamicContent(
+            ifOneViewMode = oneViewModeLink
+        )
+    @preContent match{
+        case Some(content) => {
+            @content
+        }
+        case _=> {}
+    }
+    @content
+    @postContent match{
+        case Some(content) => {
+            @content
+        }
+        case _=> {}
+    }
+</div>
+@dynamicContent(
+    ifEditMode = editLinks
+)

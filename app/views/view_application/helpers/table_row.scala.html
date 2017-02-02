@@ -1,0 +1,75 @@
+@*
+    N.B. the use of implicit in the parameter here is mainly so we do not need to specify a empty second parameter
+    every time we call this helper
+*@
+@(rowTitle: String,  content: Option[String]*)(implicit cssClass: Option[String] = None, someHref: Option[String] = None, someId: Option[Int] = None, links: Option[List[String]] = None)
+@import views.view_application.ViewApplicationHelper._
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+
+@cssClassAttr = {
+    @cssClass match {
+        case Some(css) => {class="@css"}
+        case _ => {}
+    }
+}
+@anchor = {
+    @someHref match {
+        case Some(href) => {<a href="@href@someId">@Messages("awrs.view_application.edit")</a>}
+        case _ => {}
+    }
+}
+
+@countContent(content) match {
+    case count if count > 0 => {
+        @cssClass match {
+            case Some("record-spacer") => {
+                <tr @cssClassAttr><td></td><td></td></tr>
+            }
+            case Some("record-header") => {
+                <tr @cssClassAttr>
+                    @rowTitle match {
+                        case data if data != "" => {<td class="row-title">@rowTitle</td>}
+                        case _ => {<td class="row-title"></td>}
+                    }
+                    <td class="row-data">
+                        @for(rRow <- content) {
+                            @rRow match {
+                                case Some(data) if Some(data) != Some(NoneBreakingSpace) => {<p>@Html(data)</p>}
+                                case _ => {}
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+            case _ => {
+                <tr @cssClassAttr>
+                    <td class="row-title">@Html(rowTitle)</td>
+                    <td class="row-data">
+                        @for(rRow <- content) {
+                            @rRow match {
+                                case Some(data) if Some(data) != Some(NoneBreakingSpace) => {<p>@data</p>}
+                                case _ => {}
+                            }
+                         }
+                    </td>
+                    @links match {
+                        case Some(link) => {
+                            <td class="links">
+                                @for(linkRow <- link){
+                                    <p>@Html(linkRow)</p>
+                                }
+                            </td>
+                        }
+                        case _ => {}
+                    }
+                    @someHref match {
+                        case Some(href) => {<td class="edit-link">@anchor</td>}
+                        case _ => {}
+                    }
+                </tr>
+            }
+        }
+    }
+    case _ => {}
+}

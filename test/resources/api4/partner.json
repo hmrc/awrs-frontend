@@ -1,0 +1,101 @@
+{
+  "subscriptionTypeFrontEnd": {
+    "legalEntity": {
+      "legalEntity": "Partnership"
+    },
+    "businessCustomerDetails": {
+      "businessName": "businessName",
+      "businessType": "Sole Trader",
+      "businessAddress": {
+        "line_1": "1 Example Street",
+        "line_2": "Example View",
+        "line_3": "Example Town",
+        "line_4": "Exampleshire",
+        "postcode": "$postcode",
+        "country": "GB"
+      },
+      "sapNumber": "123456  7890",
+      "safeId": "XE0001234567890",
+      "agentReferenceNumber": "JARN1234567",
+      "firstName": "first",
+      "lastName": "last"
+    },
+    "businessDetails": {
+      "tradingName": "tradingName",
+      "newAWBusiness": {
+        "newAWBusiness": "No"
+      },
+      "identification": {
+        "doYouHaveVRN": "No",
+        "doYouHaveUTR": "Yes",
+        "utr": "$utr"
+      }
+    },
+    "businessContacts": {
+      "mainPlaceOfBusiness": "Yes",
+      "contactAddressSame": "Yes",
+      "placeOfBusinessLast3Years": "Yes",
+      "operatingDuration": "5",
+      "contactFirstName": "contactFirstName",
+      "contactLastName": "contactLastName",
+      "emailReview": "emailReview@emailReview.com",
+      "telephone": "012345678901"
+    },
+    "businessPartners": {
+      "partners": [{
+        "firstName": "first",
+        "lastName": "last",
+        "isNinoPresent": "No"
+      },
+        {
+          "firstName": "first",
+          "lastName": "last",
+          "isNinoPresent": "No",
+          "additionalPartner": "Yes"
+        },
+        {
+          "firstName": "firstName",
+          "lastName": "lastName",
+          "isNinoPresent": "No",
+          "additionalPartner": "No"
+        }]
+    },
+    "additionalPremises": {
+      "premises": [{
+        "additionalPremises": "No"
+      }]
+    },
+    "tradingActivity": {
+      "wholesalerType": ["01",
+        "03"],
+      "typeOfAlcoholOrders": ["01",
+        "02",
+        "03",
+        "04"],
+      "doesBusinessImportAlcohol": "Yes"
+    },
+    "products": {
+      "mainCustomers": ["01",
+        "10"],
+      "productType": ["03",
+        "05"]
+    },
+    "suppliers": {
+      "suppliers": [{
+        "alcoholSuppliers": "Yes",
+        "supplierName": "supplierName",
+        "vatRegistered": "No",
+        "supplierAddress": {
+          "postcode": "$postcode",
+          "addressLine1": "addressLine1",
+          "addressLine2": "addressLine2"
+        },
+        "additionalSupplier": "No"
+      }]
+    },
+    "applicationDeclaration": {
+      "declarationName": "declarationName",
+      "declarationRole": "declarationRole"
+    }
+  }
+}

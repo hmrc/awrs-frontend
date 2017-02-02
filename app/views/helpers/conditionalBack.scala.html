@@ -1,0 +1,11 @@
+@import views.html.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers.ViewApplicationType
+
+@(sectionName: String)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
+
+@if(isEditMode()) {
+    @backLink()
+} else {
+    @returnToIndex()
+}

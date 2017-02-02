@@ -1,0 +1,142 @@
+# AWRS routes
+GET         /assets/*file                                   controllers.Assets.at(path="/public", file)
+
+GET         /                                               controllers.HomeController.showOrRedirect(callerId: Option[String])
+# Leaving in landing-page route in case people have it bookmarked
+GET         /landing-page                                   controllers.HomeController.showOrRedirect(callerId: Option[String])
+
+GET         /status-page                                    controllers.ApplicationStatusController.showStatus(printFriendly: Boolean ?= false, mustShow : Boolean ?= true)
+
+GET         /business-type                                  controllers.BusinessTypeController.showBusinessType(showBusinessType:Boolean ?= false)
+GET         /business-type/amend                            controllers.BusinessTypeController.showBusinessType(showBusinessType:Boolean ?= true)
+POST        /business-type/continue                         controllers.BusinessTypeController.saveAndContinue()
+
+GET         /index                                          controllers.IndexController.showIndex
+GET         /lastLocation                                   controllers.IndexController.showLastLocation
+GET         /logout                                         controllers.ApplicationController.logout
+GET         /keep-alive                                     controllers.ApplicationController.keepAlive
+
+GET         /unauthorised                                   controllers.IndexController.unauthorised
+
+GET         /additional-premises                            controllers.AdditionalPremisesController.showPremisePage(id: Int ?= 1, isLinearMode: Boolean = true, isNewRecord: Boolean = true)
+GET         /additional-premises/delete                     controllers.AdditionalPremisesController.showDelete(id: Int ?= 1)
+GET         /additional-premises/edit                       controllers.AdditionalPremisesController.showPremisePage(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = false)
+GET         /additional-premises/edit/new                   controllers.AdditionalPremisesController.showPremisePage(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = true)
+POST        /additional-premises/saveAndContinue            controllers.AdditionalPremisesController.saveAndContinue(id: Int, isNewRecord: Boolean)
+POST        /additional-premises/saveAndReturn              controllers.AdditionalPremisesController.saveAndReturn(id: Int, isNewRecord: Boolean)
+POST        /additional-premises/delete                     controllers.AdditionalPremisesController.actionDelete(id: Int)
+
+GET         /business-directors                             controllers.BusinessDirectorsController.showBusinessDirectors(id: Int ?= 1, isLinearMode: Boolean = true, isNewRecord: Boolean = true)
+GET         /business-directors/delete                      controllers.BusinessDirectorsController.showDelete(id: Int ?= 1)
+GET         /business-directors/edit                        controllers.BusinessDirectorsController.showBusinessDirectors(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = false)
+GET         /business-directors/edit/new                    controllers.BusinessDirectorsController.showBusinessDirectors(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = true)
+POST        /business-directors/saveAndContinue             controllers.BusinessDirectorsController.saveAndContinue(id: Int, isNewRecord: Boolean)
+POST        /business-directors/saveAndReturn               controllers.BusinessDirectorsController.saveAndReturn(id: Int, isNewRecord: Boolean)
+POST        /business-directors/delete                      controllers.BusinessDirectorsController.actionDelete(id: Int)
+
+GET         /trading-activity                               controllers.TradingActivityController.showTradingActivity(isLinearMode: Boolean = true)
+GET         /trading-activity/edit                          controllers.TradingActivityController.showTradingActivity(isLinearMode: Boolean = false)
+POST        /trading-activity/saveAndContinue               controllers.TradingActivityController.saveAndContinue
+POST        /trading-activity/saveAndReturn                 controllers.TradingActivityController.saveAndReturn
+
+GET         /products                                       controllers.ProductsController.showProducts(isLinearMode: Boolean = true)
+GET         /products/edit                                  controllers.ProductsController.showProducts(isLinearMode: Boolean = false)
+POST        /products/saveAndContinue                       controllers.ProductsController.saveAndContinue
+POST        /products/saveAndReturn                         controllers.ProductsController.saveAndReturn
+
+GET         /confirmation                                   controllers.ConfirmationController.showApplicationConfirmation(printFriendly: Boolean ?= false)
+GET         /update-confirmation                            controllers.ConfirmationController.showApplicationUpdateConfirmation(printFriendly: Boolean ?= false)
+
+GET         /reset                                          controllers.ResetController.resetApplication
+GET         /update-reset                                   controllers.ResetController.resetApplicationUpdate
+
+GET         /supplier-addresses                             controllers.SupplierAddressesController.showSupplierAddressesPage(id: Int ?= 1, isLinearMode: Boolean = true, isNewRecord: Boolean = true)
+GET         /supplier-addresses/delete                      controllers.SupplierAddressesController.showDelete(id: Int ?= 1)
+GET         /supplier-addresses/edit                        controllers.SupplierAddressesController.showSupplierAddressesPage(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = false)
+GET         /supplier-addresses/edit/new                    controllers.SupplierAddressesController.showSupplierAddressesPage(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = true)
+POST        /supplier-addresses/saveAndContinue             controllers.SupplierAddressesController.saveAndContinue(id: Int, isNewRecord: Boolean)
+POST        /supplier-addresses/saveAndReturn               controllers.SupplierAddressesController.saveAndReturn(id: Int, isNewRecord: Boolean)
+POST        /supplier-addresses/delete                      controllers.SupplierAddressesController.actionDelete(id: Int)
+
+GET         /business-details                               controllers.BusinessDetailsController.showBusinessDetails(isLinearMode: Boolean = true)
+GET         /business-details/edit                          controllers.BusinessDetailsController.showBusinessDetails(isLinearMode: Boolean = false)
+POST        /business-details/saveAndContinue               controllers.BusinessDetailsController.saveAndContinue
+POST        /business-details/saveAndReturn                 controllers.BusinessDetailsController.saveAndReturn
+
+GET         /business-registration-details                  controllers.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode: Boolean = true)
+GET         /business-registration-details/edit             controllers.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode: Boolean = false)
+POST        /business-registration-details/saveAndContinue  controllers.BusinessRegistrationDetailsController.saveAndContinue
+POST        /business-registration-details/saveAndReturn    controllers.BusinessRegistrationDetailsController.saveAndReturn
+
+GET         /business-contacts                              controllers.BusinessContactsController.showBusinessContacts(isLinearMode: Boolean = true)
+GET         /business-contacts/edit                         controllers.BusinessContactsController.showBusinessContacts(isLinearMode: Boolean = false)
+POST        /business-contacts/saveAndContinue              controllers.BusinessContactsController.saveAndContinue
+POST        /business-contacts/saveAndReturn                controllers.BusinessContactsController.saveAndReturn
+
+GET         /place-of-business                              controllers.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode: Boolean = true)
+GET         /place-of-business/edit                         controllers.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode: Boolean = false)
+POST        /place-of-business/saveAndContinue              controllers.PlaceOfBusinessController.saveAndContinue
+POST        /place-of-business/saveAndReturn                controllers.PlaceOfBusinessController.saveAndReturn
+
+GET         /application-declaration                        controllers.ApplicationDeclarationController.showApplicationDeclaration
+POST        /application-declaration/sendApplication        controllers.ApplicationDeclarationController.sendApplication
+
+GET         /business-partners                              controllers.BusinessPartnersController.showPartnerMemberDetails(id: Int ?= 1, isLinearMode: Boolean = true, isNewRecord: Boolean = true)
+GET         /business-partners/delete                       controllers.BusinessPartnersController.showDelete(id: Int ?= 1)
+GET         /business-partners/edit                         controllers.BusinessPartnersController.showPartnerMemberDetails(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = false)
+GET         /business-partners/edit/new                     controllers.BusinessPartnersController.showPartnerMemberDetails(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = true)
+POST        /business-partners/saveAndContinue              controllers.BusinessPartnersController.saveAndContinue(id: Int, isNewRecord: Boolean)
+POST        /business-partners/saveAndReturn                controllers.BusinessPartnersController.saveAndReturn(id: Int, isNewRecord: Boolean)
+POST        /business-partners/delete                       controllers.BusinessPartnersController.actionDelete(id: Int)
+
+GET         /group-member                                   controllers.GroupMemberController.showMemberDetails(id: Int ?= 1, isLinearMode: Boolean = true, isNewRecord: Boolean = true)
+GET         /group-member/delete                            controllers.GroupMemberController.showDelete(id: Int ?= 1)
+GET         /group-member/edit                              controllers.GroupMemberController.showMemberDetails(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = false)
+GET         /group-member/edit/new                          controllers.GroupMemberController.showMemberDetails(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = true)
+POST        /group-member/saveAndContinue                   controllers.GroupMemberController.saveAndContinue(id: Int, isNewRecord: Boolean)
+POST        /group-member/saveAndReturn                     controllers.GroupMemberController.saveAndReturn(id: Int, isNewRecord: Boolean)
+POST        /group-member/delete                            controllers.GroupMemberController.actionDelete(id: Int)
+
+GET         /group-declaration                              controllers.GroupDeclarationController.showGroupDeclaration
+POST        /group-declaration/sendConfirmation             controllers.GroupDeclarationController.sendConfirmation
+
+GET         /address-lookup                                 controllers.AddressLookupController.addressLookup(postcode: String)
+POST        /address-lookup                                 controllers.AddressLookupController.auditAddress
+
+GET         /survey                                         controllers.SurveyController.showSurvey
+POST        /survey-opt-out                                 controllers.SurveyController.optOutSurvey
+POST        /survey-submit                                  controllers.SurveyController.submitSurvey
+
+GET         /feedback                                       controllers.FeedbackController.showFeedback
+GET         /feedback/thanks                                controllers.FeedbackController.showFeedbackThanks
+POST        /feedback-submit                                controllers.FeedbackController.submitFeedback
+
+GET         /withdraw-application                           controllers.WithdrawalController.showWithdrawalReasons
+POST        /withdraw-application                           controllers.WithdrawalController.submitWithdrawalReasons
+GET         /confirm-withdrawal                             controllers.WithdrawalController.showConfirmWithdrawal
+POST        /confirm-withdrawal                             controllers.WithdrawalController.submitConfirmWithdrawal
+GET         /withdrawal-confirmation                        controllers.WithdrawalController.showWithdrawalConfirmation(printFriendly: Boolean ?= false)
+
+GET         /de-register-date                               controllers.DeRegistrationController.showDate
+POST        /de-register-date/submit                        controllers.DeRegistrationController.submitDate
+GET         /de-register/abort                              controllers.DeRegistrationController.returnToIndex
+
+GET         /de-register-reason                             controllers.DeRegistrationController.showReason
+POST        /de-register-awrs-reason/submit                 controllers.DeRegistrationController.submitReason
+
+GET         /de-register-confirm                            controllers.DeRegistrationController.showConfirm
+POST        /de-register-confirm/submit                     controllers.DeRegistrationController.callToAction
+GET         /de-register-confirmation                       controllers.DeRegistrationController.showConfirmation(printFriendly: Boolean ?= false)
+
+GET         /view-application                               controllers.ViewApplicationController.show(printFriendly: Boolean ?= false)
+GET         /view-application-print-friendly                controllers.ViewApplicationController.show(printFriendly: Boolean ?= true)
+GET         /view-section/:section                          controllers.ViewApplicationController.viewSection(section: String, printFriendly: Boolean ?= false)
+GET         /back                                           controllers.ViewApplicationController.backFrom(section: String, id: Option[Int]?= None)
+
+GET         /signed-out                                     controllers.ApplicationController.timedOut()
+
+# This is for AWRS-1595
+#GET         /implode                                        controllers.ReapplicationController.show
+#POST        /implode                                        controllers.ReapplicationController.submit
+
+

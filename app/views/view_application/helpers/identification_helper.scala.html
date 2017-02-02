@@ -1,0 +1,102 @@
+@(someId : Option[BusinessRegistrationDetails], businessType: Option[String])(implicit messages : Messages)
+@import views.view_application.ViewApplicationHelper._
+
+@* UTR *@
+@legend = @{
+    businessType.map {
+        case "SOP" => { Messages("awrs.generic.do_you_have_sa_UTR") }
+        case "Partnership" | "LP" | "LLP" | "LLP_GRP" => { Messages("awrs.generic.do_you_have_partnership_UTR") }
+        case _ => { Messages("awrs.generic.do_you_have_CT_UTR") }
+    }
+}
+
+@someId.get.doYouHaveUTR match {
+    case Some(answer) => {
+        @table_row(
+            legend.get,
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@someId.get.utr match {
+    case Some(utr) => {
+        @table_row(
+            (businessType.map {
+                case "SOP" => { Messages("awrs.generic.sa_UTR_number") }
+                case "Partnership" | "LP" | "LLP" | "LLP_GRP" => { Messages("awrs.generic.partnership_UTR_number") }
+                case _ => { Messages("awrs.generic.CT_UTR_number") }
+            }).get,
+            utr
+        )
+    }
+    case _ => {}
+}
+
+@* Nino *@
+@someId.get.doYouHaveNino match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_you_have_NINO"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@someId.get.nino match {
+    case Some(nino) => {
+        @table_row(
+            Messages("awrs.generic.NINO"),
+            nino
+        )
+    }
+    case _ => {}
+}
+
+@* CRN *@
+@someId.get.isBusinessIncorporated match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_you_have_company_reg"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@someId.get.companyRegDetails match {
+    case Some(data) => {
+        @table_row(
+            Messages("awrs.generic.company_reg"),
+            data.companyRegistrationNumber
+        )
+        @table_row(
+            Messages("awrs.generic.date_of_incorporation"),
+            data.dateOfIncorporation.toString("dd MMMM yyyy")
+        )
+    }
+    case _ => {}
+}
+
+@* VRN *@
+@someId.get.doYouHaveVRN match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_you_have_VAT"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@someId.get.vrn match {
+    case Some(vrn) => {
+        @table_row(
+            Messages("awrs.generic.VAT_registration_number"),
+            vrn
+        )
+    }
+    case _ => {}
+}

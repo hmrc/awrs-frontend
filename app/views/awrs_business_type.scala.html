@@ -1,0 +1,53 @@
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+
+@(businessTypeForm: Form[models.BusinessType], businessName : String, isAGroup : Boolean = false, isSaAccount : Option[Boolean], isOrgAccount : Option[Boolean])(implicit request: Request[AnyContent],  messages: Messages)
+
+@implicitFormInstance = @{ Some(businessTypeForm) }
+
+@pageScripts = {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+@includes.awrs_main(title = Messages("awrs.business_verification.heading"),nameBusiness = Some(businessName),pageScripts = Some(pageScripts), userLoggedIn = true){
+
+@errorSummaryTemplate(businessTypeForm)
+<div class="grid">
+    <div class="grid grid-2-3">
+        <h1 id="business-verification-heading" class="heading-xlarge">@Messages("awrs.business_verification.heading")</h1>
+        @form(action = controllers.routes.BusinessTypeController.saveAndContinue){
+            <input type="hidden" name="isSaAccount" value="@{isSaAccount}">
+            <input type="hidden" name="isOrgAccount" value="@{isOrgAccount}">
+            @if(isAGroup){
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        businessTypeForm("legalEntity"),
+                        Seq("LTD_GRP" -> Messages("awrs.business_verification.limited_company"),
+                            "LLP_GRP" -> Messages("awrs.business_verification.limited_liability_partnership")),
+                        legend = Messages("awrs.business_verification.heading"),
+                        legendClass = "visuallyhidden",
+                        fieldSetClass = "form-group",
+                        fieldSetAttributes = "id=legalEntity_field"
+                    )
+                )
+            } else {
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        businessTypeForm("legalEntity"),
+                        Seq("LTD" -> Messages("awrs.business_verification.limited_company"),
+                            "SOP" -> Messages("awrs.business_verification.sole_trader"),
+                            "Partnership" -> Messages("awrs.business_verification.business_partnership"),
+                            "LP" -> Messages("awrs.business_verification.limited_partnership"),
+                            "LLP" -> Messages("awrs.business_verification.limited_liability_partnership")),
+                        legend = Messages("awrs.business_verification.heading"),
+                        legendClass = "visuallyhidden",
+                        fieldSetClass = "form-group",
+                        fieldSetAttributes = "id=legalEntity_field"
+                    )
+                )
+            }
+            @awrsSubmitButton(Messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+        }
+    </div>
+</div>
+}

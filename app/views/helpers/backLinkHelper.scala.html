@@ -1,0 +1,20 @@
+@*
+    This helper is designed to be used for the main customer journey pages
+    if the journey is linear then the back button will always call ViewApplicationController.backFrom
+    if the journey is in edit mode then the back button will always call ViewApplicationController.viewSection
+*@
+@import views.html.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers.ViewApplicationType
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+@(params: BackLinkParams)(implicit viewApplicationType: ViewApplicationType)
+
+@backUrl = @{
+    isEditMode() match {
+        case true => controllers.routes.ViewApplicationController.viewSection(params.sectionName).url
+        case false => controllers.routes.ViewApplicationController.backFrom(params.sectionName, params.sectionEntryId).url
+    }
+}
+
+@backLink(backUrl)

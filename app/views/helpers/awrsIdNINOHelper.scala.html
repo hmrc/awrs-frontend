@@ -1,0 +1,112 @@
+@(someRadioField: Option[Field],
+ninoField: Field,
+youOrThey: String,
+passportField: Option[Field] = None,
+nationalIdField: Option[Field] = None,
+questionHintText: Option[String] = None
+)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+
+@import play.api.i18n._
+@import views.html.helper._
+@import views.html.helpers._
+@import views.helpers.InputTypeTextParams
+@import views.helpers.InputTypeRadioGroupParams
+
+@nationalIdPassportCore(passport : Field, nationalId : Field) = {
+    @awrsInputTypeText(
+        InputTypeTextParams(
+            passport,
+            inputId = passport.name,
+            label = Messages("awrs.generic.passport_no"),
+            wrapperClass = "panel-indent",
+            maxLength = frontendDefaultLen,
+            required = true
+        )
+    )
+    Or
+    @awrsInputTypeText(
+        InputTypeTextParams(
+            nationalId,
+            parentForm = formInstance,
+            inputId = nationalId.name,
+            label = Messages("awrs.generic.national_id_no"),
+            wrapperClass = "panel-indent",
+            maxLength = frontendDefaultLen,
+            required = true
+        )
+    )
+}
+
+@nationalIdPassport = {
+    @(passportField, nationalIdField) match {
+        case (None, _) => {}
+        case (_, None) => {}
+        case (Some(passport), Some(nationalId)) => {
+            @someRadioField match {
+                case Some(radioField) => {
+                    <div id="@radioField.name-no-content">
+                        @nationalIdPassportCore(passport,nationalId)
+                    </div>
+                }
+                case _ => {@nationalIdPassportCore(passport,nationalId)}
+            }
+        }
+    }
+}
+
+@core(withQuestion : Boolean) = @{
+    val wrapperClassSetting : Option[String] =
+        withQuestion match {
+            case true => Some("panel-indent")
+            case false => None
+        }
+
+    awrsInputTypeText(
+        InputTypeTextParams(
+            ninoField,
+            parentForm = formInstance,
+            inputId = ninoField.name,
+            maxLength = frontendDefaultLen,
+            wrapperClass = wrapperClassSetting,
+            label = Messages("awrs.generic.NINO"),
+            required = true,
+            labelHighlight = true,
+            formHint = Messages("awrs.generic.do_you_have_NINO_information"),
+            formHintId = "NINO-information"
+        )
+    )
+}
+
+@withQuestion(questionField : Field) = {
+    @awrsInputTypeRadioGroup(
+        InputTypeRadioGroupParams(
+            questionField,
+            Seq("Yes" -> Messages("awrs.generic.yes"),
+                "No" -> Messages("awrs.generic.no")),
+            fieldSetAttributes = "id="+questionField.name+"_field",
+            legend = Messages(s"awrs.generic.do_${youOrThey}_have_NINO"),
+            formHint = questionHintText,
+            formHintId = questionHintText match {
+                case None => None
+                case _ =>Some("Nino-question-hint")
+            },
+            fieldSetClass = "inline"
+        )
+    )
+    <div id="@questionField.name-yes-content">
+        @core(withQuestion = true)
+    </div>
+    @nationalIdPassport
+}
+
+@withoutQuestion = {
+    @core(withQuestion = false)
+    @nationalIdPassport
+}
+
+<div class="form-group">
+    @someRadioField match {
+        case Some(radioField) => {@withQuestion(radioField)}
+        case _ => {@withoutQuestion}
+    }
+</div>

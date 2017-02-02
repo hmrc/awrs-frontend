@@ -1,0 +1,71 @@
+@(params: views.subtemplates.application_status.ApplicationStatusParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages )
+@import views.html.subtemplates.application_status._
+@import views.subtemplates.application_status._
+@import models.FormBundleStatus._
+@import views.html.helpers._
+@import config.ApplicationConfig
+@normalInfo = {
+    @params.status.formBundleStatus match {
+        case Pending                     => {@pending_info(params.asInstanceOf[ApplicationPendingParameter].isNewBusiness, printFriendly)}
+        case Approved                    => {@approved_info(printFriendly)}
+        case ApprovedWithConditions      => {@approved_with_conditions_info(params.asInstanceOf[ApplicationApprovedWithConditionsParameter], printFriendly)}
+        case Rejected                    => {@rejected_info(params.asInstanceOf[ApplicationRejectedParameter], printFriendly)}
+        case Revoked                     => {@revoked_info(params.asInstanceOf[ApplicationRevokedParameter], printFriendly)}
+        case RejectedUnderReviewOrAppeal => {@rejected_review_info(params.asInstanceOf[ApplicationRejectedReviewParameter])}
+        case RevokedUnderReviewOrAppeal  => {@revoked_review_info(params.asInstanceOf[ApplicationRevokedReviewParameter])}
+        case _                           => {}
+    }
+}
+
+@alertInfo = {
+    @params match {
+        case alertParam : ApplicationMindedToRejectedParameter       => {@minded_to_rejected_info(alertParam, printFriendly)}
+        case alertParam : ApplicationMindedToRevokeParameter         => {@minded_to_revoke_info(alertParam, printFriendly)}
+        case alertParam : ApplicationNoLongerMindedToRevokeParameter => {@no_longer_minded_to_revoke_info(alertParam, printFriendly)}
+        case _                                                       => {}
+    }
+}
+
+@info = {
+    @params match {
+        case alert : AlertInfoParameters => {@alertInfo}
+        case _                           => {@normalInfo}
+    }
+}
+@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+@govWrapper = {
+    @includes.awrs_main(title = Messages("awrs.application_status.page_title"), nameBusiness = Some(params.organisationName), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    <div class="grid">
+        <div class="grid grid-2-3">
+            @application_status_header(params)
+            @info
+            @params.status.formBundleStatus match {
+                case Rejected | Revoked | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal => {
+                    @awrsPrintLink()
+                    <div class="form-group print-hidden">
+                        <a id="view-application"
+                           class="button print-hidden"
+                           role="button"
+                           href="@controllers.routes.ViewApplicationController.show(false)">
+                           @Messages("awrs.generic.application_status_continue_read_only")
+                        </a>
+                    </div>
+                }
+                case _        => {
+                    @awrsPrintLink()
+                }
+            }
+        </div>
+    </div>
+    }
+}
+@content = {
+    @application_status_header(params)
+    @awrsPrintLink()
+    @info
+    @backLink()
+}
+@printFriendly match {
+    case true => {@awrsPrintFriendlyWrapper(content)}
+    case false => {@govWrapper}
+}

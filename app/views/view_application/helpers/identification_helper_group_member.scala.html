@@ -1,0 +1,70 @@
+@(member: GroupMember)(implicit messages : Messages)
+@import views.view_application.ViewApplicationHelper._
+
+@* UTR *@
+@member.doYouHaveUTR match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_partnership_UTR"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@member.utr match {
+    case Some(utr) => {
+        @table_row(
+            Messages("awrs.generic.UTR_number"),
+            utr
+        )
+    }
+    case _ => {}
+}
+
+@* CRN *@
+@member.isBusinessIncorporated match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_company_reg"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@member.companyRegDetails match {
+    case Some(data) => {
+        @table_row(
+            Messages("awrs.generic.company_reg"),
+            data.companyRegistrationNumber
+        )
+        @table_row(
+            Messages("awrs.generic.date_of_incorporation"),
+            data.dateOfIncorporation.toString("dd MMMM yyyy")
+        )
+    }
+    case _ => {}
+}
+
+@* VRN *@
+@member.doYouHaveVRN match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_VAT"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@member.vrn match {
+    case Some(vrn) => {
+        @table_row(
+            Messages("awrs.generic.VAT_registration_number"),
+            vrn
+        )
+    }
+    case _ => {}
+}
+

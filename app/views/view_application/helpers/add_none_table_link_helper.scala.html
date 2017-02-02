@@ -1,0 +1,17 @@
+@import views.html.view_application.helpers._
+@import views.view_application.ViewApplicationHelper._
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+
+@(isSectionEdit: Boolean)(position: String, href: String, message: String)
+@isSectionEdit match {
+    case true => {
+        @Html(link(
+            href,
+            Messages("awrs.view_application.add_another", message),
+            "link",
+            "add-link-" + position
+        ))
+    }
+    case false => {}
+}

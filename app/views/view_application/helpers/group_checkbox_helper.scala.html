@@ -1,0 +1,18 @@
+@(legend: String, selectionMapping: Map[String, String], selected: List[String], otherField: Option[String] = None, otherFieldLabel: Option[String] = Some("Other: "))(implicit messages : Messages)
+@import views.view_application.ViewApplicationHelper._
+
+
+@table_row(
+    legend,
+    selected.map(
+        x => {
+            val mappedValue = selectionMapping.get(x).fold("")(x => x)
+            mappedValue match {
+                case "All" => None
+                case "Other" => otherFieldLabel + otherField
+                case _ => Some(mappedValue)
+            }
+        }
+    ) : _*
+
+)

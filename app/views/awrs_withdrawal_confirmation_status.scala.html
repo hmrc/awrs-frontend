@@ -1,0 +1,42 @@
+@(processingDate: String, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages )
+@import views.helpers.WithdrawalHelper._
+@import views.html.helpers._
+@import views.helpers._
+
+@date = @{stringifyDate(processingDate)}
+
+@govWrapper = {
+    @includes.awrs_main(title = Messages("awrs.withdrawal.confirmation.title"), userLoggedIn = true){
+        <div class="grid">
+            <div class="grid grid-2-3">
+                @confirmationHelper(
+                    "awrs.withdrawal.confirmation_page.description",
+                    Messages("awrs.withdrawal.description_1", date)
+                )
+                <h2 class="heading-small print-hidden">@Messages("awrs.generic.print_confirmation")</h2>
+                @awrsPrintLink()
+                <hr aria-hidden="true">
+                <h2 class="heading-small" id="ConfirmationNoteHeadingText">@Messages("awrs.confirmation.information")</h2>
+                <p>@Messages("awrs.withdrawal.confirmation_page.information_what_next_1")</p>
+                <div class="form-group">
+                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@Messages("awrs.confirmation.finish")</a>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@content = {
+    @confirmationHelper(
+        "awrs.de_registration.confirmation_page.description",
+        Messages("awrs.de_registration.confirmation_page.description_1", date)
+    )
+    @awrsPrintLink()
+    <h2 class="heading-small">@Messages("awrs.confirmation.information")</h2>
+    <p>@Messages("awrs.withdrawal.confirmation_page.information_what_next_1") @Messages("awrs.withdrawal.confirmation_page.information_what_next_1_href").</p>
+    @backLink()
+}
+@printFriendly match {
+    case true => {@awrsPrintFriendlyWrapper(content)}
+    case false => {@govWrapper}
+}

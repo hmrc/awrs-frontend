@@ -1,0 +1,113 @@
+@(director : BusinessDirector, businessLegalEntity: String)(implicit messages : Messages)
+@import views.view_application.ViewApplicationHelper._
+
+@* UTR *@
+@legend = @{
+    businessLegalEntity match {
+        case "SOP" => Messages("awrs.generic.do_you_have_sa_UTR") // this should never happen since SOP shouldn't have access to this page
+        case "Partnership" | "LP" | "LLP" | "LLP_GRP" => Messages("awrs.generic.do_they_have_partnership_UTR")
+        case _ => Messages("awrs.generic.do_they_have_CT_UTR")
+    }
+}
+
+@director.doYouHaveUTR match {
+    case Some(answer) => {
+        @table_row(
+            legend.get,
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@director.utr match {
+    case Some(utr) => {
+        @table_row(
+            Messages("awrs.generic.UTR_number"),
+            utr
+        )
+    }
+    case _ => {}
+}
+
+
+@* Nino *@
+@director.doTheyHaveNationalInsurance match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_NINO"),
+            answer
+        )
+    }
+    case _ => {}
+}
+@director.nino match {
+    case Some(nino) => {
+        @table_row(
+            Messages("awrs.generic.NINO"),
+            nino
+        )
+    }
+    case _ => {}
+}
+@director.passportNumber match {
+    case Some(passportNumber) => {
+        @table_row(
+            Messages("awrs.generic.passport_no"),
+            passportNumber
+        )
+    }
+    case _ => {}
+}
+@director.nationalID match {
+    case Some(nationalID) => {
+        @table_row(
+            Messages("awrs.generic.national_id_no"),
+            nationalID
+        )
+    }
+    case _ => {}
+}
+
+@* CRN *@
+@director.doYouHaveCRN match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_company_reg"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@director.companyRegNumber match {
+    case Some(data) => {
+        @table_row(
+            Messages("awrs.generic.company_reg"),
+            data
+        )
+    }
+    case _ => {}
+}
+
+@* VRN *@
+@director.doYouHaveVRN match {
+    case Some(answer) => {
+        @table_row(
+            Messages("awrs.generic.do_they_have_VAT"),
+            answer
+        )
+    }
+    case _ => {}
+}
+
+@director.vrn match {
+    case Some(vrn) => {
+        @table_row(
+            Messages("awrs.generic.VAT_registration_number"),
+            vrn
+        )
+    }
+    case _ => {}
+}
+

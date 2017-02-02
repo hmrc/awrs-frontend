@@ -1,0 +1,69 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import utils.SessionUtil.sessionUtilForRequest
+@import services.DataCacheKeys._
+
+@(someHeading: Option[String],
+  someModel: Option[models.BusinessDetails],
+  someBusinessName: Option[String]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@wrapperId = @{
+    SubviewIds.businessDetailsId
+}
+
+@href = @{
+    controllers.routes.BusinessDetailsController.showBusinessDetails(false).url
+}
+
+@content(model: models.BusinessDetails, businessName: String) = {
+
+    @table_row(
+        "",
+        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_details_text"))(x => x))
+    )(cssClass = "record-header")
+    @table_row(
+        Messages("awrs.business_details.name"),
+        businessName
+    )
+    @table_row(
+        Messages("awrs.business_details.type_of_business"),
+        request.getBusinessType match {
+            case Some("Partnership") => Messages("awrs.business_details.business_partnership")
+            case Some("LP") => Messages("awrs.business_details.limited_partnership_body")
+            case Some("LLP" | "LLP_GRP") => Messages("awrs.business_details.limited_liability_partnership_body")
+            case Some("LTD" | "LTD_GRP") => Messages("awrs.business_details.corporate_body")
+            case Some("SOP") => Messages("awrs.business_details.sole_trader")
+            case _ => Messages("awrs.business_details.unknown_body")
+        }
+    )
+    @table_row(
+        Messages("awrs.generic.trading_name"),
+        model.tradingName
+    )
+    @table_row(
+        Messages("awrs.business_details.new_AWBusiness"),
+        model.newAWBusiness.fold("")(x => x.newAWBusiness)
+    )
+    @table_row(
+        Messages("awrs.business_details.begin_trading"),
+        model.newAWBusiness.fold("")(x => x.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy")))
+    )
+}
+
+@preContent = {
+    <table class="view-application" @tabIndexHelper()>
+}
+
+@postContent = {
+    </table>
+}
+
+@(someHeading, someModel, someBusinessName) match {
+    case (Some(heading), Some(model), Some(businessName)) => {
+        @subview_core(heading, wrapperId, sectionName = businessDetailsName)(content(model, businessName), preContent = preContent, postContent = postContent)
+    }
+    case _ => {}
+}

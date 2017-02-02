@@ -1,0 +1,137 @@
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import forms.AwrsFormFields._
+@import views.helpers._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+
+@(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+
+@implicitFormInstance = @{ Some(supplierAddressForm) }
+
+
+@pageScripts = {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+}
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.SupplierAddressesController.saveAndReturn(supplierAddressId, isNewRecord)
+        case false => controllers.routes.SupplierAddressesController.saveAndContinue(supplierAddressId, isNewRecord)
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@includes.awrs_main(title = Messages("awrs.supplier-addresses.page.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+<link rel="stylesheet" href='@routes.Assets.at("stylesheets/jquery-ui.min.css")'/>
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLinkHelper(BackLinkParams(
+            sectionName = suppliersName
+        ))
+        @errorSummaryTemplate(supplierAddressForm)
+        @awrsProgressHelper(request.getBusinessType, suppliersName)
+        @{
+            (isEditMode(), isNewRecord, supplierAddressId) match {
+                case (true, true, 1) | (false, true, 1) | (false, false, 1) => <h1 id="supplier-addresses-title" class="heading-xlarge">{Messages("awrs.supplier-addresses.heading.first")}</h1>
+                case (_, _, _) => <h1 id="supplier-addresses-title" class="heading-xlarge">{Messages("awrs.supplier-addresses.heading", headingPrefix(enter = "awrs.generic.tell_us_about"), ordinalIntSuffix(supplierAddressId))}</h1>
+            }
+        }
+        <p id="supplier-address-description" class="lede">@Html(Messages("awrs.supplier-addresses.description"))</p>
+        @form(action = actionRoute){
+            @if(isEditMode() || supplierAddressId > 1){
+                <input type="hidden" name="alcoholSupplier" id="alcoholSupplier-yes" value="Yes">
+            } else {
+                <div class="form-group overseas-alcohol-suppliers">
+                    @awrsInputTypeRadioGroup(
+                        InputTypeRadioGroupParams(
+                            supplierAddressForm("alcoholSupplier"),
+                            Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                                Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                            legend = Messages("awrs.supplier-addresses.heading.first"),
+                            legendClass = "visuallyhidden",
+                            fieldSetClass = "inline",
+                            fieldSetAttributes = "id=alcoholSupplier_field"
+                        )
+                    )
+                </div>
+            }
+
+            <div class="form-group">
+                <div id="alcoholSupplier-yes-content">
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            supplierAddressForm("supplierName"),
+                            label = Messages("awrs.supplier-addresses.supplier_name"),
+                            maxLength = AwrsFieldConfig.supplierNameLen.toString,
+                            labelHighlight = true,
+                            required = true,
+                            inputClass = "alcoholSupplierName"
+                        )
+                    )
+                    <div class="form-group">
+                        @awrsInputTypeRadioGroup(
+                            InputTypeRadioGroupParams(
+                                supplierAddressForm("ukSupplier"),
+                                Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                                    Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                                legend = Messages("awrs.supplier-addresses.uk_supplier"),
+                                fieldSetClass = "inline",
+                                fieldSetAttributes = "id=ukSupplier_field"
+                            )
+                        )
+                        <div id="ukSupplier-all-content">
+                            <div class="form-group">
+                                @awrsAddressHelper(supplierAddressForm("supplierAddress"),
+                                    AddressHelperParams(
+                                        wrapperClass = "panel-indent",
+                                        isUk = false
+                                    )
+                                )
+                            </div>
+                            <div id="ukSupplier-yes-content">
+                                @awrsIdVRNHelper(
+                                    supplierAddressForm("vatRegistered"),
+                                    supplierAddressForm("vatNumber"),
+                                    legend = Some(Messages("awrs.supplier-addresses.vat_registered"))
+                                )
+                            </div>
+                        </div>
+                    </div>
+                    @if(supplierAddressId < 5 && !isEditMode){
+                        <div class="form-group">
+                            @awrsInputTypeRadioGroup(
+                                InputTypeRadioGroupParams(
+                                    supplierAddressForm("additionalSupplier"),
+                                    Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                                        Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                                    legend = Messages("awrs.supplier-addresses.add_supplier"),
+                                    fieldSetClass = "inline",
+                                    fieldSetAttributes = "id=additionalSupplier_field"
+                                )
+                            )
+                        </div>
+                    } else {
+                        <input type="hidden" name="additionalSupplier" value="No">
+                    }
+                </div>
+            </div>
+            @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                sectionName = suppliersName,
+                sectionEntryId = supplierAddressId,
+                submitText = ctaMessage,
+                submitId = "save-and-continue"
+            ))
+        }
+    </div>
+</div>
+}

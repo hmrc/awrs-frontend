@@ -1,0 +1,11 @@
+@(declarationTxt: String, id: String)
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+<div id=@id class="form-group text-disclaimer">
+    <i>
+        <span class="visuallyhidden">@Messages("awrs.generic.warning_icon_text")</span>
+    </i>
+    <strong class="bold-small">
+        @declarationTxt
+    </strong>
+</div>

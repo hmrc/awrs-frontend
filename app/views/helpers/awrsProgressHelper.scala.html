@@ -1,0 +1,12 @@
+@import services.JourneyConstants
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+
+@(businessType: Option[String], sectionName: Option[String])(implicit viewApplicationType: ViewApplicationType = LinearViewMode)
+@{
+    (isEditMode, isOneViewMode, sectionName) match {
+        case (_, false, Some(secName)) =>
+            <span id="progress-text" class="pre-heading">{JourneyConstants.getJourneyProgress(businessType, secName)}</span>
+        case (_ , _, _) =>
+    }
+}

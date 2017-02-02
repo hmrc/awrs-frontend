@@ -1,0 +1,4 @@
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+@(linkText : String = Messages("awrs.generic.return_index"))
+<a id="return-to-summary" href="@controllers.routes.IndexController.showIndex">@Html(linkText)</a>

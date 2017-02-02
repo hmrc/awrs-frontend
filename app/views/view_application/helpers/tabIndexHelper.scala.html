@@ -1,0 +1,12 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.helpers.SubViewTemplateHelper._
+
+@()(implicit viewApplicationType: ViewApplicationType)
+@tabValue
+
+@tabValue = {
+    @isOneViewMode match {
+        case true => {tabindex="0"}
+        case _ => {}
+    }
+}

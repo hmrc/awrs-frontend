@@ -1,0 +1,104 @@
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import java.text.DateFormatSymbols
+@import utils.AccountUtils
+@import views.Configuration._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+
+@(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails]
+)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+
+@implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
+
+@pageScripts = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.BusinessRegistrationDetailsController.saveAndReturn
+        case false => controllers.routes.BusinessRegistrationDetailsController.saveAndContinue
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@pageTitle = @{
+    businessType.getOrElse("") match {
+        case "Partnership" | "LP" | "LLP" => Messages("awrs.business_details.title.partnership")
+        case "LLP_GRP" | "LTD_GRP" => Messages("awrs.business_details.title.group")
+        case _ => Messages("awrs.business_details.title.generic")
+    }
+}
+
+@includes.awrs_main(title = pageTitle, pageScripts = Some(pageScripts), userLoggedIn = true) {
+    <div class="grid">
+        <div class="grid grid-2-3">
+            @backLinkHelper(BackLinkParams(
+                sectionName = businessRegistrationDetailsName
+            ))
+            @errorSummaryTemplate(businessRegistrationDetailsForm)
+            @awrsProgressHelper(businessType, businessRegistrationDetailsName)
+            <h1 id="additional-information-heading" class="heading-xlarge">
+                @businessType.map {
+                    case "Partnership" | "LP" | "LLP" => { @Messages("awrs.business_registration_details.heading.partnership", headingPrefix()) }
+                    case "LLP_GRP" | "LTD_GRP" => { @Messages("awrs.business_registration_details.heading.group", headingPrefix()) }
+                    case _ => { @Messages("awrs.business_registration_details.heading", headingPrefix()) }
+                }
+            </h1>
+
+            @form(action = actionRoute){
+                @awrsIdUTRHelper(
+                    businessType,
+                    None,
+                    businessRegistrationDetailsForm("utr"),
+                    youOrThey = "you"
+                )
+                @businessType.map {
+                    case "SOP" => {
+                        @awrsIdNINOHelper(
+                            None,
+                            businessRegistrationDetailsForm("NINO"),
+                            youOrThey = "you"
+                        )
+                    }
+                    case "Partnership" => {}
+                    case _ => {
+                        @awrsIdCRNHelper(
+                            None,
+                            businessRegistrationDetailsForm("companyRegDetails.companyRegistrationNumber"),
+                            dateField = Some(businessRegistrationDetailsForm("companyRegDetails.dateOfIncorporation")),
+                            youOrThey = "you"
+                        )
+                    }
+                }
+                @awrsIdVRNHelper(
+                    businessRegistrationDetailsForm("doYouHaveVRN"),
+                    businessRegistrationDetailsForm("vrn"),
+                    youOrThey = "you"
+                )
+                @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                    sectionName = businessRegistrationDetailsName,
+                    submitText = ctaMessage,
+                    submitId = "save-and-continue"
+                ))
+            }
+        </div>
+    </div>
+}
+
+
+
+

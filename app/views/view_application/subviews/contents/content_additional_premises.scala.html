@@ -1,0 +1,28 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import views.view_application.helpers.SubViewTemplateHelper._
+
+@(premises: models.AdditionalBusinessPremises, id: Int)(implicit viewApplicationType: ViewApplicationType, cssClass: Option[String] = None)
+
+@editUrl(id: Int) = @{controllers.routes.AdditionalPremisesController.showPremisePage(id, false, false).url}
+
+@deleteUrl(id: Int) = @{controllers.routes.AdditionalPremisesController.showDelete(id).url}
+
+@premisesCounter = @{s"$id."}
+
+@links = @{
+    isEditMode match {
+        case true  => Some(List(edit_link(editUrl, id, premisesCounter), delete_link(deleteUrl, id, premisesCounter)))
+        case false => None
+    }
+}
+
+<table class="view-application" @tabIndexHelper()>
+@address_helper(
+    premisesCounter,
+    premises.additionalAddress,
+    links
+)(cssClass = cssClass)
+</table>

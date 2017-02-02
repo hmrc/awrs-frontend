@@ -1,0 +1,81 @@
+@(submissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false)(implicit request: Request[AnyContent], messages: Messages)
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+
+@awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
+@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+@govWrapper = {
+    @includes.awrs_main(title = Messages("awrs.confirmation.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+        <div class="grid">
+            <div class="grid grid-2-3">
+                @confirmationHelper(
+                    "awrs.confirmation.description",
+                    "awrs.confirmation.description_1",
+                    Some(submissionDate)
+                )
+                <h2 class="heading-small">@Messages("awrs.confirmation.prompt_print_heading")</h2>
+                <div class="print-hidden">
+                    <a id="print-confirmation" href="javascript:window.print();" class="print-link print-hidden">@Messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="link print-hidden"
+                        href="@routes.ViewApplicationController.show(printFriendly = false)">
+                        @Messages("awrs.generic.application")
+                    </a>
+                </div>
+                <hr aria-hidden="true">
+                @paragraphs1
+                @list
+                <p id="detailed-information">@Html(Messages("awrs.confirmation.detailed_information","<a href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
+                <div class="form-group">
+                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@Messages("awrs.confirmation.finish")</a>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@paragraphs1 = {
+    <p id="confirmation0Text">
+        @isNewBusiness match {
+            case false => {@Messages("awrs.confirmation.information_0", awrsRef)}
+            case true => {@Messages("awrs.confirmation.newBusiness.information_0", awrsRef)}
+        }
+    </p>
+}
+@list = {
+    <h2 class="heading-medium" id="ConfirmationNoteHeadingText">@Messages("awrs.confirmation.information")</h2>
+    <ul id="application-confirmation-list" class="list list-bullet">
+        <li id="confirmationNoteLine1Text">
+            @isNewBusiness match {
+                case true => {@Messages("awrs.confirmation.newBusiness.information_what_next_0")}
+                case false => {@Messages("awrs.confirmation.information_what_next_0")}
+            }
+        </li>
+        @isNewBusiness match {
+            case true => {
+                <li id="confirmationNoteLine2Text">@Messages("awrs.confirmation.newBusiness.information_what_next_1")</li>
+            }
+            case false => {
+                <li id="confirmationNoteLine2Text">@Messages("awrs.confirmation.information_what_next_1")</li>
+                <li id="confirmationNoteLine3Text">@Messages("awrs.confirmation.information_what_next_2")</li>
+            }
+        }
+    </ul>
+}
+@content = {
+    @confirmationHelper(
+        "awrs.confirmation.description",
+        "awrs.confirmation.description_1",
+        Some(submissionDate)
+    )
+    @awrsPrintLink()
+    @paragraphs1
+    @list
+    @backLink()
+}
+
+@printFriendly match {
+    case true => {@awrsPrintFriendlyWrapper(content)}
+    case false => {@govWrapper}
+}

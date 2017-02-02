@@ -1,0 +1,80 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import forms.AWRSEnums._
+@import forms.AWRSEnums.EntityTypeEnum._
+
+@(partner: models.Partner, showSubHeadings: Boolean, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
+
+@editUrl(id: Int) = @{controllers.routes.BusinessPartnersController.showPartnerMemberDetails(id, isLinearMode = false, isNewRecord = false).url}
+
+@deleteUrl(id: Int) = @{controllers.routes.BusinessPartnersController.showDelete(id).url}
+
+@partnerTypeHeading(text:String) = @{
+    showSubHeadings match {
+        case true => {s"""<h2 class="heading-small">$text</h2>"""}
+        case false => {""}
+    }
+}
+
+@tableRowTitle = @{
+    partner.entityType.get match {
+        case IndividualString | SoleTraderString => partner.firstName.get + " " + partner.lastName.get
+        case CorporateBodyString => partner.companyNames.fold("")(x => x.businessName.fold("")(x => x))
+        case _ => ""
+    }
+}
+
+@content = {
+    <table class="view-application" @tabIndexHelper()>
+    @* Nominated partner heading for partner 1 and Additional Business Partners heading above remainder of list *@
+    @id match {
+        case 1 => {
+            @table_row(
+                partnerTypeHeading(Messages("awrs.business-partner.partner")),
+                NoneBreakingSpace
+            )
+        }
+        case 2 => {
+            @table_row(
+                partnerTypeHeading(Messages("awrs.business-partner.additional_partners")),
+                NoneBreakingSpace
+            )
+        }
+        case _ => {}
+    }
+
+    @* Top record row including edit and delete links *@
+    @table_row(
+        tableRowTitle,
+        edit_link(editUrl, id, tableRowTitle),
+        delete_link(deleteUrl, id, tableRowTitle)
+    )(cssClass = "record-header")
+
+    @partner.entityType.get match {
+        case CorporateBodyString | SoleTraderString => {
+            @table_row(
+                Messages("awrs.generic.trading_name"),
+                partner.companyNames.tradingName
+            )
+        }
+        case _ => {}
+    }
+
+    @* Body of record *@
+    @table_row(
+        Messages("awrs.business-partner.partner_role"),
+        EntityTypeEnum.getText(partner.entityType.get)
+    )
+    @address_helper(
+        Messages("awrs.generic.address"),
+        partner.partnerAddress
+    )
+    @identification_helper_partner(
+        partner
+    )
+    </table>
+}
+
+@content

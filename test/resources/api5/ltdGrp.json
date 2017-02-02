@@ -1,0 +1,229 @@
+{
+  "subscriptionTypeFrontEnd": {
+    "legalEntity": {
+      "legalEntity": "LTD_GRP"
+    },
+    "businessPartnerName": "businessPartnerName",
+    "groupDeclaration": {
+      "groupRepConfirmation": true
+    },
+    "businessCustomerDetails": {
+      "businessName": "businessName",
+      "businessType": "Corporate Body",
+      "businessAddress": {
+        "line_1": "1 Example Street",
+        "line_2": "Example View",
+        "line_3": "Example Town",
+        "line_4": "Exampleshire",
+        "postcode": "$postcode",
+        "country": "GB"
+      },
+      "sapNumber": "1234567890",
+      "safeId": "XE0001234567890",
+      "isAGroup": false,
+      "agentReferenceNumber": "JARN1234567"
+    },
+    "businessDetails": {
+      "tradingName": "Trading name",
+      "newAWBusiness": {
+        "newAWBusiness": "No"
+      },
+      "isBusinessIncorporated": "Yes",
+      "companyRegDetails": {
+        "companyRegistrationNumber": "$crn",
+        "dateOfIncorporation": "01/01/2015"
+      }
+    },
+    "businessRegistrationDetails": {
+      "identification": {
+        "doYouHaveVRN": "No",
+        "doYouHaveUTR": "No"
+      }
+    },
+    "placeOfBusiness": {
+      "mainPlaceOfBusiness": "Yes",
+      "placeOfBusinessLast3Years": "Yes",
+      "operatingDuration": "30",
+      "modelVersion" : "1.0"
+    },
+    "businessContacts": {
+      "contactAddressSame": "Yes",
+      "contactFirstName": "Contact",
+      "contactLastName": "name",
+      "email": "Email@email.com",
+      "confirmEmail": "Email@email.com",
+      "telephone": "012345678901",
+      "modelVersion" : "1.0"
+    },
+    "groupMembers": {
+      "members": [
+        {
+          "companyNames": {
+            "businessName": "businessName",
+            "tradingName": "Trading name"
+          },
+          "isBusinessIncorporated": "Yes",
+          "companyRegDetails": {
+            "companyRegistrationNumber": "$crn",
+            "dateOfIncorporation": "01/01/2015"
+          },
+          "groupJoiningDate": "$grpJoinDate",
+          "address": {
+            "postcode": "$postcode",
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2"
+          },
+          "doYouHaveVRN": "No",
+          "doYouHaveUTR": "Yes",
+          "utr": "$utr"
+        },
+        {
+          "companyNames": {
+            "businessName": "businessName",
+            "tradingName": "Trading name"
+          },
+          "isBusinessIncorporated": "Yes",
+          "companyRegDetails": {
+            "companyRegistrationNumber": "$crn",
+            "dateOfIncorporation": "01/01/2015"
+          },
+          "groupJoiningDate": "$grpJoinDate",
+          "address": {
+            "postcode": "$postcode",
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2"
+          },
+          "doYouHaveVRN": "No",
+          "doYouHaveUTR": "Yes",
+          "utr": "$utr"
+        }
+      ],
+      "modelVersion": "1.0"
+    },
+    "additionalPremises": {
+      "premises": [
+        {
+          "additionalPremises": "Yes",
+          "additionalAddress": {
+            "postcode": "$postcode",
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2"
+          },
+          "addAnother": "No"
+        }
+      ]
+    },
+    "businessDirectors": {
+      "directors": [
+        {
+          "directorsAndCompanySecretaries": "Company Secretary",
+          "firstName": "firstName",
+          "lastName": "lastName",
+          "doTheyHaveNationalInsurance": "Yes",
+          "nino": "$nino",
+          "otherDirectors": "Yes"
+        },
+        {
+          "directorsAndCompanySecretaries": "Director_company",
+          "companyNames": {
+            "businessName": "businessName",
+            "doYouHaveTradingName": "Yes",
+            "tradingName": "tradingName"
+          },
+          "doYouHaveVRN": "No",
+          "doYouHaveCRN": "No",
+          "doYouHaveUTR": "Yes",
+          "utr": "$utr"
+        },
+        {
+          "directorsAndCompanySecretaries": "Director and Company Secretary",
+          "firstName": "firstName",
+          "lastName": "lastName",
+          "doTheyHaveNationalInsurance": "Yes",
+          "nino": "$nino",
+          "otherDirectors": "Yes"
+        },
+        {
+          "directorsAndCompanySecretaries": "Director_company",
+          "companyNames": {
+            "businessName": "businessName",
+            "doYouHaveTradingName": "Yes",
+            "tradingName": "tradingName"
+          },
+          "doYouHaveVRN": "No",
+          "doYouHaveCRN": "Yes",
+          "companyRegNumber": "$crn",
+          "doYouHaveUTR": "Yes",
+          "utr": "$utr"
+        },
+        {
+          "directorsAndCompanySecretaries": "Director and Company Secretary",
+          "firstName": "firstName",
+          "lastName": "lastName",
+          "doTheyHaveNationalInsurance": "Yes",
+          "nino": "$nino",
+          "otherDirectors": "Yes"
+        }
+      ],
+      "modelVersion": "1.0"
+    },
+    "tradingActivity": {
+      "wholesalerType": [
+        "06",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "typeOfAlcoholOrders": [
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "doesBusinessImportAlcohol": "Yes",
+      "doYouExportAlcohol": "No"
+    },
+    "products": {
+      "mainCustomers": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08"
+      ],
+      "productType": [
+        "02",
+        "03",
+        "05",
+        "06",
+        "99"
+      ],
+      "otherProductType": "otherProductType"
+    },
+    "suppliers": {
+      "suppliers": [
+        {
+          "alcoholSuppliers": "Yes",
+          "supplierName": "supplierName",
+          "vatRegistered": "No",
+          "supplierAddress": {
+            "postcode": "$postcode",
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2"
+          },
+          "additionalSupplier": "No"
+        }
+      ]
+    },
+    "applicationDeclaration": {
+      "declarationName": "declarationName",
+      "declarationRole": "declarationRole"
+    },
+    "modelVersion": "1.0"
+  }
+}

@@ -1,0 +1,41 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import forms.AWRSEnums._
+
+@(member: models.GroupMember, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
+
+@editUrl(id: Int) = @{controllers.routes.GroupMemberController.showMemberDetails(id, isLinearMode = false, isNewRecord = false).url}
+
+@deleteUrl(id: Int) = @{controllers.routes.GroupMemberController.showDelete(id).url}
+
+@tableRowTitle = @{member.companyNames.businessName.getOrElse(member.companyNames.tradingName.get)}
+
+@content = {
+    <table class="view-application" @tabIndexHelper()>
+    @* Top record row including edit and delete links *@
+    @table_row(
+        tableRowTitle,
+        edit_link(editUrl, id, tableRowTitle),
+        delete_link(deleteUrl, id, tableRowTitle)
+    )(cssClass = "record-header")
+
+    @if(member.companyNames.businessName.isDefined){
+        @table_row(
+            Messages("awrs.generic.trading_name"),
+            member.companyNames.tradingName
+        )
+    }
+    @* Body of record *@
+    @address_helper(
+        Messages("awrs.generic.address"),
+        member.address
+    )
+    @identification_helper_group_member(
+        member
+    )
+    </table>
+}
+
+@content

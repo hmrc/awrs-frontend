@@ -1,0 +1,48 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+
+@(supplier: models.Supplier, id: Int)(implicit viewApplicationType: ViewApplicationType, messages: Messages)
+
+@editUrl(id: Int) = @{controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id, isLinearMode = false, isNewRecord = false).url}
+
+@deleteUrl(id: Int) = @{controllers.routes.SupplierAddressesController.showDelete(id).url}
+
+@tableRowTitle = @{supplier.supplierName.fold("")(x => x)}
+
+@content = {
+    <table class="view-application" @tabIndexHelper()>
+    @* Top record row including edit and delete links *@
+    @table_row(
+        tableRowTitle,
+        edit_link(editUrl, id, tableRowTitle),
+        delete_link(deleteUrl, id, tableRowTitle)
+    )(cssClass = "record-header")
+
+    @* body of record *@
+    @table_row(
+        Messages("awrs.supplier-addresses.uk_supplier"),
+        supplier.ukSupplier
+    )
+    @address_helper(
+        Messages("awrs.generic.address"),
+        supplier.supplierAddress
+    )
+    @table_row(
+        Messages("awrs.supplier-addresses.vat_registered"),
+        supplier.vatRegistered
+    )
+    @supplier.vatNumber match {
+        case Some(vatNumber) => {
+            @table_row(
+                Messages("awrs.generic.VAT_registration_number"),
+                vatNumber
+            )
+        }
+        case _ => {}
+    }
+    </table>
+}
+
+@content

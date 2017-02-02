@@ -1,0 +1,239 @@
+@import views.helpers._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+@(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+
+@implicitFormInstance = @{ Some(businessDirectorsForm) }
+
+@businessType = @{request.getBusinessType.fold("")(x=>x)}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.BusinessDirectorsController.saveAndReturn(businessDirectorId, isNewRecord)
+        case false => controllers.routes.BusinessDirectorsController.saveAndContinue(businessDirectorId, isNewRecord)
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@h1text = @{
+    businessDirectorId match {
+        case  1 if isEditMode & !isNewRecord => Messages("awrs.business_directors.heading.first.edit")
+        case  1                              => Messages("awrs.business_directors.heading.first")
+        case id                              => Messages("awrs.business_directors.heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalIntSuffix(id))
+    }
+}
+
+@directorHeading = @{
+    (businessDirectorId, isEditMode) match {
+        case (1, false) => Messages("awrs.business_directors.role_question.first")
+        case _ => Messages("awrs.business_directors.role_question.additional")
+    }
+}
+
+@directorSeq = @{
+    (businessDirectorId, isNewRecord) match {
+        case (1, true) => Seq(Messages("awrs.generic.status.director_value") -> Messages("awrs.generic.status.director"),
+            Messages("awrs.generic.status.both_value") -> Messages("awrs.generic.status.both"))
+        case _ => Seq(Messages("awrs.generic.status.director_value") -> Messages("awrs.generic.status.director"),
+            Messages("awrs.generic.status.company_secretary_value") -> Messages("awrs.generic.status.company_secretary"),
+            Messages("awrs.generic.status.both_value") -> Messages("awrs.generic.status.both"))
+    }
+}
+
+@personOrCompanyClass = @{
+    (businessDirectorId, isEditMode) match {
+        case (1, false) => " hidden"
+        case _ => ""
+    }
+}
+
+@personOnlySection ={
+    <div class="form-group">
+        @awrsInputTypeText(
+            InputTypeTextParams(
+                businessDirectorsForm("firstName"),
+                maxLength = AwrsFieldConfig.firstNameLen.toString,
+                required = true,
+                labelHighlight = true,
+                label = Messages("awrs.generic.first_name")
+            )
+        )
+        @awrsInputTypeText(
+            InputTypeTextParams(
+                businessDirectorsForm("lastName"),
+                maxLength = AwrsFieldConfig.lastNameLen.toString,
+                required = true,
+                labelHighlight = true,
+                label = Messages("awrs.generic.surname")
+            )
+        )
+    </div>
+    @awrsIdNINOHelper(
+        businessDirectorsForm("doTheyHaveNationalInsurance"),
+        businessDirectorsForm("NINO"),
+        passportField = businessDirectorsForm("passportNumber"),
+        nationalIdField = businessDirectorsForm("nationalID"),
+        youOrThey = "they",
+        questionHintText = Messages("awrs.generic.we_need_their_identity")
+    )(implicitly, formInstance = businessDirectorsForm)
+}
+
+@personOrCompanySection = {
+
+    @awrsInputTypeRadioGroup(
+        InputTypeRadioGroupParams(
+            businessDirectorsForm("personOrCompany"),
+            Seq(Messages("awrs.generic.status.person_value") -> Messages("awrs.generic.status.person"),
+                Messages("awrs.generic.status.company_value") -> Messages("awrs.generic.status.company")
+            ),
+            legend = Messages("awrs.business_directors.personOrCompany_question"),
+            fieldSetClass = "form-group inline" + personOrCompanyClass,
+            fieldSetQuestion = Messages("awrs.generic.helper_question_text"),
+            fieldSetQuestionId = "crn-HelpLink",
+            fieldSetQuestionAnswer = Html(Messages("awrs.business_directors.personOrCompany_answer_text", "<br><br>")),
+            fieldSetQuestionWrapperClass = "panel-indent",
+            formHint = Messages("awrs.business_directors.personOrCompany_hint_text"),
+            formHintId = "personOrCompany-hint",
+            fieldSetAttributes = "id=personOrCompany_field"
+        )
+    )
+
+    <div id="company">
+        <div class="form-group">
+            @awrsInputTypeText(
+                InputTypeTextParams(
+                    businessDirectorsForm("companyNames.businessName"),
+                    inputId = "companyNames.businessName",
+                    label = Messages("awrs.business_directors.business_name"),
+                    maxLength = AwrsFieldConfig.companyNameLen.toString,
+                    labelHighlight = true,
+                    required = true
+                )
+            )
+            <div class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        businessDirectorsForm("companyNames.doYouHaveTradingName"),
+                        Seq("Yes" -> Messages("awrs.generic.yes"),
+                            "No" -> Messages("awrs.generic.no")),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
+                        legend = Messages("awrs.generic.do_they_have_trading_name")
+                    )
+                )
+                <div id="companyNames.doYouHaveTradingName-yes-content">
+                @awrsInputTypeText(
+                    InputTypeTextParams(
+                        businessDirectorsForm("companyNames.tradingName"),
+                        inputId = "companyNames.tradingName",
+                        label = Messages("awrs.generic.trading_name"),
+                        maxLength = AwrsFieldConfig.tradingNameLen.toString,
+                        required = true,
+                        wrapperClass = "panel-indent"
+                    )
+                )
+                </div>
+            </div>
+        </div>
+        @awrsIdUTRHelper(
+            businessType,
+            None,
+            businessDirectorsForm("utr"),
+            youOrThey = "they"
+        )
+        @awrsIdCRNHelper(
+            None,
+            businessDirectorsForm("companyRegNumber"),
+            youOrThey = "they",
+            crnAndDate = false
+        )
+        @awrsIdVRNHelper(
+            businessDirectorsForm("doYouHaveVRN"),
+            businessDirectorsForm("vrn"),
+            youOrThey = "they"
+        )
+    </div>
+
+    <div id="individual">
+        @personOnlySection
+    </div>
+}
+
+@pageScripts = {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+@includes.awrs_main(title = Messages("awrs.business_directors.pageTitle"), pageScripts = Some(pageScripts), userLoggedIn = true){
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLinkHelper(BackLinkParams(
+            sectionName = businessDirectorsName
+        ))
+        @errorSummaryTemplate(businessDirectorsForm)
+        @awrsProgressHelper(businessType, businessDirectorsName)
+        <h1 id="business-directors-heading" class="heading-xlarge">@h1text</h1>
+
+        <p class="lede" id="directorsAndCompanySecretariesDescription">@Messages("awrs.business_directors.topText")</p>
+
+        @form(action = actionRoute) {
+
+            @(businessDirectorId, isNewRecord) match {
+                case (1, true) => {
+                    <input type="hidden" name="personOrCompany" value = "person"/>
+                    @personOnlySection
+                }
+                case _ => {@personOrCompanySection}
+            }
+
+            @* wrapper div required for summary error anchor message link *@
+            <div>
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        businessDirectorsForm("directorsAndCompanySecretaries"),
+                        directorSeq,
+                        legend = directorHeading,
+                        fieldSetClass = "form-group",
+                        fieldSetAttributes = "id=directorsAndCompanySecretaries_field"
+                    )
+                )
+            </div>
+
+            @if(!isEditMode){
+                <div class="form-group">
+
+                    @awrsInputTypeRadioGroup(
+                        InputTypeRadioGroupParams(
+                            businessDirectorsForm("otherDirectors"),
+                            Seq("Yes" -> Messages("awrs.generic.yes"),
+                                "No" -> Messages("awrs.generic.no")),
+                            legend = Messages("awrs.business_directors.add_another_director"),
+                            fieldSetClass = "inline",
+                            fieldSetAttributes = "id=otherDirectors_field"
+                        )
+                    )
+                </div>
+            } else {
+                <input type="hidden" name="otherDirectors" value="No">
+            }
+
+            @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                sectionName = businessDirectorsName,
+                sectionEntryId = businessDirectorId,
+                submitText = ctaMessage,
+                submitId = "save-and-continue"
+            ))
+        }
+    </div>
+
+</div>
+}

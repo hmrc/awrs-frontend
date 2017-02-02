@@ -1,0 +1,162 @@
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html.helpers._
+@import models._
+@import models.FormBundleStatus._
+@import views.html.helpers._
+@import views.helpers._
+@import controllers.util.UnSubmittedChangesBannerParam
+@import utils.AwrsNumberFormatter
+@(
+    awrsRef: Option[String],
+    hasApplicationChanged: Boolean,
+    allSectionComplete: Boolean,
+    showOneViewLink: Boolean,
+    businessName: String,
+    indexStatusModel: view_models.IndexViewModel,
+    someStatus: Option[SubscriptionStatusType],
+    isHappyPathEnrollment: Boolean
+)(implicit request: Request[AnyRef], messages: Messages )
+
+@changesBanner = {
+    @awrsUnSubmittedBanner(
+        UnSubmittedChangesBannerParam(
+            hasAwrs = awrsRef.isDefined,
+            hasApplicationChanged = hasApplicationChanged,
+            allSectionComplete = allSectionComplete
+        ),
+        Messages("awrs.index_page.modified_application_incomplete.index")
+    )
+}
+
+@pageScripts = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+}
+
+@includes.awrs_main(title = Messages("awrs.index_page.title"),nameBusiness = Some(businessName), pageScripts = Some(pageScripts), userLoggedIn = true){
+
+    <div class="grid">
+       @changesBanner
+        <div class="grid grid-2-3">
+            <h1 id="index-top-heading" class="heading-xlarge">@Messages("awrs.index_page.top_heading", businessName)</h1>
+
+            <p id="applicationInfo" class="lede">
+                @if(!isHappyPathEnrollment) {
+                    @Messages("awrs.index_page.topText")
+                }
+            </p>
+            <div class="form-group">
+                <table id="index-table">
+                    <thead>
+                        <tr>
+                            <th id="section-text">@Messages("awrs.index_page.section_text")</th>
+                            <th id="status-text">@Messages("awrs.index_page.status_text")</th>
+                            <th id="action-text">@Messages("awrs.index_page.action_text")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @indexStatusModel.sectionModels.zipWithIndex.map { case (i, id) =>
+                            <tr>
+                                <td id="@i.id">
+                                    <p>
+                                        @{id+1}. @Messages(i.text)
+                                        @i.size match {
+                                            case Some(size) => {&nbsp;(@size)<span class="visuallyhidden">entries</span>}
+                                            case _ => {}
+                                        }
+                                    </p>
+                                </td>
+                                <td class="awrs-status">
+                                    <span id="@{i.id + "_status"}" class="@Messages({i.status + "_class"})">
+                                        @Messages(i.status.messagesKey)
+                                    </span>
+                                </td>
+                                <td>
+                                    <a id="@{i.id + "_link"}" href="@i.href">
+                                        @Html(Messages({i.status + "_link" +
+                                            {
+                                                someStatus match {
+                                                    case Some(subStatus :SubscriptionStatusType) =>
+                                                        subStatus.formBundleStatus match {
+                                                            case Rejected | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal=> "_rejected"
+                                                            case _        => ""
+                                                        }
+                                                    case _ => ""
+                                                }
+                                            }
+                                        }, Messages(i.text) + Messages("awrs.index_page.status_description_text") + " " + Messages(i.status.messagesKey) + ", "))
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-1-3">
+            <div id="application-status-container">
+                <h2 class="heading-small">@Messages("awrs.index_page.right_column_heading")</h2>
+                <p class="font-xsmall" id="application-status">
+                    @Messages("awrs.index_page.application_status_text")
+                    <br>
+                    @someStatus match {
+                        case Some(status) => {
+                            <a id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">@status.formBundleStatus.name</a>
+                            @if(status.formBundleStatus.name == Pending.name){
+                                <br><br><a id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@Messages("awrs.index_page.withdraw_link")</a>
+                            }
+                        }
+                        case None => {
+                            @Messages("awrs.index_page.draft")
+                        }
+                    }
+                </p>
+
+                @someStatus match {
+                    case Some(status) => {
+                            @status.formBundleStatus match {
+                                case Approved | ApprovedWithConditions => {
+                                    @awrsRef match {
+                                        case Some(ref) => {
+                                            <p id="awrsRefNo">@Messages("awrs.index_page.awrs_ref")<br>@{AwrsNumberFormatter.format(ref)}</p>
+                                        }
+                                        case _ => {}
+                                    }
+                                    <p class="font-xsmall">
+                                        <a id="de_reg_page_link" href="@routes.DeRegistrationController.showReason">@Messages("awrs.index_page.de_registration_link")</a>
+                                    </p>
+                                }
+                                case _ => {}
+                            }
+
+                    }
+                    case _ => {}
+                }
+                @if(showOneViewLink) {
+                    <div class="form-group">
+                        <a id="view-application"
+                           href="@controllers.routes.ViewApplicationController.show(false)">
+                           @Messages("awrs.generic.print_application")
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="grid grid-2-3">
+            @awrsRef match {
+                case Some(_) => {
+                    @if(hasApplicationChanged && allSectionComplete) {
+                        <a href="@routes.ApplicationDeclarationController.showApplicationDeclaration" class="button" role="button" id="submit_changes">@Messages("awrs.index_page.submit_changes")</a>
+                    }
+                }
+                case _ => {
+                    @if(allSectionComplete) {
+                        <a href="@routes.ApplicationDeclarationController.showApplicationDeclaration" class="button" role="button" id="continue">@Messages("awrs.confirmation.button")</a>
+                    } else {
+                        <a href="@routes.ApplicationController.logout" class="button" role="button" id="save_and_logout">@Messages("awrs.generic.alternate_logout.button")</a>
+                    }
+                }
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,120 @@
+@import play.twirl.api.Html
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+
+@(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode)
+
+@implicitFormInstance = @{
+    Some(placeOfBusinessForm)
+}
+
+@pageScripts = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.PlaceOfBusinessController.saveAndReturn
+        case false => controllers.routes.PlaceOfBusinessController.saveAndContinue
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@includes.awrs_main(title = Messages("awrs.place_of_business.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    <div class="grid">
+        <div class="grid grid-2-3">
+            @backLinkHelper(BackLinkParams(
+                sectionName = placeOfBusinessName
+            ))
+            @errorSummaryTemplate(placeOfBusinessForm)
+            @awrsProgressHelper(businessType, placeOfBusinessName)
+            <h1 id="contact-information-heading" class="heading-xlarge">
+                @businessType.map {
+                    case "Partnership" | "LP" | "LLP" => {
+                        @Messages("awrs.place_of_business.heading.partnership", headingPrefix())
+                    }
+                    case "LLP_GRP" | "LTD_GRP" => {
+                        @Messages("awrs.place_of_business.heading.group", headingPrefix())
+                    }
+                    case _ => {
+                        @Messages("awrs.place_of_business.heading", headingPrefix())
+                    }
+                }
+            </h1>
+
+            @form(action = actionRoute) {
+
+                <p class="lede">@Messages("awrs.business_contacts.place_of_business_help_text")</p>
+                <input type="hidden" name="mainPlaceOfBusiness" value="No">
+                <div id="mainPlaceOfBusiness-api5-content">
+                    @awrsAddressHelper(
+                        placeOfBusinessForm("mainAddress"),
+                        AddressHelperParams()
+                    )
+                </div>
+                <div class="form-group">
+                    @awrsInputTypeRadioGroup(
+                        InputTypeRadioGroupParams(
+                            placeOfBusinessForm("placeOfBusinessLast3Years"),
+                            Seq("Yes" -> Messages("awrs.generic.yes"),
+                                "No" -> Messages("awrs.generic.no")),
+                            legend = Messages("awrs.business_contacts.place_of_business_changed_last_3_years"),
+                            fieldSetClass = "inline",
+                            fieldSetAttributes = "id=placeOfBusinessLast3Years_field",
+                            fieldSetQuestion = Messages("awrs.business_contacts.last_3_years_help_question"),
+                            fieldSetQuestionId = "trading-HelpLink",
+                            fieldSetQuestionAnswer = Html(Messages("awrs.business_contacts.last_3_years_help_text")),
+                            fieldSetQuestionWrapperClass = "panel-indent"
+                        )
+                    )
+                    <div id="placeOfBusinessLast3Years-no-content">
+                        <h2 id="addYourPreviousAddress" class="heading-small panel-indent">@Messages("awrs.business_details.awrs_add_your_previous_address")</h2>
+                        @awrsAddressHelper(
+                            placeOfBusinessForm("placeOfBusinessAddressLast3Years"),
+                            AddressHelperParams(
+                                wrapperClass = "panel-indent",
+                                number = "2"
+                            )
+                        )
+                    </div>
+                </div>
+                <div class="form-group" id="operationDuration-label">
+                    @awrsInputTypeRadioGroup(
+                        InputTypeRadioGroupParams(
+                            placeOfBusinessForm("operatingDuration"),
+                            Seq(Messages("awrs.generic.0to2years.value") -> Messages("awrs.generic.0to2years"),
+                                Messages("awrs.generic.2to5years.value") -> Messages("awrs.generic.2to5years"),
+                                Messages("awrs.generic.5to10years.value") -> Messages("awrs.generic.5to10years"),
+                                Messages("awrs.generic.10plusYears.value") -> Messages("awrs.generic.10plusYears")
+                            ),
+                            legend = Messages("awrs.business_contacts.business_operating_from_current_address"),
+                            fieldSetAttributes = "id=operatingDuration_field"
+                        )
+                    )
+                </div>
+                @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                    sectionName = placeOfBusinessName,
+                    submitText = ctaMessage,
+                    submitId = "save-and-continue"
+                ))
+            }
+        </div>
+    </div>
+}
+
+
+
+

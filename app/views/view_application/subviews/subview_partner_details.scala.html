@@ -1,0 +1,55 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import contents._
+@import services.DataCacheKeys._
+
+@(someHeading: Option[String],
+  someModel: Option[models.Partners]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@wrapperId = @{
+    SubviewIds.partnerDetailsId
+}
+
+@editUrl(id: Int) = @{
+    controllers.routes.BusinessPartnersController.showPartnerMemberDetails(id = id, isLinearMode = false, isNewRecord = false).url
+}
+
+@getHeading(heading: String, model: models.Partners) = @{
+    model.partners.isEmpty match {
+        case true => heading
+        case _ => f"$heading (${model.partners.size})"
+    }
+}
+@addLinkHref(model: models.Partners) = @{
+    controllers.routes.BusinessPartnersController.showPartnerMemberDetails(model.partners.length + 1, isLinearMode = false, isNewRecord = true).url
+}
+
+@ledeAndTopAdd(model: models.Partners) = {
+    @if(isSectionEdit) {
+        <p id="business_partners-subtext" class="lede">@Messages("awrs.business-partner.topText")</p>
+        @if(model.partners.size > 1) {
+            <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), Messages("awrs.view_application.partner"))</div>
+        }
+    }
+}
+
+@bottomAdd(model: models.Partners)  = {
+    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), Messages("awrs.view_application.partner"))
+}
+
+@content(model: models.Partners) = {
+    @model.partners.zipWithIndex.map { case (partner, id) =>
+        @content_partner_detail(partner, true, id + 1)
+    }
+}
+
+@(someHeading, someModel) match {
+    case (Some(heading), Some(model)) => {
+        @subview_core(getHeading(heading, model), wrapperId, sectionName = partnersName)(content(model), preContent = ledeAndTopAdd(model), postContent = bottomAdd(model))
+    }
+    case _ => {}
+}

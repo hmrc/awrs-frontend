@@ -1,0 +1,38 @@
+@import views.helpers.InputTypeRadioGroupParams
+@(confirmationForm: Form[models.DeRegistrationConfirmation], proposedEndDate: models.TupleDate)(implicit request: Request[AnyRef], messages: Messages )
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers.DeRegistrationHelper._
+@import views.html.helpers._
+
+@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+@declarationText = {@Messages("awrs.de_registration.warning", stringifyDate(proposedEndDate))}
+
+@includes.awrs_main(title = Messages("awrs.de_registration.confirmation_heading"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+
+@backLink(backUrl = controllers.routes.DeRegistrationController.showDate.toString)
+@errorSummaryTemplate(confirmationForm)
+<div class="grid">
+    <div class="grid grid-2-3">
+        <h1 id="de_registration-heading" class="heading-xlarge">@Messages("awrs.de_registration.confirmation_heading")</h1>
+        @form(action = controllers.routes.DeRegistrationController.callToAction) {
+            <div class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        confirmationForm("deRegistrationConfirmation"),
+                        Seq("Yes" -> Messages("awrs.generic.yes"),
+                            "No" -> Messages("awrs.generic.no")),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=deRegistrationConfirmation_field",
+                        legend = Messages("awrs.de_registration.confirmation_heading"),
+                        legendClass = "visuallyhidden"
+                    )
+                )
+            </div>
+            @awrsWarningHelper(declarationTxt = declarationText.toString(), id="deRegistrationConfirmation-yes-content")
+            @awrsSubmitButton(Messages("awrs.de_registration.cta"))(id = "save-and-continue", classAttr = "button")
+        }
+    </div>
+</div>
+}

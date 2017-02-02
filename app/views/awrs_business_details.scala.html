@@ -1,0 +1,200 @@
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import java.text.DateFormatSymbols
+@import utils.AccountUtils
+@import views.Configuration._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+
+@(businessType: Option[String], businessName: String, businessDetailsForm: Form[models.BusinessDetails],
+renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+
+@implicitFormInstance = @{ Some(businessDetailsForm) }
+
+@pageScripts = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.BusinessDetailsController.saveAndReturn
+        case false => controllers.routes.BusinessDetailsController.saveAndContinue
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@pageTitle = @{
+    businessType.getOrElse("") match {
+        case "Partnership" | "LP" | "LLP" => Messages("awrs.business_details.title.partnership")
+        case "LLP_GRP" | "LTD_GRP" => Messages("awrs.business_details.title.group")
+        case _ => Messages("awrs.business_details.title.generic")
+    }
+}
+
+@newBusinessSectionHeader = {
+    <h2 class="heading-medium">@Messages("awrs.business_details.newBusiness")</h2>
+}
+@hiddenNewBusinessQuestion = {
+    <input type="hidden" name="newAWBusiness.newAWBusiness" value="@{businessDetailsForm("newAWBusiness.newAWBusiness").value.getOrElse("No")}">
+}
+
+@newBusinessNewApplicationSection = {
+    <div class="form-group">
+        @awrsInputTypeRadioGroup(
+            InputTypeRadioGroupParams(
+                businessDetailsForm("newAWBusiness.newAWBusiness"),
+                Seq("Yes" -> Messages("awrs.generic.yes"),
+                    "No" -> Messages("awrs.generic.no")),
+                fieldSetClass = "inline",
+                fieldSetAttributes = "id=newAWBusiness.newAWBusiness_field",
+                legend = Messages("awrs.business_details.new_AWBusiness")
+            )
+        )
+        <div id="newAWBusiness.newAWBusiness-yes-content">
+            @awrsDateField(
+                DateHelperParams(
+                    formItem = businessDetailsForm,
+                    fieldName = "newAWBusiness.proposedStartDate",
+                    label = Some(Html(Messages("awrs.business_details.begin_trading"))),
+                    hintText = Some(awrsNewBusinessHelpTextHelper()),
+                    hintTextId  = "newBus-information",
+                    wrapperClass = "panel-indent"
+                )
+            )
+        </div>
+    </div>
+}
+
+@newBusinessRetrievedApplicationSectionForNormalScenarios = {
+    @hiddenNewBusinessQuestion
+    <input type="hidden" name="newAWBusiness.proposedStartDate.day" value="@{businessDetailsForm("newAWBusiness.proposedStartDate.day").value}">
+    <input type="hidden" name="newAWBusiness.proposedStartDate.month" value="@{businessDetailsForm("newAWBusiness.proposedStartDate.month").value}">
+    <input type="hidden" name="newAWBusiness.proposedStartDate.year" value="@{businessDetailsForm("newAWBusiness.proposedStartDate.year").value}">
+    <div id="notNewBusiness">
+    @{
+        businessDetailsForm("newAWBusiness.newAWBusiness").value match {
+            case Some("Yes") =>
+                val day = businessDetailsForm("newAWBusiness.proposedStartDate.day").value.get
+                val month = businessDetailsForm("newAWBusiness.proposedStartDate.month").value.get
+                val year = businessDetailsForm("newAWBusiness.proposedStartDate.year").value.get
+                val monthName = new DateFormatSymbols().getMonths()(month.toInt-1)
+
+                Html(Messages("awrs.business_details.new_AWBusiness_Yes", day, monthName, year))
+            case _ =>  Messages("awrs.business_details.new_AWBusiness_No")
+        }
+    }
+    </div>
+}
+
+@newBusinessRetrievedApplicationSectionForAbnormalScenarios = {
+    <div class="form-group">
+        @hiddenNewBusinessQuestion
+        <legend>@Messages("awrs.business_details.begin_trading")</legend>
+        <div id="newAWBusiness.newAWBusiness-yes-content">
+            @awrsDateField(
+                DateHelperParams(
+                    formItem = businessDetailsForm,
+                    fieldName = "newAWBusiness.proposedStartDate",
+                    hintText = Some(awrsNewBusinessHelpTextHelper(showHint1 = showHint1)),
+                    hintTextId  = "newBus-information",
+                    wrapperClass = "panel-indent"
+                )
+            )
+        </div>
+    </div>
+}
+
+@newBusinessSection = {
+    @renderMode match {
+        case NewApplicationMode => {
+            @newBusinessNewApplicationSection
+        }
+        case ReturnedApplicationMode => {
+            @newBusinessRetrievedApplicationSectionForNormalScenarios
+        }
+        case ReturnedApplicationEditMode => {
+            @newBusinessRetrievedApplicationSectionForAbnormalScenarios
+        }
+    }
+}
+
+@tradingNameLabel = @{
+    Messages("awrs.generic.trading_name") + (businessType match {
+        // this is left in in case we need to append "(optional)" to the end of this text in the future again
+        case _ => ""
+    })
+}
+
+
+@includes.awrs_main(title = pageTitle, pageScripts = Some(pageScripts), userLoggedIn = true){
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLinkHelper(BackLinkParams(
+            sectionName = businessDetailsName
+        ))
+        @errorSummaryTemplate(businessDetailsForm)
+        @awrsProgressHelper(businessType, businessDetailsName)
+        <h1 id="additional-information-heading" class="heading-xlarge">
+            @businessType.map {
+                case "Partnership" | "LP" | "LLP" => { @Messages("awrs.business_details.heading.partnership", headingPrefix()) }
+                case "LLP_GRP" | "LTD_GRP" => { @Messages("awrs.business_details.heading.group", headingPrefix()) }
+                case _ => { @Messages("awrs.business_details.heading", headingPrefix()) }
+            }
+        </h1>
+
+        @uk.gov.hmrc.play.views.html.helpers.form(action = actionRoute){
+            <div class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        businessDetailsForm("doYouHaveTradingName"),
+                        Seq("Yes" -> Messages("awrs.generic.yes"),
+                        "No" -> Messages("awrs.generic.no")),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=doYouHaveTradingName_field",
+                        legend = Messages("awrs.generic.do_you_have_trading_name")
+                    )
+                )
+                <div id="doYouHaveTradingName-yes-content">
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            businessDetailsForm("tradingName"),
+                            inputId = "tradingName",
+                            label = tradingNameLabel,
+                            maxLength = AwrsFieldConfig.tradingNameLen.toString,
+                            required = true,
+                            labelHighlight = true,
+                            wrapperClass = "panel-indent"
+                        )
+                    )
+                </div>
+            </div>
+
+            <div class="form-group">
+                @newBusinessSection
+            </div>
+
+            @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                sectionName = businessDetailsName,
+                submitText = ctaMessage,
+                submitId = "save-and-continue"
+            ))
+        }
+    </div>
+</div>
+}
+
+
+
+

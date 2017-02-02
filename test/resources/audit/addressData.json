@@ -1,0 +1,80 @@
+{
+  "addressAudits": [
+    {
+      "auditPointId": "suppliers-address-0",
+      "eventType": "manualAddressSubmitted",
+      "uprn": "",
+      "fromAddress": {
+        "addressLine1": "Principle Address line 1",
+        "addressLine2": "Principle Address line 2",
+        "addressLine3": "Principle Address line 3",
+        "addressLine4": "Principle Address line 4",
+        "postcode": "$postcode"
+      },
+      "toAddress": {
+        "addressLine1": "Principle Address line 1",
+        "addressLine2": "Principle Address line 2",
+        "addressLine3": "Principle Address line 3",
+        "addressLine4": "Principle Address line 4",
+        "postcode": "$postcode"
+      }
+    },
+    {
+      "auditPointId": "suppliers-address-1",
+      "eventType": "postcodeAddressSubmitted",
+      "uprn": "GB990091234635",
+      "fromAddress": {
+        "addressLine1": "Principle Address line 1",
+        "addressLine2": "Principle Address line 2",
+        "addressLine3": "Principle Address line 3",
+        "addressLine4": "Principle Address line 4",
+        "postcode": "$postcode"
+      },
+      "toAddress": {
+        "addressLine1": "Principle Address line 1",
+        "addressLine2": "Principle Address line 2",
+        "addressLine3": "Principle Address line 3",
+        "addressLine4": "Principle Address line 4",
+        "postcode": "$postcode"
+      }
+    },
+    {
+      "auditPointId": "suppliers-address-1",
+      "eventType": "postcodeAddressModifiedSubmitted",
+      "uprn": "GB990091234635",
+      "fromAddress": {
+        "addressLine1": "Principle Address line 1",
+        "addressLine2": "Principle Address line 2",
+        "addressLine3": "Principle Address line 3",
+        "addressLine4": "Principle Address line 4",
+        "postcode": "$postcode"
+      },
+      "toAddress": {
+        "addressLine1": "Changed Address",
+        "addressLine2": "Principle Address line 2",
+        "addressLine3": "Principle Address line 3",
+        "addressLine4": "Principle Address line 4",
+        "postcode": "$postcode"
+      }
+    },
+    {
+      "auditPointId": "suppliers-address-2",
+      "eventType": "internationalAddressSubmitted",
+      "uprn": "",
+      "fromAddress": {
+        "addressLine1": "addressLine1",
+        "addressLine2": "addressLine2",
+        "addressLine3": "addressLine3",
+        "addressLine4": "addressLine4",
+        "country": "USA"
+      },
+      "toAddress": {
+        "addressLine1": "addressLine1",
+        "addressLine2": "addressLine2",
+        "addressLine3": "addressLine3",
+        "addressLine4": "addressLine4",
+        "country": "USA"
+      }
+    }
+  ]
+}

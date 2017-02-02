@@ -1,0 +1,43 @@
+@import views.html.helpers._
+@import controllers.util.UnSubmittedChangesBannerParam
+@(
+    coreContent: Boolean => play.twirl.api.Html,
+    printFriendly: Boolean,
+    sectionText: Option[String],
+    unSubmittedChangesParam: Option[UnSubmittedChangesBannerParam]
+)(implicit request: Request[AnyRef], messages: Messages )
+
+@content = @{
+    coreContent(printFriendly)
+}
+
+@pageScripts = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+}
+
+@titleString = @{
+    sectionText match {
+        case Some(section) => Messages("awrs.view_application.section_title", section)
+        case None => Messages("awrs.view_application.title")
+    }
+}
+
+@govWrapper(content: Html) = {
+    @includes.awrs_main(title = titleString, pageScripts = Some(pageScripts), userLoggedIn = true) {
+        <div class="grid">
+            @awrsUnSubmittedBanner(unSubmittedChangesParam, Messages("awrs.index_page.modified_application_incomplete.edit"))
+            <div class="grid grid-2-3">
+                @content
+            </div>
+        </div>
+    }
+}
+
+@printFriendly match {
+    case true => {
+        @awrsPrintFriendlyWrapper(content)
+    }
+    case false => {
+        @govWrapper(content)
+    }
+}

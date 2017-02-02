@@ -1,0 +1,51 @@
+@(formItem:Form[_], fieldName: String)(implicit messages: Messages)
+
+@import uk.gov.hmrc.play.mappers.DateFields._
+@import play.api.i18n._
+@import views.html.helper._
+@import views.html.helpers._
+@import views.helpers._
+@import uk.gov.hmrc.play.mappers.DateFormatSymbols
+
+@dayElem = @{ fieldName + "." + day }
+@dayInputId = @{ fieldName + "-day"  }
+@monthElem = @{ fieldName + "." + month }
+@monthInputId = @{ fieldName + "-month" }
+@yearElem = @{ fieldName + "." + year }
+@yearInputId = @{ fieldName + "-year" }
+
+@awrsInputTypeText(
+    InputTypeTextParams(
+        formItem(dayElem),
+        inputId = dayInputId,
+        label = Messages("date.fields.day"),
+        divClass = "form-group form-group-day",
+        maxLength = "2",
+        labelHighlight = true,
+        required = true
+    )
+)
+
+@awrsInputTypeText(
+    InputTypeTextParams(
+        formItem(monthElem),
+        inputId = monthInputId,
+        label = Messages("date.fields.month"),
+        divClass = "form-group form-group-month",
+        maxLength = "2",
+        labelHighlight = true,
+        required = true
+    )
+)
+
+@awrsInputTypeText(
+    InputTypeTextParams(
+        formItem(yearElem),
+        inputId = yearInputId,
+        label = Messages("date.fields.year"),
+        divClass = "form-group form-group-year",
+        maxLength = "4",
+        labelHighlight = true,
+        required = true
+    )
+)

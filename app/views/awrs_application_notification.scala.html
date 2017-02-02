@@ -1,0 +1,16 @@
+@()(implicit request: Request[AnyRef], messages: Messages )
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html.helpers._
+
+<link rel="stylesheet" href=@routes.Assets.at("stylesheets/custom.css")>
+@includes.awrs_main(title = Messages("awrs.application_notification.title"), userLoggedIn = true){
+
+
+<div>
+    <h1 id="application-submission-header" class="heading-xlarge">@Html(Messages("awrs.application_notification.heading"))</h1>
+    <h2 id="application-submission-description" class="heading-medium">@Html(Messages("awrs.application_notification.status"))</h2>
+</div>
+
+
+<link href="/public/stylesheets/govuk-template.css?0.12.0" media="screen" rel="stylesheet" type="text/css">
+}

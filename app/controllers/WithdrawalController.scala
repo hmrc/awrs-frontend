@@ -1,0 +1,138 @@
+/*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers
+
+import config.FrontendAuthConnector
+import controllers.auth.AwrsController
+import exceptions.DeEnrollException
+import forms.AWRSEnums.ApplicationStatusEnum
+import forms.WithdrawalConfirmationForm._
+import forms.WithdrawalReasonForm._
+import models.FormBundleStatus.Pending
+import models.{ApplicationStatus, WithdrawalResponse}
+import org.joda.time.LocalDateTime
+import services.apis.{AwrsAPI8, AwrsAPI9}
+import services.{DeEnrolService, KeyStoreService, Save4LaterService}
+import utils.{AccountUtils, LoggingUtils}
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
+
+
+import scala.concurrent.Future
+
+object WithdrawalController extends WithdrawalController {
+  override val save4LaterService = Save4LaterService
+  override val authConnector = FrontendAuthConnector
+  override val keyStoreService = KeyStoreService
+  override val deEnrolService = DeEnrolService
+  override val api8 = AwrsAPI8
+  override val api9 = AwrsAPI9
+}
+
+trait WithdrawalController extends AwrsController with LoggingUtils {
+  val api9: AwrsAPI9
+  val api8: AwrsAPI8
+  val keyStoreService: KeyStoreService
+  val deEnrolService: DeEnrolService
+  val save4LaterService: Save4LaterService
+
+  def showWithdrawalReasons = async {
+    implicit user => implicit request =>
+      for {
+        successResponse <- api9.getSubscriptionStatusFromCache
+        keyStoreResponse <- keyStoreService.fetchWithdrawalReason
+      } yield {
+        (successResponse.exists(_.formBundleStatus == Pending), keyStoreResponse) match {
+          case (true, Some(data)) =>
+            Ok(views.html.awrs_withdrawal_reasons(withdrawalReasonForm.form.fill(data)))
+          case (true, _) =>
+            Ok(views.html.awrs_withdrawal_reasons(withdrawalReasonForm.form))
+          case _ =>
+            showErrorPageRaw
+        }
+      }
+  }
+
+  def submitWithdrawalReasons = async {
+    implicit user => implicit request =>
+      withdrawalReasonForm.bindFromRequest.fold(
+        formWithErrors => {
+          Future.successful(BadRequest(views.html.awrs_withdrawal_reasons(formWithErrors)))
+        },
+        surveyDetails => {
+          keyStoreService.saveWithdrawalReason(surveyDetails) map {
+            _ => Redirect(controllers.routes.WithdrawalController.showConfirmWithdrawal())
+          }
+        }
+      )
+  }
+
+  def showConfirmWithdrawal = async {
+    implicit user => implicit request =>
+      Future.successful(Ok(views.html.awrs_withdrawal_confirmation(withdrawalConfirmation)))
+  }
+
+  def submitConfirmWithdrawal = async {
+    implicit user => implicit request =>
+      withdrawalConfirmation.bindFromRequest.fold(
+        formWithErrors =>
+          Future.successful(BadRequest(views.html.awrs_withdrawal_confirmation(formWithErrors)))
+        ,
+        withdrawalDetails =>
+          withdrawalDetails.confirmation match {
+            case Some("Yes") =>
+              lazy val deEnrol = () => {
+                val awrsRef = AccountUtils.getUtrOrName()
+                val businessName = getBusinessName.fold("")(x => x)
+                val businessType = getBusinessType.fold("")(x => x)
+                deEnrolService.deEnrolAWRS(awrsRef, businessName, businessType)
+              }
+              val denrolResult = (for {
+                reason <- keyStoreService.fetchWithdrawalReason
+                api8Response <- api8.withdrawApplication(reason)
+                deleteReason <- keyStoreService.deleteWithdrawalReason
+                deEnrolSuccess <- deEnrol()
+                _ <- deEnrolService.refreshProfile
+              } yield (deEnrolSuccess, api8Response)
+                ).recover {
+                case error: NoSuchElementException => showErrorPageRaw
+                case error => throw error
+              }
+              denrolResult flatMap {
+                case (true, api8Response: WithdrawalResponse) =>
+                  for {
+                    _ <- save4LaterService.mainStore.removeAll
+                    _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.Withdrawn, LocalDateTime.now()))
+                  } yield Redirect(controllers.routes.WithdrawalController.showWithdrawalConfirmation()) addProcessingDateToSession api8Response.processingDate
+                case _ =>
+                  err("call to government gateway de-enrol failed")
+                  throw DeEnrollException("call to government gateway de-enrol failed")
+              }
+            case _ =>
+              keyStoreService.deleteWithdrawalReason map {
+                _ => Redirect(controllers.routes.IndexController.showIndex)
+              }
+          }
+      )
+  }
+
+  def showWithdrawalConfirmation(printFriendly: Boolean) = async {
+    implicit user => implicit request =>
+      Future.successful(Ok(views.html.awrs_withdrawal_confirmation_status(request.getProcessingDate.fold("")(x => x), printFriendly)))
+  }
+
+}

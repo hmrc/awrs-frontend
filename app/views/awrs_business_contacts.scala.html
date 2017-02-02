@@ -1,0 +1,148 @@
+@import play.twirl.api.Html
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+@import utils.AwrsFieldConfig
+
+
+@(isAPI5: Boolean, businessType: Option[String], business: models.BCAddress, businessContactsForm: Form[models.BusinessContacts])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+
+@implicitFormInstance = @{
+    Some(businessContactsForm)
+}
+
+@pageScripts = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.BusinessContactsController.saveAndReturn
+        case false => controllers.routes.BusinessContactsController.saveAndContinue
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@includes.awrs_main(title = Messages("awrs.business_contacts.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    <div class="grid">
+        <div class="grid grid-2-3">
+            @backLinkHelper(BackLinkParams(
+                sectionName = businessContactsName
+            ))
+            @errorSummaryTemplate(businessContactsForm)
+            @awrsProgressHelper(businessType, businessContactsName)
+            <h1 id="contact-information-heading" class="heading-xlarge">
+                @businessType.map {
+                    case "Partnership" | "LP" | "LLP" => {
+                        @Messages("awrs.business_contacts.heading.partnership", headingPrefix())
+                    }
+                    case "LLP_GRP" | "LTD_GRP" => {
+                        @Messages("awrs.business_contacts.heading.group", headingPrefix())
+                    }
+                    case _ => {
+                        @Messages("awrs.business_contacts.heading", headingPrefix())
+                    }
+                }
+            </h1>
+
+            @form(action = actionRoute) {
+                <p id="contactDetailsNominatedPerson" class="lede">@Messages("awrs.business_contacts.contact_detail_nominated_person")</p>
+                <div class="form-group">
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            businessContactsForm("contactFirstName"),
+                            inputId = "contactFirstName",
+                            label = Messages("awrs.generic.first_name"),
+                            labelHighlight = true,
+                            required = true
+                        )
+                    )
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            businessContactsForm("contactLastName"),
+                            inputId = "contactLastName",
+                            label = Messages("awrs.generic.surname"),
+                            labelHighlight = true,
+                            required = true
+                        )
+                    )
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            businessContactsForm("telephone"),
+                            inputId = "telephone",
+                            label = Messages("awrs.generic.telephone"),
+                            labelHighlight = true,
+                            required = true
+                        )
+                    )
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            businessContactsForm("email"),
+                            inputId = "email",
+                            label = Messages("awrs.generic.email"),
+                            labelHighlight = true,
+                            required = true
+                        )
+                    )
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            businessContactsForm("confirmEmail"),
+                            inputId = "confirmEmail",
+                            label = Messages("awrs.generic.confirmEmail"),
+                            labelHighlight = true,
+                            required = true
+                        )
+                    )
+                </div>
+
+                <div id="review-details" class="form-group">
+                    <strong>@Messages("awrs.generic.registered_address")</strong><br>
+                    @business.line_1<br>
+                    @business.line_2<br>
+                    @if(business.line_3.nonEmpty) {@business.line_3<br>}
+                    @if(business.line_4.nonEmpty) {@business.line_4<br>}
+                    @business.postcode<br>
+                </div>
+                <div class="form-group">
+                    @awrsInputTypeRadioGroup(
+                        InputTypeRadioGroupParams(
+                            businessContactsForm("contactAddressSame"),
+                            Seq("Yes" -> Messages("awrs.generic.yes"),
+                                "No" -> Messages("awrs.generic.no")),
+                            legend = Messages("awrs.business_contacts.contact_address_same"),
+                            fieldSetClass = "inline",
+                            fieldSetAttributes = "id=contactAddressSame_field"
+                        )
+                    )
+                    <div id="contactAddressSame-no-content">
+                    @awrsAddressHelper(businessContactsForm("contactAddress"),
+                        AddressHelperParams(
+                            wrapperClass = "panel-indent",
+                            number = "1"
+                        )
+                    )
+                    </div>
+                </div>
+                @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                    sectionName = businessContactsName,
+                    submitText = ctaMessage,
+                    submitId = "save-and-continue"
+                ))
+            }
+        </div>
+    </div>
+}
+
+
+
+

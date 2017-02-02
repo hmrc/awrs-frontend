@@ -1,0 +1,9 @@
+@(params: views.subtemplates.application_status.ApplicationRejectedReviewParameter)(implicit request: Request[AnyRef], messages: Messages )
+@import views.html.helpers._
+@import views.helpers._
+<div class="form-group">
+    <div>
+        <h2 class="heading-medium">@Messages("awrs.application_status.info.rejected.heading")</h2>
+    </div>
+    @Html(params.statusInfo.secureCommText)
+</div>

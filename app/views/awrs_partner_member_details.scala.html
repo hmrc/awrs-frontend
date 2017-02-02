@@ -1,0 +1,225 @@
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers._
+@import views.html.helpers._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+@import forms.AWRSEnums._
+
+@(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+
+@implicitFormInstance = @{
+    Some(partnerForm)
+}
+
+@isNinoPresent = @{
+    if(partnerId == 1) Messages("awrs.business-partner.doYouHaveNino") else Messages("awrs.business-partner.doTheyHaveNino")
+}
+@businessType = @{
+    request.getBusinessType.fold("")(x => x)
+}
+
+@pageScripts = {
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.BusinessPartnersController.saveAndReturn(partnerId, isNewRecord)
+        case false => controllers.routes.BusinessPartnersController.saveAndContinue(partnerId, isNewRecord)
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@h1text = @{
+    partnerId match {
+        case 1 => Messages("awrs.business-partner.heading_1", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord))
+        case _ => Messages("awrs.business-partner.heading_2_or_more", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalIntSuffix(partnerId - 1))
+    }
+}
+
+@partnerHeading(someText: Option[String]) = {
+    @someText match {
+        case None => {}
+        case Some(text) => {
+            <h2 id="partner-heading" class="heading-medium">@text</h2>
+        }
+    }
+}
+
+@includes.awrs_main(title = Messages("awrs.business-partner.page.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    <div class="grid">
+        <div class="grid grid-2-3">
+            @backLinkHelper(BackLinkParams(
+                sectionName = partnersName
+            ))
+            @errorSummaryTemplate(partnerForm)
+            @awrsProgressHelper(businessType, partnersName)
+            <h1 id="business_partner-title" class="heading-xlarge">@h1text</h1>
+            <p id="business_partners-subtext" class="lede">@Messages("awrs.business-partner.topText")</p>
+            @form(action = actionRoute) {
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        partnerForm("entityType"),
+                        Seq(IndividualString -> Messages("awrs.business-partner.entityType_individual"),
+                            CorporateBodyString -> Messages("awrs.business-partner.entityType_corporate_body"),
+                            SoleTraderString -> Messages("awrs.business-partner.entityType_sole_trader")
+                        ),
+                        legend = Messages("awrs.business-partner.partner_role"),
+                        fieldSetClass = "form-group",
+                        fieldSetAttributes = "id=entityType_field",
+                        formHint = Messages("awrs.business-partner.role_hint_text"),
+                        formHintId = "partner_role-hint",
+                        fieldSetQuestion = Messages("awrs.business-partner.role_question_text"),
+                        fieldSetQuestionId = "entity-HelpLink",
+                        fieldSetQuestionAnswer = Html(Messages("awrs.business-partner.role_help_text", "<br><br>")),
+                        fieldSetQuestionWrapperClass = "panel-indent"
+                    )
+                )
+                <div class="form-group">
+                    <div class="individual sole_trader">
+                        @awrsInputTypeText(
+                            InputTypeTextParams(
+                                partnerForm("firstName"),
+                                maxLength = AwrsFieldConfig.firstNameLen.toString,
+                                required = true,
+                                label = Messages("awrs.generic.first_name"),
+                                labelHighlight = true
+                            )
+                        )
+                        @awrsInputTypeText(
+                            InputTypeTextParams(
+                                partnerForm("lastName"),
+                                maxLength = AwrsFieldConfig.lastNameLen.toString,
+                                required = true,
+                                label = Messages("awrs.generic.surname"),
+                                labelHighlight = true
+                            )
+                        )
+                    </div>
+
+                    <div class="corporate_body">
+                        @awrsInputTypeText(
+                            InputTypeTextParams(
+                                partnerForm("companyNames.businessName"),
+                                inputId = "companyNames.businessName",
+                                label = Messages("awrs.generic.business_name"),
+                                maxLength = AwrsFieldConfig.companyNameLen.toString,
+                                required = true,
+                                labelHighlight = true
+                            )
+                        )
+                    </div>
+                    <div class="form-group">
+                        <div class="corporate_body sole_trader">
+                            @awrsInputTypeRadioGroup(
+                                InputTypeRadioGroupParams(
+                                    partnerForm("companyNames.doYouHaveTradingName"),
+                                    Seq("Yes" -> Messages("awrs.generic.yes"),
+                                        "No" -> Messages("awrs.generic.no")),
+                                    fieldSetClass = "inline",
+                                    fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
+                                    legend = Messages("awrs.generic.do_they_have_trading_name")
+                                )
+                            )
+                            <div id="companyNames.doYouHaveTradingName-yes-content">
+                            @awrsInputTypeText(
+                                InputTypeTextParams(
+                                    partnerForm("companyNames.tradingName"),
+                                    inputId = "companyNames.tradingName",
+                                    label = Messages("awrs.generic.trading_name"),
+                                    maxLength = AwrsFieldConfig.tradingNameLen.toString,
+                                    required = true,
+                                    labelHighlight = true,
+                                    wrapperClass = "panel-indent"
+                                )
+                            )
+                            </div>
+                        </div>
+                    </div>
+                    <div id="businessPartnerAddress" class="individual corporate_body sole_trader">
+                        @awrsAddressHelper(partnerForm("partnerAddress"),
+                            AddressHelperParams()
+                        )
+                    </div>
+
+                    <div class="corporate_body sole_trader">
+                        @awrsIdUTRHelper(
+                            businessType,
+                            None,
+                            partnerForm("utr"),
+                            youOrThey = "they"
+                        )
+                    </div>
+
+                    <div class="individual sole_trader">
+                        @awrsIdNINOHelper(
+                            partnerForm("doYouHaveNino"),
+                            partnerForm("nino"),
+                            youOrThey = "they"
+                        )
+                    </div>
+
+                    <div class="corporate_body">
+                        @awrsIdCRNHelper(
+                            None,
+                            partnerForm("companyRegDetails.companyRegistrationNumber"),
+                            dateField = Some(partnerForm("companyRegDetails.dateOfIncorporation")),
+                            youOrThey = "they"
+                        )
+                    </div>
+
+                    <div class="corporate_body sole_trader">
+                        @awrsIdVRNHelper(
+                            partnerForm("doYouHaveVRN"),
+                            partnerForm("vrn"),
+                            youOrThey = "they"
+                        )
+                    </div>
+
+                    @if(partnerId < 2) {
+                        <input type="hidden" name="otherPartners" value="Yes">
+                    } else {
+                        @if(!isEditMode) {
+                            <div class="form-group" id="businessPartner.otherPartners">
+                            @awrsInputTypeRadioGroup(
+                                InputTypeRadioGroupParams(
+                                    partnerForm("otherPartners"),
+                                    Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                                        Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                                    legend = Messages("awrs.business-partner.add_more_partners"),
+                                    legendId = "otherPartners",
+                                    fieldSetAttributes = "id=otherPartners_field",
+                                    fieldSetClass = "inline"
+                                )
+                            )
+                            </div>
+                        } else {
+                            <input type="hidden" name="otherPartners" value="No">
+                            }
+                    }
+                    @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                        sectionName = partnersName,
+                        sectionEntryId = partnerId,
+                        submitText = ctaMessage,
+                        submitId = "save-and-continue"
+                    ))
+                }
+            </div>
+        </div>
+    </div>
+}
+
+
+
+

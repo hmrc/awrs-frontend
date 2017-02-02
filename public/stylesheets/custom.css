@@ -1,0 +1,811 @@
+#application-status-container {
+    margin-left: 20px;
+    margin-top: 30px;
+}
+
+#application-status-container h2 {
+    border-top: 8px solid #005ea5;
+    padding-top: 15px;
+}
+
+#business_partners-subtext, #group-member-lead-paragraph {
+    float: left;
+}
+
+.alert-complete {
+    background-color: #28a197;
+    color: #fff;
+    padding: 30px 60px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.alert-complete h2 {
+    background-color: #28a197;
+    color: #fff;
+}
+
+.alert-complete h2 img {
+    position: relative;
+    top: -1px;
+}
+.centered-content {
+    display: block;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 0.78947em 0em 0.78947em;
+    font-size: 19px;
+    line-height: 1.31579;
+    font-weight: 400;
+    text-transform: none;
+}
+
+.content__body {
+    width: 100%;
+}
+
+#changes-banner {
+    margin: 0;
+    padding: 0.89474em 0 0.78947em 0;
+    max-width: 952px;
+}
+#changes-banner.banner-complete {
+    border-left: 8px solid #F47738 ;
+    background-color: #FCDDCD;
+}
+#changes-banner.banner-incomplete {
+    border-left: 8px solid #B10E1E;
+    background-color: #ECC3C7;
+}
+#changes-banner .font-xsmall {
+    top: 2px;
+    position: relative;
+}
+
+.postcode-lookup {
+    top: 6px;
+    display: none;
+    margin: 0 0 0 10px;
+    background-color: #BFC1C3;
+    box-shadow: 0 2px 0 #6F777B;
+    color: #000;
+    height: 23px;
+}
+
+.address-container .font-small {
+    display: none;
+}
+
+.element-inline {
+    float: left;
+    clear: both;
+}
+
+.inline .form-field {
+    margin-bottom: 0;
+}
+
+.block-label {
+    padding-left: 53px;
+}
+
+.postcode-lookup:hover, .postcode-lookup:focus, .postcode-lookup-color-change {
+    background-color: #00823B;
+    box-shadow: 0 2px 0 #003518;
+    color: #fff;
+}
+
+.loading {
+    display: none;
+    margin-top: 10px;
+    padding: 5px 0 0 39px;
+    background: url("/alcohol-wholesale-scheme/assets/images/loading.gif") no-repeat;
+}
+
+select {
+    width: 50%;
+    height: 44px;
+    background: #DEE0E2;
+    font-weight: 600;
+    box-shadow: 0 2px 0 #6F777B;
+    display: none;
+    margin: 35px 0 0 0;
+}
+select.show {
+    display: block;
+}
+
+summary .arrow {
+    display:inline-block;
+    margin-right: 0.5em;
+}
+
+/* one view */
+.status-banner {
+    background-color: #DEE0E2;
+    height: 46px;
+    position: relative;
+    width: 100%;
+}
+
+.status-banner span {
+    margin: 10px 15px;
+    position: relative;
+    color: #6F777B;
+    font-size: 1.2em;
+    display: inline-block;
+}
+
+table.view-application td {
+    vertical-align: top;
+    width: 40%;
+    position: relative;
+}
+
+table.view-application td:last-child {
+    padding-right: 0;
+}
+
+table.view-application tr.record-header td {
+    font-weight: 700;
+}
+
+table th, table td {font-size:19px; }
+
+td.links {
+    margin: 0;
+    text-align: right;
+}
+tr.record-header td.row-data {
+    text-align: right;
+}
+table.view-application tr.record-header td:last-child p, .links p {
+    margin: 0 0 0 1em;
+    display: inline;
+}
+
+#back-link {margin-top:10px;}
+
+.back-link::before {
+    border-bottom: 5px solid transparent;
+    border-right: 6px solid #0b0c0c;
+    border-top: 5px solid transparent;
+    content: "";
+    display: block;
+    height: 0;
+    left: 0;
+    margin-top: -6px;
+    position: absolute;
+    padding-right: 0;
+    top: 50%;
+    width: 0;
+}
+
+.back-link:link, .back-link:visited, .back-link:hover, .back-link:active {
+    color: #0b0c0c;
+}
+
+.back-link, .view-application-section a.back-link {
+    border-bottom: 1px solid #0b0c0c;
+    display: inline-block;
+    font-family: "nta",Arial,sans-serif;
+    font-weight: 400;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 14px;
+    position: relative;
+    text-decoration: none;
+    text-transform: none;
+    font-size: 16px;
+    line-height: 1.25;
+}
+
+
+.links p a {
+    margin: 0;
+}
+
+table.view-application tr.record-spacer td, .record-add td {
+    border-bottom: 0px;
+    padding-bottom: 1em;
+}
+.record-add td a {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+.view-application-section h2, .record-add td a {
+    position: relative;
+    float: left;
+}
+a.edit-section, a.back-to-top-link {
+    position: relative;
+    float: right;
+}
+a.edit-link {
+    margin-right: 1em;
+}
+
+.summary, a, .link-style, .button--link-style {
+    color: #005EA5;
+}
+
+a:visited, .link-style:visited, .button--link-style:visited {
+    color: #4C2C92;
+}
+
+.summary:hover, a:hover {
+    color: #2B8CC4;
+}
+
+.summary {
+    display: block;
+    clear: both;
+}
+
+.view-application-section a {
+    margin-top: 1.04167em;
+    font-size: 0.9em;
+}
+
+.hide {
+    display: none;
+}
+
+#print {
+    width: 0;
+}
+
+.edit-link a, tr.record-header td .edit-link {
+    margin: 0 auto;
+}
+
+#headerType {float:left; width:80%;}
+#headerLink {float:left; width:20%;}
+
+/* end one view */
+.validation-summary h1 {
+    margin-top: 10px;
+}
+
+.validation-summary {
+    border: 5px solid #b10e1e;
+    margin-bottom: 0;
+    margin-top: 30px;
+    padding: 20px 15px 15px;
+}
+
+.validation-summary-message a, .validation-message a, p.field-error {
+    color: #b10e1e;
+    font-weight: 700;
+    font-size: 19px;
+}
+
+.form-date {display: block;}
+
+
+.form-field--error .form-control {
+    border: 4px solid #b10e1e;
+}
+
+.panel-indent .form-control {
+   width: 50%;
+}
+
+.form-field.form-field--error .error-notification, fieldset.form-field--error .error-notification {
+    font-weight: 700;
+    font-size: 1em;
+}
+
+.form-field--error {
+    border-left: 5px solid #b10e1e;
+    margin: 0 0 0.75em;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.form-group legend {
+    font-weight: 700;
+    font-size: 1em;
+}
+
+fieldset.form-group dl, fieldset.form-group dl dt {
+    margin: 0;
+}
+
+fieldset dl dt {
+    font-weight: 700;
+}
+
+fieldset dl dt span.form-hint {
+    font-weight: 100;
+}
+
+#errors ul li a {
+    font-weight: 700;
+}
+
+#errors:focus {outline: 3px solid #ffbf47;}
+
+#deRegistrationConfirmation-yes-content {display:none;}
+
+.highlight {
+    font-style: underline;
+    color: #0076c0;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.manual-address {
+    clear: both;
+}
+
+@media screen {
+    .screen-hidden  {
+        display: none !important;
+    }
+}
+
+@media print {
+    .print-hidden, .header-wrapper, .service-info, .report-error  {
+        display: none !important;
+    }
+    .appstatus {
+        background-color: #005ea5;
+        color: #fff;
+        -webkit-print-color-adjust: exact;
+        margin-bottom: 1.05263em;
+        padding: 2em 2em .94737em 2em;
+        margin-top: 1.05263em;
+    }
+    .appstatus p, .appstatus strong, .alert-complete div, .alert-complete span {
+        color: #fff;
+    }
+    .alert-complete {
+        background-color: #28a197;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+@media (min-width: 641px) {
+    .appstatus-steps li {
+        display: inline-block;
+        width: 30%;
+        margin-right: 4%;
+    }
+
+    .appstatus-steps li:last-child {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 755px) {
+    .appstatus-steps li {
+        display: inline;
+    }
+}
+
+@media (max-width: 640px) {
+    #application-status-container {
+        margin: 0;
+    }
+
+    .appstatus-steps {
+        width: 100%;
+        display: inline-block;
+    }
+
+    .appstatus-steps li {
+        display: inline;
+        margin-left: 0;
+        width: 100%;
+    }
+
+    select {
+        margin: 19px 10px 0 0;
+        width: 100%;
+    }
+
+    .postcode-lookup {
+        margin: 15px 10px 0 0;
+    }
+
+    .form-field--error {
+        padding: 0 0 0 1em;
+    }
+
+    .form-field--error label.block-label {
+        margin-right: 15px;
+    }
+
+    #errors ul li {
+        margin-left: 0;
+    }
+
+    .with-lookup {
+        width: 100%;
+    }
+
+    .form-field--error input[type="text"] {
+        width: 96%;
+    }
+}
+
+select option {
+    background: #fff;
+}
+
+.text-disclaimer {
+    background: url("/alcohol-wholesale-scheme/assets/images/icon-important.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    clear: both;
+    font-size: 16px;
+    font-weight: 700;
+    padding-bottom: 10px;
+    padding-left: 45px;
+    width: 90%;
+}
+.div-new-line {
+    clear: both;
+}
+.div-left {
+    display:inline-block;
+    float: left;
+}
+.div-right {
+    display:inline-block;
+    float: right;
+}
+
+.index-page-links {
+    padding: 0;
+}
+
+.index-page-links li {
+    border-bottom: 1px solid #bfc1c3;
+    color: #2e8aca;
+    list-style-position: inside;
+    padding: 10px 0;
+}
+
+.index-page-links li:first-child {
+    padding-top: 0.6em;
+    border-top: 1px solid #bfc1c3;
+}
+#confirmation {
+    color: #fff;
+}
+
+#ConfirmationNoteHeadingText.heading-medium {padding-top: 1.5em;}
+
+.confirmation-description {
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+    font-size: 24px;
+}
+div #confirmation-date {
+    font-size: 24px;
+}
+
+#personOrCompany_field {margin-bottom:15px;}
+
+#questionAnswer-trading-HelpLink {clear:both;}
+
+.overseas-alcohol-suppliers, .alcoholSupplierName {margin-bottom:15px;}
+
+.is_supplier_based_in_the_uk {margin-bottom:0;}
+
+#businessTypeQuestionHelper {
+    margin-bottom: 2em;
+}
+
+#application-confirmation-description, #de-registration-confirmation-description {
+    color: #fff;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.21111;
+    margin: 0 auto;
+}
+
+.awrs-application-top-text.form-hint {
+    margin-top: 0;
+}
+
+.awrs-status {
+    width: 18%;
+}
+
+.awrs-status span {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 3px;
+    display: block;
+    font-size: 0.7em;
+    font-weight: 700;
+    padding: 0px 10px;
+    position: relative;
+    top: -1px;
+    text-align: center;
+    width: 90px;
+    margin-right: 20px;
+}
+
+.not-started {
+    border-color: #6F777B;
+    color: #6F777B;
+}
+
+.incomplete {
+    border-color: #B10E1E;
+    color: #B10E1E;
+}
+
+.complete {
+    border-color: #006435;
+    color: #006435;
+}
+
+.edited {
+    border-color: #006435;
+    color: #006435;
+}
+
+.ui-autocomplete-input {
+    position: relative;
+    display: block;
+}
+
+.comment-box {
+    width: 100%;
+}
+
+.banner {
+    padding: 10px 0 10px 13px;
+    background-color: #DEE0E2;
+    margin-bottom: 30px;
+}
+
+#detailed-information {
+    padding: 0.2631578947em 0 10px;
+}
+
+#confirmation-page-finish {
+    margin-top: 30px;
+}
+
+/*= added for application status page */
+
+.appstatus {
+    background-color: #005ea5;
+    color: #fff;
+    margin-bottom: 1.05263em;
+    padding: 2em 2em .94737em 2em;
+    margin-top: 1.05263em;
+}
+
+h1.appstatus-title {
+    color: #fff;
+}
+
+.appstatus-title {
+    font-family: "nta", Arial, sans-serif;
+    line-height: 1.04167;
+    font-weight: 700;
+    text-transform: none;
+    margin-bottom: .625em;
+}
+
+.appstatus-steps {
+    list-style-type: none;
+    border-collapse: collapse;
+    width: 100%;
+    display: inline-block;
+}
+
+.appstatus-steps .appstatus-processing {
+    color: #fff;
+}
+
+.appstatus-steps .appstatus-complete {
+    border-color: #fff;
+    border-bottom-width: 6px;
+    color: #fff;
+    padding-bottom: 7px;
+}
+
+.appstatus-steps {
+    margin-bottom: 1.05263em;
+}
+
+.appstatus-steps li {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.appstatus-steps span {
+    border-bottom: 3px solid #2b8cc4;
+    color: #2b8cc4;
+    display: block;
+    font-weight: bold;
+    padding: 10px 26px 10px 0;
+    vertical-align: middle;
+}
+
+.appstatus-steps .appstatus-complete {
+    border-color: #fff;
+    border-bottom-width: 6px;
+    color: #fff;
+    padding-bottom: 7px;
+}
+
+.appstatus-steps span img {
+    float: right;
+    height: 22px;
+    margin-left: 5px;
+    vertical-align: text-top;
+    width: 22px;
+}
+
+.tick {
+    background: url("/alcohol-wholesale-scheme/assets/images/complete.png") right center/24px 24px no-repeat;
+}
+
+.alert--important {
+    background-color: #b10e1e;
+    color: white;
+}
+
+.alert {
+    clear: both;
+    border-left-width: 0.15789em;
+    border-left-style: solid;
+    margin: 15px 0 1.05263em 0;
+    padding: 0.89474em 0.78947em;
+}
+
+.alert .alert__message {
+    font-family: nta, Arial, sans-serif;
+    font-size: 19px;
+    line-height: 1.31579;
+    font-weight: 400;
+    text-transform: none;
+    margin: 0px 0px 0.52632em;
+}
+
+p.lede, .lede {
+    font-family: "nta", Arial, sans-serif;
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 400;
+    text-transform: none;
+}
+
+@media (min-width: 641px) {
+    .lede {
+        font-size: 24px;
+        line-height: 1.25;
+    }
+}
+#wrapper {
+  text-align: left;
+}
+#additional-premises {
+    clear: both;
+}
+
+#global-header .header-wrapper .header-proposition .menu.js-hidden {
+  display: block !important;
+}
+@media (min-width: 769px) {
+  #global-header .header-wrapper .header-proposition .menu.js-hidden {
+    display: none !important;
+  }
+}
+#global-header .header-wrapper .header-proposition #proposition-links li {
+  width: 100%;
+}
+
+#additional-premises table.view-application tr.short-row-title td.row-title {
+   width:  5%;
+}
+
+table td.row-title {
+    font-weight: 700;
+}
+
+#add-link-top {margin-bottom: 1.57895em;}
+
+#add-link-top, #add-link-bottom {
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.add-link-top {clear:both; margin-bottom:0.5em;}
+.radioSetQuestion{float:left; clear:both;}
+
+hr {
+    clear: both;
+}
+
+p.print-heading {font-weight:700;}
+#progress-text {margin-top: 1em;}
+.beta-banner {margin-bottom:10px;}
+
+/* Timeout Modal */
+
+
+@media (max-width: 640px){
+    .timeout-dialog {
+        width: 280px !important;
+    }
+}
+
+.timeout-dialog  ~ .ui-widget-overlay {
+
+    top: 0;
+    left: 0;
+    background-color: #000;
+    filter: alpha(opacity=40);
+    -khtml-opacity: 0.4;
+    -moz-opacity: 0.4;
+    opacity: 0.4;
+
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+.ui-front {
+    z-index: 100;
+}
+
+html.noScroll {
+    overflow: hidden;
+}
+
+.timeout-dialog {
+    position: absolute;
+    padding: 40px 30px 40px 30px;
+    border: 1px solid #0b0c0c;
+    background-color: #fff;
+    -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+.ui-dialog-titlebar-close{
+    display: none;
+}
+
+.timeout-dialog .ui-dialog-title {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.timeout-dialog .button{
+    margin-bottom: 1em;
+}
+
+.timeout-dialog .button.button--link{
+    margin: 0;
+    padding: 0;
+}
+
+.timeout-dialog p {
+    font-family: "nta",Arial,sans-serif;
+    font-size: 19px;
+    line-height: 1.31579;
+    font-weight: 400;
+    text-transform: none;
+    margin: .63158em 0;
+}
+
+/* Modal Styles */
+
+#additional-premises > p, #suppliers > p, #business_directors-subtext  {
+    clear: both;
+}

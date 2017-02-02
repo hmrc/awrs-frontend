@@ -1,0 +1,38 @@
+@(field: Field, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+
+@import play.api.i18n._
+@import views.html.helper._
+@import forms.validation.util._
+
+@elements = @{ new FieldElements(field.id, field, null, args.toMap, messages) }
+@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
+@fieldErrors = @{ ErrorMessageInterpreter.getFieldErrors(field, parentField) }
+@parentElements = @{parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )}
+@value = @{ field.value match { case Some(x) => x case None => "" case x => x }}
+@labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
+@labelHighlight = @{ elements.args.get('_labelHighlight).getOrElse(false).asInstanceOf[Boolean] }
+
+<div class="form-field @if(fieldErrors.nonEmpty || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error} else {@if(elements.args.get('_wrapperClass)) { @elements.args.get('_wrapperClass) }}">
+
+    @commonHelper(field, fieldErrors)
+    <fieldset class="form-group">
+        @if( elements.args.get('_legend) ) {
+            <legend @if( elements.args.get('_legendHidden).getOrElse(false).asInstanceOf[Boolean] ) {class="visuallyhidden"}>@elements.args.get('_legend)</legend>
+        }
+        <label for="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}"
+            class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }"
+            id="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}_field"
+                @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)}>
+
+            @if(labelHighlight) {<strong>}
+            @if(elements.args.contains('_label)) {@elements.label}
+            @if(labelHighlight) {</strong>}
+        </label>
+        <textarea id="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}"
+            class="comment-box @if( elements.args.get('_inputClass) ){ @elements.args.get('_inputClass) }"
+            @if(elements.args.contains('_maxLength)){maxlength="@elements.args.get('_maxLength)"}else{}
+            name="@elements.field.name"
+            rows="6">@value</textarea>
+    </fieldset>
+
+</div>

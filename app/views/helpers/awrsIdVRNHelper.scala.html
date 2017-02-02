@@ -1,0 +1,43 @@
+@(radioField: Field, inputField: Field, youOrThey: String = "", legend: Option[String] = None)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+
+@import views.helpers.InputTypeRadioGroupParams
+@import play.api.i18n._
+@import views.html.helper._
+@import views.html.helpers._
+@import views.helpers.InputTypeTextParams
+@import utils.AwrsFieldConfig
+
+@messageKey = @{
+    legend match {
+        case Some(key) => Messages(key)
+        case None => Messages(s"awrs.generic.do_${youOrThey}_have_VAT")
+    }
+}
+
+<div class="form-group">
+    @awrsInputTypeRadioGroup(
+        InputTypeRadioGroupParams(
+            radioField,
+            Seq("Yes" -> Messages("awrs.generic.yes"),
+                "No" -> Messages("awrs.generic.no")),
+            fieldSetAttributes = "id="+radioField.name+"_field",
+            legend = messageKey,
+            fieldSetClass = "inline"
+        )
+    )
+    <div id="@radioField.name-yes-content">
+        @awrsInputTypeText(
+            InputTypeTextParams(
+                inputField,
+                inputId = inputField.name,
+                maxLength = AwrsFieldConfig.frontendDefaultLen.toString,
+                wrapperClass = "panel-indent",
+                label = Messages("awrs.generic.VAT_registration_number"),
+                required = true,
+                labelHighlight = true,
+                formHint = Messages("awrs.generic.do_you_have_VAT_information"),
+                formHintId = "vrn-information"
+            )
+        )
+    </div>
+</div>

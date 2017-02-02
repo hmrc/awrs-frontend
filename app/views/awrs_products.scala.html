@@ -1,0 +1,104 @@
+@import views.html.helpers._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import forms.AwrsFormFields._
+@import views.helpers._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+
+@(productsForm: Form[models.Products])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode)
+
+@implicitFormInstance = @{ Some(productsForm) }
+
+@pageScripts = {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.ProductsController.saveAndReturn
+        case false => controllers.routes.ProductsController.saveAndContinue
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@includes.awrs_main(title = Messages("awrs.additional_information.products.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLinkHelper(BackLinkParams(
+            sectionName = productsName
+        ))
+        @errorSummaryTemplate(productsForm)
+        @awrsProgressHelper(request.getBusinessType, productsName)
+        <h1 id="products-heading" class="heading-xlarge">@Messages("awrs.additional_information.products.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))</h1>
+        @form(action = actionRoute){
+            <div class="form-group">
+                @awrsInputTypeGroupCheckbox(
+                    InputTypeGroupCheckboxParams(
+                        productsForm("mainCustomers"),
+                        mainCustomerOptions,
+                        legend = Messages("awrs.additional_information.main_customers"),
+                        fieldSetAttributes = "id=mainCustomers_field",
+                        fieldSetClass = "test",
+                        legendClass = "test",
+                        formHint = Messages("awrs.additional_information.form_hint")
+                    )
+                )
+                <div id="other-mainCustomers">
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            productsForm("otherMainCustomers"),
+                            label = Messages("awrs.additional_information.other.main_customers"),
+                            labelHighlight = true,
+                            inputId = "otherMainCustomers",
+                            maxLength = frontendDefaultLen.toString,
+                            wrapperClass = "panel-indent",
+                            required = true
+                        )
+                    )
+                </div>
+            </div>
+            <div class="form-group">
+                @awrsInputTypeGroupCheckbox(
+                    InputTypeGroupCheckboxParams(
+                        productsForm("productType"),
+                        products,
+                        legend = Messages("awrs.additional_information.products"),
+                        fieldSetAttributes = "id=productType_field",
+                        formHint = Messages("awrs.additional_information.form_hint")
+                    )
+                )
+                <div id="other-productType">
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            productsForm("otherProductType"),
+                            label = Messages("awrs.additional_information.other.products"),
+                            inputId = "otherProductType",
+                            labelHighlight = true,
+                            maxLength = frontendDefaultLen.toString,
+                            wrapperClass = "panel-indent",
+                            required = true
+                        )
+                    )
+                </div>
+            </div>
+            @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                sectionName = productsName,
+                submitText = ctaMessage,
+                submitId = "save-and-continue"
+            ))
+        }
+    </div>
+</div>
+}

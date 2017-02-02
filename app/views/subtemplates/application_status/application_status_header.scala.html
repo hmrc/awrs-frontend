@@ -1,0 +1,155 @@
+@(params: views.subtemplates.application_status.ApplicationStatusParameter)(implicit request: Request[AnyRef], messages: Messages )
+@import views.subtemplates.application_status._
+@import models.FormBundleStatus._
+@import uk.gov.hmrc.play.http._
+@import utils.AwrsNumberFormatter
+
+@awrsNumber = {
+    @params match {
+        case r:RegisteredParameter    => {<br><br>@Html(Messages("awrs.application_status.awrsRegNo",s"<strong>${AwrsNumberFormatter.format(r.awrsRegNo)}</strong>"))}
+        case _                        => {}
+    }
+}
+
+@orgName = @{
+    s"<strong>${
+        params.organisationName
+    }</strong>"
+}
+
+@rejectedOrRevokedUnderReviewOrAppeal(rejectedString : String, revokedString : String) = @{
+    // this method is used for underReviewOrAppealLede to select the correct message depending on the status
+    params.status.formBundleStatus match {
+        case RejectedUnderReviewOrAppeal => rejectedString
+        case RevokedUnderReviewOrAppeal  => revokedString
+        // This default case is put in place solely for the purpose of keeping the compiler happy, it should never be hit
+        case _ => throw new InternalServerException(s"An unexpected status when generating underReviewOrAppealLede, params: $params")
+    }
+}
+
+@underReviewOrAppealLede = {
+    @Html(Messages("awrs.application_status.under_review_or_appeal_lede.main.line1",
+        s"<strong>${
+            rejectedOrRevokedUnderReviewOrAppeal(
+                rejectedString = Messages("awrs.application_status.lede.verb_in_main.rejected"),
+                revokedString = Messages("awrs.application_status.lede.verb_in_main.revoked")
+            )
+        }</strong>",
+        rejectedOrRevokedUnderReviewOrAppeal(
+            rejectedString = Messages("awrs.application_status.under_review_or_appeal_lede.noun_in_main.rejected"),
+            revokedString = Messages("awrs.application_status.under_review_or_appeal_lede.noun_in_main.revoked")
+        ),
+        orgName,
+        s"<strong>${
+            Messages("awrs.application_status.lede.verb_in_main.under_review_or_appeal")
+        }</strong>"
+    ))
+    <br/>
+    @Messages("awrs.application_status.under_review_or_appeal_lede.main.line2")
+}
+
+@standardlLede = {
+    @* trap all other cases as received for now *@
+    @Html(Messages("awrs.application_status.lede.main",
+        orgName,
+        s"<strong>${
+            params.status.formBundleStatus match {
+                case Pending                     => Messages("awrs.application_status.lede.verb_in_main.pending")
+                case Approved                    => Messages("awrs.application_status.lede.verb_in_main.approved")
+                case ApprovedWithConditions      => Messages("awrs.application_status.lede.verb_in_main.approved_with_conditions")
+                case Rejected                    => Messages("awrs.application_status.lede.verb_in_main.rejected")
+                case Revoked                     => Messages("awrs.application_status.lede.verb_in_main.revoked")
+                case _                           => Messages("awrs.application_status.lede.verb_in_main.other")
+            }
+        }</strong>",
+        s"<strong>${
+            params.status.formBundleStatus match {
+                case Pending    => params.status.processingDate
+                case _          => params.status.processingDate
+            }
+        }</strong>"
+    ))
+    @awrsNumber
+}
+
+@noneAlertLede = @{
+    params.status.formBundleStatus match {
+        case RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal => underReviewOrAppealLede
+        case _ => standardlLede
+    }
+}
+
+@alertLede = {
+    @params match {
+        case param : ApplicationMindedToRejectedParameter => {
+            @Html(Messages("awrs.application_status.alert_lede.main",
+                s"<strong>${Messages("awrs.application_status.alert_lede.verb_in_main.mindful_to_reject")}</strong>",
+                params.organisationName
+            ))
+        }
+        case param : ApplicationNoLongerMindedToRejectedParameter => {
+            @Html(Messages("awrs.application_status.alert_lede.main",
+                s"<strong>${Messages("awrs.application_status.alert_lede.verb_in_main.no_longer_mindful_to_reject")}</strong>",
+                params.organisationName
+            ))
+        }
+        case param : ApplicationMindedToRevokeParameter => {
+            @Html(Messages("awrs.application_status.alert_lede.main",
+                s"<strong>${Messages("awrs.application_status.alert_lede.verb_in_main.mindful_to_revoke")}</strong>",
+                params.organisationName
+            ))
+        }
+        case param : ApplicationNoLongerMindedToRevokeParameter => {
+            @Html(Messages("awrs.application_status.alert_lede.main",
+                s"<strong>${Messages("awrs.application_status.alert_lede.verb_in_main.no_longer_mindful_to_revoke")}</strong>",
+                params.organisationName
+            ))
+        }
+        case _ =>{}
+    }
+    @awrsNumber
+}
+
+@lede = {
+    @params match {
+        case alert : AlertInfoParameters => {@alertLede}
+        case _ => {@noneAlertLede}
+    }
+}
+
+<div class="appstatus" role="alert">
+
+    <h1 class="heading-xlarge appstatus-title">@Messages("awrs.application_status.appstatus-title")</h1>
+
+    <p class="lede">@lede</p>
+
+    @if(params.status.formBundleStatus.name == "Pending") {
+    <ul class="appstatus-steps" aria-hidden="true">
+        <li>
+            <span id="indication-received"
+                  class="appstatus-complete tick" aria-label="Complete.">
+                @Messages("awrs.application_status.indication-received")
+            </span>
+        </li>
+        <li>
+            <span id="indication-processed"
+                  class="appstatus-complete @params.status.formBundleStatus match {
+                                                case Pending => {}
+                                                case _       => {tick}
+                                            }">
+                @Messages("awrs.application_status.indication-processing")
+            </span>
+        </li>
+        <li>
+            <span id="indication-approved"
+                  class="@params.status.formBundleStatus match {
+                             case Pending => {appstatus-processing}
+                             case _       => {appstatus-complete tick}
+                         }">
+                 @Messages("awrs.application_status.indication-decision")
+            </span>
+        </li>
+    </ul>
+    }
+</div>
+<br/>

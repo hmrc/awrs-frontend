@@ -1,0 +1,17 @@
+@(applicationStatus: ApplicationStatus)(implicit request: Request[AnyRef], messages: Messages )
+@import play.twirl.api.Html
+@import forms.AWRSEnums.ApplicationStatusEnum
+@removeStatus = @{
+    applicationStatus.status match {
+        case ApplicationStatusEnum.Withdrawn => Messages("awrs.generic.wait_info_withdraw")
+        case ApplicationStatusEnum.DeRegistered => Messages("awrs.generic.wait_info_de-registration")
+        case _ => Messages("awrs.generic.wait_info_de-registration")
+    }
+}
+@includes.awrs_main(title = Messages("awrs.generic.wait_info", removeStatus)) {
+    <div class="grid">
+        <div class="grid grid-2-3">
+            <h1 id="application-error-header" class="heading-large">@Html(Messages("awrs.generic.wait_info", removeStatus))</h1>
+        </div>
+    </div>
+}

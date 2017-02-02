@@ -1,0 +1,61 @@
+
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import utils.AwrsFieldConfig
+@import contents._
+@import views.view_application.helpers._
+@import utils.SessionUtil
+@import services.DataCacheKeys._
+
+@(confirmationForm: Form[models.DeleteConfirmation], section: String, headingParameter: String, formAction: Int => Call, id: Int, data : Any)(implicit request: Request[AnyContent], viewMode : ViewApplicationType= OneViewMode, messages : Messages)
+
+@modelRender = {
+    @(data) match {
+        case s : Supplier => {@content_supplier(s, id)}
+        case p : AdditionalBusinessPremises => {@content_additional_premises(p, id)}
+        case d : BusinessDirector => {@content_director(d, request.session.get("businessType").getOrElse(""), id)}
+        case g : GroupMember => {@content_group_member(g, id)}
+        case p : Partner => {@content_partner_detail(p, false, id)}
+    }
+}
+
+@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+@includes.awrs_main(title = Messages("awrs.delete.confirmation_heading", headingParameter), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@backLink(backUrl = controllers.routes.ViewApplicationController.viewSection(data match {
+        case s : Supplier => suppliersName
+        case p : AdditionalBusinessPremises => additionalBusinessPremisesName
+        case d : BusinessDirector => businessDirectorsName
+        case g : GroupMember => groupMembersName
+        case p : Partner => partnersName
+    }
+).url)
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLinkHelper(BackLinkParams(
+            sectionName = section
+        ))(EditMode)
+        @errorSummaryTemplate(confirmationForm)
+        @awrsProgressHelper(request.getBusinessType, section)(EditMode)
+        <h1 id="deleteConfirmation-heading" class="heading-xlarge">@Messages("awrs.delete.confirmation_heading", headingParameter)</h1>
+        @modelRender
+        @form(action = formAction(id)) {
+        <div class="form-group">
+            @awrsInputTypeRadioGroup(
+                InputTypeRadioGroupParams(
+                    confirmationForm("deleteConfirmation"),
+                    Seq("Yes" -> Messages("awrs.generic.yes"),
+                        "No" -> Messages("awrs.generic.no")),
+                    fieldSetClass = "inline",
+                    legend = Messages("awrs.delete.confirmation_heading", headingParameter),
+                    legendClass = "visuallyhidden",
+                    fieldSetAttributes = "id=deleteConfirmation_field"
+                )
+            )
+        </div>
+        @awrsSubmitButton(Messages("awrs.generic.confirmation.button"))(id = "save-and-continue", classAttr = "button")
+        }
+    </div>
+</div>
+}

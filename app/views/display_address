@@ -1,0 +1,9 @@
+<!--@(awrs_address: Address)(implicit request: Request[AnyRef], messages: Messages )-->
+<!--@import play.twirl.api.Html-->
+<!--@import uk.gov.hmrc.play.views.html.helpers._-->
+
+<!--@includes.awrs_main(title = "Your address"){-->
+<!--<h1> Your address is: </h1>-->
+
+<!--<p id="street">@awrs_address.street <br> @awrs_address.town <br> @awrs_address.post_code </p>-->
+<!--}-->

@@ -1,0 +1,15 @@
+@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
+
+@contentHeader = {
+<h1>@heading</h1>
+}
+
+@mainContent = {
+<p>@message</p>
+}
+
+@linkElement = {
+<link rel="stylesheet" href='@routes.Assets.at("stylesheets/custom.css")'/>
+}
+
+@govuk_wrapper(appConfig = config.ApplicationConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent,linkElement = Some(linkElement))

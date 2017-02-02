@@ -1,0 +1,131 @@
+{
+  "subscriptionTypeFrontEnd": {
+    "legalEntity": {
+      "legalEntity": "SOP"
+    },
+    "businessPartnerName" : "businessPartnerName",
+    "businessCustomerDetails": {
+      "businessName": "businessName",
+      "businessType": "Sole Trader",
+      "businessAddress": {
+        "line_1": "1 Example Street",
+        "line_2": "Example View",
+        "line_3": "Example Town",
+        "line_4": "Exampleshire",
+        "postcode": "$postcode",
+        "country": "GB"
+      },
+      "sapNumber": "1234567890",
+      "safeId": "XE0001234567890",
+      "isAGroup": false,
+      "agentReferenceNumber": "JARN1234567",
+      "firstName": "firstName",
+      "lastName": "lastName"
+    },
+    "businessDetails": {
+      "tradingName": "tradingName",
+      "newAWBusiness": {
+        "newAWBusiness": "No"
+      }
+    },
+    "businessRegistrationDetails" : {
+      "identification": {
+        "doYouHaveNino": "Yes",
+        "nino": "$nino",
+        "doYouHaveVRN": "No",
+        "doYouHaveUTR": "No"
+      }
+    },
+    "placeOfBusiness": {
+      "mainPlaceOfBusiness": "Yes",
+      "placeOfBusinessLast3Years": "Yes",
+      "operatingDuration": "5",
+      "modelVersion" : "1.0"
+    },
+    "businessContacts": {
+      "contactAddressSame": "Yes",
+      "contactFirstName": "contactFirstName",
+      "contactLastName": "contactLastName",
+      "email": "email@email.com",
+      "confirmEmail": "email@email.com",
+      "telephone": "012345678901",
+      "modelVersion" : "1.0"
+    },
+    "additionalPremises": {
+      "premises": [{
+        "additionalPremises": "Yes",
+        "additionalAddress": {
+          "postcode": "$postcode",
+          "addressLine1": "additional line 1",
+          "addressLine2": "additional line 2"
+        },
+        "addAnother": "Yes"
+      },
+        {
+          "additionalPremises": "Yes",
+          "additionalAddress": {
+            "postcode": "$postcode",
+            "addressLine1": "additional line 1",
+            "addressLine2": "additional line 2"
+          },
+          "addAnother": "No"
+        }]
+    },
+    "tradingActivity": {
+      "wholesalerType": ["06",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "99"],
+      "otherWholesaler": "otherWholesaler",
+      "typeOfAlcoholOrders": ["02",
+        "04"],
+      "doesBusinessImportAlcohol": "Yes",
+      "doYouExportAlcohol": "No"
+    },
+    "products": {
+      "mainCustomers": ["03",
+        "04",
+        "06",
+        "08"],
+      "productType": ["01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06"]
+    },
+    "suppliers": {
+      "suppliers": [{
+        "alcoholSuppliers": "Yes",
+        "supplierName": "supplierName",
+        "vatRegistered": "Yes",
+        "vatNumber": "$vrn",
+        "supplierAddress": {
+          "postcode": "$postcode",
+          "addressLine1": "addressLine1",
+          "addressLine2": "addressLine2"
+        },
+        "additionalSupplier": "Yes"
+      },
+        {
+          "alcoholSuppliers": "Yes",
+          "supplierName": "supplierName",
+          "vatRegistered": "No",
+          "supplierAddress": {
+            "postcode": "$postcode",
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2"
+          },
+          "additionalSupplier": "No"
+        }]
+    },
+    "applicationDeclaration": {
+      "declarationName": "declarationName",
+      "declarationRole": "declarationRole"
+    },
+    "modelVersion": "1.0"
+  }
+}

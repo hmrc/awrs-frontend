@@ -1,0 +1,22 @@
+@(rowTitle : String, rowContent : Option[String]*)
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <table>
+        <tbody>
+            @table_row(rowTitle, rowContent :_*)
+            @*
+                example usages for table_row
+                @table_row("no lines displayed case 1")
+                @table_row("no lines displayed case 2", None, None)
+                @table_row("1 line displayed", None, "line",None)
+                @table_row("2 lines displayed", None, "line 2",None,"line 4")
+                @table_row("1 line displayed", Some("firstName") + " " + Some("lastName"))
+            *@
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,142 @@
+{
+  "subscriptionTypeFrontEnd": {
+    "legalEntity": {
+      "legalEntity": "LTD"
+    },
+    "businessPartnerName": "businessPartnerName",
+    "businessCustomerDetails": {
+      "businessName": "businessName",
+      "businessType": "Corporate Body",
+      "businessAddress": {
+        "line_1": "1 Example Street",
+        "line_2": "Example View",
+        "line_3": "Example Town",
+        "line_4": "Exampleshire",
+        "postcode": "$postcode",
+        "country": "GB"
+      },
+      "sapNumber": "1234567890",
+      "safeId": "XE0001234567890",
+      "isAGroup": false,
+      "agentReferenceNumber": "JARN1234567"
+    },
+    "corporateBodyBusinessDetails": {
+      "tradingName": "Trading name",
+      "newAWBusiness": {
+        "newAWBusiness": "No"
+      },
+      "isBusinessIncorporated": "Yes",
+      "companyRegDetails": {
+        "companyRegistrationNumber": "$crn",
+        "dateOfIncorporation": "01/01/2015"
+      },
+      "identification": {
+        "doYouHaveVRN": "Yes",
+        "vrn": "$vrn",
+        "doYouHaveUTR": "Yes",
+        "utr": "$urn"
+      },
+      "mainPlaceOfBusiness": "Yes",
+      "contactAddressSame": "Yes",
+      "placeOfBusinessLast3Years": "Yes",
+      "operatingDuration": "30",
+      "contactFirstName": "first name",
+      "contactLastName": "last name",
+      "emailReview": "Email@email.com",
+      "telephone": "012345678901"
+    },
+    "additionalPremises": {
+      "premises": [
+        {
+          "additionalPremises": "Yes",
+          "additionalAddress": {
+            "postcode": "$postcode",
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2"
+          },
+          "addAnother": "No"
+        }
+      ]
+    },
+    "businessDirectors": {
+      "directors": [
+        {
+          "directorsAndCompanySecretaries": "Director",
+          "firstName": "firstName",
+          "lastName": "lastName",
+          "doTheyHaveNationalInsurance": "Yes",
+          "nino": "$nino",
+          "otherDirectors": "Yes"
+        },
+        {
+          "directorsAndCompanySecretaries": "Director and Company Secretary",
+          "firstName": "firstName",
+          "lastName": "lastName",
+          "doTheyHaveNationalInsurance": "Yes",
+          "nino": "$nino",
+          "otherDirectors": "No"
+        }
+      ],
+      "modelVersion" : "1.0"
+    },
+    "additionalDetails": {
+      "wholesalerType": [
+        "06",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "typeOfAlcoholOrders": [
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "mainCustomers": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08"
+      ],
+      "doesBusinessImportAlcohol": "Yes",
+      "productType": [
+        "02",
+        "03",
+        "05",
+        "06",
+        "99"
+      ],
+      "otherProductType": "otherProductType",
+      "doYouExportAlcohol": [
+        "euDispatches",
+        "outsideEU"
+      ]
+    },
+    "suppliers": {
+      "suppliers": [
+        {
+          "alcoholSuppliers": "Yes",
+          "supplierName": "supplierName",
+          "vatRegistered": "No",
+          "supplierAddress": {
+            "postcode": "$postcode",
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2"
+          },
+          "additionalSupplier": "No"
+        }
+      ]
+    },
+    "applicationDeclaration": {
+      "declarationName": "declarationName",
+      "declarationRole": "declarationRole"
+    },
+    "modelVersion": "1.0"
+  }
+}

@@ -1,0 +1,55 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import services.DataCacheKeys._
+
+@(someHeading: Option[String],
+  someModel: Option[models.PlaceOfBusiness]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@wrapperId = @{
+    SubviewIds.placeOfBusinessId
+}
+
+@href = @{
+    controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(false).url
+}
+
+@content(model: models.PlaceOfBusiness) = {
+    @table_row(
+        "",
+        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_place_of_business_text"))(x => x))
+    )(cssClass = "record-header")
+    @address_helper(
+        Messages("awrs.view_application.principal_place_business"),
+        model.mainAddress
+    )
+    @table_row(
+        Messages("awrs.business_contacts.place_of_business_changed_last_3_years"),
+        model.placeOfBusinessLast3Years
+    )
+    @address_helper(
+        Messages("awrs.view_application.previous_address"),
+        model.placeOfBusinessAddressLast3Years
+    )
+    @table_row(
+        Messages("awrs.business_contacts.business_operating_from_current_address"),
+        model.operatingDuration
+    )
+}
+
+@preContent = {
+    <table class="view-application" @tabIndexHelper()>
+}
+
+@postContent = {
+    </table>
+}
+
+@(someHeading, someModel) match {
+    case (Some(heading), Some(model)) => {
+        @subview_core(heading, wrapperId, href, placeOfBusinessName)(content(model), preContent = preContent, postContent = postContent)
+    }
+    case _ => {}
+}

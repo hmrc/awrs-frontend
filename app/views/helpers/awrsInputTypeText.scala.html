@@ -1,0 +1,131 @@
+@(params: views.helpers.InputTypeTextParams)(implicit message : Messages )
+
+@import views.html.helper._
+@import views.html.helpers._
+@import views.helpers._
+@import forms.validation.util._
+
+@fieldErrors = @{
+    params.parentForm match {
+        case Some(parentForm) => ErrorMessageInterpreter.getFieldErrors(params.field, parentForm)
+        case None => ErrorMessageInterpreter.getFieldErrors(params.field)
+    }
+}
+@number = @{params.postCodeLookupAddressNumber.fold("0")(x => x)}
+@value = @{
+    params.field.value match {
+        case Some(x) => x
+        case None => ""
+        case x => x
+    }
+}
+@wrapperClass = @{
+    params.wrapperClass match {
+        case Some(wrapperClass) => wrapperClass
+        case _ => ""
+    }
+}
+@formHint = {
+    @params.formHint match {
+        case Some(formHint) => {<span @if(params.formHintId.nonEmpty){id="@params.formHintId"} class="form-hint">@formHint</span>}
+        case _ => {}
+    }
+}
+@inputId = @{
+    params.inputId match {
+        case Some(inputId) => inputId
+        case _ => params.field.name.replaceAll("""[\.\[\]]""", "-")
+    }
+}
+@inputClass = @{
+    params.inputClass match {
+        case Some(inputClass) => inputClass
+        case _ => ""
+    }
+}
+@maxLength = @{
+    params.maxLength match {
+        case Some(maxLength) => s"maxlength=$maxLength"
+        case _ => ""
+    }
+}
+@dataAttributes = @{
+    params.dataAttributes match {
+        case Some(dataAttributes) => dataAttributes
+        case _ => ""
+    }
+}
+@required = @{
+    params.required match {
+        case true => {"aria-required=true"}
+        case false => {"aria-required=false"}
+    }
+}
+@labelClass = @{
+    Html((params.divClass.fold("")(x => x), params.labelClass.fold("")(x => x)) match {
+        case ("", "") => ""
+        case (divClass, "") => "class=\""+divClass+"\""
+        case ("", labelClass) => "class=\""+labelClass+"\""
+        case (divClass, labelClass) => "class=\""+labelClass+" "+divClass+"\""
+    })
+}
+@divClass = @{
+    params.divClass match {
+        case Some(divClass) => divClass
+        case _ => ""
+    }
+}
+@labelDataAttributes = @{
+    params.labelDataAttributes match {
+        case Some(labelDataAttributes) => labelDataAttributes
+        case _ => ""
+    }
+}
+@label = {
+    @params.label match {
+        case Some(label) => {
+            @Html(
+                params.labelHighlight match {
+                    case true => s"<strong>$label</strong>"
+                    case false => label
+                }
+            )
+        }
+        case _ => {}
+    }
+}
+@isPostCodeInput = {
+    @params.isPostCode match {
+        case true => {
+            <a id="postcode-lookup-button-@number" class="button postcode-lookup" role="button" tabindex="0">@Messages("awrs.generic.find_address")</a>
+            <div class="loading" id="spinner-@number">@Messages("awrs.generic.search_address")</div>
+            <label id="result-@{number}_field" for="result-@number" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.address.lookup_dropdown_label")</label>
+            <select class="postcode-lookup-results" id="result-@number"></select>
+        }
+        case false => {}
+    }
+}
+@additionalHiddenLabelText = {
+    @params.additionalHiddenLabelText match {
+        case Some(text) => {<span class="visuallyhidden">@text</span>}
+        case None => {}
+    }
+}
+<div class="form-field @if(fieldErrors.nonEmpty) {form-field--error} @wrapperClass @divClass">
+    <label for="@inputId" id="@{inputId}_field" @labelClass @labelDataAttributes>@label@additionalHiddenLabelText</label>
+    @formHint
+    @commonHelper(params.field, fieldErrors)
+    <input type="text"
+           class="form-control @inputClass"
+           name="@params.field.name"
+           id="@inputId"
+           value="@value"
+           @maxLength
+           @dataAttributes
+           @required
+           @if(fieldErrors.nonEmpty){
+               aria-labelledby="@{params.field.name}-error-0"
+           }
+    >
+    @isPostCodeInput
+</div>

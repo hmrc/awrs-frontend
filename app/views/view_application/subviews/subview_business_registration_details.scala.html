@@ -1,0 +1,51 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import services.DataCacheKeys._
+
+@(someHeading: Option[String],
+  someModel: Option[models.BusinessRegistrationDetails],
+  legalEntity : Option[String]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@wrapperId = @{
+    SubviewIds.businessRegistrationDetailsId
+}
+
+@href = @{
+    controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(false).url
+}
+
+@hideQuestionsInModel(model: models.BusinessRegistrationDetails) = @{
+    // this function is used to hide some of the do you have questions by making their values into None
+    // the do you have VAT question should be the only do you have question displayed by this page
+    // this change is made as part of the AWRS-1547
+    model.copy(doYouHaveNino = None, isBusinessIncorporated = None, doYouHaveUTR = None)
+}
+
+@content(model: models.BusinessRegistrationDetails) = {
+    @table_row(
+        "",
+        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_registration_details_text"))(x => x))
+    )(cssClass = "record-header")
+    @identification_helper(
+        model,
+        legalEntity
+    )
+}
+
+@preContent = {
+    <table class="view-application" @tabIndexHelper()>
+}
+
+@postContent = {
+    </table>
+}
+
+@(someHeading, someModel) match {
+    case (Some(heading), Some(model)) => {
+        @subview_core(heading, wrapperId, href, businessRegistrationDetailsName)(content(hideQuestionsInModel(model)), preContent = preContent, postContent = postContent)
+    }
+    case _ => {}
+}

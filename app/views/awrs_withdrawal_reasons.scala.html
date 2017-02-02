@@ -1,0 +1,50 @@
+@import views.helpers.InputTypeRadioGroupParams
+@import views.helpers.InputTypeTextParams
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers.WithdrawalHelper._
+@import utils.AwrsFieldConfig
+@(withdrawalReasonForm: Form[models.WithdrawalReason])(implicit request: Request[AnyRef], messages: Messages )
+
+    @pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+    @includes.awrs_main(Messages("awrs.withdrawal.reason.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+        @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
+        <div class="grid">
+            <div class="grid grid-2-3">
+                @errorSummaryTemplate(withdrawalReasonForm)
+                <h1 id="withdrawal-reasons-heading" class="heading-xlarge">@Messages("awrs.withdrawal.reasons_page.heading")</h1>
+                @form(action = controllers.routes.WithdrawalController.submitWithdrawalReasons) {
+                    <div id="withdrawal-reason" class="form-group">
+                        @awrsInputTypeRadioGroup(
+                            InputTypeRadioGroupParams(
+                                withdrawalReasonForm("reason"),
+                                Seq(enumPair("applied_in_error", "withdrawal"),
+                                    enumPair("no_longer_trading", "withdrawal"),
+                                    enumPair("duplicate_application", "withdrawal"),
+                                    enumPair("joined_awrs_group", "withdrawal"),
+                                    enumPair("other", "withdrawal")),
+                                legend = Messages("awrs.withdrawal.reasons_page.heading"),
+                                legendClass = "visuallyhidden",
+                                fieldSetAttributes = "id=withdrawalReason_field"
+                            )
+                        )
+                        <div id="other-withdrawalReason">
+                            @awrsInputTypeText(
+                                InputTypeTextParams(
+                                    withdrawalReasonForm("reasonOther"),
+                                    inputId = "withdrawalReason-other",
+                                    label = Messages("awrs.withdrawal.reason.other_message"),
+                                    labelHighlight = true,
+                                    maxLength = AwrsFieldConfig.frontendDefaultLen.toString,
+                                    wrapperClass = "panel-indent",
+                                    required = true
+                                )
+                            )
+                        </div>
+                    </div>
+                    @awrsSubmitButton(Messages("awrs.generic.continue"))(id = "withdraw-application", classAttr = "button")
+                }
+            </div>
+        </div>
+    }

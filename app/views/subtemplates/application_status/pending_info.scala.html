@@ -1,0 +1,27 @@
+@(isNewBusiness : Boolean, printFriendly: Boolean = false)(implicit messages:Messages)
+@import scala.util.Try
+@import views.html.helpers._
+@import views.helpers._
+<div class="form-group">
+    <h2 class="heading-medium">@Messages("awrs.application_status.info.pending.heading")</h2>
+    @isNewBusiness match {
+        case false => {
+            <ul class="list list-bullet">
+                @for(i <- 1 to (Try(Messages("awrs.application_status.info.pending.count").toInt).toOption.getOrElse(0))) {
+                    <li>@Messages(f"awrs.application_status.info.pending.line$i")</li>
+                }
+            </ul>
+        }
+        case true => {
+            <ul class="list list-bullet">
+                @for(i <- 1 to (Try(Messages("awrs.application_status.info.pending.newBusiness.count").toInt).toOption.getOrElse(0))) {
+                <li>@Messages(f"awrs.application_status.info.pending.newBusiness.line$i")</li>
+                }
+            </ul>
+        }
+    }
+    @printFriendly match {
+        case false => {@awrsStatusPageSignInPara(messages)}
+        case true => {}
+    }
+</div>

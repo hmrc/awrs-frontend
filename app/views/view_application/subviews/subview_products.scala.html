@@ -1,0 +1,50 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import forms.AwrsFormFields
+@import views.view_application.subviews.SubviewIds
+@import services.DataCacheKeys._
+
+@(someHeading: Option[String], someModel: Option[models.Products])(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@wrapperId = @{SubviewIds.productsId}
+
+@href = @{controllers.routes.ProductsController.showProducts(false).url}
+
+@content(model: models.Products) = {
+    @table_row(
+        "",
+        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.products_text"))(x => x))
+    )(cssClass = "record-header")
+    @group_checkbox_helper(
+        Messages("awrs.additional_information.main_customers"),
+        AwrsFormFields.mainCustomerOptions.toMap,
+        model.mainCustomers,
+        model.otherMainCustomers
+    )
+
+    @group_checkbox_helper(
+        Messages("awrs.additional_information.products"),
+        AwrsFormFields.products.toMap,
+        model.productType,
+        model.otherProductType
+    )
+}
+
+@preContent = {
+    <table class="view-application" @tabIndexHelper()>
+}
+
+@postContent = {
+    </table>
+}
+
+@(someHeading, someModel) match {
+    case (Some(heading), Some(model)) => {
+        @subview_core(heading, wrapperId, href, productsName)(content(model), preContent = preContent, postContent = postContent)
+    }
+    case _ => {}
+}
+
+
+

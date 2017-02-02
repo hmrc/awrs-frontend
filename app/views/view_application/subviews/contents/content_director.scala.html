@@ -1,0 +1,60 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import forms.AWRSEnums._
+
+@(director: models.BusinessDirector, businessLegalEntity: String, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
+
+@editUrl(id: Int) = @{controllers.routes.BusinessDirectorsController.showBusinessDirectors(id, isLinearMode = false, isNewRecord = false).url}
+
+@deleteUrl(id: Int) = @{controllers.routes.BusinessDirectorsController.showDelete(id).url}
+
+@directorName(director: models.BusinessDirector) = @{
+    val businessName = director.companyNames.businessName
+    val tradingName = director.companyNames.tradingName
+
+    (director.firstName, director.lastName, businessName, tradingName) match {
+        case (Some(fn), Some(ln), _, _) => {
+            fn + " " + ln
+        }
+        case (_, _, Some(cn), _) => {
+            cn
+        }
+        case (_, _, _, Some(tn)) => {
+            tn
+        }
+        case _ => {
+            ""
+        } // this should never happen
+    }
+}
+@content = {
+    <table class="view-application" @tabIndexHelper()>
+    @* Top row with edit delete links *@
+    @table_row(
+        directorName(director),
+        edit_link(editUrl, id, directorName(director)),
+        delete_link(deleteUrl, id, directorName(director))
+    )(cssClass = "record-header")
+    @* table body with the content *@
+    @table_row(
+        Messages("awrs.generic.trading_name"),
+        director.companyNames.tradingName
+    )
+    @table_row(
+        Messages("awrs.business_directors.role_question.additional"),
+        DirectorAndSecretaryEnum.getText(director.directorsAndCompanySecretaries.get)
+    )
+    @table_row(
+        Messages("awrs.business_directors.personOrCompany_question"),
+        PersonOrCompanyEnum.getText(director.personOrCompany.get)
+    )
+    @identification_helper_director(
+        director,
+        businessLegalEntity
+    )
+    </table>
+}
+
+@content

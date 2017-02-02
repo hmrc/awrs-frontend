@@ -1,0 +1,13 @@
+@import controllers.util._
+
+@(id: Int, dummyList: Option[List[DummyData]])
+
+<h1>Test Page</h1>
+<div id="idDiv">@id</div>
+
+@{
+    dummyList match {
+      case Some(data) => <div id="dummyListHead">data exists</div>
+      case _ => {}
+    }
+}

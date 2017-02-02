@@ -1,0 +1,106 @@
+@(field: Field, params: views.helpers.AddressHelperParams)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+
+@import play.api.i18n._
+@import views.html.helper._
+@import views.html.helpers._
+@import views.helpers._
+@import utils.AwrsFieldConfig
+
+@isUkAddress = @{params.isUk}
+@number = @{params.number.fold("0")(x => x)}
+@addressContainerDataAttribute = {
+    @params.wrapperClass match {
+        case Some(wrapperClass) => {data-attribute=@wrapperClass}
+        case _ => {}
+    }
+}
+@wrapperClass = @{
+    params.wrapperClass match {
+        case Some(wrapperClass) => wrapperClass
+        case _ => ""
+    }
+}
+<div id="address-@number" class="address-container" @addressContainerDataAttribute>
+    <div class="address-lines">
+       @awrsInputTypeText(
+           InputTypeTextParams(
+               field("addressLine1"),
+                inputId = field("addressLine1").name,
+                label = Messages("awrs.generic.address"),
+                maxLength = AwrsFieldConfig.addressLine1Len.toString,
+                wrapperClass = wrapperClass,
+                labelHighlight = true,
+                required = true,
+                additionalHiddenLabelText = Messages("awrs.generic.address_line1")
+            )
+        )
+        @awrsInputTypeText(
+            InputTypeTextParams(
+                field("addressLine2"),
+                inputId = field("addressLine2").name,
+                label = Messages("awrs.generic.address_line2"),
+                labelClass = "visuallyhidden",
+                maxLength = AwrsFieldConfig.addressLine2Len.toString,
+                wrapperClass = wrapperClass,
+                required = true
+            )
+        )
+        @awrsInputTypeText(
+            InputTypeTextParams(
+                field("addressLine3"),
+                inputId = field("addressLine3").name,
+                label = Messages("awrs.generic.address_line3"),
+                labelClass = "visuallyhidden",
+                maxLength = AwrsFieldConfig.addressLine3Len.toString,
+                wrapperClass = wrapperClass,
+                required = false
+            )
+        )
+        @awrsInputTypeText(
+            InputTypeTextParams(
+                field("addressLine4"),
+                inputId = field("addressLine4").name,
+                label = Messages("awrs.generic.address_line4"),
+                labelClass = "visuallyhidden",
+                maxLength = AwrsFieldConfig.addressLine4Len.toString,
+                wrapperClass = wrapperClass,
+                required = false
+            )
+        )
+    </div>
+    <div class="uk-address">
+        @awrsInputTypeText(
+            InputTypeTextParams(
+                field("postcode"),
+                inputId = field("postcode").name,
+                inputClass = "input--normal",
+                label = Messages("awrs.generic.postcode"),
+                maxLength = AwrsFieldConfig.addressPostcodeLen.toString,
+                wrapperClass = wrapperClass,
+                required = true,
+                labelHighlight = true,
+                isPostCode = true,
+                postCodeLookupAddressNumber = number
+            )
+        )
+    </div>
+    <div id="manual-address-@number" class="font-small form-group @wrapperClass">
+        <span id="manual-address-span-@number" class="link-style" tabindex="0" role="link">@Messages("awrs.generic.enter_address_manually")</span>
+    </div>
+    @if(!isUkAddress) {
+        <div class="non-uk-address">
+            @awrsInputTypeText(
+                InputTypeTextParams(
+                    field("addressCountry"),
+                    inputId = field("addressCountry").name,
+                    inputClass = "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left form-control",
+                    label = Messages("awrs.supplier-addresses.supplier_address_country"),
+                    maxLength = "35",
+                    wrapperClass = wrapperClass,
+                    labelHighlight = true,
+                    required = true
+                )
+            )
+        </div>
+    }
+</div>

@@ -1,0 +1,58 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import contents._
+@import services.DataCacheKeys._
+
+@(someHeading: Option[String],
+  someModel: Option[models.BusinessDirectors],
+  businessLegalEntity: String
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@wrapperId = @{
+    SubviewIds.businessDirectorsId
+}
+
+@editUrl(id: Int) = @{
+    controllers.routes.BusinessDirectorsController.showBusinessDirectors(id, isLinearMode = false, isNewRecord = false).url
+}
+
+@getHeading(heading: String, model: models.BusinessDirectors) = @{
+    model.directors.isEmpty match {
+        case true => heading
+        case _ => f"$heading (${model.directors.size})"
+    }
+}
+
+@addLinkHref(model: models.BusinessDirectors) = @{
+    controllers.routes.BusinessDirectorsController.showBusinessDirectors(model.directors.length + 1, isLinearMode = false, isNewRecord = true).url
+}
+
+@ledeAndTopAdd(model: models.BusinessDirectors) = {
+    @if(model.directors.size > 1) {
+        <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), Messages("awrs.view_application.director"))</div>
+    }
+}
+
+@bottomAdd(model: models.BusinessDirectors)  = {
+    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), Messages("awrs.view_application.director"))
+}
+
+@content(model: models.BusinessDirectors) = {
+    @if(model.directors.size == 0) {
+        <p id="business_directors-subtext" class="lede">@Messages("awrs.business_directors.edit")</p>
+    }
+    @model.directors.zipWithIndex.map { case (director, id) =>
+        @content_director(director, businessLegalEntity, id + 1)
+    }
+}
+
+@(someHeading, someModel) match {
+    case (Some(heading), Some(model)) => {
+        @subview_core(getHeading(heading, model), wrapperId, sectionName = businessDirectorsName)(content(model), preContent = ledeAndTopAdd(model), postContent = bottomAdd(model))
+    }
+    case _ => {}
+}
+

@@ -1,0 +1,71 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import forms.AwrsFormFields
+@import views.view_application.subviews.SubviewIds
+@import services.DataCacheKeys._
+
+
+@(someHeading: Option[String],
+        someModel: Option[models.TradingActivity]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+    @wrapperId = @{
+        SubviewIds.tradingActivityId
+    }
+
+    @href = @{
+        controllers.routes.TradingActivityController.showTradingActivity(false).url
+    }
+
+    @content(model: models.TradingActivity) = {
+    @table_row(
+        "",
+        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.trading_activity_text"))(x => x))
+    )(cssClass = "record-header")
+    @group_checkbox_helper(
+        Messages("awrs.additional_information.wholesaler_type"),
+        AwrsFormFields.wholesaler.toMap,
+        model.wholesalerType,
+        model.otherWholesaler
+    )
+    @group_checkbox_helper(
+        Messages("awrs.additional_information.orders.orders_question"),
+        AwrsFormFields.orders.toMap,
+        model.typeOfAlcoholOrders,
+        model.otherTypeOfAlcoholOrders
+    )
+    @table_row(
+        Messages("awrs.additional_information.alcohol_import"),
+        model.doesBusinessImportAlcohol
+    )
+    @table_row(
+        Messages("awrs.additional_information.alcohol_export"),
+        model.doYouExportAlcohol
+    )
+    @group_checkbox_helper(
+        Messages("awrs.additional_information.export_location"),
+        AwrsFormFields.exportAlcohol.toMap,
+        // TODO fix this
+        model.exportLocation.getOrElse(List())
+    )
+    @table_row(
+        Messages("awrs.additional_information.third_party_storage"),
+        model.thirdPartyStorage
+    )
+    }
+
+    @preContent = {
+        <table class="view-application" @tabIndexHelper()>
+    }
+
+    @postContent = {
+        </table>
+    }
+
+    @(someHeading, someModel) match {
+        case (Some(heading), Some(model)) => {
+            @subview_core(heading, wrapperId, href, tradingActivityName)(content(model), preContent = preContent, postContent = postContent)
+        }
+        case _ => {}
+    }

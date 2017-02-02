@@ -1,0 +1,26 @@
+@(params: views.helpers.QuestionAnswerParameters)(implicit messages: Messages)
+@import views.html.helpers._
+
+<div id="questionAnswer-@params.questionId">
+    <details role="group">
+        @* Do not add spaces to the value of the summary tag *@
+        <summary role="button" aria-controls="details-content-@params.questionId" tabindex="0" class="summary" id="@params.questionId">@params.question</summary>
+        <div id="details-content-@params.questionId"
+            @params.wrapperClass match {
+                case Some(className) => {
+                    class="@className"
+                }
+                case _ => {}
+            }>
+
+            @params.answer match {
+                case Some(answer) => {
+                    @awrsAnswerHint(params.questionId, answer)
+                }
+                case _ => {
+                    @awrsAnswerStatusDecision(messages)
+                }
+            }
+        </div>
+    </details>
+</div>

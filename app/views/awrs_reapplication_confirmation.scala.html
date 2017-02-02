@@ -1,0 +1,34 @@
+@import views.helpers.InputTypeRadioGroupParams
+@(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages )
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+
+@includes.awrs_main(Messages("awrs.reapplication.confirm_page.heading"), userLoggedIn = true) {
+@* TODO - refactor for PROD
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLink()
+        @errorSummaryTemplate(reapplicationForm)
+        <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@Messages("awrs.reapplication.confirm_page.heading")</h1>
+
+        @form(action = controllers.routes.ReapplicationController.submit) {
+            <div id="withdrawal-confirmation" class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        reapplicationForm("answer"),
+                        Seq("Yes" -> Messages("awrs.generic.yes"),
+                            "No" -> Messages("awrs.generic.no")),
+                        fieldSetClass = "inline",
+                        legend = Messages("awrs.reapplication.confirm_page.heading"),
+                        legendClass = "visuallyhidden"
+                    )
+                )
+            </div>
+            @awrsSubmitButton(Messages("awrs.generic.confirmation.button"))(id = "withdraw-application", classAttr = "button")
+        }
+    </div>
+</div>
+*@
+}
+

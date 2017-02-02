@@ -1,0 +1,79 @@
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.ViewApplicationHelper._
+@import views.html.view_application.helpers._
+@import views.view_application.subviews.SubviewIds
+@import services.DataCacheKeys._
+
+@(someHeading: Option[String],
+  someModel: Option[models.BusinessContacts],
+  someBCDetails:  Option[models.BusinessCustomerDetails]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@wrapperId = @{
+    SubviewIds.businessContactsId
+}
+
+@href = @{
+    controllers.routes.BusinessContactsController.showBusinessContacts(false).url
+}
+
+@contactAddressToDisplay = @{
+    (someModel,someBCDetails) match {
+        case (Some(model), Some(bcDetails)) =>
+            model.contactAddressSame match {
+                case Some("No") => model.contactAddress
+                case Some("Yes") =>
+                    val bcAddress = bcDetails.businessAddress
+                    Some(Address(
+                        addressLine1 = bcAddress.line_1,
+                        addressLine2 = bcAddress.line_2,
+                        addressLine3 = bcAddress.line_3,
+                        addressLine4 = bcAddress.line_4,
+                        postcode = bcAddress.postcode,
+                        addressCountry = None,
+                        addressCountryCode = bcAddress.country
+                    ))
+            }
+        //n.b. there shouldn't be a case where the model exists but bcDetail doesn't
+        case _ =>   None
+    }
+}
+
+@content(model: models.BusinessContacts) = {
+    @table_row(
+        "",
+        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_contacts_text"))(x => x))
+    )(cssClass = "record-header")
+    @table_row(
+        Messages("awrs.view_application.contact_name"),
+        model.contactFirstName + " " +
+        model.contactLastName
+    )
+    @table_row(
+        Messages("awrs.generic.telephone"),
+        model.telephone
+    )
+    @table_row(
+        Messages("awrs.generic.email"),
+        model.email
+    )
+    @address_helper(
+        Messages("awrs.view_application.contact_address"),
+        contactAddressToDisplay
+    )
+}
+
+@preContent = {
+    <table class="view-application" @tabIndexHelper()>
+}
+
+@postContent = {
+    </table>
+}
+
+@(someHeading, someModel) match {
+    case (Some(heading), Some(model)) => {
+        @subview_core(heading, wrapperId, href, businessContactsName)(content(model), preContent = preContent, postContent = postContent)
+    }
+    case _ => {}
+}

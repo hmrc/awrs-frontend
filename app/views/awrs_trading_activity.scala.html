@@ -1,0 +1,148 @@
+@import views.html.helpers._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import forms.AwrsFormFields._
+@import views.helpers._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import play.api.i18n.Messages.Implicits._
+@import play.api.Play.current
+
+@(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode)
+
+@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
+
+@actionRoute = @{
+    isEditMode match {
+        case true => controllers.routes.TradingActivityController.saveAndReturn
+        case false => controllers.routes.TradingActivityController.saveAndContinue
+    }
+}
+
+@ctaMessage = @{
+    isEditMode match {
+        case true => Messages("awrs.generic.save_return")
+        case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@includes.awrs_main(title = Messages("awrs.additional_information.trading_activity.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+<div class="grid">
+    <div class="grid grid-2-3">
+        @backLinkHelper(BackLinkParams(
+            sectionName = tradingActivityName
+        ))
+        @errorSummaryTemplate(tradingActivityForm)
+        @awrsProgressHelper(request.getBusinessType, tradingActivityName)
+        <h1 id="trading-activity-heading" class="heading-xlarge">@Html(Messages("awrs.additional_information.trading_activity.heading", headingPrefix(enter = "awrs.generic.tell_us_about")))</h1>
+        @form(action = actionRoute){
+            <div class="form-group">
+                @awrsInputTypeGroupCheckbox(
+                    InputTypeGroupCheckboxParams(
+                        tradingActivityForm("wholesalerType"),
+                        wholesaler,
+                        legend = Messages("awrs.additional_information.wholesaler_type"),
+                        fieldSetAttributes = "id=wholesalerType_field",
+                        formHint = Messages("awrs.additional_information.form_hint")
+                    )
+                )
+                <div id="other-wholesalerType">
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            tradingActivityForm("otherWholesaler"),
+                            label = Messages("awrs.additional_information.other.wholesaler_type"),
+                            labelHighlight = true,
+                            inputId = "otherWholesaler",
+                            maxLength = frontendDefaultLen.toString,
+                            wrapperClass = "panel-indent",
+                            required = true
+                        )
+                    )
+                </div>
+            </div>
+            <div class="form-group">
+                @awrsInputTypeGroupCheckbox(
+                    InputTypeGroupCheckboxParams(
+                        tradingActivityForm("typeOfAlcoholOrders"),
+                        orders,
+                        legend = Messages("awrs.additional_information.orders.orders_question"),
+                        fieldSetAttributes = "id=typeOfAlcoholOrders_field",
+                        formHint = Messages("awrs.additional_information.form_hint")
+                    )
+                )
+                <div id="other-typeOfAlcoholOrders">
+                    @awrsInputTypeText(
+                        InputTypeTextParams(
+                            tradingActivityForm("otherTypeOfAlcoholOrders"),
+                            label = Messages("awrs.additional_information.orders.other.orders_question"),
+                            labelHighlight = true,
+                            inputId = "otherTypeOfAlcoholOrders",
+                            maxLength = frontendDefaultLen.toString,
+                            wrapperClass = "panel-indent",
+                            required = true
+                        )
+                    )
+                </div>
+            </div>
+
+            <div class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        tradingActivityForm("doesBusinessImportAlcohol"),
+                        Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                            Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                        legend = Messages("awrs.additional_information.alcohol_import"),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=doesBusinessImportAlcohol_field"
+                    )
+                )
+            </div>
+            <div class="form-group">
+            @awrsInputTypeRadioGroup(
+                InputTypeRadioGroupParams(
+                    tradingActivityForm("doYouExportAlcohol"),
+                    Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                        Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                    legend = Messages("awrs.additional_information.alcohol_export"),
+                    fieldSetClass = "inline",
+                    fieldSetAttributes = "id=doYouExportAlcohol_field"
+                )
+            )
+            </div>
+            <div class="form-group">
+                <div id="exportLocation-content">
+                    @awrsInputTypeGroupCheckbox(
+                        InputTypeGroupCheckboxParams(
+                            tradingActivityForm("exportLocation"),
+                            exportAlcohol,
+                            legend = Messages("awrs.additional_information.export_location"),
+                            fieldSetAttributes = "id=exportLocation_field"
+                        )
+                    )
+                </div>
+            </div>
+            <div class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        tradingActivityForm("thirdPartyStorage"),
+                        Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
+                            Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
+                        legend = Messages("awrs.additional_information.third_party_storage"),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=thirdPartyStorage_field",
+                        formHint = Messages("awrs.additional_information.third_party_storage_help_text"),
+                        formHintId = "thirdPartyStorage-legend"
+                    )
+                )
+            </div>
+            @submitButtonAndNavLinks(SubmitAndNavLinkParams(
+                sectionName = tradingActivityName,
+                submitText = ctaMessage,
+                submitId = "save-and-continue"
+            ))
+        }
+    </div>
+</div>
+}

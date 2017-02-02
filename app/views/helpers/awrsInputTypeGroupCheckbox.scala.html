@@ -1,0 +1,87 @@
+@(params: views.helpers.InputTypeGroupCheckboxParams)(implicit lang: play.api.i18n.Lang, formInstance: Option[Form[_]] = None)
+
+@import views.html.helper._
+@import views.helpers._
+@import forms.validation.util._
+
+@fieldErrors = @{
+    ErrorMessageInterpreter.getFieldErrors(params.field)
+}
+@fieldSetClass = @{
+    Html((params.fieldSetClass, fieldErrors.nonEmpty) match {
+        case (None, false) => ""
+        case (Some(""), false) => ""
+        case (Some(fieldSetClass), false) => "class=\"" + fieldSetClass + "\""
+        case (Some(fieldSetClass), true) => "class=\"" + fieldSetClass + " form-field--error" + "\""
+        case (None, true) => "class=form-field--error"
+    })
+}
+@fieldSetAttributes = @{
+    params.fieldSetAttributes match {
+        case Some(fieldSetAttributes) => fieldSetAttributes
+        case _ =>
+    }
+}
+@legendClass = @{
+    Html(params.legendClass match {
+        case Some(legendClass) => "class=\"" + legendClass + "\""
+        case _ => ""
+    })
+}
+@legendAttributes = @{
+    params.legendAttributes match {
+        case Some(legendAttributes) => legendAttributes
+        case _ => ""
+    }
+}
+@legend = {
+    @params.legend match {
+        case Some(legend) => {
+            <legend id="@(params.field.id)-legend" @legendClass @legendAttributes>@legend</legend>
+        }
+        case _ => {}
+    }
+}
+@formHintId = @{
+    Html(params.formHintId match {
+        case Some(formHintId) => "id=\"" + formHintId + "\""
+        case _ => ""
+    })
+}
+@formHint = {
+    @params.formHint match {
+        case Some(formHint) => {
+            <span @formHintId class="form-hint">@formHint</span>
+        }
+        case _ => {}
+    }
+}
+@inputName = @{
+    Html("name=\"" + params.field.name +
+        (params.checkboxOptions.length match {
+            case 1 => "\""
+            case _ => "[]\""
+        })
+    )
+}
+@inputId(append: String) = @{
+    params.overrideInputId match {
+        case Some(overrideInputId) => overrideInputId
+        case _ => params.field.id + "_" + append
+    }
+}
+<fieldset @fieldSetClass @fieldSetAttributes role="group" aria-required="true" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.field.name-error-0"}>
+    <div>
+        @legend
+        @commonHelper(params.field, fieldErrors)
+        @formHint
+        @defining(params.field.indexes.flatMap( i => params.field("[%s]".format(i)).value ).toSet) { values =>
+            @params.checkboxOptions.map { checkboxOptions =>
+                <label for="@(inputId(checkboxOptions._1))" class="block-label" id="@(inputId(checkboxOptions._1))_label">
+                    <input type="checkbox" id="@(inputId(checkboxOptions._1))" @inputName value="@checkboxOptions._1" @if(values.contains(checkboxOptions._1)){checked="checked"}>
+                    @checkboxOptions._2
+                </label>
+            }
+        }
+    </div>
+</fieldset>
