@@ -33,7 +33,9 @@ import scala.concurrent.Future
 trait GovernmentGatewayConnector extends ServicesConfig with LoggingUtils {
 
   lazy val serviceURL = baseUrl("government-gateway")
+
   val ggFailurePattern = "(^.*government-gateway-admin.*$)".r
+
   val duplicateFailurePattern = "(^.*already has an active AWRS.*$)".r
 
   val retryLimit = 7
