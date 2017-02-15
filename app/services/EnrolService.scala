@@ -36,7 +36,7 @@ trait EnrolService {
     val safeId = businessPartnerDetails.safeId
 
     val knownFacts = (utr, businessType) match {
-      case (Some(saUtr), "SOP") => Seq(awrsRef, "", saUtr, safeId)
+      case (Some(saUtr), "SOP") => Seq(awrsRef, "", saUtr, "")
       case (Some(ctUtr), _) => Seq(awrsRef, ctUtr, "", safeId)
       case (_, _) => Seq(awrsRef, "", "", safeId)
     }
