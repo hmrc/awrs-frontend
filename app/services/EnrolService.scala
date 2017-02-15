@@ -33,7 +33,7 @@ trait EnrolService {
   private def createEnrolment(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit ec: ExecutionContext) = {
 
     val awrsRef = success.awrsRegistrationNumber
-    val safeId = businessPartnerDetails.safeIdgit
+    val safeId = businessPartnerDetails.safeId
 
     val knownFacts = (utr, businessType) match {
       case (Some(saUtr), "SOP") => Seq(awrsRef, "", saUtr, "")
