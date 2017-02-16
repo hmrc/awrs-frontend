@@ -4,7 +4,7 @@
 		module="awrs-frontend-build"
 		revision="0.1-SNAPSHOT"
 		status="integration"
-		publication="20170202173621"
+		publication="20170216135129"
 		e:sbtVersion="0.13" e:scalaVersion="2.10"
 	>
 		<description>
@@ -41,7 +41,6 @@
 		<dependency org="uk.gov.hmrc" name="sbt-auto-build" rev="1.4.0" conf="compile->default(compile)" e:sbtVersion="0.13" e:scalaVersion="2.10"/>
 		<dependency org="uk.gov.hmrc" name="sbt-git-versioning" rev="0.9.0" conf="compile->default(compile)" e:sbtVersion="0.13" e:scalaVersion="2.10"/>
 		<dependency org="uk.gov.hmrc" name="sbt-distributables" rev="1.0.0" conf="compile->default(compile)" e:sbtVersion="0.13" e:scalaVersion="2.10"/>
-		<dependency org="uk.gov.hmrc" name="hmrc-resolvers" rev="0.4.0" conf="compile->default(compile)" e:sbtVersion="0.13" e:scalaVersion="2.10"/>
 		<dependency org="org.scoverage" name="sbt-scoverage" rev="1.5.0" conf="compile->default(compile)" e:sbtVersion="0.13" e:scalaVersion="2.10"/>
 		<dependency org="org.scalastyle" name="scalastyle-sbt-plugin" rev="0.8.0" conf="compile->default(compile)" e:sbtVersion="0.13" e:scalaVersion="2.10"/>
 		<override org="org.scala-lang" module="scala-library" matcher="exact" rev="2.10.4"/>

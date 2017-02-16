@@ -30,15 +30,15 @@ trait EnrolService {
   def enrolAWRS(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext) =
     ggConnector.enrol(createEnrolment(success, businessPartnerDetails, businessType, utr), businessPartnerDetails, businessType)
 
-  private def createEnrolment(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit ec: ExecutionContext) = {
+  def createEnrolment(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit ec: ExecutionContext) = {
 
     val awrsRef = success.awrsRegistrationNumber
-    val safeId = businessPartnerDetails.safeId
+    val postcode: String = businessPartnerDetails.businessAddress.postcode.fold("")(x=>x).replaceAll("\\s+", "")
 
     val knownFacts = (utr, businessType) match {
-      case (Some(saUtr), "SOP") => Seq(awrsRef, "", saUtr, "")
-      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr, "", "")
-      case (_, _) => Seq(awrsRef, "", "", safeId)
+      case (Some(saUtr), "SOP") => Seq(awrsRef, saUtr, postcode)
+      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr, postcode)
+      case (_, _) => Seq(awrsRef, postcode)
     }
 
     EnrolRequest(portalId = mdtp,
