@@ -4,10 +4,13 @@
 
 <div class="alert-complete" role="alert">
     <h1 id="confirmation">
-        <img height="24" width="24" aria-label="Application completed." src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="">
-        <span class="heading-large">@Messages(text_1) @request.session.get("businessName").getOrElse("")<br/></span>
-        <span class="confirmation-description">@Messages(text_2)
+        <div class="heading-large">
+            <img height="24" width="24" class="inline" aria-hidden="true" src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="">
+            <div class="visuallyhidden">Application completed.</div>
+            @Messages(text_1) @request.session.get("businessName").getOrElse("")<br/>
+        </div>
+        <div class="confirmation-description">@Messages(text_2)
         @if(submissionOrResubmissionDate.isDefined){<br/>@submissionOrResubmissionDate}
-        </span>
+        </div>
     </h1>
 </div>
