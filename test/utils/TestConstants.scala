@@ -27,6 +27,7 @@ object TestConstants {
   // We only want one test nino and utr throughout, therefore assign a value in the object declaration
   lazy val testNino = new Generator().nextNino.nino
   lazy val testUtr = new SaUtrGenerator().nextSaUtr.utr
+
   lazy val testVrn = genRandNumString(9)
   lazy val testCrn = 1 + genRandNumString(7)
   lazy val testNonMatchingUtr = new SaUtrGenerator().nextSaUtr.utr

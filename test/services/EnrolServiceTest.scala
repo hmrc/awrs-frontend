@@ -27,15 +27,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
+
 class EnrolServiceTest extends AwrsUnitTestTraits {
   val mockGovernmentGatewayConnector: GovernmentGatewayConnector = mock[GovernmentGatewayConnector]
 
-  val enrolRequest =  EnrolRequest(portalId = "Default", serviceName = "AWRS", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456", "", "", "safeId"))
+  val saUtr: String = testUtr
+  val ctUtr: String = testCTUtr
+  val enrolRequestSAUTR =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456",saUtr,"postcode"))
+  val enrolRequestCTUTR =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456",ctUtr,"postcode"))
+  val enrolRequestNoSACT =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456","postcode"))
   val successfulEnrolResponse = Some(EnrolResponse(serviceName = "AWRS", state = "Not-activated", identifiers = List(Identifier("AWRS","Awrs-ref-no"))))
   val sourceId: String = "AWRS"
-  val testBusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")),"sap123", "safe123", false, Some("agent123"))
+  val testBusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("post code"), Option("country")),"sap123", "safe123", false, Some("agent123"))
   val businessType = "LTD"
-  val successfulSubscriptionResponse = SuccessfulSubscriptionResponse("","","")
+  val businessTypeSOP = "SOP"
+
+  val successfulSubscriptionResponse = SuccessfulSubscriptionResponse("","XAAW000000123456","")
 
   object EnrolServiceTest extends EnrolService {
     override val ggConnector = mockGovernmentGatewayConnector
@@ -44,8 +51,7 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   override def beforeEach(): Unit = {
     reset(mockGovernmentGatewayConnector)
   }
-
-  "Awrs Service" should {
+  "Enrol Service" should {
     "use the correct DataCacheconnector" in {
       EnrolService.ggConnector shouldBe GovernmentGatewayConnector
     }
@@ -55,5 +61,20 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
       val result = EnrolServiceTest.enrolAWRS(successfulSubscriptionResponse, testBusinessCustomerDetails, businessType, Some(testUtr))
       await(result) shouldBe successfulEnrolResponse
     }
+
+    "create correct EnrolRequest when business type is SOP and UTR present " in {
+      val result = EnrolServiceTest.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, businessTypeSOP, saUtr)
+      result shouldBe enrolRequestSAUTR
+    }
+
+    "create correct EnrolRequest when business type is other than SOP and UTR present " in {
+      val result = EnrolServiceTest.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, "LTD", ctUtr)
+      result shouldBe enrolRequestCTUTR
+    }
+    "create correct EnrolRequest when business type and UTR NOT present " in {
+      val result = EnrolServiceTest.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails,"" , None)
+      result shouldBe enrolRequestNoSACT
+    }
+
   }
 }
