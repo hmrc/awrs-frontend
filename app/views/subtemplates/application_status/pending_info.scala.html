@@ -3,7 +3,9 @@
 @import views.html.helpers._
 @import views.helpers._
 <div class="form-group">
-    <h2 class="heading-medium">@Messages("awrs.application_status.info.pending.heading")</h2>
+    <div>
+        <h2 class="heading-medium">@Messages("awrs.application_status.info.pending.heading")</h2>
+    </div>
     @isNewBusiness match {
         case false => {
             <ul class="list list-bullet">
