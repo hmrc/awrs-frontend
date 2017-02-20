@@ -33,9 +33,9 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
 
   val saUtr: String = testUtr
   val ctUtr: String = testCTUtr
-  val enrolRequestSAUTR =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456",saUtr,"postcode"))
-  val enrolRequestCTUTR =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456",ctUtr,"postcode"))
-  val enrolRequestNoSACT =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456","postcode"))
+  val enrolRequestSAUTR =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456","",saUtr,"postcode"))
+  val enrolRequestCTUTR =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456",ctUtr,"","postcode"))
+  val enrolRequestNoSACT =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456","","","postcode"))
   val successfulEnrolResponse = Some(EnrolResponse(serviceName = "AWRS", state = "Not-activated", identifiers = List(Identifier("AWRS","Awrs-ref-no"))))
   val sourceId: String = "AWRS"
   val testBusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("post code"), Option("country")),"sap123", "safe123", false, Some("agent123"))

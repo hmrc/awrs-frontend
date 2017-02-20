@@ -38,7 +38,7 @@ trait EnrolService {
     val knownFacts = (utr, businessType) match {
       case (Some(saUtr), "SOP") => Seq(awrsRef,"", saUtr, postcode)
       case (Some(ctUtr), _) => Seq(awrsRef, ctUtr,"", postcode)
-      case (_, _) => Seq(awrsRef, postcode)
+      case (_, _) => Seq(awrsRef,"","", postcode)
     }
 
     EnrolRequest(portalId = mdtp,
