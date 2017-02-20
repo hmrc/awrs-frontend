@@ -36,8 +36,8 @@ trait EnrolService {
     val postcode: String = businessPartnerDetails.businessAddress.postcode.fold("")(x=>x).replaceAll("\\s+", "")
 
     val knownFacts = (utr, businessType) match {
-      case (Some(saUtr), "SOP") => Seq(awrsRef, saUtr, postcode)
-      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr, postcode)
+      case (Some(saUtr), "SOP") => Seq(awrsRef,"", saUtr, postcode)
+      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr,"", postcode)
       case (_, _) => Seq(awrsRef, postcode)
     }
 
