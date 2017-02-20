@@ -65,10 +65,10 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     val postURL = s"""$serviceURL$accountURI/awrs/send-data"""
     http.POST[JsValue, HttpResponse](postURL, fileData) map {
       response =>
-        warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - API4 Response in Frontend ## " + response.body)
         response.status match {
-
-          case 200 => response.json.as[SuccessfulSubscriptionResponse]
+          case 200 =>
+            warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - API4 Response in Frontend ## " + response.status)
+            response.json.as[SuccessfulSubscriptionResponse]
           case 404 =>
             audit(auditAPI4TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeNotFound)
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - The remote endpoint has indicated that no data can be found ## ")
@@ -121,9 +121,10 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     val putURL = s"""$serviceURL$accountURI/awrs/update/$getAwrsRefNo"""
     http.PUT[JsValue, HttpResponse](putURL, fileData) map {
       response =>
-        warn(s"[$auditAPI6TxName - $businessName, $legalEntityType ] - API6 Response in frontend  ## " + response.body)
         response.status match {
-          case 200 => response.json.as[SuccessfulUpdateSubscriptionResponse]
+          case 200 =>
+            warn(s"[$auditAPI6TxName - $businessName, $legalEntityType ] - API6 Response in frontend  ## " + response.status)
+            response.json.as[SuccessfulUpdateSubscriptionResponse]
           case 404 =>
             audit(auditAPI6TxName, Map("awrsRefNo" -> awrsRefNo.toString(), "businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeNotFound)
             warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - The remote endpoint has indicated that no data can be found ## ")
