@@ -35,16 +35,13 @@ trait EnrolService {
     val awrsRef = success.awrsRegistrationNumber
     val postcode: String = businessPartnerDetails.businessAddress.postcode.fold("")(x=>x).replaceAll("\\s+", "")
 
-    val knownFacts = (utr, businessType) match {
-      case (Some(saUtr), "SOP") => Seq(awrsRef,"", saUtr, postcode)
-      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr,"", postcode)
-      case (_, _) => Seq(awrsRef,"","", postcode)
-    }
+    val safeId = businessPartnerDetails.safeId
+
 
     EnrolRequest(portalId = mdtp,
       serviceName = service,
       friendlyName = friendly,
-      knownFacts = knownFacts)
+      knownFacts = Seq(awrsRef, "", "", safeId))
   }
 
 }
