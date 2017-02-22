@@ -17,6 +17,7 @@
 package controllers
 
 import config.FrontendAuthConnector
+import connectors.EmailVerificationConnector
 import controllers.auth.AwrsController
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable, convertBCAddressToAddress}
 import forms.BusinessContactsForm._
@@ -26,6 +27,7 @@ import services.DataCacheKeys._
 import services.Save4LaterService
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
+import utils.AwrsConfig._
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -33,6 +35,8 @@ import play.api.Play.current
 import scala.concurrent.Future
 
 trait BusinessContactsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
+
+  val emailVerificationConnector: EmailVerificationConnector
 
   override val section = businessContactsName
 
@@ -75,7 +79,11 @@ trait BusinessContactsController extends AwrsController with JourneyPage with Ac
       ,
       addressesAndContactDetailsData =>
         save4LaterService.mainStore.saveBusinessContacts(addressesAndContactDetailsData) flatMap {
-          _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
+          _ =>
+            if (emailVerificationEnabled) {
+              emailVerificationConnector.sendVerificationEmail(addressesAndContactDetailsData.email.get)
+            }
+            redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
         }
     )
   }
@@ -85,4 +93,5 @@ trait BusinessContactsController extends AwrsController with JourneyPage with Ac
 object BusinessContactsController extends BusinessContactsController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  override val emailVerificationConnector = EmailVerificationConnector
 }
