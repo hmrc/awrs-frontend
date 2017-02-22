@@ -48,7 +48,11 @@ trait HomeController extends AwrsController with AccountUtils {
 
   def api4Journey(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] =
     save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
-      case Some(_) => gotoBusinessTypePage(callerId)
+      case Some(data) =>
+        data.safeId.isEmpty match {
+          case true => Future.successful(Redirect(ExternalUrls.businessCustomerStartPage))
+          case _ => gotoBusinessTypePage(callerId)
+        }
       case _ =>
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails] flatMap {
           case Some(data) =>
