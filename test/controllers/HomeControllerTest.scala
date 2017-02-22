@@ -72,6 +72,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
       }
     }
 
+    "redirect to the Business customer matching if the save4Later review details are present WITHOUT SAFEID and the user does not have an AWRS enrolment" in {
+      showWithSave4LaterWithoutSafeId() { result =>
+        status(result) shouldBe 303
+        redirectLocation(result).get should include("http://localhost:9923/business-customer/awrs")
+      }
+    }
+
+
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment and they came from BTA" in {
       showWithSave4Later(callerId = Some("BTA")) { result =>
         status(result) shouldBe 303
@@ -149,6 +157,12 @@ class HomeControllerTest extends AwrsUnitTestTraits
     val result = TestHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
+  private def showWithSave4LaterWithoutSafeId(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetailsWithoutSafeID("SOP"), fetchApplicationStatus = applicationStatus)
+    val result = TestHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
 
   private def showWithKeystore(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = None)
