@@ -52,6 +52,7 @@ object TestUtil {
   val legalEntityList = List("SOP", "Partnership", "LTD", "LLP", "LP", "LLP_GRP", "LTD_GRP")
   val testBCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country"))
   val testBusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
+  val testBusinessCustomerDetailsWithoutSafeID = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123","", false, Some("agent123"), testUtr)
 
   val testSoleTraderBusinessRegistrationDetails = testBusinessRegistrationDetails(doYouHaveNino = Yes, nino = testNino, doYouHaveVRN = No, doYouHaveUTR = No)
   val testIsNewBusiness = newAWBusiness("Yes", Some(TupleDate("10", "10", "2016")))
