@@ -25,7 +25,7 @@ import play.api.http.Status._
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException, _}
+import uk.gov.hmrc.play.http.{HeaderCarrier, _}
 import utils.LoggingUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,57 +39,59 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
   val verifyEmail = "/verified-email-addresses"
   val continueUrl = ExternalUrls.loginCallback
   val defaultEmailExpiryPeriod = Period.days(1).toString
-  val defaultTemplate = "apiDeveloperEmailVerification"  // TODO create our own!!!!
+  // TODO create our own template!!!!
+  val defaultTemplate = "apiDeveloperEmailVerification"
   val httpGet: HttpGet
   val httpPost: HttpPost
   val metrics: AwrsMetrics
-// TODO change retrun type for both these methods
-  def sendVerificationEmail(emailAddress: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[StatusNotification]] = {
+
+  def sendVerificationEmail(emailAddress: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
     val verificationRequest = EmailVerificationRequest(email = emailAddress,
       templateId = defaultTemplate,
       templateParameters = None,
       linkExpiryDuration = defaultEmailExpiryPeriod,
       continueUrl = continueUrl)
     val postURL = s"""$serviceURL$baseURI$sendEmail"""
-    mapResult(auditEmailVerification, emailAddress, httpPost.POST(postURL, verificationRequest)).map {
-      case Some(response: HttpResponse) => Some(response.json.as[StatusNotification])
-      case None => None
+    httpPost.POST(postURL, verificationRequest).map {
+      response =>
+        response.status match {
+          case OK | CREATED =>
+            warn(f"[$auditEmailVerification] - Successful return of data")
+            audit(transactionName = auditEmailVerification, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+            true
+          case CONFLICT =>
+            warn(f"[$auditEmailVerification] - Successful return of data - email already verified")
+            audit(transactionName = auditEmailVerification, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+            true
+          case status@_ =>
+            warn(f"[$auditEmailVerification - $emailAddress ] - Unsuccessful return of data. Status code: $status")
+            false
+        }
     }
   }
 
-  def verifyEmailAddress(emailAddress: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = {
+  def isEmailAddressVerified(emailAddress: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
     val getURL = s"""$serviceURL$baseURI$verifyEmail/$emailAddress"""
-    mapResult(auditVerifyEmail, emailAddress, httpGet.GET(getURL)).map {
-      case Some(response: HttpResponse) => Some(response.json.as[ViewedStatusResponse])
-      case None => None
-    }
-  }
-
-  private def mapResult(auditTxName: String, emailAddress: String, result: Future[HttpResponse])(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[HttpResponse]] =
-    result map {
+    httpGet.GET(getURL).map {
       response =>
         response.status match {
           case OK =>
-            warn(f"[$auditTxName] - Successful return of data")
-            audit(transactionName = auditTxName, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
-            Some(response)
+            warn(f"[$auditEmailVerification] - Successful return of data")
+            audit(transactionName = auditEmailVerification, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+            true
           case NOT_FOUND =>
-            warn(f"[$auditTxName - $emailAddress ] - No data returned from email verification service")
-            None
-          case SERVICE_UNAVAILABLE =>
-            warn(f"[$auditTxName - $emailAddress ] - Dependant systems are currently not responding")
-            throw new ServiceUnavailableException("Dependant systems are currently not responding")
-          case BAD_REQUEST =>
-            warn(f"[$auditTxName - $emailAddress ] - The request has not passed validation")
-            throw new BadRequestException("The request has not passed validation")
-          case INTERNAL_SERVER_ERROR =>
-            warn(f"[$auditTxName - $emailAddress ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+            warn(f"[$auditEmailVerification] - Successful return of data - email already verified")
+            audit(transactionName = auditEmailVerification, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+            false
           case status@_ =>
-            warn(f"[$auditTxName - $emailAddress ] - Unsuccessful return of data. Status code: $status")
-            throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
+            warn(f"[$auditEmailVerification - $emailAddress ] - Unsuccessful return of data. Status code: $status")
+            // if the verification service is unavailable for any reason, the decision has been made not to block the user journey
+            // when they return their email address will be validated before any further submissions
+            true
         }
     }
+  }
+
 }
 
 object EmailVerificationConnector extends EmailVerificationConnector {
