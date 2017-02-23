@@ -453,6 +453,7 @@ awrs.business_contacts.place_of_business_help_text=The principal place of busine
 awrs.business_contacts.contact_address_same=Is this the address you want us to use?
 awrs.business_contacts.place_of_business_changed_last_3_years=Has this been your only principal place of business in the last 3 years?
 awrs.business_contacts.business_operating_from_current_address=How many years has your business operated at your principal place of business?
+awrs.business_contacts.email_info=We will use this address to verify your email
 # Error messages
 awrs.business_contacts.error.place_of_business_empty.summary=The principal place of business question has not been answered
 awrs.business_contacts.error.place_of_business_empty=Select an option for the principal place of business question
@@ -678,8 +679,8 @@ awrs.supplier-addresses.error.supplier_address_country_invalid=Select a country 
 
 # Email verification page
 #============================================================
-awrs.email_verification_error.heading=Verify your email
-awrs.email_verification_error.title=Verify your email
+awrs.email_verification_error.heading=Verify your email address
+awrs.email_verification_error.title=Verify your email address
 awrs.email_verification_error.lede=In order to contact you by email we need to check that you have entered the correct email address.
 awrs.email_verification_error.info_1=We have sent an email to {0} Click the link in the email to verify your email address.
 awrs.email_verification_error.info_2=Depending on your email settings you might have to look in your spam or junk folder to find it.

@@ -39,8 +39,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
   val verifyEmail = "/verified-email-addresses"
   val continueUrl = ExternalUrls.loginCallback
   val defaultEmailExpiryPeriod = Period.days(1).toString
-  // TODO create our own template!!!!
-  val defaultTemplate = "apiDeveloperEmailVerification"
+  val defaultTemplate = "awrs_email_verification"
   val httpGet: HttpGet
   val httpPost: HttpPost
   val metrics: AwrsMetrics

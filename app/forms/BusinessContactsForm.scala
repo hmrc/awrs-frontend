@@ -19,11 +19,8 @@ package forms
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.prevalidation._
 import forms.submapping.AddressMapping._
-import forms.validation.util.ConstraintUtil.FormData
-import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
-import forms.validation.util.TargetFieldIds
 import models.BusinessContacts
 import play.api.data.Form
 import play.api.data.Forms._
@@ -38,13 +35,6 @@ object BusinessContactsForm {
   val confirmEmail = "confirmEmail"
   val telephone = "telephone"
 
-  private val bothEmailsMatch = {
-    val ifEmailsDoNotMatch = (data: FormData) => !data.getOrElse(email, "").equals(data.getOrElse(confirmEmail, ""))
-    CrossFieldConstraint(
-      ifEmailsDoNotMatch,
-      simpleCrossFieldErrorMessage(TargetFieldIds(confirmEmail), "awrs.generic.error.emails_do_not_match"))
-  }
-
   private val contactAddress_compulsory = yesNoQuestion_compulsory("contactAddressSame", "awrs.business_contacts.error.contact_address_same_empty")
   private val whenContactAddressNo = whenAnswerToFieldIs("contactAddressSame", BooleanRadioEnum.No.toString)(_)
 
@@ -53,7 +43,7 @@ object BusinessContactsForm {
     contactLastName -> lastName_compulsory(contactLastName),
     telephone -> telephone_compulsory(),
     email -> email_compulsory(fieldId = email),
-    confirmEmail -> (confirmEmail_compulsory(fieldId = confirmEmail) + bothEmailsMatch),
+    confirmEmail -> optional(text(maxLength = 140)),
     contactAddressSame -> contactAddress_compulsory,
     contactAddress -> (ukAddress_compulsory(prefix = contactAddress, prefixRefNameInErrorMessage = "contact").toOptionalAddressMapping iff whenContactAddressNo),
     "modelVersion" -> ignored[String](BusinessContacts.latestModelVersion)
