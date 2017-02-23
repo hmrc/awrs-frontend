@@ -39,7 +39,6 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
 
   val enrolService: EnrolService
   val applicationService: ApplicationService
-  val emailVerificationConnector: EmailVerificationConnector
 
   def isEnrolledApplicant(implicit request: Request[AnyContent], messages: Messages): Boolean = {
     getSessionStatus exists (result => if (result == Pending || result == Approved || result == ApprovedWithConditions) true else false)
@@ -48,14 +47,6 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
   def showApplicationDeclaration = asyncRestrictedAccess {
     implicit user =>
       implicit request =>
-        if (emailVerificationEnabled) {
-          save4LaterService.mainStore.fetchBusinessContacts map {
-            case Some(data) =>
-              emailVerificationConnector.isEmailAddressVerified(data.email.get) map {
-                case false => Ok("Error Page")
-              }
-          }
-        }
         save4LaterService.mainStore.fetchApplicationDeclaration map {
           case Some(data) => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form.fill(data), isEnrolledApplicant))
           case _ => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form, isEnrolledApplicant))
@@ -124,6 +115,5 @@ object ApplicationDeclarationController extends ApplicationDeclarationController
   override val enrolService = EnrolService
   override val applicationService = ApplicationService
   override val keyStoreService = KeyStoreService
-  override val emailVerificationConnector = EmailVerificationConnector
 
 }

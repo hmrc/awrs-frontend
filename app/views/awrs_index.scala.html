@@ -146,12 +146,12 @@
             @awrsRef match {
                 case Some(_) => {
                     @if(hasApplicationChanged && allSectionComplete) {
-                        <a href="@routes.ApplicationDeclarationController.showApplicationDeclaration" class="button" role="button" id="submit_changes">@Messages("awrs.index_page.submit_changes")</a>
+                        <a href="@routes.EmailVerificationController.checkEmailVerification" class="button" role="button" id="submit_changes">@Messages("awrs.index_page.submit_changes")</a>
                     }
                 }
                 case _ => {
                     @if(allSectionComplete) {
-                        <a href="@routes.ApplicationDeclarationController.showApplicationDeclaration" class="button" role="button" id="continue">@Messages("awrs.confirmation.button")</a>
+                        <a href="@routes.EmailVerificationController.checkEmailVerification" class="button" role="button" id="continue">@Messages("awrs.confirmation.button")</a>
                     } else {
                         <a href="@routes.ApplicationController.logout" class="button" role="button" id="save_and_logout">@Messages("awrs.generic.alternate_logout.button")</a>
                     }

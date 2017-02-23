@@ -676,6 +676,18 @@ awrs.supplier-addresses.error.supplier_address_country_blank=Enter a country for
 awrs.supplier-addresses.error.supplier_address_country_invalid.summary=We cannot find the country you entered
 awrs.supplier-addresses.error.supplier_address_country_invalid=Select a country from the list before continuing
 
+# Email verification page
+#============================================================
+awrs.email_verification_error.heading=Verify your email
+awrs.email_verification_error.title=Verify your email
+awrs.email_verification_error.lede=In order to contact you by email we need to check that you have entered the correct email address.
+awrs.email_verification_error.info_1=We have sent an email to {0} Click the link in the email to verify your email address.
+awrs.email_verification_error.info_2=Depending on your email settings you might have to look in your spam or junk folder to find it.
+awrs.email_verification_error.info_3=You can {0} or we can {1}
+awrs.email_verification_error.contacts_link=change your contact email address
+awrs.email_verification_error.resend_link=resend the email.
+awrs.email_verification_error.resent=We have resent the email to {0}
+
 # Application declaration Page
 #============================================================
 awrs.application_declaration.heading=Application declaration
