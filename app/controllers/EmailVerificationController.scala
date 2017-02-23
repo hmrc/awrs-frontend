@@ -21,7 +21,7 @@ import controllers.auth.AwrsController
 import play.api.mvc.{Action, AnyContent}
 import services._
 import utils.AwrsConfig.emailVerificationEnabled
-import views.html.awrs_email_verification_error
+import views.html.{awrs_email_verification_error, awrs_email_verification_success}
 
 import scala.concurrent.Future
 
@@ -58,6 +58,12 @@ trait EmailVerificationController extends AwrsController {
           case true => Ok(awrs_email_verification_error(email, resent = true))
           case _ => showErrorPageRaw
         }
+  }
+
+  def showSuccess(email: String): Action[AnyContent] = async {
+    implicit user =>
+      implicit request =>
+        Future.successful(Ok(awrs_email_verification_success(email)))
   }
 
 }

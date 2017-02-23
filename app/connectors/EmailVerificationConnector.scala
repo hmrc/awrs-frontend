@@ -17,7 +17,6 @@
 package connectors
 
 import config.{AwrsFrontendAuditConnector, WSHttp}
-import controllers.auth.ExternalUrls
 import metrics.AwrsMetrics
 import models._
 import org.joda.time.Period
@@ -37,7 +36,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
   val baseURI = "/email-verification"
   val sendEmail = "/verification-requests"
   val verifyEmail = "/verified-email-addresses"
-  val continueUrl = ExternalUrls.loginCallback
+  val continueUrl = (email: String) => controllers.EmailVerificationController.showSuccess(email).toString()
   val defaultEmailExpiryPeriod = Period.days(1).toString
   val defaultTemplate = "awrs_email_verification"
   val httpGet: HttpGet
@@ -49,7 +48,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
       templateId = defaultTemplate,
       templateParameters = None,
       linkExpiryDuration = defaultEmailExpiryPeriod,
-      continueUrl = continueUrl)
+      continueUrl = continueUrl(emailAddress))
     val postURL = s"""$serviceURL$baseURI$sendEmail"""
     httpPost.POST(postURL, verificationRequest).map {
       response =>
