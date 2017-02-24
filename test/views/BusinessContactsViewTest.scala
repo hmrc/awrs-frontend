@@ -28,7 +28,7 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{JourneyConstants, ServicesUnitTestFixture}
+import services.{EmailVerificationService, JourneyConstants, ServicesUnitTestFixture}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -46,6 +46,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
   object TestBusinessContactsController extends BusinessContactsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    override val emailVerificationService = mock[EmailVerificationService]
   }
 
   def reviewDetailMatch(reviewDetail: Element) = {
