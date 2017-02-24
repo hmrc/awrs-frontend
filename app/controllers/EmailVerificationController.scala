@@ -29,11 +29,12 @@ trait EmailVerificationController extends AwrsController {
 
   val save4LaterService: Save4LaterService
   val emailVerificationService: EmailVerificationService
+  val isEmailVerificationEnabled: Boolean
 
   def checkEmailVerification: Action[AnyContent] = async {
     implicit user =>
       implicit request =>
-        emailVerificationEnabled match {
+        isEmailVerificationEnabled match {
           case true =>
             for {
               businessContacts <- save4LaterService.mainStore.fetchBusinessContacts
@@ -72,5 +73,5 @@ object EmailVerificationController extends EmailVerificationController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
   override val emailVerificationService = EmailVerificationService
-
+  override val isEmailVerificationEnabled = emailVerificationEnabled
 }

@@ -92,7 +92,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
     }
 
     "return success equals true, when email has already been verified" in {
-      mockPostResponse(responseStatus = CONFICT)
+      mockPostResponse(responseStatus = CONFLICT)
       val result = testPostCall
       await(result) shouldBe true
     }
