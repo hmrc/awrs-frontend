@@ -69,7 +69,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   implicit val request = FakeRequest()
 
   lazy val sendEmailURI = TestEmailVerificationConnector.sendEmail
-  lazy val verifiyEmailURI = TestEmailVerificationConnector.verifyEmail
+  lazy val verifiyEmailURI = (email: String) => TestEmailVerificationConnector.verifyEmail + "/" + email
 
   "sendVerificationEmail" should {
 
@@ -92,7 +92,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
     }
 
     "return success equals true, when email has already been verified" in {
-      mockPostResponse(responseStatus = CREATED)
+      mockPostResponse(responseStatus = CONFICT)
       val result = testPostCall
       await(result) shouldBe true
     }
@@ -108,7 +108,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   "isEmailAddressVerified" should {
 
     def mockGetResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
-      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(verifiyEmailURI))(Matchers.any(), Matchers.any()))
+      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(verifiyEmailURI(testEmail)))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
     def testGetCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.isEmailAddressVerified(testEmail)
