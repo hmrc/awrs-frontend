@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.{HeaderCarrier, _}
 import utils.LoggingUtils
+import utils.AwrsConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,7 +37,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
   val baseURI = "/email-verification"
   val sendEmail = "/verification-requests"
   val verifyEmail = "/verified-email-addresses"
-  val continueUrl = (email: String) => controllers.EmailVerificationController.showSuccess(email).toString()
+  val continueUrl = (email: String) => emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess(email).url
   val defaultEmailExpiryPeriod = Period.days(1).toString
   val defaultTemplate = "awrs_email_verification"
   val httpGet: HttpGet

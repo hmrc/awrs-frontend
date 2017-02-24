@@ -20,5 +20,6 @@ import play.api.Play._
 
 trait AwrsConfig {
   lazy val emailVerificationEnabled = configuration.getBoolean("email-verification.enabled").getOrElse(false)
+  lazy val emailVerificationBaseUrl = configuration.getString("email-verification.continue.baseUrl").getOrElse("")
 }
 object AwrsConfig extends AwrsConfig
