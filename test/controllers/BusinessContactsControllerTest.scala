@@ -16,20 +16,14 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.{AuthBuilder, SessionBuilder}
-import controllers.auth.Utr._
+import builders.SessionBuilder
 import forms.BusinessContactsForm
 import models.BusinessContacts
-import org.jsoup.Jsoup
-import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{Save4LaterService, ServicesUnitTestFixture}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import services.{EmailVerificationService, Save4LaterService, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
@@ -46,6 +40,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
   object TestBusinessContactsController extends BusinessContactsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    override val emailVerificationService = mock[EmailVerificationService]
   }
 
   "BusinessContactsController" must {

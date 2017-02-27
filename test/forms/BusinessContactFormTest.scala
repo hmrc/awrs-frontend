@@ -45,43 +45,6 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
         emptyErrorMsg = "awrs.generic.error.email_empty",
         invalidFormatErrorMsg = "awrs.generic.error.email_invalid")
 
-    "check validations for confirmEmail" in {
-      val fieldId = "confirmEmail"
-
-      // this asserts the field to be compulsory. it uses a predetermined email answer since confirmEmail must match email
-      def feildIsCompulsoryAndValid() = {
-        val emailAnswer = Map[String, String]("email" -> TestConstants.testEmail)
-
-        val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.confirm_email_empty"))
-        val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.confirm_email_invalid")))
-        val formatError = ExpectedFieldFormat(invalidFormats, validFormats = List(ExpectedValidFieldFormat(TestConstants.testEmail)))
-
-        val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
-
-        fieldId assertFieldIsCompulsoryWhen(emailAnswer, expectations)
-      }
-
-      // this test checks the correctness of the match function on the two emails
-      def emailsMustMatch() = {
-        val noneMatchingValues = Map[String, String]("email" -> TestConstants.testEmail, "confirmEmail" -> (TestConstants.testEmail + "n"))
-        val matchingValues = Map[String, String]("email" -> TestConstants.testEmail, "confirmEmail" -> TestConstants.testEmail)
-
-        val formWithErrors = forms.bind(noneMatchingValues)
-        assertHasFieldError(formWithErrors, fieldId)
-        val expectedFieldError = FieldError("awrs.generic.error.emails_do_not_match")
-        val expectedSummary = SummaryError(expectedFieldError, fieldId)
-        formWithErrors.hasErrors shouldBe true
-        assertSummaryError(formWithErrors, fieldId, expectedSummary)
-        assertFieldError(formWithErrors, fieldId, expectedFieldError)
-
-        val formWithoutErrors = forms.bind(matchingValues)
-        assertHasNoFieldError(formWithoutErrors, fieldId)
-      }
-
-      feildIsCompulsoryAndValid()
-      emailsMustMatch()
-    }
-
     "check validations for telephone" in
       NamedUnitTests.feildIsCompulsoryAndValid(fieldId = "telephone",
         emptyErrorMsg = "awrs.generic.error.telephone_empty",

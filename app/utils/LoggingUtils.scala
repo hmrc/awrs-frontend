@@ -39,6 +39,8 @@ trait LoggingUtils extends Auditable {
   final val auditConfirmationEmailTxName: String = "API-Confirmation"
   final val auditSubscribeTxName: String = "AWRS ETMP Subscribe"
   final val auditGGTxName: String = "AWRS GG Enrol"
+  final val auditEmailVerification: String = "AWRS Send Email Verification"
+  final val auditVerifyEmail: String = "AWRS Verify Email Address"
 
   final val eventTypeSuccess: String = "AwrsSuccess"
   final val eventTypeFailure: String = "AwrsFailure"

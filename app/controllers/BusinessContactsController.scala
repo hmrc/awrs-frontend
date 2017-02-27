@@ -18,21 +18,23 @@ package controllers
 
 import config.FrontendAuthConnector
 import controllers.auth.AwrsController
-import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable, convertBCAddressToAddress}
+import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessContactsForm._
-import models.BusinessContacts
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContent, Request, Result}
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{EmailVerificationService, Save4LaterService}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
+import utils.AwrsConfig._
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 import scala.concurrent.Future
 
 trait BusinessContactsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
+
+  val emailVerificationService: EmailVerificationService
 
   override val section = businessContactsName
 
@@ -75,7 +77,11 @@ trait BusinessContactsController extends AwrsController with JourneyPage with Ac
       ,
       addressesAndContactDetailsData =>
         save4LaterService.mainStore.saveBusinessContacts(addressesAndContactDetailsData) flatMap {
-          _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
+          _ =>
+            if (emailVerificationEnabled) {
+              emailVerificationService.sendVerificationEmail(addressesAndContactDetailsData.email.get)
+            }
+            redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
         }
     )
   }
@@ -85,4 +91,5 @@ trait BusinessContactsController extends AwrsController with JourneyPage with Ac
 object BusinessContactsController extends BusinessContactsController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  override val emailVerificationService = EmailVerificationService
 }

@@ -6,6 +6,7 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 @import utils.AwrsFieldConfig
+@import utils.AwrsConfig._
 
 
 @(isAPI5: Boolean, businessType: Option[String], business: models.BCAddress, businessContactsForm: Form[models.BusinessContacts])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
@@ -30,6 +31,13 @@
     isEditMode match {
         case true => Messages("awrs.generic.save_return")
         case false => Messages("awrs.generic.save_continue")
+    }
+}
+
+@emailMessage = @{
+    emailVerificationEnabled match {
+        case true => Some(Messages("awrs.business_contacts.email_info"))
+        case false => None
     }
 }
 
@@ -91,16 +99,8 @@
                             inputId = "email",
                             label = Messages("awrs.generic.email"),
                             labelHighlight = true,
-                            required = true
-                        )
-                    )
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            businessContactsForm("confirmEmail"),
-                            inputId = "confirmEmail",
-                            label = Messages("awrs.generic.confirmEmail"),
-                            labelHighlight = true,
-                            required = true
+                            required = true,
+                            formHint = emailMessage
                         )
                     )
                 </div>
