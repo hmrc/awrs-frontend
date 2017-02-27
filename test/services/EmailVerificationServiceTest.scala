@@ -21,6 +21,7 @@ import utils.AwrsUnitTestTraits
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import utils.TestUtil._
+import utils.TestConstants._
 
 import scala.concurrent.Future
 
@@ -36,23 +37,36 @@ class EmailVerificationServiceTest extends AwrsUnitTestTraits {
     "must use correct connector" in {
       EmailVerificationService.emailVerificationConnector shouldBe EmailVerificationConnector
     }
+
+    "return true if the email is sent" in {
+      when(mockEmailVerificationConnector.sendVerificationEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
+      val result = EmailVerificationServiceTest.sendVerificationEmail(testEmail)
+      await(result) shouldBe true
+    }
+
+    "return false if the email is not sent" in {
+      when(mockEmailVerificationConnector.sendVerificationEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(false))
+      val result = EmailVerificationServiceTest.sendVerificationEmail(testEmail)
+      await(result) shouldBe false
+    }
+
+    "return true if the email is verified" in {
+      when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
+      val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
+      await(result) shouldBe true
+    }
+
+    "return false if the email is not verified" in {
+      when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(false))
+      val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
+      await(result) shouldBe false
+    }
+
+    "return false if the business contacts are empty" in {
+      val result = EmailVerificationServiceTest.isEmailVerified(None)
+      await(result) shouldBe false
+    }
   }
 
-  "return true if the email is verified" in {
-    when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
-    val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
-    await(result) shouldBe true
-  }
-
-  "return false if the email is not verified" in {
-    when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(false))
-    val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
-    await(result) shouldBe false
-  }
-
-  "return false if the business contacts are empty" in {
-    val result = EmailVerificationServiceTest.isEmailVerified(None)
-    await(result) shouldBe false
-  }
 
 }
