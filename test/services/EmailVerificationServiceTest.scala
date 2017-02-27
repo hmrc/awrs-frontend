@@ -39,19 +39,18 @@ class EmailVerificationServiceTest extends AwrsUnitTestTraits {
   }
 
   "return true if the email is verified" in {
-    when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())).thenReturn(Future.successful(true))
+    when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
     val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
     await(result) shouldBe true
   }
 
   "return false if the email is not verified" in {
-    when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())).thenReturn(Future.successful(false))
+    when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(false))
     val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
-    await(result) shouldBe true
+    await(result) shouldBe false
   }
 
   "return false if the business contacts are empty" in {
-    when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())).thenReturn(Future.successful(true))
     val result = EmailVerificationServiceTest.isEmailVerified(None)
     await(result) shouldBe false
   }
