@@ -809,3 +809,4 @@ html.noScroll {
 #additional-premises > p, #suppliers > p, #business_directors-subtext  {
     clear: both;
 }
+.dropdown-menu .block-label {width:100%;}

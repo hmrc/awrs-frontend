@@ -25,6 +25,7 @@
 @pageScripts = {
     <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
     <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+    <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -58,6 +59,7 @@
 }
 
 @includes.awrs_main(title = Messages("awrs.business-partner.page.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(
