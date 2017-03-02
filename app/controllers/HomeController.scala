@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, AwrsSessionKeys}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+
 import scala.concurrent.Future
 
 trait HomeController extends AwrsController with AccountUtils {
@@ -71,7 +72,7 @@ trait HomeController extends AwrsController with AccountUtils {
       }
     }.recover {
       case error =>
-        warn("Exception encountered in Home Controller " + error)
+        warn("Exception encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
         throw error
     }
   }
