@@ -76,18 +76,21 @@ trait HomeController extends AwrsController with AccountUtils {
     }.recover {
       case error =>
         (error.isInstanceOf[json.JsResultException], AccountUtils.hasAwrs) match {
-          case (true,true ) => {
+          case (true, true) => {
             save4LaterService.mainStore.removeAll
             save4LaterService.api.removeAll
             showOrRedirect(callerId)
           }
-          case (true,false ) => {
+          case (true, false) => {
             save4LaterService.mainStore.removeAll
             showOrRedirect(callerId)
           }
+          case (_, _) => {
+            warn("Exception encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
+            throw error
+          }
         }
-        warn("Exception encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
-        throw error
+            throw error
     }
   }
 

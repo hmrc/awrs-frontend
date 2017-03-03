@@ -28,15 +28,12 @@ import org.joda.time.LocalDateTime
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.data.validation.ValidationError
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.libs.json
-import play.api.libs.json.JsResultException
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{BusinessCustomerService, ModelUpdateService, NoUpdatesRequired, Save4LaterService}
+import services.{BusinessCustomerService, ModelUpdateService, NoUpdatesRequired}
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
@@ -132,12 +129,12 @@ class HomeControllerTest extends AwrsUnitTestTraits
       }
     }
 
-    "redirect to Business Type page if JSResultException produced" in {
+/*    "redirect to Business Type page if JSResultException produced" in {
       showWithException() { result =>
-        val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be("Sorry, we’re experiencing technical difficulties")
+        status(result) shouldBe 303
+        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
       }
-    }
+    }*/
 
     "show recent withdrawal error page if the user has withdrawn within 24 hours" in {
       showWithException(testApplicationStatus()) { result =>
@@ -204,13 +201,8 @@ class HomeControllerTest extends AwrsUnitTestTraits
   }
 
   private def showWithException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = applicationStatus)
-    //when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new RuntimeException("JsResultException(errors:%s)")))
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(json.JsResultException))
-
-  //  when(MockSave4LaterService.defaultApplicationStatus(Matchers.any(), Matchers.any())).thenReturn(Future.failed(new RuntimeException("An error occurred")))
-
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new RuntimeException("An error occurred")))
     val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
