@@ -75,7 +75,7 @@ trait HomeController extends AwrsController with AccountUtils {
       }
     }.recover {
       case error =>
-        (error.isInstanceOf json.JsResultException, AccountUtils.hasAwrs) match {
+        (error.isInstanceOf[json.JsResultException], AccountUtils.hasAwrs) match {
           case (true,true ) => {
             save4LaterService.mainStore.removeAll
             save4LaterService.api.removeAll
