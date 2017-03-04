@@ -26,6 +26,9 @@ import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, AwrsSessionKeys}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.libs.json
+import play.api.libs.json.JsResultException
+import play.api.mvc.Action
 
 import scala.concurrent.Future
 
@@ -64,7 +67,7 @@ trait HomeController extends AwrsController with AccountUtils {
         }
     }
 
-  def showOrRedirect(callerId: Option[String] = None) = async {
+  def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = async {
     implicit user => implicit request => {
       save4LaterService.mainStore.fetchApplicationStatus flatMap {
         case Some(data) => checkValidApplicationStatus(data, callerId)
@@ -72,7 +75,26 @@ trait HomeController extends AwrsController with AccountUtils {
       }
     }.recover {
       case error =>
-        warn("Exception encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
+        val hasAwrs = AccountUtils.hasAwrs
+        (error.isInstanceOf[json.JsResultException], hasAwrs) match {
+          case (true, true) => {
+            warn("JsResultException encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
+            save4LaterService.mainStore.removeAll
+            save4LaterService.api.removeAll
+            showOrRedirect(callerId)
+          }
+          case (true, false) => {
+            save4LaterService.mainStore.removeAll
+            showOrRedirect(callerId)
+          }
+          case (_, _) => {
+            val awrsIdentifier = hasAwrs match {
+              case true => AccountUtils.getAwrsRefNo.toString()
+              case false => save4LaterService.mainStore.fetchBusinessCustomerDetails.map(_.get.safeId)
+            }
+            warn("Exception encountered in Home Controller: " + awrsIdentifier + " \nERROR: " + error)
+          }
+        }
         throw error
     }
   }
