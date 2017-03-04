@@ -67,7 +67,7 @@ trait HomeController extends AwrsController with AccountUtils {
         }
     }
 
-  def showOrRedirect(callerId: Option[String] = None) : Action[AnyContent] = async {
+  def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = async {
     implicit user => implicit request => {
       save4LaterService.mainStore.fetchApplicationStatus flatMap {
         case Some(data) => checkValidApplicationStatus(data, callerId)
@@ -75,8 +75,10 @@ trait HomeController extends AwrsController with AccountUtils {
       }
     }.recover {
       case error =>
-        (error.isInstanceOf[json.JsResultException], AccountUtils.hasAwrs) match {
+        val hasAwrs = AccountUtils.hasAwrs
+        (error.isInstanceOf[json.JsResultException], hasAwrs) match {
           case (true, true) => {
+            warn("JsResultException encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
             save4LaterService.mainStore.removeAll
             save4LaterService.api.removeAll
             showOrRedirect(callerId)
@@ -86,11 +88,14 @@ trait HomeController extends AwrsController with AccountUtils {
             showOrRedirect(callerId)
           }
           case (_, _) => {
-            warn("Exception encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
-            throw error
+            val awrsIdentifier = hasAwrs match {
+              case true => AccountUtils.getAwrsRefNo.toString()
+              case false => save4LaterService.mainStore.fetchBusinessCustomerDetails.map(_.get.safeId)
+            }
+            warn("Exception encountered in Home Controller: " + awrsIdentifier + " \nERROR: " + error)
           }
         }
-            throw error
+        throw error
     }
   }
 

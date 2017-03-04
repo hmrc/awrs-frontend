@@ -16,12 +16,9 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.{AuthBuilder, SessionBuilder}
+import builders.SessionBuilder
 import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
-import controllers.auth.Utr._
 import forms.AWRSEnums
 import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
@@ -30,11 +27,12 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import play.api.libs.json.JsResultException
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{BusinessCustomerService, ModelUpdateService, NoUpdatesRequired}
 import services.mocks.MockSave4LaterService
+import services.{BusinessCustomerService, NoUpdatesRequired}
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
@@ -129,12 +127,19 @@ class HomeControllerTest extends AwrsUnitTestTraits
       }
     }
 
-/*    "redirect to Business Type page if JSResultException produced" in {
-      showWithException() { result =>
+    "redirect to Business Type page if for AWRS Registered users JSResultException produced" in {
+      showWithJsResultExceptionAndAwrs() { result =>
         status(result) shouldBe 303
         redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
       }
-    }*/
+    }
+
+    "redirect to Business Type page if for Non reistered AWRS users JSResultException produced" in {
+      showWithJsResultException() { result =>
+        status(result) shouldBe 303
+        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
+      }
+    }
 
     "show recent withdrawal error page if the user has withdrawn within 24 hours" in {
       showWithException(testApplicationStatus()) { result =>
@@ -203,6 +208,22 @@ class HomeControllerTest extends AwrsUnitTestTraits
   private def showWithException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = applicationStatus)
     when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new RuntimeException("An error occurred")))
+    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  private def showWithJsResultExceptionAndAwrs(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
+    setUser(hasAwrs = true)
+    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = applicationStatus)
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new JsResultException(Nil)))
+    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  private def showWithJsResultException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
+    setUser(hasAwrs = false)
+    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new JsResultException(Nil)))
     val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
