@@ -50,13 +50,16 @@ trait HomeController extends AwrsController with AccountUtils {
     case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
   }
 
-  def api4Journey(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] =
+  def api4Journey(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
+
     save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
-      case Some(data) =>
+      case Some(data) => {
+
         data.safeId.isEmpty match {
           case true => Future.successful(Redirect(ExternalUrls.businessCustomerStartPage))
           case _ => gotoBusinessTypePage(callerId)
         }
+      }
       case _ =>
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails] flatMap {
           case Some(data) =>
@@ -66,36 +69,36 @@ trait HomeController extends AwrsController with AccountUtils {
           case _ => Future.successful(Redirect(ExternalUrls.businessCustomerStartPage))
         }
     }
-
+  }
   def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = async {
     implicit user => implicit request => {
-      save4LaterService.mainStore.fetchApplicationStatus flatMap {
-        case Some(data) => checkValidApplicationStatus(data, callerId)
-        case _ => startJourney(callerId)
-      }
-    }.recover {
-      case error =>
-        val hasAwrs = AccountUtils.hasAwrs
-        (error.isInstanceOf[json.JsResultException], hasAwrs) match {
-          case (true, true) => {
-            warn("JsResultException encountered in Home Controller: " + AccountUtils.getAwrsRefNo.toString() + error)
-            save4LaterService.mainStore.removeAll
-            save4LaterService.api.removeAll
-            showOrRedirect(callerId)
-          }
-          case (true, false) => {
-            save4LaterService.mainStore.removeAll
-            showOrRedirect(callerId)
-          }
-          case (_, _) => {
-            val awrsIdentifier = hasAwrs match {
-              case true => AccountUtils.getAwrsRefNo.toString()
-              case false => save4LaterService.mainStore.fetchBusinessCustomerDetails.map(_.get.safeId)
-            }
-            warn("Exception encountered in Home Controller: " + awrsIdentifier + " \nERROR: " + error)
-          }
+      start(callerId)
+    }.recoverWith {
+      case e: JsResultException => {
+        if (AccountUtils.hasAwrs) {
+          save4LaterService.mainStore.removeAll
+          save4LaterService.api.removeAll
+          start(callerId)
+        } else {
+          save4LaterService.mainStore.removeAll
+          start(callerId)
         }
-        throw error
+      }
+      case _ => {
+        showErrorPage
+      }
+    }
+  }
+
+  private def start(callerId: Option[String] = None)(implicit user:AuthContext,request: Request[AnyContent]) = {
+
+    save4LaterService.mainStore.fetchApplicationStatus flatMap {
+      case Some(data) => {
+        checkValidApplicationStatus(data, callerId)
+      }
+      case _ => {
+        startJourney(callerId)
+      }
     }
   }
 
