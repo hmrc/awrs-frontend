@@ -216,9 +216,6 @@ class HomeControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus =  applicationStatus)
     when(mockMainStoreSave4LaterConnector.fetchData4Later[ApplicationStatus](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(None))
-    //when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(Some(testBusinessCustomerDetails("SOP"))))
-
-    //when(mockMainStoreSave4LaterConnector.fetchData4Later()[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(Some(testBusinessCustomerDetails("SOP"))))
     val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

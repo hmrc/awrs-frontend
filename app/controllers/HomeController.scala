@@ -26,9 +26,9 @@ import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, AwrsSessionKeys}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.api.libs.json
 import play.api.libs.json.JsResultException
 import play.api.mvc.Action
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -39,6 +39,15 @@ trait HomeController extends AwrsController with AccountUtils {
   val businessCustomerService: BusinessCustomerService
   implicit val save4LaterService: Save4LaterService
   val modelUpdateService: ModelUpdateService
+
+
+  private def awrsIdentifier(implicit user: AuthContext, hc: HeaderCarrier): String = {
+    val awrsIdentifier = AccountUtils.hasAwrs match {
+      case true => AccountUtils.getAwrsRefNo.toString()
+      case false => save4LaterService.mainStore.fetchBusinessCustomerDetails.map(_.get.safeId)
+    }
+    awrsIdentifier.toString
+  }
 
   def api5Journey(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
     debug("API5 journey triggered")
@@ -70,28 +79,32 @@ trait HomeController extends AwrsController with AccountUtils {
         }
     }
   }
+
   def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = async {
     implicit user => implicit request => {
-      start(callerId)
+      chooseScenario(callerId)
     }.recoverWith {
       case e: JsResultException => {
-        if (AccountUtils.hasAwrs) {
-          save4LaterService.mainStore.removeAll
-          save4LaterService.api.removeAll
-          start(callerId)
-        } else {
-          save4LaterService.mainStore.removeAll
-          start(callerId)
+        AccountUtils.hasAwrs match {
+          case true => {
+            save4LaterService.mainStore.removeAll
+            save4LaterService.api.removeAll
+            chooseScenario(callerId)
+          }
+          case false => {
+            save4LaterService.mainStore.removeAll
+            chooseScenario(callerId)
+          }
         }
       }
-      case _ => {
+      case _@error => {
+        warn("Exception encountered in Home Controller: " + awrsIdentifier + " \nERROR: " + error)
         showErrorPage
       }
     }
   }
 
-  private def start(callerId: Option[String] = None)(implicit user:AuthContext,request: Request[AnyContent]) = {
-
+  private def chooseScenario(callerId: Option[String] = None)(implicit user: AuthContext, request: Request[AnyContent]) = {
     save4LaterService.mainStore.fetchApplicationStatus flatMap {
       case Some(data) => {
         checkValidApplicationStatus(data, callerId)
@@ -126,5 +139,5 @@ object HomeController extends HomeController {
   override val businessCustomerService = BusinessCustomerService
   override val save4LaterService = Save4LaterService
   /* TODO save4later update for AWRS-1800 to be replaced by NoUpdatesRequired after 28 days*/
-  override val modelUpdateService = UpdateRequired //NoUpdatesRequired
+  override val modelUpdateService = NoUpdatesRequired //NoUpdatesRequired
 }
