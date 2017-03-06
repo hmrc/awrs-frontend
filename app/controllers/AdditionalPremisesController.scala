@@ -88,7 +88,7 @@ trait AdditionalPremisesController extends AwrsController with JourneyPage with 
       businessPremisesData =>
         businessPremisesData.additionalPremises match {
           case Some("No") =>
-            //Save it
+            //Save it.
             save(AdditionalBusinessPremisesList(premises = List(businessPremisesData))) flatMap {
               //redirecting to the right page based on session business type
               case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
