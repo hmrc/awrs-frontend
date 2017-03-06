@@ -97,7 +97,7 @@ trait HomeController extends AwrsController with AccountUtils {
           }
         }
       }
-      case _@error => {
+      case error@_ => {
         warn("Exception encountered in Home Controller: " + awrsIdentifier + " \nERROR: " + error)
         showErrorPage
       }
