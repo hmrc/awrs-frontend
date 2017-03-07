@@ -2,6 +2,8 @@
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
 @import play.twirl.api.Html
+@import views.html.helpers._
+
 
 @emailAddress = {
     <strong>@email</strong>.
@@ -39,6 +41,7 @@
 
     <div class="grid">
         <div class="grid grid-2-3">
+            @backLink()
             <div>
                 <h1 id="email-verification-error-header" class="heading-xlarge">@Html(Messages("awrs.email_verification_error.heading"))</h1>
                 <p id="email-verification-error-lede" class="lede">@Html(Messages("awrs.email_verification_error.lede"))</p>
