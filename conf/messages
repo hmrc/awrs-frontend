@@ -728,7 +728,6 @@ awrs.confirmation.prompt_print_heading=You will receive an email confirmation
 awrs.confirmation.information_0=Your application reference is {0}. This is not your AWRS registration number.
 awrs.confirmation.information_1=You can still trade while we process your application.
 
-
 awrs.confirmation.information_what_next_0=There is no need to contact HMRC, you will be notified of the outcome of your application in due course. You may not receive a decision before 1 April 2017.
 awrs.confirmation.information_what_next_1=From 1 April 2017, you must not trade in wholesale alcohol if you do not have an AWRS approval from HMRC.
 awrs.confirmation.information_what_next_2=If you continue to trade from 1 April 2017 without an approval you may be liable to financial penalties and your alcohol stock could be confiscated (whether or not duty has been paid).
