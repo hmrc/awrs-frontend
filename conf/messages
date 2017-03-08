@@ -721,7 +721,7 @@ awrs.application_declaration.error.declaration_role_invalid=Enter a job title in
 #============================================================
 awrs.confirmation.button=Confirm and continue
 awrs.confirmation.title=Confirmation
-awrs.confirawrs.confirmation.information_what_next_0mation.description=Your application for
+awrs.confirmation.description=Your application for
 awrs.confirmation.description_1=has been received on
 awrs.confirmation.information=What happens next
 awrs.confirmation.prompt_print_heading=You will receive an email confirmation
