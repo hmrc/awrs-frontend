@@ -16,6 +16,8 @@
         detail = {},
         eventType;
 
+    var leftArrow = 37, rightArrow = 39, downArrow = 40, upArrow = 38, enterKey = 13, spaceKey = 32;
+
     function getId(el) {
         var id = el.id;
 
@@ -128,15 +130,17 @@
             function dynamicListener(data, num, addressSize) {
                 data.addresses.map(function(results, index) {
                    $('#result-' + num + 'choi' + index).on('keydown', function(e) {
-                        // arrow down
-                        if (e.which == 40 && index < (addressSize - 1)) {
+
+                        blockLeftAndRightArrowNavigation(e);
+
+                        if (e.which == downArrow && index < (addressSize - 1)) {
                             var nextIndex = index + 1;
                             var $this = $('#' + $(this).attr('id'));
                             $this.removeClass('selected add-focus');
                             $('#result-' + num + 'choi' + nextIndex).addClass('selected add-focus').focus();
                         }
-                        // arrow up
-                        if (e.which == 38 && index > 0) {
+
+                        if (e.which == upArrow && index > 0) {
                             var previousIndex = index - 1;
                             $('#' + $(this).attr('id')).removeClass('selected add-focus');
                             $('#result-' + num + 'choi'+previousIndex).addClass('selected add-focus').focus();
@@ -144,7 +148,7 @@
                     });
                     $('#result-' + num + 'choi' + index).on('keypress', function(e) {
                         e.preventDefault();
-                        if (e.which == 13) {
+                        if (e.which == enterKey) {
                             var $this = $('#' + $(this).attr('id')),
                                 num = spinner,
                                 $parent = $('#address-' + num),
@@ -197,8 +201,10 @@
         buildOptions(data, num);
         if (data.addresses.length == 0) {
             showErrorMessage('No results found, check postcode and try again.', num);
+            $(".dropdown-menu").hide();
         } else {
             $('#result-' + num).addClass('show').focus();
+            $(".dropdown-menu").show();
         }
     }
 
@@ -350,6 +356,12 @@
         clearResults(num);
     }
 
+    function blockLeftAndRightArrowNavigation(e) {
+        if (e.which == leftArrow || e.which == rightArrow) {
+            e.preventDefault();
+        }
+    }
+
     $manualAddressLink.show();
     $('.postcode-lookup').show();
 
@@ -394,7 +406,7 @@
     $('input[id*="postcode"]').on('keydown, keyup, keypress', function(e) {
         var $this = $('#' + getId(this));
 
-        if (e.which == 13) {
+        if (e.which == enterKey) {
             e.preventDefault();
             $this.next('a').filter(':visible').click();
             return false;
@@ -416,7 +428,7 @@
             $this = $('#' + this.id),
             num = id.substr(id.length - 1);
 
-        if (e.which == 32 || e.which == 13) {
+        if (e.which == spaceKey || e.which == enterKey) {
             e.preventDefault();
             hideErrorMessage(num);
             clearAddress(num);
@@ -447,13 +459,13 @@
             id = getId(this),
             num = this.id.substr(this.id.length -1);
 
-        if (e.which == 32 || e.which == 13) {
+        if (e.which == spaceKey || e.which == enterKey) {
             validation(postcode, url, num, id);
             return false;
         }
     });
 
-    $('.postcode-lookup-results').on('click', 'input', function() {
+    $('.postcode-lookup-results').on('click', function() {
         var $this = $('#' + this.id),
             num = spinner,
             $parent = $('#address-' + num),
