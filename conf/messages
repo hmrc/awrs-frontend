@@ -727,9 +727,10 @@ awrs.confirmation.information=What happens next
 awrs.confirmation.prompt_print_heading=You will receive an email confirmation
 awrs.confirmation.information_0=Your application reference is {0}. This is not your AWRS registration number.
 awrs.confirmation.information_1=You can still trade while we process your application.
-awrs.confirmation.information_what_next_0=Continue trading as normal while we review and check your application, which may take some time.
-awrs.confirmation.information_what_next_1=There is no need to contact HMRC, we will notify you before 1 April 2017.
-awrs.confirmation.information_what_next_2=If approved, your business will receive an AWRS registration number confirming that you are an approved alcohol wholesaler.
+awrs.confirmation.information_what_next_0=There is no need to contact HMRC, you will be notified of the outcome of your application in due course. You may not receive a decision before 1 April 2017.
+awrs.confirmation.information_what_next_1=From 1 April 2017, you must not trade in wholesale alcohol if you do not have an AWRS approval from HMRC.
+awrs.confirmation.information_what_next_2=If you continue to trade from 1 April 2017 without an approval you may be liable to financial penalties and your alcohol stock could be confiscated (whether or not duty has been paid).
+awrs.confirmation.information_what_next_3=If approved, your business will receive an AWRS registration number confirming that you are an approved alcohol wholesaler.
 awrs.confirmation.newBusiness.information_0=Your application reference is {0}. This is not your AWRS registration number.
 awrs.confirmation.newBusiness.information_what_next_0=You cannot trade until an AWRS registration number is issued.
 awrs.confirmation.newBusiness.information_what_next_1=It will take up to 45 days from your initial application before we make a decision.
@@ -742,9 +743,12 @@ awrs.confirmation.finish=Finish and sign out
 #============================================================
 awrs.update.confirmation.description=Your amendment for
 awrs.update.confirmation.description_1=has been received on
+
 awrs.update.confirmation.information_what_next_0=Continue trading as normal while we review and check your amended application.
 awrs.update.confirmation.information_what_next_1=We will review and check your application amendments (reference {0}).
 awrs.update.confirmation.information_what_next_2=We may contact you to discuss your amended application.
+
+
 awrs.update.confirmation.newBusiness.information_what_next_0a=You cannot trade until an AWRS registration number is issued.
 awrs.update.confirmation.newBusiness.information_what_next_0b=It will take up to 45 days from your initial application before we make a decision.
 awrs.update.confirmation.newBusiness.information_what_next_1=We will review and check your application amendments (reference {0}).
