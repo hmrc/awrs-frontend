@@ -13,7 +13,7 @@
 @tableRowTitle = @{member.companyNames.businessName.getOrElse(member.companyNames.tradingName.get)}
 
 @content = {
-    <table class="view-application" @tabIndexHelper()>
+    <table class="view-application">
     @* Top record row including edit and delete links *@
     @table_row(
         tableRowTitle,
