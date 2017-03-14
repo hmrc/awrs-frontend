@@ -68,6 +68,9 @@
         case _ => {}
     }
 }
+@optionMessages = @{
+    params.optionMessages
+}
 @fieldSetQuestion = {
     @params.fieldSetQuestion match {
         case Some(fieldSetQuestion) => {
@@ -126,6 +129,11 @@
                         @if(!labelAfter)@{addLabelIfSpecified(label, params)}
                         <input type="radio" id="@inputId" name="@params.field.name" value="@value" @inputClass @dataAttributes @params.field.value.filter(_ == value).map { _ => checked="checked"}>
                         @if(labelAfter)@{addLabelIfSpecified(label, params)}
+                        @if(!optionMessages.isEmpty){
+                            @optionMessages.get.filter(c=>c._1 == inputId).map( item =>
+                                Html(s"<span class='visuallyhidden'>${item._2}</span>")
+                            )
+                        }
                     </label>
                 }
             }
