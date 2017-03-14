@@ -131,7 +131,7 @@
                         @if(labelAfter)@{addLabelIfSpecified(label, params)}
                         @if(!optionMessages.isEmpty){
                             @optionMessages.get.filter(c=>c._1 == inputId).map( item =>
-                                Html(s"<span class='visuallyhidden'>${item._2}</span>")
+                                Html(s"<span ${legendClass}>${item._2}</span>")
                             )
                         }
                     </label>
