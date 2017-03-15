@@ -10,7 +10,7 @@
 @wrapperId = @{SubviewIds.applicationDeclarationId}
 
 @content(model : models.ApplicationDeclaration) = {
-    <table class="view-application" @tabIndexHelper()>
+    <table class="view-application">
     @table_row(
         Messages("awrs.application_declaration.declaration_name_hint", "sending"),
         model.declarationName
