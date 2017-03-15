@@ -5,7 +5,8 @@
 @import services.DataCacheKeys._
 
 @(someHeading: Option[String],
-  someModel: Option[models.PlaceOfBusiness]
+  someModel: Option[models.PlaceOfBusiness],
+  showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
 @wrapperId = @{
@@ -17,10 +18,12 @@
 }
 
 @content(model: models.PlaceOfBusiness) = {
-    @table_row(
-        "",
-        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_place_of_business_text"))(x => x))
-    )(cssClass = "record-header")
+    @if(showTableHeader) {
+        @table_row(
+            "",
+            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_place_of_business_text"))(x => x))
+        )(cssClass = "record-header")
+    }
     @address_helper(
         Messages("awrs.view_application.principal_place_business"),
         model.mainAddress

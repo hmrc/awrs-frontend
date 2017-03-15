@@ -6,7 +6,8 @@
 
 @(someHeading: Option[String],
   someModel: Option[models.BusinessRegistrationDetails],
-  legalEntity : Option[String]
+  legalEntity : Option[String],
+  showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
 @wrapperId = @{
@@ -25,10 +26,12 @@
 }
 
 @content(model: models.BusinessRegistrationDetails) = {
-    @table_row(
-        "",
-        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_registration_details_text"))(x => x))
-    )(cssClass = "record-header")
+    @if(showTableHeader) {
+        @table_row(
+            "",
+            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_registration_details_text"))(x => x))
+        )(cssClass = "record-header")
+    }
     @identification_helper(
         model,
         legalEntity

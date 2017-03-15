@@ -31,16 +31,16 @@
 
 @awrsPrintLink()
 
-@subview_business_details(getHeading(businessDetailsName), cache.getBusinessDetails, businessName)
-@subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity))
-@subview_place_of_business(getHeading(placeOfBusinessName), cache.getPlaceOfBusiness)
-@subview_business_contacts(getHeading(businessContactsName), cache.getBusinessContacts, cache.getBusinessCustomerDetails)
+@subview_business_details(getHeading(businessDetailsName), cache.getBusinessDetails, businessName, false)
+@subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity), false)
+@subview_place_of_business(getHeading(placeOfBusinessName), cache.getPlaceOfBusiness, false)
+@subview_business_contacts(getHeading(businessContactsName), cache.getBusinessContacts, cache.getBusinessCustomerDetails, false)
 @subview_group_member_details(getHeading(groupMembersName), cache.getGroupMembers)
 @subview_partner_details(getHeading(partnersName), cache.getPartners)
 @subview_additional_premises(getHeading(additionalBusinessPremisesName), cache.getAdditionalBusinessPremises)
 @subview_business_directors(getHeading(businessDirectorsName), cache.getBusinessDirectors, businessLegalEntity)
-@subview_trading_activity(getHeading(tradingActivityName), cache.getTradingActivity)
-@subview_products(getHeading(productsName), cache.getProducts)
+@subview_trading_activity(getHeading(tradingActivityName), cache.getTradingActivity, false)
+@subview_products(getHeading(productsName), cache.getProducts, false)
 @subview_suppliers(getHeading(suppliersName), cache.getSuppliers)
 @subview_application_declaration(getHeading(applicationDeclarationName), cache.getApplicationDeclaration)
 

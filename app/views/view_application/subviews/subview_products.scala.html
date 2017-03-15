@@ -5,17 +5,21 @@
 @import views.view_application.subviews.SubviewIds
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String], someModel: Option[models.Products])(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+@(someHeading: Option[String], someModel:
+    Option[models.Products],
+    showTableHeader: Boolean = true)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
 @wrapperId = @{SubviewIds.productsId}
 
 @href = @{controllers.routes.ProductsController.showProducts(false).url}
 
 @content(model: models.Products) = {
-    @table_row(
-        "",
-        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.products_text"))(x => x))
-    )(cssClass = "record-header")
+    @if(showTableHeader) {
+        @table_row(
+            "",
+            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.products_text"))(x => x))
+        )(cssClass = "record-header")
+    }
     @group_checkbox_helper(
         Messages("awrs.additional_information.main_customers"),
         AwrsFormFields.mainCustomerOptions.toMap,
