@@ -160,13 +160,15 @@
                                 $parent = $('#address-' + num),
                                 resultIndex = index,
                                 results = data;
-                            fillAddressFields($this, $parent, resultIndex, results);
+                                $('#postcode-lookup-button-' + num).hide();
+                                fillAddressFields($this, $parent, resultIndex, results);
                         }
                     }).on('mouseup touchend', function() {
                          var $this = $('#' + this.id).find("input"),
                              num = spinner,
                              $parent = $('#address-' + num),
                              resultIndex = this.getAttribute('value');
+                             $('#postcode-lookup-button-' + num).hide();
                              fillAddressFields($this, $parent, resultIndex, data)
                     });
                 });
@@ -204,7 +206,6 @@
 
                     clearResults(resultIndex);
                     $('.dropdown-menu').empty();
-                    $('.postcode-lookup').show();
                     $('#address-' + resultIndex + ' input[id$="addressLine1"]').focus();
                 }
     }
@@ -217,6 +218,7 @@
         } else {
             $('#result-' + num).addClass('show').focus();
             $(".dropdown-menu").show();
+            hideErrorMessage(num);
         }
     }
 
