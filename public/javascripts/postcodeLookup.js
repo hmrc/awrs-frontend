@@ -234,13 +234,13 @@
                 '<span class="error-notification" role="tooltip" data-journey="search-page:error:additionalAddress.postcode">' + message + '</span>'
             );
         }
-        $('postcode-results-fieldset').hide();
+        $('.postcode-results-fieldset').hide();
         clearResults(num);
         $postcodeLookupWrapper.find('input[type="text"]').focus();
     }
 
     function hideErrorMessage(num) {
-            $('postcode-results-fieldset').show();
+        $('.postcode-results-fieldset').show();
 
         var $address = $('#postcode-lookup-button-' + num).parents('#address-' + num);
 
