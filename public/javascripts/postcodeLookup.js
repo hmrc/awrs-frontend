@@ -140,10 +140,24 @@
                             $('#result-' + num + 'choi' + nextIndex).addClass('selected add-focus').focus();
                         }
 
+                        if (e.which == downArrow && index == (addressSize-1)) {
+                            var nextIndex = 0;
+                            var $this = $('#' + $(this).attr('id'));
+                            $this.removeClass('selected add-focus');
+                            $('#result-' + num + 'choi' + nextIndex).addClass('selected add-focus').focus();
+                        }
+
                         if (e.which == upArrow && index > 0) {
                             var previousIndex = index - 1;
                             $('#' + $(this).attr('id')).removeClass('selected add-focus');
                             $('#result-' + num + 'choi'+previousIndex).addClass('selected add-focus').focus();
+                        }
+
+                        if (e.which == upArrow && index == 0) {
+                            var nextIndex = addressSize - 1;
+                            var $this = $('#' + $(this).attr('id'));
+                            $this.removeClass('selected add-focus');
+                            $('#result-' + num + 'choi' + nextIndex).addClass('selected add-focus').focus();
                         }
 
                     }).on('keypress', function(e) {
@@ -222,6 +236,11 @@
 
     function showErrorMessage(message, num) {
         var $postcodeLookupWrapper = $('#postcode-lookup-button-' + num).parent('div');
+        $(".postcode-results-fieldset").find("label").each(function() {
+                                                      $( this ).remove();
+                                                    });
+
+        $('.postcode-results-fieldset').find("legend").empty();
 
         if ($postcodeLookupWrapper.hasClass('form-field--error')) {
             $postcodeLookupWrapper.find('.error-notification').text(message);
@@ -351,11 +370,15 @@
         $this.text() == 'Enter address manually' ? $this.text('Look up address') : $this.text('Enter address manually');
 
         if ($this.text() == 'Look up address') {
+                    $('.postcode-results-fieldset').hide();
+
             $('#address-' + num + ' .address-lines').show();
             $('#address-' + num + ' input[id$="addressLine1"]').focus();
             $('#result-' + spinner + '_field').attr('aria-hidden', 'true');
             $('#postcode-lookup-button-' + num).hide();
         } else {
+                $('.postcode-results-fieldset').show();
+
             $('#address-' + num + ' .address-lines').hide();
             $('#postcode-lookup-button-' + num).show();
             $('#address-' + num + ' input[id$="postcode"]').focus();
