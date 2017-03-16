@@ -129,8 +129,8 @@
 
             function dynamicListener(data, num, addressSize) {
                 data.addresses.map(function(results, index) {
-                   $('#result-' + num + 'choi' + index).on('keydown', function(e) {
 
+                   $('#result-' + num + 'choi' + index).on('keydown', function(e) {
                         blockLeftAndRightArrowNavigation(e);
 
                         if (e.which == downArrow && index < (addressSize - 1)) {
@@ -145,8 +145,8 @@
                             $('#' + $(this).attr('id')).removeClass('selected add-focus');
                             $('#result-' + num + 'choi'+previousIndex).addClass('selected add-focus').focus();
                         }
-                    });
-                    $('#result-' + num + 'choi' + index).on('keypress', function(e) {
+
+                    }).on('keypress', function(e) {
                         e.preventDefault();
                         if (e.which == enterKey) {
                             var $this = $('#' + $(this).attr('id')),
@@ -156,6 +156,12 @@
                                 results = data;
                             fillAddressFields($this, $parent, resultIndex, results);
                         }
+                    }).on('mouseup touchend', function() {
+                         var $this = $('#' + this.id).find("input"),
+                             num = spinner,
+                             $parent = $('#address-' + num),
+                             resultIndex = this.getAttribute('value');
+                             fillAddressFields($this, $parent, resultIndex, data)
                     });
                 });
             }
@@ -463,14 +469,6 @@
             validation(postcode, url, num, id);
             return false;
         }
-    });
-
-    $('.postcode-lookup-results').on('click', function() {
-        var $this = $('#' + this.id),
-            num = spinner,
-            $parent = $('#address-' + num),
-            resultIndex = this.value;
-            fillAddressFields($this, $parent, resultIndex, results)
     });
 
     $('form').submit(function(e){
