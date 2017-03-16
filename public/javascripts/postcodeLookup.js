@@ -122,6 +122,9 @@
             return options;
         });
         $('#result-' + num).html(options);
+
+
+
         $('#result-' + num +'choi0').addClass('selected add-focus').focus();
                 var addressSize = data.addresses.length;
                 $(dynamicListener(data, num, addressSize));
@@ -134,30 +137,19 @@
                         blockLeftAndRightArrowNavigation(e);
 
                         if (e.which == downArrow && index < (addressSize - 1)) {
-                            var nextIndex = index + 1;
-                            var $this = $('#' + $(this).attr('id'));
-                            $this.removeClass('selected add-focus');
-                            $('#result-' + num + 'choi' + nextIndex).addClass('selected add-focus').focus();
+                            higlightNextElement($(this),index + 1,num)
                         }
 
                         if (e.which == downArrow && index == (addressSize-1)) {
-                            var nextIndex = 0;
-                            var $this = $('#' + $(this).attr('id'));
-                            $this.removeClass('selected add-focus');
-                            $('#result-' + num + 'choi' + nextIndex).addClass('selected add-focus').focus();
+                            higlightNextElement($(this),0,num)
                         }
 
                         if (e.which == upArrow && index > 0) {
-                            var previousIndex = index - 1;
-                            $('#' + $(this).attr('id')).removeClass('selected add-focus');
-                            $('#result-' + num + 'choi'+previousIndex).addClass('selected add-focus').focus();
+                            higlightNextElement($(this),index - 1,num)
                         }
 
                         if (e.which == upArrow && index == 0) {
-                            var nextIndex = addressSize - 1;
-                            var $this = $('#' + $(this).attr('id'));
-                            $this.removeClass('selected add-focus');
-                            $('#result-' + num + 'choi' + nextIndex).addClass('selected add-focus').focus();
+                            higlightNextElement($(this),addressSize - 1,num)
                         }
 
                     }).on('keypress', function(e) {
@@ -230,17 +222,29 @@
 
     function clearResults(num) {
         var $result = $('#result-' + num);
-
         $result.removeClass('show').find('option').remove();
+    }
+
+    function higlightNextElement(element,index,num){
+        $('#' + element.attr('id')).removeClass('selected add-focus');
+        $('#result-' + num + 'choi' + index).addClass('selected add-focus').focus();
+    }
+
+    function removeResultCount(){
+         $('.postcode-results-fieldset').find("legend").empty();
+    }
+
+    function clearSearchResults(){
+         $(".postcode-results-fieldset").find("label").each(function() {
+           $( this ).remove();
+         });
     }
 
     function showErrorMessage(message, num) {
         var $postcodeLookupWrapper = $('#postcode-lookup-button-' + num).parent('div');
-        $(".postcode-results-fieldset").find("label").each(function() {
-                                                      $( this ).remove();
-                                                    });
 
-        $('.postcode-results-fieldset').find("legend").empty();
+        clearSearchResults();
+        removeResultCount();
 
         if ($postcodeLookupWrapper.hasClass('form-field--error')) {
             $postcodeLookupWrapper.find('.error-notification').text(message);
