@@ -374,15 +374,13 @@
         $this.text() == 'Enter address manually' ? $this.text('Look up address') : $this.text('Enter address manually');
 
         if ($this.text() == 'Look up address') {
-                    $('.postcode-results-fieldset').hide();
-
+            $('.postcode-results-fieldset').hide();
             $('#address-' + num + ' .address-lines').show();
             $('#address-' + num + ' input[id$="addressLine1"]').focus();
             $('#result-' + spinner + '_field').attr('aria-hidden', 'true');
             $('#postcode-lookup-button-' + num).hide();
         } else {
-                $('.postcode-results-fieldset').show();
-
+            $('.postcode-results-fieldset').show();
             $('#address-' + num + ' .address-lines').hide();
             $('#postcode-lookup-button-' + num).show();
             $('#address-' + num + ' input[id$="postcode"]').focus();
