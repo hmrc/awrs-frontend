@@ -206,7 +206,7 @@
 
                     clearResults(resultIndex);
                     $('.dropdown-menu').empty();
-                    $('#address-' + resultIndex + ' input[id$="addressLine1"]').focus();
+                    $(".address-lines input:first").addClass('selected add-focus').focus()
                 }
     }
 
