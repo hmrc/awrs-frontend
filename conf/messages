@@ -92,7 +92,7 @@ awrs.generic.warning_icon_text=Warning.
 
 # Generic Error Messages
 awrs.generic.error.title=Sorry, we’re experiencing technical difficulties
-awrs.generic.error.status=There is a problem with your application
+awrs.generic.error.status=There has been a problem with your application
 awrs.generic.errors_heading=There is a problem with the form
 awrs.generic.error.postcode_empty.summary=The {0} postcode is empty
 awrs.generic.error.postcode_empty=Enter a {0} postcode
@@ -524,8 +524,8 @@ awrs.additional-premises.additional_premises_help_question=What are additional t
 # Error messages
 awrs.additional-premises.error.do_you_have_additional_premises.summary=The additional trading premises question has not been answered
 awrs.additional-premises.error.do_you_have_additional_premises=Select an option for the additional trading premises question
-awrs.additional-premises.error.postcode=Postcode must not be empty
-awrs.additional-premises.error.postcode.summary=There is a problem with the Postcode
+awrs.additional-premises.error.postcode=There is a problem with the Postcode
+awrs.additional-premises.error.postcode.summary=Postcode must not be empty
 awrs.additional-premises.error.add_another.summary=The more additional trading premises question has not been answered
 awrs.additional-premises.error.add_another=Select more additional trading premises to add
 
@@ -714,8 +714,8 @@ awrs.application_declaration.error.declaration_role_empty.summary=The job title 
 awrs.application_declaration.error.declaration_role_empty=You must enter a job title or role
 awrs.application_declaration.error.confirmation_empty.summary=The declaration message has not been checked
 awrs.application_declaration.error.confirmation_empty=You must confirm the application declaration before you can submit
-awrs.application_declaration.error.declaration_role_invalid.summary=There is a problem with the job title or role
-awrs.application_declaration.error.declaration_role_invalid=Enter a job title or role in the correct format
+awrs.application_declaration.error.declaration_role_invalid.summary=The job title is not the correct format
+awrs.application_declaration.error.declaration_role_invalid=Enter a job title in the correct format
 
 # Confirmation Page
 #============================================================
