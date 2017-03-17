@@ -154,7 +154,7 @@
 
                     }).on('keypress', function(e) {
                         e.preventDefault();
-                        if (e.which == enterKey) {
+                        if (e.which == enterKey || e.which == spaceKey) {
                             var $this = $('#' + $(this).attr('id')),
                                 num = spinner,
                                 $parent = $('#address-' + num),
