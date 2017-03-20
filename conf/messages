@@ -714,8 +714,6 @@ awrs.application_declaration.error.declaration_role_empty.summary=The job title 
 awrs.application_declaration.error.declaration_role_empty=You must enter a job title or role
 awrs.application_declaration.error.confirmation_empty.summary=The declaration message has not been checked
 awrs.application_declaration.error.confirmation_empty=You must confirm the application declaration before you can submit
-awrs.application_declaration.error.declaration_role_invalid.summary=The job title is not the correct format
-awrs.application_declaration.error.declaration_role_invalid=Enter a job title in the correct format
 
 # Confirmation Page
 #============================================================
