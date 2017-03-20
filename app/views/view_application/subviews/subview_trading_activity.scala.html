@@ -7,7 +7,8 @@
 
 
 @(someHeading: Option[String],
-        someModel: Option[models.TradingActivity]
+  someModel: Option[models.TradingActivity],
+  showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
     @wrapperId = @{
@@ -19,10 +20,12 @@
     }
 
     @content(model: models.TradingActivity) = {
-    @table_row(
-        "",
-        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.trading_activity_text"))(x => x))
-    )(cssClass = "record-header")
+    @if(showTableHeader) {
+        @table_row(
+                "",
+                edit_link_s(href, someHeading.fold(Messages("awrs.index_page.trading_activity_text"))(x => x))
+            )(cssClass = "record-header")
+    }
     @group_checkbox_helper(
         Messages("awrs.additional_information.wholesaler_type"),
         AwrsFormFields.wholesaler.toMap,

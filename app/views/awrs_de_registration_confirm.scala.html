@@ -17,6 +17,7 @@
     <div class="grid grid-2-3">
         <h1 id="de_registration-heading" class="heading-xlarge">@Messages("awrs.de_registration.confirmation_heading")</h1>
         @form(action = controllers.routes.DeRegistrationController.callToAction) {
+        <div class="form-group">
             <div class="form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
@@ -26,7 +27,8 @@
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=deRegistrationConfirmation_field",
                         legend = Messages("awrs.de_registration.confirmation_heading"),
-                        legendClass = "visuallyhidden"
+                        legendClass = "visuallyhidden",
+                        optionMessages = Some(List(("deRegistrationConfirmation-yes",s"${Messages("awrs.generic.warning_icon_text")}${declarationText.toString()}")))
                     )
                 )
             </div>

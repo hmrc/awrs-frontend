@@ -6,7 +6,8 @@
 
 @(someHeading: Option[String],
   someModel: Option[models.BusinessContacts],
-  someBCDetails:  Option[models.BusinessCustomerDetails]
+  someBCDetails:  Option[models.BusinessCustomerDetails],
+  showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
 @wrapperId = @{
@@ -40,10 +41,12 @@
 }
 
 @content(model: models.BusinessContacts) = {
-    @table_row(
-        "",
-        edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_contacts_text"))(x => x))
-    )(cssClass = "record-header")
+    @if(showTableHeader) {
+        @table_row(
+            "",
+            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_contacts_text"))(x => x))
+        )(cssClass = "record-header")
+    }
     @table_row(
         Messages("awrs.view_application.contact_name"),
         model.contactFirstName + " " +
