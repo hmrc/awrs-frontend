@@ -320,7 +320,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
         }
         withClue(debugInfo) {
           subview.heading shouldBe expectedHeading
-          subview.rows shouldBe toExpectation(testData)(entity.legalEntity.get)
+          subview.rows shouldBe toExpectation(testData)(entity.legalEntity.get).drop(1)
         }
       }
 
@@ -382,7 +382,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
         }
 
         subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(entity.legalEntity, testData)
+        subview.rows shouldBe toExpectation(entity.legalEntity, testData).drop(1)
       }
 
     }
@@ -417,7 +417,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
         }
 
         subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get))
+        subview.rows shouldBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get)).drop(1)
       }
 
       val entities = Seq(testBusinessDetailsEntityTypes(Partnership),
@@ -464,7 +464,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
         }
 
         subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get))
+        subview.rows shouldBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get)).drop(1)
       }
 
       val entities = Seq(testBusinessDetailsEntityTypes(Partnership),
@@ -805,7 +805,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
         val expectedHeading = Messages("awrs.view_application.trading_activity_text")
 
         subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData)
+        subview.rows shouldBe toExpectation(testData).drop(1)
       }
 
       test(testData)
@@ -833,7 +833,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
         val expectedHeading = Messages("awrs.view_application.products_text")
 
         subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData)
+        subview.rows shouldBe toExpectation(testData).drop(1)
       }
 
       test(testData)
