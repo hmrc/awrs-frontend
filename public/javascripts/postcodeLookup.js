@@ -315,7 +315,7 @@
         // check for illegal chars
         if (valid && !postcode.match(lookupRegex)) {
             valid = false;
-            showErrorMessage('Postcode invalid', num);
+            showErrorMessage('The postcode is not valid, check the postcode and try again', num);
         }
 
         // exclude NI postcodes
