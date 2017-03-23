@@ -98,6 +98,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
                   document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.confirmation.information_what_next_1"))
                   document.getElementById(s"confirmationNoteLine3Text").text() should include(Messages(s"awrs.confirmation.information_what_next_2"))
                   document.getElementById(s"confirmationNoteLine4Text").text() should include(Messages(s"awrs.confirmation.information_what_next_3"))
+                  document.getElementById(s"confirmationNoteLine5Text").text() should include(Messages(s"awrs.confirmation.information_what_next_4"))
+
 
                   document.getElementById(s"confirmation1Text") shouldBe null
               }
