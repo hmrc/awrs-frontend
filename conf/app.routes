@@ -78,9 +78,9 @@ GET         /place-of-business/edit                         controllers.PlaceOfB
 POST        /place-of-business/saveAndContinue              controllers.PlaceOfBusinessController.saveAndContinue
 POST        /place-of-business/saveAndReturn                controllers.PlaceOfBusinessController.saveAndReturn
 
-POST        /check-email-verification                       controllers.EmailVerificationController.checkEmailVerification
-POST        /resend-email-verification/:email               controllers.EmailVerificationController.resend(email: String)
-POST        /email-verification-success/:email              controllers.EmailVerificationController.showSuccess(email: String)
+GET         /check-email-verification                       controllers.EmailVerificationController.checkEmailVerification
+GET         /resend-email-verification/:email               controllers.EmailVerificationController.resend(email: String)
+GET         /email-verification-success/:email              controllers.EmailVerificationController.showSuccess(email: String)
 
 GET         /application-declaration                        controllers.ApplicationDeclarationController.showApplicationDeclaration
 POST        /application-declaration/sendApplication        controllers.ApplicationDeclarationController.sendApplication
