@@ -100,7 +100,15 @@
             <a id="postcode-lookup-button-@number" class="button postcode-lookup" role="button" tabindex="0">@Messages("awrs.generic.find_address")</a>
             <div class="loading" id="spinner-@number">@Messages("awrs.generic.search_address")</div>
             <label id="result-@{number}_field" for="result-@number" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.address.lookup_dropdown_label")</label>
-            <select class="postcode-lookup-results" id="result-@number"></select>
+            <fieldset class="postcode-results-fieldset" aria-required="true" role="radiogroup">
+                    <div class="btn-group postcode-lookup-results">
+                        <div class="dropdown-menu" id="result-@number">
+                            <div class="btn-group postcode-lookup-results show" id="result-@{number}">
+                            </div>
+                        </div>
+                    </div>
+            </fieldset>
+
         }
         case false => {}
     }

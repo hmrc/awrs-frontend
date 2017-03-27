@@ -1,11 +1,12 @@
 (function($) {
+    addFilteringFunctionalityIfBrowserIsIE8();
     var $lookupInput = $('input[id*="postcode"]'),
         $manualAddressLink = $('.address-container .font-small'),
         results = results || {},
         postcodeHistory = postcodeHistory || {},
         lookupRegex = /(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$/,
         northernIrelandRegex = /^B{1}T{1}/i,
-        env = window.location.origin,
+        env = (!window.location.origin) ? window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') : window.location.origin,
         lookUpPath = '/alcohol-wholesale-scheme/address-lookup?postcode=',
         auditPath = '/alcohol-wholesale-scheme/address-lookup',
         spinner,
@@ -15,6 +16,8 @@
         },
         detail = {},
         eventType;
+
+    var leftArrow = 37, rightArrow = 39, downArrow = 40, upArrow = 38, enterKey = 13, spaceKey = 32;
 
     function getId(el) {
         var id = el.id;
@@ -93,58 +96,161 @@
                 return false;
             } else {
                 // check address lines are not longer than 35 chars
-                value.address.lines.map(function(line) {
-                    // if > 35 chars, push index of parent object to array
+                jQuery.map(value.address.lines, function( line ) {
                     if (line.length > 35) {
                         valid =  false;
                     }
                 });
+
             }
             return valid;
         });
-
         results = data;
     }
 
     function buildOptions(data, num) {
         filterData(data);
-
         var address = data.addresses.length != 1 ? "addresses" : "address";
-        var options = '<option value="first">' + data.addresses.length + ' ' + address + ' found...</option>';
-
-        data.addresses.map(function(results, index) {
-            options += '<option value="' + index + '">' +
-            results.address.lines.map(function(line, index) {
-                return index == 0 ? line : ' ' + line;
-            }) + ', ' +
-            results.address.town + ', ' +
-            results.address.postcode +
-            '</option>';
-
+        var options = '<legend>' + data.addresses.length + ' ' + address + ' found...</legend>';
+        jQuery.map(data.addresses, function(results,index) {
+            options += '<label id="result-' + num + 'choi' + index + '" class="block-label" for="result-' + num + 'choice' + index + '" value="' + index + '"><input class="postcode-lookup-results-entry" type="radio" id="result-' + num + 'choice' + index + '" name="res" value="' + index + '">' +
+                jQuery.map(results.address.lines, function( line,index ) {
+                    return index == 0 ? line : ' ' + line;
+                }) + ', ' +
+                results.address.town + ', ' +
+                results.address.postcode +
+                '</label>';
             return options;
         });
 
+
+
         $('#result-' + num).html(options);
+
+
+
+        $('#result-' + num +'choi0').addClass('selected add-focus').focus();
+                var addressSize = data.addresses.length;
+                $(dynamicListener(data, num, addressSize));
+            }
+
+            function dynamicListener(data, num, addressSize) {
+                jQuery.map(data.addresses, function(results,index) {
+                    $('#result-' + num + 'choi' + index).on('keydown', function(e) {
+                        blockLeftAndRightArrowNavigation(e);
+
+                        if (e.which == downArrow && index < (addressSize - 1)) {
+                            higlightNextElement($(this),index + 1,num)
+                        }
+
+                        if (e.which == downArrow && index == (addressSize-1)) {
+                            higlightNextElement($(this),0,num)
+                        }
+
+                        if (e.which == upArrow && index > 0) {
+                            higlightNextElement($(this),index - 1,num)
+                        }
+
+                        if (e.which == upArrow && index == 0) {
+                            higlightNextElement($(this),addressSize - 1,num)
+                        }
+
+                    }).on('keypress', function(e) {
+                        e.preventDefault();
+                        if (e.which == enterKey || e.which == spaceKey) {
+                            var $this = $('#' + $(this).attr('id')),
+                                num = spinner,
+                                $parent = $('#address-' + num),
+                                resultIndex = index,
+                                results = data;
+                            $('#postcode-lookup-button-' + num).hide();
+                            fillAddressFields($this, $parent, resultIndex, results);
+                        }
+                    }).on('mouseup touchend', function() {
+                        var $this = $('#' + this.id).find("input"),
+                            num = spinner,
+                            $parent = $('#address-' + num),
+                            resultIndex = this.getAttribute('value');
+                        $('#postcode-lookup-button-' + num).hide();
+                        fillAddressFields($this, $parent, resultIndex, data)
+                    });
+                });
+            }
+
+            function fillAddressFields(elem, parent, resultIndex, results) {
+                if (elem.val() != 'first') {
+                    parent.find('input[id*="addressLine"]').val('');
+                    parent.find('.address-lines').show();
+
+                    uprn = results.addresses[resultIndex].id;
+
+                    var townFieldNumber = results.addresses[resultIndex].address.lines.length + 1;
+
+                    jQuery.map(results.addresses[resultIndex].address.lines, function(line,index) {
+                        parent.find('input[id$=addressLine' + (index + 1) + ']').val(line);
+                    });
+
+                    parent.find('input[id$=addressLine' + townFieldNumber + ']').val(results.addresses[resultIndex].address.town);
+                    parent.find('input[id*="postcode"]').focus().val(results.addresses[resultIndex].address.postcode);
+
+                    parent.find('.postcode-lookup').hide();
+
+                    parent.find('.link-style').text('Look up address');
+
+                    parent.each(function() {
+                        updateAudits({
+                            addressContainer : this,
+                            eventType : 'postcodeAddressSubmitted',
+                            index : resultIndex,
+                            uprn : uprn,
+                            submitting : false
+                        });
+                    });
+
+                    clearResults(resultIndex);
+                    $('.dropdown-menu').empty();
+                    $(".address-lines input:first").addClass('selected add-focus').focus()
+                }
     }
 
     function showResult(data, num) {
         buildOptions(data, num);
-
         if (data.addresses.length == 0) {
             showErrorMessage('No results found, check postcode and try again.', num);
+            $(".dropdown-menu").hide();
         } else {
             $('#result-' + num).addClass('show').focus();
+            $(".dropdown-menu").show();
+            hideErrorMessage(num);
+            $(".postcode-results-fieldset").find("input").first().prop("checked",true)
         }
     }
 
     function clearResults(num) {
         var $result = $('#result-' + num);
-
         $result.removeClass('show').find('option').remove();
+    }
+
+    function higlightNextElement(element,index,num){
+        $('#' + element.attr('id')).removeClass('selected add-focus');
+        $('#result-' + num + 'choi' + index).addClass('selected add-focus').focus();
+    }
+
+    function removeResultCount(){
+         $('.postcode-results-fieldset').find("legend").empty();
+    }
+
+    function clearSearchResults(){
+         $(".postcode-results-fieldset").find("label").each(function() {
+           $( this ).remove();
+         });
     }
 
     function showErrorMessage(message, num) {
         var $postcodeLookupWrapper = $('#postcode-lookup-button-' + num).parent('div');
+
+        clearSearchResults();
+        removeResultCount();
 
         if ($postcodeLookupWrapper.hasClass('form-field--error')) {
             $postcodeLookupWrapper.find('.error-notification').text(message);
@@ -157,12 +263,14 @@
                 '<span class="error-notification" role="tooltip" data-journey="search-page:error:additionalAddress.postcode">' + message + '</span>'
             );
         }
-
+        $('.postcode-results-fieldset').hide();
         clearResults(num);
         $postcodeLookupWrapper.find('input[type="text"]').focus();
     }
 
     function hideErrorMessage(num) {
+        $('.postcode-results-fieldset').show();
+
         var $address = $('#postcode-lookup-button-' + num).parents('#address-' + num);
 
         if ($address.find('div.form-field').hasClass('form-field--error')) {
@@ -199,21 +307,8 @@
         }
     }
 
-    function trackStuff(id, postcode) {
-        if (postcodeHistory[id] == postcode) {
-            return false;
-        } else {
-            postcodeHistory[id] = postcode;
-            return true;
-        }
-    }
-
     function validation(postcode, url, num, id) {
         var valid = true;
-
-        // check if postcodes are the same
-        var same = trackStuff(id, postcode);
-
         // check not empty
         if (postcode == '') {
             valid = false;
@@ -223,7 +318,7 @@
         // check for illegal chars
         if (valid && !postcode.match(lookupRegex)) {
             valid = false;
-            showErrorMessage('Postcode invalid', num);
+            showErrorMessage('The postcode is not valid, check the postcode and try again', num);
         }
 
         // exclude NI postcodes
@@ -233,7 +328,7 @@
         }
 
         // only do ajax call when postcode is entered and changes and passes regex
-        if (valid && same) {
+        if (valid) {
             if(ajaxSuccess){
                 hideErrorMessage(num);
             }
@@ -243,7 +338,6 @@
 
     function searchAddress(url, num) {
         spinner = num;
-
         $.ajax({
             type: 'GET',
             url: url,
@@ -285,17 +379,62 @@
         $this.text() == 'Enter address manually' ? $this.text('Look up address') : $this.text('Enter address manually');
 
         if ($this.text() == 'Look up address') {
+            $('.postcode-results-fieldset').hide();
             $('#address-' + num + ' .address-lines').show();
             $('#address-' + num + ' input[id$="addressLine1"]').focus();
             $('#result-' + spinner + '_field').attr('aria-hidden', 'true');
             $('#postcode-lookup-button-' + num).hide();
         } else {
+            $('.postcode-results-fieldset').show();
             $('#address-' + num + ' .address-lines').hide();
             $('#postcode-lookup-button-' + num).show();
             $('#address-' + num + ' input[id$="postcode"]').focus();
         }
 
         clearResults(num);
+    }
+
+    function blockLeftAndRightArrowNavigation(e) {
+        if (e.which == leftArrow || e.which == rightArrow) {
+            e.preventDefault();
+        }
+    }
+
+    function addFilteringFunctionalityIfBrowserIsIE8(){
+        if (!Array.prototype.filter) {
+            Array.prototype.filter = function(fun/*, thisArg*/) {
+                'use strict';
+
+                if (this === void 0 || this === null) {
+                    throw new TypeError();
+                }
+
+                var t = Object(this);
+                var len = t.length >>> 0;
+                if (typeof fun !== 'function') {
+                    throw new TypeError();
+                }
+
+                var res = [];
+                var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+                for (var i = 0; i < len; i++) {
+                    if (i in t) {
+                        var val = t[i];
+
+                        // NOTE: Technically this should Object.defineProperty at
+                        //       the next index, as push can be affected by
+                        //       properties on Object.prototype and Array.prototype.
+                        //       But that method's new, and collisions should be
+                        //       rare, so use the more-compatible alternative.
+                        if (fun.call(thisArg, val, i, t)) {
+                            res.push(val);
+                        }
+                    }
+                }
+
+                return res;
+            };
+        }
     }
 
     $manualAddressLink.show();
@@ -342,7 +481,7 @@
     $('input[id*="postcode"]').on('keydown, keyup, keypress', function(e) {
         var $this = $('#' + getId(this));
 
-        if (e.which == 13) {
+        if (e.which == enterKey) {
             e.preventDefault();
             $this.next('a').filter(':visible').click();
             return false;
@@ -364,7 +503,7 @@
             $this = $('#' + this.id),
             num = id.substr(id.length - 1);
 
-        if (e.which == 32 || e.which == 13) {
+        if (e.which == spaceKey || e.which == enterKey) {
             e.preventDefault();
             hideErrorMessage(num);
             clearAddress(num);
@@ -395,48 +534,9 @@
             id = getId(this),
             num = this.id.substr(this.id.length -1);
 
-        if (e.which == 32 || e.which == 13) {
+        if (e.which == spaceKey || e.which == enterKey) {
             validation(postcode, url, num, id);
             return false;
-        }
-    });
-
-    $('.postcode-lookup-results').on('change', function() {
-        var id = this.id,
-            $this = $('#' + this.id),
-            num = this.id.substr(this.id.length -1),
-            $parent = $this.parents('#address-' + num),
-            resultIndex = this.value;
-
-        if ($this.val() != 'first') {
-            $parent.find('input[id*="addressLine"]').val('');
-            $parent.find('.address-lines').show(),
-            uprn = results.addresses[resultIndex].id;
-
-            var townFieldNumber = results.addresses[resultIndex].address.lines.length + 1;
-
-            results.addresses[resultIndex].address.lines.map(function(line, index) {
-                $parent.find('input[id$=addressLine' + (index + 1) + ']').val(line);
-            });
-
-            $parent.find('input[id$=addressLine' + townFieldNumber + ']').val(results.addresses[resultIndex].address.town);
-            $parent.find('input[id*="postcode"]').focus().val(results.addresses[resultIndex].address.postcode);
-
-            $parent.find('.postcode-lookup').hide();
-
-            $parent.find('.link-style').text('Look up address');
-
-            $parent.each(function() {
-                updateAudits({
-                    addressContainer : this,
-                    eventType : 'postcodeAddressSubmitted',
-                    index : num,
-                    uprn : uprn,
-                    submitting : false
-                });
-            });
-
-            clearResults(num);
         }
     });
 
