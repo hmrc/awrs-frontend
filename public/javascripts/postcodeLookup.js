@@ -1,11 +1,12 @@
 (function($) {
+    addFilteringFunctionalityIfBrowserIsIE8();
     var $lookupInput = $('input[id*="postcode"]'),
         $manualAddressLink = $('.address-container .font-small'),
         results = results || {},
         postcodeHistory = postcodeHistory || {},
         lookupRegex = /(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$/,
         northernIrelandRegex = /^B{1}T{1}/i,
-        env = window.location.origin,
+        env = (!window.location.origin) ? window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') : window.location.origin,
         lookUpPath = '/alcohol-wholesale-scheme/address-lookup?postcode=',
         auditPath = '/alcohol-wholesale-scheme/address-lookup',
         spinner,
@@ -95,12 +96,12 @@
                 return false;
             } else {
                 // check address lines are not longer than 35 chars
-                value.address.lines.map(function(line) {
-                    // if > 35 chars, push index of parent object to array
+                jQuery.map(value.address.lines, function( line ) {
                     if (line.length > 35) {
                         valid =  false;
                     }
                 });
+
             }
             return valid;
         });
@@ -111,16 +112,19 @@
         filterData(data);
         var address = data.addresses.length != 1 ? "addresses" : "address";
         var options = '<legend>' + data.addresses.length + ' ' + address + ' found...</legend>';
-        data.addresses.map(function(results, index) {
+        jQuery.map(data.addresses, function(results,index) {
             options += '<label id="result-' + num + 'choi' + index + '" class="block-label" for="result-' + num + 'choice' + index + '" value="' + index + '"><input class="postcode-lookup-results-entry" type="radio" id="result-' + num + 'choice' + index + '" name="res" value="' + index + '">' +
-            results.address.lines.map(function(line, index) {
-                return index == 0 ? line : ' ' + line;
-            }) + ', ' +
-            results.address.town + ', ' +
-            results.address.postcode +
-            '</label>';
+                jQuery.map(results.address.lines, function( line,index ) {
+                    return index == 0 ? line : ' ' + line;
+                }) + ', ' +
+                results.address.town + ', ' +
+                results.address.postcode +
+                '</label>';
             return options;
         });
+
+
+
         $('#result-' + num).html(options);
 
 
@@ -131,9 +135,8 @@
             }
 
             function dynamicListener(data, num, addressSize) {
-                data.addresses.map(function(results, index) {
-
-                   $('#result-' + num + 'choi' + index).on('keydown', function(e) {
+                jQuery.map(data.addresses, function(results,index) {
+                    $('#result-' + num + 'choi' + index).on('keydown', function(e) {
                         blockLeftAndRightArrowNavigation(e);
 
                         if (e.which == downArrow && index < (addressSize - 1)) {
@@ -160,16 +163,16 @@
                                 $parent = $('#address-' + num),
                                 resultIndex = index,
                                 results = data;
-                                $('#postcode-lookup-button-' + num).hide();
-                                fillAddressFields($this, $parent, resultIndex, results);
+                            $('#postcode-lookup-button-' + num).hide();
+                            fillAddressFields($this, $parent, resultIndex, results);
                         }
                     }).on('mouseup touchend', function() {
-                         var $this = $('#' + this.id).find("input"),
-                             num = spinner,
-                             $parent = $('#address-' + num),
-                             resultIndex = this.getAttribute('value');
-                             $('#postcode-lookup-button-' + num).hide();
-                             fillAddressFields($this, $parent, resultIndex, data)
+                        var $this = $('#' + this.id).find("input"),
+                            num = spinner,
+                            $parent = $('#address-' + num),
+                            resultIndex = this.getAttribute('value');
+                        $('#postcode-lookup-button-' + num).hide();
+                        fillAddressFields($this, $parent, resultIndex, data)
                     });
                 });
             }
@@ -183,7 +186,7 @@
 
                     var townFieldNumber = results.addresses[resultIndex].address.lines.length + 1;
 
-                    results.addresses[resultIndex].address.lines.map(function(line, index) {
+                    jQuery.map(results.addresses[resultIndex].address.lines, function(line,index) {
                         parent.find('input[id$=addressLine' + (index + 1) + ']').val(line);
                     });
 
@@ -335,7 +338,6 @@
 
     function searchAddress(url, num) {
         spinner = num;
-
         $.ajax({
             type: 'GET',
             url: url,
@@ -395,6 +397,43 @@
     function blockLeftAndRightArrowNavigation(e) {
         if (e.which == leftArrow || e.which == rightArrow) {
             e.preventDefault();
+        }
+    }
+
+    function addFilteringFunctionalityIfBrowserIsIE8(){
+        if (!Array.prototype.filter) {
+            Array.prototype.filter = function(fun/*, thisArg*/) {
+                'use strict';
+
+                if (this === void 0 || this === null) {
+                    throw new TypeError();
+                }
+
+                var t = Object(this);
+                var len = t.length >>> 0;
+                if (typeof fun !== 'function') {
+                    throw new TypeError();
+                }
+
+                var res = [];
+                var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+                for (var i = 0; i < len; i++) {
+                    if (i in t) {
+                        var val = t[i];
+
+                        // NOTE: Technically this should Object.defineProperty at
+                        //       the next index, as push can be affected by
+                        //       properties on Object.prototype and Array.prototype.
+                        //       But that method's new, and collisions should be
+                        //       rare, so use the more-compatible alternative.
+                        if (fun.call(thisArg, val, i, t)) {
+                            res.push(val);
+                        }
+                    }
+                }
+
+                return res;
+            };
         }
     }
 
