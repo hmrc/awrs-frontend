@@ -52,18 +52,32 @@ trait EmailVerificationController extends AwrsController {
         }
   }
 
-  def resend(email: String): Action[AnyContent] = async {
+  def resend: Action[AnyContent] = async {
     implicit user =>
       implicit request =>
-        emailVerificationService.sendVerificationEmail(email) map {
-          case true => Ok(awrs_email_verification_error(email, resent = true))
-          case _ => showErrorPageRaw
+        save4LaterService.mainStore.fetchBusinessContacts flatMap {
+          case Some(businessDetails) => {
+            val email = businessDetails.email
+            email match {
+              case Some(businessEmail) => {
+                emailVerificationService.sendVerificationEmail(businessEmail) map {
+                  case true => {
+                    Ok(awrs_email_verification_error(businessEmail, resent = true))}
+                  case _ => showErrorPageRaw
+                }
+              }
+              case _ => {
+                Future.successful(showErrorPageRaw)
+              }
+            }
+          }
+          case _ => Future.successful(showErrorPageRaw)
         }
   }
 
-  def showSuccess(email: String) = Action.async {
+  def showSuccess: Action[AnyContent]  = Action.async {
     implicit request =>
-      Future.successful(Ok(awrs_email_verification_success(email)))
+      Future.successful(Ok(awrs_email_verification_success()))
   }
 
 }

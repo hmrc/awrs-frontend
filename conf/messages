@@ -693,7 +693,7 @@ awrs.email_verification_error.resent=We have resent the email to {0}
 #============================================================
 awrs.email_verification_success.heading=Email address verified
 awrs.email_verification_success.title=Email address verified
-awrs.email_verification_success.lede=We have successfully verified the email address {0}
+awrs.email_verification_success.lede=We have successfully verified your email address.
 
 # Application declaration Page
 #============================================================

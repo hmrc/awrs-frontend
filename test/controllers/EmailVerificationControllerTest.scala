@@ -122,7 +122,7 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
         result =>
           val document = Jsoup.parse(contentAsString(result))
           document.getElementById("email-verification-success-header").text shouldBe Messages("awrs.email_verification_success.heading")
-          document.getElementById("email-verification-success-lede").text shouldBe Messages("awrs.email_verification_success.lede", testEmail + ".")
+          document.getElementById("email-verification-success-lede").text shouldBe Messages("awrs.email_verification_success.lede", ".")
           document.getElementById("return-to-summary").text shouldBe Messages("awrs.generic.return_to_app_summary")
       }
     }
@@ -140,15 +140,19 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
   }
 
   def resendEmail(isVerified: Boolean = true)(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(
+      fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
+      fetchBusinessContacts = testBusinessContactsDefault()
+    )
     when(mockEmailVerificationService.sendVerificationEmail(Matchers.eq(testEmail))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(isVerified))
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = TestEmailVerificationControllerEmailEnabled.resend(testEmail).apply(request)
+    val result = TestEmailVerificationControllerEmailEnabled.resend().apply(request)
     test(result)
   }
 
   def showSuccess(test: Future[Result] => Any) {
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = TestEmailVerificationControllerEmailEnabled.showSuccess(testEmail).apply(request)
+    val result = TestEmailVerificationControllerEmailEnabled.showSuccess().apply(request)
     test(result)
   }
 

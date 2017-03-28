@@ -37,7 +37,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
   val baseURI = "/email-verification"
   val sendEmail = "/verification-requests"
   val verifyEmail = "/verified-email-addresses"
-  val continueUrl = (email: String) => emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess(email).url
+  val continueUrl = emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess.url
   val defaultEmailExpiryPeriod = Period.days(1).toString
   val defaultTemplate = "awrs_email_verification"
   val httpGet: HttpGet
@@ -49,7 +49,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
       templateId = defaultTemplate,
       templateParameters = None,
       linkExpiryDuration = defaultEmailExpiryPeriod,
-      continueUrl = continueUrl(emailAddress))
+      continueUrl = continueUrl)
     val postURL = s"""$serviceURL$baseURI$sendEmail"""
     httpPost.POST(postURL, verificationRequest).map {
       response =>

@@ -79,8 +79,8 @@ POST        /place-of-business/saveAndContinue              controllers.PlaceOfB
 POST        /place-of-business/saveAndReturn                controllers.PlaceOfBusinessController.saveAndReturn
 
 GET         /check-email-verification                       controllers.EmailVerificationController.checkEmailVerification
-GET         /resend-email-verification/:email               controllers.EmailVerificationController.resend(email: String)
-GET         /email-verification-success/:email              controllers.EmailVerificationController.showSuccess(email: String)
+GET         /resend-email-verification/                     controllers.EmailVerificationController.resend
+GET         /email-verification-success/                    controllers.EmailVerificationController.showSuccess
 
 GET         /application-declaration                        controllers.ApplicationDeclarationController.showApplicationDeclaration
 POST        /application-declaration/sendApplication        controllers.ApplicationDeclarationController.sendApplication
