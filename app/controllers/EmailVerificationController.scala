@@ -75,7 +75,7 @@ trait EmailVerificationController extends AwrsController {
         }
   }
 
-  def showSuccess() = Action.async {
+  def showSuccess: Action[AnyContent]  = Action.async {
     implicit request =>
       Future.successful(Ok(awrs_email_verification_success()))
   }
