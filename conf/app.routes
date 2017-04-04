@@ -140,7 +140,7 @@ GET         /back                                           controllers.ViewAppl
 GET         /signed-out                                     controllers.ApplicationController.timedOut()
 
 # This is for AWRS-1595
-#GET         /implode                                        controllers.ReapplicationController.show
-#POST        /implode                                        controllers.ReapplicationController.submit
+GET         /re-apply                                        controllers.ReapplicationController.show
+POST        /re-apply                                        controllers.ReapplicationController.submit
 
 

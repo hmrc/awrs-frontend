@@ -210,11 +210,11 @@ object TestUtil {
   val testSubscriptionStatusTypePendingGroup = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, Some("2001-12-17T09:30:47Z"), true, None)
 
   val testStatusNotificationNoAlert: Option[StatusNotification] = None
-  val testStatusNotificationMindedToReject: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(MindedToReject), Some(Pending)))
+  val testStatusNotificationMindedToReject: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(MindedToReject), Some(Pending), Some("2017-04-01T0013:07:11")))
   val testStatusInfoTypeMindedToReject = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for minded to reject")))
   val testStatusInfoTypeNoLongerMindedToReject = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for no longer minded to reject")))
-  val testStatusNotificationMindedToRevoke: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(MindedToRevoke), Some(Approved)))
-  val testStatusNotificationNoLongerMindedToRevoke: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(NoLongerMindedToRevoke), Some(Approved)))
+  val testStatusNotificationMindedToRevoke: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(MindedToRevoke), Some(Approved), Some("2017-04-01T0013:07:11")))
+  val testStatusNotificationNoLongerMindedToRevoke: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(NoLongerMindedToRevoke), Some(Approved), Some("2017-04-01T0013:07:11")))
   val testStatusInfoTypeMindedToRevoke = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for minded to revoke")))
   val testStatusInfoTypeNoLongerMindedToRevoke = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for no longer minded to revoke")))
 

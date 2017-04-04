@@ -72,7 +72,7 @@ trait StatusManagementService extends LoggingUtils {
         // N.B. we also get a status code back from API 12, this should be the same as the status from API9
         // (except pending). We are not policing this check here because the likelihood of these two status being
         // different is negligible
-        case notification@Some(StatusNotification(_, contactNumber, _, _)) => callAPI11(status, contactNumber, notification)
+        case notification@Some(StatusNotification(_, contactNumber, _, _, _)) => callAPI11(status, contactNumber, notification)
         // if there there's nothing stored in the API 12 cache then
         case None => status.formBundleStatus match {
           // in case of pending and approved do no call api 11, since they should not by default

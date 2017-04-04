@@ -26,6 +26,9 @@ object AWRSEnums {
   val DeRegistrationString = "De-registered"
   val WithdrawnString = "Withdrawn"
 
+  val RejectedString = "Rejected"
+  val RevokedString = "Revoked"
+
   val IndividualString = "Individual"
   val CorporateBodyString = "Corporate Body"
   val SoleTraderString = "Sole Trader"
@@ -40,6 +43,9 @@ object AWRSEnums {
   object ApplicationStatusEnum extends AWRSEnumeration {
     val DeRegistered = Value(DeRegistrationString)
     val Withdrawn = Value(WithdrawnString)
+    val Rejected = Value(RejectedString)
+    val Revoked = Value(RevokedString)
+    val blankString = Value("")
   }
 
   trait BooleanEnumeration extends AWRSEnumeration {

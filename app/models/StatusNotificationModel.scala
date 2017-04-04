@@ -111,7 +111,8 @@ object StatusContactType {
 case class StatusNotification(registrationNumber: Option[String],
                               contactNumber: Option[String],
                               contactType: Option[StatusContactType],
-                              status: Option[FormBundleStatus])
+                              status: Option[FormBundleStatus],
+                              storageDatetime: Option[String])
 
 object StatusNotification {
 
@@ -121,7 +122,8 @@ object StatusNotification {
     (JsPath \ "registrationNumber").readNullable[String] and
       (JsPath \ "contactNumber").readNullable[String] and
       (JsPath \ "contactType").readNullable[StatusContactType] and
-      (JsPath \ "status").readNullable[FormBundleStatus]
+      (JsPath \ "status").readNullable[FormBundleStatus] and
+      (JsPath \ "storageDatetime").readNullable[String]
     ) (StatusNotification.apply _)
 
   implicit val writer = Json.writes[StatusNotification]

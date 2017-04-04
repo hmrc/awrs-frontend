@@ -17,13 +17,19 @@
 package controllers
 
 import config.FrontendAuthConnector
+import connectors.AWRSNotificationConnector
 import controllers.auth.AwrsController
+import forms.AWRSEnums.ApplicationStatusEnum
 import forms.ReapplicationForm._
+import models.ApplicationStatus
+import org.joda.time.LocalDateTime
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
 import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
+import play.api.mvc.{AnyContent, Request, Result}
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.Future
 
@@ -39,9 +45,11 @@ trait ReapplicationController extends AwrsController with LoggingUtils {
   val save4LaterService: Save4LaterService
   val keyStoreService: KeyStoreService
 
+  private final lazy val MinReturnHours = 24
+
   def show = async {
     implicit user => implicit request =>
-      Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+      checkValidApplicationStatus
   }
 
   def submit = async {
@@ -67,7 +75,29 @@ trait ReapplicationController extends AwrsController with LoggingUtils {
           AwrsSessionKeys.sessionSectionStatus
         )
       )
-
   }
 
+  def checkValidApplicationStatus(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
+  val applicationStatus = ApplicationStatus(ApplicationStatusEnum.blankString,LocalDateTime.now())
+    // check that the user has not returned within the specified amount of hours since being revoked or rejected
+    val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
+    val fmt: DateTimeFormatter = DateTimeFormat.forPattern(dateFormat)
+    AWRSNotificationConnector.fetchNotificationCache flatMap {
+      case Some(notification) => {
+        val storedDateString: String = notification.storageDatetime.getOrElse("")
+        if (storedDateString.isEmpty()) {
+          Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+        }
+        else {
+          val storedDate: LocalDateTime = fmt.parseLocalDateTime(storedDateString)
+          storedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours)) match {
+            case true => Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+            case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
+
+          }
+        }
+      }
+      case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
+    }
+  }
 }
