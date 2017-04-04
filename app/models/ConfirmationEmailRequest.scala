@@ -34,6 +34,7 @@ object ApiTypes extends Enumeration {
   val API4 = Value("api4")
   val API6Pending = Value("api6.pending")
   val API6Approved = Value("api6.approved")
+  val API10 = Value("api10")
 
   implicit val reader = new Reads[ApiTypes.Value] {
 

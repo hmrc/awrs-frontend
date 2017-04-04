@@ -80,6 +80,8 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
   lazy val confirmationEmailURI = TestAWRSNotificationConnector.confirmationEmailURI
 
+  lazy val cancellationEmailURI = TestAWRSNotificationConnector.cancellationEmailURI
+
 
   "fetchNotificationCache" should {
 
@@ -229,6 +231,29 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     "return false for a successful request" in {
       sendConfirmationEmailResponse(false)
       val result = TestAWRSNotificationConnector.sendConfirmationEmail(testEmailRequest)
+      await(result) shouldBe false
+    }
+  }
+
+  "sendCancellationEmail" should {
+    val testEmailRequest = ConfirmationEmailRequest(ApiTypes.API10, "test business", testUtr, "example@example.com", isNewBusiness = false)
+
+    def sendCancellationEmailResponse(haveResponse: Boolean): Unit =
+      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(cancellationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(haveResponse match {
+          case true => Future.successful(HttpResponse(OK))
+          case false => Future.successful(HttpResponse(NOT_FOUND))
+        })
+
+    "return true for a successful request" in {
+      sendCancellationEmailResponse(true)
+      val result = TestAWRSNotificationConnector.sendCancellationEmail(testEmailRequest)
+      await(result) shouldBe true
+    }
+
+    "return false for a successful request" in {
+      sendCancellationEmailResponse(false)
+      val result = TestAWRSNotificationConnector.sendCancellationEmail(testEmailRequest)
       await(result) shouldBe false
     }
   }
