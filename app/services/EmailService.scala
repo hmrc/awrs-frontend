@@ -18,7 +18,7 @@ package services
 
 import connectors.AWRSNotificationConnector
 import models.ApiTypes.ApiType
-import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
+import models.FormBundleStatus.{Approved, ApprovedWithConditions, DeRegistered, Pending, Withdrawal}
 import models.{ApiTypes, EmailRequest}
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -32,12 +32,31 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait EmailService {
   val awrsNotificationConnector: AWRSNotificationConnector
 
-  def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+  def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)
+                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    sendEmail(isNewBusiness, email, reference,awrsNotificationConnector.sendConfirmationEmail)
+  }
+
+  def sendWithdrawnEmail(email: String, reference: String, isNewBusiness: Boolean)
+                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    sendEmail(isNewBusiness, email, reference,awrsNotificationConnector.sendWithdrawnEmail)
+  }
+
+  def sendCancellationEmail(email: String, reference: String, isNewBusiness: Boolean)
+                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    sendEmail(isNewBusiness, email, reference,awrsNotificationConnector.sendCancellationEmail)
+  }
+
+  private def sendEmail(isNewBusiness: Boolean, email: String, reference: String, sendEmail: (EmailRequest) => Future[Boolean])
+                       (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
     implicit def conv(v: ApiType): Future[ApiType] = Future.successful(v)
+
     val apiTypePromise: Future[ApiType] = AccountUtils.hasAwrs match {
       case true =>
         request.getSessionStatus match {
           case Some(Pending) => ApiTypes.API6Pending
+          case Some(Withdrawal) => ApiTypes.API8
+          case Some(DeRegistered) => ApiTypes.API10
           case Some(Approved | ApprovedWithConditions) => ApiTypes.API6Approved
           case Some(status) => Future.failed(new InternalServerException(s"Unexpected status found: $status"))
           case None => Future.failed(new InternalServerException("Status is missing from session"))
@@ -46,7 +65,7 @@ trait EmailService {
     }
     apiTypePromise flatMap { apiType =>
       val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), reference, email, isNewBusiness = isNewBusiness)
-      awrsNotificationConnector.sendConfirmationEmail(emailRequest = emailRequest)
+      sendEmail(emailRequest)
     }
   }
 
