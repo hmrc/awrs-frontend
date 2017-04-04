@@ -38,51 +38,88 @@ class EmailServiceTest extends AwrsUnitTestTraits
   lazy val businessName = "test business"
   lazy val userName = "test user"
 
-  "Email service" should {
+  "Email Service" should {
+    "build the correct request object for the connectors for api4 None user" in {
+      implicit val user = createApi4User()
+      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName)
+      val email = "example@example.com"
+      val reference = testRefNo
+      val isNewBusiness = true
+      val expected = EmailRequest(
+        apiType = ApiTypes.API4,
+        businessName = businessName,
+        reference = reference,
+        email = email,
+        isNewBusiness = isNewBusiness
+      )
 
-    Seq(
-      (createApi4User(), None),
-      (createApi6User(), Pending),
-      (createApi6User(), Approved),
-      (createApi6User(), ApprovedWithConditions)).foreach { case (user, status) =>
-      implicit lazy val request = status match {
-        case None => FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName)
-        case s: FormBundleStatus => FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> s.name)
-      }
-      implicit val impUser = user
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
+      val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
 
-      val apiType = AccountUtils.hasAwrs(user) match {
-        case true => status match {
-          case Pending => ApiTypes.API6Pending
-          case Approved | ApprovedWithConditions => ApiTypes.API6Approved
-        }
-        case false => ApiTypes.API4
-      }
-      val userType = s"$apiType $status user"
-
-      s"build the correct request object for the connectors for $userType" in {
-        val email = "example@example.com"
-        val reference = testRefNo
-        val isNewBusiness = true
-        val expected = EmailRequest(
-          apiType = apiType,
-          businessName = businessName,
-          reference = reference,
-          email = email,
-          isNewBusiness = isNewBusiness
-        )
-
-        // the following mocks are ordered so that false is returned for any input that differs from the expected
-        when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(false)
-        when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
-        val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
-
-        // if the incorrect request object is placed into sendConfirmationEmail then false would be returned
-        await(result) shouldBe true
-      }
+      await(result) shouldBe true
     }
 
+    "build the correct request object for the connectors for api6.pending Pending(01) user" in {
+      implicit val user = createApi6User()
+      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Pending")
+      val email = "example@example.com"
+      val reference = testRefNo
+      val isNewBusiness = true
+      val expected = EmailRequest(
+        apiType = ApiTypes.API6Pending,
+        businessName = businessName,
+        reference = reference,
+        email = email,
+        isNewBusiness = isNewBusiness
+      )
+
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
+      val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
+
+      await(result) shouldBe true
+    }
+
+    "build the correct request object for the connectors for api6.approved Approved(04) user" in {
+      implicit val user = createApi6User()
+      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved")
+      val email = "example@example.com"
+      val reference = testRefNo
+      val isNewBusiness = true
+      val expected = EmailRequest(
+        apiType = ApiTypes.API6Approved,
+        businessName = businessName,
+        reference = reference,
+        email = email,
+        isNewBusiness = isNewBusiness
+      )
+
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
+      val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
+
+      await(result) shouldBe true
+    }
+
+    "build the correct request object for the connectors for api6.approved Conditions(05) user" in {
+      implicit val user = createApi6User()
+      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved with Conditions")
+      val email = "example@example.com"
+      val reference = testRefNo
+      val isNewBusiness = true
+      val expected = EmailRequest(
+        apiType = ApiTypes.API6Approved,
+        businessName = businessName,
+        reference = reference,
+        email = email,
+        isNewBusiness = isNewBusiness
+      )
+
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
+      val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
+
+      await(result) shouldBe true
+    }
   }
+
 
   private def createApi4User() = {
     AuthBuilder.createUserAuthContextIndCt(userId, userName, testUtr)
