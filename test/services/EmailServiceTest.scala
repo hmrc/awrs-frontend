@@ -19,7 +19,7 @@ package services
 import builders.AuthBuilder
 import connectors.mock.{MockAWRSNotificationConnector, MockAuthConnector}
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
-import models.{ApiTypes, ConfirmationEmailRequest, FormBundleStatus}
+import models.{ApiTypes, EmailRequest, FormBundleStatus}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
@@ -64,7 +64,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
         val email = "example@example.com"
         val reference = testRefNo
         val isNewBusiness = true
-        val expected = ConfirmationEmailRequest(
+        val expected = EmailRequest(
           apiType = apiType,
           businessName = businessName,
           reference = reference,

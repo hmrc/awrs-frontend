@@ -38,6 +38,7 @@ trait LoggingUtils extends Auditable {
   final val auditAPI12DeleteTxName: String = "API12-Delete"
   final val auditConfirmationEmailTxName: String = "API-Confirmation"
   final val auditCancellationEmailTxName: String = "API-Cancellation"
+  final val auditWithdrawnEmailTxtName: String = "API-Withdrawn"
   final val auditSubscribeTxName: String = "AWRS ETMP Subscribe"
   final val auditGGTxName: String = "AWRS GG Enrol"
   final val auditEmailVerification: String = "AWRS Send Email Verification"

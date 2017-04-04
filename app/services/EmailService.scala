@@ -19,7 +19,7 @@ package services
 import connectors.AWRSNotificationConnector
 import models.ApiTypes.ApiType
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
-import models.{ApiTypes, ConfirmationEmailRequest}
+import models.{ApiTypes, EmailRequest}
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
@@ -45,7 +45,7 @@ trait EmailService {
       case false => ApiTypes.API4
     }
     apiTypePromise flatMap { apiType =>
-      val emailRequest = ConfirmationEmailRequest(apiType, request.getBusinessName.fold("")(x => x), reference, email, isNewBusiness = isNewBusiness)
+      val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), reference, email, isNewBusiness = isNewBusiness)
       awrsNotificationConnector.sendConfirmationEmail(emailRequest = emailRequest)
     }
   }

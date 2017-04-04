@@ -38,6 +38,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   val markAsViewedURI = "/viewed"
   val confirmationEmailURI = s"$baseURI/email/confirmation"
   val cancellationEmailURI = s"$baseURI/email/cancellation"
+  val withdrawnEmailURI = s"$baseURI/email/withdrawn"
 
   val httpGet: HttpGet
   val httpDelete: HttpDelete
@@ -86,15 +87,19 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     }
   }
 
-  def sendConfirmationEmail(emailRequest: ConfirmationEmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def sendConfirmationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
     doEmailCall(emailRequest,auditConfirmationEmailTxName,confirmationEmailURI)
   }
 
-  def sendCancellationEmail(emailRequest: ConfirmationEmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+  def sendCancellationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
     doEmailCall(emailRequest,auditCancellationEmailTxName,cancellationEmailURI)
   }
 
-  private def doEmailCall(emailRequest: ConfirmationEmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier, user: AuthContext) = {
+  def sendWithdrawnEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+    doEmailCall(emailRequest,auditWithdrawnEmailTxtName,withdrawnEmailURI)
+  }
+
+  private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier, user: AuthContext) = {
     mapResult(auditTxt, emailRequest.reference, httpPost.POST(s"$serviceURL${uri}", emailRequest)).map {
       case Some(_) => true
       case _ => false
