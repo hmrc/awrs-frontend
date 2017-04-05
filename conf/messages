@@ -23,6 +23,8 @@ awrs.generic.application_status_continue=View or edit application
 awrs.generic.application_link=your application
 awrs.generic.bta_link=Business tax account home
 
+awrs.generic.create_new_application_link=Create a new application
+
 # Radio buttons
 awrs.generic.yes=Yes
 awrs.generic.no=No
