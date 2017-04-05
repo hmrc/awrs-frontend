@@ -129,17 +129,16 @@ class EmailServiceTest extends AwrsUnitTestTraits
         apiType = ApiTypes.API8,
         businessName = businessName,
         reference = reference,
-        email = email,
-        isNewBusiness = isNewBusiness
+        email = email
       )
       when(mockAWRSNotificationConnector.sendWithdrawnEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
-      val result = TestEmailService.sendWithdrawnEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
+      val result = TestEmailService.sendWithdrawnEmail(email = email, reference = reference)
 
       await(result) shouldBe true
     }
 
     "get succesful response when sending cancellation email for API10 user" in {
-      implicit val user = AuthBuilder.createUserAuthContextOrgWithAWRS(userId, userName, testUtr)
+      implicit val user = AuthBuilder.createUserAuthContextIndSaWithAWRS(userId, userName, testUtr)
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "De-Registered")
       val email = "example@example.com"
       val reference = testRefNo
@@ -148,11 +147,10 @@ class EmailServiceTest extends AwrsUnitTestTraits
         apiType = ApiTypes.API10,
         businessName = businessName,
         reference = reference,
-        email = email,
-        isNewBusiness = isNewBusiness
+        email = email
       )
       when(mockAWRSNotificationConnector.sendCancellationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
-      val result = TestEmailService.sendCancellationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
+      val result = TestEmailService.sendCancellationEmail(email = email, reference = reference)
 
       await(result) shouldBe true
     }

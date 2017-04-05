@@ -34,20 +34,20 @@ trait EmailService {
 
   def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(isNewBusiness, email, reference,awrsNotificationConnector.sendConfirmationEmail)
+    sendEmail(email, reference,awrsNotificationConnector.sendConfirmationEmail,isNewBusiness)
   }
 
-  def sendWithdrawnEmail(email: String, reference: String, isNewBusiness: Boolean)
+  def sendWithdrawnEmail(email: String, reference: String)
                         (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(isNewBusiness, email, reference,awrsNotificationConnector.sendWithdrawnEmail)
+    sendEmail(email, reference,awrsNotificationConnector.sendWithdrawnEmail)
   }
 
-  def sendCancellationEmail(email: String, reference: String, isNewBusiness: Boolean)
+  def sendCancellationEmail(email: String, reference: String)
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(isNewBusiness, email, reference,awrsNotificationConnector.sendCancellationEmail)
+    sendEmail(email, reference,awrsNotificationConnector.sendCancellationEmail)
   }
 
-  private def sendEmail(isNewBusiness: Boolean, email: String, reference: String, sendEmail: (EmailRequest) => Future[Boolean])
+  private def sendEmail(email: String, reference: String, sendEmail: (EmailRequest) => Future[Boolean],isNewBusiness: Boolean = false)
                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
     implicit def conv(v: ApiType): Future[ApiType] = Future.successful(v)
 
