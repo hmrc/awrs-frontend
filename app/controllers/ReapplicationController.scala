@@ -21,7 +21,7 @@ import connectors.AWRSNotificationConnector
 import controllers.auth.AwrsController
 import forms.AWRSEnums.ApplicationStatusEnum
 import forms.ReapplicationForm._
-import models.ApplicationStatus
+import models.{ApplicationStatus, StatusNotification}
 import org.joda.time.LocalDateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
@@ -38,66 +38,65 @@ object ReapplicationController extends ReapplicationController {
   override val authConnector = FrontendAuthConnector
   override val deEnrolService = DeEnrolService
   override val keyStoreService = KeyStoreService
+  override val awrsNotificationConnector = AWRSNotificationConnector
 }
 
 trait ReapplicationController extends AwrsController with LoggingUtils {
   val deEnrolService: DeEnrolService
   val save4LaterService: Save4LaterService
   val keyStoreService: KeyStoreService
+  val awrsNotificationConnector: AWRSNotificationConnector
 
   private final lazy val MinReturnHours = 24
 
   def show = async {
-    implicit user => implicit request =>
-      checkValidApplicationStatus
+    implicit user =>
+      implicit request =>
+        val applicationStatus = ApplicationStatus(ApplicationStatusEnum.blankString, LocalDateTime.now())
+        // check that the user has not returned within the specified amount of hours since being revoked or rejected
+
+        val fmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss")
+        awrsNotificationConnector.fetchNotificationCache flatMap {
+          case Some(notification) => {
+            val storedDateString: String = notification.storageDatetime.getOrElse("")
+            if (storedDateString.isEmpty()) {
+              Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+            }
+            else {
+              val storedDate: LocalDateTime = fmt.parseLocalDateTime(storedDateString)
+              storedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours)) match {
+                case true => Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+                case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
+              }
+            }
+          }
+          case _ => Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+        }
   }
 
   def submit = async {
-    implicit user => implicit request =>
-      reapplicationForm.bindFromRequest.fold(
-        formWithErrors =>
-          Future.successful(BadRequest(views.html.awrs_reapplication_confirmation(formWithErrors)))
-        ,
-        success => for {
-          _ <- deEnrolService.deEnrolAWRS(AccountUtils.getAwrsRefNo.toString(), getBusinessName.get, getBusinessType.get)
-          _ <- deEnrolService.refreshProfile
-          _ <- save4LaterService.mainStore.removeAll
-          _ <- save4LaterService.api.removeAll
-          _ <- keyStoreService.removeAll
-        } yield Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))).removingFromSession(
-          AwrsSessionKeys.sessionBusinessType,
-          AwrsSessionKeys.sessionBusinessName,
-          AwrsSessionKeys.sessionPreviousLocation,
-          AwrsSessionKeys.sessionCurrentLocation,
-          AwrsSessionKeys.sessionStatusType,
-          AwrsSessionKeys.sessionAwrsRefNo,
-          AwrsSessionKeys.sessionJouneyStartLocation,
-          AwrsSessionKeys.sessionSectionStatus
+    implicit user =>
+      implicit request =>
+        reapplicationForm.bindFromRequest.fold(
+          formWithErrors =>
+            Future.successful(BadRequest(views.html.awrs_reapplication_confirmation(formWithErrors)))
+          ,
+          success => for {
+            _ <- deEnrolService.deEnrolAWRS(AccountUtils.getAwrsRefNo.toString(), getBusinessName.get, getBusinessType.get)
+            _ <- deEnrolService.refreshProfile
+            _ <- save4LaterService.mainStore.removeAll
+            _ <- save4LaterService.api.removeAll
+            _ <- keyStoreService.removeAll
+          } yield Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))).removingFromSession(
+            AwrsSessionKeys.sessionBusinessType,
+            AwrsSessionKeys.sessionBusinessName,
+            AwrsSessionKeys.sessionPreviousLocation,
+            AwrsSessionKeys.sessionCurrentLocation,
+            AwrsSessionKeys.sessionStatusType,
+            AwrsSessionKeys.sessionAwrsRefNo,
+            AwrsSessionKeys.sessionJouneyStartLocation,
+            AwrsSessionKeys.sessionSectionStatus
+          )
         )
-      )
-  }
-
-  def checkValidApplicationStatus(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
-  val applicationStatus = ApplicationStatus(ApplicationStatusEnum.blankString,LocalDateTime.now())
-    // check that the user has not returned within the specified amount of hours since being revoked or rejected
-    val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
-    val fmt: DateTimeFormatter = DateTimeFormat.forPattern(dateFormat)
-    AWRSNotificationConnector.fetchNotificationCache flatMap {
-      case Some(notification) => {
-        val storedDateString: String = notification.storageDatetime.getOrElse("")
-        if (storedDateString.isEmpty()) {
-          Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
-        }
-        else {
-          val storedDate: LocalDateTime = fmt.parseLocalDateTime(storedDateString)
-          storedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours)) match {
-            case true => Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
-            case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
-
-          }
-        }
-      }
-      case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
-    }
   }
 }
