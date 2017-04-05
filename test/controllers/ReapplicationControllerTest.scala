@@ -91,15 +91,38 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
         document.getElementById("withdrawal-confirmation-title").text() should be(Messages("awrs.reapplication.confirm_page.heading"))
       }
     }
+
+    "redirect to re-application confirm page if a date is not found" in {
+      showWithException(testStatusNotification(StatusContactType.Revoked, storageDatetime = None)) { result =>
+        status(result) shouldBe 200
+        val document = Jsoup.parse(contentAsString(result))
+        document.getElementById("withdrawal-confirmation-title").text() should be(Messages("awrs.reapplication.confirm_page.heading"))
+      }
+    }
+
+    "redirect to re-application confirm page if a notification is not found" in {
+      showWithException(None) { result =>
+        status(result) shouldBe 200
+        val document = Jsoup.parse(contentAsString(result))
+        document.getElementById("withdrawal-confirmation-title").text() should be(Messages("awrs.reapplication.confirm_page.heading"))
+      }
+    }
   }
 
   def testRequest(reapplication: ReapplicationConfirmation) =
     TestUtil.populateFakeRequest[ReapplicationConfirmation](FakeRequest(), ReapplicationForm.reapplicationForm, reapplication)
 
-  def testStatusNotification(contactType: StatusContactType = StatusContactType.Rejected, storageDatetime: LocalDateTime = LocalDateTime.now()) = {
-    val fmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss")
-    val storageDatetimeString = fmt.print(storageDatetime)
-    StatusNotification(Some("reg"), Some("contact"), Some(contactType), None, Some(storageDatetimeString))
+  def testStatusNotification(contactType: StatusContactType = StatusContactType.Rejected,
+                             storageDatetime: Option[LocalDateTime] = Some(LocalDateTime.now())) = {
+    storageDatetime match {
+      case Some(storageDatetime) => {
+        val fmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val storageDatetimeString = fmt.print(storageDatetime)
+        StatusNotification(Some("reg"), Some("contact"), Some(contactType), None, Some(storageDatetimeString))
+      }
+      case _ => StatusNotification(Some("reg"), Some("contact"), Some(contactType), None, None)
+    }
+
   }
 
   private def showWithException(statusNotification: Option[StatusNotification] = None)(test: Future[Result] => Any) {

@@ -70,7 +70,7 @@ trait ReapplicationController extends AwrsController with LoggingUtils {
               }
             }
           }
-          case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
+          case _ => Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
         }
   }
 
