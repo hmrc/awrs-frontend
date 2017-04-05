@@ -101,15 +101,15 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val revokeJSon = """{
                        "registrationNumber": "XXAW000001234560",
                        "contactNumber": "123456789012",
-                       "contactType": "LTD",
-                       "status":"MindedToReject",
+                       "contactType": "REVR",
+                       "status":"08",
                        "storageDatetime":"2017-04-01T0013:07:11"
                        }"""
     val revokeOldJSon = """{
                        "registrationNumber": "XXAW000001234560",
                        "contactNumber": "123456789012",
-                       "contactType": "LTD",
-                       "status":"MindedToReject"
+                       "contactType": "REVR",
+                       "status":"08"
                        }"""
 
     "parse old StatusNotification model correctly with new field(storageDatetime) with the new model" in {
