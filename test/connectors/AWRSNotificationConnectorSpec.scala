@@ -98,6 +98,31 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
     def testDeleteCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.deleteFromNotificationCache
 
+    val revokeJSon = """{
+                       "registrationNumber": "XXAW000001234560",
+                       "contactNumber": "123456789012",
+                       "contactType": "LTD",
+                       "status":"MindedToReject",
+                       "storageDatetime":"2017-04-01T0013:07:11"
+                       }"""
+    val revokeOldJSon = """{
+                       "registrationNumber": "XXAW000001234560",
+                       "contactNumber": "123456789012",
+                       "contactType": "LTD",
+                       "status":"MindedToReject"
+                       }"""
+
+    "parse old StatusNotification model correctly with new field(storageDatetime) with the new model" in {
+      val statusNotification = Json.parse(revokeOldJSon).as[StatusNotification]
+      statusNotification.storageDatetime shouldBe None
+    }
+
+    "parse StatusNotification model correctly" in {
+      val statusNotification = Json.parse(revokeJSon).as[StatusNotification]
+      statusNotification.storageDatetime shouldBe Some("2017-04-01T0013:07:11")
+    }
+
+
     "return status as OK, for successful fetch" in {
       mockFetchResponse(OK, mindedToRejectJson)
       val result = testFetchCall
