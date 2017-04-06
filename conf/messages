@@ -436,6 +436,7 @@ awrs.business_details.error.year_toSmall=You must enter the year in full
 
 # Business registration details
 #============================================================
+awrs.business_registration_details.title=Business registration details
 awrs.business_registration_details.heading={0} your business registration details
 awrs.business_registration_details.heading.group={0} your group business registration details
 awrs.business_registration_details.heading.partnership={0} your partnership business registration details
