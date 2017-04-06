@@ -222,6 +222,23 @@ object TestUtil {
 
   val testBusinessPartnerName = "BusinessPartner"
 
+  def cachedData(legalEntity: BusinessType = testLegalEntity) =
+    CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
+      "businessCustomerDetails" -> Json.toJson(testReviewDetails),
+      businessDetailsName -> Json.toJson(testBusinessDetails()),
+      businessRegistrationDetailsName -> Json.toJson(testBusinessRegistrationDetails(legalEntity = legalEntity.legalEntity.get)),
+      placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
+      businessContactsName -> Json.toJson(testBusinessContactsDefault()),
+      "partnerDetails" -> Json.toJson(testPartnerDetails),
+      "additionalBusinessPremises" -> Json.toJson(testAdditionalPremisesList),
+      "businessDirectors" -> Json.toJson(testBusinessDirectors),
+      tradingActivityName -> Json.toJson(testTradingActivity()),
+      productsName -> Json.toJson(testProducts()),
+      "suppliers" -> Json.toJson(testSupplierAddressList),
+      "applicationDeclaration" -> Json.toJson(testApplicationDeclaration),
+      groupMembersName -> Json.toJson(testGroupMemberDetails)
+    ))
+
   def dynamicLegalEntity(legalEntity: String) = legalEntity match {
     case "SOP" => BusinessType(Some(legalEntity), Some(true), None)
     case _ => BusinessType(Some(legalEntity), None, Some(true))

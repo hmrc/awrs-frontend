@@ -29,11 +29,13 @@ import models._
 import org.joda.time.LocalDateTime
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.apis.AwrsAPI10
-import services.{DeEnrolService, KeyStoreService, Save4LaterService}
+import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import uk.gov.hmrc.play.frontend.auth.AuthContext
+import utils.CacheUtil.cacheUtil
 
 import scala.concurrent.Future
 
@@ -45,6 +47,7 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
 
   val api10: AwrsAPI10
   val deEnrolService: DeEnrolService
+  val emailService: EmailService
 
 
   private def statusPermission(permittedResult: Future[Result])(implicit request: Request[AnyContent]): Future[Result] =
@@ -71,7 +74,7 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
       )
   }
 
-  def submitReason = async {
+  def submitReason: Action[AnyContent] = async {
     implicit user => implicit request =>
       deRegistrationReasonForm.bindFromRequest.fold(
         formWithErrors =>
@@ -98,7 +101,7 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
       )
   }
 
-  def submitDate = async {
+  def submitDate: Action[AnyContent] = async {
     implicit user => implicit request =>
       deRegistrationForm.bindFromRequest.fold(
         formWithErrors =>
@@ -111,7 +114,8 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
       )
   }
 
-  def confirmationJourneyPrerequisiteCheck(callToAction: (TupleDate) => Future[Result])(implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] =
+  def confirmationJourneyPrerequisiteCheck(callToAction: (TupleDate) => Future[Result])
+                                          (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] =
     statusPermission(
       keyStoreService.fetchDeRegistrationReason flatMap {
         // if de-registration date has not been given then redirect back to the date page
@@ -126,7 +130,8 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
 
   def showConfirm: Action[AnyContent] = asyncRestrictedAccess {
     implicit user => implicit request =>
-      confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) => Future.successful(Ok(views.html.awrs_de_registration_confirm(deRegistrationConfirmationForm, proposedEndDate))))
+      confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
+        Future.successful(Ok(views.html.awrs_de_registration_confirm(deRegistrationConfirmationForm, proposedEndDate))))
   }
 
   def callToAction: Action[AnyContent] = async {
@@ -147,7 +152,10 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
                     _ <- deEnrolService.refreshProfile
                     _ <- save4LaterService.mainStore.removeAll
                     _ <- save4LaterService.api.removeAll
-                    _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.DeRegistered, LocalDateTime.now()))
+                    _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.DeRegistered,
+                      LocalDateTime.now()))
+                    cache <- save4LaterService.mainStore.fetchAll
+                    _ <- emailService.sendCancellationEmail(cache.get.getBusinessContacts.get.email.get)
                   } yield Redirect(routes.DeRegistrationController.showConfirmation())
 
                 def callAPI10(success: () => Future[Result]): Future[Result] = api10.deRegistration() flatMap {
@@ -182,7 +190,8 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
 
   def showConfirmation(printFriendly: Boolean): Action[AnyContent] = asyncRestrictedAccess {
     implicit user => implicit request =>
-      confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) => Future.successful(Ok(views.html.awrs_de_registration_confirmation_evidence(proposedEndDate, printFriendly))))
+      confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) => Future.successful
+      (Ok(views.html.awrs_de_registration_confirmation_evidence(proposedEndDate, printFriendly))))
   }
 
   def returnToIndex: Action[AnyContent] = async {
@@ -197,4 +206,5 @@ object DeRegistrationController extends DeRegistrationController {
   override val api10 = AwrsAPI10
   override val deEnrolService = DeEnrolService
   override val save4LaterService = Save4LaterService
+  override val emailService = EmailService
 }
