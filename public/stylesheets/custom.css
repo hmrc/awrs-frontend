@@ -482,6 +482,7 @@ select option {
     margin-top: 0.4em;
     margin-bottom: 0.4em;
     font-size: 24px;
+    display: inline-block;
 }
 div #confirmation-date {
     font-size: 24px;

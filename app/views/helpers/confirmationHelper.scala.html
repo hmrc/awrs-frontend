@@ -5,12 +5,11 @@
 <div class="alert-complete" role="alert">
     <h1 id="confirmation">
         <span class="heading-large">
-            <img height="24" width="24" class="inline" aria-hidden="true" src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="">
-            <span class="visuallyhidden">Application completed.</span>
-            @Messages(text_1) @request.session.get("businessName").getOrElse("")<br/>
+            <img height="24" width="24" class="inline" aria-hidden="true" src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="" aria-label="tick">
+            @Messages(text_1) @request.session.get("businessName").getOrElse("")
         </span>
         <span class="confirmation-description">@Messages(text_2)
-        @if(submissionOrResubmissionDate.isDefined){<br/>@submissionOrResubmissionDate}
+        @if(submissionOrResubmissionDate.isDefined){ @submissionOrResubmissionDate}
         </span>
     </h1>
 </div>
