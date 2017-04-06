@@ -82,8 +82,7 @@ trait ReapplicationController extends AwrsController with LoggingUtils {
             Future.successful(BadRequest(views.html.awrs_reapplication_confirmation(formWithErrors)))
           ,
           success => {
-            val answer = success.answer.get
-            answer match {
+            success.answer.get match {
               case "Yes" => {
                 for {
                   _ <- deEnrolService.deEnrolAWRS(AccountUtils.getAwrsRefNo.toString(), getBusinessName.get, getBusinessType.get)
