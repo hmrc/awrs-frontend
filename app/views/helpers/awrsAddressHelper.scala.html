@@ -26,12 +26,11 @@
            InputTypeTextParams(
                field("addressLine1"),
                 inputId = field("addressLine1").name,
-                label = Messages("awrs.generic.address"),
+                label = Messages("awrs.generic.address_line1"),
                 maxLength = AwrsFieldConfig.addressLine1Len.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
-                required = true,
-                additionalHiddenLabelText = Messages("awrs.generic.address_line1")
+                required = true
             )
         )
         @awrsInputTypeText(
@@ -41,6 +40,7 @@
                 label = Messages("awrs.generic.address_line2"),
                 maxLength = AwrsFieldConfig.addressLine2Len.toString,
                 wrapperClass = wrapperClass,
+                labelHighlight = true,
                 required = true
             )
         )
@@ -51,6 +51,7 @@
                 label = Messages("awrs.generic.address_line3"),
                 maxLength = AwrsFieldConfig.addressLine3Len.toString,
                 wrapperClass = wrapperClass,
+                labelHighlight = true,
                 required = false
             )
         )
@@ -61,6 +62,7 @@
                 label = Messages("awrs.generic.address_line4"),
                 maxLength = AwrsFieldConfig.addressLine4Len.toString,
                 wrapperClass = wrapperClass,
+                labelHighlight = true,
                 required = false
             )
         )
