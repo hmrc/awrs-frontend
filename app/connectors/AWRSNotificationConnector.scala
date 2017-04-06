@@ -106,7 +106,10 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     }
   }
 
-  private def mapResult(auditTxName: String, awrsRefNo: String, result: Future[HttpResponse])(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[HttpResponse]] =
+  private def mapResult(auditTxName: String,
+                        awrsRefNo: String,
+                        result: Future[HttpResponse])
+                       (implicit user: AuthContext, hc: HeaderCarrier): Future[Option[HttpResponse]] =
     result map {
       response =>
         response.status match {
