@@ -11,6 +11,9 @@
         @backLink()
         @errorSummaryTemplate(reapplicationForm)
         <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@Messages("awrs.reapplication.confirm_page.heading")</h1>
+        <p class="lede">
+            @Messages("awrs.reapplication.confirm_page.text")
+        </p>
 
         @form(action = controllers.routes.ReapplicationController.submit) {
             <div id="withdrawal-confirmation" class="form-group">
@@ -25,6 +28,8 @@
                     )
                 )
             </div>
+
+
             @awrsSubmitButton(Messages("awrs.generic.confirmation.button"))(id = "withdraw-application", classAttr = "button")
         }
     </div>

@@ -81,22 +81,32 @@ trait ReapplicationController extends AwrsController with LoggingUtils {
           formWithErrors =>
             Future.successful(BadRequest(views.html.awrs_reapplication_confirmation(formWithErrors)))
           ,
-          success => for {
-            _ <- deEnrolService.deEnrolAWRS(AccountUtils.getAwrsRefNo.toString(), getBusinessName.get, getBusinessType.get)
-            _ <- deEnrolService.refreshProfile
-            _ <- save4LaterService.mainStore.removeAll
-            _ <- save4LaterService.api.removeAll
-            _ <- keyStoreService.removeAll
-          } yield Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))).removingFromSession(
-            AwrsSessionKeys.sessionBusinessType,
-            AwrsSessionKeys.sessionBusinessName,
-            AwrsSessionKeys.sessionPreviousLocation,
-            AwrsSessionKeys.sessionCurrentLocation,
-            AwrsSessionKeys.sessionStatusType,
-            AwrsSessionKeys.sessionAwrsRefNo,
-            AwrsSessionKeys.sessionJouneyStartLocation,
-            AwrsSessionKeys.sessionSectionStatus
-          )
+          success => {
+            val answer = success.answer.get
+            answer match {
+              case "Yes" => {
+                for {
+                  _ <- deEnrolService.deEnrolAWRS(AccountUtils.getAwrsRefNo.toString(), getBusinessName.get, getBusinessType.get)
+                  _ <- deEnrolService.refreshProfile
+                  _ <- save4LaterService.mainStore.removeAll
+                  _ <- save4LaterService.api.removeAll
+                  _ <- keyStoreService.removeAll
+                } yield Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))).removingFromSession(
+                  AwrsSessionKeys.sessionBusinessType,
+                  AwrsSessionKeys.sessionBusinessName,
+                  AwrsSessionKeys.sessionPreviousLocation,
+                  AwrsSessionKeys.sessionCurrentLocation,
+                  AwrsSessionKeys.sessionStatusType,
+                  AwrsSessionKeys.sessionAwrsRefNo,
+                  AwrsSessionKeys.sessionJouneyStartLocation,
+                  AwrsSessionKeys.sessionSectionStatus
+                )
+              }
+              case _ => {
+                Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))))
+              }
+            }
+          }
         )
   }
 }
