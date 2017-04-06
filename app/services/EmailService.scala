@@ -34,20 +34,20 @@ trait EmailService {
 
   def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, reference,awrsNotificationConnector.sendConfirmationEmail,isNewBusiness)
+    sendEmail(email,awrsNotificationConnector.sendConfirmationEmail,Some(reference),Some(isNewBusiness))
   }
 
-  def sendWithdrawnEmail(email: String, reference: String)
+  def sendWithdrawnEmail(email: String)
                         (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, reference,awrsNotificationConnector.sendWithdrawnEmail)
+    sendEmail(email,awrsNotificationConnector.sendWithdrawnEmail)
   }
 
-  def sendCancellationEmail(email: String, reference: String)
+  def sendCancellationEmail(email: String)
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, reference,awrsNotificationConnector.sendCancellationEmail)
+    sendEmail(email,awrsNotificationConnector.sendCancellationEmail)
   }
 
-  private def sendEmail(email: String, reference: String, sendEmail: (EmailRequest) => Future[Boolean],isNewBusiness: Boolean = false)
+  private def sendEmail(email: String, sendEmail: (EmailRequest) => Future[Boolean], reference: Option[String] = None, isNewBusiness: Option[Boolean] = None)
                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
     implicit def conv(v: ApiType): Future[ApiType] = Future.successful(v)
 
@@ -64,7 +64,7 @@ trait EmailService {
       case false => ApiTypes.API4
     }
     apiTypePromise flatMap { apiType =>
-      val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), reference, email, isNewBusiness = isNewBusiness)
+      val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness)
       sendEmail(emailRequest)
     }
   }

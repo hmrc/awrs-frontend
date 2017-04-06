@@ -100,7 +100,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   }
 
   private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier, user: AuthContext) = {
-    mapResult(auditTxt, emailRequest.reference, httpPost.POST(s"$serviceURL${uri}", emailRequest)).map {
+    mapResult(auditTxt, emailRequest.reference.fold("")(x => x), httpPost.POST(s"$serviceURL${uri}", emailRequest)).map {
       case Some(_) => true
       case _ => false
     }

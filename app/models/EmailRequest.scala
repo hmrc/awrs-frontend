@@ -23,7 +23,7 @@ import play.api.libs.json._
 
 import scala.util.{Failure, Success, Try}
 
-case class EmailRequest(apiType: ApiTypes.ApiType, businessName: String, reference: String, email: String, isNewBusiness: Boolean = false)
+case class EmailRequest(apiType: ApiTypes.ApiType, businessName: String, email: String, reference: Option[String] = None, isNewBusiness: Option[Boolean] = None)
 
 object ApiTypes extends Enumeration {
 

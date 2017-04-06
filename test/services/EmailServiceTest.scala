@@ -48,9 +48,9 @@ class EmailServiceTest extends AwrsUnitTestTraits
       val expected = EmailRequest(
         apiType = ApiTypes.API4,
         businessName = businessName,
-        reference = reference,
+        reference = Some(reference),
         email = email,
-        isNewBusiness = isNewBusiness
+        isNewBusiness = Some(isNewBusiness)
       )
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
@@ -68,9 +68,9 @@ class EmailServiceTest extends AwrsUnitTestTraits
       val expected = EmailRequest(
         apiType = ApiTypes.API6Pending,
         businessName = businessName,
-        reference = reference,
+        reference = Some(reference),
         email = email,
-        isNewBusiness = isNewBusiness
+        isNewBusiness = Some(isNewBusiness)
       )
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
@@ -88,9 +88,9 @@ class EmailServiceTest extends AwrsUnitTestTraits
       val expected = EmailRequest(
         apiType = ApiTypes.API6Approved,
         businessName = businessName,
-        reference = reference,
+        reference = Some(reference),
         email = email,
-        isNewBusiness = isNewBusiness
+        isNewBusiness = Some(isNewBusiness)
       )
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
@@ -108,9 +108,9 @@ class EmailServiceTest extends AwrsUnitTestTraits
       val expected = EmailRequest(
         apiType = ApiTypes.API6Approved,
         businessName = businessName,
-        reference = reference,
+        reference = Some(reference),
         email = email,
-        isNewBusiness = isNewBusiness
+        isNewBusiness = Some(isNewBusiness)
       )
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
@@ -128,11 +128,10 @@ class EmailServiceTest extends AwrsUnitTestTraits
       val expected = EmailRequest(
         apiType = ApiTypes.API8,
         businessName = businessName,
-        reference = reference,
         email = email
       )
       when(mockAWRSNotificationConnector.sendWithdrawnEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
-      val result = TestEmailService.sendWithdrawnEmail(email = email, reference = reference)
+      val result = TestEmailService.sendWithdrawnEmail(email = email)
 
       await(result) shouldBe true
     }
@@ -146,11 +145,10 @@ class EmailServiceTest extends AwrsUnitTestTraits
       val expected = EmailRequest(
         apiType = ApiTypes.API10,
         businessName = businessName,
-        reference = reference,
         email = email
       )
       when(mockAWRSNotificationConnector.sendCancellationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
-      val result = TestEmailService.sendCancellationEmail(email = email, reference = reference)
+      val result = TestEmailService.sendCancellationEmail(email = email)
 
       await(result) shouldBe true
     }
