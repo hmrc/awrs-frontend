@@ -38,7 +38,7 @@
     businessType.getOrElse("") match {
         case "Partnership" | "LP" | "LLP" => Messages("awrs.business_details.title.partnership")
         case "LLP_GRP" | "LTD_GRP" => Messages("awrs.business_details.title.group")
-        case _ => Messages("awrs.business_details.title.generic")
+        case _ => Messages("awrs.business_registration_details.title")
     }
 }
 
