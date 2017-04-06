@@ -960,7 +960,7 @@ awrs.view_application.application_declaration_text=Your application declaration
 #===========================================================
 awrs.delete.confirmation_title=Confirm deletion
 awrs.delete.confirmation_heading=Are you sure you want to delete this {0}?
-awrs.delete.confirmation.error.empty.summary=There is a problem with your request to delete this record
+awrs.delete.confirmation.error.empty.summary=There is a problem with the question
 awrs.delete.confirmation.error.empty=Confirm if you want to delete this record
 
 # Reapplication confirmation Page messages
