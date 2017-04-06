@@ -63,7 +63,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
 
   "Reapplication Controller" should {
     "submit confirmation and redirect to root home page when yes selected" in {
-      submitAuthorisedUserYes(testRequest(ReapplicationConfirmation(AWRSEnums.BooleanRadioEnum.YesString))) {
+      submitAuthorisedUser(testRequest(ReapplicationConfirmation(AWRSEnums.BooleanRadioEnum.YesString))) {
         result =>
           status(result) shouldBe 303
           redirectLocation(result).get should include("/alcohol-wholesale-scheme")
@@ -71,7 +71,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     }
 
     "submit confirmation and redirect to root home page when no selected" in {
-      submitAuthorisedUserNo(testRequest(ReapplicationConfirmation(AWRSEnums.BooleanRadioEnum.NoString))) {
+      submitAuthorisedUser(testRequest(ReapplicationConfirmation(AWRSEnums.BooleanRadioEnum.NoString))) {
         result =>
           status(result) shouldBe 303
           redirectLocation(result).get should be("/alcohol-wholesale-scheme")
@@ -139,15 +139,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def submitAuthorisedUserNo(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
-    setupMockSave4LaterService()
-    setupMockApiSave4LaterService()
-    val result = TestReapplicationController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD"))
-    test(result)
-  }
-
-  def submitAuthorisedUserYes(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
     setupMockSave4LaterService()
     setupMockApiSave4LaterService()
