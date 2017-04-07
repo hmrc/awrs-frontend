@@ -327,7 +327,7 @@
     $("summary").keypress(
         function(event) {
             event = event || window.event
-            if (event.preventDefault && ( event.which != 13 || ie) ) {
+            if (event.preventDefault && ( event.which != 13 && ie) ) {
                 event.preventDefault();
             } else { // IE<9 variant:
                 event.returnValue = false;

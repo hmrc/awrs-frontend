@@ -811,3 +811,6 @@ html.noScroll {
     clear: both;
 }
 .dropdown-menu .block-label {width:100%;box-sizing: border-box;}
+
+details {display: block;}
+.summary {display: list-item;}
