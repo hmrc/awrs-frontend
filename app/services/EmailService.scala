@@ -34,41 +34,42 @@ trait EmailService {
 
   def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email,awrsNotificationConnector.sendConfirmationEmail,Some(reference),Some(isNewBusiness))
-  }
-
-  def sendWithdrawnEmail(email: String)
-                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email,awrsNotificationConnector.sendWithdrawnEmail)
-  }
-
-  def sendCancellationEmail(email: String)
-                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email,awrsNotificationConnector.sendCancellationEmail)
-  }
-
-  private def sendEmail(email: String, sendEmail: (EmailRequest) => Future[Boolean], reference: Option[String] = None, isNewBusiness: Option[Boolean] = None)
-                       (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
     implicit def conv(v: ApiType): Future[ApiType] = Future.successful(v)
 
     val apiTypePromise: Future[ApiType] = AccountUtils.hasAwrs match {
       case true =>
         request.getSessionStatus match {
           case Some(Pending) => ApiTypes.API6Pending
-          case Some(Withdrawal) => ApiTypes.API8
-          case Some(DeRegistered) => ApiTypes.API10
           case Some(Approved | ApprovedWithConditions) => ApiTypes.API6Approved
           case Some(status) => Future.failed(new InternalServerException(s"Unexpected status found: $status"))
           case None => Future.failed(new InternalServerException("Status is missing from session"))
         }
       case false => ApiTypes.API4
     }
+
     apiTypePromise flatMap { apiType =>
-      val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness)
-      sendEmail(emailRequest)
+      val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), email, Some(reference), Some(isNewBusiness))
+      SendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType, Some(reference), Some(isNewBusiness))
     }
   }
 
+  def sendWithdrawnEmail(email: String)
+                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    SendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
+  }
+
+  def sendCancellationEmail(email: String)
+                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    SendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10)
+  }
+
+  private def SendEmail(email: String, sendEmail: (EmailRequest) => Future[Boolean],
+                        apiTypePromise: ApiTypes.ApiType, reference: Option[String] = None,
+                        isNewBusiness: Option[Boolean] = None)
+                       (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
+      val emailRequest = EmailRequest(apiTypePromise, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness)
+      sendEmail(emailRequest)
+    }
 }
 
 object EmailService extends EmailService {

@@ -150,12 +150,12 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
                 def success(): Future[Result] =
                   for {
                     _ <- deEnrolService.refreshProfile
+                    cache <- save4LaterService.mainStore.fetchAll
+                    _ <- emailService.sendCancellationEmail(cache.get.getBusinessContacts.get.email.get)
                     _ <- save4LaterService.mainStore.removeAll
                     _ <- save4LaterService.api.removeAll
                     _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.DeRegistered,
                       LocalDateTime.now()))
-                    cache <- save4LaterService.mainStore.fetchAll
-                    _ <- emailService.sendCancellationEmail(cache.get.getBusinessContacts.get.email.get)
                   } yield Redirect(routes.DeRegistrationController.showConfirmation())
 
                 def callAPI10(success: () => Future[Result]): Future[Result] = api10.deRegistration() flatMap {

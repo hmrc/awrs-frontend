@@ -121,10 +121,10 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
               denrolResult flatMap {
                 case (true, api8Response: WithdrawalResponse) =>
                   for {
-                    _ <- save4LaterService.mainStore.removeAll
-                    _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.Withdrawn, LocalDateTime.now()))
                     cache <- save4LaterService.mainStore.fetchAll
                     _ <- emailService.sendWithdrawnEmail(cache.get.getBusinessContacts.get.email.get)
+                    _ <- save4LaterService.mainStore.removeAll
+                    _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.Withdrawn, LocalDateTime.now()))
                   } yield Redirect(controllers.routes.WithdrawalController.showWithdrawalConfirmation()) addProcessingDateToSession api8Response.processingDate
                 case _ =>
                   err("call to government gateway de-enrol failed")
