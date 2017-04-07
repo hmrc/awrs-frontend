@@ -141,10 +141,10 @@
       var openAttr = details.getAttribute('open') !== null
       if (openAttr === true) {
         details.__summary.setAttribute('aria-expanded', 'true')
-        details.__content.setAttribute('aria-hidden', 'false')
+        details.__content.setAttribute('aria-hidden', 'true')
       } else {
         details.__summary.setAttribute('aria-expanded', 'false')
-        details.__content.setAttribute('aria-hidden', 'true')
+        details.__content.setAttribute('aria-hidden', 'false')
         if (!NATIVE_DETAILS) {
           details.__content.style.display = 'none'
         }
@@ -175,8 +175,8 @@
     // Define a statechange function that updates aria-expanded and style.display
     // Also update the arrow position
     function statechange (summary) {
-      var expanded = summary.__details.__summary.getAttribute('aria-expanded') === 'true'
-      var hidden = summary.__details.__content.getAttribute('aria-hidden') === 'true'
+      var expanded = summary.__details.__summary.getAttribute('aria-expanded') === 'false'
+      var hidden = summary.__details.__content.getAttribute('aria-hidden') === 'false'
 
       summary.__details.__summary.setAttribute('aria-expanded', (expanded ? 'false' : 'true'))
       summary.__details.__content.setAttribute('aria-hidden', (hidden ? 'false' : 'true'))
