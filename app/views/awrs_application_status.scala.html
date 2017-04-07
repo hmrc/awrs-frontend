@@ -42,6 +42,7 @@
             @params.status.formBundleStatus match {
                 case Rejected | Revoked | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal => {
                     <p><a href="@controllers.routes.ReapplicationController.show()">@Html(Messages("awrs.generic.create_new_application_link"))</a></p>
+                    <br>
                     <div class="form-group print-hidden">
                         <a id="view-application"
                            class="button print-hidden"
