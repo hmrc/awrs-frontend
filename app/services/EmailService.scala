@@ -49,26 +49,26 @@ trait EmailService {
 
     apiTypePromise flatMap { apiType =>
       val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), email, Some(reference), Some(isNewBusiness))
-      SendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType, Some(reference), Some(isNewBusiness))
+      sendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType, Some(reference), Some(isNewBusiness))
     }
   }
 
   def sendWithdrawnEmail(email: String)
                         (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    SendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
+    sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
   }
 
   def sendCancellationEmail(email: String)
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    SendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10)
+    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10)
   }
 
-  private def SendEmail(email: String, sendEmail: (EmailRequest) => Future[Boolean],
+  private def sendEmail(email: String, doEmailCall: (EmailRequest) => Future[Boolean],
                         apiTypePromise: ApiTypes.ApiType, reference: Option[String] = None,
                         isNewBusiness: Option[Boolean] = None)
                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
       val emailRequest = EmailRequest(apiTypePromise, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness)
-      sendEmail(emailRequest)
+      doEmailCall(emailRequest)
     }
 }
 
