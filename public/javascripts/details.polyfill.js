@@ -10,6 +10,8 @@
   'use strict'
 
   var NATIVE_DETAILS = typeof document.createElement('details').open === 'boolean'
+  var KEY_ENTER = 13
+  var KEY_SPACE = 32
 
   // Add event construct for modern browsers or IE
   // which fires the callback with a pre-converted target reference
@@ -25,25 +27,50 @@
     }
   }
 
+  // Cross-browser character code / key pressed
+  function charCode (e) {
+    return (typeof e.which === 'number') ? e.which : e.keyCode
+  }
+
+  // Cross-browser preventing default action
+  function preventDefault (e) {
+    if (e.preventDefault) {
+      e.preventDefault()
+    } else {
+      e.returnValue = false
+    }
+  }
+
   // Handle cross-modal click events
   function addClickEvent (node, callback) {
-    // Prevent space(32) from scrolling the page
     addEvent(node, 'keypress', function (e, target) {
-      if (target.nodeName === 'SUMMARY') {
-        if (e.keyCode === 32) {
-          if (e.preventDefault) {
-            e.preventDefault()
+      // When the key gets pressed - check if it is enter or space
+      if (charCode(e) === KEY_ENTER || charCode(e) === KEY_SPACE) {
+        if (target.nodeName.toLowerCase() === 'summary') {
+          // Prevent space from scrolling the page
+          // and enter from submitting a form
+          preventDefault(e)
+          // Click to let the click event do all the necessary action
+          if (target.click) {
+            target.click()
           } else {
-            e.returnValue = false
+            // except Safari 5.1 and under don't support .click() here
+            callback(e, target)
           }
         }
       }
     })
-    // When the key comes up - check if it is enter(13) or space(32)
+
+    // Prevent keyup to prevent clicking twice in Firefox when using space key
     addEvent(node, 'keyup', function (e, target) {
-      if (e.keyCode === 13 || e.keyCode === 32) { callback(e, target) }
+      if (charCode(e) === KEY_SPACE) {
+        if (target.nodeName === 'SUMMARY') {
+          preventDefault(e)
+        }
+      }
     })
-    addEvent(node, 'mouseup', function (e, target) {
+
+    addEvent(node, 'click', function (e, target) {
       callback(e, target)
     })
   }
@@ -114,10 +141,10 @@
       var openAttr = details.getAttribute('open') !== null
       if (openAttr === true) {
         details.__summary.setAttribute('aria-expanded', 'true')
-        details.__content.setAttribute('aria-hidden', 'false')
+        details.__content.setAttribute('aria-hidden', 'true')
       } else {
         details.__summary.setAttribute('aria-expanded', 'false')
-        details.__content.setAttribute('aria-hidden', 'true')
+        details.__content.setAttribute('aria-hidden', 'false')
         if (!NATIVE_DETAILS) {
           details.__content.style.display = 'none'
         }
@@ -148,8 +175,8 @@
     // Define a statechange function that updates aria-expanded and style.display
     // Also update the arrow position
     function statechange (summary) {
-      var expanded = summary.__details.__summary.getAttribute('aria-expanded') === 'true'
-      var hidden = summary.__details.__content.getAttribute('aria-hidden') === 'true'
+      var expanded = summary.__details.__summary.getAttribute('aria-expanded') === 'false'
+      var hidden = summary.__details.__content.getAttribute('aria-hidden') === 'false'
 
       summary.__details.__summary.setAttribute('aria-expanded', (expanded ? 'false' : 'true'))
       summary.__details.__content.setAttribute('aria-hidden', (hidden ? 'false' : 'true'))
