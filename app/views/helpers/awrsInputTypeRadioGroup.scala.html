@@ -125,9 +125,9 @@
         <div>
             @params.radioOptions.map { case (value, label) =>
                 @defining(s"${params.field.name}-${value.toLowerCase.replace(" ", "_")}") { inputId =>
-                    <label for="@inputId" class="block-label @labelClass @params.field.value.filter(_ == value).map { _ => selected }">
+                    <label tabindex="0" for="@inputId" class="block-label @labelClass @params.field.value.filter(_ == value).map { _ => selected }">
                         @if(!labelAfter)@{addLabelIfSpecified(label, params)}
-                        <input type="radio" id="@inputId" name="@params.field.name" value="@value" @inputClass @dataAttributes @params.field.value.filter(_ == value).map { _ => checked="checked"}>
+                        <input tabindex="1" type="radio" id="@inputId" name="@params.field.name" value="@value" @inputClass @dataAttributes @params.field.value.filter(_ == value).map { _ => checked="checked"}>
                         @if(labelAfter)@{addLabelIfSpecified(label, params)}
                         @if(!optionMessages.isEmpty){
                             @optionMessages.get.filter(c=>c._1 == inputId).map( item =>
