@@ -37,6 +37,9 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   val cacheURI = s"$baseURI/cache"
   val markAsViewedURI = "/viewed"
   val confirmationEmailURI = s"$baseURI/email/confirmation"
+  val cancellationEmailURI = s"$baseURI/email/cancellation"
+  val withdrawnEmailURI = s"$baseURI/email/withdrawn"
+
   val httpGet: HttpGet
   val httpDelete: HttpDelete
   val httpPut: HttpPut
@@ -84,13 +87,29 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     }
   }
 
-  def sendConfirmationEmail(emailRequest: ConfirmationEmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] =
-    mapResult(auditConfirmationEmailTxName, emailRequest.reference, httpPost.POST(s"$serviceURL$confirmationEmailURI", emailRequest)).map {
+  def sendConfirmationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+    doEmailCall(emailRequest,auditConfirmationEmailTxName,confirmationEmailURI)
+  }
+
+  def sendCancellationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+    doEmailCall(emailRequest,auditCancellationEmailTxName,cancellationEmailURI)
+  }
+
+  def sendWithdrawnEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+    doEmailCall(emailRequest,auditWithdrawnEmailTxtName,withdrawnEmailURI)
+  }
+
+  private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier, user: AuthContext) = {
+    mapResult(auditTxt, emailRequest.reference.fold("")(x => x), httpPost.POST(s"$serviceURL${uri}", emailRequest)).map {
       case Some(_) => true
       case _ => false
     }
+  }
 
-  private def mapResult(auditTxName: String, awrsRefNo: String, result: Future[HttpResponse])(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[HttpResponse]] =
+  private def mapResult(auditTxName: String,
+                        awrsRefNo: String,
+                        result: Future[HttpResponse])
+                       (implicit user: AuthContext, hc: HeaderCarrier): Future[Option[HttpResponse]] =
     result map {
       response =>
         response.status match {

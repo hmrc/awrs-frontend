@@ -18,8 +18,8 @@ package services
 
 import connectors.AWRSNotificationConnector
 import models.ApiTypes.ApiType
-import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
-import models.{ApiTypes, ConfirmationEmailRequest}
+import models.FormBundleStatus.{Approved, ApprovedWithConditions, DeRegistered, Pending, Withdrawal}
+import models.{ApiTypes, EmailRequest}
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
@@ -32,8 +32,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait EmailService {
   val awrsNotificationConnector: AWRSNotificationConnector
 
-  def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+  def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)
+                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
     implicit def conv(v: ApiType): Future[ApiType] = Future.successful(v)
+
     val apiTypePromise: Future[ApiType] = AccountUtils.hasAwrs match {
       case true =>
         request.getSessionStatus match {
@@ -44,12 +46,30 @@ trait EmailService {
         }
       case false => ApiTypes.API4
     }
+
     apiTypePromise flatMap { apiType =>
-      val emailRequest = ConfirmationEmailRequest(apiType, request.getBusinessName.fold("")(x => x), reference, email, isNewBusiness = isNewBusiness)
-      awrsNotificationConnector.sendConfirmationEmail(emailRequest = emailRequest)
+      val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), email, Some(reference), Some(isNewBusiness))
+      sendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType, Some(reference), Some(isNewBusiness))
     }
   }
 
+  def sendWithdrawnEmail(email: String)
+                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
+  }
+
+  def sendCancellationEmail(email: String)
+                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10)
+  }
+
+  private def sendEmail(email: String, doEmailCall: (EmailRequest) => Future[Boolean],
+                        apiTypePromise: ApiTypes.ApiType, reference: Option[String] = None,
+                        isNewBusiness: Option[Boolean] = None)
+                       (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
+      val emailRequest = EmailRequest(apiTypePromise, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness)
+      doEmailCall(emailRequest)
+    }
 }
 
 object EmailService extends EmailService {

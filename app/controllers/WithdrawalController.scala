@@ -25,14 +25,18 @@ import forms.WithdrawalReasonForm._
 import models.FormBundleStatus.Pending
 import models.{ApplicationStatus, WithdrawalResponse}
 import org.joda.time.LocalDateTime
-import services.apis.{AwrsAPI8, AwrsAPI9}
-import services.{DeEnrolService, KeyStoreService, Save4LaterService}
-import utils.{AccountUtils, LoggingUtils}
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.apis.{AwrsAPI8, AwrsAPI9}
+import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
+import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.http.HeaderCarrier
+import utils.CacheUtil.cacheUtil
+import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.Future
+
 
 object WithdrawalController extends WithdrawalController {
   override val save4LaterService = Save4LaterService
@@ -41,6 +45,7 @@ object WithdrawalController extends WithdrawalController {
   override val deEnrolService = DeEnrolService
   override val api8 = AwrsAPI8
   override val api9 = AwrsAPI9
+  override val emailService = EmailService
 }
 
 trait WithdrawalController extends AwrsController with LoggingUtils {
@@ -49,8 +54,9 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
   val keyStoreService: KeyStoreService
   val deEnrolService: DeEnrolService
   val save4LaterService: Save4LaterService
+  val emailService: EmailService
 
-  def showWithdrawalReasons = async {
+  def showWithdrawalReasons: Action[AnyContent] = async {
     implicit user => implicit request =>
       for {
         successResponse <- api9.getSubscriptionStatusFromCache
@@ -67,7 +73,7 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
       }
   }
 
-  def submitWithdrawalReasons = async {
+  def submitWithdrawalReasons: Action[AnyContent] = async {
     implicit user => implicit request =>
       withdrawalReasonForm.bindFromRequest.fold(
         formWithErrors => {
@@ -81,12 +87,12 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
       )
   }
 
-  def showConfirmWithdrawal = async {
+  def showConfirmWithdrawal: Action[AnyContent] = async {
     implicit user => implicit request =>
       Future.successful(Ok(views.html.awrs_withdrawal_confirmation(withdrawalConfirmation)))
   }
 
-  def submitConfirmWithdrawal = async {
+  def submitConfirmWithdrawal: Action[AnyContent] = async {
     implicit user => implicit request =>
       withdrawalConfirmation.bindFromRequest.fold(
         formWithErrors =>
@@ -115,6 +121,8 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
               denrolResult flatMap {
                 case (true, api8Response: WithdrawalResponse) =>
                   for {
+                    cache <- save4LaterService.mainStore.fetchAll
+                    _ <- emailService.sendWithdrawnEmail(cache.get.getBusinessContacts.get.email.get)
                     _ <- save4LaterService.mainStore.removeAll
                     _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.Withdrawn, LocalDateTime.now()))
                   } yield Redirect(controllers.routes.WithdrawalController.showWithdrawalConfirmation()) addProcessingDateToSession api8Response.processingDate
@@ -130,9 +138,8 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
       )
   }
 
-  def showWithdrawalConfirmation(printFriendly: Boolean) = async {
+  def showWithdrawalConfirmation(printFriendly: Boolean): Action[AnyContent] = async {
     implicit user => implicit request =>
       Future.successful(Ok(views.html.awrs_withdrawal_confirmation_status(request.getProcessingDate.fold("")(x => x), printFriendly)))
   }
-
 }

@@ -43,6 +43,7 @@ object SessionUtil {
       case Some(Revoked.name) => Some(Revoked)
       case Some(RevokedUnderReviewOrAppeal.name) => Some(RevokedUnderReviewOrAppeal)
       case Some(DeRegistered.name) => Some(DeRegistered)
+      case Some(Withdrawal.name) => Some(Withdrawal)
       case None => None
       case code@_ => Some(models.FormBundleStatus.NotFound(code.get))
     }

@@ -80,6 +80,10 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
   lazy val confirmationEmailURI = TestAWRSNotificationConnector.confirmationEmailURI
 
+  lazy val cancellationEmailURI = TestAWRSNotificationConnector.cancellationEmailURI
+
+  lazy val withdranEmailURI = TestAWRSNotificationConnector.withdrawnEmailURI
+
 
   "fetchNotificationCache" should {
 
@@ -236,7 +240,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   }
 
   "sendConfirmationEmail" should {
-    val testEmailRequest = ConfirmationEmailRequest(ApiTypes.API4, "test business", testUtr, "example@example.com", isNewBusiness = true)
+    val testEmailRequest = EmailRequest(ApiTypes.API4, "test business", testUtr, "example@example.com", isNewBusiness = true)
 
     def sendConfirmationEmailResponse(haveResponse: Boolean): Unit =
       when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(confirmationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -258,4 +262,49 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     }
   }
 
+  "sendCancellationEmail" should {
+    val testEmailRequest = EmailRequest(ApiTypes.API10, "test business", testUtr, "example@example.com", isNewBusiness = false)
+
+    def sendCancellationEmailResponse(haveResponse: Boolean): Unit =
+      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(cancellationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(haveResponse match {
+          case true => Future.successful(HttpResponse(OK))
+          case false => Future.successful(HttpResponse(NOT_FOUND))
+        })
+
+    "return true for a successful request" in {
+      sendCancellationEmailResponse(true)
+      val result = TestAWRSNotificationConnector.sendCancellationEmail(testEmailRequest)
+      await(result) shouldBe true
+    }
+
+    "return false for a successful request" in {
+      sendCancellationEmailResponse(false)
+      val result = TestAWRSNotificationConnector.sendCancellationEmail(testEmailRequest)
+      await(result) shouldBe false
+    }
+  }
+
+  "sendWithdrawnEmail" should {
+    val testEmailRequest = EmailRequest(ApiTypes.API8, "test business", testUtr, "example@example.com", isNewBusiness = false)
+
+    def sendWithdrawnEmailResponse(haveResponse: Boolean): Unit =
+      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(withdranEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(haveResponse match {
+          case true => Future.successful(HttpResponse(OK))
+          case false => Future.successful(HttpResponse(NOT_FOUND))
+        })
+
+    "return true for a successful request" in {
+      sendWithdrawnEmailResponse(true)
+      val result = TestAWRSNotificationConnector.sendWithdrawnEmail(testEmailRequest)
+      await(result) shouldBe true
+    }
+
+    "return false for a successful request" in {
+      sendWithdrawnEmailResponse(false)
+      val result = TestAWRSNotificationConnector.sendWithdrawnEmail(testEmailRequest)
+      await(result) shouldBe false
+    }
+  }
 }

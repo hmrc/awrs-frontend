@@ -27,14 +27,18 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DeEnrolService
+import services.DataCacheKeys._
+import services.{DeEnrolService, EmailService}
 import services.apis.AwrsAPI8
 import services.apis.mocks.MockAwrsAPI9
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HttpResponse
+import utils.TestConstants.testUtr
 import utils.TestUtil._
 import utils.WithdrawalTestUtils._
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -50,6 +54,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
   val request = FakeRequest()
   val mockAwrsAPI8 = mock[AwrsAPI8]
   val mockDeEnrolService = mock[DeEnrolService]
+  val mockEmailService = mock[EmailService]
 
   object TestWithdrawalController extends WithdrawalController {
     override val authConnector = mockAuthConnector
@@ -58,6 +63,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     override val api9 = TestAPI9
     override val api8: AwrsAPI8 = mockAwrsAPI8
     override val save4LaterService = TestSave4LaterService
+    override val emailService = mockEmailService
   }
 
   private def testConfirmationRequest(confirmation: WithdrawalConfirmation) =
@@ -199,6 +205,8 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     when(mockDeEnrolService.deEnrolAWRS(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(deEnrol))
     when(mockDeEnrolService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
     setupMockSave4LaterServiceWithOnly(removeAll = MockSave4LaterService.defaultRemoveAll)
+    when(mockEmailService.sendWithdrawnEmail(Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+    setupMockSave4LaterService(fetchAll = cachedData())
     val result = TestWithdrawalController.submitConfirmWithdrawal.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

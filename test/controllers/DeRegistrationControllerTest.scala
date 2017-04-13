@@ -17,6 +17,7 @@
 package controllers
 
 import java.util.UUID
+
 import connectors.mock.MockAuthConnector
 import connectors.{AuthenticatorConnector, TaxEnrolmentsConnector}
 import forms.AWRSEnums.BooleanRadioEnum
@@ -28,7 +29,7 @@ import org.mockito.Mockito._
 import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DeEnrolService
+import services.{DeEnrolService, EmailService}
 import services.apis.AwrsAPI10
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import uk.gov.hmrc.domain.SaUtr
@@ -36,6 +37,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.http.{HttpResponse, SessionKeys}
 import utils.AwrsSessionKeys
 import utils.TestConstants._
+import utils.TestUtil.cachedData
 
 import scala.concurrent.Future
 
@@ -46,6 +48,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
   val mockAuthenticatorConnector = mock[AuthenticatorConnector]
   val mockApi10 = mock[AwrsAPI10]
   val mockTaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
+  val mockEmailService = mock[EmailService]
 
   object mockDeEnrolService extends DeEnrolService {
     override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
@@ -58,6 +61,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     override val keyStoreService = TestKeyStoreService
     override val deEnrolService = mockDeEnrolService
     override val save4LaterService = TestSave4LaterService
+    override val emailService = mockEmailService
   }
 
   val permittedStatusTypes: Set[FormBundleStatus] = TestDeRegistrationController.permittedStatusTypes
@@ -232,6 +236,8 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     for (pStatusType <- permittedStatusTypes) {
       f"redirect $pStatusType users to confirmation from 'de-register-awrs-confirm' " in {
         mocks()
+        when(mockEmailService.sendCancellationEmail(Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+        setupMockSave4LaterService(fetchAll = cachedData())
 
         testSubmitConfirm(pStatusType) {
           result =>
@@ -311,6 +317,8 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     for (pStatusType <- permittedStatusTypes) {
       s"$pStatusType users who went through successesful API 10 and de-enrol should have their save 4 later cleared up" in {
         mocks(deRegSuccess = true)
+        when(mockEmailService.sendCancellationEmail(Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+        setupMockSave4LaterService(fetchAll = cachedData())
 
         testSubmitConfirm(pStatusType) {
           result =>
