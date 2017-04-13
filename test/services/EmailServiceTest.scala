@@ -37,21 +37,15 @@ class EmailServiceTest extends AwrsUnitTestTraits
 
   lazy val businessName = "test business"
   lazy val userName = "test user"
+  lazy val email = "example@example.com"
+  lazy val reference = testRefNo
+  lazy val isNewBusiness = true
 
   "Email Service" should {
     "build the correct request object for the connectors for api4 None user" in {
       implicit val user = createApi4User()
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName)
-      val email = "example@example.com"
-      val reference = testRefNo
-      val isNewBusiness = true
-      val expected = EmailRequest(
-        apiType = ApiTypes.API4,
-        businessName = businessName,
-        reference = Some(reference),
-        email = email,
-        isNewBusiness = Some(isNewBusiness)
-      )
+      val expected = GetExpectedOutput(ApiTypes.API4)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
       val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
@@ -62,16 +56,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     "build the correct request object for the connectors for api6.pending Pending(01) user" in {
       implicit val user = createApi6User()
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Pending")
-      val email = "example@example.com"
-      val reference = testRefNo
-      val isNewBusiness = true
-      val expected = EmailRequest(
-        apiType = ApiTypes.API6Pending,
-        businessName = businessName,
-        reference = Some(reference),
-        email = email,
-        isNewBusiness = Some(isNewBusiness)
-      )
+      val expected = GetExpectedOutput(ApiTypes.API6Pending)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
       val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
@@ -82,16 +67,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     "build the correct request object for the connectors for api6.approved Approved(04) user" in {
       implicit val user = createApi6User()
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved")
-      val email = "example@example.com"
-      val reference = testRefNo
-      val isNewBusiness = true
-      val expected = EmailRequest(
-        apiType = ApiTypes.API6Approved,
-        businessName = businessName,
-        reference = Some(reference),
-        email = email,
-        isNewBusiness = Some(isNewBusiness)
-      )
+      val expected = GetExpectedOutput(ApiTypes.API6Approved)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
       val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
@@ -102,16 +78,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     "build the correct request object for the connectors for api6.approved Conditions(05) user" in {
       implicit val user = createApi6User()
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved with Conditions")
-      val email = "example@example.com"
-      val reference = testRefNo
-      val isNewBusiness = true
-      val expected = EmailRequest(
-        apiType = ApiTypes.API6Approved,
-        businessName = businessName,
-        reference = Some(reference),
-        email = email,
-        isNewBusiness = Some(isNewBusiness)
-      )
+      val expected = GetExpectedOutput(ApiTypes.API6Approved)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
       val result = TestEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness)
@@ -122,14 +89,8 @@ class EmailServiceTest extends AwrsUnitTestTraits
     "get succesful response when sending withdraw email for API8 user" in {
       implicit val user = AuthBuilder.createUserAuthContextOrgWithAWRS(userId, userName, testUtr)
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Withdrawal")
-      val email = "example@example.com"
-      val reference = testRefNo
-      val isNewBusiness = true
-      val expected = EmailRequest(
-        apiType = ApiTypes.API8,
-        businessName = businessName,
-        email = email
-      )
+      val expected = GetExpectedOutput(ApiTypes.API8,None,None)
+
       when(mockAWRSNotificationConnector.sendWithdrawnEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
       val result = TestEmailService.sendWithdrawnEmail(email = email)
 
@@ -139,14 +100,8 @@ class EmailServiceTest extends AwrsUnitTestTraits
     "get succesful response when sending cancellation email for API10 user" in {
       implicit val user = AuthBuilder.createUserAuthContextIndSaWithAWRS(userId, userName, testUtr)
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "De-Registered")
-      val email = "example@example.com"
-      val reference = testRefNo
-      val isNewBusiness = true
-      val expected = EmailRequest(
-        apiType = ApiTypes.API10,
-        businessName = businessName,
-        email = email
-      )
+      val expected = GetExpectedOutput(ApiTypes.API10,None,None)
+
       when(mockAWRSNotificationConnector.sendCancellationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
       val result = TestEmailService.sendCancellationEmail(email = email)
 
@@ -154,6 +109,16 @@ class EmailServiceTest extends AwrsUnitTestTraits
     }
   }
 
+
+  private def GetExpectedOutput(apiType: ApiTypes.ApiType, reference: Option[String] = reference, isNewBusiness: Option[Boolean] = isNewBusiness) = {
+    EmailRequest(
+      apiType = apiType,
+      businessName = businessName,
+      reference = reference,
+      email = email,
+      isNewBusiness = isNewBusiness
+    )
+  }
 
   private def createApi4User() = {
     AuthBuilder.createUserAuthContextIndCt(userId, userName, testUtr)
