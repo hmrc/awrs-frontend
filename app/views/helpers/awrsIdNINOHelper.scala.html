@@ -85,6 +85,7 @@ questionHintText: Option[String] = None
                 "No" -> Messages("awrs.generic.no")),
             fieldSetAttributes = "id="+questionField.name+"_field",
             legend = Messages(s"awrs.generic.do_${youOrThey}_have_NINO"),
+            legendId = ""+questionField.name+"-legend",
             formHint = questionHintText,
             formHintId = questionHintText match {
                 case None => None
