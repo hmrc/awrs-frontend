@@ -292,6 +292,8 @@
 
     $('#errors').focus();
 
+    $('#content').attr('tabindex','-1');
+
 	// ----------------------------------------------------------
 	// If you're not in IE (or IE version is less than 5) then:
 	// ie === undefined
