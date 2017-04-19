@@ -98,6 +98,7 @@
                 Messages("awrs.generic.status.company_value") -> Messages("awrs.generic.status.company")
             ),
             legend = Messages("awrs.business_directors.personOrCompany_question"),
+            legendId = "personOrCompany-legend",
             fieldSetClass = "form-group inline" + personOrCompanyClass,
             fieldSetQuestion = Messages("awrs.generic.helper_question_text"),
             fieldSetQuestionId = "crn-HelpLink",
@@ -129,6 +130,7 @@
                             "No" -> Messages("awrs.generic.no")),
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
+                        legendId = "companyNames.doYouHaveTradingName-legend",
                         legend = Messages("awrs.generic.do_they_have_trading_name")
                     )
                 )
@@ -202,6 +204,7 @@
                         businessDirectorsForm("directorsAndCompanySecretaries"),
                         directorSeq,
                         legend = directorHeading,
+                        legendId = "directorsAndCompanySecretaries-legend",
                         fieldSetClass = "form-group",
                         fieldSetAttributes = "id=directorsAndCompanySecretaries_field"
                     )
@@ -217,6 +220,7 @@
                             Seq("Yes" -> Messages("awrs.generic.yes"),
                                 "No" -> Messages("awrs.generic.no")),
                             legend = Messages("awrs.business_directors.add_another_director"),
+                            legendId = "otherDirectors-legend",
                             fieldSetClass = "inline",
                             fieldSetAttributes = "id=otherDirectors_field"
                         )

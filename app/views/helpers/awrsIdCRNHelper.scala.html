@@ -108,7 +108,7 @@
                 "No" -> Messages("awrs.generic.no")),
             fieldSetAttributes = "id="+questionField.name+"_field",
             legend = Messages(s"awrs.generic.do_${youOrThey}_have_company_reg"),
-            legendId = "+questionField.name+-legend",
+            legendId = questionField.name+"-legend",
             fieldSetClass = "inline",
             fieldSetQuestion = Messages("awrs.generic.do_${youOrThey}_have_company_reg_help_question"),
             fieldSetQuestionAnswer = Html(Messages("awrs.generic.do_${youOrThey}_have_company_reg_help_text","<br><br>")),
