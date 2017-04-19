@@ -58,6 +58,7 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
                     "No" -> Messages("awrs.generic.no")),
                 fieldSetClass = "inline",
                 fieldSetAttributes = "id=newAWBusiness.newAWBusiness_field",
+                legendId = "newAWBusiness-legend",
                 legend = Messages("awrs.business_details.new_AWBusiness")
             )
         )
@@ -162,6 +163,7 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
                         "No" -> Messages("awrs.generic.no")),
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=doYouHaveTradingName_field",
+                        legendId = "doYouHaveTradingName-legend",
                         legend = Messages("awrs.generic.do_you_have_trading_name")
                     )
                 )
