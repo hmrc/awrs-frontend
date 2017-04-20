@@ -32,7 +32,6 @@ object BusinessContactsForm {
   val contactFirstName = "contactFirstName"
   val contactLastName = "contactLastName"
   val email = "email"
-  val confirmEmail = "confirmEmail"
   val telephone = "telephone"
 
   private val contactAddress_compulsory = yesNoQuestion_compulsory("contactAddressSame", "awrs.business_contacts.error.contact_address_same_empty")
@@ -43,7 +42,6 @@ object BusinessContactsForm {
     contactLastName -> lastName_compulsory(contactLastName),
     telephone -> telephone_compulsory(),
     email -> email_compulsory(fieldId = email),
-    confirmEmail -> optional(text(maxLength = 140)),
     contactAddressSame -> contactAddress_compulsory,
     contactAddress -> (ukAddress_compulsory(prefix = contactAddress, prefixRefNameInErrorMessage = "contact").toOptionalAddressMapping iff whenContactAddressNo),
     "modelVersion" -> ignored[String](BusinessContacts.latestModelVersion)

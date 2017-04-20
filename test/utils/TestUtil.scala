@@ -553,7 +553,6 @@ object TestUtil {
       contactFirstName = contactFirstName,
       contactLastName = contactLastName,
       email = email,
-      confirmEmail = confirmEmail,
       telephone = telephone
     )
 
