@@ -71,7 +71,6 @@ case class BusinessContacts(contactFirstName: Option[String] = None,
                             contactLastName: Option[String] = None,
                             telephone: Option[String] = None,
                             email: Option[String] = None,
-                            confirmEmail: Option[String] = None,
                             contactAddressSame: Option[String] = None,
                             contactAddress: Option[Address] = None,
                             modelVersion: String = BusinessContacts.latestModelVersion
@@ -87,7 +86,7 @@ object BusinessRegistrationDetails {
 
 object BusinessContacts {
 
-  val latestModelVersion = "1.0"
+  val latestModelVersion = "1.1"
 
   implicit val formats: Format[BusinessContacts] = Json.format[BusinessContacts]
 
