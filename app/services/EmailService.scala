@@ -19,8 +19,7 @@ package services
 import connectors.AWRSNotificationConnector
 import models.ApiTypes.ApiType
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, DeRegistered, Pending, Withdrawal}
-import models.{ApiTypes, EmailRequest}
-import play.api.mvc.{AnyContent, Request}
+import models.{ApiTypes, DeRegistrationDate, EmailRequest}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
 import utils.AccountUtils
@@ -49,25 +48,30 @@ trait EmailService {
 
     apiTypePromise flatMap { apiType =>
       val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), email, Some(reference), Some(isNewBusiness))
-      sendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType, Some(reference), Some(isNewBusiness))
+      sendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType, Some(reference), Some(isNewBusiness), None)
     }
   }
 
   def sendWithdrawnEmail(email: String)
                         (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
+    sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8, None)
   }
 
-  def sendCancellationEmail(email: String)
+  def sendCancellationEmail(email: String, deRegistrationDate : Option[DeRegistrationDate])
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10)
+    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10, deRegistrationDate, None)
   }
 
   private def sendEmail(email: String, doEmailCall: (EmailRequest) => Future[Boolean],
                         apiTypePromise: ApiTypes.ApiType, reference: Option[String] = None,
-                        isNewBusiness: Option[Boolean] = None)
+                        isNewBusiness: Option[Boolean] = None,
+                        deRegistrationDate : Option[DeRegistrationDate])
                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
-      val emailRequest = EmailRequest(apiTypePromise, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness)
+        val deRegistrationDateStr = deRegistrationDate match {
+          case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))
+          case _ => None
+        }
+      val emailRequest = EmailRequest(apiTypePromise, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness, deRegistrationDateStr)
       doEmailCall(emailRequest)
     }
 }
