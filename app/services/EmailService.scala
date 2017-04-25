@@ -20,6 +20,7 @@ import connectors.AWRSNotificationConnector
 import models.ApiTypes.ApiType
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, DeRegistered, Pending, Withdrawal}
 import models.{ApiTypes, DeRegistrationDate, EmailRequest}
+import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
 import utils.AccountUtils
@@ -54,18 +55,18 @@ trait EmailService {
 
   def sendWithdrawnEmail(email: String)
                         (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8, None)
+    sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
   }
 
   def sendCancellationEmail(email: String, deRegistrationDate : Option[DeRegistrationDate])
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10, deRegistrationDate, None)
+    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10, None, None, deRegistrationDate)
   }
 
   private def sendEmail(email: String, doEmailCall: (EmailRequest) => Future[Boolean],
                         apiTypePromise: ApiTypes.ApiType, reference: Option[String] = None,
                         isNewBusiness: Option[Boolean] = None,
-                        deRegistrationDate : Option[DeRegistrationDate])
+                        deRegistrationDate : Option[DeRegistrationDate] = None)
                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
         val deRegistrationDateStr = deRegistrationDate match {
           case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))

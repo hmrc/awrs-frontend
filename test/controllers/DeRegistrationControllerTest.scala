@@ -236,7 +236,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     for (pStatusType <- permittedStatusTypes) {
       f"redirect $pStatusType users to confirmation from 'de-register-awrs-confirm' " in {
         mocks()
-        when(mockEmailService.sendCancellationEmail(Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+        when(mockEmailService.sendCancellationEmail(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
         setupMockSave4LaterService(fetchAll = cachedData())
 
         testSubmitConfirm(pStatusType) {
@@ -317,7 +317,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     for (pStatusType <- permittedStatusTypes) {
       s"$pStatusType users who went through successesful API 10 and de-enrol should have their save 4 later cleared up" in {
         mocks(deRegSuccess = true)
-        when(mockEmailService.sendCancellationEmail(Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+        when(mockEmailService.sendCancellationEmail(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
         setupMockSave4LaterService(fetchAll = cachedData())
 
         testSubmitConfirm(pStatusType) {

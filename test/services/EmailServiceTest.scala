@@ -23,6 +23,7 @@ import models.{ApiTypes, EmailRequest, FormBundleStatus}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+import services.mocks.MockKeyStoreService.defaultDeRegistrationDateData
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits}
 import utils.TestConstants._
@@ -40,6 +41,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
   lazy val email = "example@example.com"
   lazy val reference = testRefNo
   lazy val isNewBusiness = true
+  lazy val deRegistrationDateStr = "12-07-2017"
 
   "Email Service" should {
     "build the correct request object for the connectors for api4 None user" in {
@@ -103,7 +105,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
       val expected = GetExpectedOutput(ApiTypes.API10,None,None)
 
       when(mockAWRSNotificationConnector.sendCancellationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
-      val result = TestEmailService.sendCancellationEmail(email = email)
+      val result = TestEmailService.sendCancellationEmail(email = email,defaultDeRegistrationDateData)
 
       await(result) shouldBe true
     }
