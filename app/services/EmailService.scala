@@ -49,7 +49,7 @@ trait EmailService {
 
     apiTypePromise flatMap { apiType =>
       val emailRequest = EmailRequest(apiType, request.getBusinessName.fold("")(x => x), email, Some(reference), Some(isNewBusiness))
-      sendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType, Some(reference), Some(isNewBusiness), None)
+      sendEmail(email, awrsNotificationConnector.sendConfirmationEmail,apiType,None,Some(reference), Some(isNewBusiness))
     }
   }
 
@@ -60,13 +60,15 @@ trait EmailService {
 
   def sendCancellationEmail(email: String, deRegistrationDate : Option[DeRegistrationDate])
                            (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10, None, None, deRegistrationDate)
+    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10,deRegistrationDate)
   }
 
-  private def sendEmail(email: String, doEmailCall: (EmailRequest) => Future[Boolean],
-                        apiTypePromise: ApiTypes.ApiType, reference: Option[String] = None,
-                        isNewBusiness: Option[Boolean] = None,
-                        deRegistrationDate : Option[DeRegistrationDate] = None)
+  private def sendEmail(email: String,
+                        doEmailCall: (EmailRequest) => Future[Boolean],
+                        apiTypePromise: ApiTypes.ApiType,
+                        deRegistrationDate : Option[DeRegistrationDate] = None,
+                        reference: Option[String] = None,
+                        isNewBusiness: Option[Boolean] = None)
                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
         val deRegistrationDateStr = deRegistrationDate match {
           case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))
