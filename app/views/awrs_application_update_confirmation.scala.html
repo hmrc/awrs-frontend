@@ -17,7 +17,7 @@
                     "awrs.update.confirmation.description_1",
                     Some(resubmissionDate)
                 )
-                <p class="print-heading heading-small">@Messages("awrs.confirmation.prompt_print_heading")</p>
+                <h2 class="print-heading heading-small">@Messages("awrs.confirmation.prompt_print_heading")</h2>
                 <div class="print-hidden">
                     <a id="print-confirmation" href="javascript:window.print();" class="print-link print-hidden">@Messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="link print-hidden"
                        href="@routes.ViewApplicationController.show(printFriendly = false)">
