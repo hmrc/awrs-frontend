@@ -814,3 +814,7 @@ html.noScroll {
 
 details {display: block;}
 .summary {display: list-item;}
+
+[role="link"].link-style {text-decoration: none;}
+[role="link"].link-style:hover {text-decoration: underline;}
+.postcode-lookup-results {margin-top: 1em;}
