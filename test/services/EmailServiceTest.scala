@@ -19,10 +19,11 @@ package services
 import builders.AuthBuilder
 import connectors.mock.{MockAWRSNotificationConnector, MockAuthConnector}
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
-import models.{ApiTypes, EmailRequest, FormBundleStatus}
+import models.{ApiTypes, DeRegistrationDate, EmailRequest, FormBundleStatus}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
+import services.mocks.MockKeyStoreService.defaultDeRegistrationDateData
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits}
 import utils.TestConstants._
@@ -40,6 +41,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
   lazy val email = "example@example.com"
   lazy val reference = testRefNo
   lazy val isNewBusiness = true
+  lazy val deRegistrationDateStr = "12-07-2017"
 
   "Email Service" should {
     "build the correct request object for the connectors for api4 None user" in {
@@ -89,7 +91,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     "get succesful response when sending withdraw email for API8 user" in {
       implicit val user = AuthBuilder.createUserAuthContextOrgWithAWRS(userId, userName, testUtr)
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Withdrawal")
-      val expected = GetExpectedOutput(ApiTypes.API8,None,None)
+      val expected = GetExpectedOutput(ApiTypes.API8,None,None,None)
 
       when(mockAWRSNotificationConnector.sendWithdrawnEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
       val result = TestEmailService.sendWithdrawnEmail(email = email)
@@ -100,23 +102,29 @@ class EmailServiceTest extends AwrsUnitTestTraits
     "get succesful response when sending cancellation email for API10 user" in {
       implicit val user = AuthBuilder.createUserAuthContextIndSaWithAWRS(userId, userName, testUtr)
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "De-Registered")
-      val expected = GetExpectedOutput(ApiTypes.API10,None,None)
-
+      val expected = GetExpectedOutput(ApiTypes.API10,None,None,defaultDeRegistrationDateData)
       when(mockAWRSNotificationConnector.sendCancellationEmail(Matchers.eq(expected))(Matchers.any(), Matchers.any())).thenReturn(true)
-      val result = TestEmailService.sendCancellationEmail(email = email)
-
+      val result = TestEmailService.sendCancellationEmail(email = email,defaultDeRegistrationDateData)
       await(result) shouldBe true
     }
   }
 
 
-  private def GetExpectedOutput(apiType: ApiTypes.ApiType, reference: Option[String] = reference, isNewBusiness: Option[Boolean] = isNewBusiness) = {
+  private def GetExpectedOutput(apiType: ApiTypes.ApiType,
+                                reference: Option[String] = reference,
+                                isNewBusiness: Option[Boolean] = isNewBusiness,
+                                deRegistrationDate : Option[DeRegistrationDate] = None) = {
+    val deRegistrationDateStr = deRegistrationDate match {
+      case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))
+      case _ => None
+    }
     EmailRequest(
       apiType = apiType,
       businessName = businessName,
       reference = reference,
       email = email,
-      isNewBusiness = isNewBusiness
+      isNewBusiness = isNewBusiness,
+      deregistrationDateStr = deRegistrationDateStr
     )
   }
 
