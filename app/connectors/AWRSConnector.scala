@@ -61,10 +61,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     val businessName = (fileData \ subscriptionTypeJSPath \ "businessCustomerDetails" \ "businessName").as[String]
 
     val accountURI = getAuthType(legalEntityType)
-
-    info("###############AWRS FE JSON#############" + fileData)
-
     val postURL = s"""$serviceURL$accountURI/awrs/send-data"""
+
     http.POST[JsValue, HttpResponse](postURL, fileData) map {
       response =>
         response.status match {
