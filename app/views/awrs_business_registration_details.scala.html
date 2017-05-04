@@ -79,7 +79,8 @@
                             None,
                             businessRegistrationDetailsForm("companyRegDetails.companyRegistrationNumber"),
                             dateField = Some(businessRegistrationDetailsForm("companyRegDetails.dateOfIncorporation")),
-                            youOrThey = "you"
+                            youOrThey = "you",
+                            formHasErrors = businessRegistrationDetailsForm.hasErrors
                         )
                     }
                 }

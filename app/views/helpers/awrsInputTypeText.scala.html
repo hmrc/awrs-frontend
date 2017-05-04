@@ -141,7 +141,7 @@
            @dataAttributes
            @required
            @if(params.formHasErrors){
-               aria-labelledby="@{params.ariaLabelledBy} @{params.fieldName}-error-0 @if(params.isDate){@{inputId}_field}"
+               aria-labelledby="@{params.fieldName}-error-0 @if(params.isDate){@{inputId}_field}"
            } else {
                 aria-labelledby="@{params.ariaLabelledBy} @if(params.isDate){@{inputId}_field}"
            }
