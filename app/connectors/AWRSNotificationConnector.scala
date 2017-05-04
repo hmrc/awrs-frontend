@@ -58,18 +58,18 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   def getNotificationViewedStatus(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    mapResult(auditAPI12ViewStatusName, awrsRefNo, httpGet.GET(getURL)).map {
-      case Some(response: HttpResponse) => Some(response.json.as[ViewedStatusResponse])
-      case None => None
+    httpGet.GET(getURL).map {
+      case response: HttpResponse => Some(response.json.as[ViewedStatusResponse])
+      case _ => None
     }
   }
 
   def markNotificationViewedStatusAsViewed(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[Boolean]] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    mapResult(s"$auditAPI12ViewStatusName-Viewed", awrsRefNo, httpPut.PUT(getURL, "")).map {
-      case Some(response: HttpResponse) => Some(true)
-      case None => None
+    httpPut.PUT(getURL, "").map {
+      case response: HttpResponse => Some(true)
+      case _ => None
     }
   }
 
@@ -79,9 +79,8 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   def deleteFromNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val deleteURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    mapResult(auditAPI12DeleteTxName, awrsRefNo, httpDelete.DELETE(deleteURL)).map {
-      case Some(_) => true
-      case _ => false
+    httpDelete.DELETE(deleteURL).map {
+      case _ => true
     }.recover {
       case e: InternalServerException => false
     }
