@@ -38,12 +38,9 @@
        @changesBanner
         <div class="grid grid-2-3">
             <h1 id="index-top-heading" class="heading-xlarge">@Messages("awrs.index_page.top_heading", businessName)</h1>
-
-            <p id="applicationInfo" class="lede">
-                @if(!isHappyPathEnrollment) {
-                    @Messages("awrs.index_page.topText")
-                }
-            </p>
+            @if(!isHappyPathEnrollment) {
+                <p id="applicationInfo" class="lede">@Messages("awrs.index_page.topText")</p>
+            }
             <div class="form-group">
                 <table id="index-table">
                     <thead>
