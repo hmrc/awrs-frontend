@@ -95,6 +95,14 @@
     }
 }
 
+@ariaLabel(fieldLabel: String) = @{
+    params.ariaLabelledBy match {
+        case Some(ariaLabelledBy) => {"@ariaLabelledBy @fieldLabel"}
+        case _ => None
+    }
+}
+
+
 @isPostCodeInput = {
     @params.isPostCode match {
         case true => {
@@ -132,8 +140,10 @@
            @maxLength
            @dataAttributes
            @required
-           @if(fieldErrors.nonEmpty){
-               aria-labelledby="@{params.field.name}-error-0"
+           @if(params.formHasErrors){
+               aria-labelledby="@{params.ariaLabelledBy} @{params.fieldName}-error-0 @if(params.isDate){@{inputId}_field}"
+           } else {
+                aria-labelledby="@{params.ariaLabelledBy} @if(params.isDate){@{inputId}_field}"
            }
     >
     @isPostCodeInput

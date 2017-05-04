@@ -25,8 +25,9 @@
                         formItem = deRegistrationForm,
                         fieldName = "proposedEndDate",
                         hintText = hintText,
-                        hintTextId  = "de_registration-hint"
-                    )
+                        hintTextId  = "de_registration-hint",
+                        ariaLabelledBy = "de_registration-heading"
+                )
                 )
             </div>
             @awrsSubmitButton(Messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
