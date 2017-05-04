@@ -164,7 +164,7 @@
                                 resultIndex = index,
                                 results = data;
                             $('#postcode-lookup-button-' + num).hide();
-                            fillAddressFields($this, $parent, resultIndex, results);
+                            fillAddressFields($this, $parent, resultIndex, results,num);
                         }
                     }).on('mouseup touchend', function() {
                         var $this = $('#' + this.id).find("input"),
@@ -172,12 +172,12 @@
                             $parent = $('#address-' + num),
                             resultIndex = this.getAttribute('value');
                         $('#postcode-lookup-button-' + num).hide();
-                        fillAddressFields($this, $parent, resultIndex, data)
+                        fillAddressFields($this, $parent, resultIndex, data,num)
                     });
                 });
             }
 
-            function fillAddressFields(elem, parent, resultIndex, results) {
+            function fillAddressFields(elem, parent, resultIndex, results,num) {
                 if (elem.val() != 'first') {
                     parent.find('input[id*="addressLine"]').val('');
                     parent.find('.address-lines').show();
@@ -209,7 +209,7 @@
 
                     clearResults(resultIndex);
                     $('.dropdown-menu').empty();
-                    $(".address-lines input:first").addClass('selected add-focus').focus()
+                    $('#address-' + num +' input:first').addClass('selected add-focus').focus()
                 }
     }
 
