@@ -808,7 +808,7 @@ awrs.de_registration.confirmation_page.description=Your request to cancel your A
 awrs.de_registration.confirmation_page.description_1=has been received on {0}
 awrs.de_registration.confirmation_page.information_what_next_0=Your reference number for cancelling your registration is {0}.
 awrs.de_registration.confirmation_page.information_what_next_1=We will provide you with confirmation of your registration cancellation via your Government Gateway account.
-awrs.de_registration.confirmation_page.information_what_next_2=Your details on the AWRS register will be changed to show that your business has deregistered on the {0}.
+awrs.de_registration.confirmation_page.information_what_next_2=Your details on the AWRS register will be changed to show that your business is no longer approved on the {0}.
 awrs.de_registration.confirmation_page.prompt_print_heading=You will receive an email confirmation
 
 
