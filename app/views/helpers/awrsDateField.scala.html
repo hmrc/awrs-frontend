@@ -10,7 +10,7 @@
 @fieldErrors = @{ ErrorMessageInterpreter.getFieldErrorsByName(params.fieldName)(Some(params.formItem)) }
 @legend = {
     @params.label match {
-        case Some(label) => {<legend id="@params.fieldName-legend">@label</legend>}
+        case Some(label) => {<legend>@label</legend>}
         case _ => {}
     }
 }
@@ -42,7 +42,7 @@
             @formHint
             @commonHelper(params.formItem(params.fieldName), fieldErrors)
             <div class="no-touch native-date-picker form-date" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0"}>
-                @dateFieldsContent(params.formItem, params.fieldName, params.ariaLabelledBy, fieldErrors.nonEmpty)
+                @dateFieldsContent(params.formItem, params.fieldName)
             </div>
         </div>
     </div>

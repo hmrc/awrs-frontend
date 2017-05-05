@@ -35,9 +35,5 @@ case class InputTypeTextParams(field: Field,
                                dataAttributes: Option[String] = None,
                                isPostCode: Boolean = false,
                                postCodeLookupAddressNumber: Option[String] = None,
-                               additionalHiddenLabelText: Option[String] = None,
-                               ariaLabelledBy: Option[String] = None,
-                               formHasErrors: Boolean = false,
-                               fieldName: Option[String] = None,
-                               isDate: Boolean = false
+                               additionalHiddenLabelText: Option[String] = None
                               )
