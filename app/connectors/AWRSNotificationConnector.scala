@@ -49,7 +49,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   def fetchNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[StatusNotification]] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val getURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    mapResult(auditAPI12TxName, awrsRefNo, httpGet.GET(getURL)).map {
+    mapResult("", awrsRefNo, httpGet.GET(getURL)).map {
       case Some(response: HttpResponse) => Some(response.json.as[StatusNotification])
       case None => None
     }
@@ -58,18 +58,18 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   def getNotificationViewedStatus(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    httpGet.GET(getURL).map {
-      case response: HttpResponse => Some(response.json.as[ViewedStatusResponse])
-      case _ => None
+    mapResult("", awrsRefNo, httpGet.GET(getURL)).map {
+      case Some(response: HttpResponse) => Some(response.json.as[ViewedStatusResponse])
+      case None => None
     }
   }
 
   def markNotificationViewedStatusAsViewed(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[Boolean]] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    httpPut.PUT(getURL, "").map {
-      case response: HttpResponse => Some(true)
-      case _ => None
+    mapResult("", awrsRefNo, httpPut.PUT(getURL, "")).map {
+      case Some(response: HttpResponse) => Some(true)
+      case None => None
     }
   }
 
@@ -79,10 +79,11 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   def deleteFromNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val deleteURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    httpDelete.DELETE(deleteURL).map {
-      case _ => true
+    mapResult(auditDeleteFromNotificationCacheTxName, awrsRefNo, httpDelete.DELETE(deleteURL)).map {
+      case Some(_) => true
+      case _ => false
     }.recover {
-      case e: InternalServerException => false
+      case e: InternalServerException => println("going into recover");false
     }
   }
 
@@ -114,6 +115,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
         response.status match {
           case OK =>
             warn(f"[$auditTxName] - Successful return of data")
+            if(auditTxName.nonEmpty)
             audit(transactionName = auditTxName, detail = Map("awrsRegistrationNumber" -> awrsRefNo), eventType = eventTypeSuccess)
             Some(response)
           case NOT_FOUND =>
