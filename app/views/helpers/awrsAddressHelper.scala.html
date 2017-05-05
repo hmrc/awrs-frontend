@@ -24,13 +24,16 @@
     <div class="address-lines">
        @awrsInputTypeText(
            InputTypeTextParams(
-               field("addressLine1"),
+                field("addressLine1"),
                 inputId = field("addressLine1").name,
                 label = Messages("awrs.generic.address_line1"),
                 maxLength = AwrsFieldConfig.addressLine1Len.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
-                required = true
+                required = true,
+                ariaLabelledBy = field("addressLine1").name+"-legend",
+                formHasErrors = field("addressLine1").hasErrors,
+                fieldName = field("addressLine1").name
             )
         )
         @awrsInputTypeText(
@@ -41,7 +44,10 @@
                 maxLength = AwrsFieldConfig.addressLine2Len.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
-                required = true
+                required = true,
+                ariaLabelledBy = field("addressLine2").name+"-legend",
+                formHasErrors = field("addressLine2").hasErrors,
+                fieldName = field("addressLine2").name
             )
         )
         @awrsInputTypeText(
@@ -79,7 +85,10 @@
                 required = true,
                 labelHighlight = true,
                 isPostCode = true,
-                postCodeLookupAddressNumber = number
+                postCodeLookupAddressNumber = number,
+                ariaLabelledBy = field("postcode").name+"-legend",
+                formHasErrors = field("postcode").hasErrors,
+                fieldName = field("postcode").name
             )
         )
     </div>
@@ -97,7 +106,10 @@
                     maxLength = "35",
                     wrapperClass = wrapperClass,
                     labelHighlight = true,
-                    required = true
+                    required = true,
+                    ariaLabelledBy = field("addressCountry").name+"-legend",
+                    formHasErrors = field("addressCountry").hasErrors,
+                    fieldName = field("addressCountry").name
                 )
             )
         </div>
