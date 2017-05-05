@@ -95,19 +95,24 @@
                 businessType,
                 None,
                 groupMemberForm("utr"),
-                youOrThey = "they"
-
+                youOrThey = "they",
+                ariaLabelledBy = "utr_field utr-information",
+                formHasErrors = groupMemberForm.hasErrors
             )
             @awrsIdCRNHelper(
                 None,
                 groupMemberForm("companyRegDetails.companyRegistrationNumber"),
                 dateField = Some(groupMemberForm("companyRegDetails.dateOfIncorporation")),
-                youOrThey = "they"
+                youOrThey = "they",
+                ariaLabelledBy = "companyRegDetails.companyRegistrationNumber_field company_reg-information",
+                formHasErrors = groupMemberForm.hasErrors
             )
             @awrsIdVRNHelper(
                 groupMemberForm("doYouHaveVRN"),
                 groupMemberForm("vrn"),
-                youOrThey = "they"
+                youOrThey = "they",
+                ariaLabelledBy = "vrn_field vrn-information",
+                formHasErrors = groupMemberForm.hasErrors
             )
             @if(!isEditMode){
                 <div class="form-group">

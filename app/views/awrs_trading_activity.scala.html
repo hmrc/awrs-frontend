@@ -45,7 +45,10 @@
                         wholesaler,
                         legend = Messages("awrs.additional_information.wholesaler_type"),
                         fieldSetAttributes = "id=wholesalerType_field",
-                        formHint = Messages("awrs.additional_information.form_hint")
+                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHintId = "wholesalerType-hint",
+                        ariaDescribedBy = "wholesalerType-legend wholesalerType-hint",
+                        formHasErrors = tradingActivityForm.hasErrors
                     )
                 )
                 <div id="other-wholesalerType">
@@ -69,7 +72,10 @@
                         orders,
                         legend = Messages("awrs.additional_information.orders.orders_question"),
                         fieldSetAttributes = "id=typeOfAlcoholOrders_field",
-                        formHint = Messages("awrs.additional_information.form_hint")
+                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHintId = "typeOfAlcoholOrders-hint",
+                        ariaDescribedBy = "typeOfAlcoholOrders-legend typeOfAlcoholOrders-hint",
+                        formHasErrors = tradingActivityForm.hasErrors
                     )
                 )
                 <div id="other-typeOfAlcoholOrders">
@@ -136,7 +142,9 @@
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=thirdPartyStorage_field",
                         formHint = Messages("awrs.additional_information.third_party_storage_help_text"),
-                        formHintId = "thirdPartyStorage-legend"
+                        formHintId = "thirdPartyStorage-hint",
+                        ariaDescribedBy = "thirdPartyStorage-legend thirdPartyStorage-hint",
+                        formHasErrors = tradingActivityForm.hasErrors
                     )
                 )
             </div>

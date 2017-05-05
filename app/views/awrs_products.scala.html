@@ -52,7 +52,10 @@
                         fieldSetAttributes = "id=mainCustomers_field",
                         fieldSetClass = "test",
                         legendClass = "test",
-                        formHint = Messages("awrs.additional_information.form_hint")
+                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHintId = "mainCustomers-hint",
+                        ariaDescribedBy = "mainCustomers-legend mainCustomers-hint",
+                        formHasErrors = productsForm.hasErrors
                     )
                 )
                 <div id="other-mainCustomers">
@@ -76,7 +79,10 @@
                         products,
                         legend = Messages("awrs.additional_information.products"),
                         fieldSetAttributes = "id=productType_field",
-                        formHint = Messages("awrs.additional_information.form_hint")
+                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHintId = "productType-hint",
+                        ariaDescribedBy = "productType-legend productType-hint",
+                        formHasErrors = productsForm.hasErrors
                     )
                 )
                 <div id="other-productType">

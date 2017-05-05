@@ -1,4 +1,10 @@
-@(someRadioField: Option[Field], inputField: Field, youOrThey: String, crnAndDate: Boolean = true, dateField: Option[Field] = None, ariaLabelledBy: Option[String] = None, formHasErrors: Boolean = false)(implicit formInstance: Option[Form[_]] = None, messages: Messages)
+@(someRadioField: Option[Field],
+inputField: Field,
+youOrThey: String,
+crnAndDate: Boolean = true,
+dateField: Option[Field] = None,
+ariaLabelledBy: Option[String] = None,
+formHasErrors: Boolean = false)(implicit formInstance: Option[Form[_]] = None, messages: Messages)
 
 @import views.helpers.InputTypeRadioGroupParams
 @import play.api.i18n._
@@ -68,7 +74,9 @@
             required = true,
             labelHighlight = true,
             formHint = Messages("awrs.generic.do_you_have_company_reg_information"),
-            formHintId = "company_reg-information"
+            formHintId = "company_reg-information",
+            ariaLabelledBy = ariaLabelledBy,
+            formHasErrors = formHasErrors
         )
     )
 

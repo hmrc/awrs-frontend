@@ -106,7 +106,9 @@
                                 @awrsIdVRNHelper(
                                     supplierAddressForm("vatRegistered"),
                                     supplierAddressForm("vatNumber"),
-                                    legend = Some(Messages("awrs.supplier-addresses.vat_registered"))
+                                    legend = Some(Messages("awrs.supplier-addresses.vat_registered")),
+                                    ariaLabelledBy = "vrn_field vrn-information",
+                                    formHasErrors = supplierAddressForm.hasErrors
                                 )
                             </div>
                         </div>

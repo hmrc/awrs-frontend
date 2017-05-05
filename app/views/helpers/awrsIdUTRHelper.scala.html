@@ -1,4 +1,9 @@
-@(businessType: Option[String], someRadioField: Option[Field], inputField: Field, youOrThey: String)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+@(businessType: Option[String],
+someRadioField: Option[Field],
+inputField: Field,
+youOrThey: String,
+ariaLabelledBy: Option[String] = None,
+formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
 
 @import play.api.i18n._
 @import views.html.helper._
@@ -53,7 +58,9 @@
             labelHighlight = true,
             required = true,
             formHint = Messages("awrs.generic.do_you_have_UTR_information"),
-            formHintId = "utr-information"
+            formHintId = "utr-information",
+            ariaLabelledBy = ariaLabelledBy,
+            formHasErrors = formHasErrors
         )
     )
 

@@ -162,7 +162,9 @@
                             businessType,
                             None,
                             partnerForm("utr"),
-                            youOrThey = "they"
+                            youOrThey = "they",
+                            ariaLabelledBy = "utr_field utr-information",
+                            formHasErrors = partnerForm.hasErrors
                         )
                     </div>
 
@@ -170,7 +172,9 @@
                         @awrsIdNINOHelper(
                             partnerForm("doYouHaveNino"),
                             partnerForm("nino"),
-                            youOrThey = "they"
+                            youOrThey = "they",
+                            ariaDescribedBy = "doTheyHaveNationalInsurance-legend Nino-question-hint",
+                            formHasErrors = partnerForm.hasErrors
                         )
                     </div>
 
@@ -179,7 +183,9 @@
                             None,
                             partnerForm("companyRegDetails.companyRegistrationNumber"),
                             dateField = Some(partnerForm("companyRegDetails.dateOfIncorporation")),
-                            youOrThey = "they"
+                            youOrThey = "they",
+                            ariaLabelledBy = "companyRegDetails.companyRegistrationNumber_field company_reg-information",
+                            formHasErrors = partnerForm.hasErrors
                         )
                     </div>
 
@@ -187,7 +193,9 @@
                         @awrsIdVRNHelper(
                             partnerForm("doYouHaveVRN"),
                             partnerForm("vrn"),
-                            youOrThey = "they"
+                            youOrThey = "they",
+                            ariaLabelledBy = "vrn_field vrn-information",
+                            formHasErrors = partnerForm.hasErrors
                         )
                     </div>
 
