@@ -95,14 +95,6 @@
     }
 }
 
-@ariaLabel(fieldLabel: String) = @{
-    params.ariaLabelledBy match {
-        case Some(ariaLabelledBy) => {"@ariaLabelledBy @fieldLabel"}
-        case _ => None
-    }
-}
-
-
 @isPostCodeInput = {
     @params.isPostCode match {
         case true => {
