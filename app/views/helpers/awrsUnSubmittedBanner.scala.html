@@ -14,26 +14,14 @@
 @param match {
     case Some(ucParam) => {
         <div class="grid grid-3-3 banner-@bannerClass print-hidden" id="changes-banner">
-            @ucParam.allSectionComplete match {
-                case true => {
-                    <div class="grid grid-2-3">
-                        <div class="inner-block">@Messages("awrs.index_page.not_submitted_changes")</div>
-                    </div>
-                    <div class="grid grid-1-3">
-                        <div class="inner-block font-xsmall">
-                            <label for="submit_changes_link" class="visuallyhidden">@Messages("awrs.index_page.not_submitted_changes")</label>
-                            <a href="@routes.EmailVerificationController.checkEmailVerification" id="submit_changes_link" class="banner-links">
-                                @Messages("awrs.index_page.submit_changes")
-                            </a>
-                        </div>
-                    </div>
-                }
-                case false => {
-                    <div class="grid grid-3-3">
-                        <div class="inner-block">@incompleteMessage</div>
-                    </div>
-                }
-            }
+            <div class="grid grid-3-3">
+                <div class="inner-block">
+                    @ucParam.allSectionComplete match {
+                        case true => { @Messages("awrs.index_page.not_submitted_changes") }
+                        case false => { @incompleteMessage }
+                    }
+                </div>
+            </div>
         </div>
     }
     case None => {}
