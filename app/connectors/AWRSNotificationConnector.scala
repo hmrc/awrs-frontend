@@ -79,7 +79,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   def deleteFromNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
     val awrsRefNo = AccountUtils.getAwrsRefNo.toString
     val deleteURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    mapResult(auditDeleteFromNotificationCacheTxName, awrsRefNo, httpDelete.DELETE(deleteURL)).map {
+    mapResult("", awrsRefNo, httpDelete.DELETE(deleteURL)).map {
       case Some(_) => true
       case _ => false
     }.recover {
