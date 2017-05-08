@@ -32,6 +32,7 @@ trait ApplicationConfig {
   val homeUrl: String
   val defaultTimeoutSeconds: Int
   val timeoutCountdown: Int
+  val logoutCallbackUrl: String
 
 }
 
@@ -53,5 +54,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val homeUrl = s"$awrsHost/"
   override lazy val defaultTimeoutSeconds: Int = getString(s"defaultTimeoutSeconds").toInt
   override lazy val timeoutCountdown: Int = getString(s"timeoutCountdown").toInt
+  override lazy val logoutCallbackUrl = loadConfig("tamc.external-urls.logout-callback-url")
 
 }
