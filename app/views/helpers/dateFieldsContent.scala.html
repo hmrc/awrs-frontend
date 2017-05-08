@@ -1,4 +1,4 @@
-@(formItem:Form[_], fieldName: String)(implicit messages: Messages)
+@(formItem:Form[_], fieldName: String, ariaLabelledBy: Option[String] = None, formHasErrors: Boolean = false)(implicit messages: Messages)
 
 @import uk.gov.hmrc.play.mappers.DateFields._
 @import play.api.i18n._
@@ -22,7 +22,11 @@
         divClass = "form-group form-group-day",
         maxLength = "2",
         labelHighlight = true,
-        required = true
+        required = true,
+        ariaLabelledBy = ariaLabelledBy,
+        formHasErrors = formHasErrors,
+        fieldName = fieldName,
+        isDate = true
     )
 )
 
@@ -34,7 +38,11 @@
         divClass = "form-group form-group-month",
         maxLength = "2",
         labelHighlight = true,
-        required = true
+        required = true,
+        ariaLabelledBy = ariaLabelledBy,
+        formHasErrors = formHasErrors,
+        fieldName = fieldName,
+        isDate = true
     )
 )
 
@@ -46,6 +54,10 @@
         divClass = "form-group form-group-year",
         maxLength = "4",
         labelHighlight = true,
-        required = true
+        required = true,
+        ariaLabelledBy = ariaLabelledBy,
+        formHasErrors = formHasErrors,
+        fieldName = fieldName,
+        isDate = true
     )
 )

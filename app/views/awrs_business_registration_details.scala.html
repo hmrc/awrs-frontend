@@ -63,14 +63,18 @@
                     businessType,
                     None,
                     businessRegistrationDetailsForm("utr"),
-                    youOrThey = "you"
+                    youOrThey = "you",
+                    ariaLabelledBy = "utr_field utr-information",
+                    formHasErrors = businessRegistrationDetailsForm.hasErrors
                 )
                 @businessType.map {
                     case "SOP" => {
                         @awrsIdNINOHelper(
                             None,
                             businessRegistrationDetailsForm("NINO"),
-                            youOrThey = "you"
+                            youOrThey = "you",
+                            ariaDescribedBy = "doTheyHaveNationalInsurance-legend Nino-question-hint",
+                            formHasErrors = businessRegistrationDetailsForm.hasErrors
                         )
                     }
                     case "Partnership" => {}
@@ -79,14 +83,18 @@
                             None,
                             businessRegistrationDetailsForm("companyRegDetails.companyRegistrationNumber"),
                             dateField = Some(businessRegistrationDetailsForm("companyRegDetails.dateOfIncorporation")),
-                            youOrThey = "you"
+                            youOrThey = "you",
+                            ariaLabelledBy = "companyRegDetails.companyRegistrationNumber_field company_reg-information",
+                            formHasErrors = businessRegistrationDetailsForm.hasErrors
                         )
                     }
                 }
                 @awrsIdVRNHelper(
                     businessRegistrationDetailsForm("doYouHaveVRN"),
                     businessRegistrationDetailsForm("vrn"),
-                    youOrThey = "you"
+                    youOrThey = "you",
+                    ariaLabelledBy = "vrn_field vrn-information",
+                    formHasErrors = businessRegistrationDetailsForm.hasErrors
                 )
                 @submitButtonAndNavLinks(SubmitAndNavLinkParams(
                     sectionName = businessRegistrationDetailsName,

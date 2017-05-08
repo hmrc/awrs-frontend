@@ -133,7 +133,15 @@
                 @defining(s"${params.field.name}-${value.toLowerCase.replace(" ", "_")}") { inputId =>
                     <label for="@inputId" class="block-label @labelClass @params.field.value.filter(_ == value).map { _ => selected }">
                         @if(!labelAfter)@{addLabelIfSpecified(label, params)}
-                        <input type="radio" id="@inputId" aria-describedby="@inputTypeId" name="@params.field.name" value="@value" @inputClass @dataAttributes @params.field.value.filter(_ == value).map { _ => checked="checked"}>
+                        <input type="radio"
+                               id="@inputId"
+                               @if(params.ariaDescribedBy){
+                                    aria-describedby="@{params.ariaDescribedBy}"
+                               } else {
+                                    aria-describedby="@{inputTypeId}"
+                               }
+                               name="@params.field.name"
+                               value="@value" @inputClass @dataAttributes @params.field.value.filter(_ == value).map { _ => checked="checked"}>
                         @if(labelAfter)@{addLabelIfSpecified(label, params)}
                         @if(!optionMessages.isEmpty){
                             @optionMessages.get.filter(c=>c._1 == inputId).map( item =>

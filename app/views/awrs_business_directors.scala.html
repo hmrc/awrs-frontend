@@ -85,7 +85,9 @@
         passportField = businessDirectorsForm("passportNumber"),
         nationalIdField = businessDirectorsForm("nationalID"),
         youOrThey = "they",
-        questionHintText = Messages("awrs.generic.we_need_their_identity")
+        questionHintText = Messages("awrs.generic.we_need_their_identity"),
+        ariaDescribedBy = "doTheyHaveNationalInsurance-legend Nino-question-hint",
+        formHasErrors = businessDirectorsForm.hasErrors
     )(implicitly, formInstance = businessDirectorsForm)
 }
 
@@ -140,6 +142,7 @@
                         businessDirectorsForm("companyNames.tradingName"),
                         inputId = "companyNames.tradingName",
                         label = Messages("awrs.generic.trading_name"),
+                        labelHighlight = true,
                         maxLength = AwrsFieldConfig.tradingNameLen.toString,
                         required = true,
                         wrapperClass = "panel-indent"
@@ -152,18 +155,24 @@
             businessType,
             None,
             businessDirectorsForm("utr"),
-            youOrThey = "they"
+            youOrThey = "they",
+            ariaLabelledBy = "utr_field utr-information",
+            formHasErrors = businessDirectorsForm.hasErrors
         )
         @awrsIdCRNHelper(
             None,
             businessDirectorsForm("companyRegNumber"),
             youOrThey = "they",
-            crnAndDate = false
+            crnAndDate = false,
+            ariaLabelledBy = "companyRegNumber_field company_reg-information",
+            formHasErrors = businessDirectorsForm.hasErrors
         )
         @awrsIdVRNHelper(
             businessDirectorsForm("doYouHaveVRN"),
             businessDirectorsForm("vrn"),
-            youOrThey = "they"
+            youOrThey = "they",
+            ariaLabelledBy = "vrn_field vrn-information",
+            formHasErrors = businessDirectorsForm.hasErrors
         )
     </div>
 

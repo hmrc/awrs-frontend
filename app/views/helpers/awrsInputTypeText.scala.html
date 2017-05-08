@@ -132,8 +132,10 @@
            @maxLength
            @dataAttributes
            @required
-           @if(fieldErrors.nonEmpty){
-               aria-labelledby="@{params.field.name}-error-0"
+           @if(params.formHasErrors){
+               aria-labelledby="@{params.fieldName}-error-0 @if(params.isDate){@{inputId}_field}"
+           } else {
+                aria-labelledby="@{params.ariaLabelledBy} @if(params.isDate){@{inputId}_field}"
            }
     >
     @isPostCodeInput

@@ -32,5 +32,7 @@ case class InputTypeGroupCheckboxParams(field: Field,
                                         labelStacked: Boolean = false,
                                         formHint: Option[String] = None,
                                         formHintId: Option[String] = None,
-                                        dataAttributes: Option[String] = None
+                                        dataAttributes: Option[String] = None,
+                                        ariaDescribedBy: Option[String] = None,
+                                        formHasErrors: Boolean = false
                               )

@@ -40,5 +40,7 @@ case class InputTypeRadioGroupParams(field: Field,
                                      formHint: Option[String] = None,
                                      formHintId: Option[String] = None,
                                      dataAttributes: Option[String] = None,
-                                     optionMessages: Option[List[(String,String)]] = None
+                                     optionMessages: Option[List[(String,String)]] = None,
+                                     ariaDescribedBy: Option[String] = None,
+                                     formHasErrors: Boolean = false
                               )

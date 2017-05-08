@@ -78,7 +78,15 @@
         @defining(params.field.indexes.flatMap( i => params.field("[%s]".format(i)).value ).toSet) { values =>
             @params.checkboxOptions.map { checkboxOptions =>
                 <label for="@(inputId(checkboxOptions._1))" class="block-label" id="@(inputId(checkboxOptions._1))_label">
-                    <input type="checkbox" id="@(inputId(checkboxOptions._1))" @inputName value="@checkboxOptions._1" @if(values.contains(checkboxOptions._1)){checked="checked"}>
+                    <input type="checkbox"
+                           id="@(inputId(checkboxOptions._1))"
+                           @if(params.ariaDescribedBy){
+                                aria-describedby="@{params.ariaDescribedBy}"
+                           } else {
+                                aria-describedby="@(params.field.id)-legend"
+                           }
+                           @inputName
+                           value="@checkboxOptions._1" @if(values.contains(checkboxOptions._1)){checked="checked"}>
                     @checkboxOptions._2
                 </label>
             }
