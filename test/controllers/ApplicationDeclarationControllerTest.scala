@@ -74,12 +74,6 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     override val save4LaterService = TestSave4LaterService
   }
 
-  object TestSurveyController extends SurveyController {
-    override val appName = "awrs-frontend"
-    override val authConnector = mockAuthConnector
-    override val audit: Audit = new TestAudit
-  }
-
   "ApplicationDeclarationController" must {
     "use the correct AuthConnector" in {
       ApplicationDeclarationController.authConnector shouldBe FrontendAuthConnector

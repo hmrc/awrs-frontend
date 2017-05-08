@@ -33,7 +33,7 @@ class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnecto
     "be redirected to feedback-survey page" in {
       getWithAuthorisedUser { result =>
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should be("/alcohol-wholesale-scheme/survey")
+        redirectLocation(result).get should be("http://localhost:9514/feedback-survey/?origin=AWRS")
       }
     }
   }
