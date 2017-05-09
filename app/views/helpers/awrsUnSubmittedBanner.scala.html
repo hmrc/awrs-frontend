@@ -1,5 +1,5 @@
 @import controllers.util.UnSubmittedChangesBannerParam
-@(param: Option[UnSubmittedChangesBannerParam], incompleteMessage: Option[String] = None)(implicit messages: Messages)
+@(param: Option[UnSubmittedChangesBannerParam], incompleteMessage: Option[String] = None, unsubmittedMessage: Option[String] = None)(implicit messages: Messages)
 @bannerClass = @{
     param match {
         case Some(ucParam) => {
@@ -17,7 +17,7 @@
             <div class="grid grid-3-3">
                 <div class="inner-block">
                     @ucParam.allSectionComplete match {
-                        case true => { @Messages("awrs.index_page.not_submitted_changes") }
+                        case true => { @unsubmittedMessage }
                         case false => { @incompleteMessage }
                     }
                 </div>
