@@ -5,8 +5,10 @@
 @(businessType: Option[String], sectionName: Option[String])(implicit viewApplicationType: ViewApplicationType = LinearViewMode)
 @{
     (isEditMode, isOneViewMode, sectionName) match {
-        case (_, false, Some(secName)) =>
-            <span id="progress-text" class="pre-heading">{JourneyConstants.getJourneyProgress(businessType, secName)}</span>
+        case (_, false, Some(secName)) => {
+            <span id="progress-text" class="pre-heading" aria-hidden="true">{JourneyConstants.getJourneyProgress(businessType, secName)}</span>
+            <span class="visuallyhidden">{JourneyConstants.getSectionProgress(businessType, secName)}</span>
+        }
         case (_ , _, _) =>
     }
 }
