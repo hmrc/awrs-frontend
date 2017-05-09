@@ -25,7 +25,7 @@
 @govWrapper(content: Html) = {
     @includes.awrs_main(title = titleString, pageScripts = Some(pageScripts), userLoggedIn = true) {
         <div class="grid">
-            @awrsUnSubmittedBanner(unSubmittedChangesParam, Messages("awrs.index_page.modified_application_incomplete.edit"))
+            @awrsUnSubmittedBanner(unSubmittedChangesParam, Messages("awrs.index_page.modified_application_incomplete.edit"), Messages("awrs.index_page.not_submitted_changes.return"))
             <div class="grid grid-2-3">
                 @content
             </div>
