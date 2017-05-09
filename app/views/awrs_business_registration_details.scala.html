@@ -42,6 +42,16 @@
     }
 }
 
+
+@businessTypeHeading = {
+    @businessType.map {
+        case "Partnership" | "LP" | "LLP" => { @Messages("awrs.business_registration_details.heading.partnership", headingPrefix()) }
+        case "LLP_GRP" | "LTD_GRP" => { @Messages("awrs.business_registration_details.heading.group", headingPrefix()) }
+        case _ => { @Messages("awrs.business_registration_details.heading", headingPrefix()) }
+    }
+}
+
+
 @includes.awrs_main(title = pageTitle, pageScripts = Some(pageScripts), userLoggedIn = true) {
     <div class="grid">
         <div class="grid grid-2-3">
@@ -50,13 +60,12 @@
             ))
             @errorSummaryTemplate(businessRegistrationDetailsForm)
             @awrsProgressHelper(businessType, businessRegistrationDetailsName)
-            <h1 id="additional-information-heading" class="heading-xlarge">
-                @businessType.map {
-                    case "Partnership" | "LP" | "LLP" => { @Messages("awrs.business_registration_details.heading.partnership", headingPrefix()) }
-                    case "LLP_GRP" | "LTD_GRP" => { @Messages("awrs.business_registration_details.heading.group", headingPrefix()) }
-                    case _ => { @Messages("awrs.business_registration_details.heading", headingPrefix()) }
-                }
+            <h1 id="additional-information-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">
+                @businessTypeHeading
             </h1>
+            <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
+                @businessTypeHeading.
+            </span>
 
             @form(action = actionRoute){
                 @awrsIdUTRHelper(

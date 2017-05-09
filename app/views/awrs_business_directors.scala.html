@@ -192,7 +192,8 @@
         ))
         @errorSummaryTemplate(businessDirectorsForm)
         @awrsProgressHelper(businessType, businessDirectorsName)
-        <h1 id="business-directors-heading" class="heading-xlarge">@h1text</h1>
+        <h1 id="business-directors-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">@h1text</h1>
+        <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">@h1text.</span>
 
         <p class="lede" id="directorsAndCompanySecretariesDescription">@Messages("awrs.business_directors.topText")</p>
 

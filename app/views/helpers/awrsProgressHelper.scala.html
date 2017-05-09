@@ -7,7 +7,7 @@
     (isEditMode, isOneViewMode, sectionName) match {
         case (_, false, Some(secName)) => {
             <span id="progress-text" class="pre-heading" aria-hidden="true">{JourneyConstants.getJourneyProgress(businessType, secName)}</span>
-            <span class="visuallyhidden">{JourneyConstants.getSectionProgress(businessType, secName)}</span>
+            <span id="progress-section" class="visuallyhidden" aria-hidden="true">{JourneyConstants.getSectionProgress(businessType, secName)}.</span>
         }
         case (_ , _, _) =>
     }

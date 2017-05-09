@@ -38,7 +38,10 @@
         ))(EditMode)
         @errorSummaryTemplate(confirmationForm)
         @awrsProgressHelper(request.getBusinessType, section)(EditMode)
-        <h1 id="deleteConfirmation-heading" class="heading-xlarge">@Messages("awrs.delete.confirmation_heading", headingParameter)</h1>
+        <h1 id="deleteConfirmation-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">@Messages("awrs.delete.confirmation_heading", headingParameter)</h1>
+        <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
+            @Messages("awrs.delete.confirmation_heading", headingParameter).
+        </span>
         @modelRender
         @form(action = formAction(id)) {
         <div class="form-group">
