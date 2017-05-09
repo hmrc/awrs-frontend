@@ -3,7 +3,7 @@
 @import views.html.helpers._
 
 <div class="alert-complete" role="alert">
-    <h1 id="confirmation">
+    <h1 id="confirmation" aria-labelledby="ariaConfirmation">
         <span class="heading-large">
             <img height="24" width="24" class="inline" aria-hidden="true" src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="" aria-label="tick">
             @Messages(text_1) @request.session.get("businessName").getOrElse("")
@@ -12,4 +12,7 @@
         @if(submissionOrResubmissionDate.isDefined){ @submissionOrResubmissionDate}
         </span>
     </h1>
+    <span id="ariaConfirmation" class="visuallyhidden" aria-hidden="true">
+        @Messages(text_1) @request.session.get("businessName").getOrElse("") @Messages(text_2) @if(submissionOrResubmissionDate.isDefined) {@submissionOrResubmissionDate}.
+    </span>
 </div>
