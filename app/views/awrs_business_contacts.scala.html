@@ -42,6 +42,20 @@
     }
 }
 
+@businessTypeHeading = {
+    @businessType.map {
+        case "Partnership" | "LP" | "LLP" => {
+            @Messages("awrs.business_contacts.heading.partnership", headingPrefix())
+        }
+        case "LLP_GRP" | "LTD_GRP" => {
+            @Messages("awrs.business_contacts.heading.group", headingPrefix())
+        }
+        case _ => {
+            @Messages("awrs.business_contacts.heading", headingPrefix())
+        }
+    }
+}
+
 @includes.awrs_main(title = Messages("awrs.business_contacts.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
@@ -51,19 +65,12 @@
             ))
             @errorSummaryTemplate(businessContactsForm)
             @awrsProgressHelper(businessType, businessContactsName)
-            <h1 id="contact-information-heading" class="heading-xlarge">
-                @businessType.map {
-                    case "Partnership" | "LP" | "LLP" => {
-                        @Messages("awrs.business_contacts.heading.partnership", headingPrefix())
-                    }
-                    case "LLP_GRP" | "LTD_GRP" => {
-                        @Messages("awrs.business_contacts.heading.group", headingPrefix())
-                    }
-                    case _ => {
-                        @Messages("awrs.business_contacts.heading", headingPrefix())
-                    }
-                }
+            <h1 id="contact-information-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">
+                @businessTypeHeading
             </h1>
+            <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
+                @businessTypeHeading.
+            </span>
 
             @form(action = actionRoute) {
                 <p id="contactDetailsNominatedPerson" class="lede">@Messages("awrs.business_contacts.contact_detail_nominated_person")</p>

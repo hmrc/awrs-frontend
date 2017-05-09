@@ -41,7 +41,12 @@
         ))
         @errorSummaryTemplate(productsForm)
         @awrsProgressHelper(request.getBusinessType, productsName)
-        <h1 id="products-heading" class="heading-xlarge">@Messages("awrs.additional_information.products.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))</h1>
+        <h1 id="products-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">
+            @Messages("awrs.additional_information.products.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))
+        </h1>
+        <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
+            @Messages("awrs.additional_information.products.heading", headingPrefix(enter = "awrs.generic.tell_us_about")).
+        </span>
         @form(action = actionRoute){
             <div class="form-group">
                 @awrsInputTypeGroupCheckbox(

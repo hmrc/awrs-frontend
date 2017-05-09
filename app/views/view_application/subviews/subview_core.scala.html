@@ -10,7 +10,10 @@
             <div id="headerType"><h2 class="heading-large">@heading</h2></div>
         }
         case _ => {
-            <h1 class="heading-xlarge">@heading</h1>
+            <h1 class="heading-xlarge" aria-labelledby="ariaHeading progress-section">@heading</h1>
+            <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
+                @heading.
+            </span>
         }
     }
 }
