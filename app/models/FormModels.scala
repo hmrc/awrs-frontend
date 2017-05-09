@@ -527,7 +527,7 @@ object GroupMember {
 }
 
 object GroupMembers {
-  val latestModelVersion = "1.0"
+  val latestModelVersion = "1.1"
   implicit val formats = Json.format[GroupMembers]
 }
 

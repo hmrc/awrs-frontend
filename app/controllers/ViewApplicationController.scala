@@ -19,6 +19,7 @@ package controllers
 import config.{ApplicationGlobal, FrontendAuthConnector}
 import controllers.auth.AwrsController
 import controllers.util.UnSubmittedBannerUtil
+import models.GroupMembers
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -99,6 +100,10 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
             unSubmittedChangesParam = unSubmittedChangesParam
           )
         )
+        def removeRepFromGroupMembers(groupMembers: Option[GroupMembers]) : Option[GroupMembers] = {
+          val members = groupMembers.get.members.tail
+          Some(GroupMembers(members))
+        }
         subscriptionData match {
           case Some(cacheMap) =>
             val legalEntity = cacheMap.getBusinessType match {
@@ -118,7 +123,7 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
               case `partnersName` => showPage(views.html.view_application.subviews.subview_partner_details(
                 displayName, cacheMap.getPartners)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `groupMembersName` => showPage(views.html.view_application.subviews.subview_group_member_details(
-                displayName, cacheMap.getGroupMembers)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
+                displayName, removeRepFromGroupMembers(cacheMap.getGroupMembers))(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `additionalBusinessPremisesName` => showPage(views.html.view_application.subviews.subview_additional_premises(
                 displayName, cacheMap.getAdditionalBusinessPremises)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `businessDirectorsName` => showPage(views.html.view_application.subviews.subview_business_directors(
