@@ -21,7 +21,7 @@
 @getHeading(heading: String, model: models.GroupMembers) = @{
     model.members.isEmpty match {
         case true => heading
-        case _ => f"$heading (${model.members.size})"
+        case _ => f"$heading (${model.members.size-1})"
     }
 }
 
@@ -43,8 +43,8 @@
 }
 
 @content(model: models.GroupMembers) = {
-    @model.members.zipWithIndex.map { case (member, id) =>
-        @content_group_member(member, id + 1)
+    @model.members.tail.zipWithIndex.map { case (member, id) =>
+        @content_group_member(member, id + 2)
     }
 }
 

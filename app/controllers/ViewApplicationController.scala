@@ -123,7 +123,7 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
               case `partnersName` => showPage(views.html.view_application.subviews.subview_partner_details(
                 displayName, cacheMap.getPartners)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `groupMembersName` => showPage(views.html.view_application.subviews.subview_group_member_details(
-                displayName, removeRepFromGroupMembers(cacheMap.getGroupMembers))(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
+                displayName, cacheMap.getGroupMembers)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `additionalBusinessPremisesName` => showPage(views.html.view_application.subviews.subview_additional_premises(
                 displayName, cacheMap.getAdditionalBusinessPremises)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `businessDirectorsName` => showPage(views.html.view_application.subviews.subview_business_directors(

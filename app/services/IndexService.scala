@@ -365,7 +365,7 @@ trait IndexService {
         )
         val groupMemberDetailsSection = SectionModel(
           "groupMembers", groupMembersHref, "awrs.index_page.group_member_details_text", groupMembersStatus,
-          size = cache.getGroupMembers.getOrElseSize
+          size = Some(cache.getGroupMembers.getOrElseSize.get-1)
         )
 
         IndexViewModel({
