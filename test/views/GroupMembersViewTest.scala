@@ -84,7 +84,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
                   val expectedSectionNumber = journey.indexOf(groupMembersName) + 1
                   val totalSectionsForBusinessType = journey.size
                   val expectedSectionName = Messages("awrs.index_page.group_member_details_text")
-                  val expected = Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                  val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                   testText(expectedText = expected)(targetFieldId = "progress-text")
                 }
                 eitherJourney(isLinearJourney = isLinear, entityType = legalEntity)(test)

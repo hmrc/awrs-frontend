@@ -89,7 +89,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
                     case "Partnership" | "LP" | "LLP" => Messages("awrs.index_page.partnership_place_of_business_text")
                     case _ => Messages("awrs.index_page.business_place_of_business_text")
                   }
-                  val expected = Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                  val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                   testText(expectedText = expected)(targetFieldId = "progress-text")
                 }
                 eitherJourney(isLinearJourney = isLinear, entityType = legalEntity)(test)

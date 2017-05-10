@@ -5,9 +5,9 @@
 @{
     (isOneViewMode, alwaysShow) match {
         case (true, true) =>
-            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a><span class="visuallyhidden">.</span></p>
+            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a><span class="visuallyhidden">,</span></p>
         case (false, _) =>
-            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a><span class="visuallyhidden">.</span></p>
+            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a><span class="visuallyhidden">,</span></p>
         case _ =>
     }
 }

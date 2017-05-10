@@ -132,7 +132,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
                         case "Partnership" | "LP" | "LLP" => Messages("awrs.index_page.partnership_details_text")
                         case _ => Messages("awrs.index_page.business_details_text")
                       }
-                      document.getElementById("progress-text").text shouldBe Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                      document.getElementById("progress-text").text shouldBe Messages("awrs.generic.section") + Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                   }
                 }
             }
