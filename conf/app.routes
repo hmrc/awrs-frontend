@@ -107,10 +107,6 @@ POST        /group-declaration/sendConfirmation             controllers.GroupDec
 GET         /address-lookup                                 controllers.AddressLookupController.addressLookup(postcode: String)
 POST        /address-lookup                                 controllers.AddressLookupController.auditAddress
 
-GET         /survey                                         controllers.SurveyController.showSurvey
-POST        /survey-opt-out                                 controllers.SurveyController.optOutSurvey
-POST        /survey-submit                                  controllers.SurveyController.submitSurvey
-
 GET         /feedback                                       controllers.FeedbackController.showFeedback
 GET         /feedback/thanks                                controllers.FeedbackController.showFeedbackThanks
 POST        /feedback-submit                                controllers.FeedbackController.submitFeedback

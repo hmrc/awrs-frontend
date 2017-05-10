@@ -30,10 +30,10 @@ class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnecto
   object TestApplicationController extends ApplicationController
 
   "Authorised users" should {
-    "be redirected to survey page" in {
+    "be redirected to feedback-survey page" in {
       getWithAuthorisedUser { result =>
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should be("/alcohol-wholesale-scheme/survey")
+        redirectLocation(result).get should include ("/feedback-survey/?origin=AWRS")
       }
     }
   }

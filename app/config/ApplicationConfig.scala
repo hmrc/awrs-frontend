@@ -32,7 +32,6 @@ trait ApplicationConfig {
   val homeUrl: String
   val defaultTimeoutSeconds: Int
   val timeoutCountdown: Int
-
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
