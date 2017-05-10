@@ -59,13 +59,10 @@
                 sectionName = businessRegistrationDetailsName
             ))
             @errorSummaryTemplate(businessRegistrationDetailsForm)
-            @awrsProgressHelper(businessType, businessRegistrationDetailsName)
-            <h1 id="additional-information-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">
-                @businessTypeHeading
-            </h1>
-            <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
-                @businessTypeHeading.
-            </span>
+            <header class="page-header">
+                <h1 id="additional-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
+                @awrsProgressHelper(businessType, businessRegistrationDetailsName)
+            </header>
 
             @form(action = actionRoute){
                 @awrsIdUTRHelper(

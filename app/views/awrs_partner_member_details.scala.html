@@ -66,9 +66,10 @@
                 sectionName = partnersName
             ))
             @errorSummaryTemplate(partnerForm)
-            @awrsProgressHelper(businessType, partnersName)
-            <h1 id="business_partner-title" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">@h1text</h1>
-            <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">@h1text.</span>
+            <header class="page-header">
+                <h1 id="business_partner-title" class="heading-xlarge">@h1text</h1>
+                @awrsProgressHelper(businessType, partnersName)
+            </header>
             <p id="business_partners-subtext" class="lede">@Messages("awrs.business-partner.topText")</p>
             @form(action = actionRoute) {
                 @awrsInputTypeRadioGroup(

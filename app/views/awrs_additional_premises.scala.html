@@ -49,13 +49,10 @@
                     sectionEntryId = businessPremisesId
                 ))
                 @errorSummaryTemplate(businessPremisesForm)
-                @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
-                <h1 id="additional-premises-title" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">
-                    @businessPremisesIdHeading
-                </h1>
-                <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
-                    @businessPremisesIdHeading.
-                </span>
+                <header class="page-header">
+                    <h1 id="additional-premises-title" class="heading-xlarge">@businessPremisesIdHeading</h1>
+                    @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
+                </header>
 
                 <p id="additional-premises-subtext" class="lede">@Messages("awrs.additional-premises.subtext")</p>
 

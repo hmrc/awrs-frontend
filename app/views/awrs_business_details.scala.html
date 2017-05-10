@@ -155,14 +155,10 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
             sectionName = businessDetailsName
         ))
         @errorSummaryTemplate(businessDetailsForm)
-        @awrsProgressHelper(businessType, businessDetailsName)
-        <h1 id="additional-information-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">
-            @businessTypeHeading
-        </h1>
-        <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
-            @businessTypeHeading.
-        </span>
-
+        <header class="page-header">
+            <h1 id="additional-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
+            @awrsProgressHelper(businessType, businessDetailsName)
+        </header>
 
         @uk.gov.hmrc.play.views.html.helpers.form(action = actionRoute){
             <div class="form-group">
