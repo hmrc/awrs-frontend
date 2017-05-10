@@ -156,8 +156,8 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
         ))
         @errorSummaryTemplate(businessDetailsForm)
         @awrsProgressHelper(businessType, businessDetailsName)
-        <h1 id="additional-information-heading" class="heading-xlarge" aria-labelledby="ariaHeading progress-section">
-            @businessTypeHeading
+        <h1 id="additional-information-heading" class="heading-xlarge">
+            <span aria-labelledby="ariaHeading progress-section">@businessTypeHeading</span>
         </h1>
         <span id="ariaHeading" class="visuallyhidden" aria-hidden="true">
             @businessTypeHeading.
