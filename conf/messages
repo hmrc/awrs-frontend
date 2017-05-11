@@ -208,7 +208,7 @@ awrs.generic.wait_info=You must wait 24 hours after {0} your application before 
 awrs.generic.wait_info_withdraw=withdrawing
 awrs.generic.wait_info_de-registration=cancelling
 awrs.generic.section_progess={0} of {1} - {2}
-awrs.generic.section=Section
+awrs.generic.section=This section is
 awrs.generic.helper_question_text=What does this mean?
 
 # Page specific messages
