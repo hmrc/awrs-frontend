@@ -36,8 +36,7 @@ trait ApplicationController extends FrontendController with RunMode {
   }
 
   def logout = Action { implicit request =>
-    //Redirect(ExternalUrls.logoutCallbackUrl)
-    Redirect(ExternalUrls.signOut)
+    Redirect(ExternalUrls.logoutCallbackUrl)
   }
 
   def timedOut() = UnauthorisedAction {

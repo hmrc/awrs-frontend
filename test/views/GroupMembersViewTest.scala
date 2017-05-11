@@ -53,13 +53,13 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
             result =>
               status(result) shouldBe OK
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id + 1)))
+              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
           }
           editJourney(id) {
             result =>
               status(result) shouldBe OK
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id + 1)))
+              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
           }
       }
       // if the user adds a new group member from the section view
@@ -67,7 +67,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
         result =>
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(1 + 1)))
+          document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(1)))
       }
     }
 

@@ -485,7 +485,13 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
             companyRegistrationNumber = testCrn,
             dateOfIncorporation = TupleDate("09", "06", "1985")
           )
-        ), doYouHaveVRN = Some("Yes"), vrn = testVrn, addAnotherGrpMember = Some("No"))))
+        ), doYouHaveVRN = Some("Yes"), vrn = testVrn, addAnotherGrpMember = Some("No")),
+          GroupMember(companyNames = CompanyNames(Some("ACME"), Some("Yes"), Some("Business1")), address = Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), groupJoiningDate = None, doYouHaveUTR = Some("Yes"), utr = testUtr, isBusinessIncorporated = Some("No"), companyRegDetails = Some(
+            CompanyRegDetails(
+              companyRegistrationNumber = testCrn,
+              dateOfIncorporation = TupleDate("09", "06", "1985")
+            )
+          ), doYouHaveVRN = Some("Yes"), vrn = testVrn, addAnotherGrpMember = Some("No"))))
 
       def toExpectation(testData: GroupMembers): List[Row] = {
         def toList(testData: GroupMember): List[Row] = {
@@ -515,7 +521,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
 
       def test(testData: GroupMembers) {
         implicit val cache =
-          getCustomizedMap(groupMembers = testData)
+          getCustomizedMap(groupMembers = GroupMembers(testData.members))
 
         implicit val doc = getDoc()
         val subview = getSubview

@@ -100,10 +100,6 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
             unSubmittedChangesParam = unSubmittedChangesParam
           )
         )
-        def removeRepFromGroupMembers(groupMembers: Option[GroupMembers]) : Option[GroupMembers] = {
-          val members = groupMembers.get.members.tail
-          Some(GroupMembers(members))
-        }
         subscriptionData match {
           case Some(cacheMap) =>
             val legalEntity = cacheMap.getBusinessType match {
