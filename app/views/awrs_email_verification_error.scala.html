@@ -41,7 +41,11 @@
 
     <div class="grid">
         <div class="grid grid-2-3">
-            @backLink()
+            @backLink(backUrl = resent match {
+                case true =>  controllers.routes.EmailVerificationController.checkEmailVerification().url
+                case _ => controllers.routes.IndexController.showIndex().url
+                }
+            )
             <div>
                 <h1 id="email-verification-error-header" class="heading-xlarge">@Html(Messages("awrs.email_verification_error.heading"))</h1>
                 <p id="email-verification-error-lede" class="lede">@Html(Messages("awrs.email_verification_error.lede"))</p>
