@@ -29,7 +29,9 @@
                         legend = Messages("awrs.de_registration.confirmation_heading"),
                         legendId = "deRegistrationConfirmation-legend",
                         legendClass = "visuallyhidden",
-                        optionMessages = Some(List(("deRegistrationConfirmation-yes",s"${Messages("awrs.generic.warning_icon_text")}${declarationText.toString()}")))
+                        optionMessages = Some(List(("deRegistrationConfirmation-yes",s"${Messages("awrs.generic.warning_icon_text")}${declarationText.toString()}"))),
+                        ariaDescribedBy = "deRegistrationConfirmation-yes-content-text",
+                        ariaDescribedByForYesOptionOnly = true
                     )
                 )
             </div>
