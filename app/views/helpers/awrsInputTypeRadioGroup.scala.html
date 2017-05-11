@@ -136,7 +136,13 @@
                         <input type="radio"
                                id="@inputId"
                                @if(params.ariaDescribedBy){
-                                    aria-describedby="@{params.ariaDescribedBy}"
+                                    @if(params.ariaDescribedByForYesOptionOnly && (value == "Yes")) {
+                                        aria-describedby="@{params.ariaDescribedBy}"
+                                    } else {
+                                        @if(!params.ariaDescribedByForYesOptionOnly) {
+                                            aria-describedby="@{params.ariaDescribedBy}"
+                                        }
+                                    }
                                } else {
                                     aria-describedby="@{inputTypeId}"
                                }
