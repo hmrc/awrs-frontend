@@ -408,7 +408,7 @@ object TestUtil {
                      businessRegistrationDetails: Option[String => BusinessRegistrationDetails] = (entity: String) => testBusinessRegistrationDetails(Some(entity)),
                      placeOfBusiness: Option[PlaceOfBusiness] = testPlaceOfBusinessDefault(),
                      businessContacts: Option[BusinessContacts] = testBusinessContactsDefault(),
-                     groupMemberDetails: Option[GroupMembers] = testGroupMemberDetails,
+                     groupMemberDetails: Option[GroupMembers] = testGroupMemberDetails2Members,
                      groupDeclaration: Option[GroupDeclaration] = testGroupDeclaration,
                      additionalBusinessPremises: Option[AdditionalBusinessPremisesList] = testAdditionalPremisesList,
                      partnerDetails: Option[Partners] = testPartnerDetails,

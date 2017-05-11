@@ -19,6 +19,7 @@ package controllers
 import config.{ApplicationGlobal, FrontendAuthConnector}
 import controllers.auth.AwrsController
 import controllers.util.UnSubmittedBannerUtil
+import models.GroupMembers
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
