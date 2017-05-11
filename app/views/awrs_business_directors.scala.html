@@ -191,8 +191,10 @@
             sectionName = businessDirectorsName
         ))
         @errorSummaryTemplate(businessDirectorsForm)
-        @awrsProgressHelper(businessType, businessDirectorsName)
-        <h1 id="business-directors-heading" class="heading-xlarge">@h1text</h1>
+        <header class="page-header">
+            <h1 id="business-directors-heading" class="heading-xlarge">@h1text</h1>
+            @awrsProgressHelper(businessType, businessDirectorsName)
+        </header>
 
         <p class="lede" id="directorsAndCompanySecretariesDescription">@Messages("awrs.business_directors.topText")</p>
 

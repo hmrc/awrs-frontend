@@ -35,8 +35,13 @@
             sectionName = tradingActivityName
         ))
         @errorSummaryTemplate(tradingActivityForm)
-        @awrsProgressHelper(request.getBusinessType, tradingActivityName)
-        <h1 id="trading-activity-heading" class="heading-xlarge">@Html(Messages("awrs.additional_information.trading_activity.heading", headingPrefix(enter = "awrs.generic.tell_us_about")))</h1>
+        <header class="page-header">
+            <h1 id="trading-activity-heading" class="heading-xlarge">
+                @Html(Messages("awrs.additional_information.trading_activity.heading", headingPrefix(enter = "awrs.generic.tell_us_about")))
+            </h1>
+            @awrsProgressHelper(request.getBusinessType, tradingActivityName)
+        </header>
+
         @form(action = actionRoute){
             <div class="form-group">
                 @awrsInputTypeGroupCheckbox(

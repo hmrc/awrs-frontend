@@ -33,6 +33,13 @@
         }
     }
 
+@businessPremisesIdHeading = @{
+    businessPremisesId match {
+        case 1 if !isEditMode => Messages("awrs.additional-premises.top-heading.first")
+        case id               => Messages("awrs.additional-premises.top-heading", headingPrefix(enter = "awrs.generic.tell_us_about", edit = "awrs.generic.edit", isNewRecord = isNewRecord), ordinalIntSuffix(businessPremisesId))
+    }
+}
+
     @includes.awrs_main(title = Messages("awrs.additional-premises.page_title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
         <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
         <div class="grid">
@@ -42,13 +49,10 @@
                     sectionEntryId = businessPremisesId
                 ))
                 @errorSummaryTemplate(businessPremisesForm)
-                @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
-                <h1 id="additional-premises-title" class="heading-xlarge">@{
-                    businessPremisesId match {
-                        case 1 if !isEditMode => Messages("awrs.additional-premises.top-heading.first")
-                        case id               => Messages("awrs.additional-premises.top-heading", headingPrefix(enter = "awrs.generic.tell_us_about", edit = "awrs.generic.edit", isNewRecord = isNewRecord), ordinalIntSuffix(businessPremisesId))
-                    }
-                }</h1>
+                <header class="page-header">
+                    <h1 id="additional-premises-title" class="heading-xlarge">@businessPremisesIdHeading</h1>
+                    @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
+                </header>
 
                 <p id="additional-premises-subtext" class="lede">@Messages("awrs.additional-premises.subtext")</p>
 

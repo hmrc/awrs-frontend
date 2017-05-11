@@ -61,4 +61,13 @@ object JourneyConstants {
 
   }
 
+  val getSectionProgress = (businessType: Option[String], sectionName: String) => {
+    val journey = getJourney(businessType.fold("")(x => x))
+    val totalSections = journey.size
+    val sectionIndex = journey.indexOf(sectionName) + 1
+    Messages("awrs.generic.section",sectionIndex,totalSections)
+  }
+
+
+
 }

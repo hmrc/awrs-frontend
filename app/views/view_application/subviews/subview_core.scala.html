@@ -34,8 +34,10 @@
 
 <div id="@headingId" class="form-group view-application-section">
         @backLink(backUrl = controllers.routes.IndexController.showIndex().url)
-        @awrsProgressHelper(request.getBusinessType, sectionName)
-        @headerType
+        <header class="page-header">
+            @headerType
+            @awrsProgressHelper(request.getBusinessType, sectionName)
+        </header>
         @dynamicContent(
             ifOneViewMode = oneViewModeLink
         )

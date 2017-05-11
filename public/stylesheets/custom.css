@@ -818,3 +818,28 @@ details {display: block;}
 [role="link"].link-style {text-decoration: none;}
 [role="link"].link-style:hover {text-decoration: underline;}
 .postcode-lookup-results {margin-top: 1em;}
+
+p.heading-secondary {
+    color: #6f777b;
+    display: block;
+    font-family: "nta",Arial,sans-serif;
+    font-size: 27px;
+    font-weight: 400;
+    line-height: 1.11111;
+    margin-bottom: 0.42105em;
+    text-transform: none;
+}
+
+.page-header .heading-secondary {
+    display: table-header-group;
+}
+
+.page-header {
+    clear: both;
+    display: table;
+    margin-top: 1.8em;
+}
+
+.page-header .heading-xlarge {
+    margin: 0.15em 0 1.25em;
+}

@@ -40,8 +40,14 @@
             sectionName = productsName
         ))
         @errorSummaryTemplate(productsForm)
-        @awrsProgressHelper(request.getBusinessType, productsName)
-        <h1 id="products-heading" class="heading-xlarge">@Messages("awrs.additional_information.products.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))</h1>
+
+        <header class="page-header">
+            <h1 id="products-heading" class="heading-xlarge">
+                @Messages("awrs.additional_information.products.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))
+            </h1>
+            @awrsProgressHelper(request.getBusinessType, productsName)
+        </header>
+
         @form(action = actionRoute){
             <div class="form-group">
                 @awrsInputTypeGroupCheckbox(
