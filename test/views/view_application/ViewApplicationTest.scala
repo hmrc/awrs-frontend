@@ -516,19 +516,19 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
         }
 
         // .dropRight(1) is added because the last row of the table does not have a record spacer
-        testData.members.flatMap(x => toList(x)).dropRight(1)
+        testData.members.tail.flatMap(x => toList(x)).dropRight(1)
       }
 
       def test(testData: GroupMembers) {
         implicit val cache =
-          getCustomizedMap(groupMembers = GroupMembers(testData.members))
+          getCustomizedMap(groupMembers = testData)
 
         implicit val doc = getDoc()
         val subview = getSubview
 
         testSectionExists(groupMembers = true)
 
-        val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.group_member_details_text"), testData.members)
+        val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.group_member_details_text"), testData.members.tail)
 
         subview.heading shouldBe expectedHeading
         subview.rows shouldBe toExpectation(testData)
