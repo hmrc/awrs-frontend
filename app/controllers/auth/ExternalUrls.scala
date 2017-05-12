@@ -29,8 +29,8 @@ object ExternalUrls extends RunMode with ServicesConfig{
   val accountType = loadConfig(s"auth.accountType")
   val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback&accountType=$accountType"
   val loginURL = s"$companyAuthHost/gg/$loginPath"
-  val signOut = s"$companyAuthHost/gg/sign-out"
+  val logoutCallbackUrl = loadConfig(s"auth.logout-callback.url")
+  val signOut = s"$companyAuthHost/gg/sign-out/?continue=$logoutCallbackUrl"
   val businessCustomerStartPage = loadConfig(s"business-customer.serviceRedirectUrl")
   val businessTaxAccountPage = loadConfig(s"business-tax-account.serviceRedirectUrl")
-  val logoutCallbackUrl = loadConfig(s"auth.logout-callback.url")
 }
