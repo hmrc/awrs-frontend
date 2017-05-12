@@ -1067,6 +1067,23 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         await(result) shouldBe SectionChangeIndicators(true, false, false, false, false, false, false, false, false, false, false, false)
       }
     }
+    "addGroupRepToGroupMembers " should {
+      "add the group rep as the first group member to the GroupMembers list" in {
+        val result = testAddGroupRepToGroupMembers
+        result._2.get.members.size shouldBe  result._1.getEntry[GroupMembers](groupMembersName).get.members.size + 1
+      }
+
+      "have the first group member as the group rep" in {
+        val result = testAddGroupRepToGroupMembers
+        result._2.get.members(0).companyNames.tradingName shouldBe result._1.getEntry[BusinessDetails](businessDetailsName).get.tradingName
+        result._2.get.members(0).companyNames.businessName.get shouldBe result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
+      }
+    }
+  }
+
+  def testAddGroupRepToGroupMembers: (CacheMap,Option[GroupMembers]) = {
+    val cached = cachedData()
+    (cached, TestApplicationService.addGroupRepToGroupMembers(Some(cached)))
   }
 
   def sendWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any): Unit = {
