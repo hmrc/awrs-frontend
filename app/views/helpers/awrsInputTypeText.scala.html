@@ -133,9 +133,9 @@
            @dataAttributes
            @required
            @if(params.formHasErrors){
-               aria-labelledby="@{params.fieldName}-error-0 @if(params.isDate){@{inputId}_field}"
+               aria-labelledby="@{params.fieldName}-error-0 @if(params.isDate){@{inputId}_field @{inputId}_reader}"
            } else {
-                aria-labelledby="@{params.ariaLabelledBy} @if(params.isDate){@{inputId}_field}"
+                aria-labelledby="@{params.ariaLabelledBy} @if(params.isDate){@{inputId}_field @{inputId}_reader}"
            }
     >
     @isPostCodeInput

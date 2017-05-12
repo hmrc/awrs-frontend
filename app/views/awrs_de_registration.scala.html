@@ -8,6 +8,13 @@
 <span aria-hidden="true">@Messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@Messages("awrs.generic.date_hint.reader")</span>
 }
 
+@ariaDayMonthYear = {
+    <span id="proposedEndDate-day_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_day.reader")</span>
+    <span id="proposedEndDate-month_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_month.reader")</span>
+    <span id="proposedEndDate-year_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_year.reader")</span>
+}
+
+
 @includes.awrs_main(title = Messages("awrs.de_registration.page_title"), userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
@@ -25,7 +32,9 @@
                         formItem = deRegistrationForm,
                         fieldName = "proposedEndDate",
                         hintText = hintText,
-                        hintTextId  = "de_registration-hint"
+                        hintTextId  = "de_registration-hint",
+                        ariaDayMonthYear = ariaDayMonthYear,
+                        ariaLabelledBy = "de_registration-heading"
                     )
                 )
             </div>

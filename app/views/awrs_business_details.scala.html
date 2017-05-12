@@ -59,7 +59,9 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
                 fieldSetClass = "inline",
                 fieldSetAttributes = "id=newAWBusiness.newAWBusiness_field",
                 legendId = "newAWBusiness-legend",
-                legend = Messages("awrs.business_details.new_AWBusiness")
+                legend = Messages("awrs.business_details.new_AWBusiness"),
+                ariaDescribedBy = "newBus-information",
+                ariaDescribedByForYesOptionOnly = true
             )
         )
         <div id="newAWBusiness.newAWBusiness-yes-content">
@@ -70,6 +72,7 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
                     label = Some(Html(Messages("awrs.business_details.begin_trading"))),
                     hintText = Some(awrsNewBusinessHelpTextHelper()),
                     hintTextId  = "newBus-information",
+                    ariaDayMonthYear = ariaDayMonthYear,
                     wrapperClass = "panel-indent",
                     ariaLabelledBy = "newAWBusiness.proposedStartDate-legend"
                 )
@@ -99,6 +102,12 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
     </div>
 }
 
+@ariaDayMonthYear = {
+    <span id="newAWBusiness.proposedStartDate-day_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_day.reader")</span>
+    <span id="newAWBusiness.proposedStartDate-month_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_month.reader")</span>
+    <span id="newAWBusiness.proposedStartDate-year_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_year.reader")</span>
+}
+
 @newBusinessRetrievedApplicationSectionForAbnormalScenarios = {
     <div class="form-group">
         @hiddenNewBusinessQuestion
@@ -110,7 +119,9 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
                     fieldName = "newAWBusiness.proposedStartDate",
                     hintText = Some(awrsNewBusinessHelpTextHelper(showHint1 = showHint1)),
                     hintTextId  = "newBus-information",
-                    wrapperClass = "panel-indent"
+                    ariaDayMonthYear = ariaDayMonthYear,
+                    wrapperClass = "panel-indent",
+                    ariaLabelledBy = "newAWBusiness.proposedStartDate-legend"
                 )
             )
         </div>

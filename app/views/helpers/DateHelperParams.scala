@@ -26,5 +26,6 @@ case class DateHelperParams(formItem: Form[_],
                             groupClass: Option[String] = None,
                             hintText: Option[Html] = None,
                             hintTextId: Option[String] = None,
+                            ariaDayMonthYear: Option[Html] = None,
                             ariaLabelledBy: Option[String] = None
                            )
