@@ -32,6 +32,17 @@ formHasErrors: Boolean = false)(implicit formInstance: Option[Form[_]] = None, m
     <span aria-hidden="true">@Messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@Messages("awrs.generic.date_hint.reader")</span>
 }
 
+@ariaDayMonthYear = {
+    @dateField match {
+        case Some(someDateField) => {
+            <span id="@someDateField.name-day_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_day.reader")</span>
+            <span id="@someDateField.name-month_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_month.reader")</span>
+            <span id="@someDateField.name-year_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_year.reader")</span>
+        }
+        case _ => {}
+    }
+}
+
 @isDateField(withQuestion : Boolean) = @{
     val wrapperClassSetting : Option[String] =
         withQuestion match {
@@ -48,6 +59,7 @@ formHasErrors: Boolean = false)(implicit formInstance: Option[Form[_]] = None, m
                     label = Some(Html(Messages("awrs.generic.date_of_incorporation"))),
                     hintText = hintText,
                     hintTextId  = "doi-information",
+                    ariaDayMonthYear = ariaDayMonthYear,
                     wrapperClass = wrapperClassSetting,
                     ariaLabelledBy = someDateField.name+"-legend"
                 )

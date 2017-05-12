@@ -20,6 +20,14 @@
         case _ => {}
     }
 }
+
+@ariaDayMonthYear = {
+    @params.ariaDayMonthYear match {
+        case Some(ariaDayMonthYear) => {@ariaDayMonthYear}
+        case _ => {}
+    }
+}
+
 @groupClass = @{
     params.groupClass match {
         case Some(groupClass) => groupClass
@@ -40,6 +48,7 @@
         @legend
         <div class="form-date">
             @formHint
+            @ariaDayMonthYear
             @commonHelper(params.formItem(params.fieldName), fieldErrors)
             <div class="no-touch native-date-picker form-date" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0"}>
                 @dateFieldsContent(params.formItem, params.fieldName, params.ariaLabelledBy, fieldErrors.nonEmpty)

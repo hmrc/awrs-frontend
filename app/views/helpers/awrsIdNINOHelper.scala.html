@@ -5,6 +5,7 @@ passportField: Option[Field] = None,
 nationalIdField: Option[Field] = None,
 questionHintText: Option[String] = None,
 ariaDescribedBy: Option[String] = None,
+ariaLabelledBy: Option[String] = None,
 formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
 
 @import play.api.i18n._
@@ -73,7 +74,9 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             required = true,
             labelHighlight = true,
             formHint = Messages("awrs.generic.do_you_have_NINO_information"),
-            formHintId = "NINO-information"
+            formHintId = "NINO-information",
+            ariaLabelledBy = ariaLabelledBy,
+            formHasErrors = formHasErrors
         )
     )
 }
