@@ -10,7 +10,7 @@
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
 
-@(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+@(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, hasAwrs: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
 
 @implicitFormInstance = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
@@ -34,6 +34,13 @@
   }
 }
 
+@ordinalSuffix = @{
+    hasAwrs match {
+        case true => ordinalIntSuffix(groupMemberId)
+        case _ => ordinalIntSuffix(groupMemberId + 1)
+    }
+}
+
 @includes.awrs_main(title = Messages("awrs.group_member.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
 <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
@@ -44,7 +51,7 @@
         @errorSummaryTemplate(groupMemberForm)
         <header class="page-header">
             <h1 id="group-member-heading" class="heading-xlarge">
-                @Messages("awrs.group_member.top_heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalIntSuffix(groupMemberId))
+                @Messages("awrs.group_member.top_heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalSuffix)
             </h1>
             @awrsProgressHelper(businessType, groupMembersName)
         </header>

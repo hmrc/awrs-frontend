@@ -34,12 +34,13 @@ import services.Save4LaterService
 import uk.gov.hmrc.http.cache.client._
 import utils.TestUtil._
 import utils.TestConstants._
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
+import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits}
 import views.view_application.helpers.{OneViewMode, PrintFriendlyMode}
 import views.view_application.subviews.SubviewIds._
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
+
 
 class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
 
@@ -52,8 +53,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
     def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent]) =
       (printFriendly: Boolean) =>
         printFriendly match {
-          case true => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly)
-          case _ => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = OneViewMode, implicitly, implicitly)
+          case true => views.html.view_application.awrs_view_application_core(dataCache, status, AccountUtils.hasAwrs)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly)
+          case _ => views.html.view_application.awrs_view_application_core(dataCache, status, AccountUtils.hasAwrs)(viewApplicationType = OneViewMode, implicitly, implicitly)
         }
 
     def show(dataCache: CacheMap) = Action.async {

@@ -127,16 +127,16 @@ case class WithdrawalReason(reason: Option[String], reasonOther: Option[String])
 
 case class ReapplicationConfirmation(answer: Option[String])
 
-case class GroupMember(companyNames: CompanyNames,
-                       address: Option[Address],
-                       groupJoiningDate: Option[String],
-                       doYouHaveUTR: Option[String],
-                       utr: Option[String],
-                       isBusinessIncorporated: Option[String],
-                       companyRegDetails: Option[CompanyRegDetails],
-                       doYouHaveVRN: Option[String],
-                       vrn: Option[String],
-                       addAnotherGrpMember: Option[String])
+case class GroupMember(companyNames: CompanyNames = CompanyNames(),
+                       address: Option[Address] = None,
+                       groupJoiningDate: Option[String] = None,
+                       doYouHaveUTR: Option[String] = None,
+                       utr: Option[String] = None,
+                       isBusinessIncorporated: Option[String] = None,
+                       companyRegDetails: Option[CompanyRegDetails] = None,
+                       doYouHaveVRN: Option[String] = None,
+                       vrn: Option[String] = None,
+                       addAnotherGrpMember: Option[String] = None)
 
 case class GroupMembers(members: List[GroupMember],
                         modelVersion: String = GroupMembers.latestModelVersion

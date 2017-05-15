@@ -7,7 +7,8 @@
 @import services.DataCacheKeys._
 
 @(someHeading: Option[String],
-        someModel: Option[models.GroupMembers]
+        someModel: Option[models.GroupMembers],
+        hasAwrs: Boolean
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
 @wrapperId = @{
@@ -21,7 +22,13 @@
 @getHeading(heading: String, model: models.GroupMembers) = @{
     model.members.isEmpty match {
         case true => heading
-        case _ => f"$heading (${model.members.size-1})"
+        case _ => {
+            val size = hasAwrs match {
+                case true => model.members.size - 1
+                case _ => model.members.size
+            }
+            f"$heading ($size)"
+        }
     }
 }
 
@@ -43,8 +50,14 @@
 }
 
 @content(model: models.GroupMembers) = {
-    @model.members.tail.zipWithIndex.map { case (member, id) =>
-        @content_group_member(member, id + 2)
+    @if(hasAwrs) {
+        @model.members.tail.zipWithIndex.map { case (member, id) =>
+            @content_group_member(member, id + 2)
+        }
+    } else {
+        @model.members.zipWithIndex.map { case (member, id) =>
+            @content_group_member(member, id + 1)
+        }
     }
 }
 

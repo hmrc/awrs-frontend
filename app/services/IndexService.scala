@@ -23,8 +23,8 @@ import services.DataCacheKeys._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.HeaderCarrier
-import utils.CacheUtil
-import view_models.{IndexViewModel, SectionEdited, SectionNotStarted, SectionComplete, SectionIncomplete, SectionModel}
+import utils.{AccountUtils, CacheUtil}
+import view_models.{IndexViewModel, SectionComplete, SectionEdited, SectionIncomplete, SectionModel, SectionNotStarted}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -366,7 +366,8 @@ trait IndexService {
         val groupMemberDetailsSection = SectionModel(
           "groupMembers", groupMembersHref, "awrs.index_page.group_member_details_text", groupMembersStatus,
           size = cache.getGroupMembers.getOrElseSize match {
-            case Some(x) => Some(x - 1)
+            case Some(x) if AccountUtils.hasAwrs => Some(x - 1)
+            case Some(x) => Some(x)
             case _ => Some(0)
           }
         )

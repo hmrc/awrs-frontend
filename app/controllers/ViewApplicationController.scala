@@ -45,11 +45,11 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
   val indexService: IndexService
   implicit val cacheUtil = CacheUtil.cacheUtil
 
-  def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent]) =
+  def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent], user: AuthContext) =
     (printFriendly: Boolean) =>
       printFriendly match {
-        case true => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = PrintFriendlyMode, implicitly,implicitly)
-        case _ => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = OneViewMode, implicitly,implicitly)
+        case true => views.html.view_application.awrs_view_application_core(dataCache, status, AccountUtils.hasAwrs)(viewApplicationType = PrintFriendlyMode, implicitly,implicitly)
+        case _ => views.html.view_application.awrs_view_application_core(dataCache, status, AccountUtils.hasAwrs)(viewApplicationType = OneViewMode, implicitly,implicitly)
       }
 
   def show(printFriendly: Boolean) = async {
@@ -119,7 +119,7 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
               case `partnersName` => showPage(views.html.view_application.subviews.subview_partner_details(
                 displayName, cacheMap.getPartners)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `groupMembersName` => showPage(views.html.view_application.subviews.subview_group_member_details(
-                displayName, cacheMap.getGroupMembers)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
+                displayName, cacheMap.getGroupMembers, AccountUtils.hasAwrs)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `additionalBusinessPremisesName` => showPage(views.html.view_application.subviews.subview_additional_premises(
                 displayName, cacheMap.getAdditionalBusinessPremises)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `businessDirectorsName` => showPage(views.html.view_application.subviews.subview_business_directors(
