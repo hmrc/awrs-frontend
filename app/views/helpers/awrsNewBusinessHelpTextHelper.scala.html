@@ -1,6 +1,6 @@
 @(showHint1 : Boolean = true)(implicit messages: Messages)
 @showHint1 match {
-    case true => {<p>@Messages("awrs.business_details.newAWBusiness_information.para_1")</p>}
+    case true => {<p id="newBus-information-para">@Messages("awrs.business_details.newAWBusiness_information.para_1")</p>}
     case false  => {}
 }
 
