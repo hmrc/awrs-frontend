@@ -6,8 +6,10 @@
 @import views.view_application.helpers.ViewApplicationType
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.html.helpers._
+@import utils.AccountUtils
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
 
-@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages)
+@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, user :AuthContext)
 
 @businessLegalEntity = @{
     cache.getBusinessType.get.legalEntity.get
