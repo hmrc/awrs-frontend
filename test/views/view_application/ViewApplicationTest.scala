@@ -53,8 +53,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
     def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent]) =
       (printFriendly: Boolean) =>
         printFriendly match {
-          case true => views.html.view_application.awrs_view_application_core(dataCache, status, AccountUtils.hasAwrs)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly)
-          case _ => views.html.view_application.awrs_view_application_core(dataCache, status, AccountUtils.hasAwrs)(viewApplicationType = OneViewMode, implicitly, implicitly)
+          case true => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly,implicitly)
+          case _ => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = OneViewMode, implicitly, implicitly,implicitly)
         }
 
     def show(dataCache: CacheMap) = Action.async {

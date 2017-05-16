@@ -5,11 +5,12 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import contents._
 @import services.DataCacheKeys._
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import utils.AccountUtils
 
 @(someHeading: Option[String],
-        someModel: Option[models.GroupMembers],
-        hasAwrs: Boolean
-)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+        someModel: Option[models.GroupMembers]
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, user :AuthContext)
 
 @wrapperId = @{
     SubviewIds.groupMemberDetailsId
@@ -23,7 +24,7 @@
     model.members.isEmpty match {
         case true => heading
         case _ => {
-            val size = hasAwrs match {
+            val size = AccountUtils.hasAwrs match {
                 case true => model.members.size - 1
                 case _ => model.members.size
             }
@@ -50,7 +51,7 @@
 }
 
 @content(model: models.GroupMembers) = {
-    @if(hasAwrs) {
+    @if(AccountUtils.hasAwrs) {
         @model.members.tail.zipWithIndex.map { case (member, id) =>
             @content_group_member(member, id + 2)
         }

@@ -59,10 +59,10 @@ trait GroupMemberController extends AwrsController with JourneyPage with Account
       }
 
       lazy val newEntryAction = (id: Int) =>
-        Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form, id, isNewRecord, AccountUtils.hasAwrs)))
+        Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form, id, isNewRecord)))
 
       lazy val existingEntryAction = (data: GroupMembers, id: Int) =>
-        Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form.fill(data.members(id - 1)), id, isNewRecord, AccountUtils.hasAwrs)))
+        Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form.fill(data.members(id - 1)), id, isNewRecord)))
 
       lazy val haveAnother = (data: GroupMembers) => {
         val list = data.members
@@ -83,7 +83,7 @@ trait GroupMemberController extends AwrsController with JourneyPage with Account
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
     implicit val viewMode = viewApplicationType
     groupMemberForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.awrs_group_member(formWithErrors, id, isNewRecord, AccountUtils.hasAwrs))),
+      formWithErrors => Future.successful(BadRequest(views.html.awrs_group_member(formWithErrors, id, isNewRecord))),
       groupMemberData =>
         saveThenRedirect[GroupMembers, GroupMember](
           fetchData = fetch,
