@@ -141,6 +141,8 @@
                                     } else {
                                         @if(!params.ariaDescribedByForYesOptionOnly) {
                                             aria-describedby="@{params.ariaDescribedBy}"
+                                        } else {
+                                            aria-describedby="@{inputTypeId}"
                                         }
                                     }
                                } else {
