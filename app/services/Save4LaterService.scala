@@ -137,6 +137,12 @@ trait Save4LaterService {
     @inline def fetchBusinessDetails(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[BusinessDetails]] =
       fetchData4Later[BusinessDetails](businessDetailsName)
 
+    @inline def saveExtendedBusinessDetails(extendedBusinessDetails: ExtendedBusinessDetails)(implicit user: AuthContext, hc: HeaderCarrier): Future[ExtendedBusinessDetails] =
+      saveData4Later(extendedBusinessDetailsName, extendedBusinessDetails)
+
+    @inline def fetchExtendedBusinessDetails(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ExtendedBusinessDetails]] =
+      fetchData4Later[ExtendedBusinessDetails](extendedBusinessDetailsName)
+
     @inline def saveBusinessRegistrationDetails(businessDetails: BusinessRegistrationDetails)(implicit user: AuthContext, hc: HeaderCarrier): Future[BusinessRegistrationDetails] =
       saveData4Later(businessRegistrationDetailsName, businessDetails)
 

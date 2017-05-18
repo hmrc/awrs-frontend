@@ -105,24 +105,30 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
           BadRequest(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), formWithErrors, mode))
         }
       ,
-      extendedBusinessDetailsData => {
+      extendedBusinessDetails => {
         businessType match {
           case Some("LLP_GRP") | Some("LTD_GRP") => {
             save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
               case Some(businessCustomerDetails) => {
-                (businessCustomerDetails.businessName != extendedBusinessDetailsData.businessName) match {
+                (businessCustomerDetails.businessName != extendedBusinessDetails.businessName.get) match {
                   case true => {
-                    save4LaterService.mainStore.saveBusinessCustomerDetails(businessCustomerDetails.copy(businessName = extendedBusinessDetailsData.businessName.get))
-                    // TODO send to new page
-                    saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
+                    save4LaterService.mainStore.saveExtendedBusinessDetails(extendedBusinessDetails) flatMap {
+                      case _ => Future.successful(Ok("Ok"))
+                    }
+
+                    /*
+                    val extendedBusinessDetails = save4LaterService.mainStore.fetchExtendedBusinessDetails
+                    save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
+                    save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
+                    */
                   }
-                  case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
+                  case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
                 }
               }
-              case None => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
+              case None => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
             }
           }
-          case _ => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
+          case _ => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
         }
       }
     )
