@@ -23,7 +23,7 @@ import forms.BusinessDetailsForm._
 import models._
 import play.api.mvc.{AnyContent, Request, Result}
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{DataCacheService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
@@ -34,7 +34,7 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 
-trait BusinessDetailsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
+trait BusinessDetailsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable with DataCacheService {
 
   override val section = businessDetailsName
 
@@ -113,7 +113,7 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
               case Some(businessCustomerDetails) => {
                 (businessCustomerDetails.businessName != extendedBusinessDetails.businessName.get) match {
                   case true => {
-                    save4LaterService.mainStore.saveExtendedBusinessDetails(extendedBusinessDetails) flatMap {
+                    keyStoreService.saveExtendedBusinessDetails(extendedBusinessDetails) flatMap {
                       case _ => Future.successful(Ok("Ok"))
                     }
                   }
@@ -125,7 +125,7 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
           }
           case (true, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
         }
-        //val extendedBusinessDetails = save4LaterService.mainStore.fetchExtendedBusinessDetails
+        //val extendedBusinessDetails = keyStoreService.fetchExtendedBusinessDetails
         //save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
         //save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
       }
@@ -136,4 +136,5 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
 object BusinessDetailsController extends BusinessDetailsController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  override val keyStoreService = KeyStoreService
 }
