@@ -269,11 +269,7 @@ case class BusinessCustomerDetails(businessName: String,
                                    agentReferenceNumber: Option[String],
                                    firstName: Option[String] = None,
                                    lastName: Option[String] = None,
-                                   utr: Option[String] = None) {
-  def updateBusinessName(newBusinessName: String) = {
-    BusinessCustomerDetails(newBusinessName, businessType, businessAddress, sapNumber, safeId, isAGroup, agentReferenceNumber, firstName, lastName, utr)
-  }
-}
+                                   utr: Option[String] = None)
 
 case class SectionChangeIndicators(businessDetailsChanged: Boolean,
                                    businessRegistrationDetailsChanged: Boolean,

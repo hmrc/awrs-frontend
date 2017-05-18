@@ -86,6 +86,12 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
       }
   }
 
+  def saveBusinessDetails(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], isNewRecord: Boolean, businessDetails: BusinessDetails)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
+    save4LaterService.mainStore.saveBusinessDetails(businessDetails) flatMap {
+      case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
+    }
+  }
+
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
     implicit val viewMode = viewApplicationType
     val businessType = request.getBusinessType
@@ -102,29 +108,25 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
       extendedBusinessDetailsData => {
         businessType match {
           case Some("LLP_GRP") | Some("LTD_GRP") => {
-            for {
-              businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
-              if (businessCustomerDetails.get.businessName != extendedBusinessDetailsData.businessName)
-            } yield {
-              val newBusinessCustomerDetails = businessCustomerDetails.get.updateBusinessName(extendedBusinessDetailsData.businessName.get)
-              save4LaterService.mainStore.saveBusinessCustomerDetails(newBusinessCustomerDetails)
+            save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
+              case Some(businessCustomerDetails) => {
+                (businessCustomerDetails.businessName != extendedBusinessDetailsData.businessName) match {
+                  case true => {
+                    save4LaterService.mainStore.saveBusinessCustomerDetails(businessCustomerDetails.copy(businessName = extendedBusinessDetailsData.businessName.get))
+                    // TODO send to new page
+                    saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
+                  }
+                  case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
+                }
+              }
+              case None => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
             }
           }
-          case _ =>
+          case _ => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetailsData.getBusinessDetails)
         }
-        save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetailsData.getBusinessDetails) flatMap {
-          case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
-        }
-
       }
     )
   }
-
-
-
-  //TODO For Groups, on Edit, Check the business name has changed and, if so, redirect to the confirmation page.
-  // TODO: save the customer details also, but not here!!
-
 }
 
 object BusinessDetailsController extends BusinessDetailsController {
