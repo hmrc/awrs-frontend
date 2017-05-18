@@ -269,7 +269,9 @@ case class BusinessCustomerDetails(businessName: String,
                                    agentReferenceNumber: Option[String],
                                    firstName: Option[String] = None,
                                    lastName: Option[String] = None,
-                                   utr: Option[String] = None)
+                                   utr: Option[String] = None) = {
+
+}
 
 case class SectionChangeIndicators(businessDetailsChanged: Boolean,
                                    businessRegistrationDetailsChanged: Boolean,

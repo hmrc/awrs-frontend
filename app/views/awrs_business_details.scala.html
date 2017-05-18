@@ -158,6 +158,30 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
     }
 }
 
+@businessNameSectionContent = {
+<div id="businessName-content">
+    @awrsInputTypeText(
+        InputTypeTextParams(
+            businessDetailsForm("businessCustomerDetails.businessName"),
+            inputId = "businessCustomerDetails.businessName",
+            label = Messages("awrs.generic.business_name"),
+            maxLength = AwrsFieldConfig.companyNameLen.toString,
+            required = true,
+            labelHighlight = true
+        )
+    )
+</div>
+}
+
+@businessNameSection = @{
+    isEditMode match {
+        case true => businessType.getOrElse("") match {
+            case "LLP_GRP" | "LTD_GRP" => businessNameSectionContent
+            case _ =>
+        }
+        case false =>
+    }
+}
 
 @includes.awrs_main(title = pageTitle, pageScripts = Some(pageScripts), userLoggedIn = true){
 <div class="grid">
@@ -172,6 +196,11 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
         </header>
 
         @uk.gov.hmrc.play.views.html.helpers.form(action = actionRoute){
+
+            <div class="form-group">
+                @businessNameSection
+            </div>
+
             <div class="form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
