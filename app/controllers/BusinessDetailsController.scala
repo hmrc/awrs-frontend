@@ -79,9 +79,9 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
         businessDetails match {
           case Some(data) => {
             val extendedBusinessDetails = ExtendedBusinessDetails(Some(businessName), data.doYouHaveTradingName, data.tradingName, data.newAWBusiness)
-            Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get).form.fill(extendedBusinessDetails), mode))
+            Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs).form.fill(extendedBusinessDetails), mode))
           }
-          case _ => Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get).form, mode))
+          case _ => Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs).form, mode))
         }
       }
   }
@@ -95,7 +95,7 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
     implicit val viewMode = viewApplicationType
     val businessType = request.getBusinessType
-    businessDetailsForm(businessType.get).bindFromRequest.fold(
+    businessDetailsForm(businessType.get, AccountUtils.hasAwrs).bindFromRequest.fold(
       formWithErrors =>
         for {
           businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
@@ -106,8 +106,9 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
         }
       ,
       extendedBusinessDetails => {
-        businessType match {
-          case Some("LLP_GRP") | Some("LTD_GRP") => {
+        (AccountUtils.hasAwrs, businessType) match {
+          case (false, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
+          case (true, (Some("LLP_GRP") | Some("LTD_GRP"))) => {
             save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
               case Some(businessCustomerDetails) => {
                 (businessCustomerDetails.businessName != extendedBusinessDetails.businessName.get) match {
@@ -115,12 +116,6 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
                     save4LaterService.mainStore.saveExtendedBusinessDetails(extendedBusinessDetails) flatMap {
                       case _ => Future.successful(Ok("Ok"))
                     }
-
-                    /*
-                    val extendedBusinessDetails = save4LaterService.mainStore.fetchExtendedBusinessDetails
-                    save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
-                    save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
-                    */
                   }
                   case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
                 }
@@ -128,8 +123,11 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
               case None => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
             }
           }
-          case _ => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
+          case (true, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
         }
+        //val extendedBusinessDetails = save4LaterService.mainStore.fetchExtendedBusinessDetails
+        //save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
+        //save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
       }
     )
   }

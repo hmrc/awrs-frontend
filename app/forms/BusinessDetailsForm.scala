@@ -26,7 +26,7 @@ import forms.validation.util.NamedMappingAndUtil._
 import models._
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
-import utils.AwrsFieldConfig
+import utils.{AccountUtils, AwrsFieldConfig}
 import utils.AwrsValidator._
 
 object BusinessDetailsForm {
@@ -39,16 +39,21 @@ object BusinessDetailsForm {
   private val groupIds = Seq[String](businessName, doYouHaveTradingName, tradingName, newAWBusiness)
   private val otherIds = Seq[String](doYouHaveTradingName, tradingName, newAWBusiness)
 
-  private val entityIds = (entityType: String) => entityType match {
-    case "LLP_GRP" | "LTD_GRP" => groupIds
+  private val entityIds = (entityType: String, hasAwrs: Boolean) => entityType match {
+    case "LLP_GRP" | "LTD_GRP" => {
+      hasAwrs match {
+        case true => groupIds
+        case _ => otherIds
+      }
+    }
     case _ => otherIds
   }
 
   private val nbToOptional = (business: NewAWBusiness) => Some(business): Option[NewAWBusiness]
   private val nbFromOptional = (business: Option[NewAWBusiness]) => business.fold(NewAWBusiness("", None))(x => x): NewAWBusiness
 
-  val businessDetailsValidationForm = (entityType: String) => {
-    val ids = entityIds(entityType)
+  val businessDetailsValidationForm = (entityType: String, hasAwrs: Boolean) => {
+    val ids = entityIds(entityType, hasAwrs)
     Form(
       mapping(
         businessName -> (companyName_compulsory(businessName) iff ids.contains(businessName)),
@@ -58,5 +63,5 @@ object BusinessDetailsForm {
     )
   }
 
-  val businessDetailsForm = (entityType: String) => PreprocessedForm(businessDetailsValidationForm(entityType))
+  val businessDetailsForm = (entityType: String, hasAwrs: Boolean) => PreprocessedForm(businessDetailsValidationForm(entityType, hasAwrs))
 }
