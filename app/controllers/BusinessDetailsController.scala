@@ -75,12 +75,13 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
         newApplicationType <- save4LaterService.mainStore.fetchNewApplicationType
         mode <- renderMode(newApplicationType)
       } yield {
+        val businessName = businessCustomerDetails.fold("")(x => x.businessName)
         businessDetails match {
           case Some(data) => {
-            val extendedBusinessDetails = ExtendedBusinessDetails(Some(businessCustomerDetails.get.businessName), data.doYouHaveTradingName, data.tradingName, data.newAWBusiness)
-            Ok(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), businessDetailsForm(businessType.get).form.fill(extendedBusinessDetails), mode))
+            val extendedBusinessDetails = ExtendedBusinessDetails(Some(businessName), data.doYouHaveTradingName, data.tradingName, data.newAWBusiness)
+            Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get).form.fill(extendedBusinessDetails), mode))
           }
-          case _ => Ok(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), businessDetailsForm(businessType.get).form, mode))
+          case _ => Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get).form, mode))
         }
       }
   }
@@ -105,7 +106,7 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
               businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
               if (businessCustomerDetails.get.businessName != extendedBusinessDetailsData.businessName)
             } yield {
-              val newBusinessCustomerDetails = businessCustomerDetails.get.updateBusinessName(extendedBusinessDetailsData.businessName)
+              val newBusinessCustomerDetails = businessCustomerDetails.get.updateBusinessName(extendedBusinessDetailsData.businessName.get)
               save4LaterService.mainStore.saveBusinessCustomerDetails(newBusinessCustomerDetails)
             }
           }

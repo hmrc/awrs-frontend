@@ -53,7 +53,7 @@ case class ExtendedBusinessDetails(businessName: Option[String],
                                    doYouHaveTradingName: Option[String],
                                    tradingName: Option[String],
                                    newAWBusiness: Option[NewAWBusiness]) {
-  def getBusinessDetails = BusinessDetails(doYouHaveTradingName, tradingName, newAWBusiness)
+  def getBusinessDetails: BusinessDetails = BusinessDetails(doYouHaveTradingName, tradingName, newAWBusiness)
 }
 
 case class BusinessRegistrationDetails(legalEntity: Option[String] = None,
