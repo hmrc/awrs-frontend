@@ -32,11 +32,31 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
   val SoleTrader = "SOP"
   val Ltd = "LTD"
   val Partnership = "Partnership"
-  val entities = Seq[String](SoleTrader, Ltd, Partnership)
+  val LimitedLiabilityGroup = "LLP_GRP"
+  val LimitedGroup = "LTD_GRP"
+
+  val entities = Seq[String](SoleTrader, Ltd, Partnership, LimitedLiabilityGroup, LimitedGroup)
 
   "Business details form" should {
     for (entity <- entities) {
-      implicit lazy val form = forms(entity, false)
+      implicit lazy val form = forms(entity, true)
+
+      entity match {
+        case LimitedLiabilityGroup | LimitedGroup => {
+          f"check validations for businessName for entity: $entity" in {
+            val fieldId = "companyName"
+
+            val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty2"))
+            val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", AwrsFieldConfig.companyNameLen)
+            val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "business name"))
+            val formatError = ExpectedFieldFormat(invalidFormats)
+
+            val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
+            fieldId assertFieldIsCompulsory expectations
+          }
+        }
+        case _ =>
+      }
 
       f"check validations for doYouHaveTradingName for entity: $entity" in {
         val fieldId = "doYouHaveTradingName"
@@ -46,7 +66,6 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
         val expectations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
         fieldId assertEnumFieldIsCompulsory expectations
       }
-
 
       f"check validations for tradingName for entity: $entity" in {
         val fieldId = "tradingName"
