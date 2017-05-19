@@ -439,6 +439,14 @@ awrs.business_details.error.identification_provided=You must provide at least 1 
 awrs.business_details.error.year_toSmall.summary=The year is not the correct format
 awrs.business_details.error.year_toSmall=You must enter the year in full
 
+# Business Name Change confirmation
+#============================================================
+awrs.business_name_change.heading=Are you sure you want to continue?
+awrs.business_name_change.warning=Changing your group representative will delete the old one. You will have to enter all the relevant details for the new group representative, and add the old group representative as a group member.
+awrs.business_name_change.cta=Confirm
+awrs.business_name_change.error.empty=Confirm if you want to change your group representative
+
+
 # Business registration details
 #============================================================
 awrs.business_registration_details.title.generic=Business registration details

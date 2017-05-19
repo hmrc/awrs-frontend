@@ -16,18 +16,14 @@
 
 package forms
 
-import forms.AWRSEnums.BooleanRadioEnum
 import forms.prevalidation._
 import forms.submapping.NewAWBusinessMapping._
 import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, CompulsoryTextFieldMappingParameter}
-import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models._
 import play.api.data.Forms._
-import play.api.data.{Form, Mapping}
-import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import play.api.data.{Form}
 
 object BusinessDetailsForm {
 
@@ -47,3 +43,12 @@ object BusinessDetailsForm {
 
   val businessDetailsForm = (entityType: String) => PreprocessedForm(businessDetailsValidationForm(entityType))
 }
+
+object BusinessNameChangeConfirmationForm {
+
+  val businessNameChangeConfirmationForm = Form(mapping(
+    "businessNameChangeConfirmation" -> yesNoQuestion_compulsory(fieldId = "businessNameChangeConfirmation", errorMessageId = "awrs.business_name_change.error.empty")
+  )(BusinessNameChangeConfirmation.apply)(BusinessNameChangeConfirmation.unapply))
+
+}
+
