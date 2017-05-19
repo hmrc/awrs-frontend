@@ -33,12 +33,13 @@ import scala.concurrent.Future
 class BusinessDetailsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  def testRequest(businessDetails: BusinessDetails, entityType: String) =
-    TestUtil.populateFakeRequest[BusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType), businessDetails)
+  def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean) =
+    TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
 
   object TestBusinessDetailsController extends BusinessDetailsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    override val keyStoreService = TestKeyStoreService
   }
 
   "BusinessDetailsController" must {
@@ -49,7 +50,7 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
 
     "Users who entered from the summary edit view" should {
       "return to the summary view after clicking return" in {
-        returnWithAuthorisedUser(testRequest(testBusinessDetails(), "SOP")) {
+        returnWithAuthorisedUser(testRequest(testExtendedBusinessDetails(), "SOP", true)) {
           result =>
             redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessDetailsName")
             verifySave4LaterService(saveBusinessDetails = 1)

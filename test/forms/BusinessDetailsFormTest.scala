@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 
 class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
-  lazy val forms = (entity: String) => BusinessDetailsForm.businessDetailsForm(entity).form
+  lazy val forms = (entity: String, hasAwrs: Boolean) => BusinessDetailsForm.businessDetailsForm(entity, hasAwrs).form
   val SoleTrader = "SOP"
   val Ltd = "LTD"
   val Partnership = "Partnership"
@@ -36,7 +36,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
 
   "Business details form" should {
     for (entity <- entities) {
-      implicit lazy val form = forms(entity)
+      implicit lazy val form = forms(entity, false)
 
       f"check validations for doYouHaveTradingName for entity: $entity" in {
         val fieldId = "doYouHaveTradingName"

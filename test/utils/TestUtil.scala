@@ -477,6 +477,17 @@ object TestUtil {
       newAWBusiness = newBusiness
     )
 
+  def testExtendedBusinessDetails(businessName: Option[String] = Some("Acme"),
+                                  doYouHaveTradingName: Option[String] = Some("Yes"),
+                                  tradingName: Option[String] = Some("Simple Wines"),
+                                  newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())) =
+    ExtendedBusinessDetails(
+      businessName = businessName,
+      doYouHaveTradingName = doYouHaveTradingName,
+      tradingName = tradingName,
+      newAWBusiness = newBusiness
+    )
+
   def testBusinessRegistrationDetails(legalEntity: String) = legalEntity match {
     case "Partnership" => defaultBusinessRegistrationDetails(legalEntity = legalEntity)
     case "SOP" => defaultBusinessRegistrationDetails(doYouHaveNino = Yes, nino = testNino)
