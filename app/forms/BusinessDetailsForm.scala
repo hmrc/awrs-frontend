@@ -56,7 +56,7 @@ object BusinessDetailsForm {
     val ids = entityIds(entityType, hasAwrs)
     Form(
       mapping(
-        businessName -> (companyName_compulsory(businessName) iff ids.contains(businessName)),
+        businessName -> (companyName_compulsory() iff ids.contains(businessName)),
         doYouHaveTradingName -> doYouHaveTradingName_compulsory,
         tradingName -> (tradingName_compulsory iff whenDoYouHaveTradingNameIsAnsweredYes),
         newAWBusiness -> newAWBusinessMapping(newAWBusiness).transform(nbToOptional, nbFromOptional))(ExtendedBusinessDetails.apply)(ExtendedBusinessDetails.unapply)

@@ -10,9 +10,10 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 @(businessType: Option[String], businessName: String, businessDetailsForm: Form[models.ExtendedBusinessDetails],
-renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, user: AuthContext)
 
 @implicitFormInstance = @{ Some(businessDetailsForm) }
 
@@ -174,12 +175,9 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
 }
 
 @businessNameSection = @{
-    isEditMode match {
-        case true => businessType.getOrElse("") match {
-            case "LLP_GRP" | "LTD_GRP" => businessNameSectionContent
-            case _ =>
-        }
-        case false =>
+    (isEditMode, AccountUtils.hasAwrs, businessType.getOrElse("")) match {
+        case (true, true, "LLP_GRP" | "LTD_GRP") => businessNameSectionContent
+        case _ =>
     }
 }
 
