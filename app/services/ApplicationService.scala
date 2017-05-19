@@ -83,7 +83,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
-      groupMembers = if (sections.groupMemberDetails) addGroupRepToGroupMembers(cached) else None,
+      groupMembers = if (sections.groupMemberDetails) prependGroupRepToGroupMembers(cached) else None,
       partnership = if (sections.partnership) cached.get.getPartners else None,
       additionalPremises = cached.get.getAdditionalBusinessPremises,
       businessDirectors = if (sections.businessDirectors) cached.get.getBusinessDirectors else None,
@@ -106,14 +106,13 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     case None => Future.failed(new InternalServerException("No cache map found"))
   }
 
-  def addGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] = {
+  def createGroupRep(cached: Option[CacheMap]): GroupMember = {
     val businessName = cached.get.getBusinessCustomerDetails.get.businessName
     val businessDetails = cached.get.getBusinessDetails.get
     val businessRegistrationDetails = cached.get.getBusinessRegistrationDetails.get
     val placeOfBusiness = cached.get.getPlaceOfBusiness.get
-    val groupMembers = cached.get.getGroupMembers.get.members
 
-    val groupMemberFromGrpRep = GroupMember(CompanyNames(Some(businessName),businessDetails.doYouHaveTradingName,businessDetails.tradingName),
+    GroupMember(CompanyNames(Some(businessName),businessDetails.doYouHaveTradingName,businessDetails.tradingName),
       placeOfBusiness.mainAddress,
       Some(LocalDate.now().toString),
       businessRegistrationDetails.doYouHaveUTR,businessRegistrationDetails.utr,
@@ -122,9 +121,16 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails.doYouHaveVRN,
       businessRegistrationDetails.vrn,
       Some("No"))
-     val grpMemberList = groupMemberFromGrpRep :: groupMembers
-      Some(GroupMembers(grpMemberList,GroupMembers.latestModelVersion))
   }
+
+  def updateGroupRep(groupMembers: List[GroupMember]) : Option[GroupMembers] =
+    Some(GroupMembers(groupMembers, GroupMembers.latestModelVersion))
+
+  def prependGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
+    updateGroupRep(createGroupRep(cached) :: cached.get.getGroupMembers.get.members)
+
+  def replaceGroupRepInGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
+    updateGroupRep(cached.get.getGroupMembers.get.members.patch(0, Seq(createGroupRep(cached)), 1))
 
   def sendApplication()(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
     for {
@@ -203,7 +209,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
-      groupMembers = groupMemberDetails,
+      groupMembers = replaceGroupRepInGroupMembers(cached),
       partnership = partnership,
       additionalPremises = additionalPremises,
       businessDirectors = businessDirectors,
