@@ -52,8 +52,7 @@ case class BusinessDetails(doYouHaveTradingName: Option[String],
 case class ExtendedBusinessDetails(businessName: Option[String],
                                    doYouHaveTradingName: Option[String],
                                    tradingName: Option[String],
-                                   newAWBusiness: Option[NewAWBusiness],
-                                   businessNameUpdated: Boolean = false) {
+                                   newAWBusiness: Option[NewAWBusiness]) {
   def getBusinessDetails: BusinessDetails = BusinessDetails(doYouHaveTradingName, tradingName, newAWBusiness)
 
   def updateBusinessCustomerDetails(businessCustomerDetails: BusinessCustomerDetails): BusinessCustomerDetails = businessCustomerDetails.copy(businessName = businessName.get)

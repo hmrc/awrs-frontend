@@ -35,7 +35,6 @@ object BusinessDetailsForm {
   val doYouHaveTradingName = "doYouHaveTradingName"
   val tradingName = "tradingName"
   val newAWBusiness = "newAWBusiness"
-  val businessNameUpdated = "businessNameUpdated"
 
   private val groupIds = Seq[String](businessName, doYouHaveTradingName, tradingName, newAWBusiness)
   private val otherIds = Seq[String](doYouHaveTradingName, tradingName, newAWBusiness)
@@ -60,8 +59,7 @@ object BusinessDetailsForm {
         businessName -> (companyName_compulsory() iff ids.contains(businessName)),
         doYouHaveTradingName -> doYouHaveTradingName_compulsory,
         tradingName -> (tradingName_compulsory iff whenDoYouHaveTradingNameIsAnsweredYes),
-        newAWBusiness -> newAWBusinessMapping(newAWBusiness).transform(nbToOptional, nbFromOptional),
-        businessNameUpdated -> ignored(false)
+        newAWBusiness -> newAWBusinessMapping(newAWBusiness).transform(nbToOptional, nbFromOptional)
       )(ExtendedBusinessDetails.apply)(ExtendedBusinessDetails.unapply)
     )
   }

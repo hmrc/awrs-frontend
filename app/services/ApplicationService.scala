@@ -83,7 +83,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
-      groupMembers = if (sections.groupMemberDetails) prependGroupRepToGroupMembers(cached) else None,
+      groupMembers = if (sections.groupMemberDetails) addGroupRepToGroupMembers(cached) else None,
       partnership = if (sections.partnership) cached.get.getPartners else None,
       additionalPremises = cached.get.getAdditionalBusinessPremises,
       businessDirectors = if (sections.businessDirectors) cached.get.getBusinessDirectors else None,
@@ -126,17 +126,15 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
   def updateGroupRep(groupMembers: List[GroupMember]) : Option[GroupMembers] =
     Some(GroupMembers(groupMembers, GroupMembers.latestModelVersion))
 
-  def prependGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
+  def addGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
     updateGroupRep(createGroupRep(cached) :: cached.get.getGroupMembers.get.members)
 
   def replaceGroupRepInGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
     updateGroupRep(cached.get.getGroupMembers.get.members.patch(0, Seq(createGroupRep(cached)), 1))
 
-  def businessNameUpdated(extendedBusinessDetails: Option[ExtendedBusinessDetails]): Boolean = {
-    extendedBusinessDetails match {
-      case None => false
-      case Some(details) => details.businessNameUpdated
-    }
+  def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
+    cached.get.getBusinessType.get
+    (cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessCustomerDetails.get.businessName)
   }
 
   def sendApplication()(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
@@ -169,8 +167,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     for {
       cached <- save4LaterService.mainStore.fetchAll
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
-      extendedBusinessDetails <- keyStoreService.fetchExtendedBusinessDetails
-      awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription, extendedBusinessDetails))))
+      awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))))
       isNewBusiness <- isNewBusiness(cached)
       _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
     } yield {
@@ -186,7 +183,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       case _ => None
     }
 
-  def getModifiedSubscriptionType(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd], extendedBusinessDetails: Option[ExtendedBusinessDetails])(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): SubscriptionTypeFrontEnd = {
+  def getModifiedSubscriptionType(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd])(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): SubscriptionTypeFrontEnd = {
 
     val suppliers = cached.get.getSuppliers
 
@@ -217,7 +214,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
-      groupMembers = if (businessNameUpdated(extendedBusinessDetails)) replaceGroupRepInGroupMembers(cached) else cached.get.getGroupMembers,
+      groupMembers = if (isGrpRepChanged(cached, cachedSubscription)) replaceGroupRepInGroupMembers(cached) else cached.get.getGroupMembers,
       partnership = partnership,
       additionalPremises = additionalPremises,
       businessDirectors = businessDirectors,
