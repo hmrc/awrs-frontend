@@ -1079,11 +1079,35 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         result._2.get.members(0).companyNames.businessName.get shouldBe result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
       }
     }
+
+    "replaceGroupRepInGroupMembers " should {
+      "not change the size of the GroupMembers collection" in {
+        val result = testReplaceGroupRepInGroupMembers
+        result._2.get.members.size shouldBe  result._1.getEntry[GroupMembers](groupMembersName).get.members.size
+      }
+      "contain a different business name in the group rep group member" in {
+        val result = testReplaceGroupRepInGroupMembers
+        result._2.get.members(0).companyNames.businessName.get should not be result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
+      }
+    }
   }
 
   def testAddGroupRepToGroupMembers: (CacheMap,Option[GroupMembers]) = {
     val cached = cachedData()
     (cached, TestApplicationService.addGroupRepToGroupMembers(Some(cached)))
+  }
+
+  def testReplaceGroupRepInGroupMembers: (CacheMap, Option[GroupMembers]) = {
+    val cached = cachedData()
+    val legalEntity = testLegalEntity.legalEntity.get
+    val changed = CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
+      businessCustomerDetailsName -> Json.toJson(testBusinessNameChanged),
+      businessDetailsName -> Json.toJson(testBusinessDetails()),
+      businessRegistrationDetailsName -> Json.toJson(testBusinessRegistrationDetails(legalEntity)),
+      placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
+      groupMembersName -> Json.toJson(testGroupMemberDetails)))
+
+    (cached, TestApplicationService.replaceGroupRepInGroupMembers(Some(changed)))
   }
 
   def sendWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any): Unit = {

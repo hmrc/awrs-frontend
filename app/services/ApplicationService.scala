@@ -123,14 +123,11 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       Some("No"))
   }
 
-  def updateGroupRep(groupMembers: List[GroupMember]) : Option[GroupMembers] =
-    Some(GroupMembers(groupMembers, GroupMembers.latestModelVersion))
-
   def addGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
-    updateGroupRep(createGroupRep(cached) :: cached.get.getGroupMembers.get.members)
+    Some(GroupMembers(createGroupRep(cached) :: cached.get.getGroupMembers.get.members, GroupMembers.latestModelVersion))
 
   def replaceGroupRepInGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
-    updateGroupRep(cached.get.getGroupMembers.get.members.patch(0, Seq(createGroupRep(cached)), 1))
+    Some(GroupMembers(cached.get.getGroupMembers.get.members.patch(0, Seq(createGroupRep(cached)), 1), GroupMembers.latestModelVersion))
 
   def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
     cached.get.getBusinessType.get
