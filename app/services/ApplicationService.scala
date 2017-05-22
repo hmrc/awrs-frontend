@@ -132,6 +132,13 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
   def replaceGroupRepInGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
     updateGroupRep(cached.get.getGroupMembers.get.members.patch(0, Seq(createGroupRep(cached)), 1))
 
+  def businessNameUpdated(extendedBusinessDetails: Option[ExtendedBusinessDetails]): Boolean = {
+    extendedBusinessDetails match {
+      case None => false
+      case Some(details) => details.businessNameUpdated
+    }
+  }
+
   def sendApplication()(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
     for {
       cached <- save4LaterService.mainStore.fetchAll
@@ -162,7 +169,8 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     for {
       cached <- save4LaterService.mainStore.fetchAll
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
-      awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))))
+      extendedBusinessDetails <- keyStoreService.fetchExtendedBusinessDetails
+      awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription, extendedBusinessDetails))))
       isNewBusiness <- isNewBusiness(cached)
       _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
     } yield {
@@ -178,7 +186,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       case _ => None
     }
 
-  def getModifiedSubscriptionType(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): SubscriptionTypeFrontEnd = {
+  def getModifiedSubscriptionType(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd], extendedBusinessDetails: Option[ExtendedBusinessDetails])(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): SubscriptionTypeFrontEnd = {
 
     val suppliers = cached.get.getSuppliers
 
@@ -209,7 +217,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
-      groupMembers = replaceGroupRepInGroupMembers(cached),
+      groupMembers = if (businessNameUpdated(extendedBusinessDetails)) replaceGroupRepInGroupMembers(cached) else cached.get.getGroupMembers,
       partnership = partnership,
       additionalPremises = additionalPremises,
       businessDirectors = businessDirectors,
