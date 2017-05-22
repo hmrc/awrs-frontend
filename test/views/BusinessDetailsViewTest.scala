@@ -139,9 +139,33 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
             }
           }
       }
+
+      allEntities.foreach {
+        legalEntity =>
+          s"$legalEntity" should {
+            Seq(true, false).foreach {
+              hasAwrs =>
+                Seq(true, false).foreach {
+                  isEditMode =>
+                    s"correctly display/hide the business name section when isEditMode=$isEditMode and hasAwrs=$hasAwrs in" in {
+                      getWithAuthorisedUser(isLinearjourney = !isEditMode, businessType = legalEntity, hasAwrs = hasAwrs)(testRequest(testExtendedBusinessDetails(), legalEntity, hasAwrs)) {
+                        result =>
+                          val document = Jsoup.parse(contentAsString(result))
+                          val input = document.getElementById("companyName")
+                          (hasAwrs, isEditMode, legalEntity) match {
+                            case  (true, true, "LLP_GRP" | "LTD_GRP") => input.attr("value") shouldBe testBusinessCustomerDetails(legalEntity).businessName
+                            case _ => input shouldBe null
+                          }
+                      }
+                    }
+                }
+            }
+          }
+      }
     }
 
-    def getWithAuthorisedUser(isNewApplication: Boolean = true, isLinearjourney: Boolean = true, businessType: String = "SOP")(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(isNewApplication: Boolean = true, isLinearjourney: Boolean = true, businessType: String = "SOP", hasAwrs: Boolean = false)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+      setUser(hasAwrs = hasAwrs)
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
         fetchNewApplicationType = NewApplicationType(Some(false))
