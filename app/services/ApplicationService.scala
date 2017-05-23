@@ -180,7 +180,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       case _ => None
     }
 
-  def getModifiedSubscriptionType(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd])(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): SubscriptionTypeFrontEnd = {
+  def getModifiedSubscriptionType(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): SubscriptionTypeFrontEnd = {
 
     val suppliers = cached.get.getSuppliers
 
