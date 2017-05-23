@@ -23,7 +23,8 @@ case class SubscriptionStatusType(processingDate: String,
                                   formBundleStatus: FormBundleStatus,
                                   deRegistrationDate: Option[String],
                                   groupBusinessPartner: Boolean,
-                                  businessContactNumber: Option[String])
+                                  businessContactNumber: Option[String],
+                                  safeId : Option[String])
 
 object SubscriptionStatusType {
   // TODO add date validation back in once we get the expected formats
@@ -48,12 +49,14 @@ object SubscriptionStatusType {
         deRegistrationDate <- (js \ "deRegistrationDate").validateOpt[String] //.map(dateString=>parseDate(dateString))
         groupBusinessPartner <- (js \ "groupBusinessPartner").validate[Boolean]
         businessContactNumber <- (js \ "businessContactNumber").validateOpt[String]
+        safeId <- (js \ "safeId").validateOpt[String]
       } yield {
         SubscriptionStatusType(processingDate = processingDate,
           formBundleStatus = formBundleStatus,
           deRegistrationDate = deRegistrationDate,
           groupBusinessPartner = groupBusinessPartner,
-          businessContactNumber = businessContactNumber
+          businessContactNumber = businessContactNumber,
+          safeId = safeId
         )
       }
     }

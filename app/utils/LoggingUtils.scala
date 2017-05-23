@@ -29,6 +29,7 @@ trait LoggingUtils extends Auditable {
   final val auditAPI4TxName: String = "API4"
   final val auditAPI5TxName: String = "API5"
   final val auditAPI6TxName: String = "API6"
+  final val auditAPI3TxName: String = "API3 - Update Group Business Partner"
   final val auditAPI8TxName: String = "API8 - Withdraw Application"
   final val auditAPI9TxName: String = "API9 - View Application Status"
   final val auditAPI10TxName: String = "API10 - Deregister From AWRS"

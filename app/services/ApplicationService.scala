@@ -156,12 +156,45 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     for {
       cached <- save4LaterService.mainStore.fetchAll
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
+      subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
+      _ <- callUpdateGroupBusinessPartner(cached,cachedSubscription,subscriptionStatus)
+      //_ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached,cachedSubscription,subscriptionStatus) else Future("OK")
       awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))))
       isNewBusiness <- isNewBusiness(cached)
       _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
     } yield {
       awrsData
     }
+
+  def callUpdateGroupBusinessPartner(cached: Option[CacheMap],
+                                     cachedSubscription: Option[SubscriptionTypeFrontEnd],
+                                     subscriptionStatus: Option[SubscriptionStatusType])
+                                    (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext)
+                                    : Future[String] = {
+    def createUpdateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest = {
+      val businessContacts = cached.get.getBusinessContacts.get
+      UpdateRegistrationDetailsRequest(
+        isAnIndividual = false,
+        organisationName = Some(OrganisationName(cached.get.getBusinessCustomerDetails.get.businessName)),
+        address = cached.get.getBusinessContacts.get.contactAddress.get,
+        contactDetails = ContactDetails(businessContacts.telephone,businessContacts.email),
+        isAnAgent = false,
+        isAGroup = true
+      )
+    }
+    awrsConnector.updateGroupBusinessPartner(
+      cached.get.getBusinessCustomerDetails.get.businessName,
+      cached.get.getBusinessType.get.legalEntity.get,
+      "XE0001234567890",
+      createUpdateRegistrationDetailsRequest)
+  }
+
+
+
+  def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
+    cached.get.getBusinessType.get
+      (cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessCustomerDetails.get.businessName)
+  }
 
   def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = authenticatorConnector.refreshProfile
 
