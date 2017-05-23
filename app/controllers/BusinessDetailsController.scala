@@ -125,9 +125,6 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
           }
           case (true, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
         }
-        //val extendedBusinessDetails = keyStoreService.fetchExtendedBusinessDetails
-        //save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
-        //save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
       }
     )
   }

@@ -41,7 +41,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
     for (entity <- entities) {
       implicit lazy val form = forms(entity, true)
 
-      entity match {
+      /*entity match {
         case LimitedLiabilityGroup | LimitedGroup => {
           f"check validations for businessName for entity: $entity" in {
             val fieldId = "companyName"
@@ -56,7 +56,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
           }
         }
         case _ =>
-      }
+      }*/
 
       f"check validations for doYouHaveTradingName for entity: $entity" in {
         val fieldId = "doYouHaveTradingName"

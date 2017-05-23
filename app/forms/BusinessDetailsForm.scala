@@ -26,7 +26,7 @@ import forms.validation.util.NamedMappingAndUtil._
 import models._
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
-import utils.{AccountUtils, AwrsFieldConfig}
+import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
 object BusinessDetailsForm {
