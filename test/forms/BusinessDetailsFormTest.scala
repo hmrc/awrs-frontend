@@ -39,12 +39,12 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
   val entities = Seq[String](SoleTrader, Ltd, Partnership, LimitedLiabilityGroup, LimitedGroup)
 
   "Business details form" should {
-    for (entity <- entities) {
-      implicit lazy val form = forms(entity, true)
+    for (entity <- entities; hasAwrs <- Seq(true, false)) {
+      implicit lazy val form = forms(entity, hasAwrs)
 
       entity match {
         case LimitedLiabilityGroup | LimitedGroup => {
-          f"check validations for businessName for entity: $entity" in {
+          f"check validations for businessName for entity: $entity and hasAwrs: $hasAwrs" in {
             val fieldId = "companyName"
 
             val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty"))
@@ -53,13 +53,17 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
             val formatError = ExpectedFieldFormat(invalidFormats)
 
             val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
-            fieldId assertFieldIsCompulsory expectations
+
+            if (hasAwrs)
+              fieldId assertFieldIsCompulsory expectations
+            else
+              fieldId assertFieldIsIgnoredWhen (Set[Map[String, String]](), expectations.toFieldToIgnore)
           }
         }
         case _ =>
       }
 
-      f"check validations for doYouHaveTradingName for entity: $entity" in {
+      f"check validations for doYouHaveTradingName for entity: $entity and hasAwrs: $hasAwrs" in {
         val fieldId = "doYouHaveTradingName"
 
         val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_trading_name_empty"))
@@ -68,7 +72,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
         fieldId assertEnumFieldIsCompulsory expectations
       }
 
-      f"check validations for tradingName for entity: $entity" in {
+      f"check validations for tradingName for entity: $entity and hasAwrs: $hasAwrs" in {
         val fieldId = "tradingName"
 
         val preCondition: Map[String, String] = Map("doYouHaveTradingName" -> BooleanRadioEnum.Yes.toString)
@@ -82,7 +86,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
         fieldId assertFieldIsCompulsoryWhen (preCondition, expectations)
       }
 
-      f"check validations for newAWBusiness for entity: $entity" in {
+      f"check validations for newAWBusiness for entity: $entity and hasAwrs: $hasAwrs" in {
         // N.B. this test is for the optional validation function used for proposed date is too early
         // the rest of the tests are covered by NewAWBuesinessMappingTest
         val prefix = "newAWBusiness"
