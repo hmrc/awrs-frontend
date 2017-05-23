@@ -17,6 +17,7 @@
 package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
+import forms.GroupMemberDetailsForm.names
 import forms.submapping.FieldNameUtil
 import forms.test.util._
 import forms.validation.util.ConstraintUtil.FormData
@@ -41,12 +42,12 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
     for (entity <- entities) {
       implicit lazy val form = forms(entity, true)
 
-      /*entity match {
+      entity match {
         case LimitedLiabilityGroup | LimitedGroup => {
           f"check validations for businessName for entity: $entity" in {
             val fieldId = "companyName"
 
-            val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty2"))
+            val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty"))
             val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", AwrsFieldConfig.companyNameLen)
             val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "business name"))
             val formatError = ExpectedFieldFormat(invalidFormats)
@@ -56,7 +57,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
           }
         }
         case _ =>
-      }*/
+      }
 
       f"check validations for doYouHaveTradingName for entity: $entity" in {
         val fieldId = "doYouHaveTradingName"

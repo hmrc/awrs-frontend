@@ -31,7 +31,7 @@ import utils.AwrsValidator._
 
 object BusinessDetailsForm {
 
-  val businessName = "businessName"
+  val businessName = "companyName"
   val doYouHaveTradingName = "doYouHaveTradingName"
   val tradingName = "tradingName"
   val newAWBusiness = "newAWBusiness"
