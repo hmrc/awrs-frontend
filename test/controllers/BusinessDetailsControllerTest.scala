@@ -24,7 +24,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{Save4LaterService, ServicesUnitTestFixture}
+import services.{KeyStoreService, Save4LaterService, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
@@ -46,25 +46,49 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
 
     "use the correct AwrsService" in {
       BusinessDetailsController.save4LaterService shouldBe Save4LaterService
+      BusinessDetailsController.keyStoreService shouldBe KeyStoreService
     }
 
     "Users who entered from the summary edit view" should {
-      "return to the summary view after clicking return" in {
-        returnWithAuthorisedUser(testRequest(testExtendedBusinessDetails(), "SOP", true)) {
-          result =>
-            redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessDetailsName")
-            verifySave4LaterService(saveBusinessDetails = 1)
-        }
+      allEntities.foreach {
+        businessType =>
+          Seq(true, false).foreach {
+            hasAwrs =>
+              Seq(true, false).foreach {
+                updatedBusinessName =>
+                  s"go to the correct view after clicking return when business type=$businessType and hasAwrs=$hasAwrs and updatedBusinessName=$updatedBusinessName" in {
+                    returnWithAuthorisedUser(businessType, hasAwrs, testRequest(getExtendedBusinessDetails(updatedBusinessName), businessType, hasAwrs)) {
+                      result =>
+                        (hasAwrs, updatedBusinessName, businessType) match {
+                          case (true, true, "LLP_GRP" | "LTD_GRP") => redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-details/group-representative")
+                          case _ => {
+                            redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessDetailsName")
+                            verifySave4LaterService(saveBusinessDetails = 1)
+                          }
+                        }
+                    }
+                  }
+              }
+          }
       }
     }
 
-    def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    def getExtendedBusinessDetails(updatedBusinessName: Boolean) : ExtendedBusinessDetails = {
+      updatedBusinessName match {
+        case true => testExtendedBusinessDetails(businessName = "Changed")
+        case false => testExtendedBusinessDetails()
+      }
+    }
+
+    def returnWithAuthorisedUser(businessType: String, hasAwrs: Boolean, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+      setUser(hasAwrs = hasAwrs)
       setupMockSave4LaterServiceWithOnly(
-        fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
+        fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
         fetchBusinessDetails = testBusinessDetails(),
         fetchNewApplicationType = testNewApplicationType
       )
-      val result = TestBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails("SOP").businessType.get))
+
+      val result = TestBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
       test(result)
     }
 

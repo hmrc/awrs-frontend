@@ -478,7 +478,7 @@ object TestUtil {
       newAWBusiness = newBusiness
     )
 
-  def testExtendedBusinessDetails(businessName: Option[String] = Some("Acme"),
+  def testExtendedBusinessDetails(businessName: Option[String] = Some("ACME"),
                                   doYouHaveTradingName: Option[String] = Some("Yes"),
                                   tradingName: Option[String] = Some("Simple Wines"),
                                   newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())) =
