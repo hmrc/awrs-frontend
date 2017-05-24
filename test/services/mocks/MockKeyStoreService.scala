@@ -110,13 +110,15 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                                         statusInfoType: MockConfiguration[Future[Option[StatusInfoType]]] = DoNotConfigure,
                                                         statusNotification: MockConfiguration[Future[Option[StatusNotification]]] = DoNotConfigure,
                                                         fetchIsNewBusiness: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure,
-                                                        fetchViewedStatus: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure
+                                                        fetchViewedStatus: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure,
+                                                        fetchExtendedBusinessDetails: MockConfiguration[Future[Option[ExtendedBusinessDetails]]] = DoNotConfigure
                                                       ) = {
     mockFetchFromKeyStore[SubscriptionStatusType](subscriptionStatusTypeName, subscriptionStatusType)
     mockFetchFromKeyStore[StatusInfoType](statusInfoTypeName, statusInfoType)
     mockFetchFromKeyStore[StatusNotification](statusNotificationName, statusNotification)
     mockFetchFromKeyStore[Boolean](isNewBusinessName, fetchIsNewBusiness)
     mockFetchFromKeyStore[Boolean](viewedStatusName, fetchViewedStatus)
+    mockFetchFromKeyStore[ExtendedBusinessDetails](extendedBusinessDetailsName, fetchExtendedBusinessDetails)
 
     setupMockKeyStoreServiceOnlySaveFunctions()
   }

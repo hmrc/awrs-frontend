@@ -33,6 +33,8 @@ import scala.concurrent.Future
 class BusinessDetailsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
+  val newBusinessName = "Changed"
+
   def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean) =
     TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
 
@@ -57,7 +59,7 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
               Seq(true, false).foreach {
                 updatedBusinessName =>
                   s"go to the correct view after clicking return when business type=$businessType and hasAwrs=$hasAwrs and updatedBusinessName=$updatedBusinessName" in {
-                    returnWithAuthorisedUser(businessType, hasAwrs, testRequest(getExtendedBusinessDetails(updatedBusinessName), businessType, hasAwrs)) {
+                    returnWithAuthorisedUser(businessType, hasAwrs, updatedBusinessName, testRequest(getExtendedBusinessDetails(updatedBusinessName), businessType, hasAwrs)) {
                       result =>
                         (hasAwrs, updatedBusinessName, businessType) match {
                           case (true, true, "LLP_GRP" | "LTD_GRP") => redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-details/group-representative")
@@ -75,18 +77,20 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
 
     def getExtendedBusinessDetails(updatedBusinessName: Boolean) : ExtendedBusinessDetails = {
       updatedBusinessName match {
-        case true => testExtendedBusinessDetails(businessName = "Changed")
+        case true => testExtendedBusinessDetails(businessName = newBusinessName)
         case false => testExtendedBusinessDetails()
       }
     }
 
-    def returnWithAuthorisedUser(businessType: String, hasAwrs: Boolean, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    def returnWithAuthorisedUser(businessType: String, hasAwrs: Boolean, updatedBusinessName: Boolean, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
       setUser(hasAwrs = hasAwrs)
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
         fetchBusinessDetails = testBusinessDetails(),
         fetchNewApplicationType = testNewApplicationType
       )
+      if (updatedBusinessName)
+        setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
 
       val result = TestBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
       test(result)
