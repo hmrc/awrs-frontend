@@ -21,7 +21,7 @@ import controllers.auth.AwrsController
 import forms.BusinessNameChangeConfirmationForm._
 import models._
 import play.api.mvc.{Action, AnyContent}
-import services.{KeyStoreService, Save4LaterService}
+import services.{KeyStoreService, Save4LaterService, IndexService}
 import utils.AccountUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -32,7 +32,7 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
 
   val keyStoreService: KeyStoreService
   val save4LaterService: Save4LaterService
-
+  val indexService = IndexService
 
   def showConfirm: Action[AnyContent] = async {
     implicit user => implicit request =>
@@ -54,6 +54,12 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
 //              save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
 //              save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
 
+//              // Clear business sections
+//              dataRepository.removeJson(AccountUtils.getUtrOrName()) flatMap  {
+//                case true => Future.successful(Redirect(routes.IndexController.showIndex()))
+//                case _ => Future.successful(Redirect(routes.BusinessDetailsController.showBusinessDetails(true)))
+//              }
+//
               // Clear business sections
               save4LaterService.mainStore.saveBusinessRegistrationDetails(BusinessRegistrationDetails()) flatMap {
                 _ => save4LaterService.mainStore.savePlaceOfBusiness(PlaceOfBusiness()) flatMap {
