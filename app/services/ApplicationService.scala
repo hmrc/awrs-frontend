@@ -158,7 +158,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
       subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
       _ <- callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus)
-      git //_ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus) else Future("OK")
+      //_ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus) else Future("OK")
       awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))))
       isNewBusiness <- isNewBusiness(cached)
       _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
@@ -177,7 +177,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
         isAnIndividual = false,
         organisationName = Some(OrganisationName(cachedSubscription.get.businessCustomerDetails.get.businessName)),
         address = cached.get.getBusinessContacts.get.contactAddress.get,
-        contactDetails = ContactDetails(businessContacts.telephone,businessContacts.email),
+        contactDetails = ContactDetails(phoneNumber = businessContacts.telephone, emailAddress = businessContacts.email),
         isAnAgent = false,
         isAGroup = true
       )
