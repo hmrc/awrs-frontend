@@ -110,7 +110,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-  def updateGroupBusinessPartner(businessName: String, legalEntityType : String, safeId : String, updateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest)(implicit user: AuthContext, hc: HeaderCarrier) : Future[String] = {
+  def updateGroupBusinessPartner(businessName: String, legalEntityType : String, safeId : String, updateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest)
+                                (implicit user: AuthContext, hc: HeaderCarrier) : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
     val accountURI = getAuthType(legalEntityType)
     val awrsRefNo = AccountUtils.getAwrsRefNo
     val putURL = s"""$serviceURL$accountURI/$awrsRefNo/registration-details/$safeId"""
@@ -121,7 +122,7 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
         response.status match {
           case 200 =>
             warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - API6 Response in frontend  ## " + response.status)
-            response.json.as[String]
+            response.json.as[SuccessfulUpdateGroupBusinessPartnerResponse]
           case 403 =>
             audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeNotFound)
             warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - ETMP has returned a error code003 with a   status of NOT_OK - record is    not editable")
