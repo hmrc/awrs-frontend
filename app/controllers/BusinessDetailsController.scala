@@ -111,10 +111,10 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
           case (true, (Some("LLP_GRP") | Some("LTD_GRP"))) => {
             save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
               case Some(businessCustomerDetails) => {
-                (businessCustomerDetails.businessName != extendedBusinessDetails.businessName.get) match {
+                businessCustomerDetails.businessName != extendedBusinessDetails.businessName.get match {
                   case true => {
                     keyStoreService.saveExtendedBusinessDetails(extendedBusinessDetails) flatMap {
-                      case _ => Future.successful(Ok("Ok"))
+                      case _ => Future.successful(Redirect(routes.BusinessNameChangeController.showConfirm()))
                     }
                   }
                   case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
