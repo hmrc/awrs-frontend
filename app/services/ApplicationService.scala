@@ -182,6 +182,16 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
         isAGroup = true
       )
     }
+
+    //cached.get.getBusinessCustomerDetails.get.agentReferenceNumber
+    //cached.get.getBusinessCustomerDetails.get.isAGroup
+    //cached.get.getBusinessCustomerDetails.get.businessAddress
+    //cached.get.getBusinessCustomerDetails.get.safeId
+    //cached.get.getBusinessContacts.get.contactAddress
+    //cached.get.getBusinessContacts.get.email
+    //cached.get.getBusinessContacts.get.telephone
+    //cached.get.getPlaceOfBusiness.get.mainAddress
+
     awrsConnector.updateGroupBusinessPartner(
       cached.get.getBusinessCustomerDetails.get.businessName,
       cached.get.getBusinessType.get.legalEntity.get,
