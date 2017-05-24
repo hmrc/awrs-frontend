@@ -51,6 +51,13 @@ case class BusinessDetails(doYouHaveTradingName: Option[String],
                            tradingName: Option[String],
                            newAWBusiness: Option[NewAWBusiness])
 
+case class ExtendedBusinessDetails(businessName: Option[String],
+                                   doYouHaveTradingName: Option[String],
+                                   tradingName: Option[String],
+                                   newAWBusiness: Option[NewAWBusiness]) {
+  def getBusinessDetails: BusinessDetails = BusinessDetails(doYouHaveTradingName, tradingName, newAWBusiness)
+}
+
 case class BusinessRegistrationDetails(legalEntity: Option[String] = None,
                                        doYouHaveUTR: Option[String] = None,
                                        utr: Option[String] = None,
@@ -85,6 +92,10 @@ object BusinessNameChangeConfirmation {
 
 object BusinessDetails {
   implicit val formats: Format[BusinessDetails] = Json.format[BusinessDetails]
+}
+
+object ExtendedBusinessDetails {
+  implicit val formats: Format[ExtendedBusinessDetails] = Json.format[ExtendedBusinessDetails]
 }
 
 object BusinessRegistrationDetails {
