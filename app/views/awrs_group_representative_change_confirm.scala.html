@@ -26,9 +26,8 @@
 
 @includes.awrs_main(title = Messages("awrs.business_name_change.heading"), pageScripts = Some(pageScripts), userLoggedIn = true) {
 
-@backLinkHelper(BackLinkParams(
-    sectionName = businessDetailsName
-))
+@backLink()
+
 @errorSummaryTemplate(confirmationForm)
 <div class="grid">
     <div class="grid grid-2-3">

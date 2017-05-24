@@ -49,10 +49,17 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
           businessNameChangeDetails.businessNameChangeConfirmation match {
             case Some("Yes") =>
 
-              // Update business name with new business name from temp store
-//              val extendedBusinessDetails = save4LaterService.mainStore.fetchExtendedBusinessDetails
-//              save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
-//              save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
+//              // Update business name with new business name from temp store
+//              val extendedBusinessDetailsData = keyStoreService.fetchExtendedBusinessDetails
+////              save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
+////              save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
+//              keyStoreService.fetchExtendedBusinessDetails flatMap {
+//                extendedBusinessDetailsData => save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
+//                  case Some(businessCustomerDetails) => {
+//                    save4LaterService.mainStore.saveBusinessCustomerDetails(businessCustomerDetails.copy(businessName = extendedBusinessDetailsData.get.businessName.get))
+//                  }
+//                }
+//              }
 
 //              // Clear business sections
 //              dataRepository.removeJson(AccountUtils.getUtrOrName()) flatMap  {
@@ -61,13 +68,20 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
 //              }
 //
               // Clear business sections
-              save4LaterService.mainStore.saveBusinessRegistrationDetails(BusinessRegistrationDetails()) flatMap {
-                _ => save4LaterService.mainStore.savePlaceOfBusiness(PlaceOfBusiness()) flatMap {
-                  _ => save4LaterService.mainStore.saveBusinessContacts(BusinessContacts()) flatMap {
-                    _ =>
-                      // set businessRegistrationDetailsStatus, placeOfBusinessStatus and businessContactsStatus to Incomplete?
-                      Future.successful(Redirect(routes.IndexController.showIndex()))
+              keyStoreService.fetchExtendedBusinessDetails flatMap {
+                extendedBusinessDetailsData => save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
+                  case Some(businessCustomerDetails) => {
+                    save4LaterService.mainStore.saveBusinessCustomerDetails(businessCustomerDetails.copy(businessName = extendedBusinessDetailsData.get.businessName.get)) flatMap {
+                      _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(BusinessRegistrationDetails()) flatMap {
+                        _ => save4LaterService.mainStore.savePlaceOfBusiness(PlaceOfBusiness()) flatMap {
+                          _ => save4LaterService.mainStore.saveBusinessContacts(BusinessContacts()) flatMap {
+                            _ => Future.successful(Redirect(routes.IndexController.showIndex()))
+                          }
+                        }
+                      }
+                    }
                   }
+                  case _ => Future.successful(Redirect(routes.IndexController.showIndex()))
                 }
               }
 
