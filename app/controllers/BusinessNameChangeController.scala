@@ -37,15 +37,17 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
 
   def showConfirm: Action[AnyContent] = async {
     implicit user => implicit request =>
-      Future.successful(Ok(views.html.awrs_group_representative_change_confirm(businessNameChangeConfirmationForm)))
+      val businessType = request.getBusinessType
+      Future.successful(Ok(views.html.awrs_group_representative_change_confirm(businessNameChangeConfirmationForm, businessType)))
   }
 
   def callToAction: Action[AnyContent] = async {
     implicit user => implicit request =>
       businessNameChangeConfirmationForm.bindFromRequest.fold(
-        formWithErrors =>
-          Future.successful(BadRequest(views.html.awrs_group_representative_change_confirm(formWithErrors)))
-        ,
+        formWithErrors => {
+          val businessType = request.getBusinessType
+          Future.successful(BadRequest(views.html.awrs_group_representative_change_confirm(formWithErrors, businessType)))
+        },
         businessNameChangeDetails =>
           businessNameChangeDetails.businessNameChangeConfirmation match {
             case Some("Yes") =>
