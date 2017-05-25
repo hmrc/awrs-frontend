@@ -27,6 +27,7 @@ object DataCacheKeys {
 
   val groupMembersName = "groupMembers"
 
+  val extendedBusinessDetailsName = "extendedBusinessDetails"
   val businessDetailsName = "businessDetails"
   val businessRegistrationDetailsName = "businessRegistrationDetails"
   val businessContactsName = "businessContacts"
