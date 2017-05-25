@@ -22,6 +22,7 @@ import forms.BusinessNameChangeConfirmationForm._
 import models._
 import play.api.mvc.{Action, AnyContent}
 import services.{KeyStoreService, Save4LaterService, IndexService}
+import uk.gov.hmrc.play.http.InternalServerException
 import utils.AccountUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -48,26 +49,6 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
         businessNameChangeDetails =>
           businessNameChangeDetails.businessNameChangeConfirmation match {
             case Some("Yes") =>
-
-//              // Update business name with new business name from temp store
-//              val extendedBusinessDetailsData = keyStoreService.fetchExtendedBusinessDetails
-////              save4LaterService.mainStore.saveBusinessCustomerDetails(extendedBusinessDetails.updateBusinessCustomerDetails(businessCustomerDetails))
-////              save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetails.getBusinessDetails)
-//              keyStoreService.fetchExtendedBusinessDetails flatMap {
-//                extendedBusinessDetailsData => save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
-//                  case Some(businessCustomerDetails) => {
-//                    save4LaterService.mainStore.saveBusinessCustomerDetails(businessCustomerDetails.copy(businessName = extendedBusinessDetailsData.get.businessName.get))
-//                  }
-//                }
-//              }
-
-//              // Clear business sections
-//              dataRepository.removeJson(AccountUtils.getUtrOrName()) flatMap  {
-//                case true => Future.successful(Redirect(routes.IndexController.showIndex()))
-//                case _ => Future.successful(Redirect(routes.BusinessDetailsController.showBusinessDetails(true)))
-//              }
-//
-              // Clear business sections
               keyStoreService.fetchExtendedBusinessDetails flatMap {
                 extendedBusinessDetailsData => save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
                   case Some(businessCustomerDetails) => {
@@ -75,18 +56,18 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
                       _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(BusinessRegistrationDetails()) flatMap {
                         _ => save4LaterService.mainStore.savePlaceOfBusiness(PlaceOfBusiness()) flatMap {
                           _ => save4LaterService.mainStore.saveBusinessContacts(BusinessContacts()) flatMap {
-                            _ => Future.successful(Redirect(routes.IndexController.showIndex()))
+                            _ =>
+                              Future.successful(Redirect(routes.IndexController.showIndex()))
                           }
                         }
                       }
                     }
                   }
-                  case _ => Future.successful(Redirect(routes.IndexController.showIndex()))
+                  case _ => throw new InternalServerException("Business name change, businessCustomerDetails not found")
                 }
               }
-
             case _ =>
-              Future.successful(Redirect(routes.BusinessDetailsController.showBusinessDetails(true)))
+              Future.successful(Redirect(routes.BusinessDetailsController.showBusinessDetails(false)))
           }
       )
   }

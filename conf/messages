@@ -445,6 +445,7 @@ awrs.business_name_change.heading=Are you sure you want to continue?
 awrs.business_name_change.warning=Changing your group representative will delete the old one. You will have to enter all the relevant details for the new group representative, and add the old group representative as a group member.
 awrs.business_name_change.cta=Confirm
 awrs.business_name_change.error.empty=Confirm if you want to change your group representative
+awrs.business_name_change.error.empty.summary=There is a problem with your request to change your group representative
 
 
 # Business registration details

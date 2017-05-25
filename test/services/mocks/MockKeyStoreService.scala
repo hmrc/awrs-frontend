@@ -94,14 +94,16 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                 statusInfoType: Future[Option[StatusInfoType]] = Some(defaultStatusTypeInfo),
                                 statusNotification: Future[Option[StatusNotification]] = defaultStatusNotification,
                                 fetchIsNewBusiness: Future[Option[Boolean]] = defaultIsNewBusiness,
-                                fetchViewedStatus: Future[Option[Boolean]] = defaultViewedStatus
-                              ) =
+                                fetchViewedStatus: Future[Option[Boolean]] = defaultViewedStatus,
+                                fetchExtendedBusinessDetails: Future[Option[ExtendedBusinessDetails]] = defaultExtendedBusinessDetails
+  ) =
   setupMockKeyStoreServiceWithOnly(
     subscriptionStatusType = subscriptionStatusType,
     statusInfoType = statusInfoType,
     statusNotification = statusNotification,
     fetchIsNewBusiness = fetchIsNewBusiness,
-    fetchViewedStatus = fetchViewedStatus
+    fetchViewedStatus = fetchViewedStatus,
+    fetchExtendedBusinessDetails = fetchExtendedBusinessDetails
   )
 
   // children should not override this method, update here when KeyStoreService changes
@@ -202,6 +204,8 @@ object MockKeyStoreService {
   val defaultSubscriptionStatusType = testSubscriptionStatusTypeApprovedWithConditions
   val defaultStatusTypeInfo = testStatusInfoTypeApprovedWithConditions
   val defaultStatusNotification = testStatusNotificationNoAlert
+
+  val defaultExtendedBusinessDetails = testExtendedBusinessDetails()
 
   val defaultIsNewBusiness = true
 
