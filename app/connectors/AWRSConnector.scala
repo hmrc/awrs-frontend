@@ -116,7 +116,7 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     val awrsRefNo = AccountUtils.getAwrsRefNo
     val putURL = s"""$serviceURL$accountURI/$awrsRefNo/registration-details/$safeId"""
     val updateRegistrationDetailsJsonRequest = Json.toJson(updateRegistrationDetailsRequest)
-    println("#####################calling updateGroupBusinessPartner #####################" + putURL + "@@@@@@@Json" + updateRegistrationDetailsJsonRequest)
+    println("#####################calling updateGroupBusinessPartner #####################" + putURL + "@@@@@@safeId=" + safeId + "@@@@@@@Json" + updateRegistrationDetailsJsonRequest)
     http.PUT[JsValue, HttpResponse](putURL, updateRegistrationDetailsJsonRequest) map {
       response =>
         response.status match {
