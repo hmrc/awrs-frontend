@@ -54,10 +54,10 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
 
   "Submitting the business name change confirmation form with " should {
     "Authenticated and authorised users" should {
-      "redirect to Index page when valid data is provided" in {
+      "redirect to view section for Business Details page when valid data is provided" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("businessNameChangeConfirmation" -> "Yes")) {
           result =>
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/index")
+            redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/businessDetails")
         }
       }
       "save form data to Save4Later and redirect to Index page " in {

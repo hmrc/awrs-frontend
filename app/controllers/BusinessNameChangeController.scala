@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.http.InternalServerException
 import utils.AccountUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import services.DataCacheKeys._
 
 import scala.concurrent.Future
 
@@ -59,7 +60,7 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
                         _ => save4LaterService.mainStore.savePlaceOfBusiness(PlaceOfBusiness()) flatMap {
                           _ => save4LaterService.mainStore.saveBusinessContacts(BusinessContacts()) flatMap {
                             _ =>
-                              Future.successful(Redirect(routes.IndexController.showIndex()))
+                              Future.successful(Redirect(controllers.routes.ViewApplicationController.viewSection(businessDetailsName)))
                           }
                         }
                       }
