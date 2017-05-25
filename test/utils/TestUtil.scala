@@ -194,20 +194,20 @@ object TestUtil {
 
   val testReviewDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
 
-  val testSubscriptionStatusTypePending = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, None, false, None)
-  val testSubscriptionStatusTypeApproved = SubscriptionStatusType("2001-12-17T09:30:47Z", Approved, Some("2016-04-1T09:30:00Z"), false, None)
-  val testSubscriptionStatusTypeApprovedWithConditions = SubscriptionStatusType("10 December 2014", ApprovedWithConditions, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"))
+  val testSubscriptionStatusTypePending = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, None, false, None, None)
+  val testSubscriptionStatusTypeApproved = SubscriptionStatusType("2001-12-17T09:30:47Z", Approved, Some("2016-04-1T09:30:00Z"), false, None, None)
+  val testSubscriptionStatusTypeApprovedWithConditions = SubscriptionStatusType("10 December 2014", ApprovedWithConditions, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
   val testStatusInfoTypeApprovedWithConditions = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "conditions for approval")))
-  val testSubscriptionStatusTypeRejected = SubscriptionStatusType("2001-12-17T09:30:47Z", Rejected, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"))
-  val testSubscriptionStatusTypeRejectedUnderReviewOrAppeal = SubscriptionStatusType("2001-12-17T09:30:47Z", RejectedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"))
-  val testSubscriptionStatusTypeRevokedUnderReviewOrAppeal = SubscriptionStatusType("2001-12-17T09:30:47Z", RevokedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"))
-  val testSubscriptionStatusTypeRevoked = SubscriptionStatusType("2001-12-17T09:30:47Z", Revoked, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"))
+  val testSubscriptionStatusTypeRejected = SubscriptionStatusType("2001-12-17T09:30:47Z", Rejected, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testSubscriptionStatusTypeRejectedUnderReviewOrAppeal = SubscriptionStatusType("2001-12-17T09:30:47Z", RejectedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testSubscriptionStatusTypeRevokedUnderReviewOrAppeal = SubscriptionStatusType("2001-12-17T09:30:47Z", RevokedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testSubscriptionStatusTypeRevoked = SubscriptionStatusType("2001-12-17T09:30:47Z", Revoked, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
   val testStatusInfoTypeRejected = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for rejection")))
   val testStatusInfoTypeRejectedUnderReviewOrAppeal = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for rejection under review")))
   val testStatusInfoTypeRevoked = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for revoked")))
   val testStatusInfoTypeRevokedUnderReviewOrAppeal = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for revoked under review")))
 
-  val testSubscriptionStatusTypePendingGroup = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, Some("2001-12-17T09:30:47Z"), true, None)
+  val testSubscriptionStatusTypePendingGroup = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, Some("2001-12-17T09:30:47Z"), true, None, None)
 
   val testStatusNotificationNoAlert: Option[StatusNotification] = None
   val testStatusNotificationMindedToReject: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(MindedToReject), Some(Pending), Some("2017-04-01T0013:07:11")))
