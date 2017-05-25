@@ -18,7 +18,14 @@
 
 @pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 
-@warningText = {<p id="businessNameChangeConfirmation-warning">@Messages("awrs.business_name_change.warning")</p>}
+@warningText = {
+<p id="businessNameChangeConfirmation-warning">@Messages("awrs.business_name_change.warning")</p>
+<ul id="businessNameChangeConfirmation-bullets" class="bullets">
+    <li>@Messages("awrs.business_name_change.warning.bullet.1")</li>
+    <li>@Messages("awrs.business_name_change.warning.bullet.2")</li>
+    <li>@Messages("awrs.business_name_change.warning.bullet.3")</li>
+</ul>
+}
 
 @includes.awrs_main(title = Messages("awrs.business_name_change.heading"), pageScripts = Some(pageScripts), userLoggedIn = true) {
 
