@@ -1079,11 +1079,56 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         result._2.get.members(0).companyNames.businessName.get shouldBe result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
       }
     }
+
+    "replaceGroupRepInGroupMembers " should {
+      "not change the size of the GroupMembers collection" in {
+        val result = testReplaceGroupRepInGroupMembers
+        result._2.get.members.size shouldBe  result._1.getEntry[GroupMembers](groupMembersName).get.members.size
+      }
+      "contain a different business name in the group rep group member" in {
+        val result = testReplaceGroupRepInGroupMembers
+        result._2.get.members(0).companyNames.businessName.get should not be result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
+      }
+    }
+
+    "isGrpRepChanged" should {
+      allEntities.foreach {
+        legalEntity =>
+          Seq(true, false).foreach {
+            updatedBusinessName =>
+              s"return the correct value for legalEntity: $legalEntity and updatedBusinessName: $updatedBusinessName" in {
+                val businessType = BusinessType(Some(legalEntity), None, Some(true))
+                (updatedBusinessName, legalEntity) match {
+                  case (true, ("LTD_GRP" | "LLP_GRP")) => TestApplicationService.isGrpRepChanged(cachedData(businessType), getCachedSubscriptionWithChangedBusinessName(legalEntity, businessType)) shouldBe true
+                  case _ => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd()) shouldBe false
+                }
+              }
+          }
+      }
+    }
+  }
+
+  def getCachedSubscriptionWithChangedBusinessName(legalEntity: String, businessType: BusinessType): Option[SubscriptionTypeFrontEnd] = {
+    val businessCustomerDetails = cachedData(businessType).getEntry[BusinessCustomerDetails](businessCustomerDetailsName).get
+    testSubscriptionTypeFrontEnd(businessCustomerDetails = businessCustomerDetails.copy(businessName = "Changed"))
   }
 
   def testAddGroupRepToGroupMembers: (CacheMap,Option[GroupMembers]) = {
     val cached = cachedData()
     (cached, TestApplicationService.addGroupRepToGroupMembers(Some(cached)))
+  }
+
+  def testReplaceGroupRepInGroupMembers: (CacheMap, Option[GroupMembers]) = {
+    val cached = cachedData()
+    val legalEntity = testLegalEntity.legalEntity.get
+    val changed = CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
+      businessCustomerDetailsName -> Json.toJson(testBusinessNameChanged),
+      businessDetailsName -> Json.toJson(testBusinessDetails()),
+      businessRegistrationDetailsName -> Json.toJson(testBusinessRegistrationDetails(legalEntity)),
+      placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
+      groupMembersName -> Json.toJson(testGroupMemberDetails)))
+
+    (cached, TestApplicationService.replaceGroupRepInGroupMembers(Some(changed)))
   }
 
   def sendWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any): Unit = {
