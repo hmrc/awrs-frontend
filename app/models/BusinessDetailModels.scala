@@ -45,9 +45,18 @@ object BusinessDetailsEntityTypes extends Enumeration {
   implicit def autoToString(businessEntityType: BusinessDetailsEntityTypes.Value): String = businessEntityType.toString
 }
 
+case class BusinessNameChangeConfirmation(businessNameChangeConfirmation: Option[String])
+
 case class BusinessDetails(doYouHaveTradingName: Option[String],
                            tradingName: Option[String],
                            newAWBusiness: Option[NewAWBusiness])
+
+case class ExtendedBusinessDetails(businessName: Option[String],
+                                   doYouHaveTradingName: Option[String],
+                                   tradingName: Option[String],
+                                   newAWBusiness: Option[NewAWBusiness]) {
+  def getBusinessDetails: BusinessDetails = BusinessDetails(doYouHaveTradingName, tradingName, newAWBusiness)
+}
 
 case class BusinessRegistrationDetails(legalEntity: Option[String] = None,
                                        doYouHaveUTR: Option[String] = None,
@@ -76,12 +85,22 @@ case class BusinessContacts(contactFirstName: Option[String] = None,
                             modelVersion: String = BusinessContacts.latestModelVersion
                            ) extends ModelVersionControl
 
+
+object BusinessNameChangeConfirmation {
+  implicit val formats: Format[BusinessNameChangeConfirmation] = Json.format[BusinessNameChangeConfirmation]
+}
+
 object BusinessDetails {
   implicit val formats: Format[BusinessDetails] = Json.format[BusinessDetails]
 }
 
+object ExtendedBusinessDetails {
+  implicit val formats: Format[ExtendedBusinessDetails] = Json.format[ExtendedBusinessDetails]
+}
+
 object BusinessRegistrationDetails {
   implicit val formats: Format[BusinessRegistrationDetails] = Json.format[BusinessRegistrationDetails]
+  implicit val optionFormats = Format.optionWithNull[BusinessRegistrationDetails]
 }
 
 object BusinessContacts {
@@ -89,6 +108,7 @@ object BusinessContacts {
   val latestModelVersion = "1.1"
 
   implicit val formats: Format[BusinessContacts] = Json.format[BusinessContacts]
+  implicit val optionFormats = Format.optionWithNull[BusinessContacts]
 
 }
 
@@ -97,5 +117,6 @@ object PlaceOfBusiness {
   val latestModelVersion = "1.0"
 
   implicit val formats: Format[PlaceOfBusiness] = Json.format[PlaceOfBusiness]
+  implicit val optionFormats = Format.optionWithNull[PlaceOfBusiness]
 
 }

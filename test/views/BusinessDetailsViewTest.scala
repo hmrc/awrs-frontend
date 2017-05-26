@@ -42,12 +42,13 @@ import scala.concurrent.Future
 class BusinessDetailsViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  def testRequest(businessDetails: BusinessDetails, entityType: String) =
-    TestUtil.populateFakeRequest[BusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType), businessDetails)
+  def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean) =
+    TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
 
   object TestBusinessDetailsController extends BusinessDetailsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    override val keyStoreService = TestKeyStoreService
   }
 
   "BusinessDetailsController" must {
@@ -57,7 +58,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
       "Are you a new business " should {
 
         "Data is valid, isNewApplication is false so we should see a message showing this" in {
-          getWithAuthorisedUser(isNewApplication = false)(testRequest(testBusinessDetails(), "SOP")) {
+          getWithAuthorisedUser(isNewApplication = false)(testRequest(testExtendedBusinessDetails(), "SOP", false)) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
               document.getElementById("notNewBusiness").text shouldBe Messages("awrs.business_details.new_AWBusiness_No")
@@ -65,7 +66,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
         }
 
         "Data is valid, isNewApplication is true so we should see a message showing this" in {
-          getWithAuthorisedUser(isNewApplication = true)(testRequest(testBusinessDetails(), "SOP")) {
+          getWithAuthorisedUser(isNewApplication = true)(testRequest(testExtendedBusinessDetails(), "SOP", false)) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
               val info = Messages("awrs.business_details.new_AWBusiness_Yes", "10", "October", "2016")
@@ -121,7 +122,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
             Seq(true, false).foreach {
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {
-                  getWithAuthorisedUser(isLinearjourney = isLinear, businessType = legalEntity)(testRequest(testBusinessDetails(), legalEntity)) {
+                  getWithAuthorisedUser(isLinearjourney = isLinear, businessType = legalEntity)(testRequest(testExtendedBusinessDetails(), legalEntity, false)) {
                     result =>
                       val document = Jsoup.parse(contentAsString(result))
                       val journey = JourneyConstants.getJourney(legalEntity)
@@ -138,9 +139,33 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
             }
           }
       }
+
+      allEntities.foreach {
+        legalEntity =>
+          s"$legalEntity" should {
+            Seq(true, false).foreach {
+              hasAwrs =>
+                Seq(true, false).foreach {
+                  isEditMode =>
+                    s"correctly display/hide the business name section when isEditMode=$isEditMode and hasAwrs=$hasAwrs in" in {
+                      getWithAuthorisedUser(isLinearjourney = !isEditMode, businessType = legalEntity, hasAwrs = hasAwrs)(testRequest(testExtendedBusinessDetails(), legalEntity, hasAwrs)) {
+                        result =>
+                          val document = Jsoup.parse(contentAsString(result))
+                          val input = document.getElementById("companyName")
+                          (hasAwrs, isEditMode, legalEntity) match {
+                            case  (true, true, "LLP_GRP" | "LTD_GRP") => input.attr("value") shouldBe testBusinessCustomerDetails(legalEntity).businessName
+                            case _ => input shouldBe null
+                          }
+                      }
+                    }
+                }
+            }
+          }
+      }
     }
 
-    def getWithAuthorisedUser(isNewApplication: Boolean = true, isLinearjourney: Boolean = true, businessType: String = "SOP")(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(isNewApplication: Boolean = true, isLinearjourney: Boolean = true, businessType: String = "SOP", hasAwrs: Boolean = false)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+      setUser(hasAwrs = hasAwrs)
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
         fetchNewApplicationType = NewApplicationType(Some(false))
