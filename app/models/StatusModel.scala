@@ -24,7 +24,7 @@ case class SubscriptionStatusType(processingDate: String,
                                   deRegistrationDate: Option[String],
                                   groupBusinessPartner: Boolean,
                                   businessContactNumber: Option[String],
-                                  safeId : Option[String])
+                                  safeId : Option[String] = None)
 
 object SubscriptionStatusType {
   // TODO add date validation back in once we get the expected formats

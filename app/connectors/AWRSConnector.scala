@@ -116,7 +116,6 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     val awrsRefNo = AccountUtils.getAwrsRefNo
     val putURL = s"""$serviceURL$accountURI/$awrsRefNo/registration-details/$safeId"""
     val updateRegistrationDetailsJsonRequest = Json.toJson(updateRegistrationDetailsRequest)
-    println("#####################calling updateGroupBusinessPartner #####################" + putURL + "@@@@@@safeId=" + safeId + "@@@@@@@Json" + updateRegistrationDetailsJsonRequest)
     http.PUT[JsValue, HttpResponse](putURL, updateRegistrationDetailsJsonRequest) map {
       response =>
         response.status match {
@@ -125,8 +124,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             response.json.as[SuccessfulUpdateGroupBusinessPartnerResponse]
           case 403 =>
             audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeNotFound)
-            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - ETMP has returned a error code003 with a   status of NOT_OK - record is    not editable")
-            throw new ForbiddenException(s"[$auditAPI3TxName] - ETMP has returned a error code003 with a   status of NOT_OK - record is    not editable")
+            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable.")
+            throw new ForbiddenException(s"[$auditAPI3TxName] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable.")
           case 400 =>
             response.body.toString.replace("\n", "") match {
               case validationPattern(contents) =>

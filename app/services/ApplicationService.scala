@@ -157,8 +157,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       cached <- save4LaterService.mainStore.fetchAll
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
       subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
-      _ <- callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus)
-      //_ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus) else Future("OK")
+      _ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus) else Future("OK")
       awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))))
       isNewBusiness <- isNewBusiness(cached)
       _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
@@ -173,7 +172,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
                                     : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
     def createUpdateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest = {
       val businessContacts = cached.get.getBusinessContacts.get
-      UpdateRegistrationDetailsRequest( // TODO: what about AcknoledgementReference?
+      UpdateRegistrationDetailsRequest(
         isAnIndividual = false,
         organisationName = Some(OrganisationName(cachedSubscription.get.businessCustomerDetails.get.businessName)),
         address = cached.get.getBusinessContacts.get.contactAddress.get,
@@ -183,13 +182,8 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       )
     }
 
-    //cached.get.getBusinessCustomerDetails.get.agentReferenceNumber
-    //cached.get.getBusinessCustomerDetails.get.isAGroup
     //cached.get.getBusinessCustomerDetails.get.businessAddress
-    //cached.get.getBusinessCustomerDetails.get.safeId
     //cached.get.getBusinessContacts.get.contactAddress
-    //cached.get.getBusinessContacts.get.email
-    //cached.get.getBusinessContacts.get.telephone
     //cached.get.getPlaceOfBusiness.get.mainAddress
 
     awrsConnector.updateGroupBusinessPartner(
@@ -199,8 +193,12 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       createUpdateRegistrationDetailsRequest)
   }
 
-  def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean =
-      (cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessCustomerDetails.get.businessName)
+  def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
+    cached.get.getBusinessType.get.legalEntity match {
+      case Some("LTD_GRP") | Some("LLP_GRP") => cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessCustomerDetails.get.businessName
+      case _ => false
+    }
+  }
 
   def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = authenticatorConnector.refreshProfile
 
