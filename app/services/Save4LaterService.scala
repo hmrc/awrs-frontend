@@ -137,9 +137,6 @@ trait Save4LaterService {
     @inline def fetchBusinessDetails(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[BusinessDetails]] =
       fetchData4Later[BusinessDetails](businessDetailsName)
 
-    @inline def saveNoneBusinessRegistrationDetails()(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[BusinessRegistrationDetails]] =
-      saveData4Later[Option[BusinessRegistrationDetails]](businessRegistrationDetailsName, None)
-
     @inline def saveBusinessRegistrationDetails(businessDetails: BusinessRegistrationDetails)(implicit user: AuthContext, hc: HeaderCarrier): Future[BusinessRegistrationDetails] =
       saveData4Later(businessRegistrationDetailsName, businessDetails)
 

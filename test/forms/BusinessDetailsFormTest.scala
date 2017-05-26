@@ -17,7 +17,6 @@
 package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.GroupMemberDetailsForm.names
 import forms.submapping.FieldNameUtil
 import forms.test.util._
 import forms.validation.util.ConstraintUtil.FormData
@@ -29,41 +28,17 @@ import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 
 class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
-  lazy val forms = (entity: String, hasAwrs: Boolean) => BusinessDetailsForm.businessDetailsForm(entity, hasAwrs).form
+  lazy val forms = (entity: String) => BusinessDetailsForm.businessDetailsForm(entity).form
   val SoleTrader = "SOP"
   val Ltd = "LTD"
   val Partnership = "Partnership"
-  val LimitedLiabilityGroup = "LLP_GRP"
-  val LimitedGroup = "LTD_GRP"
-
-  val entities = Seq[String](SoleTrader, Ltd, Partnership, LimitedLiabilityGroup, LimitedGroup)
+  val entities = Seq[String](SoleTrader, Ltd, Partnership)
 
   "Business details form" should {
-    for (entity <- entities; hasAwrs <- Seq(true, false)) {
-      implicit lazy val form = forms(entity, hasAwrs)
+    for (entity <- entities) {
+      implicit lazy val form = forms(entity)
 
-      entity match {
-        case LimitedLiabilityGroup | LimitedGroup => {
-          f"check validations for businessName for entity: $entity and hasAwrs: $hasAwrs" in {
-            val fieldId = "companyName"
-
-            val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty"))
-            val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", AwrsFieldConfig.companyNameLen)
-            val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "business name"))
-            val formatError = ExpectedFieldFormat(invalidFormats)
-
-            val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
-
-            if (hasAwrs)
-              fieldId assertFieldIsCompulsory expectations
-            else
-              fieldId assertFieldIsIgnoredWhen (Set[Map[String, String]](), expectations.toFieldToIgnore)
-          }
-        }
-        case _ =>
-      }
-
-      f"check validations for doYouHaveTradingName for entity: $entity and hasAwrs: $hasAwrs" in {
+      f"check validations for doYouHaveTradingName for entity: $entity" in {
         val fieldId = "doYouHaveTradingName"
 
         val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_trading_name_empty"))
@@ -72,7 +47,8 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
         fieldId assertEnumFieldIsCompulsory expectations
       }
 
-      f"check validations for tradingName for entity: $entity and hasAwrs: $hasAwrs" in {
+
+      f"check validations for tradingName for entity: $entity" in {
         val fieldId = "tradingName"
 
         val preCondition: Map[String, String] = Map("doYouHaveTradingName" -> BooleanRadioEnum.Yes.toString)
@@ -86,7 +62,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
         fieldId assertFieldIsCompulsoryWhen (preCondition, expectations)
       }
 
-      f"check validations for newAWBusiness for entity: $entity and hasAwrs: $hasAwrs" in {
+      f"check validations for newAWBusiness for entity: $entity" in {
         // N.B. this test is for the optional validation function used for proposed date is too early
         // the rest of the tests are covered by NewAWBuesinessMappingTest
         val prefix = "newAWBusiness"

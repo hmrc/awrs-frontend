@@ -94,16 +94,14 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                 statusInfoType: Future[Option[StatusInfoType]] = Some(defaultStatusTypeInfo),
                                 statusNotification: Future[Option[StatusNotification]] = defaultStatusNotification,
                                 fetchIsNewBusiness: Future[Option[Boolean]] = defaultIsNewBusiness,
-                                fetchViewedStatus: Future[Option[Boolean]] = defaultViewedStatus,
-                                fetchExtendedBusinessDetails: Future[Option[ExtendedBusinessDetails]] = defaultExtendedBusinessDetails
-  ) =
+                                fetchViewedStatus: Future[Option[Boolean]] = defaultViewedStatus
+                              ) =
   setupMockKeyStoreServiceWithOnly(
     subscriptionStatusType = subscriptionStatusType,
     statusInfoType = statusInfoType,
     statusNotification = statusNotification,
     fetchIsNewBusiness = fetchIsNewBusiness,
-    fetchViewedStatus = fetchViewedStatus,
-    fetchExtendedBusinessDetails = fetchExtendedBusinessDetails
+    fetchViewedStatus = fetchViewedStatus
   )
 
   // children should not override this method, update here when KeyStoreService changes
@@ -112,15 +110,13 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                                         statusInfoType: MockConfiguration[Future[Option[StatusInfoType]]] = DoNotConfigure,
                                                         statusNotification: MockConfiguration[Future[Option[StatusNotification]]] = DoNotConfigure,
                                                         fetchIsNewBusiness: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure,
-                                                        fetchViewedStatus: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure,
-                                                        fetchExtendedBusinessDetails: MockConfiguration[Future[Option[ExtendedBusinessDetails]]] = DoNotConfigure
+                                                        fetchViewedStatus: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure
                                                       ) = {
     mockFetchFromKeyStore[SubscriptionStatusType](subscriptionStatusTypeName, subscriptionStatusType)
     mockFetchFromKeyStore[StatusInfoType](statusInfoTypeName, statusInfoType)
     mockFetchFromKeyStore[StatusNotification](statusNotificationName, statusNotification)
     mockFetchFromKeyStore[Boolean](isNewBusinessName, fetchIsNewBusiness)
     mockFetchFromKeyStore[Boolean](viewedStatusName, fetchViewedStatus)
-    mockFetchFromKeyStore[ExtendedBusinessDetails](extendedBusinessDetailsName, fetchExtendedBusinessDetails)
 
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
@@ -204,8 +200,6 @@ object MockKeyStoreService {
   val defaultSubscriptionStatusType = testSubscriptionStatusTypeApprovedWithConditions
   val defaultStatusTypeInfo = testStatusInfoTypeApprovedWithConditions
   val defaultStatusNotification = testStatusNotificationNoAlert
-
-  val defaultExtendedBusinessDetails = testExtendedBusinessDetails()
 
   val defaultIsNewBusiness = true
 

@@ -63,9 +63,6 @@ GET         /business-details/edit                          controllers.Business
 POST        /business-details/saveAndContinue               controllers.BusinessDetailsController.saveAndContinue
 POST        /business-details/saveAndReturn                 controllers.BusinessDetailsController.saveAndReturn
 
-GET         /business-details/group-representative/confirm  controllers.BusinessNameChangeController.showConfirm
-POST        /business-details/group-representative/submit   controllers.BusinessNameChangeController.callToAction
-
 GET         /business-registration-details                  controllers.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode: Boolean = true)
 GET         /business-registration-details/edit             controllers.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode: Boolean = false)
 POST        /business-registration-details/saveAndContinue  controllers.BusinessRegistrationDetailsController.saveAndContinue

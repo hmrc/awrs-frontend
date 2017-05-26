@@ -193,7 +193,6 @@ object TestUtil {
   val testPartnerDetails = Partners(List(testPartner(), testPartner()))
 
   val testReviewDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
-  val testBusinessNameChanged = BusinessCustomerDetails("NOT ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
 
   val testSubscriptionStatusTypePending = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, None, false, None, None)
   val testSubscriptionStatusTypeApproved = SubscriptionStatusType("2001-12-17T09:30:47Z", Approved, Some("2016-04-1T09:30:00Z"), false, None, Some("Safe123"))
@@ -473,17 +472,6 @@ object TestUtil {
                           tradingName: Option[String] = Some("Simple Wines"),
                           newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())) =
     BusinessDetails(
-      doYouHaveTradingName = doYouHaveTradingName,
-      tradingName = tradingName,
-      newAWBusiness = newBusiness
-    )
-
-  def testExtendedBusinessDetails(businessName: Option[String] = Some("ACME"),
-                                  doYouHaveTradingName: Option[String] = Some("Yes"),
-                                  tradingName: Option[String] = Some("Simple Wines"),
-                                  newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())) =
-    ExtendedBusinessDetails(
-      businessName = businessName,
       doYouHaveTradingName = doYouHaveTradingName,
       tradingName = tradingName,
       newAWBusiness = newBusiness
