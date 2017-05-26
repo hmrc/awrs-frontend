@@ -23,7 +23,7 @@
         case (Some(model), Some(bcDetails)) =>
             model.contactAddressSame match {
                 case Some("No") => model.contactAddress
-                case Some("Yes") =>
+                case Some("Yes") | None =>
                     val bcAddress = bcDetails.businessAddress
                     Some(Address(
                         addressLine1 = bcAddress.line_1,
