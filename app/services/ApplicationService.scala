@@ -203,13 +203,6 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       createUpdateRegistrationDetailsRequest)
   }
 
-  def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
-    cached.get.getBusinessType.get.legalEntity match {
-      case Some("LTD_GRP") | Some("LLP_GRP") => cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessCustomerDetails.get.businessName
-      case _ => false
-    }
-  }
-
   def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = authenticatorConnector.refreshProfile
 
   def removeCountry(someAddress: Option[Address]): Option[Address] =
