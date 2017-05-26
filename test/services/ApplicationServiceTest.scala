@@ -49,6 +49,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
   val subscribeUpdateSuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
+  val updateGroupBusinessPartnerResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
 
   val baseAddress = Address("line 1", "line 2", Some("line 3"), Some("line 4"), Some("NE12 2DS"), None, Some("ES"))
   val baseSupplier = Supplier(alcoholSuppliers = "Yes",
@@ -150,6 +151,13 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       sendUpdateSubscriptionTypeWithAuthorisedUser {
         result =>
           await(result) shouldBe subscribeUpdateSuccessResponse
+      }
+    }
+
+    "send updated registration details to right hand service and handle success" in {
+      sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
+        result =>
+          await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
       }
     }
 
@@ -1101,6 +1109,14 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     setupMockAWRSConnectorWithOnly(updateAWRSData = subscribeUpdateSuccessResponse)
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     TestApplicationService.updateApplication()
+  }
+
+  def sendCallUpdateGroupBusinessPartnerWithAuthorisedUser(test: Future[SuccessfulUpdateGroupBusinessPartnerResponse] => Any) : Unit = {
+    setupMockSave4LaterService(fetchAll = cachedData())
+    setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSubscription)
+    setupMockAWRSConnectorWithOnly(updateGroupBusinessPartner = updateGroupBusinessPartnerResponse)
+    implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
+    TestApplicationService.callUpdateGroupBusinessPartner(cachedData(), Some(cachedSubscription), testSubscriptionStatusTypeApproved)
   }
 
   def refreshWithAuthorisedUser(test: Future[HttpResponse] => Any): Unit = {
