@@ -82,41 +82,6 @@ trait IndexService {
   def showOneViewLink(indexViewModel: IndexViewModel)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Boolean =
     !indexViewModel.sectionModels.forall(_.status.equals(SectionNotStarted))
 
-
-  def isLegalEnityNone(cache: Option[BusinessRegistrationDetails] ): Boolean = {
-    try {
-      cache.get.legalEntity.isEmpty
-    }
-    catch {
-      case e: Throwable => {
-        false
-      }
-    }
-  }
-
-  def isMainPlaceOfBusinessNone(cache: Option[PlaceOfBusiness]): Boolean = {
-    try {
-      cache.get.mainPlaceOfBusiness.isEmpty
-    }
-    catch {
-      case e: Throwable => {
-        false
-      }
-    }
-  }
-
-  def isContactFirstNameNone(cache: Option[BusinessContacts]): Boolean = {
-    try {
-      cache.get.contactFirstName.isEmpty
-    }
-    catch {
-      case e: Throwable => {
-        false
-      }
-    }
-  }
-
-
   def getStatus(cacheMap: Option[CacheMap], businessType: String)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
 
     applicationService.getApi5ChangeIndicators(cacheMap) map {
@@ -125,8 +90,8 @@ trait IndexService {
         val cache = cacheMap.get
 
         val businessDetailsStatus = cacheMap match {
-          case Some(cache) => cache.getBusinessDetails  match {
-            case Some(businessDetails)  => changeIndicators.businessDetailsChanged match {
+          case Some(cache) => cache.getBusinessDetails match {
+            case Some(businessDetails) => changeIndicators.businessDetailsChanged match {
               case false => isNewAWBusinessAnswered(businessDetails) match {
                 case false => SectionIncomplete
                 case true => SectionComplete
@@ -138,17 +103,16 @@ trait IndexService {
           case _ => SectionNotStarted
         }
 
-
         val businessRegistrationDetailsStatus = cacheMap match {
-          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEnityNone(cache.getBusinessRegistrationDetails)) match {
-            case (Some(businessRegistrationDetails), false) => changeIndicators.businessRegistrationDetailsChanged match {
+          case Some(cache) => cache.getBusinessRegistrationDetails match {
+            case Some(businessRegistrationDetails) => changeIndicators.businessRegistrationDetailsChanged match {
               case false => displayCompleteForBusinessType(businessRegistrationDetails, someBusinessType) match {
                 case false => SectionIncomplete
                 case true => SectionComplete
               }
               case true => SectionEdited
             }
-            case (_, _) => SectionNotStarted
+            case _ => SectionNotStarted
           }
           case _ => SectionNotStarted
         }
@@ -162,50 +126,49 @@ trait IndexService {
         }
 
         val businessRegistrationDetailsHref = cacheMap match {
-          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEnityNone(cache.getBusinessRegistrationDetails)) match {
-            case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(businessRegistrationDetailsName).url
-            case (_, _) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url
+          case Some(cache) => cache.getBusinessRegistrationDetails match {
+            case Some(_) => controllers.routes.ViewApplicationController.viewSection(businessRegistrationDetailsName).url
+            case _ => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url
           }
           case _ => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url
         }
 
         val businessContactsStatus = cacheMap match {
-          case Some(cache) => (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
-            case (Some(businessContacts),false) => changeIndicators.contactDetailsChanged match {
+          case Some(cache) => cache.getBusinessContacts match {
+            case Some(businessContacts) => changeIndicators.contactDetailsChanged match {
               case true => SectionEdited
               case false => SectionComplete
             }
-            case (_, _) => SectionNotStarted
+            case _ => SectionNotStarted
           }
           case _ => SectionNotStarted
         }
 
         val placeOfBusinessStatus = cacheMap match {
-          case Some(cache) => (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
-            case (Some(placeOfBusiness),false) => changeIndicators.businessAddressChanged match {
+          case Some(cache) => cache.getPlaceOfBusiness match {
+            case Some(placeOfBusiness) => changeIndicators.businessAddressChanged match {
               case false => placeOfBusiness.operatingDuration.exists(_.isEmpty) || !placeOfBusiness.mainAddress.get.postcode.exists(_.nonEmpty) match {
                 case true => SectionIncomplete
                 case _ => SectionComplete
               }
               case true => SectionEdited
             }
-            case (_, _) => SectionNotStarted
+            case _ => SectionNotStarted
           }
           case _ => SectionNotStarted
         }
 
         val businessContactsHref = cacheMap match {
-          case Some(cache) => (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
-            case (Some(_),false) => controllers.routes.ViewApplicationController.viewSection(businessContactsName).url
-            case (_,_) => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
+          case Some(cache) => cache.getBusinessContacts match {
+            case Some(_) => controllers.routes.ViewApplicationController.viewSection(businessContactsName).url
+            case _ => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
           }
           case _ => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
         }
-
         val placeOfBusinessHref = cacheMap match {
-          case Some(cache) => (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
-            case (Some(_),false) => controllers.routes.ViewApplicationController.viewSection(placeOfBusinessName).url
-            case (_,_) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
+          case Some(cache) => cache.getPlaceOfBusiness match {
+            case Some(_) => controllers.routes.ViewApplicationController.viewSection(placeOfBusinessName).url
+            case _ => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
           }
           case _ => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
         }

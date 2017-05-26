@@ -24,7 +24,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{KeyStoreService, Save4LaterService, ServicesUnitTestFixture}
+import services.{Save4LaterService, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
@@ -33,66 +33,37 @@ import scala.concurrent.Future
 class BusinessDetailsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val newBusinessName = "Changed"
-
-  def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean) =
-    TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
+  def testRequest(businessDetails: BusinessDetails, entityType: String) =
+    TestUtil.populateFakeRequest[BusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType), businessDetails)
 
   object TestBusinessDetailsController extends BusinessDetailsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
   }
 
   "BusinessDetailsController" must {
 
     "use the correct AwrsService" in {
       BusinessDetailsController.save4LaterService shouldBe Save4LaterService
-      BusinessDetailsController.keyStoreService shouldBe KeyStoreService
     }
 
     "Users who entered from the summary edit view" should {
-      allEntities.foreach {
-        businessType =>
-          Seq(true, false).foreach {
-            hasAwrs =>
-              Seq(true, false).foreach {
-                updatedBusinessName =>
-                  s"go to the correct view after clicking return when business type=$businessType and hasAwrs=$hasAwrs and updatedBusinessName=$updatedBusinessName" in {
-                    returnWithAuthorisedUser(businessType, hasAwrs, updatedBusinessName, testRequest(getExtendedBusinessDetails(updatedBusinessName), businessType, hasAwrs)) {
-                      result =>
-                        (hasAwrs, updatedBusinessName, businessType) match {
-                          case (true, true, "LLP_GRP" | "LTD_GRP") => redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-details/group-representative")
-                          case _ => {
-                            redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessDetailsName")
-                            verifySave4LaterService(saveBusinessDetails = 1)
-                          }
-                        }
-                    }
-                  }
-              }
-          }
+      "return to the summary view after clicking return" in {
+        returnWithAuthorisedUser(testRequest(testBusinessDetails(), "SOP")) {
+          result =>
+            redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessDetailsName")
+            verifySave4LaterService(saveBusinessDetails = 1)
+        }
       }
     }
 
-    def getExtendedBusinessDetails(updatedBusinessName: Boolean) : ExtendedBusinessDetails = {
-      updatedBusinessName match {
-        case true => testExtendedBusinessDetails(businessName = newBusinessName)
-        case false => testExtendedBusinessDetails()
-      }
-    }
-
-    def returnWithAuthorisedUser(businessType: String, hasAwrs: Boolean, updatedBusinessName: Boolean, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-      setUser(hasAwrs = hasAwrs)
+    def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
       setupMockSave4LaterServiceWithOnly(
-        fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
+        fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
         fetchBusinessDetails = testBusinessDetails(),
         fetchNewApplicationType = testNewApplicationType
       )
-      if (updatedBusinessName)
-        setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
-
-      val result = TestBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+      val result = TestBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails("SOP").businessType.get))
       test(result)
     }
 

@@ -10,10 +10,9 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
 
-@(businessType: Option[String], businessName: String, businessDetailsForm: Form[models.ExtendedBusinessDetails],
-renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, user: AuthContext)
+@(businessType: Option[String], businessName: String, businessDetailsForm: Form[models.BusinessDetails],
+renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
 
 @implicitFormInstance = @{ Some(businessDetailsForm) }
 
@@ -159,27 +158,6 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
     }
 }
 
-@businessNameSectionContent = {
-<div id="businessName-content">
-    @awrsInputTypeText(
-        InputTypeTextParams(
-            businessDetailsForm("companyName"),
-            inputId = "companyName",
-            label = Messages("awrs.generic.business_name"),
-            maxLength = AwrsFieldConfig.companyNameLen.toString,
-            required = true,
-            labelHighlight = true
-        )
-    )
-</div>
-}
-
-@businessNameSection = @{
-    (isEditMode, AccountUtils.hasAwrs, businessType.getOrElse("")) match {
-        case (true, true, "LLP_GRP" | "LTD_GRP") => businessNameSectionContent
-        case _ =>
-    }
-}
 
 @includes.awrs_main(title = pageTitle, pageScripts = Some(pageScripts), userLoggedIn = true){
 <div class="grid">
@@ -194,11 +172,6 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
         </header>
 
         @uk.gov.hmrc.play.views.html.helpers.form(action = actionRoute){
-
-            <div class="form-group">
-                @businessNameSection
-            </div>
-
             <div class="form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(

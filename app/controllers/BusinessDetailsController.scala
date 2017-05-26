@@ -23,7 +23,7 @@ import forms.BusinessDetailsForm._
 import models._
 import play.api.mvc.{AnyContent, Request, Result}
 import services.DataCacheKeys._
-import services.{DataCacheService, KeyStoreService, Save4LaterService}
+import services.Save4LaterService
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
@@ -34,7 +34,7 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 
-trait BusinessDetailsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable with DataCacheService {
+trait BusinessDetailsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
 
   override val section = businessDetailsName
 
@@ -75,27 +75,17 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
         newApplicationType <- save4LaterService.mainStore.fetchNewApplicationType
         mode <- renderMode(newApplicationType)
       } yield {
-        val businessName = businessCustomerDetails.fold("")(x => x.businessName)
         businessDetails match {
-          case Some(data) => {
-            val extendedBusinessDetails = ExtendedBusinessDetails(Some(businessName), data.doYouHaveTradingName, data.tradingName, data.newAWBusiness)
-            Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs).form.fill(extendedBusinessDetails), mode))
-          }
-          case _ => Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs).form, mode))
+          case Some(data) => Ok(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), businessDetailsForm(businessType.get).form.fill(data), mode))
+          case _ => Ok(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), businessDetailsForm(businessType.get).form, mode))
         }
       }
-  }
-
-  def saveBusinessDetails(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], isNewRecord: Boolean, businessDetails: BusinessDetails)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
-    save4LaterService.mainStore.saveBusinessDetails(businessDetails) flatMap {
-      case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
-    }
   }
 
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
     implicit val viewMode = viewApplicationType
     val businessType = request.getBusinessType
-    businessDetailsForm(businessType.get, AccountUtils.hasAwrs).bindFromRequest.fold(
+    businessDetailsForm(businessType.get).bindFromRequest.fold(
       formWithErrors =>
         for {
           businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
@@ -105,33 +95,16 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
           BadRequest(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), formWithErrors, mode))
         }
       ,
-      extendedBusinessDetails => {
-        (AccountUtils.hasAwrs, businessType) match {
-          case (false, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
-          case (true, (Some("LLP_GRP") | Some("LTD_GRP"))) => {
-            save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
-              case Some(businessCustomerDetails) => {
-                businessCustomerDetails.businessName != extendedBusinessDetails.businessName.get match {
-                  case true => {
-                    keyStoreService.saveExtendedBusinessDetails(extendedBusinessDetails) flatMap {
-                      case _ => Future.successful(Redirect(routes.BusinessNameChangeController.showConfirm()))
-                    }
-                  }
-                  case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
-                }
-              }
-              case None => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
-            }
-          }
-          case (true, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
+      businessDetailsData =>
+        save4LaterService.mainStore.saveBusinessDetails(businessDetailsData) flatMap {
+          case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
         }
-      }
     )
   }
+
 }
 
 object BusinessDetailsController extends BusinessDetailsController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
-  override val keyStoreService = KeyStoreService
 }
