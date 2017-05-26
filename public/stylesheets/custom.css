@@ -819,7 +819,7 @@ details {display: block;}
 [role="link"].link-style:hover {text-decoration: underline;}
 .postcode-lookup-results {margin-top: 1em;}
 
-p.heading-secondary {
+p.heading-secondary, span.heading-secondary {
     color: #6f777b;
     display: block;
     font-family: "nta",Arial,sans-serif;
@@ -840,6 +840,13 @@ p.heading-secondary {
     margin-top: 1.8em;
 }
 
+.page-header-block {
+    display: block;
+}
+
+
 .page-header .heading-xlarge {
     margin: 0.15em 0 1.25em;
 }
+
+#businessNameChangeConfirmation-bullets {margin-bottom:1.5em;}

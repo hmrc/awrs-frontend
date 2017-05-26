@@ -106,14 +106,13 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     case None => Future.failed(new InternalServerException("No cache map found"))
   }
 
-  def addGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] = {
+  def createGroupRep(cached: Option[CacheMap]): GroupMember = {
     val businessName = cached.get.getBusinessCustomerDetails.get.businessName
     val businessDetails = cached.get.getBusinessDetails.get
     val businessRegistrationDetails = cached.get.getBusinessRegistrationDetails.get
     val placeOfBusiness = cached.get.getPlaceOfBusiness.get
-    val groupMembers = cached.get.getGroupMembers.get.members
 
-    val groupMemberFromGrpRep = GroupMember(CompanyNames(Some(businessName),businessDetails.doYouHaveTradingName,businessDetails.tradingName),
+    GroupMember(CompanyNames(Some(businessName),businessDetails.doYouHaveTradingName,businessDetails.tradingName),
       placeOfBusiness.mainAddress,
       Some(LocalDate.now().toString),
       businessRegistrationDetails.doYouHaveUTR,businessRegistrationDetails.utr,
@@ -122,8 +121,19 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails.doYouHaveVRN,
       businessRegistrationDetails.vrn,
       Some("No"))
-     val grpMemberList = groupMemberFromGrpRep :: groupMembers
-      Some(GroupMembers(grpMemberList,GroupMembers.latestModelVersion))
+  }
+
+  def addGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
+    Some(GroupMembers(createGroupRep(cached) :: cached.get.getGroupMembers.get.members, GroupMembers.latestModelVersion))
+
+  def replaceGroupRepInGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
+    Some(GroupMembers(cached.get.getGroupMembers.get.members.patch(0, Seq(createGroupRep(cached)), 1), GroupMembers.latestModelVersion))
+
+  def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
+    cached.get.getBusinessType.get.legalEntity match {
+      case Some("LTD_GRP") | Some("LLP_GRP") => cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessCustomerDetails.get.businessName
+      case _ => false
+    }
   }
 
   def sendApplication()(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
@@ -242,7 +252,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
-      groupMembers = groupMemberDetails,
+      groupMembers = if (isGrpRepChanged(cached, cachedSubscription)) replaceGroupRepInGroupMembers(cached) else cached.get.getGroupMembers,
       partnership = partnership,
       additionalPremises = additionalPremises,
       businessDirectors = businessDirectors,
