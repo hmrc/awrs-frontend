@@ -56,11 +56,13 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
                 extendedBusinessDetailsData => save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
                   case Some(businessCustomerDetails) => {
                     save4LaterService.mainStore.saveBusinessCustomerDetails(businessCustomerDetails.copy(businessName = extendedBusinessDetailsData.get.businessName.get)) flatMap {
-                      _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(BusinessRegistrationDetails()) flatMap {
-                        _ => save4LaterService.mainStore.savePlaceOfBusiness(PlaceOfBusiness()) flatMap {
-                          _ => save4LaterService.mainStore.saveBusinessContacts(BusinessContacts()) flatMap {
-                            _ =>
-                              Future.successful(Redirect(controllers.routes.ViewApplicationController.viewSection(businessDetailsName)).addBusinessNameToSession(extendedBusinessDetailsData.get.businessName.get))
+                      _ => save4LaterService.mainStore.saveBusinessDetails(extendedBusinessDetailsData.get.getBusinessDetails) flatMap {
+                        _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(BusinessRegistrationDetails()) flatMap {
+                          _ => save4LaterService.mainStore.savePlaceOfBusiness(PlaceOfBusiness()) flatMap {
+                            _ => save4LaterService.mainStore.saveBusinessContacts(BusinessContacts()) flatMap {
+                              _ =>
+                                Future.successful(Redirect(controllers.routes.ViewApplicationController.viewSection(businessDetailsName)).addBusinessNameToSession(extendedBusinessDetailsData.get.businessName.get))
+                            }
                           }
                         }
                       }
