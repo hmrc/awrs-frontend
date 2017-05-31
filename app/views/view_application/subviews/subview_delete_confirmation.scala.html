@@ -16,7 +16,7 @@
         case s : Supplier => {@content_supplier(s, id)}
         case p : AdditionalBusinessPremises => {@content_additional_premises(p, id)}
         case d : BusinessDirector => {@content_director(d, request.session.get("businessType").getOrElse(""), id)}
-        case g : GroupMember => {@content_group_member(g, id)}
+        case g : GroupMember => {@content_group_member(g, request.session.get("businessType").getOrElse(""), id)}
         case p : Partner => {@content_partner_detail(p, false, id)}
     }
 }
