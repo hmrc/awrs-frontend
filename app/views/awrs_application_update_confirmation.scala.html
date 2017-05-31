@@ -44,23 +44,18 @@
         *@
         @request.getSessionStatus match {
             case Some(Pending) => {
-                @isNewBusiness match {
-                    case true => {
-                        <li id="confirmationNoteLine0aText">
-                            @Messages("awrs.update.confirmation.newBusiness.information_what_next_0a")
-                        </li>
-                        <li id="confirmationNoteLine0bText">
-                            @Messages("awrs.update.confirmation.newBusiness.information_what_next_0b")
-                        </li>
-                    }
-                    case false => {
-                        <li id="confirmationNoteLine0Text">
-                            @Messages("awrs.update.confirmation.information_what_next_0")
-                        </li>
-                    }
-                }
+                    <li id="confirmationNoteLine0aText">
+                        @Messages("awrs.update.confirmation.newBusiness.information_what_next_0a")
+                    </li>
+                    <li id="confirmationNoteLine0bText">
+                        @Messages("awrs.update.confirmation.newBusiness.information_what_next_0b")
+                    </li>
             }
-            case _ => {}
+            case _ => {
+                <li id="confirmationNoteLine0Text">
+                    @Messages("awrs.update.confirmation.information_what_next_0")
+                </li>
+            }
         }
 
         @isNewBusiness match {
