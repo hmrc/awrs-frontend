@@ -765,15 +765,11 @@ awrs.confirmation.finish=Finish and sign out
 awrs.update.confirmation.description=Your amendment for
 awrs.update.confirmation.description_1=has been received on
 
-awrs.update.confirmation.information_what_next_0=Continue trading as normal while we review and check your amended application.
-awrs.update.confirmation.information_what_next_1=We will review and check your application amendments (reference {0}).
+awrs.update.confirmation.information_what_next_0=Continue trading as normal while we review and check your amended application (reference {0}).
 awrs.update.confirmation.information_what_next_2=We may contact you to discuss your amended application.
 
-
-awrs.update.confirmation.newBusiness.information_what_next_0a=You cannot trade until an AWRS reference number is issued.
-awrs.update.confirmation.newBusiness.information_what_next_0b=It will take up to 45 days from your initial application before we make a decision.
-awrs.update.confirmation.newBusiness.information_what_next_1=We will review and check your application amendments (reference {0}).
-awrs.update.confirmation.newBusiness.information_what_next_2=We may contact you to discuss your amended application.
+awrs.update.confirmation.pending.information_what_next_0=You cannot trade until an AWRS reference number is issued.
+awrs.update.confirmation.pending.information_what_next_1=We will review and check your application amendments (reference {0}).
 
 # De-registration Page messages
 #===========================================================
