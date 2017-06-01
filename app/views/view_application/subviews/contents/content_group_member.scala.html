@@ -4,7 +4,7 @@
 @import views.view_application.subviews.SubviewIds
 @import forms.AWRSEnums._
 
-@(member: models.GroupMember, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
+@(member: models.GroupMember, businessLegalEntity: String, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
 
 @editUrl(id: Int) = @{controllers.routes.GroupMemberController.showMemberDetails(id, isLinearMode = false, isNewRecord = false).url}
 
@@ -33,7 +33,8 @@
         member.address
     )
     @identification_helper_group_member(
-        member
+        member,
+        businessLegalEntity
     )
     </table>
 }
