@@ -63,8 +63,11 @@ object BusinessDetailsAndContactsComparator {
     val businessName = cached.get.getBusinessCustomerDetails.get.businessName
     val businessType = cached.get.getBusinessType.get.legalEntity
     val businessNameChanged: Boolean = if (data.businessPartnerName.isDefined) !data.businessPartnerName.get.equals(businessName) else false
-    val BusinessDetChangeData = if ((corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData) && businessNameChanged) ||
-      (!corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData) && businessNameChanged)) true else false
+    val BusinessDetChangeData: Boolean = (corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData), businessNameChanged) match {
+      case (true, false) => false
+      case (false, false) => true
+      case _ => true
+    }
 
     (businessType) match {
       case ((Some("LLP_GRP") | Some("LTD_GRP"))) =>
