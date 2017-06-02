@@ -17,7 +17,9 @@
 package services.helper
 
 import models._
+import services.KeyStoreService
 import uk.gov.hmrc.http.cache.client.CacheMap
+import utils.AccountUtils
 import utils.CacheUtil._
 
 // change flag categories based on JIRA story AWRS-385
@@ -25,11 +27,15 @@ object BusinessDetailsAndContactsComparator {
 
   def compare(data: SubscriptionTypeFrontEnd, cached: Option[CacheMap]): (Boolean, Boolean, Boolean, Boolean) = {
 
+    val businessCustomerDetails = cached.get.getBusinessCustomerDetails
     val businessDetails = cached.get.getBusinessDetails
     val businessRegistrationDetails = cached.get.getBusinessRegistrationDetails
-
     val businessContacts = cached.get.getBusinessContacts
     val placeOfBusiness = cached.get.getPlaceOfBusiness
+
+    val corporateSessionCacheBusinessCustomerDetChangeData = data.businessCustomerDetails.map(corBusCusDetails => (corBusCusDetails.businessName))
+
+    val corporateTempCacheBusinessCustomerDetChangeData = businessCustomerDetails.map(corBusCusDetails => (corBusCusDetails.businessName))
 
     val corporateSessionCacheBusinessDetChangeData = data.businessDetails.map(corBusDetails => (corBusDetails.tradingName, corBusDetails.newAWBusiness))
 
@@ -53,9 +59,29 @@ object BusinessDetailsAndContactsComparator {
     val corporateTempCacheContactDetChangeData = businessContacts.map(corBusDetails => (corBusDetails.contactFirstName,
       corBusDetails.contactLastName, corBusDetails.telephone, corBusDetails.email, corBusDetails.contactAddress))
 
-    (!corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData),
-      !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
-      !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
-      !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData))
+
+    val businessName = cached.get.getBusinessCustomerDetails.get.businessName
+    val businessType = cached.get.getBusinessType.get.legalEntity
+    val businessNameChanged: Boolean = if (data.businessPartnerName.isDefined) !data.businessPartnerName.get.equals(businessName) else false
+    val BusinessDetChangeData = if ((corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData) && businessNameChanged) ||
+      (!corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData) && businessNameChanged)) true else false
+
+    (businessType) match {
+      case ((Some("LLP_GRP") | Some("LTD_GRP"))) =>
+      {
+          (BusinessDetChangeData,
+            !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
+            !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
+            !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData))
+      }
+      case _ =>
+      {
+        (!corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData),
+          !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
+          !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
+          !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData))
+      }
+    }
+
   }
 }

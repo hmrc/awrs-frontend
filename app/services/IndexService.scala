@@ -138,7 +138,6 @@ trait IndexService {
           case _ => SectionNotStarted
         }
 
-
         val businessRegistrationDetailsStatus = cacheMap match {
           case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEnityNone(cache.getBusinessRegistrationDetails)) match {
             case (Some(businessRegistrationDetails), false) => changeIndicators.businessRegistrationDetailsChanged match {
