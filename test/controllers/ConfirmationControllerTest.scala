@@ -123,7 +123,6 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
                 val document = Jsoup.parse(contentAsString(result))
 
                 document.getElementById("confirmation").text() should include(s"$companyName")
-                document.getElementById("confirmationNoteLine1Text").text() should include(s"$uniqueRef")
                 val format = new SimpleDateFormat("d MMMM y")
                 val resubmissionDate = format.format(Calendar.getInstance().getTime)
                 document.getElementById("confirmation").text() should include(s"$resubmissionDate")
@@ -133,34 +132,18 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
                 verifySave4LaterService(removeAll = 1)
                 verifyApiSave4LaterService(removeAll = 1)
 
-                isNewBusiness match {
-                  case true =>
-                    status match {
-                      case Pending =>
-                        document.getElementById(s"confirmationNoteLine0aText").text() should include(Messages(s"awrs.update.confirmation.newBusiness.information_what_next_0a"))
-                        document.getElementById(s"confirmationNoteLine0bText").text() should include(Messages(s"awrs.update.confirmation.newBusiness.information_what_next_0b"))
-                        document.getElementById(s"confirmationNoteLine0Text") shouldBe null
-                      case _ =>
-                        document.getElementById(s"confirmationNoteLine0Text") shouldBe null
-                        document.getElementById(s"confirmationNoteLine0aText") shouldBe null
-                        document.getElementById(s"confirmationNoteLine0bText") shouldBe null
-                    }
-                    document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.update.confirmation.newBusiness.information_what_next_1", uniqueRef))
-                    document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.update.confirmation.newBusiness.information_what_next_2"))
-                  case false =>
-                    status match {
-                      case Pending =>
-                        document.getElementById(s"confirmationNoteLine0Text").text() should include(Messages(s"awrs.update.confirmation.information_what_next_0"))
-                        document.getElementById(s"confirmationNoteLine0aText") shouldBe null
-                        document.getElementById(s"confirmationNoteLine0bText") shouldBe null
-                      case _ =>
-                        document.getElementById(s"confirmationNoteLine0Text") shouldBe null
-                        document.getElementById(s"confirmationNoteLine0aText") shouldBe null
-                        document.getElementById(s"confirmationNoteLine0bText") shouldBe null
-                    }
-                    document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.update.confirmation.information_what_next_1", uniqueRef))
-                    document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.update.confirmation.information_what_next_2"))
+                status match {
+                  case Pending =>
+                    document.getElementById(s"confirmationNoteLine0aText").text() should include(Messages(s"awrs.update.confirmation.pending.information_what_next_0"))
+                    document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.update.confirmation.pending.information_what_next_1", uniqueRef))
+                    document.getElementById(s"confirmationNoteLine0Text") shouldBe null
+                  case _ =>
+                    document.getElementById(s"confirmationNoteLine0Text").text() should include(Messages(s"awrs.update.confirmation.information_what_next_0", uniqueRef))
+                    document.getElementById(s"confirmationNoteLine0aText") shouldBe null
+                    document.getElementById(s"confirmationNoteLine1Text") shouldBe null
                 }
+                document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.update.confirmation.information_what_next_2"))
+
                 document.getElementById(s"further-text-1") shouldBe null
                 document.getElementById(s"further-text-2") shouldBe null
                 document.getElementById(s"awrsChangesQuestion") shouldBe null

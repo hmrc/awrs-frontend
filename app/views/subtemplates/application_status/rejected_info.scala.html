@@ -7,16 +7,3 @@
     </div>
     @Html(params.statusInfo.secureCommText)
 </div>
-@printFriendly match {
-    case false => {
-        <div class="form-group print-hidden">
-            @awrsAnswerQuestionHelper(
-                QuestionAnswerParameters(
-                    Messages("awrs.application_status.decision_question"),
-                    "awrsStatusDecision"
-                )
-            )
-        </div>
-    }
-    case true => {}
-}

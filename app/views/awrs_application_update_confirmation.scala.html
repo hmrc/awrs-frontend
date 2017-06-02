@@ -40,40 +40,18 @@
     <h2 class="heading-medium" id="ConfirmationNoteHeadingText">@Messages("awrs.confirmation.information")</h2>
     <ul id="application-confirmation-list" class="list list-bullet">
         @*  In the current setting, information_what_next_0 is a message key reserved for:
-            whether they are allowed to trade whilst their amendments are being reviewed.
+        whether they are allowed to trade whilst their amendments are being reviewed.
         *@
         @request.getSessionStatus match {
             case Some(Pending) => {
-                @isNewBusiness match {
-                    case true => {
-                        <li id="confirmationNoteLine0aText">
-                            @Messages("awrs.update.confirmation.newBusiness.information_what_next_0a")
-                        </li>
-                        <li id="confirmationNoteLine0bText">
-                            @Messages("awrs.update.confirmation.newBusiness.information_what_next_0b")
-                        </li>
-                    }
-                    case false => {
-                        <li id="confirmationNoteLine0Text">
-                            @Messages("awrs.update.confirmation.information_what_next_0")
-                        </li>
-                    }
-                }
+                <li id="confirmationNoteLine0aText">@Messages("awrs.update.confirmation.pending.information_what_next_0")</li>
+                <li id="confirmationNoteLine1Text">@Messages("awrs.update.confirmation.pending.information_what_next_1", awrsRef)</li>
             }
-            case _ => {}
-        }
-
-        @isNewBusiness match {
-            case true => {
-                <li id="confirmationNoteLine1Text">@Messages("awrs.update.confirmation.newBusiness.information_what_next_1", awrsRef)</li>
-                <li id="confirmationNoteLine2Text">@Messages("awrs.update.confirmation.newBusiness.information_what_next_2", awrsRef)</li>
-            }
-            case false => {
-                <li id="confirmationNoteLine1Text">@Messages("awrs.update.confirmation.information_what_next_1", awrsRef)</li>
-                <li id="confirmationNoteLine2Text">@Messages("awrs.update.confirmation.information_what_next_2", awrsRef)</li>
+            case _ => {
+                <li id="confirmationNoteLine0Text">@Messages("awrs.update.confirmation.information_what_next_0", awrsRef)</li>
             }
         }
-
+        <li id="confirmationNoteLine2Text">@Messages("awrs.update.confirmation.information_what_next_2")</li>
     </ul>
 }
 
