@@ -279,6 +279,18 @@
          ga('send', 'event', this.id, 'click');
      });
 
+     $('#view-application').click(function() {
+        if (this.getAttribute('data-page') == "index") {
+            ga('send', 'event', "view-print-application-index-page", 'click');
+        }
+     });
+
+     $('#print').click(function() {
+        if (this.getAttribute('data-page') == "application-summary") {
+            ga('send', 'event', "print-application-summary-page", 'click');
+        }
+     });
+
     $('.validation-summary-message a').on('click', function(e){
         e.preventDefault();
             var focusId = $(this).attr('data-focuses');

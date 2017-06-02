@@ -1,11 +1,19 @@
-@(member: GroupMember)(implicit messages : Messages)
+@(member: GroupMember, businessLegalEntity: String)(implicit messages : Messages)
 @import views.view_application.ViewApplicationHelper._
 
 @* UTR *@
+@legend = @{
+businessLegalEntity match {
+        case "SOP" => Messages("awrs.generic.do_you_have_sa_UTR") // this should never happen since SOP shouldn't have access to this page
+        case "Partnership" | "LP" | "LLP" | "LLP_GRP" => Messages("awrs.generic.do_they_have_partnership_UTR")
+        case _ => Messages("awrs.generic.do_they_have_CT_UTR")
+    }
+}
+
 @member.doYouHaveUTR match {
     case Some(answer) => {
         @table_row(
-            Messages("awrs.generic.do_they_have_partnership_UTR"),
+            legend.get,
             answer
         )
     }

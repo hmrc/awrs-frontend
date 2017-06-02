@@ -499,7 +499,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
           def companyOrTradingName: String = testData.companyNames.businessName.fold(testData.companyNames.tradingName)(x => x).fold("")(x => x)
 
           def identificationToExpectation(groupMember: GroupMember): List[Row] =
-            prepRow(Messages("awrs.generic.do_they_have_partnership_UTR"), groupMember.doYouHaveUTR) ++
+            prepRow(Messages("awrs.generic.do_they_have_CT_UTR"), groupMember.doYouHaveUTR) ++
               prepRow(Messages("awrs.generic.UTR_number"), groupMember.utr) ++
               prepRow(Messages("awrs.generic.do_they_have_company_reg"), groupMember.isBusinessIncorporated) ++
               prepRowCustom(Messages("awrs.generic.company_reg"), groupMember.companyRegDetails)(groupMember.companyRegDetails.get.companyRegistrationNumber) ++

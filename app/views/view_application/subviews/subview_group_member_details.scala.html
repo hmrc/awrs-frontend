@@ -9,7 +9,8 @@
 @import utils.AccountUtils
 
 @(someHeading: Option[String],
-        someModel: Option[models.GroupMembers]
+    someModel: Option[models.GroupMembers],
+    businessLegalEntity: String
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, user :AuthContext)
 
 @wrapperId = @{
@@ -53,11 +54,11 @@
 @content(model: models.GroupMembers) = {
     @if(AccountUtils.hasAwrs) {
         @model.members.tail.zipWithIndex.map { case (member, id) =>
-            @content_group_member(member, id + 2)
+            @content_group_member(member, businessLegalEntity, id + 2)
         }
     } else {
         @model.members.zipWithIndex.map { case (member, id) =>
-            @content_group_member(member, id + 1)
+            @content_group_member(member, businessLegalEntity, id + 1)
         }
     }
 }
