@@ -3,6 +3,7 @@
 @import views.subtemplates.application_status._
 @import models.FormBundleStatus._
 @import views.html.helpers._
+@import views.helpers._
 @import config.ApplicationConfig
 @normalInfo = {
     @params.status.formBundleStatus match {
@@ -32,6 +33,41 @@
         case _                           => {@normalInfo}
     }
 }
+
+@viewAppBlock = {
+    <div class="form-group print-hidden">
+        <a id="view-application"
+           class="button print-hidden"
+           role="button"
+           href="@controllers.routes.ViewApplicationController.show(false)">
+            @Messages("awrs.generic.application_status_continue_read_only")
+        </a>
+    </div>
+}
+
+@infoBlock = {
+    @params.status.formBundleStatus match {
+        case Rejected | Revoked => {
+            <div class="form-group print-hidden">
+                @awrsAnswerQuestionHelper(
+                    QuestionAnswerParameters(
+                        Messages("awrs.application_status.decision_question"),
+                        "awrsStatusDecision"
+                    )
+                )
+            </div>
+        }
+        case _ => {}
+    }
+}
+
+@createNewAppBlock = {
+    <div class="print-hidden">
+        <p><a href="@controllers.routes.ReapplicationController.show()">@Html(Messages("awrs.generic.create_new_application_link"))</a></p>
+        <br>
+    </div>
+}
+
 @pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 @govWrapper = {
     @includes.awrs_main(title = Messages("awrs.application_status.page_title"), nameBusiness = Some(params.organisationName), pageScripts = Some(pageScripts), userLoggedIn = true) {
@@ -41,22 +77,13 @@
             @info
             @params.status.formBundleStatus match {
                 case Rejected | Revoked | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal => {
-                    <p><a href="@controllers.routes.ReapplicationController.show()">@Html(Messages("awrs.generic.create_new_application_link"))</a></p>
-                    <br>
-                    <div class="form-group print-hidden">
-                        <a id="view-application"
-                           class="button print-hidden"
-                           role="button"
-                           href="@controllers.routes.ViewApplicationController.show(false)">
-                           @Messages("awrs.generic.application_status_continue_read_only")
-                        </a>
-                    </div>
-                    @awrsPrintLink()
+                    @viewAppBlock
+                    @infoBlock
+                    @createNewAppBlock
                 }
-                case _        => {
-                    @awrsPrintLink()
-                }
+                case _ => {}
             }
+            @awrsPrintLink()
         </div>
     </div>
     }
