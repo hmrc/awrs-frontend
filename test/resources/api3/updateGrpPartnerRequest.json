@@ -1,0 +1,20 @@
+{
+  "acknowledgementReference": "kK7cbqi13GWxOKBBIb11937115059792",
+  "isAnIndividual": false,
+  "organisationName": {
+    "organisationName": ""
+  },
+  "address": {
+    "postcode": "E126TN",
+    "addressLine1": "Alternative Address line 1 API6",
+    "addressLine2": "Alternative Address line 2 API6",
+    "addressLine3": "Alternative Address line 3 API6",
+    "addressLine4": "Alternative Address line 4 API6"
+  },
+  "contactDetails": {
+    "phoneNumber": "07760922255",
+    "emailAddress": "suleman.mazhar@digital.hmrc.gov.uk"
+  },
+  "isAnAgent": false,
+  "isAGroup": true
+}

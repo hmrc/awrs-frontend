@@ -33,6 +33,7 @@ trait AwrsTestJson extends AwrsPathConstants {
   lazy val api5LTDGRPJson = loadAndParseJsonWithDummyData(api5LTDGRP)
 
   lazy val api6LTDJson = loadAndParseJsonWithDummyData(api6LTD)
+  lazy val api3RequestJson = loadAndParseJsonWithDummyData(api3Json)
 
   lazy val auditAddressJson = loadAndParseJsonWithDummyData(auditAddress)
 

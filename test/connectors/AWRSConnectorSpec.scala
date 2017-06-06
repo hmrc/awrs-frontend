@@ -65,11 +65,14 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
   val api6SuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
+  val api3SucecssResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
+  lazy val updateGrpPartnerSuccessReponseJson = Json.toJson(api3SucecssResponse)
   lazy val subscribeApi6SuccessResponseJson = Json.toJson(api6SuccessResponse)
-  lazy val api6BadRequestResponse = Json.parse( """{"reason": "Some other bad request reason"}""")
-  lazy val api6NotFoundResponse = Json.parse( """{"reason": "Resource not found"}""")
-  lazy val api6ServiceUnavailableResponse = Json.parse( """{"reason": "Dependant systems are currently not responding"}""")
-  lazy val api6InternalServerErrorResponse = Json.parse( """{"reason": "WSO2 is currently experiencing problems that require live service intervention"}""")
+  lazy val badRequestResponse = Json.parse( """{"reason": "Some other bad request reason"}""")
+  lazy val notFoundResponse = Json.parse( """{"reason": "Resource not found"}""")
+  lazy val serviceUnavailableResponse = Json.parse( """{"reason": "Dependant systems are currently not responding"}""")
+  lazy val internalServerErrorResponse = Json.parse( """{"reason": "WSO2 is currently experiencing problems that require live service intervention"}""")
+  lazy val forbiddenResponse = Json.parse( """{"reason": "ETMP has returned a error code003 with a status of NOT_OK - record is not editable"}""")
   lazy val subscribeFailureResponseJson = Json.parse( """{"status" : "Error occurred"}""")
   lazy val subscribeFailureDesValResponse = Json.parse( """{"reason": "Your submission contains one or more errors"}""")
   lazy val subscribeFailureGovGateResponse = Json.parse( """{"hostname":"government-gateway-admin", "reason": "Some other reason"}""")
@@ -95,7 +98,6 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       await(result) shouldBe subscribeSuccessResponse
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
     }
-
     "return status as OK, for LTD legal entity" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
@@ -290,7 +292,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(api6BadRequestResponse))))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
       val result = TestAWRSConnector.updateAWRSData(api6LTDJson)
 
       val thrown = the[BadRequestException] thrownBy await(result)
@@ -299,7 +301,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as NOT_FOUND, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(api6NotFoundResponse))))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
       val result = TestAWRSConnector.updateAWRSData(api6LTDJson)
 
       val thrown = the[NotFoundException] thrownBy await(result)
@@ -308,7 +310,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(api6ServiceUnavailableResponse))))
+        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
       val result = TestAWRSConnector.updateAWRSData(api6LTDJson)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
@@ -317,7 +319,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(api6InternalServerErrorResponse))))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
       val result = TestAWRSConnector.updateAWRSData(api6LTDJson)
 
       val thrown = the[InternalServerException] thrownBy await(result)
@@ -341,7 +343,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(api6BadRequestResponse))))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
       val result = TestAWRSConnector.withdrawApplication(awrsRefNo, withdrawalJsonToSend)
       val thrown = the[BadRequestException] thrownBy await(result)
       thrown.getMessage shouldBe "The Submission has not passed validation"
@@ -349,7 +351,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as NOT_FOUND, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(api6NotFoundResponse))))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
       val result = TestAWRSConnector.withdrawApplication(awrsRefNo, withdrawalJsonToSend)
 
       val thrown = the[NotFoundException] thrownBy await(result)
@@ -358,7 +360,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(api6ServiceUnavailableResponse))))
+        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
       val result = TestAWRSConnector.withdrawApplication(awrsRefNo, withdrawalJsonToSend)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
@@ -367,7 +369,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(api6InternalServerErrorResponse))))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
       val result = TestAWRSConnector.withdrawApplication(awrsRefNo, withdrawalJsonToSend)
 
       val thrown = the[InternalServerException] thrownBy await(result)
@@ -509,6 +511,66 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val thrown = the[InternalServerException] thrownBy await(result)
     }
 
+  }
+
+  "AWRSConnector update group business partner" should {
+
+    val address = Address(addressLine1 = "", addressLine2 = "")
+    val updatedDataRequest = new UpdateRegistrationDetailsRequest(false, Some(OrganisationName("testName")), address, ContactDetails(), false, false)
+
+    implicit val user = AuthBuilder.createUserAuthContextOrgWithAWRS(s"/sa/individual/$testUtr", "joe bloggs", testUtr)
+    "return status as OK, for successful update" in {
+      when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(updateGrpPartnerSuccessReponseJson))))
+      val result = TestAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest)
+      await(result) shouldBe api3SucecssResponse
+      verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+    }
+
+    "return status as BAD_REQUEST, for unsuccessful update" in {
+      when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
+      val result = TestAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest)
+
+      val thrown = the[BadRequestException] thrownBy await(result)
+      thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - The Submission has not passed validation"
+    }
+
+    "return status as NOT_FOUND, for unsuccessful update" in {
+      when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
+      val result = TestAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest)
+
+      val thrown = the[NotFoundException] thrownBy await(result)
+      thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - The remote endpoint has indicated that no data can be found"
+    }
+
+    "return status as SERVICE_UNAVAILABLE, for unsuccessful update" in {
+     when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+       .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
+     val result = TestAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest)
+
+     val thrown = the[ServiceUnavailableException] thrownBy await(result)
+     thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - Dependant systems are currently not responding"
+   }
+
+   "return status as INTERNAL_SERVER_ERROR, for unsuccessful update" in {
+     when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+       .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
+     val result = TestAWRSConnector.updateGroupBusinessPartner(testTradingName,"","",updatedDataRequest)
+
+     val thrown = the[InternalServerException] thrownBy await(result)
+     thrown.getMessage should include("[API3 - Update Group Business Partner] - WSO2 is currently experiencing problems that require live service intervention")
+   }
+
+    "return status as FORBIDDEN, for unsuccessful update" in {
+      when(mockWSHttp.PUT[JsValue, HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(FORBIDDEN, Some(forbiddenResponse))))
+      val result = TestAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest)
+
+      val thrown = the[ForbiddenException] thrownBy await(result)
+      thrown.getMessage should include("[API3 - Update Group Business Partner] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable")
+    }
   }
 
 }

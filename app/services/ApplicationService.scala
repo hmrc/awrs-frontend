@@ -166,12 +166,42 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     for {
       cached <- save4LaterService.mainStore.fetchAll
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
+      subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
+      _ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus) else Future("OK")
       awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))))
       isNewBusiness <- isNewBusiness(cached)
       _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
     } yield {
       awrsData
     }
+
+  def callUpdateGroupBusinessPartner(cached: Option[CacheMap],
+                                     cachedSubscription: Option[SubscriptionTypeFrontEnd],
+                                     subscriptionStatus: Option[SubscriptionStatusType])
+                                    (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext)
+                                    : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
+    def createUpdateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest = {
+      val businessContacts = cached.get.getBusinessContacts.get
+      UpdateRegistrationDetailsRequest(
+        isAnIndividual = false,
+        organisationName = Some(OrganisationName(cachedSubscription.get.businessCustomerDetails.get.businessName)),
+        address = cached.get.getBusinessContacts.get.contactAddress.get,
+        contactDetails = ContactDetails(phoneNumber = businessContacts.telephone, emailAddress = businessContacts.email),
+        isAnAgent = false,
+        isAGroup = true
+      )
+    }
+
+    //cached.get.getBusinessCustomerDetails.get.businessAddress
+    //cached.get.getBusinessContacts.get.contactAddress
+    //cached.get.getPlaceOfBusiness.get.mainAddress
+
+    awrsConnector.updateGroupBusinessPartner(
+      cached.get.getBusinessCustomerDetails.get.businessName,
+      cached.get.getBusinessType.get.legalEntity.get,
+      subscriptionStatus.get.safeId.get,
+      createUpdateRegistrationDetailsRequest)
+  }
 
   def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = authenticatorConnector.refreshProfile
 

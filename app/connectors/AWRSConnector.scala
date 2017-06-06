@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.{HeaderCarrier, _}
 import utils.AccountUtils._
-import utils.LoggingUtils
+import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -109,6 +109,50 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
         }
     }
   }
+
+  def updateGroupBusinessPartner(businessName: String, legalEntityType : String, safeId : String, updateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest)
+                                (implicit user: AuthContext, hc: HeaderCarrier) : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
+    val accountURI = getAuthType(legalEntityType)
+    val awrsRefNo = AccountUtils.getAwrsRefNo
+    val putURL = s"""$serviceURL$accountURI/$awrsRefNo/registration-details/$safeId"""
+    val updateRegistrationDetailsJsonRequest = Json.toJson(updateRegistrationDetailsRequest)
+    http.PUT[JsValue, HttpResponse](putURL, updateRegistrationDetailsJsonRequest) map {
+      response =>
+        response.status match {
+          case 200 =>
+            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - API6 Response in frontend  ## " + response.status)
+            response.json.as[SuccessfulUpdateGroupBusinessPartnerResponse]
+          case 403 =>
+            audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeNotFound)
+            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable.")
+            throw new ForbiddenException(s"[$auditAPI3TxName] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable.")
+          case 400 =>
+            response.body.toString.replace("\n", "") match {
+              case validationPattern(contents) =>
+                audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeBadRequest)
+                warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - Bad Request \n API3 Request Json From Frontend ## ")
+                throw new DESValidationException("Validation against schema failed")
+              case _ => throw new BadRequestException(s"[$auditAPI3TxName] - The Submission has not passed validation")
+            }
+          case 404 =>
+            audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeNotFound)
+            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - The remote endpoint has indicated that no data can be found ## ")
+            throw new NotFoundException(s"[$auditAPI3TxName] - The remote endpoint has indicated that no data can be found")
+          case 500 /*INTERNAL_SERVER_ERROR*/ =>
+            audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeInternalServerError)
+            warn(s"[$auditAPI3TxName - $legalEntityType ] - Unsuccessful return of data")
+            throw new InternalServerException(s"[$auditAPI3TxName] - WSO2 is currently experiencing problems that require live service intervention ## ")
+          case 503 /*SERVICE_UNAVAILABLE*/ =>
+            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - WSO2 is currently experiencing problems that require live service intervention")
+            throw new ServiceUnavailableException(s"[$auditAPI3TxName] - Dependant systems are currently not responding")
+          case status@_ =>
+            audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "status" -> status.toString, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeGeneric)
+            warn(f"[$auditAPI3TxName - $businessName, $legalEntityType ] - $status Exception \n API6 Request Json From Frontend ## ")
+            throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
+        }
+    }
+  }
+
 
   def updateAWRSData(fileData: JsValue)(implicit user: AuthContext, hc: HeaderCarrier): Future[SuccessfulUpdateSubscriptionResponse] = {
 

@@ -48,6 +48,12 @@ object SuccessfulUpdateSubscriptionResponse {
   implicit val formats = Json.format[SuccessfulUpdateSubscriptionResponse]
 }
 
+case class SuccessfulUpdateGroupBusinessPartnerResponse(processingDate: String)
+
+object SuccessfulUpdateGroupBusinessPartnerResponse {
+  implicit val formats = Json.format[SuccessfulUpdateGroupBusinessPartnerResponse]
+}
+
 case class WithdrawalResponse(processingDate: String)
 
 object WithdrawalResponse {
