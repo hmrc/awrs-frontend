@@ -31,6 +31,8 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, InternalServerExcepti
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 
+import controllers.util.convertBCAddressToAddress
+
 import scala.concurrent.{ExecutionContext, Future}
 
 trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCacheService {
@@ -131,7 +133,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
 
   def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
     cached.get.getBusinessType.get.legalEntity match {
-      case Some("LTD_GRP") | Some("LLP_GRP") => cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessCustomerDetails.get.businessName
+      case Some("LTD_GRP") | Some("LLP_GRP") => cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessPartnerName.get
       case _ => false
     }
   }
@@ -184,20 +186,16 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       val businessContacts = cached.get.getBusinessContacts.get
       UpdateRegistrationDetailsRequest(
         isAnIndividual = false,
-        organisationName = Some(OrganisationName(cachedSubscription.get.businessCustomerDetails.get.businessName)),
-        address = cached.get.getBusinessContacts.get.contactAddress.get,
+        organisationName = Some(OrganisationName(cached.get.getBusinessCustomerDetails.get.businessName)),
+        address = convertBCAddressToAddress(cached.get.getBusinessCustomerDetails.get.businessAddress).get,
         contactDetails = ContactDetails(phoneNumber = businessContacts.telephone, emailAddress = businessContacts.email),
         isAnAgent = false,
         isAGroup = true
       )
     }
 
-    //cached.get.getBusinessCustomerDetails.get.businessAddress
-    //cached.get.getBusinessContacts.get.contactAddress
-    //cached.get.getPlaceOfBusiness.get.mainAddress
-
     awrsConnector.updateGroupBusinessPartner(
-      cached.get.getBusinessCustomerDetails.get.businessName,
+      cachedSubscription.get.businessPartnerName.get,
       cached.get.getBusinessType.get.legalEntity.get,
       subscriptionStatus.get.safeId.get,
       createUpdateRegistrationDetailsRequest)
