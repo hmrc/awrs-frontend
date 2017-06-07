@@ -1107,18 +1107,14 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
               s"return the correct value for legalEntity: $legalEntity and updatedBusinessName: $updatedBusinessName" in {
                 val businessType = BusinessType(Some(legalEntity), None, Some(true))
                 (updatedBusinessName, legalEntity) match {
-                  case (true, ("LTD_GRP" | "LLP_GRP")) => TestApplicationService.isGrpRepChanged(cachedData(businessType), getCachedSubscriptionWithChangedBusinessName(legalEntity, businessType)) shouldBe true
-                  case _ => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd()) shouldBe false
+                  case (true, ("LTD_GRP" | "LLP_GRP")) => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe true
+                  case (true, _) => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe false
+                  case _ => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) shouldBe false
                 }
               }
           }
       }
     }
-  }
-
-  def getCachedSubscriptionWithChangedBusinessName(legalEntity: String, businessType: BusinessType): Option[SubscriptionTypeFrontEnd] = {
-    val businessCustomerDetails = cachedData(businessType).getEntry[BusinessCustomerDetails](businessCustomerDetailsName).get
-    testSubscriptionTypeFrontEnd(businessCustomerDetails = businessCustomerDetails.copy(businessName = "Changed"))
   }
 
   def testAddGroupRepToGroupMembers: (CacheMap,Option[GroupMembers]) = {
