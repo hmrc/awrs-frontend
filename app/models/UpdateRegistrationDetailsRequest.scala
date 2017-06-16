@@ -41,7 +41,7 @@ object OrganisationName {
 
 case class UpdateRegistrationDetailsRequest(isAnIndividual: Boolean,
                                             organisationName: Option[OrganisationName], // TODO: could this just be a string?
-                                            address: Address,
+                                            address: BCAddressApi3,
                                             contactDetails: ContactDetails,
                                             isAnAgent: Boolean,
                                             isAGroup: Boolean) {

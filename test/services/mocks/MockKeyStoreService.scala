@@ -88,6 +88,13 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
 
+
+  def setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress: Boolean = false): Unit =
+    noAddress match {
+      case true => setupMockKeyStoreServiceWithOnly(fetchBusinessCustomerAddress = None)
+      case _ => setupMockKeyStoreServiceWithOnly(fetchBusinessCustomerAddress = Some(defaultBCAddressApi3))
+    }
+
   // children can override in order to customise their default settings
   def setupMockKeyStoreService(
                                 subscriptionStatusType: Future[Option[SubscriptionStatusType]] = Some(defaultSubscriptionStatusType),
@@ -113,7 +120,8 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                                         statusNotification: MockConfiguration[Future[Option[StatusNotification]]] = DoNotConfigure,
                                                         fetchIsNewBusiness: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure,
                                                         fetchViewedStatus: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure,
-                                                        fetchExtendedBusinessDetails: MockConfiguration[Future[Option[ExtendedBusinessDetails]]] = DoNotConfigure
+                                                        fetchExtendedBusinessDetails: MockConfiguration[Future[Option[ExtendedBusinessDetails]]] = DoNotConfigure,
+                                                        fetchBusinessCustomerAddress: MockConfiguration[Future[Option[BCAddressApi3]]] = DoNotConfigure
                                                       ) = {
     mockFetchFromKeyStore[SubscriptionStatusType](subscriptionStatusTypeName, subscriptionStatusType)
     mockFetchFromKeyStore[StatusInfoType](statusInfoTypeName, statusInfoType)
@@ -121,6 +129,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     mockFetchFromKeyStore[Boolean](isNewBusinessName, fetchIsNewBusiness)
     mockFetchFromKeyStore[Boolean](viewedStatusName, fetchViewedStatus)
     mockFetchFromKeyStore[ExtendedBusinessDetails](extendedBusinessDetailsName, fetchExtendedBusinessDetails)
+    mockFetchFromKeyStore[BCAddressApi3](businessCustomerAddressName, fetchBusinessCustomerAddress)
 
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
@@ -210,4 +219,6 @@ object MockKeyStoreService {
   val defaultIsNewBusiness = true
 
   val defaultViewedStatus = true
+
+  val defaultBCAddressApi3 = testBCAddressApi3()
 }

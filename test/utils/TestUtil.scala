@@ -495,6 +495,21 @@ object TestUtil {
     case _ => defaultBusinessRegistrationDetails(legalEntity = legalEntity, isBusinessIncorporated = Yes, companyRegDetails = Some(testCompanyRegDetails()))
   }
 
+  def testBCAddressApi3(addressLine1: String = "Address Line 1",
+                        addressLine2: String = "Address Line 2",
+                        addressLine3: Option[String] = Some("Address Line 3"),
+                        addressLine4: Option[String] = Some("Address Line 4"),
+                        postalCode: Option[String] = Some("NE11AA"),
+                        countryCode: Option[String] = Some("GB")) =
+    BCAddressApi3(
+      addressLine1 = addressLine1,
+      addressLine2 = addressLine2,
+      addressLine3 = addressLine3,
+      addressLine4 = addressLine4,
+      postalCode = postalCode,
+      countryCode = countryCode
+    )
+
   def defaultBusinessRegistrationDetails(legalEntity: Option[String] = "SOP",
                                          doYouHaveNino: Option[String] = No,
                                          nino: Option[String] = None,
