@@ -119,6 +119,12 @@ trait KeyStoreService {
   @inline def fetchExtendedBusinessDetails(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ExtendedBusinessDetails]] =
     keyStoreConnector.fetchDataFromKeystore[ExtendedBusinessDetails](extendedBusinessDetailsName)
 
+  @inline def saveBusinessCustomerAddress(businessCustomerAddress: BCAddressApi3)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[BCAddressApi3](businessCustomerAddressName, businessCustomerAddress)
+
+  @inline def fetchBusinessCustomerAddresss(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[BCAddressApi3]] =
+    keyStoreConnector.fetchDataFromKeystore[BCAddressApi3](businessCustomerAddressName)
+
 
   @inline def saveSave4LaterBackup(save4LaterConnector: Save4LaterConnector)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] = {
     save4LaterConnector.fetchAll(AccountUtils.getUtrOrName()).flatMap {

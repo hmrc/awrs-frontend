@@ -47,11 +47,22 @@ object MatchBusinessData {
   implicit val formats = Json.format[MatchBusinessData]
 }
 
+case class BCAddressApi3(addressLine1: String,
+                      addressLine2: String,
+                      addressLine3: Option[String] = None,
+                      addressLine4: Option[String] = None,
+                      postalCode: Option[String] = None,
+                      countryCode: Option[String] = None)
+
+object BCAddressApi3 {
+  implicit val formats = Json.format[BCAddressApi3]
+}
+
 case class MatchSuccessResponse(isAnIndividual: Boolean,
                                 agentReferenceNumber: Option[String],
                                 sapNumber: Option[String],
                                 safeId: String,
-                                address: Address,
+                                address: BCAddressApi3,
                                 organisation: Option[OrganisationResponse] = None,
                                 individual: Option[Individual] = None)
 

@@ -182,23 +182,28 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
                                      subscriptionStatus: Option[SubscriptionStatusType])
                                     (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext)
                                     : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
-    def createUpdateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest = {
+    def createUpdateRegistrationDetailsRequest(businessCustomerAddress: BCAddressApi3): UpdateRegistrationDetailsRequest = {
       val businessContacts = cached.get.getBusinessContacts.get
       UpdateRegistrationDetailsRequest(
         isAnIndividual = false,
         organisationName = Some(OrganisationName(cached.get.getBusinessCustomerDetails.get.businessName)),
-        address = convertBCAddressToAddress(cached.get.getBusinessCustomerDetails.get.businessAddress).get,
+        address = businessCustomerAddress,
         contactDetails = ContactDetails(phoneNumber = businessContacts.telephone, emailAddress = businessContacts.email),
         isAnAgent = false,
         isAGroup = true
       )
     }
 
-    awrsConnector.updateGroupBusinessPartner(
-      cachedSubscription.get.businessPartnerName.get,
-      cached.get.getBusinessType.get.legalEntity.get,
-      subscriptionStatus.get.safeId.get,
-      createUpdateRegistrationDetailsRequest)
+    keyStoreService.fetchBusinessCustomerAddresss flatMap {
+      case Some(businessCustomerAddress) => {
+        awrsConnector.updateGroupBusinessPartner(
+          cachedSubscription.get.businessPartnerName.get,
+          cached.get.getBusinessType.get.legalEntity.get,
+          subscriptionStatus.get.safeId.get,
+          createUpdateRegistrationDetailsRequest(businessCustomerAddress))
+      }
+    }
+
   }
 
   def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = authenticatorConnector.refreshProfile

@@ -18,19 +18,23 @@ package services
 
 import connectors.BusinessMatchingConnector
 import models._
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsError, JsSuccess, JsValue}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
+import services.KeyStoreService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object BusinessMatchingService extends BusinessMatchingService {
   val businessMatchingConnector: BusinessMatchingConnector = BusinessMatchingConnector
+  override val keyStoreService = KeyStoreService
 }
 
 trait BusinessMatchingService extends LoggingUtils {
+
+  val keyStoreService: KeyStoreService
 
   def businessMatchingConnector: BusinessMatchingConnector
 
@@ -40,7 +44,16 @@ trait BusinessMatchingService extends LoggingUtils {
       utr = utr, requiresNameMatch = true, isAnAgent = false, individual = None, organisation = organisation)
     // set the user type to ORG as long as this is only ever used for groups as individuals cannot be group members
     businessMatchingConnector.lookup(searchData, "org") flatMap { dataReturned =>
+      storeBCAddressApi3(dataReturned)
       isSuccessfulMatch(dataReturned = dataReturned)
+    }
+  }
+
+  private def storeBCAddressApi3(dataReturned: JsValue)(implicit user: AuthContext, hc: HeaderCarrier): Unit = {
+    val address = (dataReturned \ "address").validate[BCAddressApi3]
+    address match {
+      case s: JsSuccess[BCAddressApi3] => keyStoreService.saveBusinessCustomerAddress(s.get)
+      case _ => {}
     }
   }
 

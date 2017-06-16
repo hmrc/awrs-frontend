@@ -33,6 +33,8 @@ object DataCacheKeys {
   val businessContactsName = "businessContacts"
   val placeOfBusinessName = "placeOfBusiness"
 
+  val businessCustomerAddressName = "businessCustomerAddress"
+
   val partnersName = "partnerDetails"
 
   val businessDirectorsName = "businessDirectors"

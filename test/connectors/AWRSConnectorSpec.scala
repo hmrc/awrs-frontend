@@ -515,7 +515,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
   "AWRSConnector update group business partner" should {
 
-    val address = Address(addressLine1 = "", addressLine2 = "")
+    val address = BCAddressApi3(addressLine1 = "", addressLine2 = "")
     val updatedDataRequest = new UpdateRegistrationDetailsRequest(false, Some(OrganisationName("testName")), address, ContactDetails(), false, false)
 
     implicit val user = AuthBuilder.createUserAuthContextOrgWithAWRS(s"/sa/individual/$testUtr", "joe bloggs", testUtr)

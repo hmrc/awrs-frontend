@@ -22,6 +22,7 @@ import forms.AWRSEnums
 import models.Organisation
 import org.mockito.Matchers
 import org.mockito.Mockito.when
+import services.mocks.MockKeyStoreService
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AwrsTestJson._
 import utils.AwrsUnitTestTraits
@@ -29,12 +30,13 @@ import utils.TestConstants.testUtr
 
 import scala.concurrent.Future
 
-class BusinessMatchingServiceTest extends AwrsUnitTestTraits {
+class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreService {
 
   val mockBusinessMatchingConnector: BusinessMatchingConnector = mock[BusinessMatchingConnector]
 
   object BusinessMatchingServiceTest extends BusinessMatchingService {
     override val businessMatchingConnector = mockBusinessMatchingConnector
+    override val keyStoreService = TestKeyStoreService
   }
 
   "Business Matching Services" should {

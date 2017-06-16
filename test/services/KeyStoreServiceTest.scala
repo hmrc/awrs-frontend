@@ -17,6 +17,7 @@
 package services
 import builders.AuthBuilder
 import connectors.mock.MockAuthConnector
+import models.BCAddressApi3
 import services.mocks.MockKeyStoreService
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
@@ -88,6 +89,12 @@ class KeyStoreServiceTest extends MockKeyStoreService with MockAuthConnector {
       await(resultDeletedData) shouldBe None
 
       verifyKeyStoreService(fetchDeRegistrationReason = 3)
+    }
+
+    "fetchBusinessCustomerAddress" in {
+      setupMockKeyStoreServiceForBusinessCustomerAddress()
+      val result = TestKeyStoreService.fetchBusinessCustomerAddresss
+      await(result) shouldBe Some(defaultBCAddressApi3)
     }
   }
 

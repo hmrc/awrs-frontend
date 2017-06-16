@@ -154,7 +154,16 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       }
     }
 
-    "send updated registration details to right hand service and handle success" in {
+    "send updated registration details to right hand service with a valid address and handle success" in {
+      setupMockKeyStoreServiceForBusinessCustomerAddress()
+      sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
+        result =>
+          await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
+      }
+    }
+
+    "have no address and handle success" in {
+      setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress = true)
       sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
         result =>
           await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
