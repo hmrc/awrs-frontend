@@ -162,7 +162,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       }
     }
 
-    "send updated registration details to right hand service with no address and handle success" in {
+    "have no address and handle success" in {
       setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress = true)
       sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
         result =>
