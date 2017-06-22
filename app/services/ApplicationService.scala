@@ -186,7 +186,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       val businessContacts = cached.get.getBusinessContacts.get
       UpdateRegistrationDetailsRequest(
         isAnIndividual = false,
-        organisationName = Some(OrganisationName(cached.get.getBusinessCustomerDetails.get.businessName)),
+        organisation = Some(OrganisationName(cached.get.getBusinessCustomerDetails.get.businessName)),
         address = businessCustomerAddress,
         contactDetails = ContactDetails(phoneNumber = businessContacts.telephone, emailAddress = businessContacts.email),
         isAnAgent = false,
