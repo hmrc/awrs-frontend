@@ -88,15 +88,15 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   }
 
   def sendConfirmationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
-    doEmailCall(emailRequest,auditConfirmationEmailTxName,confirmationEmailURI)
+    doEmailCall(emailRequest, auditConfirmationEmailTxName, confirmationEmailURI)
   }
 
   def sendCancellationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
-    doEmailCall(emailRequest,auditCancellationEmailTxName,cancellationEmailURI)
+    doEmailCall(emailRequest, auditCancellationEmailTxName, cancellationEmailURI)
   }
 
   def sendWithdrawnEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
-    doEmailCall(emailRequest,auditWithdrawnEmailTxtName,withdrawnEmailURI)
+    doEmailCall(emailRequest, auditWithdrawnEmailTxtName, withdrawnEmailURI)
   }
 
   private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier, user: AuthContext) = {
@@ -113,7 +113,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     result map {
       response =>
         response.status match {
-          case OK =>
+          case NO_CONTENT =>
             warn(f"[$auditTxName] - Successful return of data")
             if(auditTxName.nonEmpty)
             audit(transactionName = auditTxName, detail = Map("awrsRegistrationNumber" -> awrsRefNo), eventType = eventTypeSuccess)
@@ -139,7 +139,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
 
 object AWRSNotificationConnector extends AWRSNotificationConnector {
   override val appName = "awrs-frontend"
- override val metrics = AwrsMetrics
+  override val metrics = AwrsMetrics
   override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
 
   override val httpGet: HttpGet = WSHttp
