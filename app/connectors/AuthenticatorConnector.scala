@@ -26,9 +26,9 @@ import scala.concurrent.Future
 
 trait AuthenticatorConnector extends ServicesConfig with RawResponseReads {
 
-  lazy val serviceURL = baseUrl("authenticator")
+  lazy val serviceURL = baseUrl("government-gateway-authentication")
 
-  val refreshProfileURI = "authenticator/refresh-profile"
+  val refreshProfileURI = "government-gateway-authentication/refresh-profile"
 
   val http: HttpGet with HttpPost = WSHttp
 
