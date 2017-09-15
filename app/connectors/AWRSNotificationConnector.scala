@@ -113,7 +113,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     result map {
       response =>
         response.status match {
-          case NO_CONTENT =>
+          case (OK | NO_CONTENT) =>
             warn(f"[$auditTxName] - Successful return of data")
             if(auditTxName.nonEmpty)
             audit(transactionName = auditTxName, detail = Map("awrsRegistrationNumber" -> awrsRefNo), eventType = eventTypeSuccess)
