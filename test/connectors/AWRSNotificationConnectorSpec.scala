@@ -127,7 +127,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     }
 
 
-    "return status as OK, for successful fetch" in {
+    "return status as OK | NO_CONTENT, for successful fetch" in {
       mockFetchResponse(OK | NO_CONTENT, mindedToRejectJson)
       val result = testFetchCall
       await(result) shouldBe mindedToReject
@@ -164,7 +164,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       val thrown = the[InternalServerException] thrownBy await(result)
     }
 
-    "return true for successful delete (status OK)" in {
+    "return true for successful delete (status OK | NO_CONTENT)" in {
       mockDeleteResponse(OK | NO_CONTENT)
       val result = testDeleteCall
       await(result) shouldBe true
@@ -198,7 +198,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
     def testGetViewedStatusCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.getNotificationViewedStatus
 
-    "return status as OK, for successful getNotificationViewedStatus" in {
+    "return status as OK or NO_CONTENT, for successful getNotificationViewedStatus" in {
       val viewed = true
       mockGetViewedStatusResponse(OK | NO_CONTENT, Json.parse(s"""{"viewed": $viewed}"""))
       val result = testGetViewedStatusCall
