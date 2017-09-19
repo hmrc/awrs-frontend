@@ -113,8 +113,7 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
                 deleteReason <- keyStoreService.deleteWithdrawalReason
                 deEnrolSuccess <- deEnrol()
                 _ <- deEnrolService.refreshProfile
-              } yield (deEnrolSuccess, api8Response)
-                ).recover {
+              } yield (deEnrolSuccess, api8Response)).recover {
                 case error: NoSuchElementException => showErrorPageRaw
                 case error => throw error
               }

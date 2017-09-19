@@ -127,8 +127,8 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     }
 
 
-    "return status as OK, for successful fetch" in {
-      mockFetchResponse(NO_CONTENT, mindedToRejectJson)
+    "return status as OK | NO_CONTENT, for successful fetch" in {
+      mockFetchResponse(OK | NO_CONTENT, mindedToRejectJson)
       val result = testFetchCall
       await(result) shouldBe mindedToReject
     }
@@ -164,8 +164,8 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       val thrown = the[InternalServerException] thrownBy await(result)
     }
 
-    "return true for successful delete (status OK)" in {
-      mockDeleteResponse(NO_CONTENT)
+    "return true for successful delete (status OK | NO_CONTENT)" in {
+      mockDeleteResponse(OK | NO_CONTENT)
       val result = testDeleteCall
       await(result) shouldBe true
     }
@@ -198,9 +198,9 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
     def testGetViewedStatusCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.getNotificationViewedStatus
 
-    "return status as OK, for successful getNotificationViewedStatus" in {
+    "return status as OK or NO_CONTENT, for successful getNotificationViewedStatus" in {
       val viewed = true
-      mockGetViewedStatusResponse(NO_CONTENT, Json.parse(s"""{"viewed": $viewed}"""))
+      mockGetViewedStatusResponse(OK | NO_CONTENT, Json.parse(s"""{"viewed": $viewed}"""))
       val result = testGetViewedStatusCall
       await(result).get.viewed shouldBe viewed
     }
@@ -218,7 +218,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     def mockMarkViewedStatusResponse(haveResponse: Boolean): Unit =
       when(mockWSHttp.PUT[Unit, HttpResponse](Matchers.endsWith(notificationViewedStatusURI(awrsRef)), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
-          case true => Future.successful(HttpResponse(NO_CONTENT))
+          case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
         })
 
@@ -245,7 +245,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     def sendConfirmationEmailResponse(haveResponse: Boolean): Unit =
       when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(confirmationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
-          case true => Future.successful(HttpResponse(NO_CONTENT))
+          case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
         })
 
@@ -268,7 +268,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     def sendCancellationEmailResponse(haveResponse: Boolean): Unit =
       when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(cancellationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
-          case true => Future.successful(HttpResponse(NO_CONTENT))
+          case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
         })
 
@@ -291,7 +291,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     def sendWithdrawnEmailResponse(haveResponse: Boolean): Unit =
       when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(withdranEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
-          case true => Future.successful(HttpResponse(NO_CONTENT))
+          case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
         })
 
