@@ -27,10 +27,10 @@ import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.AppName
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.BadRequestException
 import utils.LoggingUtils
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.BadRequestException
 
 trait AddressLookupController extends FrontendController with Actions with HasAddressLookupService with LoggingUtils {
 

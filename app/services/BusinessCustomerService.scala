@@ -18,9 +18,9 @@ package services
 
 import connectors.{BusinessCustomerDataCacheConnector, KeyStoreConnector}
 import play.api.libs.json
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait BusinessCustomerService {
 

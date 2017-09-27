@@ -30,12 +30,12 @@ import services.JourneyConstants._
 import services._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.InternalServerException
 import utils.{AccountUtils, CacheUtil}
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.InternalServerException
 
 trait ViewApplicationController extends AwrsController with AccountUtils with UnSubmittedBannerUtil with DataCacheService {
 

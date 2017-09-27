@@ -19,7 +19,10 @@ package connectors
 import config.{AwrsAPIShortLivedCache, AwrsShortLivedCache}
 import models._
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
+import play.api.http.Status
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.ShortLivedCache
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
@@ -52,20 +55,20 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
 
     "fetch saved BusinessDetails from save4later" in {
       val key = "Business Details"
-      when(mockShortLivedCache.fetchAndGetEntry[BusinessCustomerDetails](Matchers.any(), Matchers.eq(key))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reviewDetails)))
+      when(mockShortLivedCache.fetchAndGetEntry[BusinessCustomerDetails](any(), Matchers.eq(key))(any(), any(), any())).thenReturn(Future.successful(Some(reviewDetails)))
       val result = TestSave4LaterConnector.fetchData4Later[BusinessCustomerDetails](testUtr, key)
       await(result) shouldBe Some(reviewDetails)
     }
 
     "save business details into save4later" in {
       val key = "BC_Business_Details"
-      when(mockShortLivedCache.cache(Matchers.any(), Matchers.eq(key), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+      when(mockShortLivedCache.cache(any(), Matchers.eq(key), any())(any(), any(), any())).thenReturn(Future.successful(returnedCacheMap))
       val result = TestSave4LaterConnector.saveData4Later(testUtr, key, reviewDetails)
       await(result).get shouldBe reviewDetails
     }
 
     "fetch all data from save4later by utr" in {
-      when(mockShortLivedCache.fetch(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(returnedCacheMap)))
+      when(mockShortLivedCache.fetch(any())(any(), any())).thenReturn(Future.successful(Some(returnedCacheMap)))
       val result = TestSave4LaterConnector.fetchAll(testUtr)
 
       await(result).get.toString should include("BC_Business_Details")
@@ -73,8 +76,12 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "remove everything from save4later" in {
-      TestSave4LaterConnector.removeAll(Matchers.any())(Matchers.any())
-      verify(mockShortLivedCache, times(1)).remove(Matchers.any())(Matchers.any())
+      when(mockShortLivedCache.remove(any())(any(), any())).thenReturn(Future.successful(HttpResponse(Status.OK)))
+
+      val result = TestSave4LaterConnector.removeAll("TEST")
+
+      await(result).status shouldBe  Status.OK
+      verify(mockShortLivedCache, times(1)).remove(Matchers.eq("TEST"))(any(),any())
     }
 
   }

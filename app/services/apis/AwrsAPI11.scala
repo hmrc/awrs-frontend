@@ -23,11 +23,11 @@ import models._
 import play.api.mvc.{AnyContent, Request}
 import services.KeyStoreService
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier}
 import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier }
 
 // Unit tests for this class are covered in EtmpLookupService for retrieveApplication
 

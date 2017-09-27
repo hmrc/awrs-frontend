@@ -17,9 +17,9 @@
 package services
 
 import connectors.{AuthenticatorConnector, TaxEnrolmentsConnector}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait DeEnrolService {
 

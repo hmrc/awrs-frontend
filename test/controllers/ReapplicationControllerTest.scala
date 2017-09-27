@@ -36,11 +36,11 @@ import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.HttpResponse
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class ReapplicationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector with MockKeyStoreService with MockSave4LaterService{

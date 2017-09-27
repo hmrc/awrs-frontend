@@ -33,11 +33,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.{JourneyConstants, ServicesUnitTestFixture}
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.SessionKeys
 
 class BusinessDetailsViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {

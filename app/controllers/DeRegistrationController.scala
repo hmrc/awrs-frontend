@@ -30,7 +30,6 @@ import org.joda.time.LocalDateTime
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.apis.AwrsAPI10
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -38,6 +37,7 @@ import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.CacheUtil.cacheUtil
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait DeRegistrationController extends AwrsController with AccountUtils {
 

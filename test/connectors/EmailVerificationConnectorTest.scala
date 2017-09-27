@@ -35,13 +35,14 @@ import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
 
 class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   val MockAuditConnector = mock[AuditConnector]
 
   val dummyAppName = "awrs-frontend"
 
-  class MockHttp extends WSGet with WSPost with WSPut with HttpAuditing with WSDelete {
+  class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpPut with WSPut with HttpAuditing with HttpDelete with WSDelete {
     override val hooks = Seq(AuditingHook)
 
     override def auditConnector: AuditConnector = MockAuditConnector
@@ -74,7 +75,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   "sendVerificationEmail" should {
 
     def mockPostResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(sendEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(sendEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
     def testPostCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.sendVerificationEmail(testEmail)
@@ -108,7 +109,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   "isEmailAddressVerified" should {
 
     def mockGetResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
-      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(verifiyEmailURI(testEmail)))(Matchers.any(), Matchers.any()))
+      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(verifiyEmailURI(testEmail)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
     def testGetCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.isEmailAddressVerified(testEmail)

@@ -21,8 +21,8 @@ import java.util.UUID
 import config.AwrsSessionCache
 import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.SessionKeys
 import utils.AwrsSessionKeys
+import uk.gov.hmrc.http.SessionKeys
 
 object SessionBuilder {
 

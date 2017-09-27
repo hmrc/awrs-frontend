@@ -28,10 +28,10 @@ import services.mocks.MockKeyStoreService
 import uk.gov.hmrc.domain.{AwrsUtr, Nino}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.http.SessionKeys
 import utils.TestConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.SessionKeys
 
 class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
   import MockKeyStoreService._

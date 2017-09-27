@@ -34,12 +34,12 @@ import services.apis.AwrsAPI10
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import uk.gov.hmrc.domain.SaUtr
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.http.{HttpResponse, SessionKeys}
 import utils.AwrsSessionKeys
 import utils.TestConstants._
 import utils.TestUtil.cachedData
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HttpResponse, SessionKeys }
 
 class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4LaterService with MockAuthConnector {
 

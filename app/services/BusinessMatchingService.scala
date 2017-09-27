@@ -20,12 +20,12 @@ import connectors.BusinessMatchingConnector
 import models._
 import play.api.libs.json.{JsError, JsSuccess, JsValue}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
 import services.KeyStoreService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 object BusinessMatchingService extends BusinessMatchingService {
   val businessMatchingConnector: BusinessMatchingConnector = BusinessMatchingConnector

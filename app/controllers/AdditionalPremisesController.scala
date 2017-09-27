@@ -29,10 +29,10 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{AnyContent, Call, Request, Result}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait AdditionalPremisesController extends AwrsController with JourneyPage with Deletable[AdditionalBusinessPremisesList, AdditionalBusinessPremises] with SaveAndRoutable {
 

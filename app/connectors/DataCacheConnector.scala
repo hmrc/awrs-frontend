@@ -19,11 +19,10 @@ package connectors
 import config.{AwrsAPIShortLivedCache, AwrsSessionCache, AwrsShortLivedCache, BusinessCustomerSessionCache}
 import play.api.libs.json
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 
 object AwrsDataCacheConnector extends Save4LaterConnector {

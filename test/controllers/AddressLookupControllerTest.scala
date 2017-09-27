@@ -35,10 +35,10 @@ import play.api.test.Helpers._
 import services.{AddressLookupErrorResponse, AddressLookupService, AddressLookupSuccessResponse}
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.TestConstants._
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier }
 
 class AddressLookupControllerTest extends UnitSpec with MockitoSugar with OneServerPerSuite with BeforeAndAfterEach with MockAuthConnector {
 

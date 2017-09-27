@@ -25,12 +25,12 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.Save4LaterService
 import services.apis.AwrsAPI5
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.InternalServerException
 import utils.AccountUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.InternalServerException
 
 trait BusinessTypeController extends AwrsController with AccountUtils {
 

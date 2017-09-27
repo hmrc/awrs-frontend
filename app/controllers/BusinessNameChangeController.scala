@@ -22,13 +22,13 @@ import forms.BusinessNameChangeConfirmationForm._
 import models._
 import play.api.mvc.{Action, AnyContent}
 import services.{KeyStoreService, Save4LaterService, IndexService}
-import uk.gov.hmrc.play.http.InternalServerException
 import utils.AccountUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import services.DataCacheKeys._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.InternalServerException
 
 trait BusinessNameChangeController extends AwrsController with AccountUtils {
 

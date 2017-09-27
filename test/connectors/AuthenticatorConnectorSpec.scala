@@ -29,11 +29,12 @@ import uk.gov.hmrc.play.http.ws.{WSGet, WSPost}
 import utils.AwrsUnitTestTraits
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HttpGet, HttpPost, HttpResponse }
 
 
 class AuthenticatorConnectorSpec extends AwrsUnitTestTraits {
 
-  class MockHttp extends WSGet with WSPost with HttpAuditing{
+  class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpAuditing{
     override val hooks = Seq(AuditingHook)
     override def auditConnector: AuditConnector = AwrsFrontendAuditConnector
 
@@ -56,7 +57,7 @@ class AuthenticatorConnectorSpec extends AwrsUnitTestTraits {
     "refresh user" must {
       "works for a user" in {
 
-        when(mockWSHttp.POSTEmpty[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).
+        when(mockWSHttp.POSTEmpty[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
           thenReturn(Future.successful(HttpResponse(OK, responseJson = None)))
 
         val result = TestAuthenticatorConnector.refreshProfile

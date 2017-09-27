@@ -22,10 +22,10 @@ import services.DataCacheKeys._
 import services.{ApplicationService, IndexService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.{AccountUtils, AwrsSessionKeys}
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 case class UnSubmittedChangesBannerParam(allSectionComplete: Boolean)
 

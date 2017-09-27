@@ -35,12 +35,13 @@ import utils.AwrsUnitTestTraits
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
+import uk.gov.hmrc.http.{ HttpGet, HttpPost, HttpResponse }
 
 class GovernmentGatewayConnectorSpec extends AwrsUnitTestTraits {
 
   val MockAuditConnector = mock[AuditConnector]
 
-  class MockHttp extends WSGet with WSPost with HttpAuditing {
+  class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpAuditing {
     override val hooks = Seq(AuditingHook)
 
     override def auditConnector: AuditConnector = MockAuditConnector
@@ -79,108 +80,108 @@ class GovernmentGatewayConnectorSpec extends AwrsUnitTestTraits {
     val businessType = "LTD"
 
     "return status as OK, for successful enrolment" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result) shouldBe subscribeSuccessResponse
-      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return status as OK, if the first failed GG Enrol call is followed by A successful GG enrolment" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result) shouldBe subscribeSuccessResponse
       // verify that the call is made 2 times, i.e. the first failed call plus 1 successful retry
-      verify(mockWSHttp, times(2)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(2)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None and catch all, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None when GovernmentGatewayException thrown, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(failureGovGateResponse))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None when DuplicateSubscriptionException thrown, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureDupSubsResponse))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None when NotFoundException thrown, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(subscribeFailureResponseJson))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None when SERVICE_UNAVAILABLE, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(subscribeFailureResponseJson))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None when INTERNAL SERVER ERROR" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None when INTERNAL SERVER ERROR and GovernmentGatewayException thrown, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(failureGovGateResponse))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None when INTERNAL SERVER ERROR and DuplicateSubscriptionException thrown, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureDupSubsResponse))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None for any other exceptions" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(777, Some(subscribeFailureResponseJson))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None for anything else and when GovernmentGatewayException thrown, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(777, Some(failureGovGateResponse))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
     "return None for anything else and when DuplicateSubscriptionException thrown, for bad data sent for subscription" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(777, Some(subscribeFailureDupSubsResponse))))
       val result = TestGovernmentGatewayConnector.enrol(enrolRequest, testBusinessCustomerDetails, businessType)
       await(result)(defaultTimeOut) shouldBe None
       // verify that the correct amount of retry calls are made, i.e. the first failed call plus the specified amount of failed retries
-      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(retries)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
   }
 }

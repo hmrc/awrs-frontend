@@ -28,16 +28,17 @@ import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.http.ws.{WSGet, WSPost}
-import uk.gov.hmrc.play.http.{HeaderCarrier, _}
+import uk.gov.hmrc.play.http._
 import utils.AwrsUnitTestTraits
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpResponse }
 
 class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
   val MockAuditConnector = mock[AuditConnector]
 
-  class MockHttp extends WSGet with WSPost with HttpAuditing {
+  class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpAuditing {
     override val hooks = Seq(AuditingHook)
 
     override def auditConnector: AuditConnector = MockAuditConnector
@@ -69,7 +70,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     val deEnrolResponseFailure = false
 
     def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.endsWith(deEnrolURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.endsWith(deEnrolURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus = responseStatus, responseString = responseString)))
 
     def testCall(implicit headerCarrier: HeaderCarrier) = TestTaxEnrolmentsConnector.deEnrol(awrsRef, businessName, businessType)(headerCarrier)

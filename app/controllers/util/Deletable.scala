@@ -23,13 +23,13 @@ import models.DeleteConfirmation
 import play.api.data.Form
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import views.view_application.helpers.EditSectionOnlyMode
 
 import scala.annotation.tailrec
 import scala.concurrent.Future
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait Deletable[C, T] extends AwrsController {
 

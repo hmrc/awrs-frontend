@@ -75,7 +75,7 @@ object AuthBuilder {
   }
 
   def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector, utr: String) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       utr match {
         case "ct" =>
           val ctAuthority = Authority(userId, Accounts(ct = Some(CtAccount(userId, CtUtr(testCTUtr)))), None, None, CredentialStrength.Strong, ConfidenceLevel.L50, None, None, None, "")
@@ -94,14 +94,14 @@ object AuthBuilder {
   }
 
   def mockUnAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       val payeAuthority = Authority(userId, Accounts(paye = Some(PayeAccount(userId, Nino(testNino)))), None, None,CredentialStrength.Strong, ConfidenceLevel.L50, None, None, None, "")
       Future.successful(Some(payeAuthority))
     }
   }
 
   def mockUnAuthorisedAgentUser(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       val agentAuthority = Authority(userId, Accounts(agent = Some(AgentAccount(link = "agency", agentCode = AgentCode("ABC123"), agentUserId = AgentUserId("12345"), agentUserRole = AgentAdmin, payeReference = None))), None, None,CredentialStrength.Strong, ConfidenceLevel.L50, None, None, None, "")
       Future.successful(Some(agentAuthority))
     }

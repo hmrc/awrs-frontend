@@ -24,11 +24,11 @@ import services.DataCacheKeys._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import utils.CacheUtil.cacheUtil
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait KeyStoreService {
 

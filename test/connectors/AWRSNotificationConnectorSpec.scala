@@ -32,11 +32,12 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
-import uk.gov.hmrc.play.http.{BadRequestException, InternalServerException, ServiceUnavailableException, _}
+import uk.gov.hmrc.play.http._
 import utils.TestConstants._
 import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
 
 
 class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
@@ -44,7 +45,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
   val dummyAppName = "awrs-frontend"
 
-  class MockHttp extends WSGet with WSPost with WSPut with HttpAuditing with WSDelete {
+  class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpPut with WSPut with HttpAuditing with HttpDelete with WSDelete {
     override val hooks = Seq(AuditingHook)
 
     override def auditConnector: AuditConnector = MockAuditConnector
@@ -91,11 +92,11 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     lazy val mindedToRejectJson = StatusNotification.writer.writes(mindedToReject.get)
 
     def mockFetchResponse(responseStatus: Int, responseData: JsValue): Unit =
-      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(notificationCacheURI(awrsRef)))(Matchers.any(), Matchers.any()))
+      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(notificationCacheURI(awrsRef)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, Some(responseData))))
 
     def mockDeleteResponse(responseStatus: Int): Unit =
-      when(mockWSHttp.DELETE[HttpResponse](Matchers.endsWith(notificationCacheURI(awrsRef)))(Matchers.any(), Matchers.any()))
+      when(mockWSHttp.DELETE[HttpResponse](Matchers.endsWith(notificationCacheURI(awrsRef)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus)))
 
     def testFetchCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.fetchNotificationCache
@@ -193,7 +194,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   "getNotificationViewedStatus" should {
 
     def mockGetViewedStatusResponse(responseStatus: Int, responseData: Option[JsValue]): Unit =
-      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(notificationViewedStatusURI(awrsRef)))(Matchers.any(), Matchers.any()))
+      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(notificationViewedStatusURI(awrsRef)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
     def testGetViewedStatusCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.getNotificationViewedStatus
@@ -216,7 +217,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   "markNotificationViewedStatusAsViewed" should {
 
     def mockMarkViewedStatusResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.PUT[Unit, HttpResponse](Matchers.endsWith(notificationViewedStatusURI(awrsRef)), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.PUT[Unit, HttpResponse](Matchers.endsWith(notificationViewedStatusURI(awrsRef)), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
@@ -243,7 +244,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API4, "test business", testUtr, "example@example.com", isNewBusiness = true)
 
     def sendConfirmationEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(confirmationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(confirmationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
@@ -266,7 +267,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API10, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendCancellationEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(cancellationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(cancellationEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
@@ -289,7 +290,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API8, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendWithdrawnEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(withdranEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(withdranEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))

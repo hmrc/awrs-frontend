@@ -25,7 +25,6 @@ import play.api.mvc.{AnyContent, Request, Result}
 import services.DataCacheKeys._
 import services.{DataCacheService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
 import views.Configuration.{NewApplicationMode, NewBusinessStartDateConfiguration, ReturnedApplicationEditMode, ReturnedApplicationMode}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
@@ -33,6 +32,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait BusinessDetailsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable with DataCacheService {
 
