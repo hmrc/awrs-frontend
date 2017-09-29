@@ -32,11 +32,6 @@ object AwrsFrontendAuditConnector extends AuditConnector with AppName with RunMo
   override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }
 
-//object WSHttp extends WSGet with WSPut with WSPost with WSDelete with AppName with RunMode with HttpAuditing{
-//  override val hooks = Seq(AuditingHook)
-//  override val auditConnector = AwrsFrontendAuditConnector
-//}
-
 trait Hooks extends HttpHooks with HttpAuditing {
   override val hooks = Seq(AuditingHook)
   override lazy val auditConnector: AuditConnector = AwrsFrontendAuditConnector
