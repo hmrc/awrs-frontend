@@ -33,12 +33,13 @@ import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException, SessionKeys }
 
 class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
   val MockAuditConnector = mock[AuditConnector]
 
-  class MockHttp extends WSGet with WSPost with HttpAuditing {
+  class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpAuditing {
     override val hooks = Seq(AuditingHook)
 
     override def auditConnector: AuditConnector = MockAuditConnector
@@ -67,55 +68,55 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
   "Business Matching connector" should {
 
     "return status as OK, for successful call" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(matchSuccessResponseJson))))
       val result = TestBusinessMatchingConnector.lookup(matchBusinessData, userType)
       await(result) shouldBe matchSuccessResponseJson
-      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
 
     "for unsuccessful match, return error message" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(matchFailureResponseJson))))
       val result = TestBusinessMatchingConnector.lookup(matchBusinessData, userType)
       await(result) shouldBe matchFailureResponseJson
-      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
 
     "throw service unavailable exception, if service is unavailable" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, None)))
       val result = TestBusinessMatchingConnector.lookup(matchBusinessData, userType)
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
       thrown.getMessage should include("Service unavailable")
-      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
 
     "throw bad request exception, if bad request is passed" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
       val result = TestBusinessMatchingConnector.lookup(matchBusinessData, userType)
       val thrown = the[BadRequestException] thrownBy await(result)
       thrown.getMessage should include("Bad Request")
-      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
 
     "throw internal server error, if Internal server error status is returned" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, None)))
       val result = TestBusinessMatchingConnector.lookup(matchBusinessData, userType)
       val thrown = the[InternalServerException] thrownBy await(result)
       thrown.getMessage should include("Internal server error")
-      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
 
    "throw runtime exception, unknown status is returned" in {
-      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, None)))
       val result = TestBusinessMatchingConnector.lookup(matchBusinessData, userType)
       val thrown = the[RuntimeException] thrownBy await(result)
       thrown.getMessage should include("Unknown response")
-      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
     }
   }
 }

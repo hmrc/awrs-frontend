@@ -27,7 +27,7 @@ import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, _}
+import uk.gov.hmrc.play.http._
 import utils.AccountUtils._
 import utils.{AccountUtils, LoggingUtils}
 
@@ -36,6 +36,7 @@ import scala.concurrent.Future
 import scala.util.Try
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import uk.gov.hmrc.http.{ BadRequestException, ForbiddenException, HeaderCarrier, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException }
 
 object AWRSConnector extends AWRSConnector {
   override val appName = "awrs-frontend"

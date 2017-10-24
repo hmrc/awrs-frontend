@@ -17,11 +17,11 @@
 package audit
 
 import config.AwrsFrontendAuditConnector
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.AppName
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait Auditable {
 

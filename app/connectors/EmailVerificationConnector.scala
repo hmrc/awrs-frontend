@@ -24,12 +24,13 @@ import play.api.http.Status._
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, _}
+import uk.gov.hmrc.play.http._
 import utils.LoggingUtils
 import utils.AwrsConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost }
 
 trait EmailVerificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
 

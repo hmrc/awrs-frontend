@@ -28,9 +28,9 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.libs.json.JsResultException
 import play.api.mvc.Action
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait HomeController extends AwrsController with AccountUtils {
 

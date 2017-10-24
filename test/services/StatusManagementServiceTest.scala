@@ -25,9 +25,9 @@ import builders.AuthBuilder
 import connectors.mock.MockAuthConnector
 import play.api.test.FakeRequest
 import services.mocks.{MockKeyStoreService, MockTestStatusManagementService}
-import uk.gov.hmrc.play.http.SessionKeys
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import utils.TestConstants._
+import uk.gov.hmrc.http.SessionKeys
 
 class StatusManagementServiceTest extends AwrsUnitTestTraits
   with MockTestStatusManagementService with MockAuthConnector {

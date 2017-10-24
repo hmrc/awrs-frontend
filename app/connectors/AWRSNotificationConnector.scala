@@ -22,12 +22,13 @@ import models._
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException, _}
+import uk.gov.hmrc.play.http._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.http.Status._
 import utils.{AccountUtils, LoggingUtils}
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, ServiceUnavailableException }
 
 trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
 

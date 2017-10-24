@@ -19,12 +19,12 @@ package services
 import models._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
 import utils.CacheUtil._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait ModelUpdateService {
   def ensureAllModelsAreUpToDate(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean]

@@ -40,6 +40,7 @@ trait MicroService {
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
     .settings(
+      scalaVersion := "2.11.11",
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       parallelExecution in Test := false,

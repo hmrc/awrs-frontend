@@ -30,6 +30,7 @@ import utils.LoggingUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException }
 
 object BusinessMatchingConnector extends BusinessMatchingConnector {
   override val appName = "awrs-frontend"

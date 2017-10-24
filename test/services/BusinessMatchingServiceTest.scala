@@ -23,7 +23,6 @@ import models.Organisation
 import org.mockito.Matchers
 import org.mockito.Mockito.when
 import services.mocks.MockKeyStoreService
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AwrsTestJson._
 import utils.AwrsUnitTestTraits
 import utils.TestConstants.testUtr

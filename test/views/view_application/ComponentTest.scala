@@ -29,11 +29,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{AwrsUtr, Nino}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, _}
-import uk.gov.hmrc.play.http.SessionKeys
 import uk.gov.hmrc.play.test._
 import utils.TestConstants._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.SessionKeys
 
 class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with MockAuthConnector {
 

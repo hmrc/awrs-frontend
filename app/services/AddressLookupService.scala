@@ -25,6 +25,8 @@ import utils.LoggingUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 
 sealed trait AddressLookupResponse
 case class AddressLookupSuccessResponse(addressList: RecordSet) extends AddressLookupResponse
@@ -37,7 +39,8 @@ trait AddressLookupService extends LoggingUtils {
 
   def lookup(postcode: String)(implicit hc: HeaderCarrier): Future[AddressLookupResponse] = {
     val awrsHc = hc.withExtraHeaders("X-Hmrc-Origin" -> "AWRS")
-    http.GET[JsValue](s"$addressLookupUrl/uk/addresses?postcode=$postcode")(implicitly[HttpReads[JsValue]], awrsHc) map {
+    http.GET[JsValue](s"$addressLookupUrl/uk/addresses?postcode=$postcode")(implicitly[HttpReads[JsValue]], awrsHc, MdcLoggingExecutionContext.fromLoggingDetails(hc)
+    ) map {
       addressListJson =>
         AddressLookupSuccessResponse(RecordSet.fromJsonAddressLookupService(addressListJson))
     } recover {

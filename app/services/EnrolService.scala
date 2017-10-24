@@ -18,11 +18,11 @@ package services
 
 import _root_.models.{BusinessCustomerDetails, EnrolRequest, SuccessfulSubscriptionResponse}
 import connectors.GovernmentGatewayConnector
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
 
 import GGConstants._
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait EnrolService {
   val ggConnector: GovernmentGatewayConnector

@@ -23,15 +23,12 @@ import play.api.{Application, Configuration, Play}
 import play.filters.csrf.CSRFFilter
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
 import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
-import uk.gov.hmrc.play.filters.{CacheControlFilter, MicroserviceFilterSupport}
-import uk.gov.hmrc.play.filters.frontend.{CSRFExceptionsFilter, HeadersFilter}
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.logging.filters.FrontendLoggingFilter
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import uk.gov.hmrc.play.frontend.filters.{ CacheControlFilter, FrontendAuditFilter, FrontendLoggingFilter, HeadersFilter, MicroserviceFilterSupport }
 
 object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 

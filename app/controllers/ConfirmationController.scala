@@ -25,11 +25,11 @@ import forms.AWRSEnums.BooleanRadioEnum
 import models.BusinessDetails
 import services.{KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, InternalServerException }
 
 trait ConfirmationController extends AwrsController {
 

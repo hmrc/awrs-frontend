@@ -22,12 +22,12 @@ import models.FormBundleStatus.{Approved, ApprovedWithConditions, DeRegistered, 
 import models.{ApiTypes, DeRegistrationDate, EmailRequest}
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
 import utils.AccountUtils
 import utils.SessionUtil.sessionUtilForRequest
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.http.{ HeaderCarrier, InternalServerException }
 
 trait EmailService {
   val awrsNotificationConnector: AWRSNotificationConnector

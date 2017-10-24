@@ -31,7 +31,6 @@ import play.api.mvc.{Action, AnyContent}
 import services.apis.{AwrsAPI8, AwrsAPI9}
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.CacheUtil.cacheUtil
 import utils.{AccountUtils, LoggingUtils}
 

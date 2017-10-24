@@ -21,11 +21,11 @@ import connectors.{AwrsAPIDataCacheConnector, AwrsDataCacheConnector, Save4Later
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import utils.AccountUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait Save4LaterUtil {
 

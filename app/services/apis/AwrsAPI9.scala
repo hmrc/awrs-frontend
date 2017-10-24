@@ -20,11 +20,11 @@ import connectors.AWRSConnector
 import models.SubscriptionStatusType
 import services.{KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 // Unit tests for this class are covered in EtmpLookupService for retrieveApplication
 

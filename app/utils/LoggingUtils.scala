@@ -18,7 +18,7 @@ package utils
 
 import audit.Auditable
 import play.api.Logger
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
 
 // This logging utility should be used to replace any manual logging or Splunk auditing
 // This means that any Splunk audit calls will automatically be logged as DEBUG to aid local debugging but not appear in

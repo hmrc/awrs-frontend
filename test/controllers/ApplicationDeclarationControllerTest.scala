@@ -35,11 +35,11 @@ import play.api.test.Helpers._
 import services._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.http.HttpResponse
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector

@@ -29,11 +29,11 @@ import play.api.mvc.{AnyContent, Call, Request, Result}
 import services.DataCacheKeys._
 import services.Save4LaterService
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.{AccountUtils, CountryCodes}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait BusinessPartnersController extends AwrsController with JourneyPage with AccountUtils with Deletable[Partners, Partner] with SaveAndRoutable {
 

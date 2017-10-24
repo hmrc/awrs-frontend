@@ -23,7 +23,6 @@ import play.api.mvc.{AnyContent, Request}
 import services.Save4LaterService
 import services.helper.AwrsAPI5Helper
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AccountUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,6 +30,7 @@ import AwrsAPI5Helper._
 import forms.AWRSEnums.BooleanRadioEnum
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait AwrsAPI5 {
 

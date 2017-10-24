@@ -29,10 +29,10 @@ import play.api.Play.current
 import play.api.mvc.{AnyContent, Call, Request, Result}
 import services.DataCacheKeys._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait BusinessDirectorsController extends AwrsController
   with JourneyPage

@@ -27,12 +27,12 @@ import org.mockito.stubbing.Answer
 import services.DataCacheKeys._
 import services.Save4LaterService
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HttpResponse
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
 import scala.concurrent.Future
 import play.api.http.Status._
+import uk.gov.hmrc.http.HttpResponse
 
 trait MockSave4LaterService extends AwrsUnitTestTraits
   with MockSave4LaterConnector {

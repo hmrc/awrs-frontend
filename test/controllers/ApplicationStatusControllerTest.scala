@@ -32,11 +32,13 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import uk.gov.hmrc.domain.AwrsUtr
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 import scala.util.Try
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 
 
 class ApplicationStatusControllerTest extends AwrsUnitTestTraits

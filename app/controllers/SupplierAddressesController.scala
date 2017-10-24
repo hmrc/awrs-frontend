@@ -29,11 +29,11 @@ import play.api.mvc._
 import services.DataCacheKeys._
 import services.Save4LaterService
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.CountryCodes
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait SupplierAddressesController extends AwrsController
   with JourneyPage

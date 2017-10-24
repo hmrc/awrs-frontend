@@ -31,7 +31,6 @@ import play.api.test.FakeRequest
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import utils.TestUtil._
 import utils.TestConstants._
@@ -39,6 +38,7 @@ import utils.AwrsTestJson._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class ApplicationServiceTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {

@@ -19,7 +19,6 @@ package services
 import connectors.mock.MockAuthConnector
 import services.apis.mocks.MockAwrsAPI5
 import services.mocks.{MockApplicationService, MockBusinessCustomerService, MockIndexService, MockTestStatusManagementService}
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.AwrsUnitTestTraits
 
 trait ServicesUnitTestFixture extends AwrsUnitTestTraits

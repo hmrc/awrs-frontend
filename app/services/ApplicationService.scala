@@ -27,13 +27,13 @@ import play.api.mvc.{AnyContent, Request}
 import services.helper._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 
 import controllers.util.convertBCAddressToAddress
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, InternalServerException }
 
 trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCacheService {
 

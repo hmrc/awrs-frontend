@@ -21,12 +21,12 @@ import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec}
 import utils.TestConstants.testUtr
 
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 

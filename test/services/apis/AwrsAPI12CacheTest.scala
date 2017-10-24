@@ -27,9 +27,9 @@ import services.apis.mocks.MockAwrsAPI12Cache
 import uk.gov.hmrc.domain.{AwrsUtr, Nino}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, _}
-import uk.gov.hmrc.play.http.SessionKeys
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
+import uk.gov.hmrc.http.SessionKeys
 
 class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with MockAuthConnector {
 

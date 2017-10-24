@@ -25,13 +25,13 @@ import models._
 import play.api.mvc.{AnyContent, Request, Result}
 import services.{Save4LaterService, StatusManagementService, StatusReturnType}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{HeaderCarrier, InternalServerException}
 import utils.AccountUtils
 import views.subtemplates.application_status._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, InternalServerException }
 
 trait ApplicationStatusController extends AwrsController with AccountUtils {
 

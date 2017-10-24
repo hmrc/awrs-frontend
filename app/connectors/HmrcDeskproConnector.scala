@@ -16,7 +16,7 @@
 
 package deskpro
 
-import uk.gov.hmrc.play.http.HttpVerb
+import uk.gov.hmrc.http.HttpVerb
 
 
 trait HmrcDeskproConnector extends HttpVerb {

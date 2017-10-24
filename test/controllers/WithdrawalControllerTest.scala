@@ -37,13 +37,13 @@ import services.apis.AwrsAPI8
 import services.apis.mocks.MockAwrsAPI9
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HttpResponse
 import utils.TestConstants.testUtr
 import utils.TestUtil._
 import utils.WithdrawalTestUtils._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class WithdrawalControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector

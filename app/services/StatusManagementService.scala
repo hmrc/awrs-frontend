@@ -21,12 +21,12 @@ import models._
 import play.api.mvc.{AnyContent, Request}
 import services.apis.{AwrsAPI11, AwrsAPI12Cache, AwrsAPI9}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier}
 import utils.LoggingUtils
 import utils.SessionUtil._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier }
 
 case class StatusReturnType(wasViewed: Boolean,
                             status: Option[SubscriptionStatusType],

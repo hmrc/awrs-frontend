@@ -20,10 +20,10 @@ import forms.AWRSEnums
 import models.{BusinessCustomerDetails, BusinessType, Organisation}
 import services.{BusinessMatchingService, Save4LaterService}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 object MatchingUtil extends MatchingUtil {
   override val businessMatchingService = BusinessMatchingService
