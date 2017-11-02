@@ -47,7 +47,7 @@ trait AddressLookupController extends FrontendController with Actions with HasAd
           case AddressLookupSuccessResponse(recordSet) => Ok(writes.writes(recordSet))
         }
       } else {
-        Future.successful(BadRequest("Invalid postcode"))
+        Future.successful(BadRequest("missing or badly-formed postcode parameter"))
       }
   }
 
