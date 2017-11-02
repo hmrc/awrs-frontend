@@ -37,10 +37,17 @@ trait AddressLookupController extends FrontendController with Actions with HasAd
   def addressLookup(postcode: String) = AuthorisedFor(AwrsRegistrationRegime, pageVisibility = GGConfidence).async {
     implicit user => implicit request =>
       implicit val writes = Json.format[RecordSet]
-      addressLookupService.lookup(postcode) map {
-        case AddressLookupErrorResponse(e: BadRequestException) => BadRequest(e.message)
-        case AddressLookupErrorResponse(e) => InternalServerError
-        case AddressLookupSuccessResponse(recordSet) => Ok(writes.writes(recordSet))
+
+      val validPostcodeCharacters = "^[A-z0-9 ]*$"
+
+      if(postcode.matches(validPostcodeCharacters)) {
+        addressLookupService.lookup(postcode) map {
+          case AddressLookupErrorResponse(e: BadRequestException) => BadRequest(e.message)
+          case AddressLookupErrorResponse(e) => InternalServerError
+          case AddressLookupSuccessResponse(recordSet) => Ok(writes.writes(recordSet))
+        }
+      } else {
+        Future.successful(BadRequest("Invalid postcode"))
       }
   }
 
