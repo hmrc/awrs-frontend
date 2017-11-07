@@ -102,8 +102,8 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with OneSer
   def addressLookupInternalServerError(test: Future[Result] => Any) {
     implicit val hc = mock[HeaderCarrier]
 
-    when(TestAddressLookupController.addressLookupService.lookup(mockEq(invalidPostcode))(any[HeaderCarrier])) thenReturn Future.successful(AddressLookupErrorResponse(new Exception("")))
-    val result = TestAddressLookupController.addressLookup(invalidPostcode).apply(SessionBuilder.buildRequestWithSession(userId))
+    when(TestAddressLookupController.addressLookupService.lookup(mockEq(postCode))(any[HeaderCarrier])) thenReturn Future.successful(AddressLookupErrorResponse(new Exception("")))
+    val result = TestAddressLookupController.addressLookup(postCode).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 }
