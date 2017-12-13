@@ -16,19 +16,35 @@
 
 package services
 
-import _root_.models.{BusinessCustomerDetails, EnrolRequest, SuccessfulSubscriptionResponse}
-import connectors.GovernmentGatewayConnector
+import _root_.models.{BusinessCustomerDetails, EnrolRequest, RequestPayload, SuccessfulSubscriptionResponse}
+import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 
 import scala.concurrent.ExecutionContext
-
 import GGConstants._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.config.RunMode
 
-trait EnrolService {
+trait EnrolService extends RunMode {
   val ggConnector: GovernmentGatewayConnector
+  val taxEnrolmentsConnector: TaxEnrolmentsConnector
 
-  def enrolAWRS(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext) =
-    ggConnector.enrol(createEnrolment(success, businessPartnerDetails, businessType, utr), businessPartnerDetails, businessType)
+  val isEmacFeatureToggle: Boolean
+
+  def enrolAWRS(success: SuccessfulSubscriptionResponse,
+                businessPartnerDetails: BusinessCustomerDetails,
+                businessType: String, utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
+    if (isEmacFeatureToggle) {
+      val requestPayload = RequestPayload("","","",List.empty)
+      val groupId: String = ""
+      val awrsRegNo = ""
+      taxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRegNo)
+    } else {
+      ggConnector.enrol(createEnrolment(success,
+        businessPartnerDetails,
+        businessType, utr),
+        businessPartnerDetails, businessType)
+    }
+  }
 
   def createEnrolment(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit ec: ExecutionContext) = {
 
@@ -51,4 +67,6 @@ trait EnrolService {
 
 object EnrolService extends EnrolService {
   val ggConnector = GovernmentGatewayConnector
+  val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
+  override val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(false)
 }
