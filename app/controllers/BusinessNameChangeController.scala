@@ -34,7 +34,7 @@ trait BusinessNameChangeController extends AwrsController with AccountUtils {
 
   val keyStoreService: KeyStoreService
   val save4LaterService: Save4LaterService
-  val indexService = IndexService
+  val indexService: IndexService
 
   def showConfirm: Action[AnyContent] = async {
     implicit user => implicit request =>
@@ -83,4 +83,5 @@ object BusinessNameChangeController extends BusinessNameChangeController {
   override val authConnector = FrontendAuthConnector
   override val keyStoreService = KeyStoreService
   override val save4LaterService = Save4LaterService
+  override val indexService = IndexService
 }

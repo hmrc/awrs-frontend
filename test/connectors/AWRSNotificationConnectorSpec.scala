@@ -66,7 +66,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     override val httpPut: MockHttp = mockWSHttp
     override val httpPost: MockHttp = mockWSHttp
     override val appName = dummyAppName
-   override val metrics = AwrsMetrics
+   override val metrics = mock[AwrsMetrics]
     override val audit: Audit = new TestAudit
   }
 

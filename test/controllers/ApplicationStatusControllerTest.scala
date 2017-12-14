@@ -80,10 +80,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   }
 
   "ApplicationStatusController" should {
-    "use the correct AuthConnector" in {
-      ApplicationStatusController.authConnector shouldBe FrontendAuthConnector
-    }
-
     def testPageIsDisplayed(result: Future[Result]) = status(result) shouldBe OK
 
     def testPageIsSkipped(result: Future[Result]) = status(result) shouldBe SEE_OTHER

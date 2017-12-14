@@ -75,10 +75,6 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   }
 
   "ApplicationDeclarationController" must {
-    "use the correct AuthConnector" in {
-      ApplicationDeclarationController.authConnector shouldBe FrontendAuthConnector
-    }
-
     "show error page if a DES Validation Exception is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), DESValidationException("Validation against schema failed")) { result =>
         await(result)

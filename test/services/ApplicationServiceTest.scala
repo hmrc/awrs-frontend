@@ -132,14 +132,6 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   }
 
   "Application Service" should {
-    " use the correct AWRS Connector" in {
-      ApplicationService.awrsConnector shouldBe AWRSConnector
-    }
-
-    " use the correct auth Connector" in {
-      ApplicationService.authenticatorConnector shouldBe AuthenticatorConnector
-    }
-
     "send data to right hand service and handle success" in {
       sendWithAuthorisedUser {
         result =>
@@ -881,7 +873,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         "if trim suppliers is supplied with a list greater than 5 it will only return the first 5" in {
           val oldSuppliers = Suppliers(List(baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier))
           oldSuppliers.suppliers.size shouldBe 7
-          val newSuppliers = ApplicationService.trimSuppliers(Some(oldSuppliers))
+          val newSuppliers = TestApplicationService.trimSuppliers(Some(oldSuppliers))
           newSuppliers.get.suppliers.size shouldBe 5
         }
 

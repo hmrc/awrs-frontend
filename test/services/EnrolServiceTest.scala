@@ -59,10 +59,6 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
     reset(mockGovernmentGatewayConnector)
   }
   "Enrol Service" should {
-    "use the correct DataCacheconnector" in {
-      EnrolService.ggConnector shouldBe GovernmentGatewayConnector
-    }
-
     "fetch data if found in save4later" in {
       when(mockGovernmentGatewayConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(successfulEnrolResponse))
       val result = EnrolServiceTest.enrolAWRS(successfulSubscriptionResponse, testBusinessCustomerDetails, businessType, Some(testUtr), userId)

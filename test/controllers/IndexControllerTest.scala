@@ -49,15 +49,6 @@ class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
   }
 
   "IndexController" must {
-
-    "use the correct AuthConnector" in {
-      IndexController.authConnector shouldBe FrontendAuthConnector
-    }
-
-    "use the correct AwrsService" in {
-      IndexController.save4LaterService shouldBe Save4LaterService
-    }
-
     "The showIndex method should function correctly" should {
       "if businessType exists in session then display the index page" in {
         val result = callShowIndex(businessType = "SOP")

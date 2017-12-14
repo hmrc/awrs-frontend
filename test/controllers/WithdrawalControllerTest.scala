@@ -73,11 +73,6 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[WithdrawalReason](FakeRequest(), WithdrawalReasonForm.withdrawalReasonForm.form, reason)
 
   "Withdrawal Controller" must {
-
-    "use the correct AuthConnector" in {
-      WithdrawalController.authConnector shouldBe FrontendAuthConnector
-    }
-
     "Withdrawal Confirmation" should {
 
       "display a validation error on submit if radio button is not selected" in {

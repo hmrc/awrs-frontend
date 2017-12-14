@@ -17,6 +17,7 @@
 package connectors
 
 import audit.TestAudit
+import com.codahale.metrics.Timer
 import metrics.AwrsMetrics
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -32,11 +33,12 @@ import uk.gov.hmrc.play.http._
 import utils.AwrsUnitTestTraits
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
 
 class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
   val MockAuditConnector = mock[AuditConnector]
+  val mockAwrsMetrics = mock[AwrsMetrics]
 
   class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpAuditing {
     override val hooks = Seq(AuditingHook)
@@ -54,13 +56,13 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
   object TestTaxEnrolmentsConnector extends TaxEnrolmentsConnector {
     override val http: HttpGet with HttpPost = mockWSHttp
-    override val metrics = AwrsMetrics
+    override val metrics = mockAwrsMetrics
     override val audit: Audit = new TestAudit
   }
 
   "Tax enrolments connector de-enrolling AWRS" should {
     // used in the mock to check the destination of the connector calls
-    lazy val deEnrolURI = TaxEnrolmentsConnector.deEnrolURI + "/" + service
+    lazy val deEnrolURI = TestTaxEnrolmentsConnector.deEnrolURI + "/" + service
 
     // these values doesn't really matter since the call itself is mocked
     val awrsRef = ""
@@ -73,7 +75,10 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.endsWith(deEnrolURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus = responseStatus, responseString = responseString)))
 
-    def testCall(implicit headerCarrier: HeaderCarrier) = TestTaxEnrolmentsConnector.deEnrol(awrsRef, businessName, businessType)(headerCarrier)
+    def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
+      when(mockAwrsMetrics.startTimer(Matchers.any())).thenReturn(new Timer().time)
+      TestTaxEnrolmentsConnector.deEnrol(awrsRef, businessName, businessType)(headerCarrier)
+    }
 
     "return status as OK, for successful de-enrolment" in {
       mockResponse(OK)

@@ -44,11 +44,6 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
   }
 
   "BusinessContactsController" must {
-
-    "use the correct AwrsService" in {
-      BusinessContactsController.save4LaterService shouldBe Save4LaterService
-    }
-
     "Authorised users" must {
 
       "AWRS Contact Details entered " should {

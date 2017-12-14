@@ -91,7 +91,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       businessDirectors = if (sections.businessDirectors) cached.get.getBusinessDirectors else None,
       tradingActivity = cached.get.getTradingActivity,
       products = cached.get.getProducts,
-      suppliers = ApplicationService.trimSuppliers(cached.get.getSuppliers),
+      suppliers = trimSuppliers(cached.get.getSuppliers),
       applicationDeclaration = cached.get.getApplicationDeclaration,
       changeIndicators = None)
 
