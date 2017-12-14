@@ -19,6 +19,7 @@ package connectors
 import audit.TestAudit
 import com.codahale.metrics.Timer
 import metrics.AwrsMetrics
+import models.{BusinessCustomerDetails, EnrolResponse, RequestPayload}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
@@ -30,7 +31,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.http.ws.{WSGet, WSPost}
 import uk.gov.hmrc.play.http._
-import utils.AwrsUnitTestTraits
+import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
@@ -117,6 +118,38 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
       await(result) shouldBe deEnrolResponseFailure
     }
 
+
   }
 
+  "Tax enrolments connector enrolling AWRS" should {
+
+    lazy val enrolURI = TestTaxEnrolmentsConnector.deEnrolURI + "/" + service
+
+    def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
+      when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(),
+        Matchers.any(), Matchers.any())(Matchers.any(),
+        Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(responseStatus = responseStatus,
+          responseString = responseString)))
+
+    def testCall(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
+      mockResponse(OK)
+      val requestPayload = RequestPayload.apply("", "", "", List.empty)
+      val groupId = ""
+      val awrsRef = ""
+      val businessType = ""
+      val businessPartnerDetails = TestUtil.testBusinessCustomerDetails("LP")
+      when(mockAwrsMetrics.startTimer(Matchers.any())).thenReturn(new Timer().time)
+      await(TestTaxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRef, businessPartnerDetails, businessType)(headerCarrier))
+    }
+
+    "return enrol response for successful enrolment" in {
+      testCall.isDefined shouldBe true
+    }
+
+    "return enrol response for unsuccessful enrolment" in {
+      mockResponse(BAD_REQUEST)
+      testCall.isDefined shouldBe true
+    }
+  }
 }

@@ -55,29 +55,51 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
     override val isEmacFeatureToggle = false
   }
 
+  object EnrolServiceEMACTest extends EnrolService {
+    override val ggConnector = mockGovernmentGatewayConnector
+    override val authConnector = mockAuthConnector
+    override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
+    override val isEmacFeatureToggle = true
+  }
+
   override def beforeEach(): Unit = {
     reset(mockGovernmentGatewayConnector)
   }
+
   "Enrol Service" should {
+    behave like enrolService(EnrolServiceTest)
+  }
+
+  "Enrol Service with EMAC switched on" should {
+    behave like enrolService(EnrolServiceEMACTest)
+  }
+
+  def enrolService(enrolService: EnrolService): Unit = {
     "fetch data if found in save4later" in {
-      when(mockGovernmentGatewayConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(successfulEnrolResponse))
-      val result = EnrolServiceTest.enrolAWRS(successfulSubscriptionResponse, testBusinessCustomerDetails, businessType, Some(testUtr), userId)
+      when(mockAuthConnector.authorise[Option[String]](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some("111")))
+      when(mockGovernmentGatewayConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(successfulEnrolResponse))
+      when(mockTaxEnrolmentsConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(successfulEnrolResponse))
+      val result = enrolService.enrolAWRS(successfulSubscriptionResponse,
+        testBusinessCustomerDetails, businessType, Some(testUtr), userId)
       await(result) shouldBe successfulEnrolResponse
     }
 
     "create correct EnrolRequest when business type is SOP and UTR present " in {
-      val result = EnrolServiceTest.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, businessTypeSOP, saUtr)
+      val result = enrolService.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, businessTypeSOP, saUtr)
       result shouldBe enrolRequestSAUTR
     }
 
     "create correct EnrolRequest when business type is other than SOP and UTR present " in {
-      val result = EnrolServiceTest.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, "LTD", ctUtr)
+      val result = enrolService.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, "LTD", ctUtr)
       result shouldBe enrolRequestCTUTR
     }
     "create correct EnrolRequest when business type and UTR NOT present " in {
-      val result = EnrolServiceTest.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails,"" , None)
+      val result = enrolService.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails,"" , None)
       result shouldBe enrolRequestNoSACT
     }
-
   }
+
 }

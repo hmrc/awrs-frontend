@@ -41,6 +41,9 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
   private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
 
   def getGroupIdentifier(implicit hc: HeaderCarrier): Future[String] = {
+
+    authorised(
+
     authorised(AuthProviders(GovernmentGateway) and AffinityGroup.Organisation).retrieve(groupIdentifier) {
       case Some(groupId) => Future.successful(formatGroupId(groupId))
       case _ => throw new RuntimeException("No group identifier found for the agent!")
