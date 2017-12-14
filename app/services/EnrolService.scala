@@ -17,14 +17,16 @@
 package services
 
 
-import config.{AuthClientConnector, FrontendAuthConnector}
+import config.AuthClientConnector
 import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 import models._
 import services.GGConstants._
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, AuthProviders, AuthorisedFunctions}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.config.RunMode
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,12 +40,11 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
 
   val enrolmentType = "principal"
 
+  val GGProviderId = "GovernmentGateway"
+
   private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
 
   def getGroupIdentifier(implicit hc: HeaderCarrier): Future[String] = {
-
-    authorised(
-
     authorised(AuthProviders(GovernmentGateway) and AffinityGroup.Organisation).retrieve(groupIdentifier) {
       case Some(groupId) => Future.successful(formatGroupId(groupId))
       case _ => throw new RuntimeException("No group identifier found for the agent!")
@@ -64,25 +65,25 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
   def enrolAWRS(success: SuccessfulSubscriptionResponse,
                 businessPartnerDetails: BusinessCustomerDetails,
                 businessType: String,
-                utr: Option[String],
-                userId: String
-               )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+                utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
       val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
       if (isEmacFeatureToggle) {
-        val emacUserId = userId.replace("/auth/session/", "")
-        println( "\n\n\nHERE 1")
         val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
-        println( "HERE 2" + postCode)
         val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
-        println( "HERE 3" + businessPartnerDetails.safeId)
-        println( "HERE 4" + verifiers)
-        val requestPayload = RequestPayload(emacUserId, enrolment.friendlyName, enrolmentType, verifiers)
-        println( "HERE 5" + requestPayload)
-        getGroupIdentifier.flatMap(groupId => {
-          println("HERE 6" + groupId)
-          taxEnrolmentsConnector.enrol(requestPayload, groupId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
-        }
-        )
+          authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
+            case Credentials(ggCred, GGProviderId) ~ Some(groupId) =>
+              val grpId = groupId.replace( "testGroupId-", "" )
+              val credId = ggCred.replace( "cred-id-", "" )
+              println("HERE 6" + grpId)
+              println("HERE 4" + credId)
+              val requestPayload = RequestPayload(credId, enrolment.friendlyName, enrolmentType, verifiers)
+              println( "HERE 5" + requestPayload)
+              taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
+            case _ ~ None =>
+              Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
+            case Credentials(_, _) ~ _ =>
+              Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
+          }
       } else {
         ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
       }

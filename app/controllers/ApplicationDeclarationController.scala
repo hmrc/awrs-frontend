@@ -81,7 +81,6 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
             val businessType = getBusinessType.getOrElse("")
 
             val awrs: String = getRefNo // getAwrsRefNo.toString
-            val userId = user.user.userId
             applicationDeclarationForm.bindFromRequest.fold(
               formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
               applicationDeclarationData => {
@@ -94,8 +93,7 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
                   _ <- enrolService.enrolAWRS(successResponse,
                     businessPartnerDetails.get,
                     businessType,
-                    businessRegDetails.get.utr,
-                    userId)
+                    businessRegDetails.get.utr)
                   refreshResp <- applicationService.refreshProfile
                 } yield refreshResp match {
                   case _ =>
