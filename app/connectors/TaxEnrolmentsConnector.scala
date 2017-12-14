@@ -81,12 +81,13 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
       case e =>
         if (tries < retryLimit) {
           Future {
-            warn(s"Retrying GG Enrol - call number: $tries")
+            warn(s"Retrying EMAC Enrol - call number: $tries")
             Thread.sleep(retryWait)
           }.flatMap(_ => trySend(tries + 1, postUrl, requestPayload, auditMap))
         }
         else {
-          warn(s"Retrying GG Enrol - retry limit exceeded")
+          println( "\n\n\n###### RETRY EXCEEDED")
+          warn(s"Retrying EMAC Enrol - retry limit exceeded")
           audit(transactionName = auditEMACTxName,
             detail = auditMap ++ Map("verifiers" -> requestPayload.verifiers.toString, "Exception" -> e.getMessage),
             eventType = eventTypeFailure)

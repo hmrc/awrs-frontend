@@ -41,7 +41,7 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
   private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
 
   def getGroupIdentifier(implicit hc: HeaderCarrier): Future[String] = {
-    authorised(AuthProviders(GovernmentGateway) and AffinityGroup.Agent).retrieve(groupIdentifier) {
+    authorised(AuthProviders(GovernmentGateway) and AffinityGroup.Organisation).retrieve(groupIdentifier) {
       case Some(groupId) => Future.successful(formatGroupId(groupId))
       case _ => throw new RuntimeException("No group identifier found for the agent!")
     }
@@ -53,7 +53,7 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
       case _ => Verifier("CTUTR", utr.getOrElse(""))
     }
     List(
-      Verifier("POSTCODE", postcode),
+      Verifier("Postcode", postcode),
       Verifier("SAFEID", safeId)
     ) :+ utrVerifier
   }
@@ -66,11 +66,19 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
                )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
       val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
       if (isEmacFeatureToggle) {
+        val emacUserId = userId.replace("/auth/session/", "")
+        println( "\n\n\nHERE 1")
         val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
-        val verifiers = createVerifiers(businessPartnerDetails.safeId, None, businessType, postCode)
-        val requestPayload = RequestPayload(userId, enrolment.friendlyName, enrolmentType, verifiers)
-        getGroupIdentifier.flatMap(groupId=>taxEnrolmentsConnector
-          .enrol(requestPayload, groupId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
+        println( "HERE 2" + postCode)
+        val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
+        println( "HERE 3" + businessPartnerDetails.safeId)
+        println( "HERE 4" + verifiers)
+        val requestPayload = RequestPayload(emacUserId, enrolment.friendlyName, enrolmentType, verifiers)
+        println( "HERE 5" + requestPayload)
+        getGroupIdentifier.flatMap(groupId => {
+          println("HERE 6" + groupId)
+          taxEnrolmentsConnector.enrol(requestPayload, groupId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
+        }
         )
       } else {
         ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
