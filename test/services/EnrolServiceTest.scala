@@ -17,9 +17,10 @@
 package services
 
 import _root_.models._
-import connectors.GovernmentGatewayConnector
+import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import uk.gov.hmrc.auth.core.AuthConnector
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 
@@ -31,6 +32,7 @@ import scala.concurrent.Future
 class EnrolServiceTest extends AwrsUnitTestTraits {
   val mockGovernmentGatewayConnector: GovernmentGatewayConnector = mock[GovernmentGatewayConnector]
 
+  val userId = ""
   val saUtr: String = testUtr
   val ctUtr: String = testCTUtr
   val enrolRequestSAUTR =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG", friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456","",saUtr,"postcode"))
@@ -43,9 +45,14 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   val businessTypeSOP = "SOP"
 
   val successfulSubscriptionResponse = SuccessfulSubscriptionResponse("","XAAW000000123456","")
+  val mockAuthConnector = mock[AuthConnector]
+  val mockTaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
 
   object EnrolServiceTest extends EnrolService {
     override val ggConnector = mockGovernmentGatewayConnector
+    override val authConnector = mockAuthConnector
+    override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
+    override val isEmacFeatureToggle = false
   }
 
   override def beforeEach(): Unit = {
@@ -58,7 +65,7 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
 
     "fetch data if found in save4later" in {
       when(mockGovernmentGatewayConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(successfulEnrolResponse))
-      val result = EnrolServiceTest.enrolAWRS(successfulSubscriptionResponse, testBusinessCustomerDetails, businessType, Some(testUtr))
+      val result = EnrolServiceTest.enrolAWRS(successfulSubscriptionResponse, testBusinessCustomerDetails, businessType, Some(testUtr), userId)
       await(result) shouldBe successfulEnrolResponse
     }
 

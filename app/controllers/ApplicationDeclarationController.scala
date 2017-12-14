@@ -27,6 +27,8 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{AnyContent, Request}
 import services._
+import uk.gov.hmrc.domain.AwrsUtr
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
 import utils.AwrsConfig.emailVerificationEnabled
 
@@ -53,6 +55,8 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
         }
   }
 
+  private def getRefNo(implicit user: AuthContext): String = user.principal.accounts.awrs.fold("")(_.utr.toString)
+
   def sendApplication = async {
     implicit user =>
       implicit request =>
@@ -76,6 +80,8 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
           case _ =>
             val businessType = getBusinessType.getOrElse("")
 
+            val awrs: String = getRefNo // getAwrsRefNo.toString
+            val userId = user.user.userId
             applicationDeclarationForm.bindFromRequest.fold(
               formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
               applicationDeclarationData => {
@@ -85,7 +91,11 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
                   businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
                   businessRegDetails <- save4LaterService.mainStore.fetchBusinessRegistrationDetails
                   successResponse <- applicationService.sendApplication()
-                  enrolAWRS <- enrolService.enrolAWRS(successResponse, businessPartnerDetails.get, businessType, businessRegDetails.get.utr)
+                  _ <- enrolService.enrolAWRS(successResponse,
+                    businessPartnerDetails.get,
+                    businessType,
+                    businessRegDetails.get.utr,
+                    userId)
                   refreshResp <- applicationService.refreshProfile
                 } yield refreshResp match {
                   case _ =>

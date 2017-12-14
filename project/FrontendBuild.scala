@@ -35,7 +35,8 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-partials" % playPartialsVersion, // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc" %% "domain" % domainVersion,
     "uk.gov.hmrc" %% "json-encryption" % jSonEncryptionVersion,
-    "com.mohiva" %% "play-html-compressor" % "0.6.3" // used to pretty print html by stripping out all the whitespaces added by the playframework
+    "com.mohiva" %% "play-html-compressor" % "0.6.3", // used to pretty print html by stripping out all the whitespaces added by the playframework
+    "uk.gov.hmrc" %% "auth-client" % "2.4.0"
   )
 
 

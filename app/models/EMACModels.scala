@@ -17,7 +17,12 @@
 package models
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.crypto.Verifier
+
+case class Verifier(key: String, value: String)
+
+object Verifier {
+  implicit val formats = Json.format[Verifier]
+}
 
 case class RequestPayload(userId: String, friendlyName: String, `type`: String, verifiers: List[Verifier])
 

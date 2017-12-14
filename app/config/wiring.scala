@@ -16,6 +16,7 @@
 
 package config
 
+import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.hooks.HttpHooks
@@ -92,4 +93,9 @@ object AwrsShortLivedCache extends ShortLivedCache {
 object AwrsAPIShortLivedCache extends ShortLivedCache {
   override implicit lazy val crypto = ApplicationCrypto.JsonCrypto
   override lazy val shortLiveCache = AwrsAPIDataShortLivedCaching
+}
+
+object AuthClientConnector extends PlayAuthConnector with ServicesConfig {
+  val serviceUrl: String = baseUrl("auth")
+  lazy val http = WSHttp
 }

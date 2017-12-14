@@ -16,45 +16,77 @@
 
 package services
 
-import _root_.models.{BusinessCustomerDetails, EnrolRequest, RequestPayload, SuccessfulSubscriptionResponse}
-import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 
-import scala.concurrent.ExecutionContext
-import GGConstants._
+import config.{AuthClientConnector, FrontendAuthConnector}
+import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
+import models._
+import services.GGConstants._
+import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthProviders, AuthorisedFunctions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.RunMode
 
-trait EnrolService extends RunMode {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
+
+trait EnrolService extends RunMode with AuthorisedFunctions {
   val ggConnector: GovernmentGatewayConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector
 
   val isEmacFeatureToggle: Boolean
 
+  val enrolmentType = "principal"
+
+  private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
+
+  def getGroupIdentifier(implicit hc: HeaderCarrier): Future[String] = {
+    authorised(AuthProviders(GovernmentGateway) and AffinityGroup.Agent).retrieve(groupIdentifier) {
+      case Some(groupId) => Future.successful(formatGroupId(groupId))
+      case _ => throw new RuntimeException("No group identifier found for the agent!")
+    }
+  }
+
+  private def createVerifiers(safeId: String, utr: Option[String], businessType: String, postcode: String) = {
+    val utrVerifier = businessType match {
+      case "SOP" => Verifier("SAUTR", utr.getOrElse(""))
+      case _ => Verifier("CTUTR", utr.getOrElse(""))
+    }
+    List(
+      Verifier("POSTCODE", postcode),
+      Verifier("SAFEID", safeId)
+    ) :+ utrVerifier
+  }
+
   def enrolAWRS(success: SuccessfulSubscriptionResponse,
                 businessPartnerDetails: BusinessCustomerDetails,
-                businessType: String, utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
-    if (isEmacFeatureToggle) {
-      val requestPayload = RequestPayload("","","",List.empty)
-      val groupId: String = ""
-      val awrsRegNo = ""
-      taxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRegNo)
-    } else {
-      ggConnector.enrol(createEnrolment(success,
-        businessPartnerDetails,
-        businessType, utr),
-        businessPartnerDetails, businessType)
-    }
+                businessType: String,
+                utr: Option[String],
+                userId: String
+               )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+      val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
+      if (isEmacFeatureToggle) {
+        val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
+        val verifiers = createVerifiers(businessPartnerDetails.safeId, None, businessType, postCode)
+        val requestPayload = RequestPayload(userId, enrolment.friendlyName, enrolmentType, verifiers)
+        getGroupIdentifier.flatMap(groupId=>taxEnrolmentsConnector
+          .enrol(requestPayload, groupId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
+        )
+      } else {
+        ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
+      }
+
   }
 
   def createEnrolment(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit ec: ExecutionContext) = {
 
     val awrsRef = success.awrsRegistrationNumber
-    val postcode: String = businessPartnerDetails.businessAddress.postcode.fold("")(x=>x).replaceAll("\\s+", "")
+    val postcode: String = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
 
     val knownFacts = (utr, businessType) match {
-      case (Some(saUtr), "SOP") => Seq(awrsRef,"", saUtr, postcode)
-      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr,"", postcode)
-      case (_, _) => Seq(awrsRef,"","", postcode)
+      case (Some(saUtr), "SOP") => Seq(awrsRef, "", saUtr, postcode)
+      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr, "", postcode)
+      case (_, _) => Seq(awrsRef, "", "", postcode)
     }
 
     EnrolRequest(portalId = mdtp,
@@ -68,5 +100,6 @@ trait EnrolService extends RunMode {
 object EnrolService extends EnrolService {
   val ggConnector = GovernmentGatewayConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
-  override val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(false)
+  val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(false)
+  override val authConnector = AuthClientConnector
 }
