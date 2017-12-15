@@ -72,12 +72,9 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
         val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
           authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
             case Credentials(ggCred, GGProviderId) ~ Some(groupId) =>
-              val grpId = groupId.replace( "testGroupId-", "" )
-              val credId = ggCred.replace( "cred-id-", "" )
-              println("HERE 6" + grpId)
-              println("HERE 4" + credId)
+              val grpId = groupId//.replace( "testGroupId-", "" )
+              val credId = ggCred//.replace( "cred-id-", "" )
               val requestPayload = RequestPayload(credId, enrolment.friendlyName, enrolmentType, verifiers)
-              println( "HERE 5" + requestPayload)
               taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
             case _ ~ None =>
               Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
@@ -87,7 +84,6 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
       } else {
         ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
       }
-
   }
 
   def createEnrolment(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit ec: ExecutionContext) = {
