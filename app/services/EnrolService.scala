@@ -20,6 +20,7 @@ package services
 import config.AuthClientConnector
 import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 import models._
+import play.api.Logger
 import services.GGConstants._
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
@@ -66,30 +67,38 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
                 businessPartnerDetails: BusinessCustomerDetails,
                 businessType: String,
                 utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
-      val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
-      if (isEmacFeatureToggle) {
-        val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
-        val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
-          authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
-            case Credentials(ggCred, GGProviderId) ~ Some(groupId) =>
-              val grpId = groupId//.replace( "testGroupId-", "" )
-              val credId = ggCred//.replace( "cred-id-", "" )
-              val requestPayload = RequestPayload(credId, enrolment.friendlyName, enrolmentType, verifiers)
-              taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
-            case _ ~ None =>
-              Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
-            case Credentials(_, _) ~ _ =>
-              Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
-          }
-      } else {
-        ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
+    val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
+    if (isEmacFeatureToggle) {
+      Logger.info("EMACS is switched ON so enrolling using EMAC enrol service.")
+      val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
+      val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
+      authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
+        case Credentials(ggCred, GGProviderId) ~ Some(groupId) =>
+          val grpId = groupId
+          //.replace( "testGroupId-", "" )
+          val credId = ggCred
+          //.replace( "cred-id-", "" )
+          val requestPayload = RequestPayload(credId, enrolment.friendlyName, enrolmentType, verifiers)
+          taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
+        case _ ~ None =>
+          Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
+        case Credentials(_, _) ~ _ =>
+          Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
       }
+    } else {
+      Logger.info("EMACS is switched OFF so enrolling using GG")
+      ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
+    }
   }
 
-  def createEnrolment(success: SuccessfulSubscriptionResponse, businessPartnerDetails: BusinessCustomerDetails, businessType: String, utr: Option[String])(implicit ec: ExecutionContext) = {
+  def createEnrolment(success: SuccessfulSubscriptionResponse,
+                      businessPartnerDetails: BusinessCustomerDetails,
+                      businessType: String,
+                      utr: Option[String])(implicit ec: ExecutionContext): EnrolRequest = {
 
     val awrsRef = success.awrsRegistrationNumber
-    val postcode: String = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
+    val postcode: String = businessPartnerDetails.businessAddress.postcode
+      .fold("")(x => x).replaceAll("\\s+", "")
 
     val knownFacts = (utr, businessType) match {
       case (Some(saUtr), "SOP") => Seq(awrsRef, "", saUtr, postcode)
@@ -108,6 +117,6 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
 object EnrolService extends EnrolService {
   val ggConnector = GovernmentGatewayConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
-  val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(false)
+  val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
   override val authConnector = AuthClientConnector
 }

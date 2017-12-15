@@ -53,9 +53,8 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
             businessPartnerDetails: BusinessCustomerDetails,
             businessType: String)(implicit hc: HeaderCarrier): Future[Option[EnrolResponse]] = {
     val timer = metrics.startTimer(ApiType.API4Enrolment)
-    val logMessage = s"Enrol called with requestPayload $requestPayload, groupId $groupId, " +
+    val logMessage = s"EMAC Enrol called on tax enrolments connector with requestPayload $requestPayload, groupId $groupId, " +
       s"awrsRegistrationNumber $awrsRegistrationNumber, businessPartnerDetails $businessPartnerDetails, businessType $businessType."
-    println( "\n\n\n*******" + logMessage)
     Logger.info(logMessage)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~$awrsRegistrationNumber"
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
@@ -68,12 +67,11 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
     response
   }
 
-  //@tailrec
   def trySend(tries: Int, postUrl: String,
               requestPayload: RequestPayload,
               auditMap: Map[String, String])(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val jsonData: JsValue = Json.toJson(requestPayload)
-    println(s"\n\n\n+++++++++++++++++++++$postUrl+++++++++++++++${Json.prettyPrint(jsonData)}")
+    Logger.info(s"EMAC Enrol post made to tax enrolments service: $postUrl with payload ${Json.prettyPrint(jsonData)}.")
     http.POST[JsValue, HttpResponse](postUrl, jsonData).flatMap {
       response =>
         Future.successful(processResponse(response, postUrl, requestPayload))
@@ -81,13 +79,12 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
       case e =>
         if (tries < retryLimit) {
           Future {
-            warn(s"Retrying EMAC Enrol - call number: $tries")
+            warn(s"Retrying EMAC Enrol - call number: $tries.")
             Thread.sleep(retryWait)
           }.flatMap(_ => trySend(tries + 1, postUrl, requestPayload, auditMap))
         }
         else {
-          println( "\n\n\n###### RETRY EXCEEDED")
-          warn(s"Retrying EMAC Enrol - retry limit exceeded")
+          warn(s"Retrying EMAC Enrol - retry limit exceeded.")
           audit(transactionName = auditEMACTxName,
             detail = auditMap ++ Map("verifiers" -> requestPayload.verifiers.toString, "Exception" -> e.getMessage),
             eventType = eventTypeFailure)
