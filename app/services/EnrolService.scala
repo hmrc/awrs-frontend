@@ -22,11 +22,10 @@ import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 import models._
 import play.api.Logger
 import services.GGConstants._
-import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.AuthorisedFunctions
 import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, AuthProviders, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.config.RunMode
 
@@ -44,13 +43,6 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
   val GGProviderId = "GovernmentGateway"
 
   private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
-
-  def getGroupIdentifier(implicit hc: HeaderCarrier): Future[String] = {
-    authorised(AuthProviders(GovernmentGateway) and AffinityGroup.Organisation).retrieve(groupIdentifier) {
-      case Some(groupId) => Future.successful(formatGroupId(groupId))
-      case _ => throw new RuntimeException("No group identifier found for the agent!")
-    }
-  }
 
   private def createVerifiers(safeId: String, utr: Option[String], businessType: String, postcode: String) = {
     val utrVerifier = businessType match {
@@ -73,8 +65,8 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
       val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
-        case Credentials(ggCred, GGProviderId) ~ Some(groupId) =>
-          val grpId = groupId
+        case Credentials(ggCred, _) ~ Some(groupId) =>
+          val grpId = formatGroupId(groupId)
           //.replace( "testGroupId-", "" )
           val credId = ggCred
           //.replace( "cred-id-", "" )
