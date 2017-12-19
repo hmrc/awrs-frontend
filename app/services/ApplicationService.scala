@@ -145,7 +145,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       sections <- getSections(AccountUtils.getUtrOrName())
       awrsData <- {
         val schema = assembleAWRSFEModel(cached, businessCustomerDetails, sections)
-        awrsConnector.submitAWRSData(Json.toJson(schema))
+        awrsConnector.submitAWRSData(Json.toJson(schema)) // Calls ES6
       }
       isNewBusiness <- isNewBusiness(cached)
       _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)

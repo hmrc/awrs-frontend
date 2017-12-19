@@ -93,7 +93,7 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
                   _ <- enrolService.enrolAWRS(successResponse,
                     businessPartnerDetails.get,
                     businessType,
-                    businessRegDetails.get.utr)
+                    businessRegDetails.get.utr) // Calls ES8
                   refreshResp <- applicationService.refreshProfile
                 } yield refreshResp match {
                   case _ =>

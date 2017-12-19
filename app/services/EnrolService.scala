@@ -66,7 +66,7 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
       val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
         case Credentials(ggCred, _) ~ Some(groupId) =>
-          val grpId = formatGroupId(groupId)
+          val grpId = groupId
           val requestPayload = RequestPayload(ggCred, enrolment.friendlyName, enrolmentType, verifiers)
           taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
         case _ ~ None =>
