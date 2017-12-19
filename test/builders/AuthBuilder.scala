@@ -57,9 +57,6 @@ object AuthBuilder {
     val ctAuthority = Authority(userId, Accounts(org = Some(OrgAccount(s"/org/$org", Org(org))),
       awrs = Some(AwrsAccount(userId, AwrsUtr(testAWRSUtr)))), None, None, CredentialStrength.Strong, ConfidenceLevel.L50, None, None, None, "")
     AuthContext(authority = ctAuthority, nameFromSession = Some(userName))
-
-    //user.principal.accounts.awrs.get.utr
-
   }
 
   def createAuthContextWithOrWithoutAWWRS(userId: String, userName: String, org: String, hasAwrs: Boolean): AuthContext = {
