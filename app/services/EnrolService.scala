@@ -61,7 +61,7 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
   def enrolAWRS(success: SuccessfulSubscriptionResponse,
                 businessPartnerDetails: BusinessCustomerDetails,
                 businessType: String,
-                utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext, ac: AuthContext): Future[Option[EnrolResponse]] = {
+                utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
     if (isEmacFeatureToggle) {
       Logger.info("EMAC is switched ON so enrolling using EMAC enrol service.")
