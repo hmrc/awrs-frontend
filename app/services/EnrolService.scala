@@ -64,15 +64,17 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
       Logger.info("EMACS is switched ON so enrolling using EMAC enrol service.")
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
       val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
-      authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
-        case Credentials(ggCred, _) ~ Some(groupId) =>
-          val grpId = groupId
-          val requestPayload = RequestPayload(ggCred, enrolment.friendlyName, enrolmentType, verifiers)
-          taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
-        case _ ~ None =>
-          Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
-        case Credentials(_, _) ~ _ =>
-          Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
+      authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap { (xx: ~[Credentials, Option[String]]) =>
+        xx match {
+          case Credentials(ggCred, _) ~ Some(groupId) =>
+            val grpId = groupId
+            val requestPayload = RequestPayload(ggCred, enrolment.friendlyName, enrolmentType, verifiers)
+            taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
+          case _ ~ None =>
+            Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
+          case Credentials(_, _) ~ _ =>
+            Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
+        }
       }
     } else {
       Logger.info("EMACS is switched OFF so enrolling using GG")
