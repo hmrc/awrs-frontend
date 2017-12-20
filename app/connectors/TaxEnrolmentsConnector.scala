@@ -101,6 +101,9 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
       case OK =>
         metrics.incrementSuccessCounter(ApiType.API4Enrolment)
         response
+      case CREATED =>
+        metrics.incrementSuccessCounter(ApiType.API4Enrolment)
+        response
       case BAD_REQUEST =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
         Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +

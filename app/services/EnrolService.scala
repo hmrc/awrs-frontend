@@ -19,6 +19,7 @@ package services
 
 import config.AuthClientConnector
 import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
+import forms.AWRSEnums.BooleanRadioEnum
 import models._
 import play.api.Logger
 import services.GGConstants._
@@ -28,9 +29,11 @@ import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.config.RunMode
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 trait EnrolService extends RunMode with AuthorisedFunctions {
   val ggConnector: GovernmentGatewayConnector
@@ -58,7 +61,7 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
   def enrolAWRS(success: SuccessfulSubscriptionResponse,
                 businessPartnerDetails: BusinessCustomerDetails,
                 businessType: String,
-                utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+                utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext, ac: AuthContext): Future[Option[EnrolResponse]] = {
     val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
     if (isEmacFeatureToggle) {
       Logger.info("EMAC is switched ON so enrolling using EMAC enrol service.")
