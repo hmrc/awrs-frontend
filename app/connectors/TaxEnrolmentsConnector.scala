@@ -53,9 +53,6 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
             businessPartnerDetails: BusinessCustomerDetails,
             businessType: String)(implicit hc: HeaderCarrier): Future[Option[EnrolResponse]] = {
     val timer = metrics.startTimer(ApiType.API4Enrolment)
-    val logMessage = s"EMAC Enrol called on tax enrolments connector with requestPayload $requestPayload, groupId $groupId, " +
-      s"awrsRegistrationNumber $awrsRegistrationNumber, businessPartnerDetails $businessPartnerDetails, businessType $businessType."
-    Logger.info(logMessage)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
     val auditMap: Map[String, String] = Map(
