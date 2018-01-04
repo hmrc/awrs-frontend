@@ -1,6 +1,6 @@
 
 Frontend of the Alcohol Wholesale Registration Scheme application
-====================================================================
+=================================================================
 
 [![Build Status](https://travis-ci.org/hmrc/awrs-frontend.svg?branch=master)](https://travis-ci.org/hmrc/awrs-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/awrs-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/awrs-frontend/_latestVersion)
 
