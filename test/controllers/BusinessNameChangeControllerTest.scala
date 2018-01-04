@@ -23,7 +23,8 @@ import models._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.mocks.{MockSave4LaterService, MockKeyStoreService}
+import services.IndexService
+import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
@@ -44,12 +45,7 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val keyStoreService = TestKeyStoreService
-  }
-
-  "BusinessNameChangeController" must {
-    "use the correct AuthConnector" in {
-      BusinessNameChangeController.authConnector shouldBe FrontendAuthConnector
-    }
+    override val indexService = mock[IndexService]
   }
 
   "Submitting the business name change confirmation form with " should {

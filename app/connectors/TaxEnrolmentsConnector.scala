@@ -18,26 +18,133 @@ package connectors
 
 import config.{AwrsFrontendAuditConnector, WSHttp}
 import metrics.AwrsMetrics
-import models._
+import models.{RequestPayload, _}
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import services.GGConstants._
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.http._
 import utils.LoggingUtils
-import services.GGConstants._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpResponse }
 
 trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
+  val serviceURL = baseUrl("tax-enrolments")//
 
-  lazy val serviceURL = baseUrl("tax-enrolments")
+  val http: HttpGet with HttpPost = WSHttp//
+  val metrics: AwrsMetrics//
 
-  val http: HttpGet with HttpPost = WSHttp
-  val metrics: AwrsMetrics
+  val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
+  val EnrolmentIdentifierName = "AWRSRefNumber"
+  val retryLimit = 7
+  val retryWait = 1000 // milliseconds
 
   val deEnrolURI = "tax-enrolments/de-enrol"
+  val enrolmentUrl = s"$serviceURL/tax-enrolments"
+
+  val emptyResponse: EnrolResponse = EnrolResponse("", "", Seq.empty)
+
+  def enrol(requestPayload: RequestPayload,
+            groupId: String,
+            awrsRegistrationNumber: String,
+            businessPartnerDetails: BusinessCustomerDetails,
+            businessType: String)(implicit hc: HeaderCarrier): Future[Option[EnrolResponse]] = {
+    val timer = metrics.startTimer(ApiType.API4Enrolment)
+    val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
+    val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
+    val auditMap: Map[String, String] = Map(
+      "safeId" -> businessPartnerDetails.safeId,
+      "UserDetail" -> businessPartnerDetails.businessName,
+      "legal-entity" -> businessType)
+    val response = trySend(0, postUrl, requestPayload, auditMap).map(_=>Option(emptyResponse))
+    timer.stop()
+    response
+  }
+
+  def trySend(tries: Int, postUrl: String,
+              requestPayload: RequestPayload,
+              auditMap: Map[String, String])(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val jsonData: JsValue = Json.toJson(requestPayload)
+    http.POST[JsValue, HttpResponse](postUrl, jsonData).flatMap {
+      response =>
+        Future.successful(processResponse(response, postUrl, requestPayload))
+    }.recoverWith {
+      case e =>
+        if (tries < retryLimit) {
+          Future {
+            warn(s"Retrying EMAC Enrol - call number: $tries.")
+            Thread.sleep(retryWait)
+          }.flatMap(_ => trySend(tries + 1, postUrl, requestPayload, auditMap))
+        }
+        else {
+          warn(s"Retrying EMAC Enrol - retry limit exceeded.")
+          audit(transactionName = auditEMACTxName,
+            detail = auditMap ++ Map("verifiers" -> requestPayload.verifiers.toString, "Exception" -> e.getMessage),
+            eventType = eventTypeFailure)
+          // Code changed to hide the Enrol failure from the user.
+          // The failure will need to be sorted out manually and there is nothing the user can do at the time.
+          // The manual process will take place after the Enrol failure is picked up in Splunk.
+          Future.successful(HttpResponse(OK))
+        }
+    }
+  }
+
+  def processResponse(response: HttpResponse, postUrl: String, requestPayload: RequestPayload)(implicit hc: HeaderCarrier): HttpResponse = {
+    response.status match {
+      case OK =>
+        metrics.incrementSuccessCounter(ApiType.API4Enrolment)
+        response
+      case CREATED =>
+        metrics.incrementSuccessCounter(ApiType.API4Enrolment)
+        response
+      case BAD_REQUEST =>
+        metrics.incrementFailedCounter(ApiType.API4Enrolment)
+        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
+          s"gg url:$postUrl, " +
+          s"Bad Request Exception account Ref:${requestPayload.verifiers}, " +
+          s"Service: $AWRS_SERVICE_NAME")
+        throw new BadRequestException(response.body)
+      case NOT_FOUND =>
+        metrics.incrementFailedCounter(ApiType.API4Enrolment)
+        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
+          s"Not Found Exception account Ref:${requestPayload.verifiers}, " +
+          s"Service: $AWRS_SERVICE_NAME}")
+        throw new NotFoundException(response.body)
+      case SERVICE_UNAVAILABLE =>
+        metrics.incrementFailedCounter(ApiType.API4Enrolment)
+        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
+          s"gg url:$postUrl, " +
+          s"Service Unavailable Exception account Ref:${requestPayload.verifiers}, " +
+          s"Service: $AWRS_SERVICE_NAME}")
+        throw new ServiceUnavailableException(response.body)
+      case BAD_GATEWAY =>
+        metrics.incrementFailedCounter(ApiType.API4Enrolment)
+        createWarning(postUrl, None, requestPayload.verifiers, response.body, response.status, Some("BAD_GATEWAY"))
+        response
+      case status =>
+        metrics.incrementFailedCounter(ApiType.API4Enrolment)
+        createWarning(postUrl, Some(status), requestPayload.verifiers, response.body, response.status)
+        throw new InternalServerException(response.body)
+    }
+  }
+
+  private def createWarning(postUrl: String,
+                            optionStatus: Option[Int],
+                            verifiers: List[Verifier],
+                            responseBody: String,
+                            responseStatus: Int,
+                            optionErrorStatus: Option[String] = None) = {
+    val errorStatus = optionErrorStatus.fold("")(status => " - " + status)
+    Logger.warn(s"[GovernmentGatewayConnector][enrol]$errorStatus" +
+      s"gg url:$postUrl, " +
+      optionStatus.map(status => s"status:$status Exception account Ref:$verifiers, ") +
+      s"Service: $AWRS_SERVICE_NAME" +
+      s"Reponse Body: $responseBody," +
+      s"Reponse Status: $responseStatus")
+  }
 
   def deEnrol(awrsRef: String, businessName: String, businessType: String)(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
     val timer = metrics.startTimer(ApiType.API10DeEnrolment)
@@ -71,6 +178,6 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
 
 object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
   override val appName = "awrs-frontend"
- override val metrics = AwrsMetrics
+  override val metrics = AwrsMetrics
   override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
 }

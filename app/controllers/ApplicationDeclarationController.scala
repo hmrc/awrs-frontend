@@ -26,13 +26,17 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{AnyContent, Request}
+import services.EnrolService.runModeConfiguration
 import services._
+import uk.gov.hmrc.domain.AwrsUtr
+import uk.gov.hmrc.play.config.RunMode
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
 import utils.AwrsConfig.emailVerificationEnabled
 
 import scala.concurrent.Future
 
-trait ApplicationDeclarationController extends AwrsController with AccountUtils with DataCacheService {
+trait ApplicationDeclarationController extends AwrsController with AccountUtils with DataCacheService with RunMode {
 
   val save4LaterService: Save4LaterService
   val keyStoreService: KeyStoreService
@@ -52,6 +56,8 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
           case _ => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form, isEnrolledApplicant))
         }
   }
+
+  private def getRefNo(implicit user: AuthContext): String = user.principal.accounts.awrs.fold("")(_.utr.toString)
 
   def sendApplication = async {
     implicit user =>
@@ -75,21 +81,29 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
           )
           case _ =>
             val businessType = getBusinessType.getOrElse("")
-
+            val awrs: String = getRefNo
             applicationDeclarationForm.bindFromRequest.fold(
               formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
               applicationDeclarationData => {
+                val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
                 for {
                   savedDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(applicationDeclarationData)
                   _ <- backUpSave4LaterInKeyStore
                   businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
                   businessRegDetails <- save4LaterService.mainStore.fetchBusinessRegistrationDetails
                   successResponse <- applicationService.sendApplication()
-                  enrolAWRS <- enrolService.enrolAWRS(successResponse, businessPartnerDetails.get, businessType, businessRegDetails.get.utr)
-                  refreshResp <- applicationService.refreshProfile
-                } yield refreshResp match {
-                  case _ =>
-                    Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false)).addAwrsRefToSession(successResponse.etmpFormBundleNumber)
+                  _ <- enrolService.enrolAWRS(successResponse,
+                    businessPartnerDetails.get,
+                    businessType,
+                    businessRegDetails.get.utr) // Calls ES8
+                  _ <- if (isEmacFeatureToggle) {
+                    Future.successful(true)
+                  } else {
+                    applicationService.refreshProfile.map(_=>true)
+                  }
+                } yield {
+                    Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
+                      .addAwrsRefToSession(successResponse.etmpFormBundleNumber)
                 }
               }.recover {
                 case error: DESValidationException => InternalServerError(views.html.error_template(Messages("awrs.application_des_validation.title"), Messages("awrs.application_des_validation.heading"), Messages("awrs.application_des_validation.message")))

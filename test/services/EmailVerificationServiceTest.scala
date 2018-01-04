@@ -34,10 +34,6 @@ class EmailVerificationServiceTest extends AwrsUnitTestTraits {
   }
 
   "Email Verification Service" should {
-    "must use correct connector" in {
-      EmailVerificationService.emailVerificationConnector shouldBe EmailVerificationConnector
-    }
-
     "return true if the email is sent" in {
       when(mockEmailVerificationConnector.sendVerificationEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
       val result = EmailVerificationServiceTest.sendVerificationEmail(testEmail)

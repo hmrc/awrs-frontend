@@ -54,15 +54,6 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     override val isEmailVerificationEnabled = false
   }
 
-
-  "EmailVerificationController" must {
-
-    "use the correct AuthConnector" in {
-      EmailVerificationController.authConnector shouldBe FrontendAuthConnector
-    }
-
-  }
-
   "Page load for Authorised users" should {
 
     "redirect to the declaration page if the email verification is turned off" in {

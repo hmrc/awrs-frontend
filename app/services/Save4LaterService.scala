@@ -25,7 +25,9 @@ import utils.AccountUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+
+import scala.util.{Failure, Success, Try}
 
 trait Save4LaterUtil {
 
@@ -43,7 +45,6 @@ trait Save4LaterUtil {
 
   @inline def removeAll(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] =
     save4LaterConnector.removeAll(AccountUtils.getUtrOrName())
-
 }
 
 trait Save4LaterService {
