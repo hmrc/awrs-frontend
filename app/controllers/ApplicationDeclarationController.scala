@@ -81,7 +81,7 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
           )
           case _ =>
             val businessType = getBusinessType.getOrElse("")
-            val awrs: String = getRefNo // getAwrsRefNo.toString
+            val awrs: String = getRefNo
             applicationDeclarationForm.bindFromRequest.fold(
               formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
               applicationDeclarationData => {

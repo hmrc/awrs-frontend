@@ -38,7 +38,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
   val metrics: AwrsMetrics//
 
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
-
+  val EnrolmentIdentifierName = "AWRSRefNumber"
   val retryLimit = 7
   val retryWait = 1000 // milliseconds
 
@@ -56,7 +56,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
     val logMessage = s"EMAC Enrol called on tax enrolments connector with requestPayload $requestPayload, groupId $groupId, " +
       s"awrsRegistrationNumber $awrsRegistrationNumber, businessPartnerDetails $businessPartnerDetails, businessType $businessType."
     Logger.info(logMessage)
-    val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~$awrsRegistrationNumber"
+    val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
     val auditMap: Map[String, String] = Map(
       "safeId" -> businessPartnerDetails.safeId,
@@ -71,7 +71,6 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
               requestPayload: RequestPayload,
               auditMap: Map[String, String])(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val jsonData: JsValue = Json.toJson(requestPayload)
-    Logger.info(s"EMAC Enrol post made to tax enrolments service: $postUrl with payload ${Json.prettyPrint(jsonData)}.")
     http.POST[JsValue, HttpResponse](postUrl, jsonData).flatMap {
       response =>
         Future.successful(processResponse(response, postUrl, requestPayload))

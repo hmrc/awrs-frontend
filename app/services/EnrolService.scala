@@ -64,7 +64,6 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
                 utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
     if (isEmacFeatureToggle) {
-      Logger.info("EMAC is switched ON so enrolling using EMAC enrol service.")
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
       val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
