@@ -108,6 +108,6 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
 object EnrolService extends EnrolService {
   val ggConnector = GovernmentGatewayConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
-  val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
+  val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(false)
   override val authConnector = AuthClientConnector
 }
