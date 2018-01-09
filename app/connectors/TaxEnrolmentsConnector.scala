@@ -154,7 +154,6 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
     val auditSubscribeTxName: String = "AWRS ETMP de-enrol"
 
     val postUrl = s"""$serviceURL/$deEnrolURI/$service"""
-
     http.POST[JsValue, HttpResponse](postUrl, jsonData) map {
       response =>
         timer.stop()

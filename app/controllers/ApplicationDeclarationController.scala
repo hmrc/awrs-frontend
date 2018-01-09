@@ -85,7 +85,7 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
             applicationDeclarationForm.bindFromRequest.fold(
               formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
               applicationDeclarationData => {
-                val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(false)
+                val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
                 for {
                   savedDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(applicationDeclarationData)
                   _ <- backUpSave4LaterInKeyStore
