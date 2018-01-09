@@ -137,6 +137,7 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
   def callToAction: Action[AnyContent] = async {
     implicit user => implicit request =>
       confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
+
         deRegistrationConfirmationForm.bindFromRequest.fold(
           formWithErrors =>
             Future.successful(BadRequest(views.html.awrs_de_registration_confirm(formWithErrors, proposedEndDate)))
@@ -170,7 +171,8 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
                   val businessName = getBusinessName.fold("")(x => x)
                   val businessType = getBusinessType.fold("")(x => x)
                   deEnrolService.deEnrolAWRS(awrsRef, businessName, businessType) flatMap {
-                    case (true) => success()
+                    case (true) =>
+                      success()
                     case _ =>
                       err("call to government gateway de-enrol failed")
                       Future.failed(DeEnrollException("call to government gateway de-enrol failed"))
