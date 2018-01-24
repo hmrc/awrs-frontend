@@ -47,16 +47,6 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
 
   private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
 
-  private def createVerifiers(safeId: String, utr: Option[String], businessType: String, postcode: String) = {
-    val utrVerifier = businessType match {
-      case "SOP" => Verifier("SAUTR", utr.getOrElse(""))
-      case _ => Verifier("CTUTR", utr.getOrElse(""))
-    }
-    List(
-      Verifier("Postcode", postcode),
-      Verifier("SAFEID", safeId)
-    ) :+ utrVerifier
-  }
 
   def enrolAWRS(success: SuccessfulSubscriptionResponse,
                 businessPartnerDetails: BusinessCustomerDetails,
@@ -65,7 +55,7 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
     val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
     if (isEmacFeatureToggle) {
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
-      val verifiers = createVerifiers(businessPartnerDetails.safeId, businessPartnerDetails.utr, businessType, postCode)
+      val verifiers = createVerifiers(businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
         case Credentials(ggCred, _) ~ Some(groupId) =>
           val grpId = groupId
@@ -81,6 +71,17 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
       ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
     }
   }
+
+  private def createVerifiers(utr: Option[String], businessType: String, postcode: String) = {
+    val utrVerifier = businessType match {
+      case "SOP" => Verifier("SAUTR", utr.getOrElse(""))
+      case _ => Verifier("CTUTR", utr.getOrElse(""))
+    }
+    List(
+      Verifier("Postcode", postcode)
+    ) :+ utrVerifier
+  }
+
 
   def createEnrolment(success: SuccessfulSubscriptionResponse,
                       businessPartnerDetails: BusinessCustomerDetails,
