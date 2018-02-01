@@ -83,14 +83,14 @@
                 }
                 case _ => {}
             }
-            @awrsPrintLink("data-journey-click= print-click:Applicationstatus:Print")
+            @awrsPrintLink()
         </div>
     </div>
     }
 }
 @content = {
     @application_status_header(params)
-    @awrsPrintLink("data-journey-click= print-click:Applicationstatus:Print")
+    @awrsPrintLink()
     @info
     @backLink()
 }
