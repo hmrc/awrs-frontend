@@ -14,7 +14,7 @@
                     Messages("awrs.withdrawal.description_1", date)
                 )
                 <h2 class="heading-small print-hidden">@Messages("awrs.generic.print_confirmation")</h2>
-                @awrsPrintLink()
+                @awrsPrintLink("data-journey-click= print-click:Applicationwithdrawn:Print")
                 <hr aria-hidden="true">
                 <h2 class="heading-small" id="ConfirmationNoteHeadingText">@Messages("awrs.confirmation.information")</h2>
                 <p>@Messages("awrs.withdrawal.confirmation_page.information_what_next_1")</p>
@@ -31,7 +31,7 @@
         "awrs.de_registration.confirmation_page.description",
         Messages("awrs.de_registration.confirmation_page.description_1", date)
     )
-    @awrsPrintLink()
+    @awrsPrintLink("data-journey-click= print-click:Applicationwithdrawn:Print")
     <h2 class="heading-small">@Messages("awrs.confirmation.information")</h2>
     <p>@Messages("awrs.withdrawal.confirmation_page.information_what_next_1") @Messages("awrs.withdrawal.confirmation_page.information_what_next_1_href").</p>
     @backLink()

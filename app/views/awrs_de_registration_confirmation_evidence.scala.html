@@ -13,7 +13,7 @@
                     Messages("awrs.de_registration.confirmation_page.description_1", today)
                 )
                 <h2 class="heading-small print-hidden">@Messages("awrs.generic.print_confirmation")</h2>
-                @awrsPrintLink()
+                @awrsPrintLink("data-journey-click= print-click:Cancellationregistrationconfirmation:Print")
                 <hr aria-hidden="true">
                 @info
                 <div class="form-group">
@@ -35,7 +35,7 @@
         "awrs.de_registration.confirmation_page.description",
         Messages("awrs.de_registration.confirmation_page.description_1", today)
     )
-    @awrsPrintLink()
+    @awrsPrintLink("data-journey-click= print-click:Cancellationregistrationconfirmation:Print")
     @info
     @backLink()
 }

@@ -31,7 +31,7 @@
 </div>
 <h1 class="heading-xlarge">@Messages("awrs.view_application.heading", businessName.fold("")(x => x))</h1>
 
-@awrsPrintLink("data-journey-click=print-application-summary-page:click:print")
+@awrsPrintLink("data-journey-click= print-click:AlcoholWholesalerRegistrationSchemeApplicationforRealBusinessInc:Print")
 
 @subview_business_details(getHeading(businessDetailsName), cache.getBusinessDetails, businessName, false)
 @subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity), false)
