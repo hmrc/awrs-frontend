@@ -278,23 +278,17 @@
      $('input:checkbox').click(function() {
          ga('send', 'event', this.id, 'click');
      });
+/*ga data for all the save/print and external links*/
 
      $('a[rel="external"]').click(function(){
-     alert("Hello")
      if($("h1.heading-xlarge"))
          var sEventAction = $("h1.heading-xlarge").text()
          else
          var sEventAction =  $(document).find("title").text();
 
-        ga('send', 'event','link - click', sEventAction, this.text);
+        ga('send', 'event','link-click', sEventAction, this.text);
      });
 
-//     $('#view-application').click(function() {
-//        if (this.getAttribute('data-page') == "index") {
-//            ga('send', 'event', "view-print-application-index-page", 'click');
-//        }
-//     });
-//
     $('#print').click(function() {
     if($("h1.heading-xlarge"))
     var sEventAction = $("h1.heading-xlarge").text()
@@ -303,6 +297,15 @@
 
            ga('send', 'event','print-click', sEventAction, this.text);
      });
+
+     $('button:submit').click(function() {
+         if($("h1.heading-xlarge"))
+         var sEventAction = $("h1.heading-xlarge").text()
+         else
+         var sEventAction =  $(document).find("title").text();
+
+                ga('send', 'event','save-click', sEventAction, this.innerText);
+          });
 
     $('.validation-summary-message a').on('click', function(e){
         e.preventDefault();
