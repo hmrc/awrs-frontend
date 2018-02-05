@@ -26,8 +26,8 @@
                 </div>
                 <hr aria-hidden="true">
                 @list
-                <p id="detailed-information">@Html(Messages("awrs.confirmation.detailed_information","<a href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
-                <p><a id="inform-us-link" class="print-hidden element-inline" href="https://www.gov.uk/government/publications/excise-notice-2002-alcohol-wholesaler-registration-scheme/excise-notice-2002-alcohol-wholesaler-registration-scheme#approval-details-change">@Messages("awrs.index_page.changes.answer.para_3_link")</a><div class="screen-hidden element-inline">@Messages("awrs.index_page.changes.answer.para_3_link")</div>&nbsp;@Messages("awrs.index_page.changes.answer.para_3")
+                <p id="detailed-information">@Html(Messages("awrs.confirmation.detailed_information","<a class='external_link' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
+                <p><a id="inform-us-link" class="print-hidden element-inline external_link" href="https://www.gov.uk/government/publications/excise-notice-2002-alcohol-wholesaler-registration-scheme/excise-notice-2002-alcohol-wholesaler-registration-scheme#approval-details-change">@Messages("awrs.index_page.changes.answer.para_3_link")</a><div class="screen-hidden element-inline">@Messages("awrs.index_page.changes.answer.para_3_link")</div>&nbsp;@Messages("awrs.index_page.changes.answer.para_3")
                 <div class="form-group">
                     <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@Messages("awrs.confirmation.finish")</a>
                 </div>

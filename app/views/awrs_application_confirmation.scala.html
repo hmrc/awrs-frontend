@@ -26,7 +26,7 @@
                 <hr aria-hidden="true">
                 @paragraphs1
                 @list
-                <p id="detailed-information">@Html(Messages("awrs.confirmation.detailed_information","<a href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
+                <p id="detailed-information">@Html(Messages("awrs.confirmation.detailed_information","<a class='external_link' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
                 <div class="form-group">
                     <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@Messages("awrs.confirmation.finish")</a>
                 </div>

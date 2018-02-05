@@ -280,7 +280,7 @@
      });
 /*ga data for all the save/print and external links*/
 
-     $('a[rel="external"]').click(function(){
+     $(".external_link").click(function(){
      if($("h1.heading-xlarge"))
          var sEventAction = $("h1.heading-xlarge").text()
          else
