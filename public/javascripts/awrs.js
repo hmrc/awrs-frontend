@@ -284,10 +284,9 @@
      if($("h1.heading-xlarge")){
          if($("h1.heading-xlarge").text() != "")
           var sEventAction = $("h1.heading-xlarge").text()
-         }
-         else{
+         else
           var sEventAction = $("h1").text()
-         }
+       }
 
       else{
          var sEventAction =  $(document).find("title").text();
