@@ -295,6 +295,16 @@
         ga('send', 'event','link-click', sEventAction, this.text);
      });
 
+
+     $('#submit_changes').click(function() {
+              if($("h1.heading-xlarge"))
+              var sEventAction = $("h1.heading-xlarge").text()
+              else
+              var sEventAction =  $(document).find("title").text();
+
+                     ga('send', 'event','save-click', sEventAction, this.innerText);
+               });
+
     $('#print').click(function() {
     if($("h1.heading-xlarge"))
     var sEventAction = $("h1.heading-xlarge").text()
