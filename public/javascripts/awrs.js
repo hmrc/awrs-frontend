@@ -281,10 +281,17 @@
 /*ga data for all the save/print and external links*/
 
      $(".external_link").click(function(){
-     if($("h1.heading-xlarge"))
-         var sEventAction = $("h1.heading-xlarge").text()
-         else
+     if($("h1.heading-xlarge")){
+         if($("h1.heading-xlarge").text() != "")
+          var sEventAction = $("h1.heading-xlarge").text()
+         }
+         else{
+          var sEventAction = $("h1").text()
+         }
+
+      else{
          var sEventAction =  $(document).find("title").text();
+         }
 
         ga('send', 'event','link-click', sEventAction, this.text);
      });
