@@ -306,13 +306,29 @@
                });
 
     $('#print').click(function() {
-    if($("h1.heading-xlarge"))
-    var sEventAction = $("h1.heading-xlarge").text()
-    else
-    var sEventAction =  $(document).find("title").text();
+        if($("h1.heading-xlarge"))
+          var sEventAction = $("h1.heading-xlarge").text()
+        else
+          var sEventAction =  $(document).find("title").text();
 
            ga('send', 'event','print-click', sEventAction, this.text);
      });
+
+      $('#print-confirmation').click(function() {
+         if($("h1.heading-xlarge")){
+              if($("h1.heading-xlarge").text() != "")
+                  var sEventAction = $("h1.heading-xlarge").text()
+                 else
+                  var sEventAction = $("h1").text()
+               }
+
+              else{
+                 var sEventAction =  $(document).find("title").text();
+                 }
+
+                ga('send', 'event','print-click', sEventAction, this.text);
+          });
+
 
      $('button:submit').click(function() {
          if($("h1.heading-xlarge"))

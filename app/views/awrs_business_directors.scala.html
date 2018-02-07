@@ -183,10 +183,8 @@
     </div>
 }
 
-@pageScripts = {
-<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 
-@includes.awrs_main(title = Messages("awrs.business_directors.pageTitle"), pageScripts = Some(pageScripts), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.business_directors.pageTitle"), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(

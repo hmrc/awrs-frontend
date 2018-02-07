@@ -16,9 +16,6 @@
 
 @implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
 
-@pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
-}
 
 @actionRoute = @{
     isEditMode match {
@@ -52,7 +49,7 @@
 }
 
 
-@includes.awrs_main(title = pageTitle, pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = pageTitle, userLoggedIn = true) {
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(

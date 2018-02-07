@@ -29,11 +29,8 @@
     )
 }
 
-@pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
-}
 
-@includes.awrs_main(title = Messages("awrs.index_page.title"),nameBusiness = Some(businessName), pageScripts = Some(pageScripts), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.index_page.title"),nameBusiness = Some(businessName), userLoggedIn = true){
 
     <div class="grid">
        @changesBanner

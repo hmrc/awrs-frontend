@@ -16,7 +16,6 @@
 
 @(confirmationForm: Form[models.BusinessNameChangeConfirmation], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages )
 
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 
 @warningText = {
 <p id="businessNameChangeConfirmation-warning">@Messages("awrs.business_name_change.warning")</p>
@@ -27,7 +26,7 @@
 </ul>
 }
 
-@includes.awrs_main(title = Messages("awrs.business_name_change.heading"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.business_name_change.heading"), userLoggedIn = true) {
 
 @backLink()
 

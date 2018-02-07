@@ -5,10 +5,9 @@
 @import views.helpers._
 
 @awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 
 @govWrapper = {
-    @includes.awrs_main(title = Messages("awrs.confirmation.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+    @includes.awrs_main(title = Messages("awrs.confirmation.title"), userLoggedIn = true){
         <div class="grid">
             <div class="grid grid-2-3">
                 @confirmationHelper(

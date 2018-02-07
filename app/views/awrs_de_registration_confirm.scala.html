@@ -5,11 +5,9 @@
 @import views.helpers.DeRegistrationHelper._
 @import views.html.helpers._
 
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
-
 @declarationText = {@Messages("awrs.de_registration.warning.confirm", stringifyDate(proposedEndDate))}
 
-@includes.awrs_main(title = Messages("awrs.de_registration.confirmation_heading"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.de_registration.confirmation_heading"), userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showDate.toString)
 @errorSummaryTemplate(confirmationForm)

@@ -21,8 +21,7 @@
     }
 }
 
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
-@includes.awrs_main(title = Messages("awrs.delete.confirmation_heading", headingParameter), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.delete.confirmation_heading", headingParameter), userLoggedIn = true) {
 @backLink(backUrl = controllers.routes.ViewApplicationController.viewSection(data match {
         case s : Supplier => suppliersName
         case p : AdditionalBusinessPremises => additionalBusinessPremisesName
