@@ -12,8 +12,6 @@
 
 @(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode)
 
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
-
 @actionRoute = @{
     isEditMode match {
         case true => controllers.routes.TradingActivityController.saveAndReturn
@@ -28,7 +26,7 @@
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.additional_information.trading_activity.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.additional_information.trading_activity.title"), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(

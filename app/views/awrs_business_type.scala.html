@@ -6,10 +6,7 @@
 
 @implicitFormInstance = @{ Some(businessTypeForm) }
 
-@pageScripts = {
-<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
-
-@includes.awrs_main(title = Messages("awrs.business_verification.heading"),nameBusiness = Some(businessName),pageScripts = Some(pageScripts), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.business_verification.heading"),nameBusiness = Some(businessName), userLoggedIn = true){
 
 @errorSummaryTemplate(businessTypeForm)
 <div class="grid">

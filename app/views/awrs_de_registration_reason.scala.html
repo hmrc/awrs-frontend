@@ -6,9 +6,8 @@
 @import views.helpers.DeRegistrationHelper._
 @import views.html.helpers._
 @import utils.AwrsFieldConfig
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 
-@includes.awrs_main(title = Messages("awrs.de_registration_reason.page_title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.de_registration_reason.page_title"), userLoggedIn = true) {
 <div class="grid">
     <div class="grid grid-2-3">
         @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)

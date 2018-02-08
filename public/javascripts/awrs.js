@@ -278,18 +278,93 @@
      $('input:checkbox').click(function() {
          ga('send', 'event', this.id, 'click');
      });
+/*ga data for all the save/print and external links*/
 
-//     $('#view-application').click(function() {
-//        if (this.getAttribute('data-page') == "index") {
-//            ga('send', 'event', "view-print-application-index-page", 'click');
-//        }
-//     });
-//
-//     $('#print').click(function() {
-//        if (this.getAttribute('data-page') == "application-summary") {
-//            ga('send', 'event', "print-application-summary-page", 'click');
-//        }
-//     });
+     $(".external_link").click(function(){
+     if($("h1.heading-xlarge")){
+         if($("h1.heading-xlarge").text() != "")
+          var sEventAction = $("h1.heading-xlarge").text()
+         else
+          var sEventAction = $("h1").text()
+
+           if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                                        sEventAction =  $(document).find("title").text();
+
+       }
+
+      else{
+         var sEventAction =  $(document).find("title").text();
+         }
+
+        ga('send', 'event','link - click', sEventAction, this.text);
+     });
+
+
+     $('#submit_changes').click(function() {
+              if($("h1.heading-xlarge"))
+              var sEventAction = $("h1.heading-xlarge").text()
+              else
+              var sEventAction =  $(document).find("title").text();
+
+               if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                                            sEventAction =  $(document).find("title").text();
+
+                     ga('send', 'event','save - click', sEventAction, this.innerText);
+               });
+
+    $('#print').click(function() {
+        if($("h1.heading-xlarge")){
+          var sEventAction = $("h1.heading-xlarge").text()
+          if(sEventAction.indexOf("Application for") != -1  || sEventAction.indexOf("Your amendment for") != -1)
+            sEventAction = sEventAction.split(" for")[0]
+             else
+                var sEventAction =  $(document).find("title").text();
+
+          }
+
+        else
+          var sEventAction =  $(document).find("title").text();
+
+           ga('send', 'event','print - click', sEventAction, this.text);
+     });
+
+      $('#print-confirmation').click(function() {
+         if($("h1.heading-xlarge")){
+              if($("h1.heading-xlarge").text() != "")
+                  var sEventAction = $("h1.heading-xlarge").text()
+                 else
+                  var sEventAction = $("h1").text()
+
+                 if(sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                      sEventAction = sEventAction.split(" for")[0];
+                  else{
+                       sEventAction =  $(document).find("title").text();
+                      }
+               }
+
+              else{
+                 var sEventAction =  $(document).find("title").text();
+                 }
+
+                ga('send', 'event','print - click', sEventAction, this.text);
+          });
+
+
+     $('button:submit').click(function() {
+         if($("h1.heading-xlarge"))
+         var sEventAction = $("h1.heading-xlarge").text()
+         else
+         var sEventAction =  $(document).find("title").text();
+
+         if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                              sEventAction =  $(document).find("title").text();
+
+         if(this.innerText == "Continue")
+              ga('send', 'event','button - click', sEventAction, this.innerText);
+          else
+              ga('send', 'event','save - click', sEventAction, this.innerText);
+
+          });
 
     $('.validation-summary-message a').on('click', function(e){
         e.preventDefault();

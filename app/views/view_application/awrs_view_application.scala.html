@@ -11,9 +11,6 @@
     coreContent(printFriendly)
 }
 
-@pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
-}
 
 @titleString = @{
     sectionText match {
@@ -23,7 +20,7 @@
 }
 
 @govWrapper(content: Html) = {
-    @includes.awrs_main(title = titleString, pageScripts = Some(pageScripts), userLoggedIn = true) {
+    @includes.awrs_main(title = titleString, userLoggedIn = true) {
         <div class="grid">
             @awrsUnSubmittedBanner(unSubmittedChangesParam, Messages("awrs.index_page.modified_application_incomplete.edit"), Messages("awrs.index_page.not_submitted_changes.return"))
             <div class="grid grid-2-3">

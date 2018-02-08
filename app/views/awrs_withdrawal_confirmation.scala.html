@@ -4,9 +4,8 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 
-@includes.awrs_main(Messages("awrs.withdrawal.confirm_page.heading"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(Messages("awrs.withdrawal.confirm_page.heading"), userLoggedIn = true) {
 
 <div class="grid">
     @backLink(backUrl = controllers.routes.WithdrawalController.showWithdrawalReasons.toString)

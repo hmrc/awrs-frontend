@@ -15,9 +15,7 @@
     }
 }
 
-@pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
-
-@includes.awrs_main(title = Messages("awrs.application_declaration.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.application_declaration.title"), userLoggedIn = true){
 
 @errorSummaryTemplate(applicationDeclarationForm)
 <div class="grid">

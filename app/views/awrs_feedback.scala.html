@@ -5,10 +5,7 @@
 @import views.helpers.InputTypeRadioGroupParams
 @(feedbackForm: Form[models.Feedback])(implicit request: Request[_])
 
-@pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
-}
-@includes.awrs_main(title = Messages("awrs.feedback.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.feedback.title"), userLoggedIn = true) {
     @backLink()
     @errorSummaryTemplate(feedbackForm)
     <div class="grid">

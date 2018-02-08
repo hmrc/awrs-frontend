@@ -6,9 +6,8 @@
 @import utils.AwrsFieldConfig
 @(withdrawalReasonForm: Form[models.WithdrawalReason])(implicit request: Request[AnyRef], messages: Messages )
 
-    @pageScripts = {<script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>}
 
-    @includes.awrs_main(Messages("awrs.withdrawal.reason.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    @includes.awrs_main(Messages("awrs.withdrawal.reason.title"), userLoggedIn = true) {
         @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
         <div class="grid">
             <div class="grid grid-2-3">
