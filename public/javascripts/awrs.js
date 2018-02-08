@@ -286,13 +286,17 @@
           var sEventAction = $("h1.heading-xlarge").text()
          else
           var sEventAction = $("h1").text()
+
+           if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1)
+                                sEventAction =  $(document).find("title").text();
+
        }
 
       else{
          var sEventAction =  $(document).find("title").text();
          }
 
-        ga('send', 'event','link-click', sEventAction, this.text);
+        ga('send', 'event','link - click', sEventAction, this.text);
      });
 
 
@@ -302,16 +306,23 @@
               else
               var sEventAction =  $(document).find("title").text();
 
-                     ga('send', 'event','save-click', sEventAction, this.innerText);
+                     ga('send', 'event','save - click', sEventAction, this.innerText);
                });
 
     $('#print').click(function() {
-        if($("h1.heading-xlarge"))
+        if($("h1.heading-xlarge")){
           var sEventAction = $("h1.heading-xlarge").text()
+          if(sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application for") != -1)
+            sEventAction = sEventAction.split(" for")[0]
+             else
+                var sEventAction =  $(document).find("title").text();
+
+          }
+
         else
           var sEventAction =  $(document).find("title").text();
 
-           ga('send', 'event','print-click', sEventAction, this.text);
+           ga('send', 'event','print - click', sEventAction, this.text);
      });
 
       $('#print-confirmation').click(function() {
@@ -320,13 +331,19 @@
                   var sEventAction = $("h1.heading-xlarge").text()
                  else
                   var sEventAction = $("h1").text()
+
+                 if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1)
+                      sEventAction =  $(document).find("title").text();
+                  else{
+                       sEventAction =  $(document).find("title").text();
+                      }
                }
 
               else{
                  var sEventAction =  $(document).find("title").text();
                  }
 
-                ga('send', 'event','print-click', sEventAction, this.text);
+                ga('send', 'event','print - click', sEventAction, this.text);
           });
 
 
@@ -336,7 +353,11 @@
          else
          var sEventAction =  $(document).find("title").text();
 
-                ga('send', 'event','save-click', sEventAction, this.innerText);
+         if(this.innerText == "Continue")
+              ga('send', 'event','button - click', sEventAction, this.innerText);
+          else
+              ga('send', 'event','save - click', sEventAction, this.innerText);
+
           });
 
     $('.validation-summary-message a').on('click', function(e){
