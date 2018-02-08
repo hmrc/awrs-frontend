@@ -287,8 +287,8 @@
          else
           var sEventAction = $("h1").text()
 
-           if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1)
-                                sEventAction =  $(document).find("title").text();
+           if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                                        sEventAction =  $(document).find("title").text();
 
        }
 
@@ -306,13 +306,16 @@
               else
               var sEventAction =  $(document).find("title").text();
 
+               if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                                            sEventAction =  $(document).find("title").text();
+
                      ga('send', 'event','save - click', sEventAction, this.innerText);
                });
 
     $('#print').click(function() {
         if($("h1.heading-xlarge")){
           var sEventAction = $("h1.heading-xlarge").text()
-          if(sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application for") != -1)
+          if(sEventAction.indexOf("Application for") != -1  || sEventAction.indexOf("Your amendment for") != -1)
             sEventAction = sEventAction.split(" for")[0]
              else
                 var sEventAction =  $(document).find("title").text();
@@ -332,8 +335,8 @@
                  else
                   var sEventAction = $("h1").text()
 
-                 if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1)
-                      sEventAction =  $(document).find("title").text();
+                 if(sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                      sEventAction = sEventAction.split(" for")[0];
                   else{
                        sEventAction =  $(document).find("title").text();
                       }
@@ -352,6 +355,9 @@
          var sEventAction = $("h1.heading-xlarge").text()
          else
          var sEventAction =  $(document).find("title").text();
+
+         if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
+                              sEventAction =  $(document).find("title").text();
 
          if(this.innerText == "Continue")
               ga('send', 'event','button - click', sEventAction, this.innerText);
