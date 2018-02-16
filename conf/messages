@@ -98,77 +98,77 @@ awrs.generic.error.status = There has been a problem with your application
 awrs.generic.errors_heading = There is a problem with the form
 awrs.generic.error.addressLine1_empty = Enter {0} address line 1
 awrs.generic.error.addressLine2_empty = Enter {0} address line 2
-awrs.generic.error.postcode_empty.summary = The {0} postcode is empty
 awrs.generic.error.postcode_empty = Enter a {0} postcode
-awrs.generic.error.postcode_invalid.summary = The {0} postcode is not in the correct format
 awrs.generic.error.postcode_invalid = Enter a {0} postcode in the correct format
 awrs.generic.error.addressLine1_empty.summary = The {0} address line 1 is empty
 awrs.generic.error.addressLine2_empty.summary = The {0} address line 2 is empty
-awrs.generic.error.character_invalid.summary = The {0} is not in the correct format
 awrs.generic.error.character_invalid = Invalid characters have been entered
-awrs.generic.error.first_name_empty.summary = The first name is empty
 awrs.generic.error.first_name_empty = Enter a first name
-awrs.generic.error.last_name_empty.summary = The last name is empty
 awrs.generic.error.last_name_empty = Enter a last name
-awrs.generic.error.company_trading_name.summary = Both the business name and trading name are empty
 awrs.generic.error.company_trading_name = Enter either a business name or trading name
-awrs.generic.error.do_you_have_trading_name_empty.summary = The trading name question has not been answered
 awrs.generic.error.do_you_have_trading_name_empty = Select an option for the trading name question
-awrs.generic.error.tradingName_empty.summary = The trading name is empty
 awrs.generic.error.tradingName_empty = Enter a trading name
-awrs.generic.error.businessName_empty.summary = The business name is empty
 awrs.generic.error.businessName_empty = Enter a business name
-awrs.generic.error.do_you_have_nino_empty.summary = The National Insurance number question has not been answered
 awrs.generic.error.do_you_have_nino_empty = Select an option for the National Insurance number question
-awrs.generic.error.nino_empty.summary = The National Insurance number is empty
 awrs.generic.error.nino_empty = Enter a National Insurance number
-awrs.generic.error.nino_invalid.summary = The National Insurance number is not in the correct format
 awrs.generic.error.nino_invalid = Enter a National Insurance number in the correct format
-awrs.generic.error.vrn_empty.summary = The VAT registration number is empty
 awrs.generic.error.vrn_empty = Enter a VAT registration number
-awrs.generic.error.vrn_invalid.summary = The VAT registration number is not in the correct format
 awrs.generic.error.vrn_invalid = Enter a VAT registration number in the correct format
-awrs.generic.error.do_you_have_vat_reg_empty.summary = The VAT registration number question has not been answered
 awrs.generic.error.do_you_have_vat_reg_empty = Select an option for the VAT registration number question
-awrs.generic.error.do_you_have_utr_empty.summary = The Unique Taxpayer reference number (UTR) question has not been answered
 awrs.generic.error.do_you_have_utr_empty = Select an option for the Unique Taxpayer Reference number (UTR) question
-awrs.generic.error.utr_empty.summary = The Unique Taxpayer Reference number (UTR) is empty
 awrs.generic.error.utr_empty = Enter a Unique Taxpayer Reference number (UTR)
-awrs.generic.error.utr_invalid.summary = The Unique Taxpayer Reference number (UTR) is not in the correct format
 awrs.generic.error.utr_invalid = Enter a Unique Taxpayer Reference number (UTR) in the correct format
 awrs.generic.error.utr_invalid_match.summary = The UTR entered does not match
 awrs.generic.error.utr_invalid_match = The UTR and the business name do not match. Make sure you enter the correct UTR for this business name
-awrs.generic.error.companyRegNumber_empty.summary = The company registration number is empty
 awrs.generic.error.companyRegNumber_empty = Enter company registration number
 awrs.generic.error.companyRegNumber_invalid.summary = The company registration number is not the correct format
 awrs.generic.error.companyRegNumber_invalid = The company registration number must be 8 characters or digits
-awrs.generic.error.companyRegNumber_atleastOneNumber.summary = The company registration number is not the correct format
 awrs.generic.error.companyRegNumber_atleastOneNumber = The company registration number needs at least one digit that is greater than 0
-awrs.generic.error.do_you_have_company_reg_empty.summary = The company registration number question has not been answered
 awrs.generic.error.do_you_have_company_reg_empty = Select an option for the company registration number question
-awrs.generic.error.companyRegDate_empty.summary = The date of incorporation is empty
 awrs.generic.error.companyRegDate_empty = Enter a date of incorporation
-awrs.generic.error.companyRegDate_invalid.summary = The date of incorporation is not in the correct format
 awrs.generic.error.companyRegDate_invalid = Enter a valid date of incorporation
 awrs.generic.error.invalid.date = The date is invalid
-awrs.generic.error.invalid.date.summary = Enter a valid date
-awrs.generic.error.identification_provided.summary = No form of identification has been provided
 awrs.generic.error.identification_provided = Provide at least 1 form of identification
-awrs.generic.error.maximum_length.summary = The {0} is not in the correct format
 awrs.generic.error.maximum_length = The {0} must not be more than {1} characters
-awrs.generic.error.email_empty.summary = The email address field is empty
 awrs.generic.error.email_empty = Enter a valid email address
-awrs.generic.error.email_invalid.summary = The email address is incorrect
 awrs.generic.error.email_invalid = Enter an email address in the correct format
 awrs.generic.error.confirm_email_empty.summary = The confirm email address is empty
 awrs.generic.error.confirm_email_empty = Enter a confirm email address
 awrs.generic.error.confirm_email_invalid.summary = The confirm email address is not in the correct format
 awrs.generic.error.confirm_email_invalid = Enter an email address in the correct format
 awrs.generic.error.emails_do_not_match.summary = The email addresses do not match
-awrs.generic.error.telephone_empty.summary = The telephone number is empty
 awrs.generic.error.telephone_empty = Enter a telephone number
-awrs.generic.error.telephone_numeric.summary = The telephone number is not in the correct format
 awrs.generic.error.telephone_numeric = Enter a telephone number in the correct format
+awrs.generic.error.identification_provided.summary = No form of identification has been provided
+awrs.generic.error.utr_empty.summary = The Unique Taxpayer Reference number (UTR) is empty
+awrs.generic.error.companyRegNumber_empty.summary = The company registration number is empty
+awrs.generic.error.do_you_have_vat_reg_empty.summary = The VAT registration number question has not been answered
+awrs.generic.error.maximum_length.summary = The {0} is not in the correct format
+awrs.generic.error.businessName_empty.summary = The business name is empty
+awrs.generic.error.character_invalid.summary = The {0} is not in the correct format
+awrs.generic.error.vrn_empty.summary = The VAT registration number is empty
+awrs.generic.error.companyRegNumber_atleastOneNumber.summary = The company registration number is not the correct format
+awrs.generic.error.utr_invalid.summary = The Unique Taxpayer Reference number (UTR) is not in the correct format
+awrs.generic.error.companyRegDate_empty.summary = The date of incorporation is empty
+awrs.generic.error.postcode_empty.summary = The {0} postcode is empty
+awrs.generic.error.postcode_invalid.summary = The {0} postcode is not in the correct format
+awrs.generic.error.first_name_empty.summary = The first name is empty
+awrs.generic.error.last_name_empty.summary = The last name is empty
+awrs.generic.error.company_trading_name.summary = Both the business name and trading name are empty
+awrs.generic.error.do_you_have_trading_name_empty.summary = The trading name question has not been answered
+awrs.generic.error.tradingName_empty.summary = The trading name is empty
+awrs.generic.error.do_you_have_nino_empty.summary = The National Insurance number question has not been answered
+awrs.generic.error.nino_empty.summary = The National Insurance number is empty
+awrs.generic.error.nino_invalid.summary = The National Insurance number is not in the correct format
+awrs.generic.error.vrn_invalid.summary = The VAT registration number is not in the correct format
+awrs.generic.error.do_you_have_utr_empty.summary = The Unique Taxpayer reference number (UTR) question has not been answered
+awrs.generic.error.do_you_have_company_reg_empty.summary = The company registration number question has not been answered
+awrs.generic.error.companyRegDate_invalid.summary = The date of incorporation is not in the correct format
+awrs.generic.error.invalid.date.summary = Enter a valid date
+awrs.generic.error.email_empty.summary = The email address field is empty
+awrs.generic.error.email_invalid.summary = The email address is incorrect
+awrs.generic.error.telephone_empty.summary = The telephone number is empty
+awrs.generic.error.telephone_numeric.summary = The telephone number is not in the correct format
 
 ##### MISCELLANEOUS
 
@@ -219,12 +219,12 @@ awrs.business_verification.limited_liability_partnership = Limited liability par
 
 ##### ERROR MESSAGES
 
-awrs.business_verification.error.type_of_business_empty.summary = The business type question has not been answered
 awrs.business_verification.error.type_of_business_empty = Select an option for what is your business type
-awrs.business_verification.error.type_of_business_organisation_invalid.summary = You need to have an individual Government Gateway ID to continue
 awrs.business_verification.error.type_of_business_organisation_invalid = You are logged in as an organisation with your Government Gateway ID. You cannot select Sole Trader Self-employed as your business type. You need to have an individual Government Gateway ID and enrol for Self Assessment online.
-awrs.business_verification.error.type_of_business_individual_invalid.summary = You need to have an organisation Government Gateway ID to continue
 awrs.business_verification.error.type_of_business_individual_invalid = You are logged in as an individual with your Government Gateway ID. You cannot select Limited company or Partnership as your business type. You need to have an organisation Government Gateway ID.
+awrs.business_verification.error.type_of_business_organisation_invalid.summary = You need to have an individual Government Gateway ID to continue
+awrs.business_verification.error.type_of_business_individual_invalid.summary = You need to have an organisation Government Gateway ID to continue
+awrs.business_verification.error.type_of_business_empty.summary = The business type question has not been answered
 
 ##### GROUP DECLARATION PAGE
 
@@ -240,7 +240,6 @@ awrs.group_declaration.declaration_statement_bullet_6 = The group representative
 awrs.group_declaration.declaration_statement_bullet_7 = All group members agree that they are jointly and severally liable for any group liabilities.
 awrs.group_declaration.declaration_statement_bullet_8 = None of the members should hold another AWRS registration.
 awrs.group_declaration.declaration_statement_confirmation = As the group representative I can confirm that the above conditions have been met in full.
-awrs.group_declaration.error.declaration_confirmation_not_checked.summary = The group representative confirmation has not been answered
 awrs.group_declaration.error.declaration_confirmation_not_checked = As the group representative you must check the confirmation before you can continue
 
 ##### STATUS PAGE MESSAGES
@@ -278,13 +277,8 @@ awrs.application_status.lede.verb_in_main.under_review_or_appeal = under review 
 awrs.application_status.lede.verb_in_main.other = received
 awrs.application_status.info.pending.heading = What happens next
 awrs.application_status.info.pending.count = 3
-awrs.application_status.info.pending.line1 = Continue trading as normal while we review and check your application, which might take some time.
-awrs.application_status.info.pending.line2 = There is no need to contact HMRC, you will be notified before 1 April 2017.
-awrs.application_status.info.pending.line3 = If approved, your business will receive an AWRS reference number confirming that you are an approved alcohol wholesaler.
 awrs.application_status.info.pending = You can still trade while we process your application.
 awrs.application_status.info.pending.newBusiness.count = 2
-awrs.application_status.info.pending.newBusiness.line1 = You cannot trade until an AWRS reference number is issued.
-awrs.application_status.info.pending.newBusiness.line2 = It will take up to 45 days from your initial application before we make a decision.
 awrs.application_status.info.pending.newBusiness = A new wholesale alcohol business cannot trade until an AWRS reference number is issued. It will take up to 45 days from your initial application before we make a decision.
 awrs.application_status.info.approved.heading1 = About making changes
 awrs.application_status.info.approved.line1 = Thank you for your application. Based on the information you have given us, we have registered you to trade in wholesale alcohol. This means that we have approved you to carry on a controlled activity under the Alcoholic Liquor Duties Act 1979, section 88C and regulations made under section 88E.
@@ -409,18 +403,18 @@ awrs.business_details.new_AWBusiness_No = You previously indicated that you are 
 
 ##### ERROR MESSAGES
 
-awrs.business_details.error.tradingName_empty.summary = The trading name is empty
 awrs.business_details.error.tradingName_empty = Enter a trading name
-awrs.business_details.error.newAWBusiness_invalid.summary = The trading start question has not been answered
+awrs.business_details.error.tradingName_empty.summary = The trading name is empty
 awrs.business_details.error.newAWBusiness_invalid = Select an option for the trading start question
-awrs.business_details.error.proposedDate_empty.summary = The approximate start date is empty
 awrs.business_details.error.proposedDate_empty = Enter an approximate start date
 awrs.business_details.error.proposedDate_invalid.summary = The approximate start date is not the correct format
-awrs.business_details.error.proposedDate_toEarly.summary = The approximate start date must be after 31 March 2016
 awrs.business_details.error.proposedDate_toEarly = Enter an approximate start date after 31 March 2016
 awrs.business_details.error.identification_provided.summary = No form of identification has been provided
-awrs.business_details.error.year_toSmall.summary = The year is not the correct format
 awrs.business_details.error.year_toSmall = You must enter the year in full
+awrs.business_details.error.year_toSmall.summary = The year is not the correct format
+awrs.business_details.error.proposedDate_empty.summary = The approximate start date is empty
+awrs.business_details.error.newAWBusiness_invalid.summary = The trading start question has not been answered
+awrs.business_details.error.proposedDate_toEarly.summary = The approximate start date must be after 31 March 2016
 
 ##### BUSINESS NAME CHANGE CONFIRMATION 
 
@@ -431,7 +425,6 @@ awrs.business_name_change.warning.bullet.2 = enter all the relevant details for 
 awrs.business_name_change.warning.bullet.3 = add the old group representative as a group member
 awrs.business_name_change.cta = Confirm
 awrs.business_name_change.error.empty = Confirm if you want to change your group representative
-awrs.business_name_change.error.empty.summary = There is a problem with your request to change your group representative
 
 ##### BUSINESS REGISTRATION DETAILS 
 
@@ -460,14 +453,11 @@ awrs.business_contacts.email_info = We will use this address to verify your emai
 
 ##### ERROR MESSAGES
 
-awrs.business_contacts.error.place_of_business_empty.summary = The principal place of business question has not been answered
 awrs.business_contacts.error.place_of_business_empty = Select an option for the principal place of business question
-awrs.business_contacts.error.contact_address_same_empty.summary = The contact address question has not been answered
 awrs.business_contacts.error.contact_address_same_empty = Select an option for the contact address question
-awrs.business_contacts.error.place_of_business_changed_last_3_years_empty.summary = The main place of business address has not been answered
 awrs.business_contacts.error.place_of_business_changed_last_3_years_empty = Select an option for the main place of business address question
-awrs.business_contacts.error.operating_duration_empty.summary = The number of years at your current address question has not been answered
 awrs.business_contacts.error.operating_duration_empty = Select an option for the years at your current address question
+awrs.business_contacts.error.operating_duration_empty.summary = The number of years at your current address question has not been answered
 
 ##### PLACE OF BUSINESS
 
@@ -496,10 +486,10 @@ awrs.business-partner.entityType_sole_trader = Sole trader self-employed
 
 ##### ERROR MESSAGES
 
-awrs.business-partner.error.entityType_empty.summary = Is the partner or member an individual or a company question has not been answered
 awrs.business-partner.error.entityType_empty = Confirm if the partner or member is an individual or a company
-awrs.business-partner.error.add_more_partner.summary = The add more partners question has not been answered
 awrs.business-partner.error.add_more_partner = Select an option to add more partners
+awrs.business-partner.error.add_more_partner.summary = The add more partners question has not been answered
+awrs.business-partner.error.entityType_empty.summary = Is the partner or member an individual or a company question has not been answered
 
 ##### GROUP MEMBERS PAGE
 
@@ -507,8 +497,8 @@ awrs.group_member.title = Members in the group
 awrs.group_member.top_heading = {0} the {1} member in the group
 awrs.group_member.lead_paragraph = Please provide the company details of the additional members in the group. Do not enter the group representative details again.
 awrs.group_member.addAnother = Do you have any other group members to register with AWRS?
-awrs.group_member.addAnother.empty.summary = The other group members question has not been answered
 awrs.group_member.addAnother.empty = Select an option for other group members
+awrs.group_member.addAnother.empty.summary = The other group members question has not been answered
 
 ##### ADDITIONAL BUSINESS PREMISES PAGE
 
@@ -520,11 +510,11 @@ awrs.additional-premises.do_you_have_additional_addresses = Do you have more add
 
 ##### ERROR MESSAGES
 
-awrs.additional-premises.error.do_you_have_additional_premises.summary = The additional trading premises question has not been answered
 awrs.additional-premises.error.do_you_have_additional_premises = Select an option for the additional trading premises question
 awrs.additional-premises.error.postcode.summary = Postcode must not be empty
-awrs.additional-premises.error.add_another.summary = The more additional trading premises question has not been answered
 awrs.additional-premises.error.add_another = Select more additional trading premises to add
+awrs.additional-premises.error.add_another.summary = The more additional trading premises question has not been answered
+awrs.additional-premises.error.do_you_have_additional_premises.summary = The additional trading premises question has not been answered
 
 ##### BUSINESS DIRECTORS PAGE
 
@@ -544,20 +534,20 @@ awrs.business_directors.personOrCompany_answer_text = Directors and company secr
 
 ##### ERROR MESSAGES
 
-awrs.business_directors.error.directorsAndCompanySecretaries_empty.summary = The director or company secretary question has not been answered
 awrs.business_directors.error.directorsAndCompanySecretaries_empty = Select an option for the director or company secretary question
-awrs.business_directors.error.personOrCompany_empty.summary = The company official as a person or company question has not been answered
 awrs.business_directors.error.personOrCompany_empty = Select an option for the company official as a person or company
-awrs.business_directors.error.national_id_numeric.summary = The National Identification number is not in the correct format
 awrs.business_directors.error.national_id_numeric = The National Identification number must be numeric
-awrs.business_directors.error.passport_no_invalid.summary = The Passport number is not in the correct format
 awrs.business_directors.error.passport_no_invalid = Enter a Passport number in the correct format
-awrs.business_directors.error.non_resident.passport_no_and_nationalId_empty.summary = Both the Passport number and National Identification number are empty
 awrs.business_directors.error.non_resident.passport_no_and_nationalId_empty = Enter either a Passport number or a National Identification number
-awrs.business_directors.error.other_directors.summary = The other directors and company secretaries question has not been answered
 awrs.business_directors.error.other_directors = Select an option for the other directors and company secretaries question
-awrs.business_directors.error.do_you_have_id.summary = You must enter at least one of the following numbers, VAT registration number, company registration number or Corporation Tax UTR
 awrs.business_directors.error.do_you_have_id = Enter at least one form of identification
+awrs.business_directors.error.other_directors.summary = The other directors and company secretaries question has not been answered
+awrs.business_directors.error.do_you_have_id.summary = You must enter at least one of the following numbers, VAT registration number, company registration number or Corporation Tax UTR
+awrs.business_directors.error.passport_no_invalid.summary = The Passport number is not in the correct format
+awrs.business_directors.error.national_id_numeric.summary = The National Identification number is not in the correct format
+awrs.business_directors.error.non_resident.passport_no_and_nationalId_empty.summary = Both the Passport number and National Identification number are empty
+awrs.business_directors.error.personOrCompany_empty.summary = The company official as a person or company question has not been answered
+awrs.business_directors.error.directorsAndCompanySecretaries_empty.summary = The director or company secretary question has not been answered
 
 ##### ADDITIONAL BUSINESS INFORMATION PAGE
 
@@ -608,50 +598,50 @@ awrs.additional_information.form_hint = Select all that apply
 
 ##### ERRORS - WHOLESALER
 
-awrs.additional_information.error.type_of_wholesaler.summary = The trader question has not been answered
 awrs.additional_information.error.type_of_wholesaler = Select an option for the trader question
-awrs.additional_information.error.other_wholesaler.summary = Other types of trading is empty
 awrs.additional_information.error.other_wholesaler = Enter other types of trading
-awrs.additional_information.error.wholesaler_validation.summary = Other types of trading is not in the correct format
 awrs.additional_information.error.wholesaler_validation = Other types of trading can only contain alphanumeric characters
 
 ##### ERRORS - ORDERS
 
-awrs.additional_information.error.orders.summary = The orders question has not been answered
 awrs.additional_information.error.orders = Select an option for the orders question
-awrs.additional_information.error.other_order.summary = The other field for orders is empty
 awrs.additional_information.error.other_order = Enter further information for how you take orders
-awrs.additional_information.error.order_validation.summary = The other field for orders is not the correct format
 awrs.additional_information.error.order_validation = The other field for orders can only contain alphanumeric characters
 
 ##### ERRORS - CUSTOMERS
 
-awrs.additional_information.error.main_customer.summary = The customer sales question has not been answered
 awrs.additional_information.error.main_customer = Select an option for the customer sales question
-awrs.additional_information.error.other_mainCustomers.summary = The other field for the customer sales question is empty
 awrs.additional_information.error.other_mainCustomers = Enter further information for the customer sales question
-awrs.additional_information.error.other_mainCustomers_invalid_format.summary = The other field for main customers is not in the correct format
 awrs.additional_information.error.other_mainCustomers_invalid_format = The other field for the customer sales question is not in the correct format
+awrs.additional_information.error.other_mainCustomers_invalid_format.summary = The other field for main customers is not in the correct format
+awrs.additional_information.error.other_mainCustomers.summary = The other field for the customer sales question is empty
+awrs.additional_information.error.main_customer.summary = The customer sales question has not been answered
 
 ##### ERRORS - PRODUCT TYPE
 
-awrs.additional_information.error.type_of_product.summary = The types of product question has not been answered
 awrs.additional_information.error.type_of_product = Select an option for the types of product question
-awrs.additional_information.error.type_of_product_other.summary = The other field for types of product is empty
 awrs.additional_information.error.type_of_product_other = Enter further information for types of product
-awrs.additional_information.error.type_of_product_other_validation.summary = The other field for types of product is not in the correct format
 awrs.additional_information.error.type_of_product_other_validation = The other field for types of product can only contain alphanumeric characters
+awrs.additional_information.error.type_of_product_other_validation.summary = The other field for types of product is not in the correct format
+awrs.additional_information.error.type_of_product_other.summary = The other field for types of product is empty
 
 ##### ERRORS - THIRD PARTY STORAGE, IMPORT, EXPORT
 
-awrs.additional_information.error.import_alcohol.summary = The import alcohol question has not been answered
 awrs.additional_information.error.import_alcohol = Select an option for the import alcohol question
-awrs.additional_information.error.do_you_export_alcohol.summary = The export alcohol question has not been answered
 awrs.additional_information.error.do_you_export_alcohol = Select an option for the export alcohol question
-awrs.additional_information.error.export_location.summary = The export location question has not been answered
 awrs.additional_information.error.export_location = Select an option for the export location question
-awrs.additional_information.error.third_party_storage.summary = The third party alcohol storage question has not been answered
 awrs.additional_information.error.third_party_storage = Select an option for the third party alcohol storage question
+awrs.additional_information.error.type_of_product.summary = The types of product question has not been answered
+awrs.additional_information.error.third_party_storage.summary = The third party alcohol storage question has not been answered
+awrs.additional_information.error.do_you_export_alcohol.summary = The export alcohol question has not been answered
+awrs.additional_information.error.type_of_wholesaler.summary = The trader question has not been answered
+awrs.additional_information.error.other_wholesaler.summary = Other types of trading is empty
+awrs.additional_information.error.wholesaler_validation.summary = Other types of trading is not in the correct format
+awrs.additional_information.error.orders.summary = The orders question has not been answered
+awrs.additional_information.error.other_order.summary = The other field for orders is empty
+awrs.additional_information.error.order_validation.summary = The other field for orders is not the correct format
+awrs.additional_information.error.import_alcohol.summary = The import alcohol question has not been answered
+awrs.additional_information.error.export_location.summary = The export location question has not been answered
 
 ##### SUPPLIER ADDRESSES PAGE
 
@@ -672,14 +662,14 @@ awrs.supplier-addresses.add_supplier_empty.summary = The another supplier questi
 
 ##### ERROR MESSAGES
 
-awrs.supplier-addresses.error.supplier_name_blank.summary = The supplier name is empty
 awrs.supplier-addresses.error.supplier_name_blank = Enter a supplier name
-awrs.supplier-addresses.error.uk_supplier_blank.summary = The UK supplier question has not been answered
 awrs.supplier-addresses.error.uk_supplier_blank = Select an option for the UK supplier question
-awrs.supplier-addresses.error.supplier_address_country_blank.summary = The country for the supplier address is empty
 awrs.supplier-addresses.error.supplier_address_country_blank = Enter a country for the supplier address
-awrs.supplier-addresses.error.supplier_address_country_invalid.summary = We cannot find the country you entered
 awrs.supplier-addresses.error.supplier_address_country_invalid = Select a country from the list before continuing
+awrs.supplier-addresses.error.supplier_address_country_blank.summary = The country for the supplier address is empty
+awrs.supplier-addresses.error.uk_supplier_blank.summary = The UK supplier question has not been answered
+awrs.supplier-addresses.error.supplier_name_blank.summary = The supplier name is empty
+awrs.supplier-addresses.error.supplier_address_country_invalid.summary = We cannot find the country you entered
 
 ##### EMAIL VERIFICATION ERROR PAGE
 
@@ -710,14 +700,14 @@ awrs.application_declaration.declaration_role_hint = Job title or role of the pe
 awrs.application_declaration.declaration_statement = I want to register {0} for AWRS. I confirm that the information provided in this application is accurate and complete. I understand that knowingly including any false information in this application is a criminal offence.
 awrs.application_declaration.declaration_statement.amend = I want to amend the application for {0}. I confirm that the information provided in this application is accurate and complete. I understand that knowingly including any false information in this application is a criminal offence.
 awrs.application_declaration.confirmation_and_send_application = Agree and submit application
-awrs.application_declaration.error.declaration_name_empty.summary = The name is empty
 awrs.application_declaration.error.declaration_name_empty = You must enter a name
 awrs.application_declaration.error.declaration_name_invalid.summary = The name is not in the correct format
-awrs.application_declaration.error.declaration_role_empty.summary = The job title or role is empty
 awrs.application_declaration.error.declaration_role_empty = You must enter a job title or role
-awrs.application_declaration.error.confirmation_empty.summary = The declaration message has not been checked
 awrs.application_declaration.error.confirmation_empty = You must confirm the application declaration before you can submit
 awrs.application_declaration.error.declaration_name_invalid = Enter a name in the correct format
+awrs.application_declaration.error.confirmation_empty.summary = The declaration message has not been checked
+awrs.application_declaration.error.declaration_role_empty.summary = The job title or role is empty
+awrs.application_declaration.error.declaration_name_empty.summary = The name is empty
 
 ##### CONFIRMATION PAGE
 
@@ -756,7 +746,6 @@ awrs.de_registration.page_title = Date of cancellation
 awrs.de_registration.heading = Enter the date of cancellation
 awrs.de_registration.lede = You should notify us at least 30 calendar days in advance.
 awrs.de_registration.confirmation_heading = Are you sure that you want to cancel your AWRS registration?
-awrs.de_registration.confirmation.error.empty.summary = There is a problem with your request to cancel
 awrs.de_registration.confirmation.error.empty = Confirm if you want to cancel your AWRS registration
 awrs.de_registration.warning = Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid).
 awrs.de_registration.warning.confirm = Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid). If you cancel your group registration all group members will be no longer approved.
@@ -764,12 +753,11 @@ awrs.de_registration.cta = Confirm
 
 ##### ERROR MESSAGES 
 
-awrs.de_registration.error.date_empty.summary = There is a problem with the stop trading date
 awrs.de_registration.error.date_empty = You must enter a date
-awrs.de_registration.error.date_valid.summary = There is a problem with the stop trading date
 awrs.de_registration.error.date_valid = You must enter a valid date
-awrs.de_registration.error.proposedDate_toEarly.summary = The proposed cancellation date must be on or after today's date
 awrs.de_registration.error.proposedDate_toEarly = Enter a proposed cancellation date on or after today's date
+awrs.de_registration.error.date_empty.summary = There is a problem with the stop trading date
+awrs.de_registration.error.proposedDate_toEarly.summary = The proposed cancellation date must be on or after today's date
 
 ##### DE-REGISTRATION REASON PAGE MESSAGES
 
@@ -796,10 +784,9 @@ awrs.de_registration.reason.other = Other
 
 ##### ERROR MESSAGES
 
-awrs.de_registration.error.reason_empty.summary = No cancellation reason selected
 awrs.de_registration.error.reason_empty = Select a cancellation reason
-awrs.de_registration.error.other.reason_empty.summary = No other cancellation reason entered
 awrs.de_registration.error.other.reason_empty = Enter other cancellation reason
+awrs.de_registration.error.date_valid.summary = There is a problem with the stop trading date
 
 ##### DE-REGISTRATION CONFIRMATION PAGE MESSAGES
 
@@ -816,10 +803,10 @@ awrs.withdrawal.reasons_page.heading = Select the reason for withdrawing your ap
 awrs.withdrawal.confirm_page.heading = Are you sure that you want to withdraw your AWRS application?
 awrs.withdrawal.confirmation_page.description = Application withdrawn for
 awrs.withdrawal.description_1 = received on {0}
-awrs.withdrawal.confirmation.error.empty.summary = There is a problem with your request to withdraw
 awrs.withdrawal.confirmation.error.empty = Confirm if you want to withdraw your AWRS application
 awrs.withdrawal.confirmation_page.information_what_next_1 = If you wish to submit a new application for AWRS you must wait 24 hours after withdrawing your application before you can start a new AWRS application.
 awrs.withdrawal.confirmation_page.information_what_next_1_href = start the application process again
+awrs.withdrawal.confirmation.error.empty.summary = There is a problem with your request to withdraw
 
 ##### DYNAMICALLY CREATED - DO NOT DELETE
 
@@ -837,10 +824,10 @@ awrs.withdrawal.reason.other.schema_enum = Others
 
 ##### ERROR MESSAGES
 
-awrs.withdrawal.error.reason_empty.summary = No withdrawal reason selected
 awrs.withdrawal.error.reason_empty = Select a withdrawal reason
-awrs.withdrawal.error.other.reason_empty.summary = No other withdrawal reason entered
 awrs.withdrawal.error.other.reason_empty = Enter other withdrawal reason
+awrs.withdrawal.error.other.reason_empty.summary = No other withdrawal reason entered
+awrs.withdrawal.error.reason_empty.summary = No withdrawal reason selected
 
 ##### SURVEY 
 
@@ -919,7 +906,6 @@ awrs.view_application.application_declaration_text = Your application declaratio
 ##### DELETE CONFIRMATION PAGE MESSAGES
 
 awrs.delete.confirmation_heading = Are you sure you want to delete this {0}?
-awrs.delete.confirmation.error.empty.summary = There is a problem with the question
 awrs.delete.confirmation.error.empty = Confirm if you want to delete this record
 
 ##### REAPPLICATION CONFIRMATION PAGE MESSAGES
