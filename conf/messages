@@ -96,12 +96,12 @@ awrs.generic.warning_icon_text = Warning.
 awrs.generic.error.title = Sorry, we’re experiencing technical difficulties
 awrs.generic.error.status = There has been a problem with your application
 awrs.generic.errors_heading = There is a problem with the form
+awrs.generic.error.addressLine1_empty.summary = The {0} address line 1 is empty
+awrs.generic.error.addressLine2_empty.summary = The {0} address line 2 is empty
 awrs.generic.error.addressLine1_empty = Enter {0} address line 1
 awrs.generic.error.addressLine2_empty = Enter {0} address line 2
 awrs.generic.error.postcode_empty = Enter a {0} postcode
 awrs.generic.error.postcode_invalid = Enter a {0} postcode in the correct format
-awrs.generic.error.addressLine1_empty.summary = The {0} address line 1 is empty
-awrs.generic.error.addressLine2_empty.summary = The {0} address line 2 is empty
 awrs.generic.error.character_invalid = Invalid characters have been entered
 awrs.generic.error.first_name_empty = Enter a first name
 awrs.generic.error.last_name_empty = Enter a last name
@@ -136,7 +136,6 @@ awrs.generic.error.confirm_email_empty.summary = The confirm email address is em
 awrs.generic.error.confirm_email_empty = Enter a confirm email address
 awrs.generic.error.confirm_email_invalid.summary = The confirm email address is not in the correct format
 awrs.generic.error.confirm_email_invalid = Enter an email address in the correct format
-awrs.generic.error.emails_do_not_match.summary = The email addresses do not match
 awrs.generic.error.telephone_empty = Enter a telephone number
 awrs.generic.error.telephone_numeric = Enter a telephone number in the correct format
 awrs.generic.error.identification_provided.summary = No form of identification has been provided
@@ -294,15 +293,8 @@ awrs.application_status.info.approved_with_conditions.heading = What this means
 awrs.application_status.info.rejected.heading = What this means
 awrs.application_status.decision_question = If you do not agree with the decision
 awrs.application_status.decision_answer.para_1 = If you do not agree with my decision then you can ask for it to be reviewed by another HMRC officer who has previously not been involved in the matter, or appeal to an independent tribunal. If you opt for a review you can still appeal to the tribunal after the review has finished.
-awrs.application_status.decision_answer.bullet_list_1.point_1 = send any further information you want me to consider
-awrs.application_status.decision_answer.bullet_list_1.point_2 = have your case reviewed by a different officer; or
-awrs.application_status.decision_answer.bullet_list_1.point_3 = have your case heard by an independent tribunal
 awrs.application_status.decision_answer.para_2 = If you want a review you should write to me at the address above within 30 days of the date of this letter, giving your reasons why you do not agree with my decision. If you want to appeal to the tribunal you should send them your appeal within 30 days of the date of this letter.
 awrs.application_status.decision_answer.para_3 = You can find further information on reviews and appeals in {0}{1}{2}. Please note that you must not carry on this controlled activity and may only do so if you have been approved as part of this scheme.
-awrs.application_status.decision_answer.bullet_list_2.point_1 = downloading it from our website at:
-awrs.application_status.decision_answer.bullet_list_2.point_2 = phoning the Revenue and Customs Orderline on 0300 200 3700
-awrs.application_status.decision_answer.bullet_list_3.point_1 = justice.gov.uk or
-awrs.application_status.decision_answer.bullet_list_3.point_2 = by phoning 0845 223 8080
 
 ##### ALERT STATUSES
 
@@ -407,9 +399,7 @@ awrs.business_details.error.tradingName_empty = Enter a trading name
 awrs.business_details.error.tradingName_empty.summary = The trading name is empty
 awrs.business_details.error.newAWBusiness_invalid = Select an option for the trading start question
 awrs.business_details.error.proposedDate_empty = Enter an approximate start date
-awrs.business_details.error.proposedDate_invalid.summary = The approximate start date is not the correct format
 awrs.business_details.error.proposedDate_toEarly = Enter an approximate start date after 31 March 2016
-awrs.business_details.error.identification_provided.summary = No form of identification has been provided
 awrs.business_details.error.year_toSmall = You must enter the year in full
 awrs.business_details.error.year_toSmall.summary = The year is not the correct format
 awrs.business_details.error.proposedDate_empty.summary = The approximate start date is empty
@@ -511,7 +501,6 @@ awrs.additional-premises.do_you_have_additional_addresses = Do you have more add
 ##### ERROR MESSAGES
 
 awrs.additional-premises.error.do_you_have_additional_premises = Select an option for the additional trading premises question
-awrs.additional-premises.error.postcode.summary = Postcode must not be empty
 awrs.additional-premises.error.add_another = Select more additional trading premises to add
 awrs.additional-premises.error.add_another.summary = The more additional trading premises question has not been answered
 awrs.additional-premises.error.do_you_have_additional_premises.summary = The additional trading premises question has not been answered
@@ -701,7 +690,6 @@ awrs.application_declaration.declaration_statement = I want to register {0} for 
 awrs.application_declaration.declaration_statement.amend = I want to amend the application for {0}. I confirm that the information provided in this application is accurate and complete. I understand that knowingly including any false information in this application is a criminal offence.
 awrs.application_declaration.confirmation_and_send_application = Agree and submit application
 awrs.application_declaration.error.declaration_name_empty = You must enter a name
-awrs.application_declaration.error.declaration_name_invalid.summary = The name is not in the correct format
 awrs.application_declaration.error.declaration_role_empty = You must enter a job title or role
 awrs.application_declaration.error.confirmation_empty = You must confirm the application declaration before you can submit
 awrs.application_declaration.error.declaration_name_invalid = Enter a name in the correct format
@@ -829,16 +817,6 @@ awrs.withdrawal.error.other.reason_empty = Enter other withdrawal reason
 awrs.withdrawal.error.other.reason_empty.summary = No other withdrawal reason entered
 awrs.withdrawal.error.reason_empty.summary = No withdrawal reason selected
 
-##### SURVEY 
-
-awrs.survey.intro.instructions.line1 = Before you sign out, please complete this short survey to help us improve the service.
-awrs.survey.intro.instructions.line2 = It should not take more than 2 minutes.
-awrs.survey.answers.visit_reason.start_application = To start your alcohol wholesaler application
-awrs.survey.answers.visit_reason.view_application = To view your alcohol wholesaler application
-awrs.survey.answers.visit_reason.amend_application = To amend your alcohol wholesaler application
-awrs.survey.answers.visit_reason.check_progress = To check the progress of your application
-awrs.survey.answers.visit_reason.delete_application = To delete your alcohol wholesaler application
-
 ##### FEEDBACK 
 
 awrs.feedback.title = Feedback
@@ -848,7 +826,6 @@ awrs.feedback.intro.instructions.line1 = You won’t get a reply to any feedback
 awrs.feedback.questions.visit_reason = What were you trying to do today?
 awrs.feedback.questions.satisfaction_rating = Overall, how do you feel about your experience using the service today?
 awrs.feedback.questions.comments = What would you like to tell us?
-awrs.feedback.answers.visit_reason.view_application = To view your alcohol wholesaler application
 awrs.feedback.answers.very_satisfied = Very satisfied
 awrs.feedback.answers.satisfied = Satisfied
 awrs.feedback.answers.neutral = Neither satisfied or dissatisfied
