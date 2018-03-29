@@ -573,7 +573,7 @@ object TestUtil {
                                    contactLastName: Option[String] = Some("Walker"),
                                    email: Option[String] = Some(testEmail),
                                    confirmEmail: Option[String] = Some(testEmail),
-                                   telephone: Option[String] = Some("123456789")) =
+                                   telephone: Option[String] = Some("01123456789")) =
     BusinessContacts(
       contactAddressSame = contactAddressSame,
       contactAddress = contactAddress,
