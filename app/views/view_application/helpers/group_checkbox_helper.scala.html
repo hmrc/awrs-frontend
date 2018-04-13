@@ -1,7 +1,6 @@
 @(legend: String, selectionMapping: Map[String, String], selected: List[String], otherField: Option[String] = None, otherFieldLabel: Option[String] = Some("Other: "))(implicit messages : Messages)
 @import views.view_application.ViewApplicationHelper._
 
-
 @table_row(
     legend,
     selected.map(

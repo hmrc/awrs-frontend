@@ -24,41 +24,41 @@ object AwrsFormFields extends AwrsFormFields
 
 trait AwrsFormFields {
   val wholesaler = Seq(
+    "05"-> Messages("awrs.additional_information.broker"),
     "01"-> Messages("awrs.additional_information.cash_and_carry"),
+    "04"-> Messages("awrs.additional_information.producer"),
     "02"-> Messages("awrs.additional_information.supply_off_trade"),
     "03"-> Messages("awrs.additional_information.supply_on_trade"),
-    "04"-> Messages("awrs.additional_information.producer"),
-    "05"-> Messages("awrs.additional_information.broker"),
     "99"-> Messages("awrs.additional_information.other")
   )
 
   val orders = Seq(
+    "04"-> Messages("awrs.additional_information.orders.facetoface"),
     "02"-> Messages("awrs.additional_information.orders.internet"),
     "03"-> Messages("awrs.additional_information.orders.telephonefax"),
-    "04"-> Messages("awrs.additional_information.orders.facetoface"),
     "99"-> Messages("awrs.additional_information.other")
   )
 
   val mainCustomerOptions = Seq(
-    "01" -> Messages("awrs.additional_information.mainCustomers.pubs"),
-    "02" -> Messages("awrs.additional_information.mainCustomers.night_clubs"),
-    "03" -> Messages("awrs.additional_information.mainCustomers.private_members_clubs"),
-    "04" -> Messages("awrs.additional_information.mainCustomers.hotels"),
     "05" -> Messages("awrs.additional_information.mainCustomers.hospitality_catering"),
-    "06" -> Messages("awrs.additional_information.mainCustomers.restaurants"),
+    "04" -> Messages("awrs.additional_information.mainCustomers.hotels"),
     "07" -> Messages("awrs.additional_information.mainCustomers.independent_retailers"),
     "08" -> Messages("awrs.additional_information.mainCustomers.national_retailers"),
-    "09" -> Messages("awrs.additional_information.mainCustomers.public"),
+    "02" -> Messages("awrs.additional_information.mainCustomers.night_clubs"),
     "10" -> Messages("awrs.additional_information.mainCustomers.other_wholesalers"),
+    "03" -> Messages("awrs.additional_information.mainCustomers.private_members_clubs"),
+    "09" -> Messages("awrs.additional_information.mainCustomers.public"),
+    "01" -> Messages("awrs.additional_information.mainCustomers.pubs"),
+    "06" -> Messages("awrs.additional_information.mainCustomers.restaurants"),
     "99" -> Messages("awrs.additional_information.other")
   )
 
   val products = Seq(
-    "02"-> Messages("awrs.additional_information.wine"),
-    "03"-> Messages("awrs.additional_information.spirits"),
-    "04"-> Messages("awrs.additional_information.cider"),
     "05"-> Messages("awrs.additional_information.beer"),
+    "04"-> Messages("awrs.additional_information.cider"),
     "06"-> Messages("awrs.additional_information.perry"),
+    "03"-> Messages("awrs.additional_information.spirits"),
+    "02"-> Messages("awrs.additional_information.wine"),
     "99"-> Messages("awrs.additional_information.other")
   )
 
