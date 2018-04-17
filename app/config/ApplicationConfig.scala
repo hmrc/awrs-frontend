@@ -24,7 +24,6 @@ trait ApplicationConfig {
 
   val assetsPrefix: String
   val betaFeedbackUrl: String
-  val betaFeedbackUnauthenticatedUrl: String
   val analyticsToken: Option[String]
   val analyticsHost: String
   val externalReportProblemUrl: String
@@ -47,7 +46,6 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val analyticsToken: Option[String] = Some(getString(s"google-analytics.token"))
   override lazy val analyticsHost: String = getString(s"google-analytics.host")
   override lazy val externalReportProblemUrl = s"$contactHost/contact/problem_reports"
-  override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
   override lazy val reportAProblemPartialUrl = s"$contactFrontendService/contact/problem_reports?secure=true"
   override lazy val homeUrl = s"$awrsHost/"
   override lazy val defaultTimeoutSeconds: Int = getString(s"defaultTimeoutSeconds").toInt
