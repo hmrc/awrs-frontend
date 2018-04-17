@@ -833,7 +833,7 @@ awrs.de_registration.confirmation_page.prompt_print_heading=You will receive an 
 awrs.withdrawal.reason.title=Reason for withdrawal
 awrs.withdrawal.confirm_reason.title=Confirm application withdrawal
 awrs.withdrawal.confirmation.title=Application withdrawn
-awrs.withdrawal.reasons_page.heading=Select the reason for withdrawing your application
+awrs.withdrawal.reasons_page.heading = What is the reason you are withdrawing your registration?
 awrs.withdrawal.confirm_page.heading = Are you sure that you want to withdraw your registration?
 awrs.withdrawal.confirmation_page.description=Application withdrawn for
 awrs.withdrawal.description_1=received on {0}
@@ -842,22 +842,22 @@ awrs.withdrawal.confirmation.error.empty = Select yes if you want to withdraw yo
 awrs.withdrawal.confirmation_page.information_what_next_1=If you wish to submit a new application for AWRS you must wait 24 hours after withdrawing your application before you can start a new AWRS application.
 awrs.withdrawal.confirmation_page.information_what_next_1_href=start the application process again
 # Dynamically created - DO NOT DELETE
-awrs.withdrawal.reason.applied_in_error=Applied in error
-awrs.withdrawal.reason.no_longer_trading=No longer trading
-awrs.withdrawal.reason.duplicate_application=Duplicate application
-awrs.withdrawal.reason.joined_awrs_group=Joined AWRS group
+awrs.withdrawal.reason.applied_in_error = Registered by mistake
+awrs.withdrawal.reason.no_longer_trading= No longer trading as an alcohol wholesaler or producer
+awrs.withdrawal.reason.duplicate_application = Registered more than once
+awrs.withdrawal.reason.joined_awrs_group = Registering with a group
 awrs.withdrawal.reason.other=Other
-awrs.withdrawal.reason.other_message=Enter additional information
-awrs.withdrawal.reason.applied_in_error.schema_enum=Applied in error
-awrs.withdrawal.reason.no_longer_trading.schema_enum=No Longer trading
-awrs.withdrawal.reason.duplicate_application.schema_enum=Duplicate Application
-awrs.withdrawal.reason.joined_awrs_group.schema_enum=Joined AWRS Group
+awrs.withdrawal.reason.other_message= What are the other reasons you are withdrawing your registration?
+awrs.withdrawal.reason.applied_in_error.schema_enum =  Registered by mistake
+awrs.withdrawal.reason.no_longer_trading.schema_enum = No longer trading as an alcohol wholesaler or producer
+awrs.withdrawal.reason.duplicate_application.schema_enum = Registered more than once
+awrs.withdrawal.reason.joined_awrs_group.schema_enum = Registering with a group
 awrs.withdrawal.reason.other.schema_enum=Others
 # Error messages
 awrs.withdrawal.error.reason_empty.summary=No withdrawal reason selected
-awrs.withdrawal.error.reason_empty=Select a withdrawal reason
+awrs.withdrawal.error.reason_empty = Select the reason you are withdrawing your registration
 awrs.withdrawal.error.other.reason_empty.summary=No other withdrawal reason entered
-awrs.withdrawal.error.other.reason_empty=Enter other withdrawal reason
+awrs.withdrawal.error.other.reason_empty = Enter the other reasons why you are withdrawing your registration
 
 # Survey
 #============================================================

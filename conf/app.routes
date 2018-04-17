@@ -114,8 +114,8 @@ GET         /feedback                                       controllers.Feedback
 GET         /feedback/thanks                                controllers.FeedbackController.showFeedbackThanks
 POST        /feedback-submit                                controllers.FeedbackController.submitFeedback
 
-GET         /withdraw-application                           controllers.WithdrawalController.showWithdrawalReasons
-POST        /withdraw-application                           controllers.WithdrawalController.submitWithdrawalReasons
+GET         /withdraw-registration                          controllers.WithdrawalController.showWithdrawalReasons
+POST        /withdraw-registration                          controllers.WithdrawalController.submitWithdrawalReasons
 GET         /confirm-withdrawal                             controllers.WithdrawalController.showConfirmWithdrawal
 POST        /confirm-withdrawal                             controllers.WithdrawalController.submitConfirmWithdrawal
 GET         /withdrawal-confirmation                        controllers.WithdrawalController.showWithdrawalConfirmation(printFriendly: Boolean ?= false)
