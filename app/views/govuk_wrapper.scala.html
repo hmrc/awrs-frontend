@@ -92,20 +92,12 @@
 }
 
 @footerTop = {<a id="feedback-link-footer" href="@appConfig.betaFeedbackUrl">@Messages("awrs.feedback.title")</a>}
-@footerLinks = {}
 
-@betaBanner = {
-    @uiLayouts.betaBanner(
-        userLoggedIn = true,
-        betaFeedbackUrl = appConfig.betaFeedbackUrl,
-        betaFeedbackUnauthenticatedUrl = appConfig.betaFeedbackUnauthenticatedUrl,
-        showFeedbackLinkInBetaBanner = true
-    )
-}
+@footerLinks = {}
 
 @serviceInfo = {
     @uiLayouts.serviceInfo(
-        betaBanner = betaBanner,
+        betaBanner = HtmlFormat.empty,
         includeGridWrapper = false,
         serviceInfoContent = Some(buildServiceInfo),
         includeHMRCBranding = false
