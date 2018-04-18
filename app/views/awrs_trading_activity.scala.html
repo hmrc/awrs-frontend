@@ -26,8 +26,12 @@
     }
 }
 
+@pageHeading = @{
+    Messages("awrs.additional_information.trading_activity.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))
+}
+
 @includes.awrs_main(
-    title = Html(Messages("awrs.generic.tab.title", Messages("awrs.additional_information.trading_activity.heading", headingPrefix(enter = "awrs.generic.tell_us_about")))).toString, userLoggedIn = true){
+    title = Messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(
@@ -36,7 +40,7 @@
         @errorSummaryTemplate(tradingActivityForm)
         <header class="page-header">
             <h1 id="trading-activity-heading" class="heading-xlarge">
-                @Html(Messages("awrs.additional_information.trading_activity.heading", headingPrefix(enter = "awrs.generic.tell_us_about")))
+                @pageHeading
             </h1>
             @awrsProgressHelper(request.getBusinessType, tradingActivityName)
         </header>

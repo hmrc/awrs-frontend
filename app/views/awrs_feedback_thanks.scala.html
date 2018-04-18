@@ -4,7 +4,7 @@
 
 @backUrl = @{controllers.routes.IndexController.showLastLocation()}
 
-@includes.awrs_main(title = Messages("awrs.feedback.thanks.title"), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.feedback.thanks.heading")), userLoggedIn = true) {
     <div class="grid">
         <div class="grid-2-3">
             <header class="page-header">

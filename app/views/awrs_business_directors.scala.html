@@ -34,14 +34,6 @@
     }
 }
 
-@pageTitle = @{
-businessDirectorId match {
-case  1 if isEditMode & !isNewRecord => Messages("awrs.generic.tab.title", Messages("awrs.business_directors.heading.first.edit"))
-case  1                              => Messages("awrs.generic.tab.title", Messages("awrs.business_directors.heading.first"))
-case id                              => Messages("awrs.generic.tab.title", Messages("awrs.business_directors.heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalIntSuffix(id)))
-}
-}
-
 @directorHeading = @{
     (businessDirectorId, isEditMode) match {
         case (1, false) => Messages("awrs.business_directors.role_question.first")
@@ -192,7 +184,7 @@ case id                              => Messages("awrs.generic.tab.title", Messa
 }
 
 
-@includes.awrs_main(title = pageTitle, userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", h1text), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(

@@ -57,7 +57,7 @@
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.business-partner.page.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
