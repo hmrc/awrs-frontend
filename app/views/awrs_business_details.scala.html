@@ -34,9 +34,9 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
 
 @pageTitle = @{
     businessType.getOrElse("") match {
-        case "Partnership" | "LP" | "LLP" => Messages("awrs.business_details.title.partnership")
-        case "LLP_GRP" | "LTD_GRP" => Messages("awrs.business_details.title.group")
-        case _ => Messages("awrs.business_details.title.generic")
+        case "Partnership" | "LP" | "LLP" => Messages("awrs.generic.tab.title", Messages("awrs.business_details.heading.partnership", headingPrefix()))
+        case "LLP_GRP" | "LTD_GRP" => Messages("awrs.generic.tab.title", Messages("awrs.business_details.heading.group", headingPrefix()))
+        case _ => Messages("awrs.generic.tab.title", Messages("awrs.business_details.heading", headingPrefix()))
     }
 }
 

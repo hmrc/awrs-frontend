@@ -55,7 +55,21 @@
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.business_contacts.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@pageTitle = @{
+    businessType.getOrElse("") match {
+        case "Partnership" | "LP" | "LLP" => {
+            Messages("awrs.generic.tab.title", Messages("awrs.business_contacts.heading.partnership", headingPrefix()))
+        }
+        case "LLP_GRP" | "LTD_GRP" => {
+            Messages("awrs.generic.tab.title", Messages("awrs.business_contacts.heading.group", headingPrefix()))
+        }
+        case _ => {
+            Messages("awrs.generic.tab.title", Messages("awrs.business_contacts.heading", headingPrefix()))
+        }
+    }
+}
+
+@includes.awrs_main(title = pageTitle, pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">

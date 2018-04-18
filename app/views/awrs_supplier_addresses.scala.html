@@ -31,7 +31,22 @@
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.supplier-addresses.page.title"), pageScripts = Some(pageScripts), userLoggedIn = true){
+@pageHeading = @{
+(isEditMode(), isNewRecord, supplierAddressId) match {
+case (true, true, 1) | (false, true, 1) | (false, false, 1) => {
+Messages("awrs.supplier-addresses.heading.first")
+}
+case (_, _, _) => {
+Messages("awrs.supplier-addresses.heading", headingPrefix(enter = "awrs.generic.tell_us_about"), ordinalIntSuffix(supplierAddressId))
+}
+}
+}
+
+@pageTitle = @{
+Messages("awrs.generic.tab.title", pageHeading)
+}
+
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true){
 <link rel="stylesheet" href='@routes.Assets.at("stylesheets/jquery-ui.min.css")'/>
 <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
@@ -41,16 +56,7 @@
         ))
         @errorSummaryTemplate(supplierAddressForm)
         <header class="page-header">
-            @{
-                (isEditMode(), isNewRecord, supplierAddressId) match {
-                    case (true, true, 1) | (false, true, 1) | (false, false, 1) => {
-                        <h1 id="supplier-addresses-title" class="heading-xlarge">{Messages("awrs.supplier-addresses.heading.first")}</h1>
-                    }
-                    case (_, _, _) => {
-                        <h1 id="supplier-addresses-title" class="heading-xlarge">{Messages("awrs.supplier-addresses.heading", headingPrefix(enter = "awrs.generic.tell_us_about"), ordinalIntSuffix(supplierAddressId))}</h1>
-                    }
-                }
-            }
+            <h1 id="supplier-addresses-title" class="heading-xlarge">@pageHeading</h1>
             @awrsProgressHelper(request.getBusinessType, suppliersName)
         </header>
         <p id="supplier-address-description" class="lede">@Html(Messages("awrs.supplier-addresses.description"))</p>
