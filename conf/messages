@@ -73,7 +73,7 @@ awrs.generic.iDoNotKnowMyCRN_text=Your company registration number is made up of
 awrs.generic.iDoNotKnowTheirCRN_question=I do not know their CRN or date of incorporation
 awrs.generic.iDoNotKnowTheirCRN_text=Their company registration number is made up of 8 characters. If their company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on their certificate of incorporation, or any official company documentation they receive from Companies House.{0}If they are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.
 awrs.generic.date_of_incorporation=Date of incorporation
-awrs.generic.date_hint=Example, 01 01 2016	
+awrs.generic.date_hint= For example, 25 1 2016
 awrs.generic.date_hint.reader=Example, one, one, two thousand and sixteen
 awrs.generic.date_day.reader=Example, one
 awrs.generic.date_month.reader=Example, one
@@ -774,22 +774,22 @@ awrs.update.confirmation.pending.information_what_next_1=We will review and chec
 # De-registration Page messages
 #===========================================================
 awrs.de_registration.page_title=Date of cancellation
-awrs.de_registration.heading=Enter the date of cancellation
-awrs.de_registration.lede=You should notify us at least 30 calendar days in advance.
+awrs.de_registration.heading = What date do you want to cancel your registration from?
+awrs.de_registration.lede= You should give us at least 30 days notice.
 awrs.de_registration.confirmation_title=Confirm registration cancellation
-awrs.de_registration.confirmation_heading=Are you sure that you want to cancel your AWRS registration?
+awrs.de_registration.confirmation_heading=Are you sure that you want to cancel your registration?
 awrs.de_registration.confirmation.error.empty.summary=There is a problem with your request to cancel
-awrs.de_registration.confirmation.error.empty=Confirm if you want to cancel your AWRS registration
+awrs.de_registration.confirmation.error.empty=Select yes if you want to cancel your registration
 awrs.de_registration.warning=Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid).
 awrs.de_registration.warning.confirm=Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid). If you cancel your group registration all group members will be no longer approved.
-awrs.de_registration.cta=Confirm
+awrs.de_registration.cta = Continue
 # Error messages
 awrs.de_registration.error.date_empty.summary=There is a problem with the stop trading date
-awrs.de_registration.error.date_empty=You must enter a date
+awrs.de_registration.error.date_empty=Enter the date you want to cancel your registration from
 awrs.de_registration.error.date_valid.summary=There is a problem with the stop trading date
-awrs.de_registration.error.date_valid=You must enter a valid date
+awrs.de_registration.error.date_valid=Enter a valid date when you want to cancel your registration from
 awrs.de_registration.error.proposedDate_toEarly.summary=The proposed cancellation date must be on or after today's date
-awrs.de_registration.error.proposedDate_toEarly=Enter a proposed cancellation date on or after today's date
+awrs.de_registration.error.proposedDate_toEarly=The date you want to cancel your registration must be after [yesterday’s date]
 
 # De-registration reason Page messages
 #===========================================================
