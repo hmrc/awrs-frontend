@@ -793,29 +793,29 @@ awrs.de_registration.error.proposedDate_toEarly=The date you want to cancel your
 
 # De-registration reason Page messages
 #===========================================================
-awrs.de_registration_reason.page_heading=Select the reason for cancelling your registration
+awrs.de_registration_reason.page_heading = What is the reason you are cancelling your registration?
 awrs.de_registration_reason.page_title=Reason for cancelling registration
-awrs.de_registration_reason.other_input_label=Enter additional information
+awrs.de_registration_reason.other_input_label= What are the other reasons you are cancelling your registration?
 awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme.schema_enum=Ceases to be registerable for the scheme
 awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler.schema_enum=Ceases to trade as an alcohol wholesaler
-awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum=Joining a group to register for AWRS
-awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum=Joining a partnership to register for AWRS
-awrs.de_registration.reason.group_disbanded.schema_enum=Group disbanded
+awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum= Registering with a group
+awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum= Registering with a partnership
+awrs.de_registration.reason.group_disbanded.schema_enum= Group ended
 awrs.de_registration.reason.partnership_disbanded.schema_enum=Partnership disbanded
 awrs.de_registration.reason.other.schema_enum=Others
 # Dynamically created - DO NOT DELETE
-awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme=AWRS registration is no longer needed
-awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler=Stop trading as an alcohol wholesaler
-awrs.de_registration.reason.joining_a_group_to_register_for_awrs=Joining a group to register for AWRS
-awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs=Joining a partnership to register for AWRS
-awrs.de_registration.reason.group_disbanded=Group disbanded
-awrs.de_registration.reason.partnership_disbanded=Partnership dissolved
+awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme= Registration no longer needed
+awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler= Stopped trading as an alcohol wholesaler or producer
+awrs.de_registration.reason.joining_a_group_to_register_for_awrs= Registering with a group
+awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs= Registering with a partnership
+awrs.de_registration.reason.group_disbanded= Group ended
+awrs.de_registration.reason.partnership_disbanded= Partnership ended
 awrs.de_registration.reason.other=Other
 # Error messages
 awrs.de_registration.error.reason_empty.summary=No cancellation reason selected
-awrs.de_registration.error.reason_empty=Select a cancellation reason
+awrs.de_registration.error.reason_empty= Select the reason you are cancelling your registration
 awrs.de_registration.error.other.reason_empty.summary=No other cancellation reason entered
-awrs.de_registration.error.other.reason_empty=Enter other cancellation reason
+awrs.de_registration.error.other.reason_empty= Enter the other reasons why you are cancelling your registration
 
 # De-registration confirmation Page messages
 #===========================================================

@@ -124,8 +124,8 @@ GET         /cancellation-date                               controllers.DeRegis
 POST        /cancellation-date/submit                        controllers.DeRegistrationController.submitDate
 GET         /de-register/abort                              controllers.DeRegistrationController.returnToIndex
 
-GET         /de-register-reason                             controllers.DeRegistrationController.showReason
-POST        /de-register-awrs-reason/submit                 controllers.DeRegistrationController.submitReason
+GET         /cancel-registration                            controllers.DeRegistrationController.showReason
+POST        /cancel-registration/submit                     controllers.DeRegistrationController.submitReason
 
 GET         /confirm-cancellation                            controllers.DeRegistrationController.showConfirm
 POST        /confirm-cancellation/submit                     controllers.DeRegistrationController.callToAction
