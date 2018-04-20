@@ -157,8 +157,9 @@ awrs.generic.error.invalid.date=The date is invalid
 awrs.generic.error.invalid.date.summary=Enter a valid date
 awrs.generic.error.identification_provided.summary=No form of identification has been provided
 awrs.generic.error.identification_provided=Provide at least 1 form of identification
-awrs.generic.error.maximum_length.summary=The {0} is not in the correct format
-awrs.generic.error.maximum_length=The {0} must not be more than {1} characters
+awrs.generic.error.maximum_length.summary = The {0} is not in the correct format
+awrs.generic.error.maximum_length= What {0} must not be more than {1} characters
+
 awrs.generic.error.email_empty.summary=The email address field is empty
 awrs.generic.error.email_empty=Enter a valid email address
 awrs.generic.error.email_invalid.summary=The email address is incorrect
@@ -594,8 +595,8 @@ awrs.additional_information.trading_activity.title=Trading activities
 awrs.additional_information.products.title=Products
 awrs.additional_information.wholesaler_type=How do you currently, or plan to, trade alcohol?
 awrs.additional_information.other.wholesaler_type=Enter how you currently, or plan to, trade alcohol
-awrs.additional_information.products=What type of alcohol products do you currently, or plan to, sell?
-awrs.additional_information.other.products=Enter other types of alcohol products you currently, or plan to, sell
+awrs.additional_information.products= What products do you sell or plan to sell?
+awrs.additional_information.other.products= What other products do you sell or plan to sell?
 awrs.additional_information.all=All
 awrs.additional_information.cash_and_carry=Cash and carry
 awrs.additional_information.supply_off_trade=Supplying to off trade, retailers and off-licences
@@ -616,8 +617,8 @@ awrs.additional_information.alcohol_export=Do you currently, or plan to, export 
 awrs.additional_information.export_location=Where do you currently, or plan to, export alcohol?
 awrs.additional_information.within_eu=Within the EU
 awrs.additional_information.outside_eu=Outside the EU
-awrs.additional_information.main_customers=Who do you currently, or plan, to sell alcohol to?
-awrs.additional_information.other.main_customers=Enter who else you currently, or plan, to sell alcohol to
+awrs.additional_information.main_customers= Who do you sell, or plan to sell, alcohol to?
+awrs.additional_information.other.main_customers= Who else do you sell, or plan to sell, alcohol to?
 awrs.additional_information.mainCustomers.all=All
 awrs.additional_information.mainCustomers.pubs= Pubs
 awrs.additional_information.mainCustomers.night_clubs= Night clubs
@@ -651,18 +652,24 @@ awrs.additional_information.error.order_validation.summary=The other field for o
 awrs.additional_information.error.order_validation=The other field for orders can only contain alphanumeric characters
 # errors - customers
 awrs.additional_information.error.main_customer.summary=The customer sales question has not been answered
-awrs.additional_information.error.main_customer=Select an option for the customer sales question
+awrs.additional_information.error.main_customer= Select who you sell, or plan to sell, alcohol to
 awrs.additional_information.error.other_mainCustomers.summary=The other field for the customer sales question is empty
-awrs.additional_information.error.other_mainCustomers=Enter further information for the customer sales question
+awrs.additional_information.error.other_mainCustomers= Enter who else you sell, or plan to sell, alcohol to
 awrs.additional_information.error.other_mainCustomers_invalid_format.summary=The other field for main customers is not in the correct format
-awrs.additional_information.error.other_mainCustomers_invalid_format=The other field for the customer sales question is not in the correct format
+awrs.additional_information.error.other_mainCustomers_invalid_format= Who else you sell, or plan to sell, alcohol to must only contain letters and numbers
+awrs.additional_information.error.maximum_length.customer= Who else you sell, or plan to sell, alcohol to must be 40 characters or less
+awrs.additional_information.error.maximum_length.customer.summary= The {0} is not in the correct format
+
 # errors - product type
 awrs.additional_information.error.type_of_product.summary=The types of product question has not been answered
-awrs.additional_information.error.type_of_product=Select an option for the types of product question
+awrs.additional_information.error.type_of_product= Select what products you sell or plan to sell
 awrs.additional_information.error.type_of_product_other.summary=The other field for types of product is empty
-awrs.additional_information.error.type_of_product_other=Enter further information for types of product
+awrs.additional_information.error.type_of_product_other=Enter what other products you sell or plan to sell
 awrs.additional_information.error.type_of_product_other_validation.summary=The other field for types of product is not in the correct format
-awrs.additional_information.error.type_of_product_other_validation=The other field for types of product can only contain alphanumeric characters
+awrs.additional_information.error.type_of_product_other_validation= What other products you sell or plan to sell must only contain letters and numbers
+awrs.additional_information.error.maximum_length.product.summary= The {0} is not in the correct format
+awrs.additional_information.error.maximum_length.product= What other products you sell or plan to sell must only contain letters and numbers
+
 # errors - third party storage. import, export
 awrs.additional_information.error.import_alcohol.summary=The import alcohol question has not been answered
 awrs.additional_information.error.import_alcohol=Select an option for the import alcohol question
