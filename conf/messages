@@ -719,21 +719,21 @@ awrs.email_verification_success.lede=We have successfully verified your email ad
 
 # Application declaration Page
 #============================================================
-awrs.application_declaration.heading=Application declaration
-awrs.application_declaration.title=Application declaration
-awrs.application_declaration.lede=This is a person, within your business, who is legally responsible for this application.
+awrs.application_declaration.heading=Declaration
+awrs.application_declaration.title=Declaration
+awrs.application_declaration.lede=This is someone in your business who is legally responsible for this registration.
 awrs.application_declaration.declaration_name_hint=Name of the person {0} the application
 awrs.application_declaration.declaration_role=Job title or role
 awrs.application_declaration.declaration_role_hint=Job title or role of the person {0} the application
-awrs.application_declaration.declaration_statement=I want to register {0} for AWRS. I confirm that the information provided in this application is accurate and complete. I understand that knowingly including any false information in this application is a criminal offence.
+awrs.application_declaration.declaration_statement=I want to register {0} as an alcohol wholesaler or producer. I confirm that the information provided is accurate and complete. I understand that providing false information on purpose in a criminal offence.
 awrs.application_declaration.declaration_statement.amend=I want to amend the application for {0}. I confirm that the information provided in this application is accurate and complete. I understand that knowingly including any false information in this application is a criminal offence.
-awrs.application_declaration.confirmation_and_send_application=Agree and submit application
+awrs.application_declaration.confirmation_and_send_application= Agree and send
 awrs.application_declaration.error.declaration_name_empty.summary=The name is empty
-awrs.application_declaration.error.declaration_name_empty=You must enter a name
+awrs.application_declaration.error.declaration_name_empty=Enter full name
 awrs.application_declaration.error.declaration_name_invalid.summary=The name is not in the correct format
 awrs.application_declaration.error.declaration_name_invalid=Enter a name in the correct format
 awrs.application_declaration.error.declaration_role_empty.summary=The job title or role is empty
-awrs.application_declaration.error.declaration_role_empty=You must enter a job title or role
+awrs.application_declaration.error.declaration_role_empty=Enter job title or role
 awrs.application_declaration.error.confirmation_empty.summary=The declaration message has not been checked
 awrs.application_declaration.error.confirmation_empty=You must confirm the application declaration before you can submit
 
@@ -789,7 +789,7 @@ awrs.de_registration.error.date_empty=Enter the date you want to cancel your reg
 awrs.de_registration.error.date_valid.summary=There is a problem with the stop trading date
 awrs.de_registration.error.date_valid=Enter a valid date when you want to cancel your registration from
 awrs.de_registration.error.proposedDate_toEarly.summary=The proposed cancellation date must be on or after today's date
-awrs.de_registration.error.proposedDate_toEarly=The date you want to cancel your registration must be after [yesterday’s date]
+awrs.de_registration.error.proposedDate_toEarly=The date you want to cancel your registration must be after yesterday’s date
 
 # De-registration reason Page messages
 #===========================================================
