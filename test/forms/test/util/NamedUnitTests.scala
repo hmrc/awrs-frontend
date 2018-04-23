@@ -303,7 +303,7 @@ private object IdentityVerifications {
       case id => id
     })
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.first_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "first name", AwrsFieldConfig.firstNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "First name", AwrsFieldConfig.firstNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "first name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -324,7 +324,7 @@ private object IdentityVerifications {
     })
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.last_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "last name", AwrsFieldConfig.lastNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "Last name", AwrsFieldConfig.lastNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "last name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 

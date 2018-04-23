@@ -30,7 +30,7 @@
     businessDirectorId match {
         case  1 if isEditMode & !isNewRecord => Messages("awrs.business_directors.heading.first.edit")
         case  1                              => Messages("awrs.business_directors.heading.first")
-        case id                              => Messages("awrs.business_directors.heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalIntSuffix(id))
+        case id                              => Messages("awrs.business_directors.heading", headingPrefix(enter = "awrs.director.what.are", isNewRecord = isNewRecord), ordinalIntSuffix(id))
     }
 }
 
@@ -85,7 +85,6 @@
         passportField = businessDirectorsForm("passportNumber"),
         nationalIdField = businessDirectorsForm("nationalID"),
         youOrThey = "they",
-        questionHintText = Messages("awrs.generic.we_need_their_identity"),
         ariaDescribedBy = "doTheyHaveNationalInsurance-legend Nino-question-hint",
         ariaLabelledBy = "NINO_field NINO-information",
         formHasErrors = businessDirectorsForm.hasErrors
@@ -103,7 +102,6 @@
             legend = Messages("awrs.business_directors.personOrCompany_question"),
             legendId = "personOrCompany-legend",
             fieldSetClass = "form-group inline" + personOrCompanyClass,
-            fieldSetQuestion = Messages("awrs.generic.helper_question_text"),
             fieldSetQuestionId = "crn-HelpLink",
             fieldSetQuestionAnswer = Html(Messages("awrs.business_directors.personOrCompany_answer_text", "<br><br>")),
             fieldSetQuestionWrapperClass = "panel-indent",

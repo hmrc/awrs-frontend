@@ -34,7 +34,7 @@ object NamedMappingAndUtil {
     val firstNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.first_name_empty"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.firstNameLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.firstNameLen, fieldId, "First name", errorMsg = "awrs.generic.error.name.maximum_length"),
         genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
       )
     compulsoryText(firstNameConstraintParameters)
@@ -45,7 +45,7 @@ object NamedMappingAndUtil {
     val lastNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.last_name_empty"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.lastNameLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.lastNameLen, fieldId, "Last name", errorMsg = "awrs.generic.error.name.maximum_length"),
         genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
       )
     compulsoryText(lastNameConstraintParameters)
