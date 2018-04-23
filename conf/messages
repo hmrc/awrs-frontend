@@ -593,28 +593,28 @@ awrs.additional_information.products.heading={0} your products
 awrs.additional_information.title=Additional business information
 awrs.additional_information.trading_activity.title=Trading activities
 awrs.additional_information.products.title=Products
-awrs.additional_information.wholesaler_type=How do you currently, or plan to, trade alcohol?
-awrs.additional_information.other.wholesaler_type=Enter how you currently, or plan to, trade alcohol
+awrs.additional_information.wholesaler_type= How do you trade, or plan to trade, alcohol?
+awrs.additional_information.other.wholesaler_type= What other ways do you trade, or plan to trade, alcohol?
 awrs.additional_information.products= What products do you sell or plan to sell?
 awrs.additional_information.other.products= What other products do you sell or plan to sell?
 awrs.additional_information.all=All
 awrs.additional_information.cash_and_carry=Cash and carry
-awrs.additional_information.supply_off_trade=Supplying to off trade, retailers and off-licences
-awrs.additional_information.supply_on_trade=Supplying to on trade, pubs and hotels
+awrs.additional_information.supply_off_trade= Supplying to off trade, like retailers and off-licences
+awrs.additional_information.supply_on_trade = Supplying to on trade, like pubs and hotels
 awrs.additional_information.producer=Producer
 awrs.additional_information.broker=Broker
 awrs.additional_information.other=Other
 awrs.additional_information.other_text=Enter additional information
-awrs.additional_information.alcohol_import=Does your business currently, or plan, to import alcohol?
-awrs.additional_information.third_party_storage=Do you currently, or plan to, use any third party alcohol storage?
-awrs.additional_information.third_party_storage_help_text=This includes any warehousing and logistics services that you use. It would also include any repacking services.
+awrs.additional_information.alcohol_import= Do you import, or plan to import, alcohol?
+awrs.additional_information.third_party_storage= Do you use, or plan to use, a third party to store alcohol?
+awrs.additional_information.third_party_storage_help_text= This includes any warehousing, logistics and repacking services you use.
 awrs.additional_information.wine=Wine
 awrs.additional_information.spirits=Spirits
 awrs.additional_information.cider=Cider
 awrs.additional_information.beer=Beer
 awrs.additional_information.perry=Perry
-awrs.additional_information.alcohol_export=Do you currently, or plan to, export alcohol?
-awrs.additional_information.export_location=Where do you currently, or plan to, export alcohol?
+awrs.additional_information.alcohol_export= Do you export, or plan to export, alcohol?
+awrs.additional_information.export_location=Where do you export, or plan to export, alcohol to?
 awrs.additional_information.within_eu=Within the EU
 awrs.additional_information.outside_eu=Outside the EU
 awrs.additional_information.main_customers= Who do you sell, or plan to sell, alcohol to?
@@ -630,26 +630,26 @@ awrs.additional_information.mainCustomers.independent_retailers= Independent ret
 awrs.additional_information.mainCustomers.national_retailers= National retailers
 awrs.additional_information.mainCustomers.public= Public
 awrs.additional_information.mainCustomers.other_wholesalers= Other wholesalers
-awrs.additional_information.orders.orders_question=How do you currently, or plan to, take orders?
-awrs.additional_information.orders.other.orders_question=Enter how you currently, or plan to, take orders
+awrs.additional_information.orders.orders_question= How do you take orders or plan to take orders?
+awrs.additional_information.orders.other.orders_question= What other ways do you take orders or plan to take orders?
 awrs.additional_information.orders.internet=Internet, email or social media
 awrs.additional_information.orders.telephonefax=Telephone or fax
 awrs.additional_information.orders.facetoface=Face to face
 awrs.additional_information.form_hint=Select all that apply
 # errors - wholesaler
 awrs.additional_information.error.type_of_wholesaler.summary=The trader question has not been answered
-awrs.additional_information.error.type_of_wholesaler=Select an option for the trader question
+awrs.additional_information.error.type_of_wholesaler= Select how you trade, or plan to trade, alcohol
 awrs.additional_information.error.other_wholesaler.summary=Other types of trading is empty
-awrs.additional_information.error.other_wholesaler=Enter other types of trading
+awrs.additional_information.error.other_wholesaler= Enter the other ways you trade, or plan to trade, alcohol
 awrs.additional_information.error.wholesaler_validation.summary=Other types of trading is not in the correct format
-awrs.additional_information.error.wholesaler_validation=Other types of trading can only contain alphanumeric characters
+awrs.additional_information.error.wholesaler_validation= What other ways you trade, or plan to trade, alcohol must only contain letters or numbers
 # errors - orders
 awrs.additional_information.error.orders.summary=The orders question has not been answered
-awrs.additional_information.error.orders=Select an option for the orders question
+awrs.additional_information.error.orders= Select how you take orders or plan to take orders
 awrs.additional_information.error.other_order.summary=The other field for orders is empty
-awrs.additional_information.error.other_order=Enter further information for how you take orders
+awrs.additional_information.error.other_order= Enter the other ways you take orders or plan to take orders
 awrs.additional_information.error.order_validation.summary=The other field for orders is not the correct format
-awrs.additional_information.error.order_validation=The other field for orders can only contain alphanumeric characters
+awrs.additional_information.error.order_validation= What other ways you take orders or plan to take orders must only contain letters or numbers
 # errors - customers
 awrs.additional_information.error.main_customer.summary=The customer sales question has not been answered
 awrs.additional_information.error.main_customer= Select who you sell, or plan to sell, alcohol to
@@ -672,13 +672,13 @@ awrs.additional_information.error.maximum_length.product= What other products yo
 
 # errors - third party storage. import, export
 awrs.additional_information.error.import_alcohol.summary=The import alcohol question has not been answered
-awrs.additional_information.error.import_alcohol=Select an option for the import alcohol question
+awrs.additional_information.error.import_alcohol= Select yes if you import, or plan to import, alcohol
 awrs.additional_information.error.do_you_export_alcohol.summary=The export alcohol question has not been answered
-awrs.additional_information.error.do_you_export_alcohol=Select an option for the export alcohol question
+awrs.additional_information.error.do_you_export_alcohol=Select yes if you import, or plan to import, alcohol
 awrs.additional_information.error.export_location.summary=The export location question has not been answered
-awrs.additional_information.error.export_location=Select an option for the export location question
+awrs.additional_information.error.export_location= Select where you export, or plan to export, alcohol to
 awrs.additional_information.error.third_party_storage.summary=The third party alcohol storage question has not been answered
-awrs.additional_information.error.third_party_storage=Select an option for the third party alcohol storage question
+awrs.additional_information.error.third_party_storage= Select yes if you use, or plan to use, a third party to store alcohol
 
 # Supplier Addresses Page
 #============================================================
@@ -978,6 +978,13 @@ awrs.view_application.products_text=Your products
 awrs.view_application.suppliers_text=Your 5 main suppliers
 awrs.view_application.business_partners_text=Your business partners
 awrs.view_application.application_declaration_text=Your application declaration
+
+
+awrs.view_application.error.trading_activity.maxlength.summary = The other orders is not in the correct format
+awrs.view_application.error.trading_activity.order.maxlength.summary = The wholesaler type other is not in the correct format
+
+awrs.view_application.error.trading_activity.maxlength = What other ways you take orders or plan to take orders must be 40 characters or less
+awrs.view_application.error.trading_activity.order.maxlength =What other ways you trade, or plan to trade, alcohol must be 40 characters or less
 
 
 # Delete Confirmation Page messages
