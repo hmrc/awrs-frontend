@@ -272,16 +272,16 @@ object NamedMappingAndUtil {
         Seq(
           FieldFormatConstraintParameter(
             (str: String) =>
-              str.matches(crnRegex) match {
+              """[1-9]""".r.findFirstIn(str).nonEmpty match {
                 case true => Valid
-                case false => simpleErrorMessage(fieldId, "awrs.generic.error.companyRegNumber_invalid")
+                case false => simpleErrorMessage(fieldId, "awrs.generic.error.companyRegNumber_atleastOneNumber")
               }
           ),
           FieldFormatConstraintParameter(
             (str: String) =>
-              """[1-9]""".r.findFirstIn(str).nonEmpty match {
+              str.matches(crnRegex) match {
                 case true => Valid
-                case false => simpleErrorMessage(fieldId, "awrs.generic.error.companyRegNumber_atleastOneNumber")
+                case false => simpleErrorMessage(fieldId, "awrs.generic.error.companyRegNumber_invalid")
               }
           )
         )
