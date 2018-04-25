@@ -175,6 +175,7 @@ awrs.generic.error.telephone_numeric.summary=The telephone number is not in the 
 awrs.generic.error.telephone_numeric=Enter a telephone number in the correct format
 
 # Misc
+awrs.generic.tab.title={0} - Register as an alcohol wholesaler or producer - GOV.UK
 awrs.generic.signed_out.page_title=Signed out
 awrs.generic.signed_out.reason=For your security, we signed you out because you did not use the service for 15 minutes or more.
 awrs.generic.signed_out.link=Sign back in to your HMRC Online services account

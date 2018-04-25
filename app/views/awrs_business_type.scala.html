@@ -6,7 +6,7 @@
 
 @implicitFormInstance = @{ Some(businessTypeForm) }
 
-@includes.awrs_main(title = Messages("awrs.business_verification.heading"),nameBusiness = Some(businessName), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.business_verification.heading")), nameBusiness = Some(businessName), userLoggedIn = true){
 
 @errorSummaryTemplate(businessTypeForm)
 <div class="grid">

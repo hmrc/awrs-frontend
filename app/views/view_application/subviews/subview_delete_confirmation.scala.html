@@ -21,7 +21,7 @@
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.delete.confirmation_heading", headingParameter), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.delete.confirmation_heading", headingParameter)), userLoggedIn = true) {
 @backLink(backUrl = controllers.routes.ViewApplicationController.viewSection(data match {
         case s : Supplier => suppliersName
         case p : AdditionalBusinessPremises => additionalBusinessPremisesName
