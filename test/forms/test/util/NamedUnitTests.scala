@@ -729,7 +729,8 @@ object ProofOfIdentiticationVerifications {
   def utrIsValidWhenDoYouHaveUTRIsAnsweredWithYes(preCondition: Map[String, String],
                                                   ignoreCondition: Set[Map[String, String]],
                                                   idPrefix: IdPrefix = None,
-                                                  alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true)(implicit form: Form[_]): Unit = {
+                                                  alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true)
+                                                 (implicit form: Form[_]): Unit = {
     val fieldId = idPrefix attach "utr"
 
     val questionId = idPrefix attach "doYouHaveUTR"
