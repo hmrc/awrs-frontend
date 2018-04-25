@@ -29,13 +29,13 @@ awrs.generic.create_new_application_link=Create a new application
 # Radio buttons
 awrs.generic.yes=Yes
 awrs.generic.no=No
-awrs.generic.0to2years=0 to 2 years
-awrs.generic.2to5years=2 to 5 years
-awrs.generic.5to10years=5 to 10 years
+awrs.generic.0to2years= Less than 2 years
+awrs.generic.2to5years= 2 to 5 years
+awrs.generic.5to10years= 6 to 9 years
 awrs.generic.10plusYears=10 or more years
-awrs.generic.0to2years.value=0 to 2 years
-awrs.generic.2to5years.value=2 to 5 years
-awrs.generic.5to10years.value=5 to 10 years
+awrs.generic.0to2years.value= Less than 2 years
+awrs.generic.2to5years.value= 2 to 5 years
+awrs.generic.5to10years.value=6 to 9 years
 awrs.generic.10plusYears.value=over 10 years
 awrs.generic.status.director=Director
 awrs.generic.status.director_value=Director
@@ -103,13 +103,15 @@ awrs.generic.error.title=Sorry, we’re experiencing technical difficulties
 awrs.generic.error.status=There has been a problem with your application
 awrs.generic.errors_heading=There is a problem with the form
 awrs.generic.error.postcode_empty.summary=The {0} postcode is empty
-awrs.generic.error.postcode_empty=Enter postcode
+awrs.generic.error.postcode_empty= Enter a {0} postcode
 awrs.generic.error.postcode_invalid.summary=The {0} postcode is not in the correct format
-awrs.generic.error.postcode_invalid=Enter a {0} postcode in the correct format
-awrs.generic.error.addressLine1_empty.summary=The address line 1 is empty
-awrs.generic.error.addressLine1_empty=Enter address line 1
-awrs.generic.error.addressLine2_empty.summary=The address line 2 is empty
-awrs.generic.error.addressLine2_empty=Enter address line 2
+awrs.generic.error.postcode_invalid= Enter a valid {0} postcode in the correct format, like AA1 1AA
+awrs.generic.error.addressLine1_empty.summary= The {0} address line 1 is empty
+awrs.generic.error.addressLine1_empty= Enter {0} address line 1
+awrs.generic.error.addressLine2_empty.summary= The {0} address line 2 is empty
+awrs.generic.error.addressLine2_empty= Enter {0} address line 2
+
+
 awrs.generic.error.character_invalid.summary=The {0} is not in the correct format
 awrs.generic.error.character_invalid=Invalid characters have been entered
 awrs.generic.error.first_name_empty.summary=The first name is empty
@@ -215,6 +217,14 @@ awrs.generic.address_line1=Address line 1
 awrs.generic.address_line2=Address line 2
 awrs.generic.address_line3=Address line 3 (optional)
 awrs.generic.address_line4=Address line 4 (optional)
+
+awrs.generic.principal.address_line1= {0} place of business address line 1
+awrs.generic.principal.address_line2= {0} place of business address line 2
+awrs.generic.principal.address_line3= {0} place of business address line 3 (optional)
+awrs.generic.principal.address_line4= {0} place of business address line 4 (optional)
+awrs.generic.principal.postcode= {0} place of business postcode
+
+
 awrs.generic.application_title=Register as an alcohol wholesaler or producer
 awrs.generic.telephone=Telephone number
 awrs.generic.email=Email address
@@ -427,7 +437,7 @@ awrs.business_details.limited_partnership_body=Limited Partnership
 awrs.business_details.partnership=Partnership
 awrs.business_details.unknown_body=Unknown
 awrs.business_details.type_of_business=Type of business
-awrs.business_details.awrs_add_your_previous_address=Add your previous address
+awrs.business_details.awrs_add_your_previous_address=What was your previous principal place of business address?
 awrs.business_details.begin_trading= When did you start, or plan to start, trading wholesale alcohol?
 awrs.business_details.business_partnership=Business Partnership
 awrs.business_details.newBusiness=New business
@@ -497,9 +507,9 @@ awrs.business_contacts.error.place_of_business_empty=Select an option for the pr
 awrs.business_contacts.error.contact_address_same_empty.summary=The contact address question has not been answered
 awrs.business_contacts.error.contact_address_same_empty= Select yes if this is the address you want us to use
 awrs.business_contacts.error.place_of_business_changed_last_3_years_empty.summary=The main place of business address has not been answered
-awrs.business_contacts.error.place_of_business_changed_last_3_years_empty=Select an option for the main place of business address question
+awrs.business_contacts.error.place_of_business_changed_last_3_years_empty=Select yes if this has been your only principal place of business in the last 3 years
 awrs.business_contacts.error.operating_duration_empty.summary=The number of years at your current address question has not been answered
-awrs.business_contacts.error.operating_duration_empty=Select an option for the years at your current address question
+awrs.business_contacts.error.operating_duration_empty= Select how many years your business has operated at your principal place of business
 
 #TODO refactor duplicate enter/edit etc
 

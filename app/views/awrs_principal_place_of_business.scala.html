@@ -74,7 +74,9 @@
                 <div id="mainPlaceOfBusiness-api5-content">
                     @awrsAddressHelper(
                         placeOfBusinessForm("mainAddress"),
-                        AddressHelperParams()
+                        AddressHelperParams(),
+                        isPrincipalPlace = Some(true),
+                        PrincipalPrevious = "Principal"
                     )
                 </div>
                 <div class="form-group">
@@ -100,7 +102,9 @@
                             AddressHelperParams(
                                 wrapperClass = "panel-indent",
                                 number = "2"
-                            )
+                            ),
+                        isPrincipalPlace = Some(true),
+                        PrincipalPrevious = "Previous principal"
                         )
                     </div>
                 </div>
