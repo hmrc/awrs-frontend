@@ -98,7 +98,7 @@ object BusinessRegistrationDetailsForm {
       mapping(
         "legalEntity" -> ignored(Option(entityType)),
         doYouHaveUtr -> (doYouHaveUTR_compulsory(doYouHaveUtr) iff ids.contains(doYouHaveUtr)),
-        utr -> (utr_compulsory(utr) iff noIdIsSupplied(doYouHaveUtr) ||| answeredYesToDoYouHaveUTR),
+        utr -> (utr_compulsory(utr, entityType) iff noIdIsSupplied(doYouHaveUtr) ||| answeredYesToDoYouHaveUTR),
         doYouHaveNino -> (doYouHaveNino_compulsory(doYouHaveNino) iff ids.contains(doYouHaveNino)),
         nino -> (nino_compulsory(nino) iff noIdIsSupplied(doYouHaveNino) ||| answeredYesToDoYouHaveNino),
         doYouHaveCrn -> (doYouHaveCRN_compulsory iff ids.contains(doYouHaveCrn)),

@@ -72,13 +72,15 @@ awrs.generic.do_you_have_company_reg_help_text=A company registration (CRN) numb
 awrs.generic.do_they_have_company_reg_help_question=Where can I find the CRN?
 awrs.generic.do_they_have_company_reg_help_text=A company registration number is made up of 8 characters. If it is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it on their certificate of incorporation, or any official company documentation they receive from Companies House.
 awrs.generic.iDoNotKnowMyCRN_question=I do not know my CRN or date of incorporation
-awrs.generic.iDoNotKnowMyCRN_text=Your company registration number is made up of 8 characters. If your company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on your certificate of incorporation, or any official company documentation you receive from Companies House.{0}If you are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.
+awrs.generic.iDoNotKnowMyCRN_text=<span class="form-hint">Your company registration number is made of 8 characters. If your company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on your certificate of incorporation, or any official company documentation you receive from Companies House.{0}If you are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.</span>
 awrs.generic.iDoNotKnowTheirCRN_question=I do not know their CRN or date of incorporation
 awrs.generic.iDoNotKnowTheirCRN_text=Their company registration number is made up of 8 characters. If their company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on their certificate of incorporation, or any official company documentation they receive from Companies House.{0}If they are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.
 awrs.generic.date_of_incorporation= What is your date of incorporation?
 awrs.generic.date_hint= For example, 25 1 2016
-awrs.generic.date_hint.reader=Example, one, one, two thousand and sixteen
-awrs.generic.date_day.reader=Example, one
+awrs.generic.date_hint.corporation= It is on your certificate of incorporation and any documents you get from Companies House. For example, 25 1 2016.
+awrs.generic.date_hint.reader.corporation = It is on your certificate of incorporation and any documents you get from Companies House. For example, twenty five, one, two thousand and sixteen
+awrs.generic.date_hint.reader=Example,  twenty five, one, two thousand and sixteen
+awrs.generic.date_day.reader=Example, twenty five
 awrs.generic.date_month.reader=Example, one
 awrs.generic.date_year.reader=Example, two thousand and sixteen
 awrs.generic.do_you_have_VAT=Do you have a VAT registration number?
@@ -148,6 +150,12 @@ awrs.generic.error.utr_empty.summary=The Unique Taxpayer Reference number (UTR) 
 awrs.generic.error.utr_empty= Enter a Unique Taxpayer Reference number (UTR)
 awrs.generic.error.utr_invalid.summary=The Unique Taxpayer Reference number (UTR) is not in the correct format
 awrs.generic.error.utr_invalid= Enter a Unique Taxpayer Reference number (UTR) in the correct format
+awrs.generic.error.utr_invalid_LTD.summary=The Unique Taxpayer Reference number (UTR) is not in the correct format
+awrs.generic.error.utr_invalid_LTD= Corporation Tax UTR must be 10 or 13 numbers
+awrs.generic.error.utr_empty_LTD.summary=The Unique Taxpayer Reference number (UTR) is empty
+awrs.generic.error.utr_empty_LTD= Enter your Corporation Tax UTR
+
+
 awrs.generic.error.utr_invalid_match.summary=The UTR entered does not match
 awrs.generic.error.utr_invalid_match=The UTR and the business name do not match. Make sure you enter the correct UTR for this business name
 awrs.generic.error.companyRegNumber_empty.summary=The company registration number is empty

@@ -729,15 +729,30 @@ object ProofOfIdentiticationVerifications {
   def utrIsValidWhenDoYouHaveUTRIsAnsweredWithYes(preCondition: Map[String, String],
                                                   ignoreCondition: Set[Map[String, String]],
                                                   idPrefix: IdPrefix = None,
-                                                  alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true)(implicit form: Form[_]): Unit = {
+                                                  alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true,
+                                                  isLTD: Boolean = false)(implicit form: Form[_]): Unit = {
     val fieldId = idPrefix attach "utr"
 
     val questionId = idPrefix attach "doYouHaveUTR"
 
     val theyHaveUTR = generateFormTestData(preCondition, questionId, Yes.toString)
+    var emptyErrorMsg = "awrs.generic.error.utr_empty"
+    var invalidErrorMsg = "awrs.generic.error.utr_invalid"
 
-    val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.utr_empty"))
-    val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.utr_invalid")))
+    isLTD match {
+      case true => {
+        emptyErrorMsg = "awrs.generic.error.utr_empty_LTD"
+        invalidErrorMsg = "awrs.generic.error.utr_invalid_LTD"
+      }
+      case _ => {
+         emptyErrorMsg = "awrs.generic.error.utr_empty"
+         invalidErrorMsg = "awrs.generic.error.utr_invalid"
+      }
+    }
+
+    val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError(emptyErrorMsg))
+    val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError(invalidErrorMsg)))
+
     val formatError = ExpectedFieldFormat(invalidFormats)
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
