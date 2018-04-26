@@ -103,7 +103,7 @@ awrs.generic.warning_icon_text=Warning.
 # Generic Error Messages
 awrs.generic.error.title=Sorry, we’re experiencing technical difficulties
 awrs.generic.error.status=There has been a problem with your application
-awrs.generic.errors_heading=There is a problem with the form
+awrs.generic.errors_heading=There is a problem
 awrs.generic.error.postcode_empty.summary=The {0} postcode is empty
 awrs.generic.error.postcode_empty= Enter a {0} postcode
 awrs.generic.error.postcode_invalid.summary=The {0} postcode is not in the correct format
@@ -115,7 +115,7 @@ awrs.generic.error.addressLine2_empty= Enter {0} address line 2
 
 
 awrs.generic.error.character_invalid.summary=The {0} is not in the correct format
-awrs.generic.error.character_invalid=Invalid characters have been entered
+awrs.generic.error.character_invalid= Invalid characters have been entered
 awrs.generic.error.first_name_empty.summary=The first name is empty
 awrs.generic.error.first_name_empty=Enter a first name
 awrs.generic.error.last_name_empty.summary=The last name is empty
@@ -449,7 +449,7 @@ awrs.business_details.awrs_add_your_previous_address=What was your previous prin
 awrs.business_details.begin_trading= When did you start, or plan to start, trading wholesale alcohol?
 awrs.business_details.business_partnership=Business Partnership
 awrs.business_details.newBusiness=New business
-awrs.business_details.new_AWBusiness= Did you start, or plan to start, trading wholesale alcohol after 31 March 2016?
+awrs.business_details.new_AWBusiness= Did you start, or plan to start, trading wholesale alcohol after 31&nbsp;March&nbsp;2016?
 awrs.business_details.newAWBusiness_information.para_1= A wholesale alcohol business must have an Alcohol Wholesaler Registration Scheme reference. You must have a business plan and letters of intent from suppliers and customers before you register. We can take up to 45 days to make a decision and provide your reference.
 awrs.business_details.new_AWBusiness_Yes=You previously indicated that you are a new business and you have proposed to start trading on {0} {1} {2}.
 awrs.business_details.new_AWBusiness_No=You previously indicated that you are not a new business.
@@ -457,13 +457,13 @@ awrs.business_details.new_AWBusiness_No=You previously indicated that you are no
 awrs.business_details.error.tradingName_empty.summary= The trading name is empty
 awrs.business_details.error.tradingName_empty= Enter your trading name
 awrs.business_details.error.newAWBusiness_invalid.summary=The trading start question has not been answered
-awrs.business_details.error.newAWBusiness_invalid= Select yes if you started, or planned to start, trading wholesale after 31 March 2016
+awrs.business_details.error.newAWBusiness_invalid= Select yes if you started, or planned to start, trading wholesale after 31&nbsp;March&nbsp;2016
 awrs.business_details.error.proposedDate_empty.summary=The approximate start date is empty
 awrs.business_details.error.proposedDate_empty= Enter the date you started, or plan to start, trading wholesale alcohol
 awrs.business_details.error.proposedDate_invalid.summary=The approximate start date is not the correct format
 awrs.business_details.error.proposedDate_invalid=Enter approximate start date in the correct format
-awrs.business_details.error.proposedDate_toEarly.summary=The approximate start date must be after 31 March 2016
-awrs.business_details.error.proposedDate_toEarly= The date you started, or plan to start, trading wholesale alcohol must be after 31 March 2016
+awrs.business_details.error.proposedDate_toEarly.summary=The approximate start date must be after 31&nbsp;March&nbsp;2016
+awrs.business_details.error.proposedDate_toEarly= The date you started, or plan to start, trading wholesale alcohol must be after 31&nbsp;March&nbsp;2016
 awrs.business_details.error.identification_provided.summary=No form of identification has been provided
 awrs.business_details.error.identification_provided=You must provide at least 1 form of identification
 awrs.business_details.error.year_toSmall.summary=The year is not the correct format
@@ -692,6 +692,7 @@ awrs.additional_information.error.other_mainCustomers_invalid_format= Who else y
 awrs.additional_information.error.maximum_length.customer= Who else you sell, or plan to sell, alcohol to must be 40 characters or less
 awrs.additional_information.error.maximum_length.customer.summary= The {0} is not in the correct format
 
+
 # errors - product type
 awrs.additional_information.error.type_of_product.summary=The types of product question has not been answered
 awrs.additional_information.error.type_of_product= Select what products you sell or plan to sell
@@ -700,7 +701,7 @@ awrs.additional_information.error.type_of_product_other=Enter what other product
 awrs.additional_information.error.type_of_product_other_validation.summary=The other field for types of product is not in the correct format
 awrs.additional_information.error.type_of_product_other_validation= What other products you sell or plan to sell must only contain letters and numbers
 awrs.additional_information.error.maximum_length.product.summary= The {0} is not in the correct format
-awrs.additional_information.error.maximum_length.product= What other products you sell or plan to sell must only contain letters and numbers
+awrs.additional_information.error.maximum_length.product= What other products you sell or plan to sell must be 40 characters or less
 
 # errors - third party storage. import, export
 awrs.additional_information.error.import_alcohol.summary=The import alcohol question has not been answered
@@ -765,7 +766,7 @@ awrs.application_declaration.declaration_name_hint=Name of the person {0} the ap
 awrs.application_declaration.declaration_role=Job title or role
 awrs.application_declaration.declaration_role_hint=Job title or role of the person {0} the application
 awrs.application_declaration.declaration_statement=I want to register {0} as an alcohol wholesaler or producer. I confirm that the information provided is accurate and complete. I understand that providing false information on purpose in a criminal offence.
-awrs.application_declaration.declaration_statement.amend=I want to amend the application for {0}. I confirm that the information provided in this application is accurate and complete. I understand that knowingly including any false information in this application is a criminal offence.
+awrs.application_declaration.declaration_statement.amend=I want to amend the application for {0}. I confirm that the information provided in this application is accurate and complete. <br> <br>I understand that knowingly including any false information in this application is a criminal offence.
 awrs.application_declaration.confirmation_and_send_application= Agree and send
 awrs.application_declaration.error.declaration_name_empty.summary=The name is empty
 awrs.application_declaration.error.declaration_name_empty=Enter full name
@@ -787,7 +788,7 @@ awrs.confirmation.prompt_print_heading=You will receive an email confirmation
 awrs.confirmation.information_0=Your application reference is {0}. This is not your AWRS reference number.
 awrs.confirmation.information_1=You can still trade while we process your application.
 awrs.confirmation.information_what_next_0=There is no need to contact HMRC, you will be notified of the outcome of your application in due course.
-awrs.confirmation.information_what_next_1=As you were trading as an alcohol wholesaler before 31 March 2016, your application should have been made before that date.
+awrs.confirmation.information_what_next_1=As you were trading as an alcohol wholesaler before 31&nbsp;March&nbsp;2016, your application should have been made before that date.
 awrs.confirmation.information_what_next_2=You must not trade as an alcohol wholesaler without an AWRS approval from HMRC. You may be liable to financial penalties and your alcohol stock could be confiscated (whether or not duty has been paid).
 awrs.confirmation.information_what_next_3=From 1st April 2017 it is an offence for trade buyers to buy alcohol from you.
 awrs.confirmation.information_what_next_4=If approved, your business will receive an AWRS reference number confirming that you are an approved alcohol wholesaler.
