@@ -47,7 +47,7 @@
         model.tradingName
     )
     @table_row(
-        Messages("awrs.business_details.new_AWBusiness"),
+        Html(Messages("awrs.business_details.new_AWBusiness")),
         model.newAWBusiness.fold("")(x => x.newAWBusiness)
     )
     @table_row(

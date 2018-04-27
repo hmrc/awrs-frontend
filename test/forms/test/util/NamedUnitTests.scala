@@ -223,8 +223,10 @@ private object AddressVerifications {
   def addressLine1(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
                    idPrefix: IdPrefix = None,
-                   nameInErrorMessage: String)(implicit form: Form[_]): Unit =
+                   nameInErrorMessage: String)(implicit form: Form[_]): Unit ={
     addressLinex(1, preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
+  }
+
 
   def addressLine2(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
