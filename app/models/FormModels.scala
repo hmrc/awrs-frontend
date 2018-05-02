@@ -19,6 +19,7 @@ package models
 import java.text.SimpleDateFormat
 
 import forms.AWRSEnums.ApplicationStatusEnum
+import forms.AwrsFormFields
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{LocalDate, LocalDateTime}
 import play.api.data.format.Formats
@@ -698,6 +699,9 @@ object TradingActivity {
       case _ => None
     }
 
+    def getOrderedWholesalers(orderedWholesalers: Seq[(String, String)], unorderedWholesalers: List[String]): List[String] =
+      orderedWholesalers.map(_._1).toList.filter(unorderedWholesalers.toSet)
+
     def reads(js: JsValue): JsResult[TradingActivity] =
       for {
         wholesalerType <- (js \ "wholesalerType").validate[List[String]]
@@ -710,7 +714,7 @@ object TradingActivity {
         exportLocation <- (js \ "exportLocation").validateOpt[List[String]]
       } yield {
         val other = cleanseOtherWholesaler(wholesalerType, otherWholesaler)
-        TradingActivity(wholesalerType = augmentWholesaler(wholesalerType, otherWholesaler),
+        TradingActivity(wholesalerType = getOrderedWholesalers(AwrsFormFields.wholesaler, augmentWholesaler(wholesalerType, otherWholesaler)),
           otherWholesaler = other,
           typeOfAlcoholOrders = typeOfAlcoholOrders,
           otherTypeOfAlcoholOrders = otherTypeOfAlcoholOrders,

@@ -5,9 +5,10 @@
 @import views.view_application.subviews.SubviewIds
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String], someModel:
-    Option[models.Products],
-    showTableHeader: Boolean = true)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+@(someHeading: Option[String],
+    someModel: Option[models.Products],
+    showTableHeader: Boolean = true
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
 @wrapperId = @{SubviewIds.productsId}
 

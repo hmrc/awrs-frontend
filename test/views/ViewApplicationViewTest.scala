@@ -116,7 +116,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
             val document = Jsoup.parse(contentAsString(result))
             status(result) shouldBe OK
             document.getElementById(idName).text should include(expectedTitle)
-            document.getElementsByTag("title").text shouldBe Messages("awrs.view_application.section_title", expectedTitle)
+            document.getElementsByTag("title").text shouldBe Messages("awrs.generic.tab.title", Messages("awrs.view_application.section_title", expectedTitle))
         }
       }
     }

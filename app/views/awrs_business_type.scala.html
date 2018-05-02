@@ -6,7 +6,7 @@
 
 @implicitFormInstance = @{ Some(businessTypeForm) }
 
-@includes.awrs_main(title = Messages("awrs.business_verification.heading"),nameBusiness = Some(businessName), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.business_verification.heading")), nameBusiness = Some(businessName), userLoggedIn = true){
 
 @errorSummaryTemplate(businessTypeForm)
 <div class="grid">
@@ -32,11 +32,11 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         businessTypeForm("legalEntity"),
-                        Seq("LTD" -> Messages("awrs.business_verification.limited_company"),
-                            "SOP" -> Messages("awrs.business_verification.sole_trader"),
-                            "Partnership" -> Messages("awrs.business_verification.business_partnership"),
+                        Seq("Partnership" -> Messages("awrs.business_verification.business_partnership"),
+                            "LTD" -> Messages("awrs.business_verification.limited_company"),
+                            "LLP" -> Messages("awrs.business_verification.limited_liability_partnership"),
                             "LP" -> Messages("awrs.business_verification.limited_partnership"),
-                            "LLP" -> Messages("awrs.business_verification.limited_liability_partnership")),
+                            "SOP" -> Messages("awrs.business_verification.sole_trader")),
                         legend = Messages("awrs.business_verification.heading"),
                         legendId = "legalEntity-legend",
                         legendClass = "visuallyhidden",

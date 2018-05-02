@@ -155,7 +155,7 @@ object TestUtil {
   val testBusinessDirectorCompany = testBusinessDirectorDefault(directorsAndCompanySecretaries = Some("Director and Company Secretary"), personOrCompany = Some("company"), businessName = Some("Acme"), doYouHaveTradingName = Some("No"), doYouHaveUTR = Some("No"), doYouHaveCRN = Some("No"), doYouHaveVRN = Some("Yes"), vrn = testVrn, otherDirectors = No)
   val testBusinessDirectors = BusinessDirectors(List(testBusinessDirector))
 
-  def testTradingActivity(wholesalerType: List[String] = List("02", "05", "99"),
+  def testTradingActivity(wholesalerType: List[String] = List("05", "02", "99"),
                           otherWholesaler: Option[String] = Option("Supermarket"),
                           typeOfAlcoholOrders: List[String] = List("02", "04"),
                           otherTypeOfAlcoholOrders: Option[String] = Option("Post"),
