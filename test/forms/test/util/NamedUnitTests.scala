@@ -675,7 +675,9 @@ object ProofOfIdentiticationVerifications {
       List(
         ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
         ExpectedInvalidFieldFormat("1234-678", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
-        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber"))
+        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber")),
+        ExpectedInvalidFieldFormat("", fieldId, FieldError("awrs.generic.error.companyRegNumber_empty")),
+        ExpectedInvalidFieldFormat("123", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid"))
       )
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -738,7 +740,11 @@ object ProofOfIdentiticationVerifications {
     val theyHaveUTR = generateFormTestData(preCondition, questionId, Yes.toString)
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.utr_empty"))
-    val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.utr_invalid")))
+    val invalidFormats = List(
+            ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.utr_invalid")),
+            ExpectedInvalidFieldFormat("asdfasdfasdfa", fieldId, FieldError("awrs.generic.error.utr_invalid")),
+            ExpectedInvalidFieldFormat("1234567890123", fieldId, FieldError("awrs.generic.error.utr_invalid"))
+    )
     val formatError = ExpectedFieldFormat(invalidFormats)
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
