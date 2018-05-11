@@ -279,13 +279,6 @@ object NamedMappingAndUtil {
                 case false => simpleErrorMessage(fieldId, "awrs.generic.error.companyRegNumber_invalid")
               }
           )
-          //          FieldFormatConstraintParameter(
-          //            (str: String) =>
-          //              """[1-9]""".r.findFirstIn(str).nonEmpty match {
-          //                case true => Valid
-          //                case false => simpleErrorMessage(fieldId, "awrs.generic.error.companyRegNumber_atleastOneNumber")
-          //              }
-          //          )
         )
       )
     )
