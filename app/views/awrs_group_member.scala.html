@@ -42,7 +42,11 @@ AccountUtils.hasAwrs match {
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.group_member.title"), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@pageHeading = @{
+    Messages("awrs.group_member.top_heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalSuffix)
+}
+
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
 <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
     <div class="grid grid-2-3">

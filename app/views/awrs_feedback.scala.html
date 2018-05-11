@@ -5,7 +5,7 @@
 @import views.helpers.InputTypeRadioGroupParams
 @(feedbackForm: Form[models.Feedback])(implicit request: Request[_])
 
-@includes.awrs_main(title = Messages("awrs.feedback.title"), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.feedback.heading")), userLoggedIn = true) {
     @backLink()
     @errorSummaryTemplate(feedbackForm)
     <div class="grid">

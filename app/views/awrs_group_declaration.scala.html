@@ -13,7 +13,7 @@
     Some(groupDeclarationForm)
 }
 
-@includes.awrs_main(title = Messages("awrs.group_declaration.title"), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.group_declaration.heading")), userLoggedIn = true) {
 
     @errorSummaryTemplate(groupDeclarationForm)
     <div class="grid">

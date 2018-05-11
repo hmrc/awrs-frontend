@@ -69,7 +69,7 @@
 }
 
 @govWrapper = {
-    @includes.awrs_main(title = Messages("awrs.application_status.page_title"), nameBusiness = Some(params.organisationName), userLoggedIn = true) {
+    @includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.application_status.page_title")), nameBusiness = Some(params.organisationName), userLoggedIn = true) {
     <div class="grid">
         <div class="grid grid-2-3">
             @application_status_header(params)
