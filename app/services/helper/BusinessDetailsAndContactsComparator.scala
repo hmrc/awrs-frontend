@@ -75,7 +75,8 @@ object BusinessDetailsAndContactsComparator {
           (BusinessDetChangeData,
             !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
             !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
-            !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData))
+            !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData)
+          )
       }
       case _ =>
       {

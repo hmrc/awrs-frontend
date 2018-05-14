@@ -223,10 +223,8 @@ private object AddressVerifications {
   def addressLine1(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
                    idPrefix: IdPrefix = None,
-                   nameInErrorMessage: String)(implicit form: Form[_]): Unit ={
+                   nameInErrorMessage: String)(implicit form: Form[_]): Unit =
     addressLinex(1, preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
-  }
-
 
   def addressLine2(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
@@ -677,7 +675,9 @@ object ProofOfIdentiticationVerifications {
       List(
         ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
         ExpectedInvalidFieldFormat("1234-678", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
-        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber"))
+        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber")),
+        ExpectedInvalidFieldFormat("", fieldId, FieldError("awrs.generic.error.companyRegNumber_empty")),
+        ExpectedInvalidFieldFormat("123", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid"))
       )
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -731,8 +731,13 @@ object ProofOfIdentiticationVerifications {
   def utrIsValidWhenDoYouHaveUTRIsAnsweredWithYes(preCondition: Map[String, String],
                                                   ignoreCondition: Set[Map[String, String]],
                                                   idPrefix: IdPrefix = None,
+<<<<<<< HEAD
                                                   alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true,
                                                   isLTD: Boolean = false)(implicit form: Form[_]): Unit = {
+=======
+                                                  alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true)
+                                                 (implicit form: Form[_]): Unit = {
+>>>>>>> master
     val fieldId = idPrefix attach "utr"
 
     val questionId = idPrefix attach "doYouHaveUTR"
@@ -747,14 +752,23 @@ object ProofOfIdentiticationVerifications {
         invalidErrorMsg = "awrs.generic.error.utr_invalid_LTD"
       }
       case _ => {
-        emptyErrorMsg = "awrs.generic.error.utr_empty"
-        invalidErrorMsg = "awrs.generic.error.utr_invalid"
+         emptyErrorMsg = "awrs.generic.error.utr_empty"
+         invalidErrorMsg = "awrs.generic.error.utr_invalid"
       }
     }
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError(emptyErrorMsg))
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError(invalidErrorMsg)))
 
+<<<<<<< HEAD
+=======
+    val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.utr_empty"))
+    val invalidFormats = List(
+            ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.utr_invalid")),
+            ExpectedInvalidFieldFormat("asdfasdfasdfa", fieldId, FieldError("awrs.generic.error.utr_invalid")),
+            ExpectedInvalidFieldFormat("1234567890123", fieldId, FieldError("awrs.generic.error.utr_invalid"))
+    )
+>>>>>>> master
     val formatError = ExpectedFieldFormat(invalidFormats)
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)

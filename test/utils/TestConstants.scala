@@ -18,7 +18,7 @@ package utils
 
 import scala.util.Random
 import org.joda.time.LocalDate
-import uk.gov.hmrc.domain.{Generator, SaUtrGenerator}
+import uk.gov.hmrc.domain.{Generator, SaUtr, SaUtrGenerator}
 
 import scala.annotation.tailrec
 
@@ -27,9 +27,12 @@ object TestConstants {
   // We only want one test nino and utr throughout, therefore assign a value in the object declaration
   lazy val testNino = new Generator().nextNino.nino
   lazy val testUtr = new SaUtrGenerator().nextSaUtr.utr
-
+  val prefixedLowerCaseUTR = SaUtr("abc123451235")
+  val prefixedCapsUTR = SaUtr("ABC123451235")
   lazy val testVrn = genRandNumString(9)
   lazy val testCrn = 1 + genRandNumString(7)
+  val shortCRN = "2134567"
+  val alphaNumCRN = "AB123456"
   lazy val testNonMatchingUtr = new SaUtrGenerator().nextSaUtr.utr
   lazy val testAWRSUtr = "XNAW" + genRandNumString(11)
   lazy val testCTUtr = genRandNumString(12)

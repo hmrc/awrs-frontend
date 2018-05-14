@@ -166,11 +166,11 @@ sealed trait MaxLengthOption[+A] {
   }
 }
 
-case class MaxLengthDefinition[A <: ExpectedFieldExceedsMaxLength](val get: A) extends MaxLengthOption[A]
+case class MaxLengthDefinition[A <: ExpectedFieldExceedsMaxLength](get: A) extends MaxLengthOption[A]
 
 case class MaxLengthIsHandledByTheRegEx() extends MaxLengthOption[Nothing]
 
-case class ExpectedInvalidFieldFormat(val invalidCase: String, val fieldError: FieldError, val summaryError: SummaryError) extends ExpectedErrorExpectation
+case class ExpectedInvalidFieldFormat(invalidCase: String, fieldError: FieldError, summaryError: SummaryError) extends ExpectedErrorExpectation
 
 object ExpectedInvalidFieldFormat {
   def apply(invalidCase: String, fieldId: String, embeddedFieldNameInErrorMessages: String): ExpectedInvalidFieldFormat = {
@@ -186,9 +186,9 @@ object ExpectedInvalidFieldFormat {
   }
 }
 
-case class ExpectedValidFieldFormat(val validCase: String)
+case class ExpectedValidFieldFormat(validCase: String)
 
-case class ExpectedFieldFormat(val invalidFormats: List[ExpectedInvalidFieldFormat], val validFormats: List[ExpectedValidFieldFormat] = List[ExpectedValidFieldFormat]())
+case class ExpectedFieldFormat(invalidFormats: List[ExpectedInvalidFieldFormat], validFormats: List[ExpectedValidFieldFormat] = List[ExpectedValidFieldFormat]())
 
 case class CompulsoryFieldValidationExpectations(val fieldIsEmptyExpectation: ExpectedFieldIsEmpty, val maxLengthExpectation: MaxLengthOption[ExpectedFieldExceedsMaxLength], val formatExpectations: ExpectedFieldFormat) {
   def toOptionalFieldValidationExpectations: OptionalFieldValidationExpectations = new OptionalFieldValidationExpectations(maxLengthExpectation, formatExpectations)

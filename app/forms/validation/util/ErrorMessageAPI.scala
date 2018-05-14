@@ -223,7 +223,7 @@ object SummaryError {
 
 /**
   * FieldError specifies the return type from the ErrorMessageInterpreter API
-  * It contain the relevant information required by the html templates in order to display the field error messages
+  * It contains the relevant information required by the html templates in order to display the field error messages
   *
   * @param msgKey  the key in the conf/messages file
   * @param msgArgs any arguments expected by the message in the conf/messages file

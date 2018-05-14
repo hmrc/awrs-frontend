@@ -8,7 +8,7 @@
         case _ => Messages("awrs.generic.wait_info_de-registration")
     }
 }
-@includes.awrs_main(title = Messages("awrs.generic.wait_info", removeStatus)) {
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.generic.wait_info", removeStatus))) {
     <div class="grid">
         <div class="grid grid-2-3">
             <h1 id="application-error-header" class="heading-large">@Html(Messages("awrs.generic.wait_info", removeStatus))</h1>

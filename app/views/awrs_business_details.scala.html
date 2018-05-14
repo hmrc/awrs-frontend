@@ -32,13 +32,6 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
     }
 }
 
-@pageTitle = @{
-    businessType.getOrElse("") match {
-        case "Partnership" | "LP" | "LLP" => Messages("awrs.business_details.title.partnership")
-        case "LLP_GRP" | "LTD_GRP" => Messages("awrs.business_details.title.group")
-        case _ => Messages("awrs.business_details.title.generic")
-    }
-}
 
 @newBusinessSectionHeader = {
     <h2 class="heading-medium">@Messages("awrs.business_details.newBusiness")</h2>
@@ -178,7 +171,7 @@ renderMode: views.Configuration.NewBusinessStartDateConfiguration)(implicit requ
     }
 }
 
-@includes.awrs_main(title = pageTitle, userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", businessTypeHeading), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(

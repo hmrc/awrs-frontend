@@ -15,7 +15,7 @@
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.application_declaration.title"), userLoggedIn = true){
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.application_declaration.heading")), userLoggedIn = true){
 
 @errorSummaryTemplate(applicationDeclarationForm)
 <div class="grid">
