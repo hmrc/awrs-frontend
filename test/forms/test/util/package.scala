@@ -198,7 +198,6 @@ package object util extends FormValidationTestAPI with TestUtilAPI {
           val formWithErrors = form.bind(invalidLen)
           formWithErrors.hasErrors shouldBe true
           assertFieldError(formWithErrors, fieldId, maxLengthExpectation.fieldError)
-          assertSummaryError(formWithErrors, fieldId, maxLengthExpectation.summaryError)
         }
 
         // test with the exact length, this should not throw the max length error (though it can be a different error)
@@ -208,7 +207,6 @@ package object util extends FormValidationTestAPI with TestUtilAPI {
         val formWithNoErrorsInField = form.bind(validLen)
         withClue(f"$fieldId must be valid when length equal to ${maxLengthExpectation.maxLength}%d:\n") {
           assertNotThisFieldError(formWithNoErrorsInField, fieldId, maxLengthExpectation.fieldError)
-          assertNotThisSummaryError(formWithNoErrorsInField, fieldId, maxLengthExpectation.summaryError)
         }
     }
 

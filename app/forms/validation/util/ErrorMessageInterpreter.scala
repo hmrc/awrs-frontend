@@ -189,7 +189,7 @@ object ErrorMessageInterpreter extends ErrorMessageInterpreter {
   // current string manipulation error extraction functions
   import ErrorDelimiterConstants._
 
-  def defaultSummaryId(fieldId: String): String = f"${fieldId}%s.summary"
+  def defaultSummaryId(fieldId: String): String = fieldId
 
   private def FieldId(errMsg: String): String =
     errMsg.split(fieldDelimiter, -1).last.split(paramDelimiter, -1).head
