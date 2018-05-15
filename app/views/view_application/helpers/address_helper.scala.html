@@ -5,6 +5,13 @@
 
 @(legend: String, someAddress: Option[Address], links: Option[List[String]] = None)(implicit cssClass: Option[String] = None, someId: Option[Int] = None, viewApplicationType: ViewApplicationType = EditSectionOnlyMode)
 
+@postcodeHelper(postcode: String) = @{
+    val splitPoint = postcode.length - 3
+    val startPostCode = postcode.substring(0, splitPoint)
+    val endPostCode = postcode.substring(splitPoint, postcode.length)
+    startPostCode + " " + endPostCode
+}
+
 @someAddress match {
     case Some(address) => {
         @table_row(
@@ -13,7 +20,10 @@
             address.addressLine2,
             address.addressLine3,
             address.addressLine4,
-            address.postcode,
+            address.postcode match {
+                case Some(postcode) => postcodeHelper(postcode.get)
+                case _ => None
+            },
             getCountry(address.addressCountryCode.fold("")(x => x))
         )(someId = someId, links = links, cssClass = cssClass)
     }
