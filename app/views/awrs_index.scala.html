@@ -29,13 +29,17 @@
     )
 }
 
+@pageHeading = @{
+    Messages("awrs.index_page.top_heading", businessName)
+}
 
-@includes.awrs_main(title = Messages("awrs.index_page.title"),nameBusiness = Some(businessName), userLoggedIn = true){
+
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", pageHeading), nameBusiness = Some(businessName), userLoggedIn = true){
 
     <div class="grid">
        @changesBanner
         <div class="grid grid-2-3">
-            <h1 id="index-top-heading" class="heading-xlarge">@Messages("awrs.index_page.top_heading", businessName)</h1>
+            <h1 id="index-top-heading" class="heading-xlarge">@pageHeading</h1>
             @if(!isHappyPathEnrollment) {
                 <p id="applicationInfo" class="lede">@Messages("awrs.index_page.topText")</p>
             }

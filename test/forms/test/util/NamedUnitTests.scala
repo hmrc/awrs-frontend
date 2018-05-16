@@ -677,7 +677,9 @@ object ProofOfIdentiticationVerifications {
       List(
         ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
         ExpectedInvalidFieldFormat("1234-678", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
-        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber"))
+        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber")),
+        ExpectedInvalidFieldFormat("", fieldId, FieldError("awrs.generic.error.companyRegNumber_empty")),
+        ExpectedInvalidFieldFormat("123", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid"))
       )
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -747,8 +749,8 @@ object ProofOfIdentiticationVerifications {
         invalidErrorMsg = "awrs.generic.error.utr_invalid_LTD"
       }
       case _ => {
-         emptyErrorMsg = "awrs.generic.error.utr_empty"
-         invalidErrorMsg = "awrs.generic.error.utr_invalid"
+        emptyErrorMsg = "awrs.generic.error.utr_empty"
+        invalidErrorMsg = "awrs.generic.error.utr_invalid"
       }
     }
 

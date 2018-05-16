@@ -15,7 +15,7 @@
 }
 
 
-@includes.awrs_main(title = Messages("awrs.de_registration.page_title"), userLoggedIn = true) {
+@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.de_registration.heading")), userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
 @errorSummaryTemplate(deRegistrationForm)

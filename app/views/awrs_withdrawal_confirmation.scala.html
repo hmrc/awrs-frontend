@@ -5,7 +5,7 @@
 @import views.html.helpers._
 
 
-@includes.awrs_main(Messages("awrs.withdrawal.confirm_page.heading"), userLoggedIn = true) {
+@includes.awrs_main(Messages("awrs.generic.tab.title", Messages("awrs.withdrawal.confirm_page.heading")), userLoggedIn = true) {
 
 <div class="grid">
     @backLink(backUrl = controllers.routes.WithdrawalController.showWithdrawalReasons.toString)

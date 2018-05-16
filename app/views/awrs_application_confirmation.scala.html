@@ -7,7 +7,7 @@
 @awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
 
 @govWrapper = {
-    @includes.awrs_main(title = Messages("awrs.confirmation.title"), userLoggedIn = true){
+    @includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.confirmation.title")), userLoggedIn = true){
         <div class="grid">
             <div class="grid grid-2-3">
                 @confirmationHelper(

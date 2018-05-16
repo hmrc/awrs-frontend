@@ -21,7 +21,7 @@ import play.api.data.Form
 
 object TrimOption extends Enumeration {
   type TrimOption = Value
-  val both, all, bothAndCompress, none = Value
+  val both, all, bothAndCompress, none, utr, crn = Value
 }
 
 object CaseOption extends Enumeration {
@@ -72,6 +72,8 @@ trait PrevalidationAPI[T] {
       case TrimOption.bothAndCompress => trimBothAndCompressFunc(value)
       case TrimOption.all => trimAllFunc(value)
       case TrimOption.none => value
+      case TrimOption.utr => trimUTR(value)
+      case TrimOption.crn => trimCRN(value)
     }
    caseRules.getOrElse(removeKeyPrefix(key), CaseOption.none) match {
       case CaseOption.upper => trimmedField.toUpperCase
