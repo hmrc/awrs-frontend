@@ -59,12 +59,12 @@ object ErrorMessagesUtilAPI {
       createErrorMessage(TargetFieldIds(fieldId),
         FieldErrorConfig("awrs.generic.error.maximum_length",
           MessageArguments(fieldNameInErrorMessage, maxLen)),
-        SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage))))
+        SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage, maxLen))))
 
   def genericFieldMaxLengthConstraintParameterForDifferentMessages(maxLen: Int, fieldId: String, fieldNameInErrorMessage: String, errorMsg: String = "awrs.generic.error.character_invalid"): FieldMaxLengthConstraintParameter =
     FieldMaxLengthConstraintParameter(maxLen,
       createErrorMessage(TargetFieldIds(fieldId),
         FieldErrorConfig(errorMsg,MessageArguments(fieldNameInErrorMessage, maxLen)),
-        SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage))))
+        SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage, maxLen))))
 
 }
