@@ -63,11 +63,20 @@
             @form(action = actionRoute) {
 
                 <p class="lede">@Messages("awrs.business_contacts.place_of_business_help_text")</p>
+
+                  <ul class="bullets">
+                	    <li>@Messages("awrs.business_contacts.place_of_business_help_text.bullet1")</li>
+                      <li> @Messages("awrs.business_contacts.place_of_business_help_text.bullet2")</li>
+                      <li> @Messages("awrs.business_contacts.place_of_business_help_text.bullet3")</li>
+                  </ul>
+
                 <input type="hidden" name="mainPlaceOfBusiness" value="No">
                 <div id="mainPlaceOfBusiness-api5-content">
                     @awrsAddressHelper(
                         placeOfBusinessForm("mainAddress"),
-                        AddressHelperParams()
+                        AddressHelperParams(),
+                        isPrincipalPlace = Some(true),
+                        PrincipalPrevious = "Principal"
                     )
                 </div>
                 <div class="form-group">
@@ -93,7 +102,9 @@
                             AddressHelperParams(
                                 wrapperClass = "panel-indent",
                                 number = "2"
-                            )
+                            ),
+                        isPrincipalPlace = Some(true),
+                        PrincipalPrevious = "Previous principal"
                         )
                     </div>
                 </div>

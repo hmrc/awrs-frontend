@@ -158,10 +158,10 @@ object AWRSEnums {
     val JoinedAWRSGroup = Value(Messages("awrs.withdrawal.reason.joined_awrs_group.schema_enum"))
     val Other = Value(Messages("awrs.withdrawal.reason.other.schema_enum"))*/
 
-    val AppliedInError = Value("Applied in error")
-    val NoLongerTrading = Value("No Longer trading")
-    val DuplicateApplication = Value("Duplicate Application")
-    val JoinedAWRSGroup = Value("Joined AWRS Group")
+    val AppliedInError = Value("Registered by mistake")
+    val NoLongerTrading = Value("No longer trading as an alcohol wholesaler or producer")
+    val DuplicateApplication = Value("Registered more than once")
+    val JoinedAWRSGroup = Value("Registering with a group")
     val Other = Value("Others")
   }
 

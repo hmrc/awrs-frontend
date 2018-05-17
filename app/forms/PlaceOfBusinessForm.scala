@@ -43,9 +43,9 @@ object PlaceOfBusinessForm {
 
   val placeOfBusinessValidationForm = Form(mapping(
     "mainPlaceOfBusiness" -> principalAddress_compulsory,
-    "mainAddress" -> (ukAddress_compulsory(prefix = "mainAddress", prefixRefNameInErrorMessage = "principal business").toOptionalAddressMapping iff whenPrincipalAddressNo),
+    "mainAddress" -> (ukAddress_compulsory(prefix = "mainAddress", prefixRefNameInErrorMessage = "principal place of business").toOptionalAddressMapping iff whenPrincipalAddressNo),
     "placeOfBusinessLast3Years" -> previousAddress_compulsory,
-    "placeOfBusinessAddressLast3Years" -> (ukAddress_compulsory(prefix = "placeOfBusinessAddressLast3Years", prefixRefNameInErrorMessage = "previous").toOptionalAddressMapping iff whenPreviousAddressNo),
+    "placeOfBusinessAddressLast3Years" -> (ukAddress_compulsory(prefix = "placeOfBusinessAddressLast3Years", prefixRefNameInErrorMessage = "previous principal place of business").toOptionalAddressMapping iff whenPreviousAddressNo),
     "operatingDuration" -> operatingDuration_compulsory,
     "modelVersion" -> ignored[String](PlaceOfBusiness.latestModelVersion)
   )(PlaceOfBusiness.apply)(PlaceOfBusiness.unapply))

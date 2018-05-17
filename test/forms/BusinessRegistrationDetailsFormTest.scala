@@ -66,6 +66,9 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
     (doYouHaveCrn, ExpectedFieldIsEmpty(crnField, FieldError("awrs.generic.error.companyRegNumber_empty"))),
     (doYouHaveVrn, ExpectedFieldIsEmpty(vrn, FieldError("awrs.generic.error.vrn_empty")))
   )
+  private val expectedEmptyForUTR: Map[String, ExpectedFieldIsEmpty] = Map(
+    (doYouHaveUtr, ExpectedFieldIsEmpty(utr, FieldError("awrs.generic.error.utr_empty_LTD")))
+  )
 
   private val doYouHaveToTargetField = Map(
     (doYouHaveUtr, utr),
@@ -97,11 +100,13 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
         val preCondition = Map[String, String]()
         val ignoreCondition = Set[Map[String, String]]()
         val idPrefix = None
+        val isEntityLTD = if(entity == "LTD") true else false
         ProofOfIdentiticationVerifications.utrIsValidWhenDoYouHaveUTRIsAnsweredWithYes(
           preCondition,
           ignoreCondition,
           idPrefix,
-          alsoTestWhenDoYouHaveUtrIsAnsweredWithNo = false)
+          alsoTestWhenDoYouHaveUtrIsAnsweredWithNo = false,
+          isLTD = isEntityLTD)
       }
 
       s"check the validations of nino for entity: $entity" in {
@@ -150,11 +155,24 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
         val formWithErrors = forms(entity).bind(testData)
 
         def mainTest(doYouHaveId: String) = {
+
+
           val fieldId = doYouHaveToTargetField(doYouHaveId)
           formWithErrors.hasErrors shouldBe true
-          val expected = expectedEmpty(doYouHaveId)
-          assertFieldError(formWithErrors, fieldId, expected.fieldError)
-          assertSummaryError(formWithErrors, fieldId, expected.summaryError)
+
+          if( doYouHaveId == "doYouHaveUTR" && entity == "LTD"){
+            val expected = expectedEmptyForUTR(doYouHaveId)
+            assertFieldError(formWithErrors, fieldId, expected.fieldError)
+            assertSummaryError(formWithErrors, fieldId, expected.summaryError)
+          }
+          else{
+            val expected = expectedEmpty(doYouHaveId)
+            assertFieldError(formWithErrors, fieldId, expected.fieldError)
+            assertSummaryError(formWithErrors, fieldId, expected.summaryError)
+          }
+
+
+
         }
         targetIds.foreach {
           case `doYouHaveVrn` => // the user can have No as an answer to VRN in this new format

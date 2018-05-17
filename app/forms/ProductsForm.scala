@@ -36,7 +36,7 @@ object ProductsForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_mainCustomers"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.otherCustomersLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.customer"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.other_mainCustomers_invalid_format")
       )
     compulsoryText(companyNameConstraintParameters)
@@ -50,7 +50,7 @@ object ProductsForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.type_of_product_other"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.otherProductsLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.product"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.type_of_product_other_validation")
       )
     compulsoryText(companyNameConstraintParameters)

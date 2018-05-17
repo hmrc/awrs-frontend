@@ -43,7 +43,7 @@ object BusinessContactsForm {
     telephone -> telephone_compulsory(),
     email -> email_compulsory(fieldId = email),
     contactAddressSame -> contactAddress_compulsory,
-    contactAddress -> (ukAddress_compulsory(prefix = contactAddress, prefixRefNameInErrorMessage = "contact").toOptionalAddressMapping iff whenContactAddressNo),
+    contactAddress -> (ukAddress_compulsory(prefix = contactAddress).toOptionalAddressMapping iff whenContactAddressNo),
     "modelVersion" -> ignored[String](BusinessContacts.latestModelVersion)
   )(BusinessContacts.apply)(BusinessContacts.unapply))
 

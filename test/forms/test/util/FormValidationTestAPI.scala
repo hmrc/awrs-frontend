@@ -128,8 +128,6 @@ trait FormValidationTestAPI {
 
 trait ExpectedErrorExpectation {
   def fieldError: FieldError
-
-  def summaryError: SummaryError
 }
 
 case class ExpectedFieldIsEmpty(val fieldError: FieldError, val summaryError: SummaryError) extends ExpectedErrorExpectation
@@ -139,14 +137,13 @@ object ExpectedFieldIsEmpty {
     new ExpectedFieldIsEmpty(fieldError, SummaryError(fieldError, anchorId))
 }
 
-case class ExpectedFieldExceedsMaxLength(val fieldError: FieldError, val summaryError: SummaryError, val maxLength: Int) extends ExpectedErrorExpectation
+case class ExpectedFieldExceedsMaxLength(val fieldError: FieldError, val maxLength: Int) extends ExpectedErrorExpectation
 
 object ExpectedFieldExceedsMaxLength {
   // quick constructor for the default expected max length error messages
-  def apply(fieldId: String, embeddedFieldNameInErrorMessages: String, maxLen: Int): ExpectedFieldExceedsMaxLength = {
-    val defaultKey = "awrs.generic.error.maximum_length"
+  def apply(fieldId: String, embeddedFieldNameInErrorMessages: String, maxLen: Int,defaultKey: String = "awrs.generic.error.maximum_length" ): ExpectedFieldExceedsMaxLength = {
     val defaultError = FieldError(defaultKey, MessageArguments(embeddedFieldNameInErrorMessages, maxLen))
-    new ExpectedFieldExceedsMaxLength(defaultError, SummaryError(defaultError, MessageArguments(embeddedFieldNameInErrorMessages), fieldId), maxLen)
+    new ExpectedFieldExceedsMaxLength(defaultError, maxLen)
   }
 }
 

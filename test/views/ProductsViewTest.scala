@@ -77,7 +77,7 @@ class ProductsViewTest extends AwrsUnitTestTraits
             val document = Jsoup.parse(contentAsString(result))
 
             val id = "otherMainCustomers"
-            val expectedErrorKey = "awrs.generic.error.maximum_length"
+            val expectedErrorKey = "awrs.additional_information.error.maximum_length.customer"
 
             testErrorMessageValidation(document, id, expectedErrorKey, "other customers", AwrsFieldConfig.otherCustomersLen)
         }
@@ -113,7 +113,7 @@ class ProductsViewTest extends AwrsUnitTestTraits
             val document = Jsoup.parse(contentAsString(result))
 
             val id = "otherProductType"
-            val expectedErrorKey = "awrs.generic.error.maximum_length"
+            val expectedErrorKey = "awrs.additional_information.error.maximum_length.product"
 
             testErrorMessageValidation(document, id, expectedErrorKey, "other products", AwrsFieldConfig.otherProductsLen)
         }
