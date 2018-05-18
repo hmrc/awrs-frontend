@@ -152,17 +152,17 @@ object AWRSEnums {
   }
 
   object WithdrawalReasonEnum extends AWRSEnumeration {
-    /*val AppliedInError = Value(Messages("awrs.withdrawal.reason.applied_in_error.schema_enum"))
+    val AppliedInError = Value(Messages("awrs.withdrawal.reason.applied_in_error.schema_enum"))
     val NoLongerTrading = Value(Messages("awrs.withdrawal.reason.no_longer_trading.schema_enum"))
     val DuplicateApplication = Value(Messages("awrs.withdrawal.reason.duplicate_application.schema_enum"))
     val JoinedAWRSGroup = Value(Messages("awrs.withdrawal.reason.joined_awrs_group.schema_enum"))
-    val Other = Value(Messages("awrs.withdrawal.reason.other.schema_enum"))*/
+    val Other = Value(Messages("awrs.withdrawal.reason.other.schema_enum"))
 
-    val AppliedInError = Value("Registered by mistake")
+/*    val AppliedInError = Value("Registered by mistake")
     val NoLongerTrading = Value("No longer trading as an alcohol wholesaler or producer")
     val DuplicateApplication = Value("Registered more than once")
     val JoinedAWRSGroup = Value("Registering with a group")
-    val Other = Value("Others")
+    val Other = Value("Others")*/
   }
 
 }
