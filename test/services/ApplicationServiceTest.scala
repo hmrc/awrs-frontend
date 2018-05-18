@@ -527,7 +527,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
               newBusiness = Some(newAWBusiness())
             )
           val testPartnershipBusinessRegDetails =
-            testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "Yes", utr = testUtr)
+            testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "Yes", utr = prefixedLowerCaseUTR.toString())
 
           val result =
             TestApplicationService.getModifiedSubscriptionType(

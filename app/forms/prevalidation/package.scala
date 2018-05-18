@@ -31,7 +31,7 @@ package object prevalidation {
     "vatNumber" -> all,
     "companyRegNumber" -> all,
     "companyRegistrationNumber" -> all,
-    "utr" -> all,
+    "utr" -> utr,
     "postcode" -> all
   )
 
@@ -53,6 +53,8 @@ package object prevalidation {
   val trimAllFunc = (value: String) => value.replaceAll("[\\s]", "")
   val trimBothFunc = (value: String) => value.trim
   val trimBothAndCompressFunc = (value: String) => value.trim.replaceAll("[\\s]{2,}", " ")
+  val trimUTR = (value: String) => if(value.length == 13) value.replaceAll("[\\s]", "").substring(3) else value.replaceAll("[\\s]", "")
+  val trimCRN = (value: String) => if(value.length == 7) "0" + value else value
 
   def PreprocessedForm[T](validation: Form[T], trimRules: Map[String, TrimOption] = defaultTrims, caseRules: Map[String, CaseOption] = defaultCases) = {
     val trules = trimRules

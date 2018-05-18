@@ -99,9 +99,9 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     deEnrol ifDefinedThen (count => verify(mockTaxEnrolmentsConnector, times(count)).deEnrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
   }
 
-  val reasonURL = "/alcohol-wholesale-scheme/de-register-reason"
-  val dateURL = "/alcohol-wholesale-scheme/de-register-date"
-  val confirmURL = "/alcohol-wholesale-scheme/de-register-confirm"
+  val reasonURL = "/alcohol-wholesale-scheme/cancel-registration"
+  val dateURL = "/alcohol-wholesale-scheme/cancellation-date"
+  val confirmURL = "/alcohol-wholesale-scheme/confirm-cancellation"
   val confirmationURL = "/alcohol-wholesale-scheme/de-register-confirmation"
   val indexURL = "/alcohol-wholesale-scheme/index"
 

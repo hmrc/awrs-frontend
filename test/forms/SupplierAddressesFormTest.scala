@@ -74,7 +74,7 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
     "display the correct validation errors for vatRegistered" in {
       val fieldId = "vatRegistered"
 
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_vat_reg_empty"))
+      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.supplier.do_you_have_vat_reg_empty"))
       val expecations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
 
       val preCondition = Map("ukSupplier" -> "Yes")
@@ -90,7 +90,7 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
 
       val theyHaveVRN = Map("vatRegistered" -> Yes.toString)
 
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.vrn_empty"))
+      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.their.error.vrn_empty"))
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.vrn_invalid")))
       val formatError = ExpectedFieldFormat(invalidFormats)
 

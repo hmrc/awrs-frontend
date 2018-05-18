@@ -223,8 +223,10 @@ private object AddressVerifications {
   def addressLine1(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
                    idPrefix: IdPrefix = None,
-                   nameInErrorMessage: String)(implicit form: Form[_]): Unit =
+                   nameInErrorMessage: String)(implicit form: Form[_]): Unit ={
     addressLinex(1, preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
+  }
+
 
   def addressLine2(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
@@ -303,7 +305,7 @@ private object IdentityVerifications {
       case id => id
     })
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.first_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "first name", AwrsFieldConfig.firstNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "First name", AwrsFieldConfig.firstNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "first name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -324,7 +326,7 @@ private object IdentityVerifications {
     })
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.last_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "last name", AwrsFieldConfig.lastNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "Last name", AwrsFieldConfig.lastNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "last name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -675,7 +677,9 @@ object ProofOfIdentiticationVerifications {
       List(
         ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
         ExpectedInvalidFieldFormat("1234-678", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid")),
-        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber"))
+        ExpectedInvalidFieldFormat("aaaaaaaa", fieldId, FieldError("awrs.generic.error.companyRegNumber_atleastOneNumber")),
+        ExpectedInvalidFieldFormat("", fieldId, FieldError("awrs.generic.error.companyRegNumber_empty")),
+        ExpectedInvalidFieldFormat("123", fieldId, FieldError("awrs.generic.error.companyRegNumber_invalid"))
       )
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -729,15 +733,30 @@ object ProofOfIdentiticationVerifications {
   def utrIsValidWhenDoYouHaveUTRIsAnsweredWithYes(preCondition: Map[String, String],
                                                   ignoreCondition: Set[Map[String, String]],
                                                   idPrefix: IdPrefix = None,
-                                                  alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true)(implicit form: Form[_]): Unit = {
+                                                  alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true,
+                                                  isLTD: Boolean = false)(implicit form: Form[_]): Unit = {
     val fieldId = idPrefix attach "utr"
 
     val questionId = idPrefix attach "doYouHaveUTR"
 
     val theyHaveUTR = generateFormTestData(preCondition, questionId, Yes.toString)
+    var emptyErrorMsg = "awrs.generic.error.utr_empty"
+    var invalidErrorMsg = "awrs.generic.error.utr_invalid"
 
-    val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.utr_empty"))
-    val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError("awrs.generic.error.utr_invalid")))
+    isLTD match {
+      case true => {
+        emptyErrorMsg = "awrs.generic.error.utr_empty_LTD"
+        invalidErrorMsg = "awrs.generic.error.utr_invalid_LTD"
+      }
+      case _ => {
+        emptyErrorMsg = "awrs.generic.error.utr_empty"
+        invalidErrorMsg = "awrs.generic.error.utr_invalid"
+      }
+    }
+
+    val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError(emptyErrorMsg))
+    val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, FieldError(invalidErrorMsg)))
+
     val formatError = ExpectedFieldFormat(invalidFormats)
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)

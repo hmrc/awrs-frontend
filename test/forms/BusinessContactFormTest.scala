@@ -34,7 +34,7 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
       val ignoreCondition: Set[Map[String, String]] = Set(Map("contactAddressSame" -> BooleanRadioEnum.Yes.toString))
       val idPrefix: String = "contactAddress"
 
-      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix, nameInErrorMessage = "contact")
+      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix, nameInErrorMessage = "")
     }
 
     "check validations for contactFirstName and contactLastName" in

@@ -29,10 +29,10 @@ trait AwrsValidator {
   val vatRegex = """^(?i)([ \t]*G[ \t]*B[ \t]*(?:[ \t]*\d[ \t]*){9})|(?:[ \t]*\d[ \t]*){9}$"""
 
   // match any combination of alphanumeric characters and spaces 8 times, case insensitive
-  val crnRegex =  """^(?i)(?:[ \t]*[A-Z0-9][ \t]*){8}$"""
+  val crnRegex =  """^(?i)((?:[ \t]*([A-Z]*){2}[0-9][ \t]*){6})|(([0-9][ \t]*){8})|((?:[ \t]*[0-9][ \t]*){7})$"""
 
-  // match leadings spaces + any combination of digits and spaces 10 times
-  val utrRegex = """^(?:[ \t]*\d[ \t]*){10}$"""
+  // match leading spaces + any 3 letters + any combination of digits and spaces 10 times
+  val utrRegex = """^(?:[ \t]*(?:[a-zA-Z]{3})?\d[ \t]*){10}$"""
 
   val emailRegex = """(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"""
 

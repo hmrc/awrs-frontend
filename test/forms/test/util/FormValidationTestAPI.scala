@@ -128,8 +128,6 @@ trait FormValidationTestAPI {
 
 trait ExpectedErrorExpectation {
   def fieldError: FieldError
-
-  def summaryError: SummaryError
 }
 
 case class ExpectedFieldIsEmpty(val fieldError: FieldError, val summaryError: SummaryError) extends ExpectedErrorExpectation
@@ -139,14 +137,13 @@ object ExpectedFieldIsEmpty {
     new ExpectedFieldIsEmpty(fieldError, SummaryError(fieldError, anchorId))
 }
 
-case class ExpectedFieldExceedsMaxLength(val fieldError: FieldError, val summaryError: SummaryError, val maxLength: Int) extends ExpectedErrorExpectation
+case class ExpectedFieldExceedsMaxLength(val fieldError: FieldError, val maxLength: Int) extends ExpectedErrorExpectation
 
 object ExpectedFieldExceedsMaxLength {
   // quick constructor for the default expected max length error messages
-  def apply(fieldId: String, embeddedFieldNameInErrorMessages: String, maxLen: Int): ExpectedFieldExceedsMaxLength = {
-    val defaultKey = "awrs.generic.error.maximum_length"
+  def apply(fieldId: String, embeddedFieldNameInErrorMessages: String, maxLen: Int,defaultKey: String = "awrs.generic.error.maximum_length" ): ExpectedFieldExceedsMaxLength = {
     val defaultError = FieldError(defaultKey, MessageArguments(embeddedFieldNameInErrorMessages, maxLen))
-    new ExpectedFieldExceedsMaxLength(defaultError, SummaryError(defaultError, MessageArguments(embeddedFieldNameInErrorMessages), fieldId), maxLen)
+    new ExpectedFieldExceedsMaxLength(defaultError, maxLen)
   }
 }
 
@@ -167,11 +164,11 @@ sealed trait MaxLengthOption[+A] {
   }
 }
 
-case class MaxLengthDefinition[A <: ExpectedFieldExceedsMaxLength](val get: A) extends MaxLengthOption[A]
+case class MaxLengthDefinition[A <: ExpectedFieldExceedsMaxLength](get: A) extends MaxLengthOption[A]
 
 case class MaxLengthIsHandledByTheRegEx() extends MaxLengthOption[Nothing]
 
-case class ExpectedInvalidFieldFormat(val invalidCase: String, val fieldError: FieldError, val summaryError: SummaryError) extends ExpectedErrorExpectation
+case class ExpectedInvalidFieldFormat(invalidCase: String, fieldError: FieldError, summaryError: SummaryError) extends ExpectedErrorExpectation
 
 object ExpectedInvalidFieldFormat {
   def apply(invalidCase: String, fieldId: String, embeddedFieldNameInErrorMessages: String): ExpectedInvalidFieldFormat = {
@@ -187,9 +184,9 @@ object ExpectedInvalidFieldFormat {
   }
 }
 
-case class ExpectedValidFieldFormat(val validCase: String)
+case class ExpectedValidFieldFormat(validCase: String)
 
-case class ExpectedFieldFormat(val invalidFormats: List[ExpectedInvalidFieldFormat], val validFormats: List[ExpectedValidFieldFormat] = List[ExpectedValidFieldFormat]())
+case class ExpectedFieldFormat(invalidFormats: List[ExpectedInvalidFieldFormat], validFormats: List[ExpectedValidFieldFormat] = List[ExpectedValidFieldFormat]())
 
 case class CompulsoryFieldValidationExpectations(val fieldIsEmptyExpectation: ExpectedFieldIsEmpty, val maxLengthExpectation: MaxLengthOption[ExpectedFieldExceedsMaxLength], val formatExpectations: ExpectedFieldFormat) {
   def toOptionalFieldValidationExpectations: OptionalFieldValidationExpectations = new OptionalFieldValidationExpectations(maxLengthExpectation, formatExpectations)
