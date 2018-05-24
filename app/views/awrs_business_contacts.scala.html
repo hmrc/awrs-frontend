@@ -55,6 +55,13 @@
     }
 }
 
+@postcodeHelper(postcode: String) = @{
+    val splitPoint = postcode.length - 3
+    val startPostCode = postcode.substring(0, splitPoint)
+    val endPostCode = postcode.substring(splitPoint, postcode.length)
+    startPostCode + " " + endPostCode
+}
+
 
 @includes.awrs_main(title = Messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
@@ -117,7 +124,7 @@
                     @business.line_2<br>
                     @if(business.line_3.nonEmpty) {@business.line_3<br>}
                     @if(business.line_4.nonEmpty) {@business.line_4<br>}
-                    @business.postcode<br>
+                    @postcodeHelper(business.postcode.get)<br>
                 </div>
                 <div class="form-group">
                     @awrsInputTypeRadioGroup(

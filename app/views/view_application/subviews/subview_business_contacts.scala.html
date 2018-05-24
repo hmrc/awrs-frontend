@@ -18,6 +18,13 @@
     controllers.routes.BusinessContactsController.showBusinessContacts(false).url
 }
 
+@postcodeHelper(postcode: String) = @{
+    val splitPoint = postcode.length - 3
+    val startPostCode = postcode.substring(0, splitPoint)
+    val endPostCode = postcode.substring(splitPoint, postcode.length)
+    startPostCode + " " + endPostCode
+}
+
 @contactAddressToDisplay = @{
     (someModel,someBCDetails) match {
         case (Some(model), Some(bcDetails)) =>
@@ -30,7 +37,7 @@
                         addressLine2 = bcAddress.line_2,
                         addressLine3 = bcAddress.line_3,
                         addressLine4 = bcAddress.line_4,
-                        postcode = bcAddress.postcode,
+                        postcode = postcodeHelper(bcAddress.postcode.get),
                         addressCountry = None,
                         addressCountryCode = bcAddress.country
                     ))
