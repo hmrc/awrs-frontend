@@ -1,4 +1,4 @@
-@(field: Field, params: views.helpers.AddressHelperParams)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
+@(field: Field, params: views.helpers.AddressHelperParams, isPrincipalPlace : Option[Boolean] =  false, PrincipalPrevious: String =  "")(implicit messages: Messages, formInstance: Option[Form[_]] = None)
 
 @import play.api.i18n._
 @import views.html.helper._
@@ -20,13 +20,26 @@
         case _ => ""
     }
 }
+@adressLineMessages(line : String) = @{
+    isPrincipalPlace match {
+    case Some(true) => Messages(s"awrs.generic.principal.address_$line", PrincipalPrevious)
+    case _ =>      Messages(s"awrs.generic.address_$line")
+    }
+}
+@postCodeMessage = @{
+    isPrincipalPlace match {
+        case Some(true) => Messages("awrs.generic.principal.postcode", PrincipalPrevious)
+        case _ =>     Messages("awrs.generic.postcode")
+    }
+}
+
 <div id="address-@number" class="address-container" @addressContainerDataAttribute>
     <div class="address-lines">
        @awrsInputTypeText(
            InputTypeTextParams(
                field("addressLine1"),
                 inputId = field("addressLine1").name,
-                label = Messages("awrs.generic.address_line1"),
+                label = adressLineMessages("line1"),
                 maxLength = AwrsFieldConfig.addressLine1Len.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
@@ -37,7 +50,7 @@
             InputTypeTextParams(
                 field("addressLine2"),
                 inputId = field("addressLine2").name,
-                label = Messages("awrs.generic.address_line2"),
+                label = adressLineMessages("line2"),
                 maxLength = AwrsFieldConfig.addressLine2Len.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
@@ -48,7 +61,7 @@
             InputTypeTextParams(
                 field("addressLine3"),
                 inputId = field("addressLine3").name,
-                label = Messages("awrs.generic.address_line3"),
+                label = adressLineMessages("line3"),
                 maxLength = AwrsFieldConfig.addressLine3Len.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
@@ -59,7 +72,7 @@
             InputTypeTextParams(
                 field("addressLine4"),
                 inputId = field("addressLine4").name,
-                label = Messages("awrs.generic.address_line4"),
+                label = adressLineMessages("line4"),
                 maxLength = AwrsFieldConfig.addressLine4Len.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
@@ -73,7 +86,7 @@
                 field("postcode"),
                 inputId = field("postcode").name,
                 inputClass = "input--normal",
-                label = Messages("awrs.generic.postcode"),
+                label = postCodeMessage,
                 maxLength = AwrsFieldConfig.addressPostcodeLen.toString,
                 wrapperClass = wrapperClass,
                 required = true,

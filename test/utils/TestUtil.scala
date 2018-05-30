@@ -760,7 +760,7 @@ object TestUtil {
   }
 
   @inline def errorSummaryValidation(document: Document, id: String, expectedErrorKey: String, expectedhref: String, errorArgs: Any*) = {
-    val expectedSummaryErrorKey: String = expectedErrorKey + ".summary"
+    val expectedSummaryErrorKey: String = expectedErrorKey
     val associatedSummaryErrMsg = document.getElementById(id + "_errorLink")
     if (associatedSummaryErrMsg == null) {
       println(f"id=${id + "_errorLink"}, associatedSummaryErrMsg=$associatedSummaryErrMsg")

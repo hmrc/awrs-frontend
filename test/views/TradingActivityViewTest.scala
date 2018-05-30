@@ -77,7 +77,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
             val document = Jsoup.parse(contentAsString(result))
 
             val id = "otherWholesaler"
-            val expectedErrorKey = "awrs.generic.error.maximum_length"
+            val expectedErrorKey = "awrs.view_application.error.trading_activity.order.maxlength"
 
             testErrorMessageValidation(document, id, expectedErrorKey, "wholesaler type other", AwrsFieldConfig.otherWholesalerLen)
         }
@@ -126,7 +126,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
             val document = Jsoup.parse(contentAsString(result))
 
             val id = "otherTypeOfAlcoholOrders"
-            val expectedErrorKey = "awrs.generic.error.maximum_length"
+            val expectedErrorKey = "awrs.view_application.error.trading_activity.maxlength"
 
             testErrorMessageValidation(document, id, expectedErrorKey, "other orders", AwrsFieldConfig.otherOrdersLen)
         }

@@ -114,21 +114,21 @@ GET         /feedback                                       controllers.Feedback
 GET         /feedback/thanks                                controllers.FeedbackController.showFeedbackThanks
 POST        /feedback-submit                                controllers.FeedbackController.submitFeedback
 
-GET         /withdraw-application                           controllers.WithdrawalController.showWithdrawalReasons
-POST        /withdraw-application                           controllers.WithdrawalController.submitWithdrawalReasons
+GET         /withdraw-registration                          controllers.WithdrawalController.showWithdrawalReasons
+POST        /withdraw-registration                          controllers.WithdrawalController.submitWithdrawalReasons
 GET         /confirm-withdrawal                             controllers.WithdrawalController.showConfirmWithdrawal
 POST        /confirm-withdrawal                             controllers.WithdrawalController.submitConfirmWithdrawal
 GET         /withdrawal-confirmation                        controllers.WithdrawalController.showWithdrawalConfirmation(printFriendly: Boolean ?= false)
 
-GET         /de-register-date                               controllers.DeRegistrationController.showDate
-POST        /de-register-date/submit                        controllers.DeRegistrationController.submitDate
+GET         /cancellation-date                               controllers.DeRegistrationController.showDate
+POST        /cancellation-date/submit                        controllers.DeRegistrationController.submitDate
 GET         /de-register/abort                              controllers.DeRegistrationController.returnToIndex
 
-GET         /de-register-reason                             controllers.DeRegistrationController.showReason
-POST        /de-register-awrs-reason/submit                 controllers.DeRegistrationController.submitReason
+GET         /cancel-registration                            controllers.DeRegistrationController.showReason
+POST        /cancel-registration/submit                     controllers.DeRegistrationController.submitReason
 
-GET         /de-register-confirm                            controllers.DeRegistrationController.showConfirm
-POST        /de-register-confirm/submit                     controllers.DeRegistrationController.callToAction
+GET         /confirm-cancellation                            controllers.DeRegistrationController.showConfirm
+POST        /confirm-cancellation/submit                     controllers.DeRegistrationController.callToAction
 GET         /de-register-confirmation                       controllers.DeRegistrationController.showConfirmation(printFriendly: Boolean ?= false)
 
 GET         /view-application                               controllers.ViewApplicationController.show(printFriendly: Boolean ?= false)

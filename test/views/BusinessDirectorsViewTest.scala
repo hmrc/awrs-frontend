@@ -63,7 +63,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
                 personOrCompanySection shouldBe null
                 companySecretaryOption shouldBe null
               case _ =>
-                heading should be(Messages("awrs.business_directors.heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
+                heading should be(Messages("awrs.business_directors.heading", Messages("awrs.director.what.are"), views.html.helpers.ordinalIntSuffix(id)))
                 personOrCompanySection should not be null
                 companySecretaryOption should not be null
             }
@@ -95,7 +95,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           val heading = document.getElementById("business-directors-heading").text()
-          heading should be(Messages("awrs.business_directors.heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(2)))
+          heading should be(Messages("awrs.business_directors.heading", Messages("awrs.director.what.are"), views.html.helpers.ordinalIntSuffix(2)))
 
           val personOrCompanySection = document.getElementById("personOrCompany_field")
           personOrCompanySection should not be null

@@ -38,7 +38,7 @@ object TradingActivityForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_wholesaler"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.otherWholesalerLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages (AwrsFieldConfig.otherWholesalerLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.order.maxlength"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.wholesaler_validation")
       )
     compulsoryText(companyNameConstraintParameters)
@@ -54,7 +54,7 @@ object TradingActivityForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_order"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.otherOrdersLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages (AwrsFieldConfig.otherOrdersLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.maxlength"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.order_validation")
       )
     compulsoryText(companyNameConstraintParameters)

@@ -34,10 +34,20 @@ object NamedMappingAndUtil {
     val firstNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.first_name_empty"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.firstNameLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.firstNameLen, fieldId, "First name", errorMsg = "awrs.generic.error.name.maximum_length"),
         genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
       )
     compulsoryText(firstNameConstraintParameters)
+  }
+
+  def getEntityMessage(entityType: String, messageKey: String) = {
+
+    entityType match{
+      case "LTD" => messageKey +"_LTD"
+      case _ => messageKey
+
+    }
+
   }
 
   def lastName_compulsory(fieldId: String = "lastName"): Mapping[Option[String]] = {
@@ -45,7 +55,7 @@ object NamedMappingAndUtil {
     val lastNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.last_name_empty"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.lastNameLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.lastNameLen, fieldId, "Last name", errorMsg = "awrs.generic.error.name.maximum_length"),
         genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
       )
     compulsoryText(lastNameConstraintParameters)
@@ -216,14 +226,14 @@ object NamedMappingAndUtil {
     )
 
 
-  def utr_compulsory(fieldId: String = "utr"): Mapping[Option[String]] =
+  def utr_compulsory(fieldId: String = "utr", businessType :String = "None"): Mapping[Option[String]] ={
     commonIdConstraints(
       fieldId,
-      isEmptyErrMessage = "awrs.generic.error.utr_empty",
+      isEmptyErrMessage = getEntityMessage(businessType,"awrs.generic.error.utr_empty"),
       regex = utrRegex,
-      isInvalidErrMessage = "awrs.generic.error.utr_invalid"
+      isInvalidErrMessage =  getEntityMessage(businessType,"awrs.generic.error.utr_invalid")
     )
-
+  }
   def email_compulsory(fieldId: String = "email"): Mapping[Option[String]] = {
     val fieldNameInErrorMessage = "email"
     val firstNameConstraintParameters =

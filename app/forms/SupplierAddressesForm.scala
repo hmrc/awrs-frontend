@@ -53,12 +53,12 @@ object SupplierAddressesForm {
     compulsoryText(supplierNameConstraintParameters)
   }
 
-  @inline def vatRegistered_compulsory() = yesNoQuestion_compulsory("vatRegistered", "awrs.generic.error.do_you_have_vat_reg_empty")
+  @inline def vatRegistered_compulsory() = yesNoQuestion_compulsory("vatRegistered", "awrs.generic.error.supplier.do_you_have_vat_reg_empty")
 
   private def vatNumber_compulsory: Mapping[Option[String]] =
     commonIdConstraints(
       fieldId = "vatNumber",
-      isEmptyErrMessage = "awrs.generic.error.vrn_empty",
+      isEmptyErrMessage = "awrs.generic.their.error.vrn_empty",
       regex = vatRegex,
       isInvalidErrMessage = "awrs.generic.error.vrn_invalid"
     )

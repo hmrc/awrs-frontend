@@ -33,7 +33,7 @@ class PlaceOfBusinessFormTest extends UnitSpec with MockitoSugar with OneServerP
       val ignoreCondition: Set[Map[String, String]] = Set(Map("mainPlaceOfBusiness" -> BooleanRadioEnum.Yes.toString))
       val idPrefix: String = "mainAddress"
 
-      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix, nameInErrorMessage = "principal business")
+      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix, nameInErrorMessage = "principal place of business")
     }
 
     f"check validations for placeOfBusinessAddressLast3Years " in {
@@ -41,7 +41,7 @@ class PlaceOfBusinessFormTest extends UnitSpec with MockitoSugar with OneServerP
       val ignoreCondition: Set[Map[String, String]] = Set(Map("placeOfBusinessLast3Years" -> BooleanRadioEnum.Yes.toString))
       val idPrefix: String = "placeOfBusinessAddressLast3Years"
 
-      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix, nameInErrorMessage = "previous")
+      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix, nameInErrorMessage = "previous principal place of business")
     }
 
     "check the operating duration is selected" in {

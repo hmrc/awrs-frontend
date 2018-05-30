@@ -4,7 +4,9 @@ youOrThey: String,
 crnAndDate: Boolean = true,
 dateField: Option[Field] = None,
 ariaLabelledBy: Option[String] = None,
-formHasErrors: Boolean = false)(implicit formInstance: Option[Form[_]] = None, messages: Messages)
+formHasErrors: Boolean = false,
+businessEntity : Option[String] = ""
+)(implicit formInstance: Option[Form[_]] = None, messages: Messages)
 
 @import views.helpers.InputTypeRadioGroupParams
 @import play.api.i18n._
@@ -28,8 +30,9 @@ formHasErrors: Boolean = false)(implicit formInstance: Option[Form[_]] = None, m
     }
 }
 
+
 @hintText = {
-    <span aria-hidden="true">@Messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@Messages("awrs.generic.date_hint.reader")</span>
+    <span aria-hidden="true">@Messages("awrs.generic.date_hint.corporation")</span><span class="visuallyhidden">@Messages("awrs.generic.date_hint.reader.corporation")</span>
 }
 
 @ariaDayMonthYear = {

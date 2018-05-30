@@ -18,6 +18,13 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
         case None => Messages(s"awrs.generic.do_${youOrThey}_have_VAT")
     }
 }
+@youOrTheyMessagekey = @{
+    youOrThey match{
+        case "you" => Messages("awrs.generic.you.VAT_registration_number")
+        case _ => Messages("awrs.generic.VAT_registration_number")
+    }
+}
+
 
 <div class="form-group">
     @awrsInputTypeRadioGroup(
@@ -38,7 +45,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
                 inputId = inputField.name,
                 maxLength = AwrsFieldConfig.frontendDefaultLen.toString,
                 wrapperClass = "panel-indent",
-                label = Messages("awrs.generic.VAT_registration_number"),
+                label = youOrTheyMessagekey,
                 required = true,
                 labelHighlight = true,
                 formHint = Messages("awrs.generic.do_you_have_VAT_information"),
