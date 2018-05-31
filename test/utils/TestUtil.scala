@@ -50,7 +50,7 @@ object TestUtil {
   final lazy val EmptyJsVal = None: Option[JsValue]
 
   val legalEntityList = List("SOP", "Partnership", "LTD", "LLP", "LP", "LLP_GRP", "LTD_GRP")
-  val testBCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country"))
+  val testBCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("NE98 1ZZ"), Option("country"))
   val testBusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
   val testBusinessCustomerDetailsWithoutSafeID = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123","", false, Some("agent123"), testUtr)
 
