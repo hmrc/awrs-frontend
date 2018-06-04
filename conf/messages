@@ -51,7 +51,6 @@ awrs.generic.status.company_value = company
 
 ##### GENERIC ID MESSAGES
 
-awrs.generic.we_need_their_identity = We need this information to check their identity
 awrs.generic.passport_no = Passport number
 awrs.generic.national_id_no = National Identification number
 awrs.generic.NINO = National Insurance number
@@ -222,10 +221,6 @@ awrs.generic.company_reg_details = Company registration details
 awrs.generic.postcode = Postcode
 awrs.generic.address.lookup_dropdown_label = Address look up dropdown.
 awrs.generic.address = Address
-awrs.generic.address_line1 = Address line 1
-awrs.generic.address_line2 = Address line 2
-awrs.generic.address_line3 = Address line 3 (optional)
-awrs.generic.address_line4 = Address line 4 (optional)
 
 awrs.generic.principal.address_line1 = {0} place of business address line 1
 awrs.generic.principal.address_line2 = {0} place of business address line 2
@@ -242,7 +237,6 @@ awrs.generic.wait_info_withdraw = withdrawing
 awrs.generic.wait_info_de-registration = cancelling
 awrs.generic.section_progess = {0} of {1} - {2}
 awrs.generic.section = This section is
-awrs.generic.helper_question_text = What does this mean?
 
 ##### PAGE SPECIFIC MESSAGES
 
@@ -270,7 +264,6 @@ awrs.business_verification.error.type_of_business_individual_invalid = You are l
 ##### GROUP DECLARATION PAGE
 
 awrs.group_declaration.heading = AWRS group declaration
-awrs.group_declaration.title = AWRS group declaration
 awrs.group_declaration.declaration_statement_lead = As you are registering as a group you need to confirm the following statements are true
 awrs.group_declaration.declaration_statement_bullet_1 = There must be more than one member of the group.
 awrs.group_declaration.declaration_statement_bullet_2 = All members of the group must be either limited companies or limited liability partnerships that are established or have a fixed establishment in the UK.
@@ -370,7 +363,6 @@ awrs.application_status.info.no_longer_minded_to_revoke.heading = What this mean
 
 ##### INDEX PAGE
 
-awrs.index_page.title = Your application
 awrs.index_page.top_heading = {0} application summary
 awrs.index_page.not_submitted_changes.return = You must return to the application summary to submit your changes
 awrs.index_page.not_submitted_changes = You must submit your changes before you sign out
@@ -391,15 +383,6 @@ awrs.index_page.awrs_ref = AWRS reference number
 
 ##### Dynamically created - DO NOT DELETE
 
-awrs.index_page.not_started_class = not-started
-awrs.index_page.incomplete_class = incomplete
-awrs.index_page.complete_class = complete
-awrs.index_page.edited_class = edited
-awrs.index_page.not_started_link = Start now <span class = "visuallyhidden">{0}</span>
-awrs.index_page.incomplete_link = View or edit <span class = "visuallyhidden">{0}</span>
-awrs.index_page.complete_link = View or edit <span class = "visuallyhidden">{0}</span>
-awrs.index_page.edited_link = View or edit <span class = "visuallyhidden">{0}</span>
-awrs.index_page.complete_link_rejected = View <span class = "visuallyhidden">{0}</span> details
 awrs.index_page.status_description_text = , status is
 awrs.index_page.section_text = Section
 awrs.index_page.application_status_text = Application status
@@ -440,9 +423,6 @@ awrs.index_page.changes.answer.para_3_link = Excise Notice 2002 Section 10.4
 
 ##### BUSINESS DETAILS
 
-awrs.business_details.title.generic = Business details
-awrs.business_details.title.group = Group business details
-awrs.business_details.title.partnership = Partnership business details
 awrs.business_details.heading = {0} your business details
 awrs.business_details.heading.group = {0} your group business details
 awrs.business_details.heading.partnership = {0} your partnership business details
@@ -495,16 +475,12 @@ awrs.business_name_change.error.empty.summary = There is a problem with your req
 
 ##### BUSINESS REGISTRATION DETAILS
 
-awrs.business_registration_details.title.generic = Business registration details
-awrs.business_registration_details.title.group = Group business registration details
-awrs.business_registration_details.title.partnership = Partnership business registration details
 awrs.business_registration_details.heading = {0} your business registration details
 awrs.business_registration_details.heading.group = {0} your group business registration details
 awrs.business_registration_details.heading.partnership = {0} your partnership business registration details
 
 ##### BUSINESS CONTACTS
 
-awrs.business_contacts.title = Business contacts
 awrs.business_contacts.heading = {0} your business contact details
 awrs.business_contacts.heading.group = {0} your group business contacts
 awrs.business_contacts.heading.partnership = {0} your partnership business contacts
@@ -544,7 +520,6 @@ awrs.place_of_business.heading.partnership = {0} your partnership principal plac
 
 ##### PARTNER MEMBERS PAGE
 
-awrs.business-partner.page.title = Business partners or members
 awrs.business-partner.heading_1 = {0} your nominated partner or member
 awrs.business-partner.heading_2_or_more = {0} your {1} additional partner or member
 awrs.business-partner.topText = Tell us about all the partners or members in your partnership. You must give us details of at least two partners.
@@ -582,7 +557,6 @@ awrs.group_member.member_counter = Business {0}
 
 ##### ADDITIONAL BUSINESS PREMISES PAGE
 
-awrs.additional-premises.page_title = Additional trading premises
 awrs.additional-premises.title = Additional trading premises
 awrs.additional-premises.top-heading.first = Do you use any other trading premises for alcohol wholesale?
 awrs.additional-premises.top-heading = What is the address of your {1} trading premises?
@@ -605,7 +579,6 @@ awrs.additional-premises.error.add_another = Select yes if you need to add any o
 ##### BUSINESS DIRECTORS PAGE
 
 awrs.business_directors.status_of_person_heading = Person {0}
-awrs.business_directors.pageTitle = Directors and company secretaries
 awrs.business_directors.have_national_insurance_number = Do they have a National Insurance number?<br><span class = 'form-hint' id = 'nino_secondary_text'>We need this information to check their identity</span>
 awrs.business_directors.add_another_director = Are there any other directors or company secretaries?
 awrs.business_directors.heading.first = Tell us about all the directors and company secretaries
@@ -643,8 +616,6 @@ awrs.additional_information.heading = Tell us about your additional business inf
 awrs.additional_information.trading_activity.heading = {0} your trading activities
 awrs.additional_information.products.heading = {0} your products
 awrs.additional_information.title = Additional business information
-awrs.additional_information.trading_activity.title = Trading activities
-awrs.additional_information.products.title = Products
 awrs.additional_information.wholesaler_type = How do you trade, or plan to trade, alcohol?
 awrs.additional_information.other.wholesaler_type = What other ways do you trade, or plan to trade, alcohol?
 awrs.additional_information.products = What products do you sell or plan to sell?
@@ -742,10 +713,8 @@ awrs.additional_information.error.third_party_storage = Select yes if you use, o
 
 ##### SUPPLIER ADDRESSES PAGE
 
-awrs.supplier-addresses.page.title = Suppliers
 awrs.supplier-addresses.heading.first = Do you have, or plan to have, any alcohol suppliers?
 awrs.supplier-addresses.heading = {0} your {1} alcohol supplier
-awrs.supplier-addresses.alcohol_supplier_empty.summary = The alcohol suppliers question has not been answered
 awrs.supplier-addresses.alcohol_supplier_empty = Select yes if you have, or plan to have, any alcohol suppliers
 awrs.supplier-addresses.description = Provide the business name and address of your 5 main alcohol suppliers by overall volume. If you do not have 5 suppliers then enter the ones you have. If you are not trading yet, answer the questions based on your plans.
 awrs.supplier-addresses.supplier = Supplier {0}
@@ -754,7 +723,6 @@ awrs.supplier-addresses.uk_supplier = Is this supplier based in the UK?
 awrs.supplier-addresses.vat_registered = Is this supplier VAT registered?
 awrs.supplier-addresses.supplier_address_country = Country
 awrs.supplier-addresses.add_supplier = Do you have another supplier?
-awrs.supplier-addresses.add_supplier_empty.summary = The another supplier question has not been answered
 awrs.supplier-addresses.add_supplier_empty = Select yes if you have another supplier
 
 ##### ERROR MESSAGES
@@ -771,7 +739,6 @@ awrs.supplier-addresses.error.supplier_address_country_invalid = Select a countr
 ##### EMAIL VERIFICATION ERROR PAGE
 
 awrs.email_verification_error.heading = Verify your email address
-awrs.email_verification_error.title = Verify your email address
 awrs.email_verification_error.lede = In order to contact you by email we need to check that you have entered the correct email address.
 awrs.email_verification_error.info_1 = We have sent an email to {0} Click the link in the email to verify your email address.
 awrs.email_verification_error.info_2 = Depending on your email settings you might have to look in your spam or junk folder to find it.
@@ -789,7 +756,6 @@ awrs.email_verification_success.lede = We have successfully verified your email 
 ##### APPLICATION DECLARATION PAGE
 
 awrs.application_declaration.heading = Declaration
-awrs.application_declaration.title = Declaration
 awrs.application_declaration.lede = This is someone in your business who is legally responsible for this registration.
 awrs.application_declaration.declaration_name_hint = Name of the person {0} the application
 awrs.application_declaration.declaration_role = Job title or role
@@ -800,7 +766,6 @@ awrs.application_declaration.confirmation_and_send_application = Agree and send
 awrs.application_declaration.error.declaration_name_empty.summary = The name is empty
 awrs.application_declaration.error.declaration_name_empty = Enter full name
 awrs.application_declaration.error.declaration_name_invalid.summary = The name is not in the correct format
-awrs.application_declaration.error.declaration_name_invalid = Enter a name in the correct format
 awrs.application_declaration.error.declaration_role_empty.summary = The job title or role is empty
 awrs.application_declaration.error.declaration_role_empty = Enter job title or role
 awrs.application_declaration.error.confirmation_empty.summary = The declaration message has not been checked
@@ -842,7 +807,6 @@ awrs.update.confirmation.pending.information_what_next_1 = We will review and ch
 
 ##### DE-REGISTRATION PAGE MESSAGES
 
-awrs.de_registration.page_title = Date of cancellation
 awrs.de_registration.heading = What date do you want to cancel your registration from?
 awrs.de_registration.lede = You should give us at least 30 days notice.
 awrs.de_registration.confirmation_title = Confirm registration cancellation
@@ -865,7 +829,6 @@ awrs.de_registration.error.proposedDate_toEarly = The date you want to cancel yo
 ##### DE-REGISTRATION REASON PAGE MESSAGES
 
 awrs.de_registration_reason.page_heading = What is the reason you are cancelling your registration?
-awrs.de_registration_reason.page_title = Reason for cancelling registration
 awrs.de_registration_reason.other_input_label = What are the other reasons you are cancelling your registration?
 awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme.schema_enum = Ceases to be registerable for the scheme
 awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler.schema_enum = Ceases to trade as an alcohol wholesaler
@@ -904,7 +867,6 @@ awrs.de_registration.confirmation_page.prompt_print_heading = You will receive a
 
 ##### WITHDRAWAL REASONS PAGE MESSAGES
 
-awrs.withdrawal.reason.title = Reason for withdrawal
 awrs.withdrawal.confirm_reason.title = Confirm application withdrawal
 awrs.withdrawal.confirmation.title = Application withdrawn
 awrs.withdrawal.reasons_page.heading = What is the reason you are withdrawing your registration?
@@ -919,9 +881,6 @@ awrs.withdrawal.confirmation_page.information_what_next_1_href = start the appli
 ##### Dynamically created - DO NOT DELETE
 
 awrs.withdrawal.reason.applied_in_error = Registered by mistake
-awrs.withdrawal.reason.no_longer_trading = No longer trading as an alcohol wholesaler or producer
-awrs.withdrawal.reason.duplicate_application = Registered more than once
-awrs.withdrawal.reason.joined_awrs_group = Registering with a group
 awrs.withdrawal.reason.other = Other
 awrs.withdrawal.reason.other_message = What are the other reasons you are withdrawing your registration?
 awrs.withdrawal.reason.applied_in_error.schema_enum = Applied in error
@@ -997,7 +956,6 @@ awrs.feedback.answers.neutral = Neither satisfied or dissatisfied
 awrs.feedback.answers.dissatisfied = Dissatisfied
 awrs.feedback.answers.very_dissatisfied = Very dissatisfied
 awrs.feedback.submit = Send feedback
-awrs.feedback.thanks.title = Thank you
 awrs.feedback.thanks.heading = Thank you
 awrs.feedback.thanks.line1 = Your feedback will help us improve the service.
 awrs.feedback.thanks.back = Continue with what you were doing
@@ -1068,7 +1026,6 @@ awrs.reapplication.confirm_page.text = If you create a new application, you will
 
 ##### NOTIFICATION PAGE
 
-awrs.application_notification.title = Your application has already been submitted
 awrs.application_notification.heading = Your application has already been submitted
 awrs.application_notification.status = At the present time you are unable to access your application. A new version will be released shortly, this will allow you to view and edit your submitted application.
 
