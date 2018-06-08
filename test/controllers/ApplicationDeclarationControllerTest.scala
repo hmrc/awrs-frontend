@@ -118,7 +118,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     "show error page if a Run time exception is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), new Exception("Runtime Exception")) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be("Sorry, we’re experiencing technical difficulties")
+        document.getElementById("application-error-header").text() should be("Sorry, we are experiencing technical difficulties")
       }
     }
 
