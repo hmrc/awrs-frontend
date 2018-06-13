@@ -382,15 +382,7 @@ awrs.index_page.edited = EDITED
 awrs.index_page.awrs_ref = AWRS reference number
 
 ##### Dynamically created - DO NOT DELETE
-awrs.index_page.not_started_class = not-started
-awrs.index_page.incomplete_class = incomplete
-awrs.index_page.complete_class = complete
-awrs.index_page.edited_class = edited
-awrs.index_page.not_started_link = Start now <span class = "visuallyhidden">{0}</span>
-awrs.index_page.incomplete_link = View or edit <span class = "visuallyhidden">{0}</span>
-awrs.index_page.complete_link = View or edit <span class = "visuallyhidden">{0}</span>
-awrs.index_page.edited_link = View or edit <span class = "visuallyhidden">{0}</span>
-awrs.index_page.complete_link_rejected = View <span class = "visuallyhidden">{0}</span> details
+
 awrs.index_page.status_description_text = , status is
 awrs.index_page.section_text = Section
 awrs.index_page.application_status_text = Application status
