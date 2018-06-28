@@ -134,7 +134,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
                     val expectedSectionNumber = journey.indexOf(additionalBusinessPremisesName) + 1
                     val totalSectionsForBusinessType = journey.size
                     val expectedSectionName = Messages("awrs.index_page.additional_premises_text")
-                    val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                    val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progress", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                     testText(expectedText = expected)(targetFieldId = "progress-text")
                   }
                   eitherJourney(isLinearJourney = isLinear, entityType = legalEntity)(test)

@@ -143,7 +143,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
                   val expectedSectionNumber = journey.indexOf(businessDirectorsName) + 1
                   val totalSectionsForBusinessType = journey.size
                   val expectedSectionName = Messages("awrs.index_page.business_directors.index_text")
-                  val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                  val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progress", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                   testText(expectedText = expected)(targetFieldId = "progress-text")
                 }
                 eitherJourney(isLinearJourney = isLinear, entityType = legalEntity)(test)

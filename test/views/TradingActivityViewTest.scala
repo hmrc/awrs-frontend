@@ -193,7 +193,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
                     val expectedSectionNumber = journey.indexOf(tradingActivityName) + 1
                     val totalSectionsForBusinessType = journey.size
                     val expectedSectionName = Messages("awrs.index_page.trading_activity_text")
-                    val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                    val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progress", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                     testText(expectedText = expected)(targetFieldId = "progress-text")
                   }
                   eitherJourney(isLinearJourney = isLinear, entityType = legalEntity)(test)
