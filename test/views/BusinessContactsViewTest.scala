@@ -106,7 +106,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
                     case "Partnership" | "LP" | "LLP" => Messages("awrs.index_page.partnership_contacts_text")
                     case _ => Messages("awrs.index_page.business_contacts_text")
                   }
-                  val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progress", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                  val expected = Messages("awrs.generic.section_progress", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                   testText(expectedText = expected)(targetFieldId = "progress-text")
                 }
                 eitherJourney(isLinearJourney = isLinear, entityType = legalEntity)(test)

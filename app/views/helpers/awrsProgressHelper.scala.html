@@ -7,7 +7,7 @@
 @{
     (isEditMode, isOneViewMode, sectionName) match {
         case (_, false, Some(secName)) => {
-            <span id="progress-text" class="heading-secondary"><span class="visuallyhidden">{Messages("awrs.generic.section")}</span>{JourneyConstants.getJourneyProgress(businessType, secName)}</span>
+            <span id="progress-text" class="heading-secondary">{JourneyConstants.getJourneyProgress(businessType, secName)}</span>
         }
         case (_ , _, _) =>
     }
