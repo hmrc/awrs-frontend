@@ -29,9 +29,9 @@ import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.JourneyConstants
 import services.mocks.MockSave4LaterService
-import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants._
-import utils.TestUtil.{testBusinessCustomerDetails, testBusinessDirectors}
+import utils.TestUtil.testBusinessCustomerDetails
+import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.annotation.tailrec
 import scala.concurrent.Future
@@ -210,7 +210,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
                   val expectedSectionNumber = journey.indexOf(partnersName) + 1
                   val totalSectionsForBusinessType = journey.size
                   val expectedSectionName = Messages("awrs.index_page.business_partners_text")
-                  val expected = Messages("awrs.generic.section") + Messages("awrs.generic.section_progess", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
+                  val expected = Messages("awrs.generic.section_progress", expectedSectionNumber, totalSectionsForBusinessType, expectedSectionName)
                   testText(expectedText = expected)(targetFieldId = "progress-text")
                 }
                 eitherJourney(isLinearJourney = isLinear, entityType = legalEntity)(test)

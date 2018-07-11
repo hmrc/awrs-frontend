@@ -1,291 +1,295 @@
-##### GENERIC MESSAGES
+# Generic messages
+#============================================================
 
-##### BUTTONS AND LINKS
+# Buttons & links
+awrs.generic.save_continue=Save and continue
+awrs.generic.continue=Continue
+awrs.generic.save_return=Save
+awrs.generic.edit=Edit
+awrs.generic.enter=Enter
+awrs.generic.tell_us_about=Tell us about
+awrs.director.what.are=What are
+awrs.generic.return_index=Return to your application summary
+awrs.generic.return_to_app_summary=Return to application summary
+awrs.generic.back=Back
+awrs.generic.confirmation.button=Confirm
+awrs.generic.print_confirmation=Print confirmation
+awrs.generic.application=view and print application
+awrs.generic.sign_out=Sign out
+awrs.generic.alternate_logout.button=Save and come back later
+awrs.generic.print_application=View and print application
+awrs.generic.print_application_status=Print page for your records
+awrs.generic.application_status_continue_read_only=View application
+awrs.generic.application_status_continue=View or edit application
+awrs.generic.application_link=your application
+awrs.generic.bta_link=Business tax account home
 
-awrs.generic.save_continue = Save and continue
-awrs.generic.continue = Continue
-awrs.generic.save_return = Save
-awrs.generic.edit = Edit
-awrs.generic.enter = Enter
-awrs.generic.tell_us_about = Tell us about
-awrs.director.what.are = What are
-awrs.generic.return_index = Return to your application summary
-awrs.generic.return_to_app_summary = Return to application summary
-awrs.generic.back = Back
-awrs.generic.confirmation.button = Confirm
-awrs.generic.print_confirmation = Print confirmation
-awrs.generic.application = view and print application
-awrs.generic.sign_out = Sign out
-awrs.generic.alternate_logout.button = Save and come back later
-awrs.generic.print_application = View and print application
-awrs.generic.print_application_status = Print page for your records
-awrs.generic.application_status_continue_read_only = View application
-awrs.generic.application_status_continue = View or edit application
-awrs.generic.application_link = your application
-awrs.generic.bta_link = Business tax account home
+awrs.generic.create_new_application_link=Create a new application
 
-awrs.generic.create_new_application_link = Create a new application
+# Radio buttons
+awrs.generic.yes=Yes
+awrs.generic.no=No
+awrs.generic.0to2years= Less than 2 years
+awrs.generic.2to4years= 2 to 4 years
+awrs.generic.5to9years= 5 to 9 years
+awrs.generic.10plusYears=10 or more years
+awrs.generic.0to2years.value= Less than 2 years
+awrs.generic.2to4years.value= 2 to 4 years
+awrs.generic.5to9years.value=5 to 9 years
+awrs.generic.10plusYears.value=10 or more years
+awrs.generic.status.director=Director
+awrs.generic.status.director_value=Director
+awrs.generic.status.company_secretary=Company secretary
+awrs.generic.status.company_secretary_value=Company Secretary
+awrs.generic.status.both=Both a director and a company secretary
+awrs.generic.status.both_value=Director and Company Secretary
+awrs.generic.status.person=Person
+awrs.generic.status.person_value=person
+awrs.generic.status.company=Company
+awrs.generic.status.company_value=company
 
-##### RADIO BUTTONS
-
-awrs.generic.yes = Yes
-awrs.generic.no = No
-awrs.generic.0to2years = Less than 2 years
-awrs.generic.2to5years = 2 to 5 years
-awrs.generic.5to10years = 6 to 9 years
-awrs.generic.10plusYears = 10 or more years
-awrs.generic.0to2years.value = Less than 2 years
-awrs.generic.2to5years.value = 2 to 5 years
-awrs.generic.5to10years.value = 6 to 9 years
-awrs.generic.10plusYears.value = over 10 years
-awrs.generic.status.director = Director
-awrs.generic.status.director_value = Director
-awrs.generic.status.company_secretary = Company secretary
-awrs.generic.status.company_secretary_value = Company Secretary
-awrs.generic.status.both = Both a director and a company secretary
-awrs.generic.status.both_value = Director and Company Secretary
-awrs.generic.status.person = Person
-awrs.generic.status.person_value = person
-awrs.generic.status.company = Company
-awrs.generic.status.company_value = company
-
-##### GENERIC ID MESSAGES
-
-awrs.generic.passport_no = Passport number
-awrs.generic.national_id_no = National identification number
-awrs.generic.NINO = National Insurance number
-awrs.director.NINO = What is their National Insurance number?
-awrs.generic.company_reg = What is your company registration number (CRN)?
-awrs.generic.you.VAT_registration_number = What is your VAT registration number?
-awrs.generic.VAT_registration_number = What is their VAT registration number?
-awrs.generic.UTR_number = Unique Taxpayer Reference (UTR)
-awrs.generic.sa_UTR_number = Self Assessment Unique Taxpayer Reference (UTR)
-awrs.generic.partnership_UTR_number = Partnership Self Assessment Unique Taxpayer Reference (UTR)
+# Generic ID messages
+awrs.generic.we_need_their_identity=We need this information to check their identity
+awrs.generic.passport_no= Passport number
+awrs.generic.national_id_no=National Identification number
+awrs.generic.NINO=National Insurance number
+awrs.director.NINO= What is their National Insurance number?
+awrs.generic.company_reg= What is your company registration number (CRN)?
+awrs.generic.you.VAT_registration_number= What is your VAT registration number?
+awrs.generic.VAT_registration_number= What is their VAT registration number?
+awrs.generic.UTR_number=Unique Taxpayer Reference number (UTR)
+awrs.generic.sa_UTR_number=Self Assessment Unique Taxpayer Reference number (UTR)
+awrs.generic.partnership_UTR_number=Partnership Self Assessment Unique Taxpayer Reference number (UTR)
 awrs.generic.CT_UTR_number = What is your Corporation Tax Unique Taxpayer Reference (UTR)?
-awrs.generic.do_you_have_NINO = Do you have a National Insurance number?
-awrs.generic.do_they_have_NINO = Do they have a National Insurance number?
-awrs.generic.do_you_have_NINO_information = For example, QQ123456C
-awrs.generic.do_you_have_company_reg = Do you have a company registration number (CRN)?
-awrs.generic.do_they_have_company_reg = Do they have a company registration number (CRN)?
-awrs.generic.do_you_have_company_reg_information = Your CRN is 7 numbers, 8 numbers, or 2 letters and 6 numbers. It is on your certificate of incorporation and any documents you get from Companies House.
-awrs.generic.do_you_have_company_reg_help_question = Where can I find the CRN?
-awrs.generic.do_you_have_company_reg_help_text = A company registration (CRN) number is made up of 8 characters. If it is 7 digits you must include a zero at the start to create an 8-digit number.{0}You will find it on your certificate of incorporation, or any official company documentation you receive from Companies House.
-awrs.generic.do_they_have_company_reg_help_question = Where can I find the CRN?
-awrs.generic.do_they_have_company_reg_help_text = A company registration number is made up of 8 characters. If it is 7 digits you must include a zero at the start to create an 8-digit number.{0}You will find it on their certificate of incorporation, or any official company documentation they receive from Companies House.
-awrs.generic.iDoNotKnowMyCRN_question = I do not know my CRN or date of incorporation
-awrs.generic.iDoNotKnowMyCRN_text = <span class = "form-hint">Your company registration number is made of 8 characters. If your company registration number is 7 digits you must include a zero at the start to create an 8-digit number.{0}You will find it and the date of incorporation on your certificate of incorporation, or any official company documentation you receive from Companies House.{0}If you are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.</span>
-awrs.generic.iDoNotKnowTheirCRN_question = I do not know their CRN or date of incorporation
-awrs.generic.iDoNotKnowTheirCRN_text = Their company registration number is made up of 8 characters. If their company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on their certificate of incorporation, or any official company documentation they receive from Companies House.{0}If they are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.
-awrs.generic.date_of_incorporation = What is your date of incorporation?
-awrs.generic.date_hint = For example, 25 1 2016
-awrs.generic.date_hint.corporation = It is on your certificate of incorporation and any documents you get from Companies House. For example, 25 1 2016.
+awrs.generic.do_you_have_NINO=Do you have a National Insurance number?
+awrs.generic.do_they_have_NINO=Do they have a National Insurance number?
+awrs.generic.do_you_have_NINO_information=Example, QQ123456C
+awrs.generic.do_you_have_company_reg=Do you have a company registration number (CRN)?
+awrs.generic.do_they_have_company_reg=Do they have a company registration number (CRN)?
+awrs.generic.do_you_have_company_reg_information= Your CRN is 7 numbers, 8 numbers, or 2 letters and 6 numbers. It is on your certificate of incorporation and any documents you get from Companies House.
+awrs.generic.do_you_have_company_reg_help_question=Where can I find the CRN?
+awrs.generic.do_you_have_company_reg_help_text=A company registration (CRN) number is made up of 8 characters. If it is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it on your certificate of incorporation, or any official company documentation you receive from Companies House.
+awrs.generic.do_they_have_company_reg_help_question=Where can I find the CRN?
+awrs.generic.do_they_have_company_reg_help_text=A company registration number is made up of 8 characters. If it is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it on their certificate of incorporation, or any official company documentation they receive from Companies House.
+awrs.generic.iDoNotKnowMyCRN_question=I do not know my CRN or date of incorporation
+awrs.generic.iDoNotKnowMyCRN_text=<span class="form-hint">Your company registration number is made of 8 characters. If your company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on your certificate of incorporation, or any official company documentation you receive from Companies House.{0}If you are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.</span>
+awrs.generic.iDoNotKnowTheirCRN_question=I do not know their CRN or date of incorporation
+awrs.generic.iDoNotKnowTheirCRN_text=Their company registration number is made up of 8 characters. If their company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on their certificate of incorporation, or any official company documentation they receive from Companies House.{0}If they are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.
+awrs.generic.date_of_incorporation= What is your date of incorporation?
+awrs.generic.date_hint= For example, 25 1 2016
+awrs.generic.date_hint.corporation= It is on your certificate of incorporation and any documents you get from Companies House. For example, 25 1 2016.
 awrs.generic.date_hint.reader.corporation = It is on your certificate of incorporation and any documents you get from Companies House. For example, twenty five, one, two thousand and sixteen
-awrs.generic.date_hint.reader = For example, twenty five, one, two thousand and sixteen
-awrs.generic.date_day.reader = For example, twenty five
-awrs.generic.date_month.reader = For example, one
-awrs.generic.date_year.reader = For example, two thousand and sixteen
-awrs.generic.do_you_have_VAT = Do you have a VAT registration number?
-awrs.generic.do_they_have_VAT = Do they have a VAT registration number?
-awrs.generic.do_you_have_VAT_information = For example, 372894638
-awrs.generic.do_you_have_CT_UTR = Do you have a Corporation Tax Unique Taxpayer Reference (UTR)?
-awrs.generic.do_they_have_CT_UTR = Do they have a Corporation Tax Unique Taxpayer Reference (UTR)?
-awrs.generic.do_you_have_UTR_information = For example, 12345 46734
-awrs.generic.iDoNotKnowMyUTR_question = I do not know my UTR
-awrs.generic.iDoNotKnowMyUTR_text = Your UTR is 10 or 13 numbers. It can be found in the header of any letter from HMRC next to headings like ‘Tax Reference’, ‘UTR’ or ‘Official Use’. Your accountant or tax manager will have your UTR.
-awrs.generic.iDoNotKnowTheirUTR_question = I do not know the UTR
-awrs.generic.iDoNotKnowTheirUTR_text = Their UTR number is made up of 10 or 13 digits like this, 12345 67890. It is issued by HMRC when they register their business or for Self Assessment. If their UTR is 13 digits only enter the last 10.{0}It can usually be found in the header of any letter issued by HMRC next to headings such as ‘Tax Reference’, ‘UTR’ or ‘Official Use’{0}Their accountant or tax manager would normally have their UTR.{0}If they are a charity or an unincorporated association and do not have a UTR then leave it blank.
-awrs.generic.do_you_have_sa_UTR = Do you have a Self Assessment Unique Taxpayer Reference (UTR)?
-awrs.generic.do_you_have_partnership_UTR = Do you have a Partnership Self Assessment Unique Taxpayer Reference(UTR)?
-awrs.generic.do_they_have_partnership_UTR = Do they have a Partnership Self Assessment Unique Taxpayer Reference (UTR)?
-awrs.generic.do_you_have_trading_name = Do you have a trading name?
-awrs.generic.do_they_have_trading_name = Do they have a trading name?
-awrs.generic.warning_icon_text = Warning.
+awrs.generic.date_hint.reader=Example,  twenty five, one, two thousand and sixteen
+awrs.generic.date_day.reader=Example, twenty five
+awrs.generic.date_month.reader=Example, one
+awrs.generic.date_year.reader=Example, two thousand and sixteen
+awrs.generic.do_you_have_VAT=Do you have a VAT registration number?
+awrs.generic.do_they_have_VAT=Do they have a VAT registration number?
+awrs.generic.do_you_have_VAT_information=Example, 372894638
+awrs.generic.do_you_have_CT_UTR=Do you have a Corporation Tax Unique Taxpayer Reference (UTR)?
+awrs.generic.do_they_have_CT_UTR=Do they have a Corporation Tax Unique Taxpayer Reference (UTR)?
+awrs.generic.do_you_have_UTR_information=Example, 1234546734
+awrs.generic.iDoNotKnowMyUTR_question=I do not know my UTR
+awrs.generic.iDoNotKnowMyUTR_text= Your UTR is 10 or 13 numbers. It can be found in the header of any letter from HMRC next to headings like ‘Tax Reference’, ‘UTR’ or ‘Official Use’. Your accountant or tax manager will have your UTR.
+awrs.generic.iDoNotKnowTheirUTR_question=I do not know the UTR
+awrs.generic.iDoNotKnowTheirUTR_text=Their UTR number is made up of 10 or 13 digits like this, 12345 67890. It is issued by HMRC when they register their business or for Self Assessment. If their UTR is 13 digits only enter the last 10.{0}It can usually be found in the header of any letter issued by HMRC next to headings such as ''Tax Reference'', ''UTR'' or ''Official Use''{0}Their accountant or tax manager would normally have their UTR.{0}If they are a charity or an unincorporated association and do not have a UTR then leave it blank.
+awrs.generic.do_you_have_sa_UTR=Do you have a Self Assessment Unique Taxpayer Reference (UTR)?
+awrs.generic.do_you_have_partnership_UTR=Do you have a Partnership Self Assessment Unique Taxpayer Reference(UTR)?
+awrs.generic.do_they_have_partnership_UTR=Do they have a Partnership Self Assessment Unique Taxpayer Reference (UTR)?
+awrs.generic.do_you_have_trading_name=Do you have a trading name?
+awrs.generic.do_they_have_trading_name=Do they have a trading name?
+awrs.generic.warning_icon_text=Warning.
 
-##### GENERIC ERROR MESSAGES
+# Generic Error Messages
+awrs.generic.error.title=Sorry, we’re experiencing technical difficulties
+awrs.generic.error.status=There has been a problem with your application
+awrs.generic.errors_heading=There is a problem
+awrs.generic.error.postcode_empty.summary=The {0} postcode is empty
+awrs.generic.error.postcode_empty= Enter a {0} postcode
+awrs.generic.error.postcode_invalid.summary=The {0} postcode is not in the correct format
+awrs.generic.error.postcode_invalid= Enter a valid {0} postcode, like AA1 1AA
+awrs.generic.error.addressLine1_empty.summary= The {0} address line 1 is empty
+awrs.generic.error.addressLine1_empty= Enter {0} address line 1
+awrs.generic.error.addressLine2_empty.summary= The {0} address line 2 is empty
+awrs.generic.error.addressLine2_empty= Enter {0} address line 2
 
-awrs.generic.error.title = Sorry, we are experiencing technical difficulties
-awrs.generic.error.status = There has been a problem with your application
-awrs.generic.errors_heading = There is a problem
-awrs.generic.error.postcode_empty.summary = The {0} postcode is empty
-awrs.generic.error.postcode_empty = Enter a {0} postcode
-awrs.generic.error.postcode_invalid.summary = The {0} postcode is not in the correct format
-awrs.generic.error.postcode_invalid = Enter a valid {0} postcode, like AA1 1AA
-awrs.generic.error.addressLine1_empty = Enter {0} address line 1
-awrs.generic.error.addressLine2_empty = Enter {0} address line 2
 
-awrs.generic.error.character_invalid.summary = The {0} is not in the correct format
-awrs.generic.error.character_invalid = Invalid characters have been entered
-awrs.generic.error.first_name_empty.summary = The first name is empty
-awrs.generic.error.first_name_empty = Enter a first name
-awrs.generic.error.last_name_empty.summary = The last name is empty
-awrs.generic.error.last_name_empty = Enter a last name
-awrs.generic.error.company_trading_name.summary = Both the business name and trading name are empty
-awrs.generic.error.company_trading_name = Enter either a business name or trading name
-awrs.generic.error.do_you_have_trading_name_empty.summary = The trading name question has not been answered
-awrs.generic.error.do_you_have_trading_name_empty = Select yes if you have a trading name
-awrs.generic.error.tradingName_empty.summary = The trading name is empty
-awrs.generic.error.tradingName_empty = Enter your trading name
-awrs.generic.error.businessName_empty.summary = The business name is empty
-awrs.generic.error.businessName_empty = Enter a business name
-awrs.generic.error.do_you_have_nino_empty.summary = The National Insurance number question has not been answered
-awrs.generic.error.do_you_have_nino_empty = Select yes if they have a National Insurance number
-awrs.generic.error.nino_empty.summary = The National Insurance number is empty
-awrs.generic.error.nino_empty = Enter their National Insurance number
-awrs.generic.error.nino_invalid.summary = The National Insurance number is not in the correct format
-awrs.generic.error.nino_invalid = Enter a valid National Insurance number
-awrs.generic.their.error.vrn_empty.summary = The VAT registration number is empty
-awrs.generic.their.error.vrn_empty = Enter their VAT registration number
-awrs.generic.error.vrn_empty = Enter your VAT registration number
-awrs.generic.error.vrn_empty.summary = The VAT registration number is empty
-awrs.generic.error.vrn_invalid.summary = The VAT registration number is not in the correct format
-awrs.generic.error.vrn_invalid = VAT registration number must be 9 numbers
-awrs.generic.error.supplier.do_you_have_vat_reg_empty.summary = The VAT registration number question has not been answered
-awrs.generic.error.supplier.do_you_have_vat_reg_empty = Select yes if this supplier is VAT registered
-awrs.generic.error.do_you_have_vat_reg_empty.summary = The VAT registration number question has not been answered
-awrs.generic.error.do_you_have_vat_reg_empty = Select yes if you have a VAT registration number
-awrs.generic.error.do_you_have_utr_empty.summary = The Unique Taxpayer reference (UTR) question has not been answered
-awrs.generic.error.do_you_have_utr_empty = Select an option for the Unique Taxpayer Reference (UTR) question
-awrs.generic.error.utr_empty.summary = Enter a Unique Taxpayer Reference (UTR)
-awrs.generic.error.utr_empty = Enter a Unique Taxpayer Reference (UTR)
-awrs.generic.error.utr_invalid.summary = The Unique Taxpayer Reference (UTR) is not in the correct format
-awrs.generic.error.utr_invalid = Enter a Unique Taxpayer Reference (UTR) in the correct format
-awrs.generic.error.utr_invalid_LTD.summary = The Unique Taxpayer Reference (UTR) is not in the correct format
-awrs.generic.error.utr_invalid_LTD = Corporation Tax UTR must be 10 or 13 numbers
-awrs.generic.error.utr_empty_LTD.summary = The Unique Taxpayer Reference (UTR) is empty
-awrs.generic.error.utr_empty_LTD = Enter your Corporation Tax UTR
+awrs.generic.error.character_invalid.summary=The {0} is not in the correct format
+awrs.generic.error.character_invalid= Invalid characters have been entered
+awrs.generic.error.first_name_empty.summary=The first name is empty
+awrs.generic.error.first_name_empty=Enter a first name
+awrs.generic.error.last_name_empty.summary=The last name is empty
+awrs.generic.error.last_name_empty=Enter a last name
+awrs.generic.error.company_trading_name.summary=Both the business name and trading name are empty
+awrs.generic.error.company_trading_name=Enter either a business name or trading name
+awrs.generic.error.do_you_have_trading_name_empty.summary=The trading name question has not been answered
+awrs.generic.error.do_you_have_trading_name_empty= Select yes if you have a trading name
+awrs.generic.error.tradingName_empty.summary= The trading name is empty
+awrs.generic.error.tradingName_empty=Enter your trading name
+awrs.generic.error.businessName_empty.summary=The business name is empty
+awrs.generic.error.businessName_empty=Enter a business name
+awrs.generic.error.do_you_have_nino_empty.summary=The National Insurance number question has not been answered
+awrs.generic.error.do_you_have_nino_empty=Select yes if they have a National Insurance number
+awrs.generic.error.nino_empty.summary=The National Insurance number is empty
+awrs.generic.error.nino_empty= Enter their National Insurance number
+awrs.generic.error.nino_invalid.summary=The National Insurance number is not in the correct format
+awrs.generic.error.nino_invalid=Enter a valid National Insurance number
+awrs.generic.their.error.vrn_empty.summary= The VAT registration number is empty
+awrs.generic.their.error.vrn_empty= Enter their VAT registration number
+awrs.generic.error.vrn_empty= Enter your VAT registration number
+awrs.generic.error.vrn_empty.summary=The VAT registration number is empty
+awrs.generic.error.vrn_invalid.summary=The VAT registration number is not in the correct format
+awrs.generic.error.vrn_invalid= VAT registration number must be 9 numbers
+awrs.generic.error.supplier.do_you_have_vat_reg_empty.summary=The VAT registration number question has not been answered
+awrs.generic.error.supplier.do_you_have_vat_reg_empty= Select yes if this supplier is VAT registered
+awrs.generic.error.do_you_have_vat_reg_empty.summary=The VAT registration number question has not been answered
+awrs.generic.error.do_you_have_vat_reg_empty= Select yes if you have a VAT registration number
+awrs.generic.error.do_you_have_utr_empty.summary=The Unique Taxpayer reference number (UTR) question has not been answered
+awrs.generic.error.do_you_have_utr_empty=Select an option for the Unique Taxpayer Reference number (UTR) question
+awrs.generic.error.utr_empty.summary=Enter a Unique Taxpayer Reference number (UTR)
+awrs.generic.error.utr_empty= Enter a Unique Taxpayer Reference number (UTR)
+awrs.generic.error.utr_invalid.summary=The Unique Taxpayer Reference number (UTR) is not in the correct format
+awrs.generic.error.utr_invalid= Enter a Unique Taxpayer Reference number (UTR) in the correct format
+awrs.generic.error.utr_invalid_LTD.summary=The Unique Taxpayer Reference number (UTR) is not in the correct format
+awrs.generic.error.utr_invalid_LTD= Corporation Tax UTR must be 10 or 13 numbers
+awrs.generic.error.utr_empty_LTD.summary=The Unique Taxpayer Reference number (UTR) is empty
+awrs.generic.error.utr_empty_LTD= Enter your Corporation Tax UTR
 
-awrs.generic.error.utr_invalid_match.summary = The UTR and the business name do not match. Make sure you enter the correct UTR for this business name
-awrs.generic.error.utr_invalid_match = The UTR and the business name do not match. Make sure you enter the correct UTR for this business name
-awrs.generic.error.companyRegNumber_empty.summary = The company registration number is empty
-awrs.generic.error.companyRegNumber_empty = Enter your CRN
-awrs.generic.error.companyRegNumber_invalid.summary = The company registration number is not the correct format
-awrs.generic.error.companyRegNumber_invalid = CRN must be 7 numbers, 8 numbers, or 2 letters and 6 numbers
-awrs.generic.error.companyRegNumber_atleastOneNumber.summary = The company registration number is not the correct format
-awrs.generic.error.companyRegNumber_atleastOneNumber = The company registration number needs at least one digit that is greater than 0
-awrs.generic.error.do_you_have_company_reg_empty.summary = The company registration number question has not been answered
-awrs.generic.error.do_you_have_company_reg_empty = Select an option for the company registration number question
-awrs.generic.error.companyRegDate_empty.summary = The date of incorporation is empty
-awrs.generic.error.companyRegDate_empty = Enter your date of incorporation
-awrs.generic.error.companyRegDate_invalid.summary = The date of incorporation is not in the correct format
-awrs.generic.error.companyRegDate_invalid = Enter a real date of incorporation
-awrs.generic.error.invalid.date = Enter a real date when you started, or plan to start, trading wholesale alcohol
-awrs.generic.error.invalid.date.summary = Enter a valid date
-awrs.generic.error.identification_provided.summary = No form of identification has been provided
-awrs.generic.error.identification_provided = Provide at least 1 form of identification
+
+awrs.generic.error.utr_invalid_match.summary=The UTR and the business name do not match. Make sure you enter the correct UTR for this business name
+awrs.generic.error.utr_invalid_match=The UTR and the business name do not match. Make sure you enter the correct UTR for this business name
+awrs.generic.error.companyRegNumber_empty.summary= The company registration number is empty
+awrs.generic.error.companyRegNumber_empty= Enter your CRN
+awrs.generic.error.companyRegNumber_invalid.summary=The company registration number is not the correct format
+awrs.generic.error.companyRegNumber_invalid= CRN must be 7 numbers, 8 numbers, or 2 letters and 6 numbers
+awrs.generic.error.companyRegNumber_atleastOneNumber.summary=The company registration number is not the correct format
+awrs.generic.error.companyRegNumber_atleastOneNumber=The company registration number needs at least one digit that is greater than 0
+awrs.generic.error.do_you_have_company_reg_empty.summary=The company registration number question has not been answered
+awrs.generic.error.do_you_have_company_reg_empty=Select an option for the company registration number question
+awrs.generic.error.companyRegDate_empty.summary=The date of incorporation is empty
+awrs.generic.error.companyRegDate_empty= Enter your date of incorporation
+awrs.generic.error.companyRegDate_invalid.summary=The date of incorporation is not in the correct format
+awrs.generic.error.companyRegDate_invalid= Enter a real date of incorporation
+awrs.generic.error.invalid.date= Enter a real date when you started, or plan to start, trading wholesale alcohol
+awrs.generic.error.invalid.date.summary=Enter a valid date
+awrs.generic.error.identification_provided.summary=No form of identification has been provided
+awrs.generic.error.identification_provided=Provide at least 1 form of identification
 
 awrs.generic.error.maximum_length.summary = The {0} is not in the correct format
-awrs.generic.error.maximum_length = The {0} must not be more than {1} characters
+awrs.generic.error.maximum_length= The {0} must not be more than {1} characters
 
 awrs.generic.error.name.maximum_length.summary = The {0} is not in the correct format
-awrs.generic.error.name.maximum_length = {0} must be {1} characters or less
+awrs.generic.error.name.maximum_length= {0} must be {1} characters or less
 
-awrs.generic.error.email_empty.summary = The email address field is empty
-awrs.generic.error.email_empty = Enter an email address
-awrs.generic.error.email_invalid.summary = The email address is incorrect
-awrs.generic.error.email_invalid = Enter an email address like name@example.com
-awrs.generic.error.confirm_email_empty.summary = The confirm email address is empty
-awrs.generic.error.confirm_email_empty = Enter a confirm email address
-awrs.generic.error.confirm_email_invalid.summary = The confirm email address is not in the correct format
-awrs.generic.error.confirm_email_invalid = Enter an email address like name@example.com
-awrs.generic.error.emails_do_not_match.summary = The email addresses do not match
-awrs.generic.error.emails_do_not_match = Enter a matching email address
-awrs.generic.error.telephone_empty.summary = The telephone number is empty
-awrs.generic.error.telephone_empty = Enter a telephone number
-awrs.generic.error.telephone_numeric.summary = The telephone number is not in the correct format
-awrs.generic.error.telephone_numeric = Enter a valid telephone number
+awrs.generic.error.email_empty.summary=The email address field is empty
+awrs.generic.error.email_empty= Enter an email address
+awrs.generic.error.email_invalid.summary=The email address is incorrect
+awrs.generic.error.email_invalid= Enter an email address like name@example.com
+awrs.generic.error.confirm_email_empty.summary=The confirm email address is empty
+awrs.generic.error.confirm_email_empty=Enter a confirm email address
+awrs.generic.error.confirm_email_invalid.summary=The confirm email address is not in the correct format
+awrs.generic.error.confirm_email_invalid= Enter an email address like name@example.com
+awrs.generic.error.emails_do_not_match.summary=The email addresses do not match
+awrs.generic.error.emails_do_not_match=Enter a matching email address
+awrs.generic.error.telephone_empty.summary=The telephone number is empty
+awrs.generic.error.telephone_empty=Enter a telephone number
+awrs.generic.error.telephone_numeric.summary=The telephone number is not in the correct format
+awrs.generic.error.telephone_numeric= Enter a valid telephone number
 
-##### MISCELLANEOUS
+# Misc
+awrs.generic.tab.title={0} - Register as an alcohol wholesaler or producer - GOV.UK
+awrs.generic.signed_out.page_title=Signed out
+awrs.generic.signed_out.reason=For your security, we signed you out because you did not use the service for 15 minutes or more.
+awrs.generic.signed_out.link=Sign back in to your HMRC Online services account
+awrs.generic.unauthorised.heading=You are not authorised to use the AWRS service
+awrs.generic.unauthorised.reason_start=This could be because,
+awrs.generic.unauthorised.reason_1=you are a sole trader and before you can register for AWRS you must register for Self Assessment Online.
+awrs.generic.unauthorised.reason_2=you are an agent. Agents cannot use the AWRS service to apply on behalf of their clients.
+awrs.generic.enter_address_manually=Enter address manually
+awrs.generic.search_address=Searching addresses...
+awrs.generic.find_address=Find address
+awrs.generic.sign_in_to_view=You can view and make changes to {0}.
+awrs.generic.first_name=First name
+awrs.generic.surname=Last name
+awrs.generic.full_name=Full name
+awrs.generic.company_name=Company name
+awrs.generic.business_name=Business name
+awrs.generic.trading_name= What is your trading name?
+awrs.generic.new_wholesaler.question=If you are a new alcohol wholesaler
+awrs.generic.new_wholesaler.answer=If you are a new alcohol wholesaler, you need to complete all the questions as fully as possible. If you are not trading yet then answer the questions based on your plans and projections.
+awrs.generic.registered_address=Contact address
+awrs.generic.company_reg_details=Company registration details
+awrs.generic.postcode=Postcode
+awrs.generic.address.lookup_dropdown_label=Address look up dropdown.
+awrs.generic.address=Address
+awrs.generic.address_line1=Address line 1
+awrs.generic.address_line2=Address line 2
+awrs.generic.address_line3=Address line 3 (optional)
+awrs.generic.address_line4=Address line 4 (optional)
 
-awrs.generic.tab.title = {0} - Register as an alcohol wholesaler or producer - GOV.UK
-awrs.generic.signed_out.page_title = Signed out
-awrs.generic.signed_out.reason = For your security, we signed you out because you did not use the service for 15 minutes or more.
-awrs.generic.signed_out.link = Sign back in to your HMRC Online services account
-awrs.generic.unauthorised.heading = You are not authorised to use the AWRS service
-awrs.generic.unauthorised.reason_start = This could be because,
-awrs.generic.unauthorised.reason_1 = you are a sole trader and before you can register for AWRS you must register for Self Assessment Online.
-awrs.generic.unauthorised.reason_2 = you are an agent. Agents cannot use the AWRS service to apply on behalf of their clients.
-awrs.generic.enter_address_manually = Enter address manually
-awrs.generic.search_address = Searching addresses...
-awrs.generic.find_address = Find address
-awrs.generic.sign_in_to_view = You can view and make changes to {0}.
-awrs.generic.first_name = First name
-awrs.generic.surname = Last name
-awrs.generic.full_name = Full name
-awrs.generic.company_name = Company name
-awrs.generic.business_name = Business name
-awrs.generic.trading_name = What is your trading name?
-awrs.generic.new_wholesaler.question = If you are a new alcohol wholesaler
-awrs.generic.new_wholesaler.answer = If you are a new alcohol wholesaler, you need to complete all the questions as fully as possible. If you are not trading yet then answer the questions based on your plans and projections.
-awrs.generic.registered_address = Contact address
-awrs.generic.company_reg_details = Company registration details
-awrs.generic.postcode = Postcode
-awrs.generic.address.lookup_dropdown_label = Address look up dropdown.
-awrs.generic.address = Address
+awrs.generic.principal.address_line1= {0} place of business address line 1
+awrs.generic.principal.address_line2= {0} place of business address line 2
+awrs.generic.principal.address_line3= {0} place of business address line 3 (optional)
+awrs.generic.principal.address_line4= {0} place of business address line 4 (optional)
+awrs.generic.principal.postcode= {0} place of business postcode
 
-awrs.generic.principal.address_line1 = {0} place of business address line 1
-awrs.generic.principal.address_line2 = {0} place of business address line 2
-awrs.generic.principal.address_line3 = {0} place of business address line 3 (optional)
-awrs.generic.principal.address_line4 = {0} place of business address line 4 (optional)
-awrs.generic.principal.postcode = {0} place of business postcode
 
-awrs.generic.application_title = Register as an alcohol wholesaler or producer
-awrs.generic.telephone = Telephone number
-awrs.generic.email = Email address
-awrs.generic.confirmEmail = Confirm email address
+awrs.generic.application_title=Register as an alcohol wholesaler or producer
+awrs.generic.telephone=Telephone number
+awrs.generic.email=Email address
+awrs.generic.confirmEmail=Confirm email address
 awrs.generic.wait_info = You must wait 24 hours after {0} your registration before you can start a new registration.
-awrs.generic.wait_info_withdraw = withdrawing
-awrs.generic.wait_info_de-registration = cancelling
-awrs.generic.section_progess = {0} of {1} - {2}
-awrs.generic.section = This section is
+awrs.generic.wait_info_withdraw=withdrawing
+awrs.generic.wait_info_de-registration=cancelling
+awrs.generic.section_progress=Section {0} of {1} - {2}
+awrs.generic.helper_question_text=What does this mean?
 
-##### PAGE SPECIFIC MESSAGES
+# Page specific messages
+#============================================================
 
-##### BUSINESS CUSTOMER
+#  Business customer
+#============================================================
+awrs.business_verification.title=About your business details
+awrs.business_verification.heading=Select your business type
+awrs.business_verification.question=My business type is not listed
+awrs.business_verification.answer=If your business is an unincorporated association or charity then select limited company.
+awrs.business_verification.limited_company=Limited company
+awrs.business_verification.sole_trader=Sole Trader self-employed
+awrs.business_verification.business_partnership=Business partnership
+awrs.business_verification.limited_partnership=Limited partnership
+awrs.business_verification.limited_liability_partnership=Limited liability partnership
+# Error messages
+awrs.business_verification.error.type_of_business_empty.summary=The business type question has not been answered
+awrs.business_verification.error.type_of_business_empty=Select an option for what is your business type
+awrs.business_verification.error.type_of_business_organisation_invalid.summary=You need to have an individual Government Gateway ID to continue
+awrs.business_verification.error.type_of_business_organisation_invalid=You are logged in as an organisation with your Government Gateway ID. You cannot select Sole Trader Self-employed as your business type. You need to have an individual Government Gateway ID and enrol for Self Assessment online.
+awrs.business_verification.error.type_of_business_individual_invalid.summary=You need to have an organisation Government Gateway ID to continue
+awrs.business_verification.error.type_of_business_individual_invalid=You are logged in as an individual with your Government Gateway ID. You cannot select Limited company or Partnership as your business type. You need to have an organisation Government Gateway ID.
 
-awrs.business_verification.title = About your business details
-awrs.business_verification.heading = Select your business type
-awrs.business_verification.question = My business type is not listed
-awrs.business_verification.answer = If your business is an unincorporated association or charity then select limited company.
-awrs.business_verification.limited_company = Limited company
-awrs.business_verification.sole_trader = Sole l self-employed
-awrs.business_verification.business_partnership = Business partnership
-awrs.business_verification.limited_partnership = Limited partnership
-awrs.business_verification.limited_liability_partnership = Limited liability partnership
+# Group declaration Page
+#============================================================
+awrs.group_declaration.heading=AWRS group declaration
+awrs.group_declaration.title=AWRS group declaration
+awrs.group_declaration.declaration_statement_lead=As you are registering as a group you need to confirm the following statements are true
+awrs.group_declaration.declaration_statement_bullet_1=There must be more than one member of the group.
+awrs.group_declaration.declaration_statement_bullet_2=All members of the group must be either limited companies or limited liability partnerships that are established or have a fixed establishment in the UK.
+awrs.group_declaration.declaration_statement_bullet_3=All members must have a Controlling Body in common with each other.
+awrs.group_declaration.declaration_statement_bullet_4=The group members included in the AWRS application must be, or intend to be, alcohol wholesalers.
+awrs.group_declaration.declaration_statement_bullet_5=The group must have a group representative that will act on behalf of the group when dealing with HMRC.
+awrs.group_declaration.declaration_statement_bullet_6=The group representative must confirm that they have the consent of all group members to act on their behalf.
+awrs.group_declaration.declaration_statement_bullet_7=All group members agree that they are jointly and severally liable for any group liabilities.
+awrs.group_declaration.declaration_statement_bullet_8=None of the members should hold another AWRS registration.
+awrs.group_declaration.declaration_statement_confirmation=As the group representative I can confirm that the above conditions have been met in full.
+awrs.group_declaration.error.declaration_confirmation_not_checked.summary=The group representative confirmation has not been answered
+awrs.group_declaration.error.declaration_confirmation_not_checked=As the group representative you must check the confirmation before you can continue
 
-##### ERROR MESSAGES
-
-awrs.business_verification.error.type_of_business_empty.summary = The business type question has not been answered
-awrs.business_verification.error.type_of_business_empty = Select an option for what is your business type
-awrs.business_verification.error.type_of_business_organisation_invalid.summary = You need to have an individual Government Gateway ID to continue
-awrs.business_verification.error.type_of_business_organisation_invalid = You are logged in as an organisation with your Government Gateway ID. You cannot select Sole Trader Self-employed as your business type. You need to have an individual Government Gateway ID and enrol for Self Assessment online.
-awrs.business_verification.error.type_of_business_individual_invalid.summary = You need to have an organisation Government Gateway ID to continue
-awrs.business_verification.error.type_of_business_individual_invalid = You are logged in as an individual with your Government Gateway ID. You cannot select limited company or partnership as your business type. You need to have an organisation Government Gateway ID.
-
-##### GROUP DECLARATION PAGE
-
-awrs.group_declaration.heading = AWRS group declaration
-awrs.group_declaration.declaration_statement_lead = As you are registering as a group you need to confirm the following statements are true
-awrs.group_declaration.declaration_statement_bullet_1 = There must be more than one member of the group.
-awrs.group_declaration.declaration_statement_bullet_2 = All members of the group must be either limited companies or limited liability partnerships that are established or have a fixed establishment in the UK.
-awrs.group_declaration.declaration_statement_bullet_3 = All members must have a controlling body in common with each other.
-awrs.group_declaration.declaration_statement_bullet_4 = The group members included in the AWRS application must be, or intend to be, alcohol wholesalers.
-awrs.group_declaration.declaration_statement_bullet_5 = The group must have a group representative that will act on behalf of the group when dealing with HMRC.
-awrs.group_declaration.declaration_statement_bullet_6 = The group representative must confirm that they have the consent of all group members to act on their behalf.
-awrs.group_declaration.declaration_statement_bullet_7 = All group members agree that they are jointly and severally liable for any group liabilities.
-awrs.group_declaration.declaration_statement_bullet_8 = None of the members should hold another AWRS registration.
-awrs.group_declaration.declaration_statement_confirmation = As the group representative I can confirm that the above conditions have been met in full.
-awrs.group_declaration.error.declaration_confirmation_not_checked.summary = The group representative confirmation has not been answered
-awrs.group_declaration.error.declaration_confirmation_not_checked = As the group representative you must check the confirmation before you can continue
-
-##### STATUS PAGE MESSAGES
-
-awrs.application_status.page_title = Application status
-awrs.application_status.appstatus-title = Alcohol Wholesaler Registration Scheme
-awrs.application_status.lede.main = Your application for {0} was {1}
-
-#####
+# Status Page messages
+#===========================================================
+awrs.application_status.page_title=Application status
+awrs.application_status.appstatus-title=Alcohol Wholesaler Registration Scheme
+awrs.application_status.lede.main=Your application for {0} was {1}
 # uncomment and replace the above once date is to be displayed
-# awrs.application_status.lede.main = Your application for {0} was {1} on the {2}
+# awrs.application_status.lede.main=Your application for {0} was {1} on the {2}
 # the awrs.application_status.under_review_or_appeal_lede.main.line1 is parameterised as the parameters require css styling
 # {0} is awrs.application_status.lede.{verb_in_main.rejected or verb_in_main.revoked}
 # {1} is awrs.application_status.under_review_or_appeal_lede.{noun_in_main.rejected or noun_in_main.revoked}
@@ -293,54 +297,50 @@ awrs.application_status.lede.main = Your application for {0} was {1}
 # {3} is awrs.application_status.lede.verb_in_main.under_review_or_appeal
 # for rejected the text should read: Your rejected application for {AWRS ref} is under review or appeal
 # for revoked the text should read: Your revoked registration for {AWRS ref} is under review or appeal
-#####
-
-awrs.application_status.under_review_or_appeal_lede.main.line1 = Your {0} {1} for {2} is {3}
-awrs.application_status.under_review_or_appeal_lede.main.line2 = The conditions listed below still apply.
-awrs.application_status.under_review_or_appeal_lede.noun_in_main.rejected = application
-awrs.application_status.under_review_or_appeal_lede.noun_in_main.revoked = registration
-awrs.application_status.awrsRegNo = AWRS reference number {0}
-awrs.application_status.indication-received = Received
-awrs.application_status.indication-processing = Processing
-awrs.application_status.indication-decision = Decision
-awrs.application_status.lede.verb_in_main.pending = received
-awrs.application_status.lede.verb_in_main.approved = approved
-awrs.application_status.lede.verb_in_main.approved_with_conditions = approved with conditions
-awrs.application_status.lede.verb_in_main.rejected = rejected
-awrs.application_status.lede.verb_in_main.revoked = revoked
-awrs.application_status.lede.verb_in_main.under_review_or_appeal = under review or appeal
-awrs.application_status.lede.verb_in_main.other = received
-awrs.application_status.info.pending.heading = What happens next
-
-##### the awrs.application_status.info.pending.count must be Int and equal to the number of pending_info.linex
-
-awrs.application_status.info.pending.count = 3
-awrs.application_status.info.pending.line1 = Continue trading as normal while we review and check your application, which might take some time.
-awrs.application_status.info.pending.line2 = There is no need to contact HMRC, you will be notified before 1 April 2017.
-awrs.application_status.info.pending.line3 = If approved, your business will receive an AWRS reference number confirming that you are an approved alcohol wholesaler.
-awrs.application_status.info.pending = You can still trade while we process your application.
-awrs.application_status.info.pending.newBusiness.count = 2
-awrs.application_status.info.pending.newBusiness.line1 = You cannot trade until an AWRS reference number is issued.
-awrs.application_status.info.pending.newBusiness.line2 = It will take up to 45 days from your initial application before we make a decision.
-awrs.application_status.info.pending.newBusiness = A new wholesale alcohol business cannot trade until an AWRS reference number is issued. It will take up to 45 days from your initial application before we make a decision.
-awrs.application_status.info.approved.heading1 = About making changes
-awrs.application_status.info.approved.line1 = Thank you for your application. Based on the information you have given us, we have registered you to trade in wholesale alcohol. This means that we have approved you to carry on a controlled activity under the Alcoholic Liquor Duties Act 1979, section 88C and regulations made under section 88E.
-awrs.application_status.info.approved.line2 = You must meet the general conditions and restrictions of AWRS. These are set out in Excise Notice 2002. You can find this on our website at GOV.UK.
-awrs.application_status.info.approved.line3 = You must use the AWRS service to tell us about any changes to your registration details, trading premises or any other information set out in paragraph 10 of Excise Notice 2002. This includes telling us if you stop trading in wholesale alcohol. Go to the AWRS pages on GOV.UK to access this service. You must use the same username and password that you used for your original application.
-awrs.application_status.info.approved.line4 = If you do not
-awrs.application_status.info.approved.line4.1 = tell us about any changes to your registration details; or
-awrs.application_status.info.approved.line4.2 = meet the conditions and restrictions of the AWRS
-awrs.application_status.info.approved.line5 = then you may have to pay financial penalties and your alcohol stock may be subject to forfeiture (whether or not duty has been paid).
-awrs.application_status.info.approved.heading2 = About our look-up service
-awrs.application_status.info.approved.line6 = We are introducing an online look-up service for AWRS from 1 April 2017. You can access this on our website at GOV.UK. This will allow your customers to check that you are approved as wholesalers of alcohol. Now that we have approved you, your details will appear on this service. To allow your customers to use this service, you must give them your AWRS reference number if they ask for it.
-awrs.application_status.info.approved_with_conditions.heading = What this means
-awrs.application_status.info.rejected.heading = What this means
-awrs.application_status.decision_question = If you do not agree with the decision
-awrs.application_status.decision_answer.para_1 = If you do not agree with my decision then you can ask for it to be reviewed by another HMRC officer who has previously not been involved in the matter, or appeal to an independent tribunal. If you opt for a review you can still appeal to the tribunal after the review has finished.
-awrs.application_status.decision_answer.bullet_list_1.point_1 = send any further information you want me to consider
-awrs.application_status.decision_answer.bullet_list_1.point_2 = have your case reviewed by a different officer; or
-awrs.application_status.decision_answer.bullet_list_1.point_3 = have your case heard by an independent tribunal
-awrs.application_status.decision_answer.para_2 = If you want a review you should write to me at the address above within 30 days of the date of this letter, giving your reasons why you do not agree with my decision. If you want to appeal to the tribunal you should send them your appeal within 30 days of the date of this letter.
+awrs.application_status.under_review_or_appeal_lede.main.line1=Your {0} {1} for {2} is {3}
+awrs.application_status.under_review_or_appeal_lede.main.line2=The conditions listed below still apply.
+awrs.application_status.under_review_or_appeal_lede.noun_in_main.rejected=application
+awrs.application_status.under_review_or_appeal_lede.noun_in_main.revoked=registration
+awrs.application_status.awrsRegNo=AWRS reference number {0}
+awrs.application_status.indication-received=Received
+awrs.application_status.indication-processing=Processing
+awrs.application_status.indication-decision=Decision
+awrs.application_status.lede.verb_in_main.pending=received
+awrs.application_status.lede.verb_in_main.approved=approved
+awrs.application_status.lede.verb_in_main.approved_with_conditions=approved with conditions
+awrs.application_status.lede.verb_in_main.rejected=rejected
+awrs.application_status.lede.verb_in_main.revoked=revoked
+awrs.application_status.lede.verb_in_main.under_review_or_appeal=under review or appeal
+awrs.application_status.lede.verb_in_main.other=received
+awrs.application_status.info.pending.heading=What happens next
+# the awrs.application_status.info.pending.count must be Int and equal to the number of pending_info.linex
+awrs.application_status.info.pending.count=3
+awrs.application_status.info.pending.line1=Continue trading as normal while we review and check your application, which might take some time.
+awrs.application_status.info.pending.line2=There is no need to contact HMRC, you will be notified before 1 April 2017.
+awrs.application_status.info.pending.line3=If approved, your business will receive an AWRS reference number confirming that you are an approved alcohol wholesaler.
+awrs.application_status.info.pending=You can still trade while we process your application.
+awrs.application_status.info.pending.newBusiness.count=2
+awrs.application_status.info.pending.newBusiness.line1=You cannot trade until an AWRS reference number is issued.
+awrs.application_status.info.pending.newBusiness.line2=It will take up to 45 days from your initial application before we make a decision.
+awrs.application_status.info.pending.newBusiness=A new wholesale alcohol business cannot trade until an AWRS reference number is issued. It will take up to 45 days from your initial application before we make a decision.
+awrs.application_status.info.approved.heading1=About making changes
+awrs.application_status.info.approved.line1=Thank you for your application. Based on the information you have given us, we have registered you to trade in wholesale alcohol. This means that we have approved you to carry on a controlled activity under the Alcoholic Liquor Duties Act 1979, section 88C and regulations made under section 88E.
+awrs.application_status.info.approved.line2=You must meet the general conditions and restrictions of AWRS. These are set out in Excise Notice 2002. You can find this on our website at GOV.UK.
+awrs.application_status.info.approved.line3=You must use the AWRS service to tell us about any changes to your registration details, trading premises or any other information set out in paragraph 10 of Excise Notice 2002. This includes telling us if you stop trading in wholesale alcohol. Go to the AWRS pages on GOV.UK to access this service. You must use the same username and password that you used for your original application.
+awrs.application_status.info.approved.line4=If you do not
+awrs.application_status.info.approved.line4.1=tell us about any changes to your registration details; or
+awrs.application_status.info.approved.line4.2=meet the conditions and restrictions of the AWRS
+awrs.application_status.info.approved.line5=then you may have to pay financial penalties and your alcohol stock may be subject to forfeiture (whether or not duty has been paid).
+awrs.application_status.info.approved.heading2=About our look-up service
+awrs.application_status.info.approved.line6=We are introducing an online look-up service for AWRS from 1 April 2017. You can access this on our website at GOV.UK. This will allow your customers to check that you are approved as wholesalers of alcohol. Now that we have approved you, your details will appear on this service. To allow your customers to use this service, you must give them your AWRS reference number if they ask for it.
+awrs.application_status.info.approved_with_conditions.heading=What this means
+awrs.application_status.info.rejected.heading=What this means
+awrs.application_status.decision_question=If you do not agree with the decision
+awrs.application_status.decision_answer.para_1=If you do not agree with my decision then you can ask for it to be reviewed by another HMRC officer who has previously not been involved in the matter, or appeal to an independent tribunal.  If you opt for a review you can still appeal to the tribunal after the review has finished.
+awrs.application_status.decision_answer.bullet_list_1.point_1=send any further information you want me to consider
+awrs.application_status.decision_answer.bullet_list_1.point_2=have your case reviewed by a different officer; or
+awrs.application_status.decision_answer.bullet_list_1.point_3=have your case heard by an independent tribunal
+awrs.application_status.decision_answer.para_2=If you want a review you should write to me at the address above within 30 days of the date of this letter, giving your reasons why you do not agree with my decision.  If you want to appeal to the tribunal you should send them your appeal within 30 days of the date of this letter.
 awrs.application_status.decision_answer.para_3 = You can find further information on reviews and appeals in {0}{1}{2}. Please note that you must not carry on this controlled activity and may only do so if you have been approved as part of this scheme,
 awrs.application_status.decision_answer.para_3_link = section 19 of Excise Notice 2002
 awrs.application_status.decision_answer.para_4 = You can find further information about appeals and reviews in fact sheet HMRC1 ‘HMRC Decisions – What to do if you disagree’. You can get this fact sheet by:
@@ -624,197 +624,195 @@ awrs.additional_information.all = All
 awrs.additional_information.cash_and_carry = Cash and carry
 awrs.additional_information.supply_off_trade = Supplying to off trade, like retailers and off-licences
 awrs.additional_information.supply_on_trade = Supplying to on trade, like pubs and hotels
-awrs.additional_information.producer = Producer
-awrs.additional_information.broker = Broker
-awrs.additional_information.other = Other
-awrs.additional_information.other_text = Enter additional information
-awrs.additional_information.alcohol_import = Do you import, or plan to import, alcohol?
-awrs.additional_information.third_party_storage = Do you use, or plan to use, a third party to store alcohol?
-awrs.additional_information.third_party_storage_help_text = This includes any warehousing, logistics and repacking services you use.
-awrs.additional_information.wine = Wine
-awrs.additional_information.spirits = Spirits
-awrs.additional_information.cider = Cider
-awrs.additional_information.beer = Beer
-awrs.additional_information.perry = Perry
-awrs.additional_information.alcohol_export = Do you export, or plan to export, alcohol?
-awrs.additional_information.export_location = Where do you export, or plan to export, alcohol to?
-awrs.additional_information.within_eu = Within the EU
-awrs.additional_information.outside_eu = Outside the EU
-awrs.additional_information.main_customers = Who do you sell, or plan to sell, alcohol to?
-awrs.additional_information.other.main_customers = Who else do you sell, or plan to sell, alcohol to?
-awrs.additional_information.mainCustomers.all = All
-awrs.additional_information.mainCustomers.pubs = Pubs
-awrs.additional_information.mainCustomers.night_clubs = Night clubs
-awrs.additional_information.mainCustomers.private_members_clubs = Private members clubs
-awrs.additional_information.mainCustomers.hotels = Hotels
-awrs.additional_information.mainCustomers.hospitality_catering = Hospitality and catering
-awrs.additional_information.mainCustomers.restaurants = Restaurants
-awrs.additional_information.mainCustomers.independent_retailers = Independent retailers
-awrs.additional_information.mainCustomers.national_retailers = National retailers
-awrs.additional_information.mainCustomers.public = Public
-awrs.additional_information.mainCustomers.other_wholesalers = Other wholesalers
-awrs.additional_information.orders.orders_question = How do you take orders or plan to take orders?
-awrs.additional_information.orders.other.orders_question = What other ways do you take orders or plan to take orders?
-awrs.additional_information.orders.internet = Internet, email or social media
-awrs.additional_information.orders.telephonefax = Telephone or fax
-awrs.additional_information.orders.facetoface = Face to face
-awrs.additional_information.form_hint = Select all that apply
+awrs.additional_information.producer=Producer
+awrs.additional_information.broker=Broker
+awrs.additional_information.other=Other
+awrs.additional_information.other_text=Enter additional information
+awrs.additional_information.alcohol_import= Do you import, or plan to import, alcohol?
+awrs.additional_information.third_party_storage= Do you use, or plan to use, a third party to store alcohol?
+awrs.additional_information.third_party_storage_help_text= This includes any warehousing, logistics and repacking services you use.
+awrs.additional_information.wine=Wine
+awrs.additional_information.spirits=Spirits
+awrs.additional_information.cider=Cider
+awrs.additional_information.beer=Beer
+awrs.additional_information.perry=Perry
+awrs.additional_information.alcohol_export= Do you export, or plan to export, alcohol?
+awrs.additional_information.export_location=Where do you export, or plan to export, alcohol to?
+awrs.additional_information.within_eu=Within the EU
+awrs.additional_information.outside_eu=Outside the EU
+awrs.additional_information.main_customers= Who do you sell, or plan to sell, alcohol to?
+awrs.additional_information.other.main_customers= Who else do you sell, or plan to sell, alcohol to?
+awrs.additional_information.mainCustomers.all=All
+awrs.additional_information.mainCustomers.pubs= Pubs
+awrs.additional_information.mainCustomers.night_clubs= Night clubs
+awrs.additional_information.mainCustomers.private_members_clubs= Private members clubs
+awrs.additional_information.mainCustomers.hotels= Hotels
+awrs.additional_information.mainCustomers.hospitality_catering= Hospitality and catering
+awrs.additional_information.mainCustomers.restaurants= Restaurants
+awrs.additional_information.mainCustomers.independent_retailers= Independent retailers
+awrs.additional_information.mainCustomers.national_retailers= National retailers
+awrs.additional_information.mainCustomers.public= Public
+awrs.additional_information.mainCustomers.other_wholesalers= Other wholesalers
+awrs.additional_information.orders.orders_question= How do you take orders or plan to take orders?
+awrs.additional_information.orders.other.orders_question= What other ways do you take orders or plan to take orders?
+awrs.additional_information.orders.internet=Internet, email or social media
+awrs.additional_information.orders.telephonefax=Telephone or fax
+awrs.additional_information.orders.facetoface=Face to face
+awrs.additional_information.form_hint=Select all that apply
+# errors - wholesaler
+awrs.additional_information.error.type_of_wholesaler.summary=The trader question has not been answered
+awrs.additional_information.error.type_of_wholesaler= Select how you trade, or plan to trade, alcohol
+awrs.additional_information.error.other_wholesaler.summary=Other types of trading is empty
+awrs.additional_information.error.other_wholesaler= Enter the other ways you trade, or plan to trade, alcohol
+awrs.additional_information.error.wholesaler_validation.summary=Other types of trading is not in the correct format
+awrs.additional_information.error.wholesaler_validation= What other ways you trade, or plan to trade, alcohol must only contain letters or numbers
+# errors - orders
+awrs.additional_information.error.orders.summary=The orders question has not been answered
+awrs.additional_information.error.orders= Select how you take orders or plan to take orders
+awrs.additional_information.error.other_order.summary=The other field for orders is empty
+awrs.additional_information.error.other_order= Enter the other ways you take orders or plan to take orders
+awrs.additional_information.error.order_validation.summary=The other field for orders is not the correct format
+awrs.additional_information.error.order_validation= What other ways you take orders or plan to take orders must only contain letters or numbers
+# errors - customers
+awrs.additional_information.error.main_customer.summary=The customer sales question has not been answered
+awrs.additional_information.error.main_customer= Select who you sell, or plan to sell, alcohol to
+awrs.additional_information.error.other_mainCustomers.summary=The other field for the customer sales question is empty
+awrs.additional_information.error.other_mainCustomers= Enter who else you sell, or plan to sell, alcohol to
+awrs.additional_information.error.other_mainCustomers_invalid_format.summary=The other field for main customers is not in the correct format
+awrs.additional_information.error.other_mainCustomers_invalid_format= Who else you sell, or plan to sell, alcohol to must only contain letters and numbers
+awrs.additional_information.error.maximum_length.customer= Who else you sell, or plan to sell, alcohol to must be 40 characters or less
+awrs.additional_information.error.maximum_length.customer.summary= The {0} is not in the correct format
 
-##### ERROR - WHOLESALER
 
-awrs.additional_information.error.type_of_wholesaler.summary = The trader question has not been answered
-awrs.additional_information.error.type_of_wholesaler = Select how you trade, or plan to trade, alcohol
-awrs.additional_information.error.other_wholesaler.summary = Other types of trading is empty
-awrs.additional_information.error.other_wholesaler = Enter the other ways you trade, or plan to trade, alcohol
-awrs.additional_information.error.wholesaler_validation.summary = Other types of trading is not in the correct format
-awrs.additional_information.error.wholesaler_validation = What other ways you trade, or plan to trade, alcohol must only contain letters or numbers
+# errors - product type
+awrs.additional_information.error.type_of_product.summary=The types of product question has not been answered
+awrs.additional_information.error.type_of_product= Select what products you sell or plan to sell
+awrs.additional_information.error.type_of_product_other.summary=The other field for types of product is empty
+awrs.additional_information.error.type_of_product_other=Enter what other products you sell or plan to sell
+awrs.additional_information.error.type_of_product_other_validation.summary=The other field for types of product is not in the correct format
+awrs.additional_information.error.type_of_product_other_validation= What other products you sell or plan to sell must only contain letters and numbers
+awrs.additional_information.error.maximum_length.product.summary= The {0} is not in the correct format
+awrs.additional_information.error.maximum_length.product= What other products you sell or plan to sell must be 40 characters or less
 
-##### ERRORS - ORDERS
+# errors - third party storage. import, export
+awrs.additional_information.error.import_alcohol.summary=The import alcohol question has not been answered
+awrs.additional_information.error.import_alcohol= Select yes if you import, or plan to import, alcohol
+awrs.additional_information.error.do_you_export_alcohol.summary=The export alcohol question has not been answered
+awrs.additional_information.error.do_you_export_alcohol=Select yes if you import, or plan to import, alcohol
+awrs.additional_information.error.export_location.summary=The export location question has not been answered
+awrs.additional_information.error.export_location= Select where you export, or plan to export, alcohol to
+awrs.additional_information.error.third_party_storage.summary=The third party alcohol storage question has not been answered
+awrs.additional_information.error.third_party_storage= Select yes if you use, or plan to use, a third party to store alcohol
 
-awrs.additional_information.error.orders.summary = The orders question has not been answered
-awrs.additional_information.error.orders = Select how you take orders or plan to take orders
-awrs.additional_information.error.other_order.summary = The other field for orders is empty
-awrs.additional_information.error.other_order = Enter the other ways you take orders or plan to take orders
-awrs.additional_information.error.order_validation.summary = The other field for orders is not the correct format
-awrs.additional_information.error.order_validation = What other ways you take orders or plan to take orders must only contain letters or numbers
+# Supplier Addresses Page
+#============================================================
+awrs.supplier-addresses.page.title=Suppliers
+awrs.supplier-addresses.heading.first= Do you have, or plan to have, any alcohol suppliers?
+awrs.supplier-addresses.heading={0} your {1} alcohol supplier
+awrs.supplier-addresses.alcohol_supplier_empty.summary=The alcohol suppliers question has not been answered
+awrs.supplier-addresses.alcohol_supplier_empty= Select yes if you have, or plan to have, any alcohol suppliers
+awrs.supplier-addresses.description=Provide the business name and address of your 5 main alcohol suppliers by overall volume. If you do not have 5 suppliers then enter the ones you have. If you are not trading yet, answer the questions based on your plans.
+awrs.supplier-addresses.supplier=Supplier {0}
+awrs.supplier-addresses.supplier_name= Name of supplier
+awrs.supplier-addresses.uk_supplier=Is this supplier based in the UK?
+awrs.supplier-addresses.vat_registered=Is this supplier VAT registered?
+awrs.supplier-addresses.supplier_address_country=Country
+awrs.supplier-addresses.add_supplier=Do you have another supplier?
+awrs.supplier-addresses.add_supplier_empty.summary=The another supplier question has not been answered
+awrs.supplier-addresses.add_supplier_empty= Select yes if you have another supplier
+# Error messages
+awrs.supplier-addresses.error.supplier_name_blank.summary=The supplier name is empty
+awrs.supplier-addresses.error.supplier_name_blank= Enter name of supplier
+awrs.supplier-addresses.error.uk_supplier_blank.summary=The UK supplier question has not been answered
+awrs.supplier-addresses.error.uk_supplier_blank= Select yes if this supplier is based in the UK
+awrs.supplier-addresses.error.supplier_address_country_blank.summary=The country for the supplier address is empty
+awrs.supplier-addresses.error.supplier_address_country_blank=Enter a country for the supplier address
+awrs.supplier-addresses.error.supplier_address_country_invalid.summary=We cannot find the country you entered
+awrs.supplier-addresses.error.supplier_address_country_invalid=Select a country from the list before continuing
 
-##### ERRORS - CUSTOMERS
+# Email verification error page
+#============================================================
+awrs.email_verification_error.heading=Verify your email address
+awrs.email_verification_error.title=Verify your email address
+awrs.email_verification_error.lede=In order to contact you by email we need to check that you have entered the correct email address.
+awrs.email_verification_error.info_1=We have sent an email to {0} Click the link in the email to verify your email address.
+awrs.email_verification_error.info_2=Depending on your email settings you might have to look in your spam or junk folder to find it.
+awrs.email_verification_error.info_3=You can {0} or we can {1}
+awrs.email_verification_error.contacts_link=change your contact email address
+awrs.email_verification_error.resend_link=resend the email.
+awrs.email_verification_error.resent=We have resent the email to {0}
 
-awrs.additional_information.error.main_customer.summary = The customer sales question has not been answered
-awrs.additional_information.error.main_customer = Select who you sell, or plan to sell, alcohol to
-awrs.additional_information.error.other_mainCustomers.summary = The other field for the customer sales question is empty
-awrs.additional_information.error.other_mainCustomers = Enter who else you sell, or plan to sell, alcohol to
-awrs.additional_information.error.other_mainCustomers_invalid_format.summary = The other field for main customers is not in the correct format
-awrs.additional_information.error.other_mainCustomers_invalid_format = Who else you sell, or plan to sell, alcohol to must only contain letters and numbers
-awrs.additional_information.error.maximum_length.customer = Who else you sell, or plan to sell, alcohol to must be 40 characters or less
-awrs.additional_information.error.maximum_length.customer.summary = The {0} is not in the correct format
+# Email verification success page
+#============================================================
+awrs.email_verification_success.heading=Email address verified
+awrs.email_verification_success.title=Email address verified
+awrs.email_verification_success.lede=We have successfully verified your email address.
 
-##### ERRORS - PRODUCT TYPE
+# Application declaration Page
+#============================================================
+awrs.application_declaration.heading=Declaration
+awrs.application_declaration.title=Declaration
+awrs.application_declaration.lede=This is someone in your business who is legally responsible for this registration.
+awrs.application_declaration.declaration_name_hint=Name of the person {0} the application
+awrs.application_declaration.declaration_role=Job title or role
+awrs.application_declaration.declaration_role_hint=Job title or role of the person {0} the application
+awrs.application_declaration.declaration_statement=I want to register {0} as an alcohol wholesaler or producer. I confirm that the information provided is accurate and complete. I understand that providing false information on purpose in a criminal offence.
+awrs.application_declaration.declaration_statement.amend=I want to amend the application for {0}. I confirm that the information provided in this application is accurate and complete. <br> <br>I understand that knowingly including any false information in this application is a criminal offence.
+awrs.application_declaration.confirmation_and_send_application= Agree and send
+awrs.application_declaration.error.declaration_name_empty.summary=The name is empty
+awrs.application_declaration.error.declaration_name_empty=Enter full name
+awrs.application_declaration.error.declaration_name_invalid.summary=The name is not in the correct format
+awrs.application_declaration.error.declaration_name_invalid=Enter a name in the correct format
+awrs.application_declaration.error.declaration_role_empty.summary=The job title or role is empty
+awrs.application_declaration.error.declaration_role_empty=Enter job title or role
+awrs.application_declaration.error.confirmation_empty.summary=The declaration message has not been checked
+awrs.application_declaration.error.confirmation_empty=You must confirm the application declaration before you can submit
 
-awrs.additional_information.error.type_of_product.summary = The types of product question has not been answered
-awrs.additional_information.error.type_of_product = Select what products you sell or plan to sell
-awrs.additional_information.error.type_of_product_other.summary = The other field for types of product is empty
-awrs.additional_information.error.type_of_product_other = Enter what other products you sell or plan to sell
-awrs.additional_information.error.type_of_product_other_validation.summary = The other field for types of product is not in the correct format
-awrs.additional_information.error.type_of_product_other_validation = What other products you sell or plan to sell must only contain letters and numbers
-awrs.additional_information.error.maximum_length.product.summary = The {0} is not in the correct format
-awrs.additional_information.error.maximum_length.product = What other products you sell or plan to sell must be 40 characters or less
+# Confirmation Page
+#============================================================
+awrs.confirmation.button=Confirm and continue
+awrs.confirmation.title=Confirmation
+awrs.confirmation.description=Your application for
+awrs.confirmation.description_1=has been received on
+awrs.confirmation.information=What happens next
+awrs.confirmation.prompt_print_heading=You will receive an email confirmation
+awrs.confirmation.information_0=Your application reference is {0}. This is not your AWRS reference number.
+awrs.confirmation.information_1=You can still trade while we process your application.
+awrs.confirmation.information_what_next_0=There is no need to contact HMRC, you will be notified of the outcome of your application in due course.
+awrs.confirmation.information_what_next_1=As you were trading as an alcohol wholesaler before 31&nbsp;March&nbsp;2016, your application should have been made before that date.
+awrs.confirmation.information_what_next_2=You must not trade as an alcohol wholesaler without an AWRS approval from HMRC. You may be liable to financial penalties and your alcohol stock could be confiscated (whether or not duty has been paid).
+awrs.confirmation.information_what_next_3=From 1st April 2017 it is an offence for trade buyers to buy alcohol from you.
+awrs.confirmation.information_what_next_4=If approved, your business will receive an AWRS reference number confirming that you are an approved alcohol wholesaler.
+awrs.confirmation.newBusiness.information_0=Your application reference is {0}. This is not your AWRS reference number.
+awrs.confirmation.newBusiness.information_what_next_0=You cannot trade until an AWRS reference number is issued.
+awrs.confirmation.newBusiness.information_what_next_1=It will take up to 45 days from your initial application before we make a decision.
+awrs.confirmation.further_text_1=Remember to keep your Government Gateway user ID and password safe as you will need them if you need to make changes.
+awrs.confirmation.further_text_2=If your circumstances change you must tell us by making changes to your application within 14 days.
+awrs.confirmation.detailed_information=More detailed information can be found in the {0}AWRS guidance{1}
+awrs.confirmation.finish=Finish and sign out
 
-##### ERRORS - THIRD PARTY STORAGE, IMPORT AND EXPORT
+# Update Confirmation Page
+#============================================================
+awrs.update.confirmation.description=Your amendment for
+awrs.update.confirmation.description_1=has been received on
 
-awrs.additional_information.error.import_alcohol.summary = The import alcohol question has not been answered
-awrs.additional_information.error.import_alcohol = Select yes if you import, or plan to import, alcohol
-awrs.additional_information.error.do_you_export_alcohol.summary = The export alcohol question has not been answered
-awrs.additional_information.error.do_you_export_alcohol = Select yes if you import, or plan to import, alcohol
-awrs.additional_information.error.export_location.summary = The export location question has not been answered
-awrs.additional_information.error.export_location = Select where you export, or plan to export, alcohol to
-awrs.additional_information.error.third_party_storage.summary = The third party alcohol storage question has not been answered
-awrs.additional_information.error.third_party_storage = Select yes if you use, or plan to use, a third party to store alcohol
+awrs.update.confirmation.information_what_next_0=Continue trading as normal while we review and check your amended application (reference {0}).
+awrs.update.confirmation.information_what_next_2=We may contact you to discuss your amended application.
 
-##### SUPPLIER ADDRESSES PAGE
+awrs.update.confirmation.pending.information_what_next_0=You cannot trade until an AWRS reference number is issued.
+awrs.update.confirmation.pending.information_what_next_1=We will review and check your application amendments (reference {0}).
 
-awrs.supplier-addresses.heading.first = Do you have, or plan to have, any alcohol suppliers?
-awrs.supplier-addresses.heading = {0} your {1} alcohol supplier
-awrs.supplier-addresses.alcohol_supplier_empty = Select yes if you have, or plan to have, any alcohol suppliers
-awrs.supplier-addresses.description = Provide the business name and address of your 5 main alcohol suppliers by overall volume. If you do not have 5 suppliers then enter the ones you have. If you are not trading yet, answer the questions based on your plans.
-awrs.supplier-addresses.supplier = Supplier {0}
-awrs.supplier-addresses.supplier_name = Name of supplier
-awrs.supplier-addresses.uk_supplier = Is this supplier based in the UK?
-awrs.supplier-addresses.vat_registered = Is this supplier VAT registered?
-awrs.supplier-addresses.supplier_address_country = Country
-awrs.supplier-addresses.add_supplier = Do you have another supplier?
-awrs.supplier-addresses.add_supplier_empty = Select yes if you have another supplier
-
-##### ERROR MESSAGES
-
-awrs.supplier-addresses.error.supplier_name_blank.summary = The supplier name is empty
-awrs.supplier-addresses.error.supplier_name_blank = Enter name of supplier
-awrs.supplier-addresses.error.uk_supplier_blank.summary = The UK supplier question has not been answered
-awrs.supplier-addresses.error.uk_supplier_blank = Select yes if this supplier is based in the UK
-awrs.supplier-addresses.error.supplier_address_country_blank.summary = The country for the supplier address is empty
-awrs.supplier-addresses.error.supplier_address_country_blank = Enter a country for the supplier address
-awrs.supplier-addresses.error.supplier_address_country_invalid.summary = We cannot find the country you entered
-awrs.supplier-addresses.error.supplier_address_country_invalid = Select a country from the list before continuing
-
-##### EMAIL VERIFICATION ERROR PAGE
-
-awrs.email_verification_error.heading = Verify your email address
-awrs.email_verification_error.lede = In order to contact you by email we need to check that you have entered the correct email address.
-awrs.email_verification_error.info_1 = We have sent an email to {0} Click the link in the email to verify your email address.
-awrs.email_verification_error.info_2 = Depending on your email settings you might have to look in your spam or junk folder to find it.
-awrs.email_verification_error.info_3 = You can {0} or we can {1}
-awrs.email_verification_error.contacts_link = change your contact email address
-awrs.email_verification_error.resend_link = resend the email.
-awrs.email_verification_error.resent = We have resent the email to {0}
-
-##### EMAIL VERIFICATION SUCCESS PAGE
-
-awrs.email_verification_success.heading = Email address verified
-awrs.email_verification_success.title = Email address verified
-awrs.email_verification_success.lede = We have successfully verified your email address.
-
-##### APPLICATION DECLARATION PAGE
-
-awrs.application_declaration.heading = Declaration
-awrs.application_declaration.lede = This is someone in your business who is legally responsible for this registration.
-awrs.application_declaration.declaration_name_hint = Name of the person {0} the application
-awrs.application_declaration.declaration_role = Job title or role
-awrs.application_declaration.declaration_role_hint = Job title or role of the person {0} the application
-awrs.application_declaration.declaration_statement = I want to register {0} as an alcohol wholesaler or producer. I confirm that the information provided is accurate and complete. I understand that providing false information on purpose in a criminal offence.
-awrs.application_declaration.declaration_statement.amend = I want to amend the application for {0}. I confirm that the information provided in this application is accurate and complete. <br> <br>I understand that knowingly including any false information in this application is a criminal offence.
-awrs.application_declaration.confirmation_and_send_application = Agree and send
-awrs.application_declaration.error.declaration_name_empty.summary = The name is empty
-awrs.application_declaration.error.declaration_name_empty = Enter full name
-awrs.application_declaration.error.declaration_name_invalid.summary = The name is not in the correct format
-awrs.application_declaration.error.declaration_role_empty.summary = The job title or role is empty
-awrs.application_declaration.error.declaration_role_empty = Enter job title or role
-awrs.application_declaration.error.confirmation_empty.summary = The declaration message has not been checked
-awrs.application_declaration.error.confirmation_empty = You must confirm the application declaration before you can submit
-
-##### CONFIRMATION PAGE
-
-awrs.confirmation.button = Confirm and continue
-awrs.confirmation.title = Confirmation
-awrs.confirmation.description = Your application for
-awrs.confirmation.description_1 = has been received on
-awrs.confirmation.information = What happens next
-awrs.confirmation.prompt_print_heading = You will receive an email confirmation
-awrs.confirmation.information_0 = Your application reference is {0}. This is not your AWRS reference number.
-awrs.confirmation.information_1 = You can still trade while we process your application.
-awrs.confirmation.information_what_next_0 = There is no need to contact HMRC, you will be notified of the outcome of your application in due course.
-awrs.confirmation.information_what_next_1 = As you were trading as an alcohol wholesaler before 31&nbsp;March&nbsp;2016, your application should have been made before that date.
-awrs.confirmation.information_what_next_2 = You must not trade as an alcohol wholesaler without an AWRS approval from HMRC. You may be liable to financial penalties and your alcohol stock could be confiscated (whether or not duty has been paid).
-awrs.confirmation.information_what_next_3 = From 1 April 2017, it is an offence for trade buyers to buy alcohol from you.
-awrs.confirmation.information_what_next_4 = If approved, your business will receive an AWRS reference number confirming that you are an approved alcohol wholesaler.
-awrs.confirmation.newBusiness.information_0 = Your application reference is {0}. This is not your AWRS reference number.
-awrs.confirmation.newBusiness.information_what_next_0 = You cannot trade until an AWRS reference number is issued.
-awrs.confirmation.newBusiness.information_what_next_1 = It will take up to 45 days from your initial application before we make a decision.
-awrs.confirmation.further_text_1 = Remember to keep your Government Gateway user ID and password safe as you will need them if you need to make changes.
-awrs.confirmation.further_text_2 = If your circumstances change you must tell us by making changes to your application within 14 days.
-awrs.confirmation.detailed_information = More detailed information can be found in the {0}AWRS guidance{1}
-awrs.confirmation.finish = Finish and sign out
-
-##### UPDATE CONFIRMATION PAGE
-
-awrs.update.confirmation.description = Your amendment for
-awrs.update.confirmation.description_1 = has been received on
-
-awrs.update.confirmation.information_what_next_0 = Continue trading as normal while we review and check your amended application (reference {0}).
-awrs.update.confirmation.information_what_next_2 = We may contact you to discuss your amended application.
-
-awrs.update.confirmation.pending.information_what_next_0 = You cannot trade until an AWRS reference number is issued.
-awrs.update.confirmation.pending.information_what_next_1 = We will review and check your application amendments (reference {0}).
-
-##### DE-REGISTRATION PAGE MESSAGES
-
+# De-registration Page messages
+#===========================================================
+awrs.de_registration.page_title=Date of cancellation
 awrs.de_registration.heading = What date do you want to cancel your registration from?
-awrs.de_registration.lede = You should give us at least 30 days notice.
-awrs.de_registration.confirmation_title = Confirm registration cancellation
-awrs.de_registration.confirmation_heading = Are you sure that you want to cancel your registration?
-awrs.de_registration.confirmation.error.empty.summary = There is a problem with your request to cancel
-awrs.de_registration.confirmation.error.empty = Select yes if you want to cancel your registration
-awrs.de_registration.warning = Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid).
-awrs.de_registration.warning.confirm = Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid). If you cancel your group registration all group members will be no longer approved.
+awrs.de_registration.lede= You should give us at least 30 days notice.
+awrs.de_registration.confirmation_title=Confirm registration cancellation
+awrs.de_registration.confirmation_heading=Are you sure that you want to cancel your registration?
+awrs.de_registration.confirmation.error.empty.summary=There is a problem with your request to cancel
+awrs.de_registration.confirmation.error.empty=Select yes if you want to cancel your registration
+awrs.de_registration.warning=Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid).
+awrs.de_registration.warning.confirm=Unless you are joining a group or partnership, you must not trade alcohol wholesale after the {0}. You must sell or dispose of any existing stock by this date. If you continue to sell alcohol wholesale without an AWRS number, you could be liable to criminal prosecution, financial penalties and/or seizure of alcohol stock (whether or not duty paid). If you cancel your group registration all group members will be no longer approved.
 awrs.de_registration.cta = Continue
 
 ##### ERROR MESSAGES
@@ -829,220 +827,226 @@ awrs.de_registration.error.proposedDate_toEarly = The date you want to cancel yo
 ##### DE-REGISTRATION REASON PAGE MESSAGES
 
 awrs.de_registration_reason.page_heading = What is the reason you are cancelling your registration?
-awrs.de_registration_reason.other_input_label = What are the other reasons you are cancelling your registration?
-awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme.schema_enum = Ceases to be registerable for the scheme
-awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler.schema_enum = Ceases to trade as an alcohol wholesaler
-awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum = Registering with a group
-awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum = Registering with a partnership
-awrs.de_registration.reason.group_disbanded.schema_enum = Group ended
-awrs.de_registration.reason.partnership_disbanded.schema_enum = Partnership disbanded
-awrs.de_registration.reason.other.schema_enum = Others
+awrs.de_registration_reason.page_title=Reason for cancelling registration
+awrs.de_registration_reason.other_input_label= What are the other reasons you are cancelling your registration?
+awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme.schema_enum=Ceases to be registerable for the scheme
+awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler.schema_enum=Ceases to trade as an alcohol wholesaler
+awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum= Registering with a group
+awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum= Registering with a partnership
+awrs.de_registration.reason.group_disbanded.schema_enum= Group ended
+awrs.de_registration.reason.partnership_disbanded.schema_enum=Partnership disbanded
+awrs.de_registration.reason.other.schema_enum=Others
+# Dynamically created - DO NOT DELETE
+awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme= Registration no longer needed
+awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler= Stopped trading as an alcohol wholesaler or producer
+awrs.de_registration.reason.joining_a_group_to_register_for_awrs= Registering with a group
+awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs= Registering with a partnership
+awrs.de_registration.reason.group_disbanded= Group ended
+awrs.de_registration.reason.partnership_disbanded= Partnership ended
+awrs.de_registration.reason.other=Other
+# Error messages
+awrs.de_registration.error.reason_empty.summary=No cancellation reason selected
+awrs.de_registration.error.reason_empty= Select the reason you are cancelling your registration
+awrs.de_registration.error.other.reason_empty.summary=No other cancellation reason entered
+awrs.de_registration.error.other.reason_empty= Enter the other reasons why you are cancelling your registration
 
-##### Dynamically created - DO NOT DELETE
+# De-registration confirmation Page messages
+#===========================================================
+awrs.de_registration.confirmation_page.title=Cancellation registration confirmation
+awrs.de_registration.confirmation_page.description=Your request to cancel your AWRS registration for
+awrs.de_registration.confirmation_page.description_1=has been received on {0}
+awrs.de_registration.confirmation_page.information_what_next_0=Your reference number for cancelling your registration is {0}.
+awrs.de_registration.confirmation_page.information_what_next_1=We will provide you with confirmation of your registration cancellation via your Government Gateway account.
+awrs.de_registration.confirmation_page.information_what_next_2=Your details on the AWRS register will be changed to show that your business is no longer approved on the {0}.
+awrs.de_registration.confirmation_page.prompt_print_heading=You will receive an email confirmation
 
-awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme = Registration no longer needed
-awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler = Stopped trading as an alcohol wholesaler or producer
-awrs.de_registration.reason.joining_a_group_to_register_for_awrs = Registering with a group
-awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs = Registering with a partnership
-awrs.de_registration.reason.group_disbanded = Group ended
-awrs.de_registration.reason.partnership_disbanded = Partnership ended
-awrs.de_registration.reason.other = Other
 
-##### ERROR MESSAGES
-
-awrs.de_registration.error.reason_empty.summary = No cancellation reason selected
-awrs.de_registration.error.reason_empty = Select the reason you are cancelling your registration
-awrs.de_registration.error.other.reason_empty.summary = No other cancellation reason entered
-awrs.de_registration.error.other.reason_empty = Enter the other reasons why you are cancelling your registration
-
-##### DE-REGISTRATION CONFIRMATION PAGE MESSAGES
-
-awrs.de_registration.confirmation_page.title = Cancellation registration confirmation
-awrs.de_registration.confirmation_page.description = Your request to cancel your AWRS registration for
-awrs.de_registration.confirmation_page.description_1 = has been received on {0}
-awrs.de_registration.confirmation_page.information_what_next_0 = Your reference number for cancelling your registration is {0}.
-awrs.de_registration.confirmation_page.information_what_next_1 = We will provide you with confirmation of your registration cancellation via your Government Gateway account.
-awrs.de_registration.confirmation_page.information_what_next_2 = Your details on the AWRS register will be changed to show that your business is no longer approved on the {0}.
-awrs.de_registration.confirmation_page.prompt_print_heading = You will receive an email confirmation
-
-##### WITHDRAWAL REASONS PAGE MESSAGES
-
-awrs.withdrawal.confirm_reason.title = Confirm application withdrawal
-awrs.withdrawal.confirmation.title = Application withdrawn
+# Withdrawal reasons Page messages
+#===========================================================
+awrs.withdrawal.reason.title=Reason for withdrawal
+awrs.withdrawal.confirm_reason.title=Confirm application withdrawal
+awrs.withdrawal.confirmation.title=Application withdrawn
 awrs.withdrawal.reasons_page.heading = What is the reason you are withdrawing your registration?
 awrs.withdrawal.confirm_page.heading = Are you sure that you want to withdraw your registration?
-awrs.withdrawal.confirmation_page.description = Application withdrawn for
-awrs.withdrawal.description_1 = received on {0}
-awrs.withdrawal.confirmation.error.empty.summary = There is a problem with your request to withdraw
+awrs.withdrawal.confirmation_page.description=Application withdrawn for
+awrs.withdrawal.description_1=received on {0}
+awrs.withdrawal.confirmation.error.empty.summary=There is a problem with your request to withdraw
 awrs.withdrawal.confirmation.error.empty = Select yes if you want to withdraw your registration
-awrs.withdrawal.confirmation_page.information_what_next_1 = If you wish to submit a new application for AWRS you must wait 24 hours after withdrawing your application before you can start a new AWRS application.
-awrs.withdrawal.confirmation_page.information_what_next_1_href = start the application process again
-
-##### Dynamically created - DO NOT DELETE
-
+awrs.withdrawal.confirmation_page.information_what_next_1=If you wish to submit a new application for AWRS you must wait 24 hours after withdrawing your application before you can start a new AWRS application.
+awrs.withdrawal.confirmation_page.information_what_next_1_href=start the application process again
+# Dynamically created - DO NOT DELETE
 awrs.withdrawal.reason.applied_in_error = Registered by mistake
-awrs.withdrawal.reason.other = Other
-awrs.withdrawal.reason.other_message = What are the other reasons you are withdrawing your registration?
-awrs.withdrawal.reason.applied_in_error.schema_enum = Applied in error
-awrs.withdrawal.reason.other.schema_enum = Others
-
-##### ERROR MESSAGES
-
-awrs.withdrawal.error.reason_empty.summary = No withdrawal reason selected
+awrs.withdrawal.reason.no_longer_trading= No longer trading as an alcohol wholesaler or producer
+awrs.withdrawal.reason.duplicate_application = Registered more than once
+awrs.withdrawal.reason.joined_awrs_group = Registering with a group
+awrs.withdrawal.reason.other=Other
+awrs.withdrawal.reason.other_message= What are the other reasons you are withdrawing your registration?
+awrs.withdrawal.reason.applied_in_error.schema_enum =  Applied in error
+awrs.withdrawal.reason.no_longer_trading.schema_enum = No Longer trading
+awrs.withdrawal.reason.duplicate_application.schema_enum = Duplicate Application
+awrs.withdrawal.reason.joined_awrs_group.schema_enum = Joined AWRS Group
+awrs.withdrawal.reason.other.schema_enum=Others
+# Error messages
+awrs.withdrawal.error.reason_empty.summary=No withdrawal reason selected
 awrs.withdrawal.error.reason_empty = Select the reason you are withdrawing your registration
-awrs.withdrawal.error.other.reason_empty.summary = No other withdrawal reason entered
+awrs.withdrawal.error.other.reason_empty.summary=No other withdrawal reason entered
 awrs.withdrawal.error.other.reason_empty = Enter the other reasons why you are withdrawing your registration
 
-##### SURVEY
+# Survey
+#============================================================
+awrs.survey.title=Survey
+awrs.survey.heading=Before you sign out
+awrs.survey.subheading=Survey
+awrs.survey.intro.instructions.line1=Before you sign out, please complete this short survey to help us improve the service.
+awrs.survey.intro.instructions.line2=It should not take more than 2 minutes.
+awrs.survey.optOut=No thanks - sign me out
+awrs.survey.questions.visit_reason=What was the main reason for your visit today?
+awrs.survey.questions.ease_of_access=How easy was it to get to your alcohol wholesaler application?
+awrs.survey.questions.ease_of_use=How easy was it to do what you wanted?
+awrs.survey.questions.overall=Overall, how satisfied were you with the Alcohol Wholesaler Registration Service today?
+awrs.survey.questions.help_needed=Did you need help during your visit today?
+awrs.survey.questions.find_out=How did you first find out you needed to apply for the AWRS scheme?
+awrs.survey.questions.improve=How could we improve this service?
+awrs.survey.questions.contactable=Leave your details if you are happy to be contacted for research purposes
+awrs.survey.answers.visit_reason.start_application=To start your alcohol wholesaler application
+awrs.survey.answers.visit_reason.view_application=To view your alcohol wholesaler application
+awrs.survey.answers.visit_reason.amend_application=To amend your alcohol wholesaler application
+awrs.survey.answers.visit_reason.check_progress=To check the progress of your application
+awrs.survey.answers.visit_reason.delete_application=To delete your alcohol wholesaler application
+awrs.survey.answers.very_easy=Very easy
+awrs.survey.answers.easy=Easy
+awrs.survey.answers.no_opinion=Neither easy or difficult
+awrs.survey.answers.difficult=Difficult
+awrs.survey.answers.very_difficult=Very difficult
+awrs.survey.answers.very_satisfied=Very satisfied
+awrs.survey.answers.satisfied=Satisfied
+awrs.survey.answers.neutral=Neither satisfied or dissatisfied
+awrs.survey.answers.dissatisfied=Dissatisfied
+awrs.survey.answers.very_dissatisfied=Very dissatisfied
+awrs.survey.answers.help_needed_answer_1=No, I did it myself
+awrs.survey.answers.help_needed_answer_2=Yes, because I did not understand some of the language
+awrs.survey.answers.help_needed_answer_3=Yes, because there is no option to do it by phone or paper
+awrs.survey.answers.help_needed_answer_4=Yes, because something went wrong
+awrs.survey.answers.help_needed_answer_5=Yes, to get some information for the application
+awrs.survey.answers.help_needed_answer_6=Yes, for something else
+awrs.survey.answers.find_out_1=Accountant / agent
+awrs.survey.answers.find_out_2=Social media
+awrs.survey.answers.find_out_3=Trade body / association
+awrs.survey.answers.find_out_4=HMRC visit
+awrs.survey.answers.find_out_5=HMRC communication
+awrs.survey.answers.find_out_6=Supplier
+awrs.survey.answers.find_out_7=Customer
+awrs.survey.answers.find_out_8=Someone else in the industry
+awrs.survey.submit_and_sign_out=Submit and sign out
 
-awrs.survey.title = Survey
-awrs.survey.heading = Before you sign out
-awrs.survey.subheading = Survey
-awrs.survey.intro.instructions.line1 = Before you sign out, please complete this short survey to help us improve the service.
-awrs.survey.intro.instructions.line2 = It should not take more than 2 minutes.
-awrs.survey.optOut = No thanks - sign me out
-awrs.survey.questions.visit_reason = What was the main reason for your visit today?
-awrs.survey.questions.ease_of_access = How easy was it to get to your alcohol wholesaler application?
-awrs.survey.questions.ease_of_use = How easy was it to do what you wanted?
-awrs.survey.questions.overall = Overall, how satisfied were you with the Alcohol Wholesaler Registration Service today?
-awrs.survey.questions.help_needed = Did you need help during your visit today?
-awrs.survey.questions.find_out = How did you first find out you needed to apply for the AWRS scheme?
-awrs.survey.questions.improve = How could we improve this service?
-awrs.survey.questions.contactable = Leave your details if you are happy to be contacted for research purposes
-awrs.survey.answers.visit_reason.start_application = To start your alcohol wholesaler application
-awrs.survey.answers.visit_reason.view_application = To view your alcohol wholesaler application
-awrs.survey.answers.visit_reason.amend_application = To amend your alcohol wholesaler application
-awrs.survey.answers.visit_reason.check_progress = To check the progress of your application
-awrs.survey.answers.visit_reason.delete_application = To delete your alcohol wholesaler application
-awrs.survey.answers.very_easy = Very easy
-awrs.survey.answers.easy = Easy
-awrs.survey.answers.no_opinion = Neither easy or difficult
-awrs.survey.answers.difficult = Difficult
-awrs.survey.answers.very_difficult = Very difficult
-awrs.survey.answers.very_satisfied = Very satisfied
-awrs.survey.answers.satisfied = Satisfied
-awrs.survey.answers.neutral = Neither satisfied or dissatisfied
-awrs.survey.answers.dissatisfied = Dissatisfied
-awrs.survey.answers.very_dissatisfied = Very dissatisfied
-awrs.survey.answers.help_needed_answer_1 = No, I did it myself
-awrs.survey.answers.help_needed_answer_2 = Yes, because I did not understand some of the language
-awrs.survey.answers.help_needed_answer_3 = Yes, because there is no option to do it by phone or paper
-awrs.survey.answers.help_needed_answer_4 = Yes, because something went wrong
-awrs.survey.answers.help_needed_answer_5 = Yes, to get some information for the application
-awrs.survey.answers.help_needed_answer_6 = Yes, for something else
-awrs.survey.answers.find_out_1 = Accountant / agent
-awrs.survey.answers.find_out_2 = Social media
-awrs.survey.answers.find_out_3 = Trade body / association
-awrs.survey.answers.find_out_4 = HMRC visit
-awrs.survey.answers.find_out_5 = HMRC communication
-awrs.survey.answers.find_out_6 = Supplier
-awrs.survey.answers.find_out_7 = Customer
-awrs.survey.answers.find_out_8 = Someone else in the industry
-awrs.survey.submit_and_sign_out = Submit and sign out
+# Feedback
+#============================================================
+awrs.feedback.title=Feedback
+awrs.feedback.heading=Leave feedback
+awrs.feedback.subheading=Feedback
+awrs.feedback.intro.instructions.line1=You won’t get a reply to any feedback. If you want to raise a technical problem or get a response {0}report an issue with this service{1}. Do not include any personal or financial information.
+awrs.feedback.questions.visit_reason=What were you trying to do today?
+awrs.feedback.questions.satisfaction_rating=Overall, how do you feel about your experience using the service today?
+awrs.feedback.questions.comments=What would you like to tell us?
+awrs.feedback.answers.visit_reason.view_application=To view your alcohol wholesaler application
+awrs.feedback.answers.very_satisfied=Very satisfied
+awrs.feedback.answers.satisfied=Satisfied
+awrs.feedback.answers.neutral=Neither satisfied or dissatisfied
+awrs.feedback.answers.dissatisfied=Dissatisfied
+awrs.feedback.answers.very_dissatisfied=Very dissatisfied
+awrs.feedback.submit=Send feedback
+awrs.feedback.thanks.title=Thank you
+awrs.feedback.thanks.heading=Thank you
+awrs.feedback.thanks.line1=Your feedback will help us improve the service.
+awrs.feedback.thanks.back=Continue with what you were doing
 
-##### FEEDBACK
+# One view
+#===========================================================
+awrs.view_application.title=AWRS Application
+awrs.view_application.section_title={0} summary
+awrs.view_application.heading=Alcohol Wholesaler Registration Scheme Application for {0}
+awrs.view_application.status_colon=Status:
+awrs.view_application.print=Print
+awrs.view_application.print_friendly=Print friendly version
+awrs.view_application.principal_place_business=Principal place of business
+awrs.view_application.contact_address=Contact address
+awrs.view_application.previous_address=Previous address
+awrs.view_application.contact_name=Contact name
+awrs.view_application.back_to_top=Back to Top
+awrs.view_application.edit=Edit
+awrs.view_application.delete=Delete
+awrs.view_application.add_another=Add {0}
+awrs.view_application.form_hint=Return to your application summary to change other sections or to submit your completed application
+awrs.view_application.no_premises=There are no premises listed.
+awrs.view_application.no_suppliers=There are no suppliers listed.
+awrs.view_application.premises=premises
+awrs.view_application.group=group member
+awrs.view_application.supplier=supplier
+awrs.view_application.director=director or secretary
+awrs.view_application.partner=partner or member
+awrs.view_application.business_details_text=Your business details
+awrs.view_application.business_registration_details_text=Your business registration details
+awrs.view_application.place_of_business_text=Your principal place of business
+awrs.view_application.business_contacts_text=Your business contacts
+awrs.view_application.group_business_details_text=Your group business details
+awrs.view_application.group_business_registration_details_text=Your group business registration details
+awrs.view_application.group_place_of_business_text=Your group principal place of business
+awrs.view_application.group_business_contacts_text=Your group business contacts
+awrs.view_application.group_member_details_text=Your group members
+awrs.view_application.partnership_details_text=Your partnership business details
+awrs.view_application.partnership_registration_details_text=Your partnership registration details
+awrs.view_application.partnership_place_of_business_text=Your partnership principal place of business
+awrs.view_application.partnership_contacts_text=Your partnership contacts
+awrs.view_application.additional_premises_text=Your additional trading premises
+awrs.view_application.business_directors.index_text=The directors and company secretaries
+awrs.view_application.trading_activity_text=Your trading activities
+awrs.view_application.products_text=Your products
+awrs.view_application.suppliers_text=Your 5 main suppliers
+awrs.view_application.business_partners_text=Your business partners
+awrs.view_application.application_declaration_text=Your application declaration
 
-awrs.feedback.title = Feedback
-awrs.feedback.heading = Leave feedback
-awrs.feedback.subheading = Feedback
-awrs.feedback.intro.instructions.line1 = You will not get a reply to any feedback. If you want to raise a technical problem or get a response {0}report an issue with this service{1}. Do not include any personal or financial information.
-awrs.feedback.questions.visit_reason = What were you trying to do today?
-awrs.feedback.questions.satisfaction_rating = Overall, how do you feel about your experience using the service today?
-awrs.feedback.questions.comments = What would you like to tell us?
-awrs.feedback.answers.visit_reason.view_application = To view your alcohol wholesaler application
-awrs.feedback.answers.very_satisfied = Very satisfied
-awrs.feedback.answers.satisfied = Satisfied
-awrs.feedback.answers.neutral = Neither satisfied or dissatisfied
-awrs.feedback.answers.dissatisfied = Dissatisfied
-awrs.feedback.answers.very_dissatisfied = Very dissatisfied
-awrs.feedback.submit = Send feedback
-awrs.feedback.thanks.heading = Thank you
-awrs.feedback.thanks.line1 = Your feedback will help us improve the service.
-awrs.feedback.thanks.back = Continue with what you were doing
-
-##### ONE VIEW
-
-awrs.view_application.title = AWRS Application
-awrs.view_application.section_title = {0} summary
-awrs.view_application.heading = Alcohol Wholesaler Registration Scheme Application for {0}
-awrs.view_application.status_colon = Status:
-awrs.view_application.print = Print
-awrs.view_application.print_friendly = Print friendly version
-awrs.view_application.principal_place_business = Principal place of business
-awrs.view_application.contact_address = Contact address
-awrs.view_application.previous_address = Previous address
-awrs.view_application.contact_name = Contact name
-awrs.view_application.back_to_top = Back to top
-awrs.view_application.edit = Edit
-awrs.view_application.delete = Delete
-awrs.view_application.add_another = Add {0}
-awrs.view_application.form_hint = Return to your application summary to change other sections or to submit your completed application
-awrs.view_application.no_premises = There are no premises listed.
-awrs.view_application.no_suppliers = There are no suppliers listed.
-awrs.view_application.premises = premises
-awrs.view_application.group = group member
-awrs.view_application.supplier = supplier
-awrs.view_application.director = director or secretary
-awrs.view_application.partner = partner or member
-awrs.view_application.business_details_text = Your business details
-awrs.view_application.business_registration_details_text = Your business registration details
-awrs.view_application.place_of_business_text = Your principal place of business
-awrs.view_application.business_contacts_text = Your business contacts
-awrs.view_application.group_business_details_text = Your group business details
-awrs.view_application.group_business_registration_details_text = Your group business registration details
-awrs.view_application.group_place_of_business_text = Your group principal place of business
-awrs.view_application.group_business_contacts_text = Your group business contacts
-awrs.view_application.group_member_details_text = Your group members
-awrs.view_application.partnership_details_text = Your partnership business details
-awrs.view_application.partnership_registration_details_text = Your partnership registration details
-awrs.view_application.partnership_place_of_business_text = Your partnership principal place of business
-awrs.view_application.partnership_contacts_text = Your partnership contacts
-awrs.view_application.additional_premises_text = Your additional trading premises
-awrs.view_application.business_directors.index_text = The directors and company secretaries
-awrs.view_application.trading_activity_text = Your trading activities
-awrs.view_application.products_text = Your products
-awrs.view_application.suppliers_text = Your 5 main suppliers
-awrs.view_application.business_partners_text = Your business partners
-awrs.view_application.application_declaration_text = Your application declaration
 
 awrs.view_application.error.trading_activity.maxlength.summary = The other orders is not in the correct format
 awrs.view_application.error.trading_activity.order.maxlength.summary = The wholesaler type other is not in the correct format
 
 awrs.view_application.error.trading_activity.maxlength = What other ways you take orders or plan to take orders must be 40 characters or less
-awrs.view_application.error.trading_activity.order.maxlength = What other ways you trade, or plan to trade, alcohol must be 40 characters or less
+awrs.view_application.error.trading_activity.order.maxlength =What other ways you trade, or plan to trade, alcohol must be 40 characters or less
 
-##### DELETE CONFIRMATION PAGE MESSAGES
 
-awrs.delete.confirmation_title = Confirm deletion
-awrs.delete.confirmation_heading = Are you sure you want to delete this {0}?
-awrs.delete.confirmation.error.empty.summary = There is a problem with the question
-awrs.delete.confirmation.error.empty = Confirm if you want to delete this record
+# Delete Confirmation Page messages
+#===========================================================
+awrs.delete.confirmation_title=Confirm deletion
+awrs.delete.confirmation_heading=Are you sure you want to delete this {0}?
+awrs.delete.confirmation.error.empty.summary=There is a problem with the question
+awrs.delete.confirmation.error.empty=Confirm if you want to delete this record
 
-##### REAPPLICATION CONFIRMATION PAGE MESSAGES
+# Reapplication confirmation Page messages
+#===========================================================
+awrs.reapplication.confirm.title=Confirm re-application
+awrs.reapplication.confirm_page.heading=Are you sure you want to create a new AWRS application?
+awrs.reapplication.confirm_page.text=If you create a new application, you will lose all the data from the previous application. You can go back and view your previous application before creating a new one.
 
-awrs.reapplication.confirm.title = Confirm re-application
-awrs.reapplication.confirm_page.heading = Are you sure you want to create a new AWRS application?
-awrs.reapplication.confirm_page.text = If you create a new application, you will lose all the data from the previous application. You can go back and view your previous application before creating a new one.
 
-##### NOTIFICATION PAGE
+# Notification page
+#============================================================
+awrs.application_notification.title=Your application has already been submitted
+awrs.application_notification.heading=Your application has already been submitted
+awrs.application_notification.status=At the present time you are unable to access your application. A new version will be released shortly, this will allow you to view and edit your submitted application.
 
-awrs.application_notification.heading = Your application has already been submitted
-awrs.application_notification.status = At the present time you are unable to access your application. A new version will be released shortly, this will allow you to view and edit your submitted application.
-
-##### EXCEPTION ERROR MESSAGES
-
-awrs.application_des_validation.title = There has been an error while saving your application.
-awrs.application_des_validation.heading = There was an error while saving your application. Do not try to resubmit your application again.
-awrs.application_des_validation.message = You need to submit a help request using the link below and we will contact you.
-awrs.application_duplicate_request.title = We have received your application so you do not need to resubmit your application.
-awrs.application_duplicate_request.heading = We have received your application so you do not need to resubmit your application.
-awrs.application_duplicate_request.message = You can submit a help request using the link below. We will contact you to let you know when you can access the service again to view or amend your application.
-awrs.application_government_gateway_error.title = There has been an error while saving your application.
-awrs.application_government_gateway_error.heading = There was an error while saving your application. Your information has been saved, do not try to resubmit your application.
-awrs.application_government_gateway_error.message = You need to submit a help request using the link below and we will contact you.
-awrs.application_resubmission_error.title = Resubmission rejected
-awrs.application_resubmission_error.heading = Resubmission rejected
-awrs.application_resubmission_error.message = Your resubmission has been rejected as you made no changes to your application.
-awrs.application_pending_deregistration.title = Your submission has failed
-awrs.application_pending_deregistration.heading = Your submission has failed
-awrs.application_pending_deregistration.message = You cannot submit a new application while your cancelled application is still pending.
+# Exception Error Messages
+#===========================
+awrs.application_des_validation.title=There has been an error while saving your application.
+awrs.application_des_validation.heading=There was an error while saving your application. Do not try to resubmit your application again.
+awrs.application_des_validation.message=You need to submit a help request using the link below and we will contact you.
+awrs.application_duplicate_request.title=We have received your application so you do not need to resubmit your application.
+awrs.application_duplicate_request.heading=We have received your application so you do not need to resubmit your application.
+awrs.application_duplicate_request.message=You can submit a help request using the link below. We will contact you to let you know when you can access the service again to view or amend your application.
+awrs.application_government_gateway_error.title=There has been an error while saving your application.
+awrs.application_government_gateway_error.heading=There was an error while saving your application. Your information has been saved, do not try to resubmit your application.
+awrs.application_government_gateway_error.message=You need to submit a help request using the link below and we will contact you.
+awrs.application_resubmission_error.title=Resubmission rejected
+awrs.application_resubmission_error.heading=Resubmission rejected
+awrs.application_resubmission_error.message=Your resubmission has been rejected as you made no changes to your application.
+awrs.application_pending_deregistration.title=Your submission has failed
+awrs.application_pending_deregistration.heading=Your submission has failed
+awrs.application_pending_deregistration.message=You cannot submit a new application while your cancelled application is still pending.

@@ -123,7 +123,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     "show error page if a runtime error is produced" in {
       showWithException() { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be("Sorry, we are experiencing technical difficulties")
+        document.getElementById("application-error-header").text() should be("Sorry, we’re experiencing technical difficulties")
       }
     }
 

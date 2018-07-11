@@ -136,8 +136,8 @@ object AWRSEnums {
 
   object OperatingDurationEnum extends AWRSEnumeration {
     val ZeroToTwoYears = Value(Messages("awrs.generic.0to2years.value"))
-    val TwoToFiveYears = Value(Messages("awrs.generic.2to5years.value"))
-    val FiveToTenYears = Value(Messages("awrs.generic.5to10years.value"))
+    val TwoToFiveYears = Value(Messages("awrs.generic.2to4years.value"))
+    val FiveToTenYears = Value(Messages("awrs.generic.5to9years.value"))
     val TenPlusYears = Value(Messages("awrs.generic.10plusYears.value"))
   }
 
