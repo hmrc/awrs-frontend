@@ -579,7 +579,7 @@ awrs.additional-premises.error.add_another = Select yes if you need to add any o
 ##### BUSINESS DIRECTORS PAGE
 
 awrs.business_directors.status_of_person_heading = Person {0}
-awrs.business_directors.have_national_insurance_number = Do they have a National Insurance number?<br><span class = 'form-hint' id = 'nino_secondary_text'>We need this information to check their identity</span>
+awrs.business_directors.have_national_insurance_number = Do they have a National Insurance number?<br><span class='form-hint' id='nino_secondary_text'>We need this information to check their identity</span>
 awrs.business_directors.add_another_director = Are there any other directors or company secretaries?
 awrs.business_directors.heading.first = Tell us about all the directors and company secretaries
 awrs.business_directors.heading.first.edit = Edit the company director
@@ -823,7 +823,7 @@ awrs.de_registration.error.date_empty.summary = There is a problem with the stop
 awrs.de_registration.error.date_empty = Enter the date you want to cancel your registration from
 awrs.de_registration.error.date_valid.summary = There is a problem with the stop trading date
 awrs.de_registration.error.date_valid = Enter a valid date when you want to cancel your registration from
-awrs.de_registration.error.proposedDate_toEarly.summary = The proposed cancellation date must be on or after today's date
+awrs.de_registration.error.proposedDate_toEarly.summary = The proposed cancellation date must be on or after today’s date
 awrs.de_registration.error.proposedDate_toEarly = The date you want to cancel your registration must be after yesterday’s date
 
 ##### DE-REGISTRATION REASON PAGE MESSAGES
