@@ -18,8 +18,8 @@ package controllers
 
 import java.util.UUID
 
+import connectors.TaxEnrolmentsConnector
 import connectors.mock.MockAuthConnector
-import connectors.{AuthenticatorConnector, TaxEnrolmentsConnector}
 import forms.AWRSEnums.BooleanRadioEnum
 import models.FormBundleStatus.{Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal}
 import models._
@@ -29,30 +29,25 @@ import org.mockito.Mockito._
 import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{DeEnrolService, EmailService}
 import services.apis.AwrsAPI10
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
-import uk.gov.hmrc.domain.SaUtr
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
+import services.{DeEnrolService, EmailService}
+import uk.gov.hmrc.http.SessionKeys
 import utils.AwrsSessionKeys
-import utils.TestConstants._
 import utils.TestUtil.cachedData
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HttpResponse, SessionKeys }
 
 class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4LaterService with MockAuthConnector {
 
   import MockKeyStoreService._
 
-  val mockAuthenticatorConnector = mock[AuthenticatorConnector]
   val mockApi10 = mock[AwrsAPI10]
   val mockTaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
   val mockEmailService = mock[EmailService]
 
   object mockDeEnrolService extends DeEnrolService {
     override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
-    override val authenticatorConnector = mockAuthenticatorConnector
   }
 
   object TestDeRegistrationController extends DeRegistrationController {
@@ -81,7 +76,6 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     }
     when(mockApi10.deRegistration()(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(deRegSuccessData))
     when(mockTaxEnrolmentsConnector.deEnrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(defaultDeEnrollResponseSuccessData))
-    when(mockDeEnrolService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
   }
 
   def mocks(haveDeRegDate: Boolean = true,

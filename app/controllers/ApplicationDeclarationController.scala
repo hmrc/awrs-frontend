@@ -99,7 +99,7 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
                   _ <- if (isEmacFeatureToggle) {
                     Future.successful(true)
                   } else {
-                    applicationService.refreshProfile.map(_=>true)
+                    Future.successful(true)
                   }
                 } yield {
                     Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
