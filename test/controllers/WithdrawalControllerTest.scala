@@ -17,7 +17,6 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums.WithdrawalReasonEnum
 import forms.{WithdrawalConfirmationForm, WithdrawalReasonForm}
@@ -27,23 +26,18 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DataCacheKeys._
-import services.{DeEnrolService, EmailService}
 import services.apis.AwrsAPI8
 import services.apis.mocks.MockAwrsAPI9
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
-import uk.gov.hmrc.http.cache.client.CacheMap
-import utils.TestConstants.testUtr
+import services.{DeEnrolService, EmailService}
 import utils.TestUtil._
 import utils.WithdrawalTestUtils._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HttpResponse
 
 class WithdrawalControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
@@ -198,7 +192,6 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     )
     when(mockAwrsAPI8.withdrawApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(api8Repsonse))
     when(mockDeEnrolService.deEnrolAWRS(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(deEnrol))
-    when(mockDeEnrolService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
     setupMockSave4LaterServiceWithOnly(removeAll = MockSave4LaterService.defaultRemoveAll)
     when(mockEmailService.sendWithdrawnEmail(Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
     setupMockSave4LaterService(fetchAll = cachedData())

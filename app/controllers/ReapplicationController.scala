@@ -86,7 +86,6 @@ trait ReapplicationController extends AwrsController with LoggingUtils {
               case "Yes" => {
                 for {
                   _ <- deEnrolService.deEnrolAWRS(AccountUtils.getAwrsRefNo.toString(), getBusinessName.get, getBusinessType.get)
-                  _ <- deEnrolService.refreshProfile
                   _ <- save4LaterService.mainStore.removeAll
                   _ <- save4LaterService.api.removeAll
                   _ <- keyStoreService.removeAll
