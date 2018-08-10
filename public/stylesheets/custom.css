@@ -506,24 +506,34 @@ div #confirmation-date {
     width: 18%;
 }
 
+.awrs-status span {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 3px;
+    display: block;
+    font-size: 0.7em;
+    font-weight: 700;
+    padding: 0px 10px;
+    position: relative;
+    top: -1px;
+    text-align: center;
+    width: 90px;
+    margin-right: 20px;
+}
+
 .incomplete {
     border-color: #B10E1E;
     color: #B10E1E;
 }
 
 .complete {
-    font-size: 16px;
-    line-height: 1.25;
-    margin: 0 8px 0 0;
-    padding: 3px 5px 0;
-    font-family: "nta", Arial, sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-decoration: none;
-    color: #fff;
-    background-color: #005ea5;
-    float: right;
+    border-color: #006435;
+    color: #006435;
+}
+
+.not-started {
+    border-color: #6F777B;
+    color: #6F777B;
 }
 
 .edited {
@@ -834,28 +844,6 @@ p.heading-secondary, span.heading-secondary {
 
 .form-date .form-group-year {
     width: 4em;
-}
-
-#index-form {
-    padding: 0 0 1.5em 1em;
-}
-
-.index-data-row {
-    border-bottom: 1px solid #bfc1c3;
-    padding: 10px 0 10px 0;
-}
-
-.index-data-row p {
-    display: inline;
-}
-
-.index-data-row h3:nth-of-type(2) {
-    float: right;
-    margin: 0 50px 0 0;
-}
-
-.data-title {
-    display: inline;
 }
 
 #applicationInfo {

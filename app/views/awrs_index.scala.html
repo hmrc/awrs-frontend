@@ -40,21 +40,21 @@
        @changesBanner
         <div class="grid grid-2-3">
             <h1 id="index-top-heading" class="heading-xlarge">@pageHeading</h1>
-
-            <h3 class="heading-medium" id="application-status">
                 <br>
                 @someStatus match {
                     case Some(status) => {
-                        <a id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">@status.formBundleStatus.name @Messages("awrs.index_page.application_status_text")</a>
+                        <h3 class="heading-medium" id="application-status">@Messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h3>
+                        <a id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">
+                            @Messages("awrs.index_page.view_application_status_link_text")</a>
                         @if(status.formBundleStatus.name == Pending.name){
                             <br><br><a id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@Messages("awrs.index_page.withdraw_link")</a>
                         }
                     }
                     case None => {
-                        @Messages("awrs.index_page.draft") @Messages("awrs.index_page.application_status_text")
+
+                        <h3 class="heading-medium" id="application-status">@Messages("awrs.index_page.draft") @Messages("awrs.index_page.application_status_text").toLowerCase</h3>
                     }
                 }
-            </h3>
 
             @someStatus match {
                 case Some(status) => {
@@ -77,6 +77,7 @@
                 case _ => {}
             }
             @if(showOneViewLink) {
+                <br><br>
                 <div class="form-group">
                     <a id="view-application"
                     data-journey-click="view-print-application-index-page:click:print"
@@ -86,33 +87,54 @@
                 </div>
             }
 
-            @if(!isHappyPathEnrollment) {
-                <p id="applicationInfo" class="lede">@Messages("awrs.index_page.topText")</p>
-            }
+            <p id="applicationInfo">@Messages("awrs.index_page.topText")</p>
 
-            <div class="form-group" id="index-form">
-                <div class="index-data-row">
-                        <h3 class="heading-medium data-title">@Messages("awrs.index_page.section_text")</h3>
-                        <h3 class="heading-medium data-title">@Messages("awrs.index_page.status_text")</h3>
-                </div>
-                @indexStatusModel.sectionModels.zipWithIndex.map { case (i, id) =>
-                <div class="index-data-row">
-                    <p id="@i.id"> @{id+1}.
-                        <a id="@{i.id + "_link"}" href="@i.href">
-                            @Messages(i.text)
-                            @i.size match {
-                                case Some(size) => {&nbsp;(@size)<span class="visuallyhidden">entries</span>}
-                                case _ => {}
-                            }
-                        </a>
-                    </p>
-                    <p class="awrs-status">
-                        <span id="@{i.id + "_status"}" class="@Messages({i.status + "_class"})">
+            <div class="form-group">
+                <table id="index-table">
+                    <thead>
+                        <tr>
+                            <th id="section-text">@Messages("awrs.index_page.section_text")</th>
+                            <th id="status-text">@Messages("awrs.index_page.status_text")</th>
+                            <th id="action-text">@Messages("awrs.index_page.action_text")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @indexStatusModel.sectionModels.zipWithIndex.map { case (i, id) =>
+                    <tr>
+                        <td id="@i.id">
+                            <p>
+                                @{id+1}. @Messages(i.text)
+                                @i.size match {
+                                    case Some(size) => {&nbsp;(@size)<span class="visuallyhidden">entries</span>}
+                                    case _ => {}
+                                }
+                            </p>
+                        </td>
+                        <td class="awrs-status">
+                            <span id="@{i.id + "_status"}" class="@Messages({i.status + "_class"})">
                             @Messages(i.status.messagesKey)
-                        </span>
-                    </p>
-                </div>
-                }
+                            </span>
+                        </td>
+                        <td>
+                            <a id="@{i.id + "_link"}" href="@i.href">
+                            @Html(Messages({i.status + "_link" +
+                                    {
+                                        someStatus match {
+                                            case Some(subStatus :SubscriptionStatusType) =>
+                                                subStatus.formBundleStatus match {
+                                                    case Rejected | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal=> "_rejected"
+                                                    case _        => ""
+                                                }
+                                            case _ => ""
+                                        }
+                                    }
+                            }, Messages(i.text) + Messages("awrs.index_page.status_description_text") + " " + Messages(i.status.messagesKey) + ", "))
+                    </a>
+                    </td>
+                    </tr>
+                    }
+                    </tbody>
+                </table>
             </div>
             @awrsRef match {
                 case Some(_) => {

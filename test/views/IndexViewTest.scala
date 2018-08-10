@@ -221,28 +221,28 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       "display application-status showing correct application status" in {
         {
           implicit val result = showIndexPageAPI4()
-          checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.draft")} ${Messages("awrs.index_page.application_status_text")}")
+          checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.draft")} ${Messages("awrs.index_page.application_status_text").toLowerCase}")
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = false)
         }
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypePending)
-          checkElementsText(elementId = "application-status", expected = s"${Pending.name} ${Messages("awrs.index_page.application_status_text")}")
+          checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.application_status_text")} ${Pending.name.toLowerCase}")
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = true)
           checkDeRegLink(shouldExists = false)
         }
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApproved)
-          checkElementsText(elementId = "application-status", expected = s"${Approved.name} ${Messages("awrs.index_page.application_status_text")}")
+          checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.application_status_text")} ${Approved.name.toLowerCase}")
           checkAwrsRefNo(shouldExists = true)
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = true)
         }
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApprovedWithConditions)
-          checkElementsText(elementId = "application-status", expected = s"${ApprovedWithConditions.name} ${Messages("awrs.index_page.application_status_text")}")
+          checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.application_status_text")} ${ApprovedWithConditions.name.toLowerCase}")
           checkAwrsRefNo(shouldExists = true)
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = true)
@@ -251,7 +251,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         // the status is not stored in the session. These tests are left in in-case this behaviour changes in the future.
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeRejected)
-          checkElementsText(elementId = "application-status", expected = Rejected.name)
+          checkElementsText(elementId = "application-status", expected = Rejected.name.toLowerCase)
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = false)
