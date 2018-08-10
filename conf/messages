@@ -370,13 +370,12 @@ awrs.index_page.modified_application_incomplete.edit=Your application is incompl
 awrs.index_page.submit_changes=Submit changes
 awrs.index_page.de_registration_link=Cancel registration
 awrs.index_page.withdraw_link=Withdraw application
-awrs.index_page.right_column_heading=Your application
 awrs.index_page.topText=Each section is saved as you progress. Once you start you have 28 days to complete the application before it is deleted.
 awrs.index_page.topText.amend=If your circumstances change you must tell us by making changes to your application within 14 days.
 awrs.index_page.bottomText=You can still submit your application if you were trading before the 31 March but missed the deadline.
-awrs.index_page.not_started=NOT STARTED
+awrs.index_page.not_started=
 awrs.index_page.incomplete=INCOMPLETE
-awrs.index_page.complete=COMPLETE
+awrs.index_page.complete=COMPLETED
 awrs.index_page.edited=EDITED
 awrs.index_page.awrs_ref=AWRS reference number
 # Dynamically created - DO NOT DELETE
@@ -391,7 +390,7 @@ awrs.index_page.edited_link=View or edit <span class="visuallyhidden">{0}</span>
 awrs.index_page.complete_link_rejected=View <span class="visuallyhidden">{0}</span> details
 awrs.index_page.status_description_text=, status is
 awrs.index_page.section_text=Section
-awrs.index_page.application_status_text=Application status
+awrs.index_page.application_status_text=application
 awrs.index_page.status_text=Status
 awrs.index_page.draft=Draft
 awrs.index_page.action_text=Action
