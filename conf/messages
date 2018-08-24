@@ -364,6 +364,7 @@ awrs.index_page.trading_activity_text=Trading activities
 awrs.index_page.products_text=Products
 awrs.index_page.suppliers_text=Suppliers
 awrs.index_page.business_partners_text=Business partners
+awrs.index_page.changes.question=What changes do I need to tell you about?
 awrs.index_page.changes.answer.para_1=You need to tell us about changes to:
 awrs.index_page.changes.answer.bullet_list_1.point_1=your partners
 awrs.index_page.changes.answer.bullet_list_1.point_2=your directors
