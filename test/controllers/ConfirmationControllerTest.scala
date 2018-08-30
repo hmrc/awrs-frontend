@@ -95,7 +95,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
                   document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.confirmation.newBusiness.information_what_next_1"))
                 case false =>
                   document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.confirmation.information_what_next_0"))
-                  document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.confirmation.information_what_next_1"))
+                  document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.confirmation.information_what_next_1").replace("&nbsp;", " "))
                   document.getElementById(s"confirmationNoteLine3Text").text() should include(Messages(s"awrs.confirmation.information_what_next_2"))
                   document.getElementById(s"confirmationNoteLine4Text").text() should include(Messages(s"awrs.confirmation.information_what_next_3"))
                   document.getElementById(s"confirmationNoteLine5Text").text() should include(Messages(s"awrs.confirmation.information_what_next_4"))
