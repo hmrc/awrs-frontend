@@ -23,7 +23,7 @@ import play.api.Play.current
 object AwrsFormFields extends AwrsFormFields
 
 trait AwrsFormFields {
-  val wholesaler = Seq(
+  lazy val wholesaler = Seq(
     "05"-> Messages("awrs.additional_information.broker"),
     "01"-> Messages("awrs.additional_information.cash_and_carry"),
     "04"-> Messages("awrs.additional_information.producer"),
@@ -32,14 +32,14 @@ trait AwrsFormFields {
     "99"-> Messages("awrs.additional_information.other")
   )
 
-  val orders = Seq(
+  lazy val orders = Seq(
     "04"-> Messages("awrs.additional_information.orders.facetoface"),
     "02"-> Messages("awrs.additional_information.orders.internet"),
     "03"-> Messages("awrs.additional_information.orders.telephonefax"),
     "99"-> Messages("awrs.additional_information.other")
   )
 
-  val mainCustomerOptions = Seq(
+  lazy val mainCustomerOptions = Seq(
     "05" -> Messages("awrs.additional_information.mainCustomers.hospitality_catering"),
     "04" -> Messages("awrs.additional_information.mainCustomers.hotels"),
     "07" -> Messages("awrs.additional_information.mainCustomers.independent_retailers"),
@@ -53,7 +53,7 @@ trait AwrsFormFields {
     "99" -> Messages("awrs.additional_information.other")
   )
 
-  val products = Seq(
+  lazy val products = Seq(
     "05"-> Messages("awrs.additional_information.beer"),
     "04"-> Messages("awrs.additional_information.cider"),
     "06"-> Messages("awrs.additional_information.perry"),
@@ -62,7 +62,7 @@ trait AwrsFormFields {
     "99"-> Messages("awrs.additional_information.other")
   )
 
-  val exportAlcohol = Seq(
+  lazy val exportAlcohol = Seq(
     "euDispatches" -> Messages("awrs.additional_information.within_eu"),
     "outsideEU" -> Messages("awrs.additional_information.outside_eu")
   )

@@ -18,13 +18,14 @@ package utils
 
 import models.BusinessDetailsEntityTypes
 import models.BusinessDetailsEntityTypes._
+import org.scalatestplus.play.OneAppPerSuite
 import services.DataCacheKeys._
 import services.JourneyConstants
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.CacheUtil.cacheUtil
 import utils.TestUtil._
 
-class CacheUtilTest extends UnitSpec {
+class CacheUtilTest extends UnitSpec with OneAppPerSuite {
 
   lazy val allEntities = List("SOP", "LTD", "Partnership", "LLP", "LTD_GRP", "LLP_GRP")
 
