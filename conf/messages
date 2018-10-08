@@ -254,6 +254,11 @@ awrs.group_declaration.declaration_statement_bullet_8=None of the members should
 awrs.group_declaration.declaration_statement_confirmation=As the group representative I can confirm that the above conditions have been met in full.
 awrs.group_declaration.error.declaration_confirmation_not_checked.summary=The group representative confirmation has not been answered
 awrs.group_declaration.error.declaration_confirmation_not_checked=As the group representative you must check the confirmation before you can continue
+awrs.application_status.info.pending.newBusiness.line1=You cannot trade until an AWRS reference number is issued.
+awrs.application_status.info.pending.newBusiness.line2=It will take up to 45 days from your initial application before we make a decision.
+awrs.application_status.info.pending.line1=Continue trading as normal while we review and check your application, which might take some time.
+awrs.application_status.info.pending.line2=There is no need to contact HMRC, you will be notified before 1 April 2017.
+awrs.application_status.info.pending.line3=If approved, your business will receive an AWRS reference number confirming that you are an approved alcohol wholesaler.
 
 # Status Page messages
 #===========================================================
