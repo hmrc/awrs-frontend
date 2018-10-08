@@ -76,8 +76,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
             throw new NotFoundException("URL not found")
           case 503 /*SERVICE_UNAVAILABLE*/ =>
-            warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - WSO2 is currently experiencing problems that require live service intervention")
-            info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
+            warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - 5 WSO2 is currently experiencing problems that require live service intervention")
+            info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - 5 Request Json ## $fileData")
             throw new ServiceUnavailableException("Service unavailable")
           case 400 =>
             response.body.toString.replace("\n", "") match {
@@ -141,11 +141,11 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             throw new NotFoundException(s"[$auditAPI3TxName] - The remote endpoint has indicated that no data can be found")
           case 500 /*INTERNAL_SERVER_ERROR*/ =>
             audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeInternalServerError)
-            warn(s"[$auditAPI3TxName - $legalEntityType ] - Unsuccessful return of data")
-            throw new InternalServerException(s"[$auditAPI3TxName] - WSO2 is currently experiencing problems that require live service intervention ## ")
+            warn(s"[$auditAPI3TxName - $legalEntityType ] - 6 Unsuccessful return of data")
+            throw new InternalServerException(s"[$auditAPI3TxName] - 6 WSO2 is currently experiencing problems that require live service intervention ## ")
           case 503 /*SERVICE_UNAVAILABLE*/ =>
-            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new ServiceUnavailableException(s"[$auditAPI3TxName] - Dependant systems are currently not responding")
+            warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - 7 WSO2 is currently experiencing problems that require live service intervention")
+            throw new ServiceUnavailableException(s"[$auditAPI3TxName] - 7 Dependant systems are currently not responding")
           case status@_ =>
             audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "status" -> status.toString, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeGeneric)
             warn(f"[$auditAPI3TxName - $businessName, $legalEntityType ] - $status Exception \n API6 Request Json From Frontend ## ")
@@ -175,8 +175,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - The remote endpoint has indicated that no data can be found ## ")
             throw new NotFoundException(s"[$auditAPI6TxName] - The remote endpoint has indicated that no data can be found")
           case 503 /*SERVICE_UNAVAILABLE*/ =>
-            warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new ServiceUnavailableException(s"[$auditAPI6TxName] - Dependant systems are currently not responding")
+            warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - 8 WSO2 is currently experiencing problems that require live service intervention")
+            throw new ServiceUnavailableException(s"[$auditAPI6TxName] -8 Dependant systems are currently not responding")
           case 400 =>
             response.body.toString.replace("\n", "") match {
               case validationPattern(contents) =>
@@ -187,8 +187,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             }
           case 500 /*INTERNAL_SERVER_ERROR*/ =>
             audit(auditAPI6TxName, Map("awrsRefNo" -> awrsRefNo.toString(), "businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeInternalServerError)
-            warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - Unsuccessful return of data")
-            throw new InternalServerException(s"[$auditAPI6TxName] - WSO2 is currently experiencing problems that require live service intervention ## ")
+            warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - 9 Unsuccessful return of data")
+            throw new InternalServerException(s"[$auditAPI6TxName] - 9 WSO2 is currently experiencing problems that require live service intervention ## ")
           case status@_ =>
             audit(auditAPI6TxName, Map("awrsRefNo" -> awrsRefNo.toString(), "businessName" -> businessName, "legalEntityType" -> legalEntityType, "status" -> status.toString, "requestJson" -> fileData.toString()), eventTypeGeneric)
             warn(f"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - $status Exception \n API6 Request Json From Frontend ## ")
@@ -230,8 +230,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             warn(s"[$auditAPI5TxName - $awrsRefNo ] - Bad Request \n API5 Response fron DES ##" + response.body)
             throw new BadRequestException("The Submission has not passed validation")
           case 500 =>
-            warn(s"[$auditAPI5TxName - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+            warn(s"[$auditAPI5TxName - $awrsRefNo ] - 10 WSO2 is currently experiencing problems that require live service intervention")
+            throw new InternalServerException("10 WSO2 is currently experiencing problems that require live service intervention")
           case status@_ =>
             warn(f"[$auditAPI5TxName - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
             throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
@@ -277,8 +277,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             warn(f"[$auditAPI9TxName - $awrsRefNo ] - The request has not passed validation")
             throw new BadRequestException("The Submission has not passed validation")
           case 500 =>
-            warn(f"[$auditAPI9TxName - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+            warn(f"[$auditAPI9TxName - $awrsRefNo ] - 1 WSO2 is currently experiencing problems that require live service intervention")
+            throw new InternalServerException("1 - WSO2 is currently experiencing problems that require live service intervention")
           case status@_ =>
             warn(f"[$auditAPI9TxName - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
             throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
@@ -338,8 +338,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             warn(f"[API11 - $awrsRefNo ] - The request has not passed validation")
             throw new BadRequestException("The Submission has not passed validation")
           case 500 =>
-            warn(f"[API11 - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+            warn(f"[API11 - $awrsRefNo ] - 2 WSO2 is currently experiencing problems that require live service intervention")
+            throw new InternalServerException("2 - WSO2 is currently experiencing problems that require live service intervention")
           case status@_ =>
             warn(f"[API11 - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
             throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
@@ -373,8 +373,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             warn(f"[$auditAPI8TxName - $awrsRefNo ] - The request has not passed validation")
             throw new BadRequestException("The Submission has not passed validation")
           case 500 =>
-            warn(f"[$auditAPI8TxName - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+            warn(f"[$auditAPI8TxName - $awrsRefNo ] - 3 WSO2 is currently experiencing problems that require live service intervention")
+            throw new InternalServerException("3 WSO2 is currently experiencing problems that require live service intervention")
           case status@_ =>
             warn(f"[$auditAPI8TxName - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
             throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
@@ -425,8 +425,8 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
             warn(f"[$auditAPI10TxName - $awrsRefNo ] - The request has not passed validation")
             throw new BadRequestException("The Submission has not passed validation")
           case 500 =>
-            warn(f"[$auditAPI10TxName - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+            warn(f"[$auditAPI10TxName - $awrsRefNo ] - 4 WSO2 is currently experiencing problems that require live service intervention")
+            throw new InternalServerException("4 WSO2 is currently experiencing problems that require live service intervention")
           case status@_ =>
             warn(f"[$auditAPI10TxName - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
             throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")

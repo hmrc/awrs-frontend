@@ -129,8 +129,8 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
             warn(f"[$auditTxName - $awrsRefNo ] - The request has not passed validation")
             throw new BadRequestException("The request has not passed validation")
           case INTERNAL_SERVER_ERROR =>
-            warn(f"[$auditTxName - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
-            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+            warn(f"[$auditTxName - $awrsRefNo ] - 12 WSO2 is currently experiencing problems that require live service intervention")
+            throw new InternalServerException("12 WSO2 is currently experiencing problems that require live service intervention")
           case status@_ =>
             warn(f"[$auditTxName - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
             throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")

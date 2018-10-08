@@ -276,7 +276,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = TestAWRSConnector.lookupAWRSData(awrsRefNo)
 
       val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage shouldBe "WSO2 is currently experiencing problems that require live service intervention"
+      thrown.getMessage shouldBe "10 WSO2 is currently experiencing problems that require live service intervention"
     }
   }
 
@@ -315,7 +315,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = TestAWRSConnector.updateAWRSData(api6LTDJson)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
-      thrown.getMessage shouldBe "[API6] - Dependant systems are currently not responding"
+      thrown.getMessage shouldBe "[API6] -8 Dependant systems are currently not responding"
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
@@ -324,7 +324,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = TestAWRSConnector.updateAWRSData(api6LTDJson)
 
       val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage should include("[API6] - WSO2 is currently experiencing problems that require live service intervention")
+      thrown.getMessage should include("[API6] - 9 WSO2 is currently experiencing problems that require live service intervention")
     }
   }
 
@@ -552,7 +552,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
      val result = TestAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest)
 
      val thrown = the[ServiceUnavailableException] thrownBy await(result)
-     thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - Dependant systems are currently not responding"
+     thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - 7 Dependant systems are currently not responding"
    }
 
    "return status as INTERNAL_SERVER_ERROR, for unsuccessful update" in {
@@ -561,7 +561,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
      val result = TestAWRSConnector.updateGroupBusinessPartner(testTradingName,"","",updatedDataRequest)
 
      val thrown = the[InternalServerException] thrownBy await(result)
-     thrown.getMessage should include("[API3 - Update Group Business Partner] - WSO2 is currently experiencing problems that require live service intervention")
+     thrown.getMessage should include("[API3 - Update Group Business Partner] - 6 WSO2 is currently experiencing problems that require live service intervention")
    }
 
     "return status as FORBIDDEN, for unsuccessful update" in {
