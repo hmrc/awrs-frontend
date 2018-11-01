@@ -58,11 +58,15 @@ class UnauthorisedViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtu
     }
 
     "Display the correct reason 1" in {
-      fetchContentFor("reason_1") shouldBe "a sole trader, you must"
+      fetchContentFor("reason_1") shouldBe "a sole trader, you must register for Self Assessment online"
     }
 
     "Display the correct reason 2" in {
       fetchContentFor("reason_2") shouldBe "an agent, you cannot apply on behalf of your clients"
+    }
+
+    "Display the correct reason link" in {
+      fetchContentFor("reason_1_link") shouldBe "register for Self Assessment online"
     }
   }
 
