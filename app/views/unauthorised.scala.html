@@ -19,10 +19,14 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 
 @includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.generic.unauthorised.heading")), userLoggedIn = false){
-<h1 class="heading-xlarge"> @Html(Messages("awrs.generic.unauthorised.heading")) </h1>
-<p>@Messages("awrs.generic.unauthorised.reason_start")</p>
-<p>@Messages("awrs.generic.unauthorised.reason_1")</p>
-<p>@Messages("awrs.generic.unauthorised.reason_2")</p>
+<h1 class="heading-xlarge" id="heading"> @Html(Messages("awrs.generic.unauthorised.heading")) </h1>
+<p id="reason_start">@Messages("awrs.generic.unauthorised.reason_start")</p>
+<ul id="reasons" class="list list-bullet">
+  <li id="reason_1">@Messages("awrs.generic.unauthorised.reason_1")
+   <a id="reason_1_link" href="https://www.gov.uk/log-in-file-self-assessment-tax-return/register-if-youre-self-employed">
+   @messages("awrs.generic.unauthorised.reason_1_link")</a></li>
+  <li id="reason_2">@Messages("awrs.generic.unauthorised.reason_2")</li>
+</ul>
 }
 
 
