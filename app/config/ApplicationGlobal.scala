@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package config
 
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
+import play.api.Mode.Mode
 import play.api.mvc.{EssentialFilter, Request}
 import play.api.{Application, Configuration, Play}
 import play.filters.csrf.CSRFFilter
@@ -28,7 +29,7 @@ import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import uk.gov.hmrc.play.frontend.filters.{ CacheControlFilter, FrontendAuditFilter, FrontendLoggingFilter, HeadersFilter, MicroserviceFilterSupport }
+import uk.gov.hmrc.play.frontend.filters.{CacheControlFilter, FrontendAuditFilter, FrontendLoggingFilter, HeadersFilter, MicroserviceFilterSupport}
 
 object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 
@@ -50,7 +51,7 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 
   override def onStart(app: Application) {
     super.onStart(app)
-    ApplicationCrypto.verifyConfiguration()
+    new ApplicationCrypto(Play.current.configuration.underlying).verifyConfiguration()
   }
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
@@ -79,6 +80,11 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
     override lazy val auditConnector = AwrsFrontendAuditConnector
 
     override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
+
+    override protected def mode: Mode = Play.current.mode
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
+
+    override protected def appNameConfiguration: Configuration = Play.current.configuration
   }
 
 }

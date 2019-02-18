@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import exceptions.{DESValidationException, DuplicateSubscriptionException, Gover
 import models.FormBundleStatus.Approved
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.i18n.Messages
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, Request}
@@ -36,11 +38,14 @@ import scala.concurrent.Future
 import scala.util.Try
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import uk.gov.hmrc.http.{ BadRequestException, ForbiddenException, HeaderCarrier, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException }
+import uk.gov.hmrc.http.{BadRequestException, ForbiddenException, HeaderCarrier, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
 
 object AWRSConnector extends AWRSConnector {
   override val appName = "awrs-frontend"
-  override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
+  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
+
+  override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
 trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUtils {

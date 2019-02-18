@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package connectors
 import config.{AwrsFrontendAuditConnector, WSHttp}
 import metrics.AwrsMetrics
 import models.{RequestPayload, _}
-import play.api.Logger
+import play.api.Mode.Mode
+import play.api.{Configuration, Logger, Play}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import services.GGConstants._
@@ -178,5 +179,9 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
 object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
   override val appName = "awrs-frontend"
   override val metrics = AwrsMetrics
-  override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
+  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
