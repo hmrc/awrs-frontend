@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import _root_.models._
 import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
@@ -63,6 +65,10 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
     override val authConnector = mockAuthConnector
     override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
     override val isEmacFeatureToggle = false
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   object EnrolServiceEMACTest extends EnrolService {
@@ -70,6 +76,10 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
     override val authConnector = mockAuthConnector
     override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
     override val isEmacFeatureToggle = true
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   override def beforeEach(): Unit = {

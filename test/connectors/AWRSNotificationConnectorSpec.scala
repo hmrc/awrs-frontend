@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package connectors
 
+import akka.actor.ActorSystem
 import audit.TestAudit
 import builders.AuthBuilder
+import com.typesafe.config.Config
 import metrics.AwrsMetrics
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Request}
@@ -51,6 +55,10 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     override def auditConnector: AuditConnector = MockAuditConnector
 
     override def appName = dummyAppName
+
+    override protected def actorSystem: ActorSystem = Play.current.actorSystem
+
+    override protected def configuration: Option[Config] = Option(Play.current.configuration.underlying)
   }
 
   val mockWSHttp = mock[MockHttp]
@@ -68,6 +76,10 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     override val appName = dummyAppName
    override val metrics = mock[AwrsMetrics]
     override val audit: Audit = new TestAudit
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
 

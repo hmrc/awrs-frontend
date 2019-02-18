@@ -17,15 +17,20 @@
 package controllers
 
 import controllers.auth.ExternalUrls
-import play.api.Play
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.mvc.Action
 import uk.gov.hmrc.play.config.RunMode
-import uk.gov.hmrc.play.frontend.controller.{UnauthorisedAction, FrontendController}
+import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
 import utils.SessionUtil._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
-object ApplicationController extends ApplicationController {}
+object ApplicationController extends ApplicationController {
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
+}
 
 trait ApplicationController extends FrontendController with RunMode {
 

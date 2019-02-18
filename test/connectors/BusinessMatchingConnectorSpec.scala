@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,14 @@
 
 package connectors
 
+import akka.actor.ActorSystem
 import audit.TestAudit
+import com.typesafe.config.Config
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
@@ -33,7 +37,7 @@ import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException, SessionKeys }
+import uk.gov.hmrc.http.{BadRequestException, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException, SessionKeys}
 
 class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
@@ -45,6 +49,10 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
     override def auditConnector: AuditConnector = MockAuditConnector
 
     override def appName = "awrs-frontend"
+
+    override protected def actorSystem: ActorSystem = Play.current.actorSystem
+
+    override protected def configuration: Option[Config] = Option(Play.current.configuration.underlying)
   }
 
   val mockWSHttp = mock[MockHttp]
@@ -59,6 +67,10 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
     override def serviceUrl: String = ""
     override def baseUri: String = ""
     override def lookupUri: String = ""
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   val matchBusinessData = MatchBusinessData(SessionKeys.sessionId, testUtr, false, false, None, None)

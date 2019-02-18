@@ -17,6 +17,8 @@
 package services
 
 import config.WSHttp
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -54,6 +56,10 @@ trait AddressLookupService extends LoggingUtils {
 object AddressLookupService extends AddressLookupService with ServicesConfig {
   override val http = WSHttp
   override val addressLookupUrl = baseUrl("address-lookup")
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
 trait HasAddressLookupService {

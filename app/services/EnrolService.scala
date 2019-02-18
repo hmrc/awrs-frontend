@@ -21,7 +21,8 @@ import config.AuthClientConnector
 import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
 import forms.AWRSEnums.BooleanRadioEnum
 import models._
-import play.api.Logger
+import play.api.Mode.Mode
+import play.api.{Configuration, Logger, Play}
 import services.GGConstants._
 import uk.gov.hmrc.auth.core.AuthorisedFunctions
 import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
@@ -111,4 +112,8 @@ object EnrolService extends EnrolService {
   val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
   val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
   override val authConnector = AuthClientConnector
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

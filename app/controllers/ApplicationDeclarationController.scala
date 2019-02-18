@@ -22,6 +22,8 @@ import connectors.EmailVerificationConnector
 import controllers.auth.AwrsController
 import exceptions._
 import forms.ApplicationDeclarationForm._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -125,4 +127,7 @@ object ApplicationDeclarationController extends ApplicationDeclarationController
   override val applicationService = ApplicationService
   override val keyStoreService = KeyStoreService
 
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

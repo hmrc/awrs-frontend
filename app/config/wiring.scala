@@ -33,14 +33,10 @@ import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
 import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
 
-object AwrsFrontendAuditConnector extends AuditConnector with AppName with RunMode {
+object AwrsFrontendAuditConnector extends AuditConnector with AppName {
   override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 
   override protected def appNameConfiguration: Configuration = Play.current.configuration
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
 trait Hooks extends HttpHooks with HttpAuditing {
@@ -125,12 +121,12 @@ object AwrsAPIDataShortLivedCaching extends ShortLivedHttpCaching with ServicesC
 }
 
 object AwrsShortLivedCache extends ShortLivedCache {
-  override implicit lazy val crypto = new ApplicationCypto(Play.current.configuration.underlying).JsonCrypto
+  override implicit lazy val crypto = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
   override lazy val shortLiveCache = AwrsShortLivedCaching
 }
 
 object AwrsAPIShortLivedCache extends ShortLivedCache {
-  override implicit lazy val crypto = new ApplicationCypto(Play.current.configuration.underlying).JsonCrypto
+  override implicit lazy val crypto = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
   override lazy val shortLiveCache = AwrsAPIDataShortLivedCaching
 }
 
