@@ -33,7 +33,7 @@ trait Auditable {
   def sendDataEvent(transactionName: String,
                     path: String = "N/A",
                     tags: Map[String, String] = Map.empty[String, String],
-                    detail: Map[String, String]ui
+                    detail: Map[String, String],
                     eventType: String)
                    (implicit hc: HeaderCarrier): Unit =
     audit.sendDataEvent(
