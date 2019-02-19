@@ -36,7 +36,8 @@ import scala.concurrent.Future
 class AdditionalPremisesViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  def testPremises(addAnother: Option[String]) = testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"), additionalAddress = Some(testAddress), addAnother = addAnother)
+  def testPremises(addAnother: Option[String]) = testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"),
+    additionalAddress = Some(testAddress), addAnother = addAnother)
 
   lazy val testList = List(testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("No")))
 

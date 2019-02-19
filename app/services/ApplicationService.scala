@@ -17,7 +17,7 @@
 package services
 
 import _root_.models._
-import connectors.{AWRSConnector, AuthenticatorConnector}
+import connectors.AWRSConnector
 import exceptions.{InvalidStateException, ResubmissionException}
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.AwrsFormFields
@@ -26,14 +26,12 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Request}
 import services.helper._
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 
-import controllers.util.convertBCAddressToAddress
-
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, InternalServerException }
 
 trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCacheService {
 
@@ -41,7 +39,6 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
   override val keyStoreService: KeyStoreService
   val enrolService: EnrolService
   val awrsConnector: AWRSConnector
-  val authenticatorConnector: AuthenticatorConnector
   val emailService: EmailService
   val maxSuppliers = 5
 
@@ -205,8 +202,6 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     }
 
   }
-
-  def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = authenticatorConnector.refreshProfile
 
   def removeCountry(someAddress: Option[Address]): Option[Address] =
     someAddress match {
@@ -428,6 +423,5 @@ object ApplicationService extends ApplicationService {
   override val keyStoreService = KeyStoreService
   override val enrolService = EnrolService
   override val awrsConnector = AWRSConnector
-  override val authenticatorConnector = AuthenticatorConnector
   override val emailService = EmailService
 }

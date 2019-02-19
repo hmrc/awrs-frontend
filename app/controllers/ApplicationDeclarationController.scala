@@ -85,7 +85,6 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
             applicationDeclarationForm.bindFromRequest.fold(
               formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
               applicationDeclarationData => {
-                val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
                 for {
                   savedDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(applicationDeclarationData)
                   _ <- backUpSave4LaterInKeyStore
@@ -96,15 +95,11 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
                     businessPartnerDetails.get,
                     businessType,
                     businessRegDetails.get.utr) // Calls ES8
-                  _ <- if (isEmacFeatureToggle) {
-                    Future.successful(true)
-                  } else {
-                    applicationService.refreshProfile.map(_=>true)
-                  }
                 } yield {
-                    Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
-                      .addAwrsRefToSession(successResponse.etmpFormBundleNumber)
+                  Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
+                    .addAwrsRefToSession(successResponse.etmpFormBundleNumber)
                 }
+
               }.recover {
                 case error: DESValidationException => InternalServerError(views.html.error_template(Messages("awrs.application_des_validation.title"), Messages("awrs.application_des_validation.heading"), Messages("awrs.application_des_validation.message")))
                 case error: DuplicateSubscriptionException => InternalServerError(views.html.error_template(Messages("awrs.application_duplicate_request.title"), Messages("awrs.application_duplicate_request.heading"), Messages("awrs.application_duplicate_request.message")))

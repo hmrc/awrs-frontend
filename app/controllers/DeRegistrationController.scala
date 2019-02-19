@@ -150,7 +150,6 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
                 // the calls are abstracted out to make it easier for rewiring and replacement of de-enroll call
                 def success(): Future[Result] =
                   for {
-                    _ <- deEnrolService.refreshProfile
                     deristrationDate <- keyStoreService.fetchDeRegistrationDate
                     cache <- save4LaterService.mainStore.fetchAll
                     _ <- emailService.sendCancellationEmail(cache.get.getBusinessContacts.get.email.get, deristrationDate)

@@ -16,12 +16,7 @@
 
 package services
 
-import java.util.UUID
-
 import _root_.models.BusinessDetailsEntityTypes._
-import builders.AuthBuilder
-import connectors._
-import controllers.auth.Utr._
 import exceptions.{InvalidStateException, ResubmissionException}
 import models._
 import org.mockito.Matchers
@@ -29,22 +24,20 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import services.DataCacheKeys._
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
-import utils.TestUtil._
-import utils.TestConstants._
 import utils.AwrsTestJson._
+import utils.TestConstants._
+import utils.TestUtil._
+import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HttpResponse
 
 class ApplicationServiceTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
   val mockDataCacheService = mock[Save4LaterService]
   val mockEnrolService = mock[EnrolService]
-  val mockAuthenticatorConnector = mock[AuthenticatorConnector]
   val mockEmailService = mock[EmailService]
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
@@ -127,7 +120,6 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     override val keyStoreService = TestKeyStoreService
     override val enrolService = mockEnrolService
     override val awrsConnector = mockAWRSConnector
-    override val authenticatorConnector = mockAuthenticatorConnector
     override val emailService: EmailService = mockEmailService
   }
 
@@ -1159,11 +1151,5 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     setupMockAWRSConnectorWithOnly(updateGroupBusinessPartner = updateGroupBusinessPartnerResponse)
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     TestApplicationService.callUpdateGroupBusinessPartner(cachedData(), Some(cachedSubscription), testSubscriptionStatusTypeApproved)
-  }
-
-  def refreshWithAuthorisedUser(test: Future[HttpResponse] => Any): Unit = {
-    when(mockAuthenticatorConnector.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(204)))
-    val result = TestApplicationService.refreshProfile
-    test(result)
   }
 }

@@ -18,8 +18,8 @@ package controllers
 
 import audit.TestAudit
 import builders.SessionBuilder
-import connectors.mock.{MockAWRSNotificationConnector, MockAuthConnector}
-import connectors.{AWRSNotificationConnector, AuthenticatorConnector, TaxEnrolmentsConnector}
+import connectors.mock.MockAuthConnector
+import connectors.{AWRSNotificationConnector, TaxEnrolmentsConnector}
 import forms.{AWRSEnums, ReapplicationForm}
 import models.{ReapplicationConfirmation, StatusContactType, StatusNotification}
 import org.joda.time.LocalDateTime
@@ -34,19 +34,18 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, KeyStoreService}
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HttpResponse
 
 class ReapplicationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector with MockKeyStoreService with MockSave4LaterService{
 
   val mockAudit: Audit = mock[Audit]
-  val mockAuthenticatorConnector: AuthenticatorConnector = mock[AuthenticatorConnector]
   val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
   val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockKeyStoreService: KeyStoreService = mock[KeyStoreService]
@@ -143,7 +142,6 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterService()
     setupMockApiSave4LaterService()
-    when(mockDeEnrolService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
     when(mockDeEnrolService.deEnrolAWRS(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
     when(mockKeyStoreService.removeAll(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
     val result = TestReapplicationController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD"))

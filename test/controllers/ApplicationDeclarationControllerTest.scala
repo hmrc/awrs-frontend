@@ -186,7 +186,6 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.sendApplication()(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
     when(mockEnrolService.enrolAWRS(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
-    when(mockApplicationService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(204)))
     val result = TestApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
