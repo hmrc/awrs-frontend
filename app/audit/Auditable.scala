@@ -17,6 +17,7 @@
 package audit
 
 import config.AwrsFrontendAuditConnector
+import play.api.Play
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.model.Audit
@@ -25,14 +26,14 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 trait Auditable {
 
-  def appName: String = appName
+  def appName: String = AppName(Play.current.configuration).appName
 
   def audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
 
   def sendDataEvent(transactionName: String,
                     path: String = "N/A",
                     tags: Map[String, String] = Map.empty[String, String],
-                    detail: Map[String, String],
+                    detail: Map[String, String]ui
                     eventType: String)
                    (implicit hc: HeaderCarrier): Unit =
     audit.sendDataEvent(

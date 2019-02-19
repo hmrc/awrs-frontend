@@ -23,8 +23,7 @@ private object AppDependencies {
   private val jSoupVersion = "1.8.3"
   private val jSonEncryptionVersion = "4.1.0"
   private val mockitoAllVersion = "1.10.19"
-  private val scalaTestPlusPlayVersion = "1.5.1"
-  private val scalatestVersion = "2.2.6"
+  private val scalaTestPlusPlayVersion = "2.0.1"
 
   val compile = Seq(
     ws,
@@ -53,9 +52,7 @@ private object AppDependencies {
         "org.jsoup" % "jsoup" % jSoupVersion % scope,
         "org.mockito" % "mockito-all" % mockitoAllVersion % scope,
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope,
-        "org.scalatest" %% "scalatest" % scalatestVersion % scope,
-        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
+        "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope
       )
     }.test
   }
