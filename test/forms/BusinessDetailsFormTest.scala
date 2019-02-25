@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,16 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
           )
         )
         dateId assertDateFieldIsCompulsoryWhen(newBusinessAnsweredYes, expectations)
+      }
+
+      f"check Welsh character validations for entity: $entity and hasAwrs: $hasAwrs" in {
+        val data: Map[String, String] =
+          Map("companyName" -> "ôéàëŵŷáîïâêûü",
+            "newAWBusiness.newAWBusiness" -> "No",
+            "doYouHaveTradingName" -> "Yes",
+            "tradingName" -> "ôéàëŵŷáîïâêûü"
+          )
+        assertFormIsValid(forms(entity, hasAwrs), data)
       }
     }
   }

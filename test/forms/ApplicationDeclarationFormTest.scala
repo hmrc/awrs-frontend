@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with One
   "Form validation" should {
     "Allow submission if both name and role are filled in and the confirmation box is checked" in {
       val data: Map[String, String] =
-        Map("declarationName" -> "declarationName",
+        Map("declarationName" -> "ôéàëŵŷáîïâêûü",
           "declarationRole" -> "Director",
           "confirmation" -> "true"
         )

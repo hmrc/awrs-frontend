@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import forms.validation.util.{FieldError, SummaryError}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.play.views.html.helpers.form
 import utils.TestConstants
 
 class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
@@ -50,6 +51,20 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
         emptyErrorMsg = "awrs.generic.error.telephone_empty",
         invalidFormatErrorMsg = "awrs.generic.error.telephone_numeric")
 
+  }
+
+  "Form validation" should {
+    "Allow submission if both name and role are filled in and the confirmation box is checked" in {
+      val data: Map[String, String] =
+        Map("contactFirstName" -> "ôéàëŵŷáîïâêûü",
+          "contactLastName" -> "ôéàëŵŷáîïâêûü",
+          "contactAddressSame" -> "Yes",
+          "contactAddress" -> "test",
+          "email" -> "test@test.com",
+          "telephone" -> "01912244194"
+        )
+      assertFormIsValid(forms, data)
+    }
   }
 
 }
