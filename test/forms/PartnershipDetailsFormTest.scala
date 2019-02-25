@@ -193,7 +193,7 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
         assertFormIsValid(form, testDataScen2)
       }
 
-      "check when partner is Individual with Welsh characters" in {
+      "check when partner is Individual and uses Welsh characters" in {
         val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
 
         val testDataScen1: Map[String, String] =
@@ -273,7 +273,7 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
 
       }
 
-      "check when partner is Corporate Body with Welsh characters" in {
+      "check when partner is Corporate Body and uses Welsh characters" in {
         val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
 
         val data: Map[String, String] =
@@ -350,7 +350,7 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
 
       }
 
-      "check when partner is Sole Trader with Welsh characters" in {
+      "check when partner is Sole Trader and uses Welsh characters" in {
         val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
 
         val data: Map[String, String] =
@@ -376,6 +376,5 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
     }
 
   }
-
 
 }
