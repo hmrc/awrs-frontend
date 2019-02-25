@@ -83,7 +83,7 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
                 "doTheyHaveNationalInsurance" -> Yes.toString,
                 "NINO" -> testNino,
                 "otherDirectors" -> Yes.toString
-                )
+              )
           assertFormIsValid(form, testDataScen1)
 
           val testDataScen2: Map[String, String] =
@@ -93,7 +93,7 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
                 "doTheyHaveNationalInsurance" -> No.toString,
                 "passportNumber" -> generateFieldTestDataInThisFormat(DataFormat("1", 20)),
                 "otherDirectors" -> Yes.toString
-                )
+              )
           assertFormIsValid(form, testDataScen2)
 
           val testDataScen3: Map[String, String] =
@@ -103,21 +103,22 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
                 "doTheyHaveNationalInsurance" -> No.toString,
                 "nationalID" -> generateFieldTestDataInThisFormat(DataFormat("1", 20)),
                 "otherDirectors" -> No.toString
-                )
+              )
           assertFormIsValid(form, testDataScen3)
         }
 
-        "check Welsh character validations %s".format(directorType) in {
+        "check Welsh character validations for %s".format(directorType) in {
           val data: Map[String, String] =
             conditionDirectorIsIndividual +
-              ("firstName" -> "firstName",
-                "lastName" -> "lastName",
+              ("firstName" -> "ôéàëŵŷáîïâêûü",
+                "lastName" -> "ôéàëŵŷáîïâêûü",
                 "doTheyHaveNationalInsurance" -> Yes.toString,
                 "NINO" -> testNino,
                 "otherDirectors" -> Yes.toString
               )
           assertFormIsValid(form, data)
         }
+      }
     }
 
     "Directors or secretaries that are companies," should {
@@ -199,10 +200,21 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
           assertFormIsValid(form, testDataScen3)
         }
 
+        "check Welsh character validations for %s".format(directorType) in {
+          val data: Map[String, String] =
+            conditionDirectorIsCompany +
+              ("companyNames.tradingName" -> "ôéàëŵŷáîïâêûü",
+                "companyNames.doYouHaveTradingName" -> "Yes",
+                "companyNames.businessName" -> "ôéàëŵŷáîïâêûü",
+                "doYouHaveVRN" -> Yes.toString,
+                "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
+                "doYouHaveCRN" -> No.toString,
+                "doYouHaveUTR" -> No.toString,
+                "otherDirectors" -> Yes.toString
+              )
+          assertFormIsValid(form, data)
+        }
       }
     }
-
   }
-
-
 }

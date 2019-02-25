@@ -193,7 +193,26 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
         assertFormIsValid(form, testDataScen2)
       }
 
-      "Valid journeys for when partner is Corporate Body should pass" in {
+      "check when partner is Individual with Welsh characters" in {
+        val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
+
+        val testDataScen1: Map[String, String] =
+          conditionEntityIsIndividual +
+            ("firstName" -> "ôéàëŵŷáîïâêûü",
+              "lastName" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.postcode" -> testPostcode,
+              "partnerAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine3" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine4" -> "ôéàëŵŷáîïâêûü",
+              "doYouHaveNino" -> Yes.toString,
+              "nino" -> testNino,
+              "otherPartners" -> Yes.toString
+            )
+        assertFormIsValid(form, testDataScen1)
+      }
+
+        "Valid journeys for when partner is Corporate Body should pass" in {
         val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
 
         val testDataScen1: Map[String, String] =
@@ -254,6 +273,26 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
 
       }
 
+      "check when partner is Corporate Body with Welsh characters" in {
+        val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
+
+        val data: Map[String, String] =
+          conditionEntityIsCompany +
+            ("companyNames.businessName" -> "ôéàëŵŷáîïâêûü",
+              "companyNames.doYouHaveTradingName" -> YesString,
+              "companyNames.tradingName" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.postcode" -> testPostcode,
+              "partnerAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
+              "doYouHaveVRN" -> No.toString,
+              "isBusinessIncorporated" -> No.toString,
+              "doYouHaveUTR" -> Yes.toString,
+              "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+              "otherPartners" -> No.toString
+            )
+        assertFormIsValid(form, data)
+      }
+
       "Valid journeys for when partner is Sole Trader should pass" in {
         val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
 
@@ -309,6 +348,29 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
               )
         assertFormIsValid(form, testDataScen3)
 
+      }
+
+      "check when partner is Sole Trader with Welsh characters" in {
+        val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
+
+        val data: Map[String, String] =
+          conditionEntityIsSoleTrader +
+            ("firstName" -> "ôéàëŵŷáîïâêûü",
+              "lastName" -> "ôéàëŵŷáîïâêûü",
+              "companyNames.doYouHaveTradingName" -> YesString,
+              "companyNames.tradingName" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.postcode" -> testPostcode,
+              "partnerAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
+              "doYouHaveNino" -> Yes.toString,
+              "nino" -> testNino,
+              "doYouHaveVRN" -> Yes.toString,
+              "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
+              "doYouHaveUTR" -> Yes.toString,
+              "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+              "otherPartners" -> Yes.toString
+            )
+        assertFormIsValid(form, data)
       }
 
     }

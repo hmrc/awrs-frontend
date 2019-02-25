@@ -85,5 +85,17 @@ class BusinessPremisesFormTest extends UnitSpec with MockitoSugar with OneServer
         )
       assertFormIsValid(form, data2)
     }
+    "Allow submission if Welsh characters are used" in {
+      val data: Map[String, String] =
+        Map("additionalPremises" -> BooleanRadioEnum.Yes.toString,
+          "additionalAddress.postcode" -> testPostcode,
+          "additionalAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
+          "additionalAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
+          "additionalAddress.addressLine3" -> "ôéàëŵŷáîïâêûü",
+          "additionalAddress.addressLine4" -> "ôéàëŵŷáîïâêûü",
+          "addAnother" -> BooleanRadioEnum.Yes.toString
+        )
+      assertFormIsValid(form, data)
+    }
   }
 }
