@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,18 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
                 )
           assertFormIsValid(form, testDataScen3)
         }
-      }
+
+        "check Welsh character validations %s".format(directorType) in {
+          val data: Map[String, String] =
+            conditionDirectorIsIndividual +
+              ("firstName" -> "firstName",
+                "lastName" -> "lastName",
+                "doTheyHaveNationalInsurance" -> Yes.toString,
+                "NINO" -> testNino,
+                "otherDirectors" -> Yes.toString
+              )
+          assertFormIsValid(form, data)
+        }
     }
 
     "Directors or secretaries that are companies," should {

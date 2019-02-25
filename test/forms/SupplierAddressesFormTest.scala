@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,6 +177,22 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
           "supplierAddress.addressLine2" -> "addressLine2",
           "supplierAddress.addressCountry" -> "France",
           "additionalSupplier" -> BooleanRadioEnum.No.toString
+        )
+      assertFormIsValid(form, data)
+    }
+
+    "Allow submission if fields contain Welsh characters" in {
+      val data: Map[String, String] =
+        Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
+          "ukSupplier" -> "Yes",
+          "supplierName" -> "ôéàëŵŷáîïâêûü",
+          "vatRegistered" -> "No",
+          "supplierAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
+          "supplierAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
+          "supplierAddress.addressLine3" -> "ôéàëŵŷáîïâêûü",
+          "supplierAddress.addressLine4" -> "ôéàëŵŷáîïâêûü",
+          "supplierAddress.postcode" -> testPostcode,
+          "additionalSupplier" -> BooleanRadioEnum.Yes.toString
         )
       assertFormIsValid(form, data)
     }
