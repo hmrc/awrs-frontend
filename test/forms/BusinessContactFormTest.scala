@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import forms.validation.util.{FieldError, SummaryError}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.TestConstants
+import uk.gov.hmrc.play.views.html.helpers.form
+import utils.TestConstants._
 
 class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
   implicit lazy val forms = BusinessContactsForm.businessContactsForm.form
@@ -52,4 +53,21 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
 
   }
 
+  "Form validation" should {
+    "check Welsh character validations for First Name, Last Name and Contact Address" in {
+      val data: Map[String, String] =
+        Map("contactAddressSame" -> "No",
+          "contactAddress.addressLine1" -> testWelshChars,
+          "contactAddress.addressLine2" -> testWelshChars,
+          "contactAddress.addressLine3" -> testWelshChars,
+          "contactAddress.addressLine4" -> testWelshChars,
+          "contactAddress.postcode" -> testPostcode,
+          "contactFirstName" -> testWelshChars,
+          "contactLastName" -> testWelshChars,
+          "email" -> "test@test.com",
+          "telephone" -> "01912244194"
+        )
+      assertFormIsValid(forms, data)
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
+import utils.TestConstants._
 
 class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
   lazy val forms = (entity: String, hasAwrs: Boolean) => BusinessDetailsForm.businessDetailsForm(entity, hasAwrs).form
@@ -37,6 +38,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
   val LimitedGroup = "LTD_GRP"
 
   val entities = Seq[String](SoleTrader, Ltd, Partnership, LimitedLiabilityGroup, LimitedGroup)
+  val welshCharEntities = Seq[String](LimitedLiabilityGroup, LimitedGroup)
 
   "Business details form" should {
     for (entity <- entities; hasAwrs <- Seq(true, false)) {
@@ -108,6 +110,18 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
         )
         dateId assertDateFieldIsCompulsoryWhen(newBusinessAnsweredYes, expectations)
       }
+    }
+
+    for (entity <- welshCharEntities; hasAwrs <- Seq(true))
+    f"check Welsh character validations for entity: $entity and hasAwrs: $hasAwrs" in {
+      val validDate = List(ExpectedValidDateFormat(TupleDate("01", "04", "2016")))
+      val data: Map[String, String] =
+        Map("companyName" -> testWelshChars,
+          "newAWBusiness.newAWBusiness" -> "No",
+          "doYouHaveTradingName" -> "Yes",
+          "tradingName" -> testWelshChars
+        )
+      assertFormIsValid(forms(entity, hasAwrs), data)
     }
   }
 }

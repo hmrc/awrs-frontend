@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ object TestConstants {
   lazy val testEmail = "email@email.com"
   lazy val testTradingName = "North East Wines"
   lazy val testUserName = "joe bloggs"
+  lazy val testWelshChars = "ôéàëŵŷáîïâêûü"
 
   // a hacky method to generate a post code by testing a probable post code against the regex
   @tailrec

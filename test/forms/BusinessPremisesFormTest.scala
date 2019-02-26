@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,18 @@ class BusinessPremisesFormTest extends UnitSpec with MockitoSugar with OneServer
           "addAnother" -> BooleanRadioEnum.No.toString
         )
       assertFormIsValid(form, data2)
+    }
+    "Allow submission if Welsh characters are input" in {
+      val data: Map[String, String] =
+        Map("additionalPremises" -> BooleanRadioEnum.Yes.toString,
+          "additionalAddress.postcode" -> testPostcode,
+          "additionalAddress.addressLine1" -> testWelshChars,
+          "additionalAddress.addressLine2" -> testWelshChars,
+          "additionalAddress.addressLine3" -> testWelshChars,
+          "additionalAddress.addressLine4" -> testWelshChars,
+          "addAnother" -> BooleanRadioEnum.Yes.toString
+        )
+      assertFormIsValid(form, data)
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 import forms.AWRSEnums._
+import utils.TestConstants._
 
 class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
 
@@ -74,7 +75,7 @@ class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with One
   "Form validation" should {
     "Allow submission if both name and role are filled in and the confirmation box is checked" in {
       val data: Map[String, String] =
-        Map("declarationName" -> "declarationName",
+        Map("declarationName" -> testWelshChars,
           "declarationRole" -> "Director",
           "confirmation" -> "true"
         )

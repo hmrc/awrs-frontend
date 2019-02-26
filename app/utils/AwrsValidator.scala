@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,11 @@ trait AwrsValidator {
 
   val asciiRegex =  """^[\x00-\x7F]*$"""
 
-  val alphaRegex = """^(?i)[A-Z ]+$"""
+  val alphaRegex = """^(?i)[A-Z ôéëàŵŷáîïâêûü]+$"""
 
   val numericRegex = """^[0-9 ]+$"""
 
-  val alphaNumericRegex = """^(?i)[A-Z0-9 ]+$"""
+  val alphaNumericRegex = """^(?i)[A-Z0-9 ôéëàŵŷáîïâêûü]+$"""
 
   // allow any combination of numbers and letters from 1 to 20 times
   // for now both passport and national ids are the same but the variables are left seperate in case if they do diverge
@@ -69,6 +69,8 @@ trait AwrsValidator {
   val asciiChar126 = 126
   val asciiChar160 = 160
   val asciiChar255 = 255
+  val asciiChar244 = 244
+  val asciiWelshChars = List(244, 233, 235, 224, 373, 375, 225, 238, 239, 226)
 
   def validText(input: String): Boolean = {
     validateISO88591(input)
@@ -77,7 +79,7 @@ trait AwrsValidator {
   def validateISO88591(input: String): Boolean = {
     val inputList: List[Char] = input.toList
     inputList.forall { c =>
-      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255)
+      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255) || asciiWelshChars.contains(c)
     }
   }
 
