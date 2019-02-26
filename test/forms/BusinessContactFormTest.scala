@@ -23,7 +23,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.views.html.helpers.form
-import utils.TestConstants
+import utils.TestConstants._
 
 class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
   implicit lazy val forms = BusinessContactsForm.businessContactsForm.form
@@ -54,17 +54,20 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
   }
 
   "Form validation" should {
-    "Allow submission if both name and role are filled in and the confirmation box is checked" in {
+    "check Welsh character validations for First Name, Last Name and Contact Address" in {
       val data: Map[String, String] =
-        Map("contactFirstName" -> "ôéàëŵŷáîïâêûü",
-          "contactLastName" -> "ôéàëŵŷáîïâêûü",
-          "contactAddressSame" -> "Yes",
-          "contactAddress" -> "test",
+        Map("contactAddressSame" -> "No",
+          "contactAddress.addressLine1" -> testWelshChars,
+          "contactAddress.addressLine2" -> testWelshChars,
+          "contactAddress.addressLine3" -> testWelshChars,
+          "contactAddress.addressLine4" -> testWelshChars,
+          "contactAddress.postcode" -> testPostcode,
+          "contactFirstName" -> testWelshChars,
+          "contactLastName" -> testWelshChars,
           "email" -> "test@test.com",
           "telephone" -> "01912244194"
         )
       assertFormIsValid(forms, data)
     }
   }
-
 }

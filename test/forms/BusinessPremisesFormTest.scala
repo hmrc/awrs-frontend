@@ -89,10 +89,10 @@ class BusinessPremisesFormTest extends UnitSpec with MockitoSugar with OneServer
       val data: Map[String, String] =
         Map("additionalPremises" -> BooleanRadioEnum.Yes.toString,
           "additionalAddress.postcode" -> testPostcode,
-          "additionalAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
-          "additionalAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
-          "additionalAddress.addressLine3" -> "ôéàëŵŷáîïâêûü",
-          "additionalAddress.addressLine4" -> "ôéàëŵŷáîïâêûü",
+          "additionalAddress.addressLine1" -> testWelshChars,
+          "additionalAddress.addressLine2" -> testWelshChars,
+          "additionalAddress.addressLine3" -> testWelshChars,
+          "additionalAddress.addressLine4" -> testWelshChars,
           "addAnother" -> BooleanRadioEnum.Yes.toString
         )
       assertFormIsValid(form, data)

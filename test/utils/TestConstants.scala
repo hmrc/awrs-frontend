@@ -47,6 +47,7 @@ object TestConstants {
   lazy val testEmail = "email@email.com"
   lazy val testTradingName = "North East Wines"
   lazy val testUserName = "joe bloggs"
+  lazy val testWelshChars = "ôéàëŵŷáîïâêûü"
 
   // a hacky method to generate a post code by testing a probable post code against the regex
   @tailrec

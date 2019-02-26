@@ -23,6 +23,7 @@ import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 import forms.AWRSEnums._
+import utils.TestConstants._
 
 class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
 
@@ -74,7 +75,7 @@ class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with One
   "Form validation" should {
     "Allow submission if both name and role are filled in and the confirmation box is checked" in {
       val data: Map[String, String] =
-        Map("declarationName" -> "ôéàëŵŷáîïâêûü",
+        Map("declarationName" -> testWelshChars,
           "declarationRole" -> "Director",
           "confirmation" -> "true"
         )

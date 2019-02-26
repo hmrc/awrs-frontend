@@ -185,12 +185,12 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
       val data: Map[String, String] =
         Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
           "ukSupplier" -> "Yes",
-          "supplierName" -> "ôéàëŵŷáîïâêûü",
+          "supplierName" -> testWelshChars,
           "vatRegistered" -> "No",
-          "supplierAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
-          "supplierAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
-          "supplierAddress.addressLine3" -> "ôéàëŵŷáîïâêûü",
-          "supplierAddress.addressLine4" -> "ôéàëŵŷáîïâêûü",
+          "supplierAddress.addressLine1" -> testWelshChars,
+          "supplierAddress.addressLine2" -> testWelshChars,
+          "supplierAddress.addressLine3" -> testWelshChars,
+          "supplierAddress.addressLine4" -> testWelshChars,
           "supplierAddress.postcode" -> testPostcode,
           "additionalSupplier" -> BooleanRadioEnum.Yes.toString
         )

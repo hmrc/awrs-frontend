@@ -198,13 +198,13 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
 
         val testDataScen1: Map[String, String] =
           conditionEntityIsIndividual +
-            ("firstName" -> "ôéàëŵŷáîïâêûü",
-              "lastName" -> "ôéàëŵŷáîïâêûü",
+            ("firstName" -> testWelshChars,
+              "lastName" -> testWelshChars,
               "partnerAddress.postcode" -> testPostcode,
-              "partnerAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
-              "partnerAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
-              "partnerAddress.addressLine3" -> "ôéàëŵŷáîïâêûü",
-              "partnerAddress.addressLine4" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine1" -> testWelshChars,
+              "partnerAddress.addressLine2" -> testWelshChars,
+              "partnerAddress.addressLine3" -> testWelshChars,
+              "partnerAddress.addressLine4" -> testWelshChars,
               "doYouHaveNino" -> Yes.toString,
               "nino" -> testNino,
               "otherPartners" -> Yes.toString
@@ -278,12 +278,12 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
 
         val data: Map[String, String] =
           conditionEntityIsCompany +
-            ("companyNames.businessName" -> "ôéàëŵŷáîïâêûü",
+            ("companyNames.businessName" -> testWelshChars,
               "companyNames.doYouHaveTradingName" -> YesString,
-              "companyNames.tradingName" -> "ôéàëŵŷáîïâêûü",
+              "companyNames.tradingName" -> testWelshChars,
               "partnerAddress.postcode" -> testPostcode,
-              "partnerAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
-              "partnerAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine1" -> testWelshChars,
+              "partnerAddress.addressLine2" -> testWelshChars,
               "doYouHaveVRN" -> No.toString,
               "isBusinessIncorporated" -> No.toString,
               "doYouHaveUTR" -> Yes.toString,
@@ -355,13 +355,13 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
 
         val data: Map[String, String] =
           conditionEntityIsSoleTrader +
-            ("firstName" -> "ôéàëŵŷáîïâêûü",
-              "lastName" -> "ôéàëŵŷáîïâêûü",
+            ("firstName" -> testWelshChars,
+              "lastName" -> testWelshChars,
               "companyNames.doYouHaveTradingName" -> YesString,
-              "companyNames.tradingName" -> "ôéàëŵŷáîïâêûü",
+              "companyNames.tradingName" -> testWelshChars,
               "partnerAddress.postcode" -> testPostcode,
-              "partnerAddress.addressLine1" -> "ôéàëŵŷáîïâêûü",
-              "partnerAddress.addressLine2" -> "ôéàëŵŷáîïâêûü",
+              "partnerAddress.addressLine1" -> testWelshChars,
+              "partnerAddress.addressLine2" -> testWelshChars,
               "doYouHaveNino" -> Yes.toString,
               "nino" -> testNino,
               "doYouHaveVRN" -> Yes.toString,

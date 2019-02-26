@@ -110,8 +110,8 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
         "check Welsh character validations for %s".format(directorType) in {
           val data: Map[String, String] =
             conditionDirectorIsIndividual +
-              ("firstName" -> "ôéàëŵŷáîïâêûü",
-                "lastName" -> "ôéàëŵŷáîïâêûü",
+              ("firstName" -> testWelshChars,
+                "lastName" -> testWelshChars,
                 "doTheyHaveNationalInsurance" -> Yes.toString,
                 "NINO" -> testNino,
                 "otherDirectors" -> Yes.toString
@@ -203,9 +203,9 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
         "check Welsh character validations for %s".format(directorType) in {
           val data: Map[String, String] =
             conditionDirectorIsCompany +
-              ("companyNames.tradingName" -> "ôéàëŵŷáîïâêûü",
+              ("companyNames.tradingName" -> testWelshChars,
                 "companyNames.doYouHaveTradingName" -> "Yes",
-                "companyNames.businessName" -> "ôéàëŵŷáîïâêûü",
+                "companyNames.businessName" -> testWelshChars,
                 "doYouHaveVRN" -> Yes.toString,
                 "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
                 "doYouHaveCRN" -> No.toString,
