@@ -19,6 +19,8 @@ package connectors
 import config.{AwrsFrontendAuditConnector, WSHttp}
 import metrics.AwrsMetrics
 import models._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -28,7 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import play.api.http.Status._
 import utils.{AccountUtils, LoggingUtils}
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, ServiceUnavailableException }
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, ServiceUnavailableException}
 
 trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
 
@@ -141,10 +143,14 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
 object AWRSNotificationConnector extends AWRSNotificationConnector {
   override val appName = "awrs-frontend"
   override val metrics = AwrsMetrics
-  override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
+  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
 
   override val httpGet: HttpGet = WSHttp
   override val httpDelete: HttpDelete = WSHttp
   override val httpPut: HttpPut = WSHttp
   override val httpPost: HttpPost = WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

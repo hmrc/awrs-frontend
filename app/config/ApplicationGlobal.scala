@@ -18,6 +18,7 @@ package config
 
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
+import play.api.Mode.Mode
 import play.api.mvc.{EssentialFilter, Request}
 import play.api.{Application, Configuration, Play}
 import play.filters.csrf.CSRFFilter
@@ -28,9 +29,9 @@ import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import uk.gov.hmrc.play.frontend.filters.{ CacheControlFilter, FrontendAuditFilter, FrontendLoggingFilter, HeadersFilter, MicroserviceFilterSupport }
+import uk.gov.hmrc.play.frontend.filters.{CacheControlFilter, FrontendAuditFilter, FrontendLoggingFilter, HeadersFilter, MicroserviceFilterSupport}
 
-object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
+object ApplicationGlobal extends DefaultFrontendGlobal {
 
 
   override val auditConnector = AwrsFrontendAuditConnector
@@ -42,7 +43,7 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
   override protected lazy val defaultFrontendFilters: Seq[EssentialFilter] = Seq(
     metricsFilter,
     HeadersFilter,
-    SessionCookieCryptoFilter,
+    sessionCookieCryptoFilter,
     deviceIdFilter,
     loggingFilter,
     frontendAuditFilter,
@@ -50,7 +51,7 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 
   override def onStart(app: Application) {
     super.onStart(app)
-    ApplicationCrypto.verifyConfiguration()
+    new ApplicationCrypto(Play.current.configuration.underlying).verifyConfiguration()
   }
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
@@ -70,7 +71,7 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
     override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsLogging
   }
 
-  object AwrsFrontendAuditFilter extends FrontendAuditFilter with RunMode with AppName with MicroserviceFilterSupport{
+  object AwrsFrontendAuditFilter extends FrontendAuditFilter with AppName with MicroserviceFilterSupport{
 
     override lazy val maskedFormFields = Seq.empty
 
@@ -79,6 +80,8 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
     override lazy val auditConnector = AwrsFrontendAuditConnector
 
     override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
+
+    override protected def appNameConfiguration: Configuration = Play.current.configuration
   }
 
 }

@@ -19,6 +19,8 @@ package connectors
 import com.fasterxml.jackson.core.JsonParseException
 import config.{AwrsFrontendAuditConnector, WSHttp}
 import models.MatchBusinessData
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
@@ -30,15 +32,19 @@ import utils.LoggingUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException }
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException}
 
 object BusinessMatchingConnector extends BusinessMatchingConnector {
   override val appName = "awrs-frontend"
-  override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
+  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
   val baseUri = "business-matching"
   val lookupUri = "business-lookup"
   val serviceUrl = baseUrl("business-matching")
   val http: HttpGet with HttpPost = WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
 trait BusinessMatchingConnector extends ServicesConfig with RawResponseReads with LoggingUtils {

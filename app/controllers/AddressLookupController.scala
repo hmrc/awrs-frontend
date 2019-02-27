@@ -132,5 +132,5 @@ object AddressLookupController extends AddressLookupController {
 
   override def appName: String = "awrs-frontend"
 
-  override def audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
+  override def audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
 }

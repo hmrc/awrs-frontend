@@ -18,6 +18,8 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import utils.AwrsUnitTestTraits
@@ -27,7 +29,11 @@ import scala.concurrent.Future
 
 class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnector {
 
-  object TestApplicationController extends ApplicationController
+  object TestApplicationController extends ApplicationController {
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
+  }
 
   "Authorised users" should {
     "be redirected to feedback-survey page" in {

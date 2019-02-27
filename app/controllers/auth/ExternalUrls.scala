@@ -16,6 +16,8 @@
 
 package controllers.auth
 
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -33,4 +35,8 @@ object ExternalUrls extends RunMode with ServicesConfig{
   val signOut = s"$companyAuthHost/gg/sign-out/?continue=$logoutCallbackUrl"
   val businessCustomerStartPage = loadConfig(s"business-customer.serviceRedirectUrl")
   val businessTaxAccountPage = loadConfig(s"business-tax-account.serviceRedirectUrl")
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

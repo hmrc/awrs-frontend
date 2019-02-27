@@ -20,6 +20,8 @@ import config.{AwrsFrontendAuditConnector, WSHttp}
 import exceptions.{DuplicateSubscriptionException, GovernmentGatewayException}
 import metrics.AwrsMetrics
 import models._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.audit.model.Audit
@@ -29,7 +31,7 @@ import utils.LoggingUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException }
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
 
 trait GovernmentGatewayConnector extends ServicesConfig with LoggingUtils {
 
@@ -147,5 +149,9 @@ trait GovernmentGatewayConnector extends ServicesConfig with LoggingUtils {
 object GovernmentGatewayConnector extends GovernmentGatewayConnector {
   override val appName = "awrs-frontend"
  override val metrics = AwrsMetrics
-  override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
+  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

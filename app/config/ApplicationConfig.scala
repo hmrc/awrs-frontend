@@ -16,6 +16,8 @@
 
 package config
 
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -51,4 +53,7 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   override lazy val defaultTimeoutSeconds: Int = getString(s"defaultTimeoutSeconds").toInt
   override lazy val timeoutCountdown: Int = getString(s"timeoutCountdown").toInt
 
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

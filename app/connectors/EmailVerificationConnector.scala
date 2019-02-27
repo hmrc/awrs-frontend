@@ -20,6 +20,8 @@ import config.{AwrsFrontendAuditConnector, WSHttp}
 import metrics.AwrsMetrics
 import models._
 import org.joda.time.Period
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.http.Status._
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
@@ -30,7 +32,7 @@ import utils.AwrsConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost}
 
 trait EmailVerificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
 
@@ -103,7 +105,11 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
 object EmailVerificationConnector extends EmailVerificationConnector {
   override val appName = "awrs-frontend"
   override val metrics = AwrsMetrics
-  override val audit: Audit = new Audit(AppName.appName, AwrsFrontendAuditConnector)
+  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
   override val httpGet: HttpGet = WSHttp
   override val httpPost: HttpPost = WSHttp
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

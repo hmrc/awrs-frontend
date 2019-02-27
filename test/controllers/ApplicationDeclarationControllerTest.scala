@@ -27,6 +27,8 @@ import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -67,6 +69,10 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     override val keyStoreService = TestKeyStoreService
     override val enrolService = mockEnrolService
     override val applicationService = mockApplicationService
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   object TestApplicationBusinessDirectorsController extends BusinessDirectorsController {

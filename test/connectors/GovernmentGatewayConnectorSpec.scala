@@ -18,12 +18,16 @@ package connectors
 
 import java.util.concurrent.TimeUnit
 
+import akka.actor.ActorSystem
 import audit.TestAudit
 import com.codahale.metrics.Timer
+import com.typesafe.config.Config
 import metrics.AwrsMetrics
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
@@ -50,6 +54,10 @@ class GovernmentGatewayConnectorSpec extends AwrsUnitTestTraits {
     override def auditConnector: AuditConnector = MockAuditConnector
 
     override def appName = "awrs-frontend"
+
+    override protected def actorSystem: ActorSystem = Play.current.actorSystem
+
+    override protected def configuration: Option[Config] = Option(Play.current.configuration.underlying)
   }
 
   val mockWSHttp = mock[MockHttp]
@@ -65,6 +73,9 @@ class GovernmentGatewayConnectorSpec extends AwrsUnitTestTraits {
     override val metrics = mockAwrsMetrics
     override val audit: Audit = new TestAudit
     override val retryWait = 1 // override the retryWait as the wait time is irrelevant to the meaning of the test and reducing it speeds up the tests
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   val failureGovGateResponse = Json.parse( """{"hostname":"government-gateway-admin", "reason": "Some other reason"}""")

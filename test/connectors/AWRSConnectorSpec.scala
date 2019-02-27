@@ -16,14 +16,18 @@
 
 package connectors
 
+import akka.actor.ActorSystem
 import audit.TestAudit
 import builders.AuthBuilder
+import com.typesafe.config.Config
 import exceptions.{DESValidationException, DuplicateSubscriptionException, GovernmentGatewayException, PendingDeregistrationException}
 import models.FormBundleStatus.Pending
 import models.StatusContactType.MindedToReject
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
@@ -39,7 +43,7 @@ import utils.TestConstants._
 import utils.{AccountUtils, AwrsUnitTestTraits}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, ForbiddenException, HeaderCarrier, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException }
+import uk.gov.hmrc.http.{BadRequestException, ForbiddenException, HeaderCarrier, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
 
 class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
@@ -51,6 +55,10 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     override def auditConnector: AuditConnector = MockAuditConnector
 
     override def appName = "awrs-frontend"
+
+    override protected def actorSystem: ActorSystem = Play.current.actorSystem
+
+    override protected def configuration: Option[Config] = Option(Play.current.configuration.underlying)
   }
 
   val mockWSHttp = mock[MockHttp]
@@ -62,6 +70,10 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   object TestAWRSConnector extends AWRSConnector {
     override val http: HttpGet with HttpPost with HttpPut = mockWSHttp
     override val audit: Audit = new TestAudit
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
