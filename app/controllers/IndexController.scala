@@ -50,6 +50,7 @@ trait IndexController extends AwrsController {
           Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession)
         case businessType =>
           debug(s"Business Type : $businessType")
+          println(s"\n\n\n\nBusiness Type : $businessType\n\n\n\n")
           for {
             businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
             subscriptionStatus <- api9.getSubscriptionStatusFromCache
@@ -60,6 +61,7 @@ trait IndexController extends AwrsController {
             val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
             val showOneViewLink = indexService.showOneViewLink(sectionStatus)
             val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
+            println(s"\n\n\n\nScubscription Status Type : $subscriptionStatus\n\n\n\n")
             Ok(views.html.awrs_index(
               awrsRef = {AccountUtils.hasAwrs match {
                 case true => Some(AccountUtils.getAwrsRefNo.toString())
