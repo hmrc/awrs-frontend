@@ -47,6 +47,7 @@ trait IndexController extends AwrsController {
       request.session.get("businessType").fold("")(x => x) match {
         case "" =>
           debug("No business Type found")
+          debug("Fell in here, no business type")
           Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession)
         case businessType =>
           debug(s"Business Type : $businessType")
@@ -61,7 +62,8 @@ trait IndexController extends AwrsController {
             val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
             val showOneViewLink = indexService.showOneViewLink(sectionStatus)
             val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
-            println(s"\n\n\n\nScubscription Status Type : $subscriptionStatus\n\n\n\n")
+            debug(s"Subscription Status Type : $subscriptionStatus")
+            println(s"\n\n\n\nSubscription Status Type : $subscriptionStatus\n\n\n\n")
             Ok(views.html.awrs_index(
               awrsRef = {AccountUtils.hasAwrs match {
                 case true => Some(AccountUtils.getAwrsRefNo.toString())

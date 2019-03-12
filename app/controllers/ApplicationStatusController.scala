@@ -207,7 +207,8 @@ trait ApplicationStatusController extends AwrsController with AccountUtils {
               statusReturnType,
               isNewBusiness
             )
-          case false => Redirect(controllers.routes.IndexController.showIndex()) addSessionStatus statusReturnType.status addLocation
+          case false => println(s"\n\n\n\nBusiness Type App Status : $businessType\n\n\n\n")
+            Redirect(controllers.routes.IndexController.showIndex()) addSessionStatus statusReturnType.status addLocation
         }
       }
   }
