@@ -87,7 +87,7 @@ awrs.generic.do_you_have_UTR_information=Example, 1234546734
 awrs.generic.iDoNotKnowMyUTR_question=I do not know my UTR
 awrs.generic.iDoNotKnowMyUTR_text= Your UTR is 10 or 13 numbers. It can be found in the header of any letter from HMRC next to headings like ‘Tax Reference’, ‘UTR’ or ‘Official Use’. Your accountant or tax manager will have your UTR.
 awrs.generic.iDoNotKnowTheirUTR_question=I do not know the UTR
-awrs.generic.iDoNotKnowTheirUTR_text=Their UTR number is made up of 10 or 13 digits like this, 12345 67890. It is issued by HMRC when they register their business or for Self Assessment. If their UTR is 13 digits only enter the last 10.{0}It can usually be found in the header of any letter issued by HMRC next to headings such as ''Tax Reference'', ''UTR'' or ''Official Use''{0}Their accountant or tax manager would normally have their UTR.{0}If they are a charity or an unincorporated association and do not have a UTR then leave it blank.
+awrs.generic.iDoNotKnowTheirUTR_text=Their UTR number is made up of 10 or 13 digits like this, 12345 67890. It is issued by HMRC when they register their business or for Self Assessment. If their UTR is 13 digits only enter the last 10.{0}It can usually be found in the header of any letter issued by HMRC next to headings such as ‘Tax Reference’, ‘UTR’ or ‘Official Use’{0}Their accountant or tax manager would normally have their UTR.{0}If they are a charity or an unincorporated association and do not have a UTR then leave it blank.
 awrs.generic.do_you_have_sa_UTR=Do you have a Self Assessment Unique Taxpayer Reference (UTR)?
 awrs.generic.do_you_have_partnership_UTR=Do you have a Partnership Self Assessment Unique Taxpayer Reference(UTR)?
 awrs.generic.do_they_have_partnership_UTR=Do they have a Partnership Self Assessment Unique Taxpayer Reference (UTR)?
@@ -97,7 +97,7 @@ awrs.generic.warning_icon_text=Warning.
 
 # Generic Error Messages
 #============================================================
-awrs.generic.error.title=Sorry, we’re experiencing technical difficulties
+awrs.generic.error.title=Sorry, we are experiencing technical difficulties
 awrs.generic.error.status=There has been a problem with your application
 awrs.generic.errors_heading=There is a problem
 awrs.generic.error.postcode_empty.summary=The {0} postcode is empty
@@ -820,7 +820,7 @@ awrs.withdrawal.error.other.reason_empty = Enter the other reasons why you are w
 awrs.feedback.title=Feedback
 awrs.feedback.heading=Leave feedback
 awrs.feedback.subheading=Feedback
-awrs.feedback.intro.instructions.line1=You won’t get a reply to any feedback. If you want to raise a technical problem or get a response {0}report an issue with this service{1}. Do not include any personal or financial information.
+awrs.feedback.intro.instructions.line1=You will not get a reply to any feedback. If you want to raise a technical problem or get a response {0}report an issue with this service{1}. Do not include any personal or financial information.
 awrs.feedback.questions.visit_reason=What were you trying to do today?
 awrs.feedback.questions.satisfaction_rating=Overall, how do you feel about your experience using the service today?
 awrs.feedback.questions.comments=What would you like to tell us?
