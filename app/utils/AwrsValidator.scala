@@ -29,7 +29,7 @@ trait AwrsValidator {
   val vatRegex = """^(?i)([ \t]*G[ \t]*B[ \t]*(?:[ \t]*\d[ \t]*){9})|(?:[ \t]*\d[ \t]*){9}$"""
 
   // match any combination of alphanumeric characters and spaces 8 times, case insensitive
-  val crnRegex =  """^(?i)((?:[ \t]*([A-Z]*){2}[0-9][ \t]*){6})|(([0-9][ \t]*){8})|((?:[ \t]*[0-9][ \t]*){7})$"""
+  val crnRegex =  """^((?i)[A-Z]{2}[\d]{6})|([\d]{7,8})$"""
 
   // match leading spaces + any 3 letters + any combination of digits and spaces 10 times
   val utrRegex = """^(?:[ \t]*(?:[a-zA-Z]{3})?\d[ \t]*){10}$"""

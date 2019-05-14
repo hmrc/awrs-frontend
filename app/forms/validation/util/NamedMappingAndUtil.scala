@@ -282,7 +282,7 @@ object NamedMappingAndUtil {
         Seq(
           FieldFormatConstraintParameter(
             (str: String) =>
-              str.matches(crnRegex) match {
+              str.replace(" ", "").matches(crnRegex) match {
                 case true => Valid
                 case false if """[1-9]""".r.findFirstIn(str).isEmpty && str.length == 8
                 => simpleErrorMessage(fieldId, "awrs.generic.error.companyRegNumber_atleastOneNumber")
