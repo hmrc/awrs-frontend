@@ -60,6 +60,37 @@ class FormatValidationsTest extends UnitSpec with Matchers {
     }
   }
 
+  "crn reg ex" should {
+    "satisfy the following valid" in {
+      Seq(
+        "12345678",
+        "01234567",
+        "NI123456",
+        "ni000000",
+        "ni000000",
+        "NO987654",
+        "9876543"
+      ) foreach { crn =>
+        crn.matches(crnRegex) shouldBe true
+      }
+    }
+    "satisfy the following invalid" in {
+      Seq(
+        "1",
+        "123456",
+        "123456789",
+        "ABC12312",
+        "12AB3456",
+        " 1234567",
+        "123456  ",
+        "A1234567",
+        "SC 236367"
+      ) foreach { crn =>
+        crn.matches(crnRegex) shouldBe false
+      }
+    }
+  }
+
   "validation functions" should {
     "satisfy the following valid and invalid cases" in {
       val validData = Seq("0", "9", "a", "A", "z", "Z")
