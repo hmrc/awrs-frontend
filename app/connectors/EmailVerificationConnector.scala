@@ -23,6 +23,7 @@ import org.joda.time.Period
 import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.http.Status._
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -32,14 +33,14 @@ import utils.AwrsConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, NotFoundException}
 
 trait EmailVerificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
 
   lazy val serviceURL = baseUrl("email-verification")
   val baseURI = "/email-verification"
   val sendEmail = "/verification-requests"
-  val verifyEmail = "/verified-email-addresses"
+  val verifyEmail = "/verified-email-check"
   val continueUrl = emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess.url
   val defaultEmailExpiryPeriod = Period.days(1).toString
   val defaultTemplate = "awrs_email_verification"
@@ -76,25 +77,22 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
   def isEmailAddressVerified(email: Option[String])(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
     email match {
       case Some(emailAddress) =>
-        val getURL = s"""$serviceURL$baseURI$verifyEmail/$emailAddress"""
-        httpGet.GET(getURL).map {
-          response =>
-            response.status match {
-              case OK =>
-                warn(f"[$auditVerifyEmail] - Successful return of data")
-                audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
-                true
-              case NOT_FOUND =>
-                warn(f"[$auditVerifyEmail] - Successful return of data - email address not verified")
-                audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
-                false
-              case status@_ =>
-                warn(f"[$auditVerifyEmail - $emailAddress ] - Unsuccessful return of data. Status code: $status")
-                audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeFailure)
-                // if the verification service is unavailable for any reason, the decision has been made not to block the user journey
-                // when they return their email address will be validated before any further submissions
-                true
-            }
+        val verifyURL = s"""$serviceURL$baseURI$verifyEmail"""
+
+        httpPost.POST(verifyURL, Json.obj("email" -> emailAddress)).map { _ =>
+          audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+          true
+        } recover {
+          case _: NotFoundException =>
+            warn(f"[$auditVerifyEmail] - Successful return of data - email address not verified")
+            audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+            false
+          case status =>
+            warn(f"[$auditVerifyEmail] - Unsuccessful return of data. Status code: $status")
+            audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeFailure)
+            // if the verification service is unavailable for any reason, the decision has been made not to block the user journey
+            // when they return their email address will be validated before any further submissions
+            true
         }
       case _ => Future.successful(false)
     }

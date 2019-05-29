@@ -21,11 +21,12 @@ import audit.TestAudit
 import com.typesafe.config.Config
 import metrics.AwrsMetrics
 import org.mockito.Matchers
+import org.mockito.Matchers.{any, endsWith}
 import org.mockito.Mockito._
 import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -82,7 +83,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   implicit val request = FakeRequest()
 
   lazy val sendEmailURI = TestEmailVerificationConnector.sendEmail
-  lazy val verifiyEmailURI = (email: String) => TestEmailVerificationConnector.verifyEmail + "/" + email
+  lazy val verifiyEmailURI = TestEmailVerificationConnector.verifyEmail
 
   "sendVerificationEmail" should {
 
@@ -120,26 +121,25 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
 
   "isEmailAddressVerified" should {
 
-    def mockGetResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
-      when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(verifiyEmailURI(testEmail)))(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
-
     def testGetCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.isEmailAddressVerified(testEmail)
 
     "return success equals true, for successful verification of email" in {
-      mockGetResponse(responseStatus = OK)
+      when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK)))
       val result = testGetCall
       await(result) shouldBe true
     }
 
     "return success equals false, if email has not been verified" in {
-      mockGetResponse(responseStatus = NOT_FOUND)
+      when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
+        .thenReturn(Future.failed(new NotFoundException("404")))
       val result = testGetCall
       await(result) shouldBe false
     }
 
     "return success equals true, when an error occurs as we have chosen not to block" in {
-      mockGetResponse(responseStatus = INTERNAL_SERVER_ERROR)
+      when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
+        .thenReturn(Future.failed(Upstream5xxResponse("503", 503, 503)))
       val result = testGetCall
       await(result) shouldBe true
     }
