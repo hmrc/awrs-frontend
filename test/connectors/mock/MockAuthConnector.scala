@@ -19,10 +19,18 @@ package connectors.mock
 import java.util.UUID
 
 import builders.AuthBuilder
+import config.FrontendAuthConnector
 import controllers.auth.Utr._
+import org.mockito.Matchers
 import org.mockito.Mockito._
+import org.mockito.stubbing.OngoingStubbing
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import utils.AwrsUnitTestTraits
+import utils.{AwrsUnitTestTraits, TestUtil}
+import uk.gov.hmrc.auth.core.retrieve.{~ => retrieval}
+
+import scala.concurrent.Future
 
 sealed trait BType
 
@@ -32,15 +40,17 @@ case object LTD extends BType
 trait MockAuthConnector extends AwrsUnitTestTraits {
   lazy val userId = s"user-${UUID.randomUUID}"
   // need to be lazy in case of overrides
-  lazy val mockAuthConnector = mock[AuthConnector]
+  lazy val mockAuthConnector: FrontendAuthConnector = mock[FrontendAuthConnector]
 
-  def setUser(businessType: BType = SoleTrader, hasAwrs: Boolean = false) = {
+  def setUser(businessType: BType = SoleTrader, hasAwrs: Boolean = false): Unit = {
     reset(mockAuthConnector)
-    (businessType, hasAwrs) match {
-      case (_, true) => AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, awrsUtr)
-      case (SoleTrader, _) => AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, saUtr)
-      case _ => AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, ctUtr)
-    }
+  }
+
+  def setAuthMocks(authResult: Future[Enrolments ~ Option[AffinityGroup]] =
+                   Future.successful(retrieval(Enrolments(TestUtil.defaultEnrolmentSet),
+                     Some(AffinityGroup.Organisation)))): OngoingStubbing[Future[retrieval[Enrolments, Option[AffinityGroup]]]] = {
+    when(mockAuthConnector.authorise[Enrolments ~ Option[AffinityGroup]](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(authResult)
   }
 
   override def beforeEach(): Unit = {

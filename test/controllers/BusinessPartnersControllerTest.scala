@@ -52,6 +52,7 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
   object TestBusinessPartnersController extends BusinessPartnersController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   private def testPartner(haveMore: Boolean = true) = TestUtil.testPartner(
@@ -133,24 +134,28 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(partnerId: Int = 1, businessType: String = "LLP")(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = testPartnerDetails, fetchAdditionalBusinessPremisesList = None)
+    setAuthMocks()
     val result = TestBusinessPartnersController.saveAndContinue(partnerId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
   private def returnWithAuthorisedUser(partnerId: Int = 1)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = testPartnerDetails)
+    setAuthMocks()
     val result = TestBusinessPartnersController.saveAndReturn(partnerId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def showDeleteWithAuthorisedUser(id: Int = 1, partners: Partners = Partners(List(testPartner())))(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = partners)
+    setAuthMocks()
     val result = TestBusinessPartnersController.showDelete(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def deleteWithAuthorisedUser(id: Int = 1, partners: Partners = Partners(List(testPartner())))(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = partners)
+    setAuthMocks()
     val result = TestBusinessPartnersController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

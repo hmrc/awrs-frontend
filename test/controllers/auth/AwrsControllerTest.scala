@@ -54,6 +54,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     override val indexService = mockIndexService
     override val api9 = TestAPI9
     override val applicationService = mockApplicationService
+    val signInUrl = "/sign-in"
   }
 
   "The index page which implements AwrsController" should {
@@ -103,8 +104,8 @@ class AwrsControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testReviewDetails,
       fetchAll = returnedCachemap
     )
-
     setupMockIndexService()
+    setAuthMocks()
     val result = TestIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -120,6 +121,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     setupMockKeyStoreService(subscriptionStatusType = testSubscriptionStatusType)
     setupMockIndexService(showContinueButton = false)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
+    setAuthMocks()
     val result = TestIndexController.showIndex.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }

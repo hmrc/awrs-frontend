@@ -17,57 +17,58 @@
 package connectors
 
 import config.{AwrsFrontendAuditConnector, WSHttp}
+import controllers.auth.StandardAuthRetrievals
 import exceptions.{DESValidationException, DuplicateSubscriptionException, GovernmentGatewayException, PendingDeregistrationException}
 import models.FormBundleStatus.Approved
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
+import play.api.Play.current
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, Request}
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
-import utils.AccountUtils._
+import uk.gov.hmrc.play.config.ServicesConfig
 import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import uk.gov.hmrc.http.{BadRequestException, ForbiddenException, HeaderCarrier, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
 
 object AWRSConnector extends AWRSConnector {
   override val appName = "awrs-frontend"
   override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
 
   override protected def mode: Mode = Play.current.mode
+
   override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
-trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
+trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUtils with AccountUtils {
 
+  private final val subscriptionTypeJSPath = "subscriptionTypeFrontEnd"
   lazy val serviceURL = baseUrl("awrs")
-
+  lazy val approvedInfo: String =
+    (1 to Try(Messages("awrs.application_status.info.approved.count").toInt).toOption.getOrElse(0)).map {
+      i => Messages(f"awrs.application_status.info.approved.line$i")
+    }.mkString("\n")
   val validationPattern = "(^.*submission contains one or more errors.*$)".r
   val ggFailurePattern = "(^.*government-gateway-admin.*$)".r
   val duplicateFailurePattern = "(^.*already has an active AWRS.*$)".r
   val deregFailurePattern = "(^.*whilst previous one is Under Appeal/Review or being Deregistered.*$)".r
-
-  private final val subscriptionTypeJSPath = "subscriptionTypeFrontEnd"
-
   val http: HttpGet with HttpPost with HttpPut = WSHttp
 
-  def submitAWRSData(fileData: JsValue)(implicit user: AuthContext, hc: HeaderCarrier): Future[SuccessfulSubscriptionResponse] = {
+  def submitAWRSData(fileData: JsValue, authRetrievals: StandardAuthRetrievals)
+                    (implicit hc: HeaderCarrier): Future[SuccessfulSubscriptionResponse] = {
 
     val legalEntityType = (fileData \ subscriptionTypeJSPath \ "legalEntity" \ "legalEntity").as[String]
     val businessName = (fileData \ subscriptionTypeJSPath \ "businessCustomerDetails" \ "businessName").as[String]
 
-    val accountURI = getAuthType(legalEntityType)
-    val postURL = s"""$serviceURL$accountURI/awrs/send-data"""
+    val accountURI = getAuthType(legalEntityType, authRetrievals)
+    val postURL = s"""$serviceURL/$accountURI/awrs/send-data"""
 
     http.POST[JsValue, HttpResponse](postURL, fileData) map {
       response =>
@@ -116,11 +117,18 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-  def updateGroupBusinessPartner(businessName: String, legalEntityType : String, safeId : String, updateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest)
-                                (implicit user: AuthContext, hc: HeaderCarrier) : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
-    val accountURI = getAuthType(legalEntityType)
-    val awrsRefNo = AccountUtils.getAwrsRefNo
-    val putURL = s"""$serviceURL$accountURI/$awrsRefNo/registration-details/$safeId"""
+  def updateGroupBusinessPartner(
+                                  businessName: String,
+                                  legalEntityType: String,
+                                  safeId: String,
+                                  updateRegistrationDetailsRequest: UpdateRegistrationDetailsRequest,
+                                  standardAuthRetrievals: StandardAuthRetrievals
+                                )
+                                (implicit hc: HeaderCarrier): Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
+    val accountURI = getAuthType(legalEntityType, standardAuthRetrievals)
+    val awrsRefNo = AccountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
+
+    val putURL = s"""$serviceURL/$accountURI/$awrsRefNo/registration-details/$safeId"""
     val updateRegistrationDetailsJsonRequest = Json.toJson(updateRegistrationDetailsRequest)
     http.PUT[JsValue, HttpResponse](putURL, updateRegistrationDetailsJsonRequest) map {
       response =>
@@ -159,16 +167,16 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-
-  def updateAWRSData(fileData: JsValue)(implicit user: AuthContext, hc: HeaderCarrier): Future[SuccessfulUpdateSubscriptionResponse] = {
+  def updateAWRSData(fileData: JsValue, standardAuthRetrievals: StandardAuthRetrievals)
+                    (implicit hc: HeaderCarrier): Future[SuccessfulUpdateSubscriptionResponse] = {
 
     val legalEntityType = (fileData \ subscriptionTypeJSPath \ "legalEntity" \ "legalEntity").as[String]
     val businessName = (fileData \ subscriptionTypeJSPath \ "businessCustomerDetails" \ "businessName").as[String]
 
-    val accountURI = getAuthType(legalEntityType)
-    val awrsRefNo = getAwrsRefNo
+    lazy val accountURI = authLink(standardAuthRetrievals)
+    val awrsRefNo = getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    val putURL = s"""$serviceURL$accountURI/awrs/update/$getAwrsRefNo"""
+    val putURL = s"""$serviceURL/$accountURI/awrs/update/$awrsRefNo"""
     http.PUT[JsValue, HttpResponse](putURL, fileData) map {
       response =>
         response.status match {
@@ -202,21 +210,12 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-  private def getAccountURI(implicit user: AuthContext, hc: HeaderCarrier) =
-    user.principal.accounts.org.isDefined match {
-      case true => user.principal.accounts.org.get.link
-      case false =>
-        user.principal.accounts.sa.isDefined match {
-          case true => user.principal.accounts.sa.get.link.replace("/individual", "")
-          case false => throw new RuntimeException("Neither SA or ORG link found")
-        }
-    }
+  def lookupAWRSData(standardAuthRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[JsValue] = {
 
-  def lookupAWRSData(awrsRefNo: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[JsValue] = {
+    lazy val accountURI = authLink(standardAuthRetrievals)
+    val awrsRefNo = getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    lazy val accountURI = getAccountURI
-
-    val getURL = s"""$serviceURL$accountURI/awrs/lookup/$awrsRefNo"""
+    val getURL = s"""$serviceURL/$accountURI/awrs/lookup/$awrsRefNo"""
 
     http.GET(getURL) map {
       response =>
@@ -244,17 +243,13 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-  lazy val approvedInfo: String =
-    (1 to Try(Messages("awrs.application_status.info.approved.count").toInt).toOption.getOrElse(0)).map {
-      i => Messages(f"awrs.application_status.info.approved.line$i")
-    }.mkString("\n")
+  def checkStatus(standardAuthRetrievals: StandardAuthRetrievals, orgName: String)
+                 (implicit hc: HeaderCarrier): Future[SubscriptionStatusType] = {
 
+    lazy val accountURI = authLink(standardAuthRetrievals)
+    val awrsRefNo = getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-  def checkStatus(awrsRefNo: String, orgName: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[SubscriptionStatusType] = {
-
-    lazy val accountURI = getAccountURI
-
-    val getURL = s"""$serviceURL$accountURI/awrs/status/$awrsRefNo"""
+    val getURL = s"""$serviceURL/$accountURI/awrs/status/$awrsRefNo"""
 
     lazy val auditFunction = (status: FormBundleStatus) =>
       audit(transactionName = auditAPI9TxName, detail = Map("OrganisationName" -> orgName, "awrsRegistrationNumber" -> awrsRefNo, "formBundleStatus" -> status.name) ++ {
@@ -291,12 +286,17 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-  def getStatusInfo(awrsRefNo: String, contactNumber: String, formBundleStatus: FormBundleStatus, statusContactType: Option[StatusContactType])(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[StatusInfoType] = {
+  def getStatusInfo(contactNumber: String,
+                    formBundleStatus: FormBundleStatus,
+                    statusContactType: Option[StatusContactType],
+                    authRetrievals: StandardAuthRetrievals)
+                   (implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[StatusInfoType] = {
     debug("getStatusInfo")
 
-    lazy val accountURI = getAccountURI
+    lazy val accountURI = authLink(authRetrievals)
+    val awrsRefNo = getAwrsRefNo(authRetrievals.enrolments)
 
-    val getURL = s"""$serviceURL$accountURI/awrs/status-info/$awrsRefNo/$contactNumber"""
+    val getURL = s"""$serviceURL/$accountURI/awrs/status-info/$awrsRefNo/$contactNumber"""
 
     lazy val auditFunction = (secureCommText: String) =>
       audit(transactionName = auditAPI11TxName, detail = Map("message-details" -> secureCommText, "companyName" -> request.session.get("businessName").getOrElse(""), "awrsRegistrationNumber" -> awrsRefNo, "formBundleStatus" -> formBundleStatus.name)
@@ -352,11 +352,13 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-  def withdrawApplication(awrsRefNo: String, withdrawalReason: JsValue)(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[WithdrawalResponse] = {
+  def withdrawApplication(standardAuthRetrievals: StandardAuthRetrievals, withdrawalReason: JsValue)
+                         (implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[WithdrawalResponse] = {
 
-    lazy val accountURI = getAccountURI
+    lazy val accountURI = authLink(standardAuthRetrievals)
+    val awrsRefNo = getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    val postURL = s"""$serviceURL$accountURI/awrs/withdrawal/$awrsRefNo"""
+    val postURL = s"""$serviceURL/$accountURI/awrs/withdrawal/$awrsRefNo"""
     debug(f"withdrawal calling - $postURL")
 
     http.POST[JsValue, HttpResponse](postURL, withdrawalReason) map {
@@ -366,7 +368,7 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
           case 200 =>
             warn(s"[$auditAPI8TxName] - Successful return of data")
             val withdrawalResponse = response.json.as[WithdrawalResponse]
-            audit(transactionName = auditAPI8TxName, detail = Map("message-details" -> withdrawalResponse.processingDate, "companyName" -> request.session.get("businessName").getOrElse(""),"awrsRegistrationNumber" -> awrsRefNo), eventType = eventTypeSuccess)
+            audit(transactionName = auditAPI8TxName, detail = Map("message-details" -> withdrawalResponse.processingDate, "companyName" -> request.session.get("businessName").getOrElse(""), "awrsRegistrationNumber" -> awrsRefNo), eventType = eventTypeSuccess)
             withdrawalResponse
           case 404 =>
             warn(f"[$auditAPI8TxName - $awrsRefNo ] - The remote endpoint has indicated that no data can be found")
@@ -388,14 +390,16 @@ trait AWRSConnector extends ServicesConfig with RawResponseReads with LoggingUti
     }
   }
 
-  def deRegistration(awrsRefNo: String, deRegistration: DeRegistration)(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[DeRegistrationType] = {
+  def deRegistration(deRegistration: DeRegistration, standardAuthRetrievals: StandardAuthRetrievals)
+                    (implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[DeRegistrationType] = {
     debug("deRegistration")
 
-    lazy val accountURI = getAccountURI
+    lazy val accountURI = authLink(standardAuthRetrievals)
+    val awrsRefNo = getAwrsRefNo(standardAuthRetrievals.enrolments)
 
     val body = DeRegistration.formats.writes(deRegistration)
 
-    val postURL = s"""$serviceURL$accountURI/awrs/de-registration/$awrsRefNo"""
+    val postURL = s"""$serviceURL/$accountURI/awrs/de-registration/$awrsRefNo"""
     debug(f"deRegistration calling - $postURL")
     http.POST(postURL, body) map {
       response =>

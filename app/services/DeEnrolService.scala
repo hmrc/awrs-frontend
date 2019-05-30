@@ -19,16 +19,14 @@ package services
 import connectors.TaxEnrolmentsConnector
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 trait DeEnrolService {
 
   val taxEnrolmentsConnector: TaxEnrolmentsConnector
 
-  def deEnrolAWRS(awrs: String, businessName: String, businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) =
+  def deEnrolAWRS(awrs: String, businessName: String, businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     taxEnrolmentsConnector.deEnrol(awrs, businessName, businessType)
-
-
 }
 
 object DeEnrolService extends DeEnrolService {

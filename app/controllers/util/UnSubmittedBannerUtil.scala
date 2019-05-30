@@ -16,6 +16,7 @@
 
 package controllers.util
 
+import controllers.auth.StandardAuthRetrievals
 import models.BusinessDetails
 import play.api.mvc.{AnyContent, Request}
 import services.DataCacheKeys._
@@ -32,9 +33,10 @@ case class UnSubmittedChangesBannerParam(allSectionComplete: Boolean)
 object UnSubmittedChangesBannerParam {
 
   def apply(hasAwrs: Boolean, hasApplicationChanged: Boolean, allSectionComplete: Boolean): Option[UnSubmittedChangesBannerParam] =
-    hasAwrs && hasApplicationChanged match {
-      case false => None
-      case true => Some(UnSubmittedChangesBannerParam(allSectionComplete = allSectionComplete))
+    if (hasAwrs && hasApplicationChanged) {
+      Some(UnSubmittedChangesBannerParam(allSectionComplete = allSectionComplete))
+    } else {
+      None
     }
 
 }
@@ -46,20 +48,21 @@ trait UnSubmittedBannerUtil {
   val keyStoreService: KeyStoreService
   val indexService: IndexService
 
-  def unSubmittedChangesBanner(awrsDataMap: Option[CacheMap])(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[UnSubmittedChangesBannerParam]] = {
-    AccountUtils.hasAwrs match {
-      case true =>
-        val businessType = request.session.get(AwrsSessionKeys.sessionBusinessType).fold("")(x => x)
-        applicationService.hasAPI5ApplicationChanged(AccountUtils.getUtrOrName()).flatMap {
-          case false => Future.successful(None)
-          case true =>
-            for {
-              sectionStatus <- indexService.getStatus(awrsDataMap, businessType)
-            } yield {
-              Some(UnSubmittedChangesBannerParam(allSectionComplete = indexService.showContinueButton(sectionStatus)))
-            }
-        }
-      case false => Future.successful(None)
+  def unSubmittedChangesBanner(awrsDataMap: Option[CacheMap], authRetrievals: StandardAuthRetrievals)
+                              (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[UnSubmittedChangesBannerParam]] = {
+    if (AccountUtils.hasAwrs(authRetrievals.enrolments)) {
+      val businessType = request.session.get(AwrsSessionKeys.sessionBusinessType).fold("")(x => x)
+      applicationService.hasAPI5ApplicationChanged(AccountUtils.getUtr(authRetrievals.enrolments), authRetrievals).flatMap {
+        case false => Future.successful(None)
+        case true =>
+          for {
+            sectionStatus <- indexService.getStatus(awrsDataMap, businessType, authRetrievals)
+          } yield {
+            Some(UnSubmittedChangesBannerParam(allSectionComplete = indexService.showContinueButton(sectionStatus)))
+          }
+      }
+    } else {
+      Future.successful(None)
     }
   }
 

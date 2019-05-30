@@ -38,7 +38,7 @@ import utils.TestUtil.cachedData
 
 import scala.concurrent.Future
 
-class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4LaterService with MockAuthConnector {
+class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreService with MockSave4LaterService {
 
   import MockKeyStoreService._
 
@@ -57,6 +57,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     override val deEnrolService = mockDeEnrolService
     override val save4LaterService = TestSave4LaterService
     override val emailService = mockEmailService
+    val signInUrl = "/sign-in"
   }
 
   val permittedStatusTypes: Set[FormBundleStatus] = TestDeRegistrationController.permittedStatusTypes
@@ -74,7 +75,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
       case true => deRegistrationSuccessData
       case false => deRegistrationFailureData
     }
-    when(mockApi10.deRegistration()(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(deRegSuccessData))
+    when(mockApi10.deRegistration(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(deRegSuccessData))
     when(mockTaxEnrolmentsConnector.deEnrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(defaultDeEnrollResponseSuccessData))
   }
 
@@ -89,7 +90,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
 
   def verifyExternCalls(deRegistration: Option[Int] = None,
                         deEnrol: Option[Int] = None) = {
-    deRegistration ifDefinedThen (count => verify(mockApi10, times(count)).deRegistration()(Matchers.any(), Matchers.any(), Matchers.any()))
+    deRegistration ifDefinedThen (count => verify(mockApi10, times(count)).deRegistration(Matchers.any())(Matchers.any(), Matchers.any()))
     deEnrol ifDefinedThen (count => verify(mockTaxEnrolmentsConnector, times(count)).deEnrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
   }
 
@@ -230,7 +231,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     for (pStatusType <- permittedStatusTypes) {
       f"redirect $pStatusType users to confirmation from 'de-register-awrs-confirm' " in {
         mocks()
-        when(mockEmailService.sendCancellationEmail(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+        when(mockEmailService.sendCancellationEmail(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
         setupMockSave4LaterService(fetchAll = cachedData())
 
         testSubmitConfirm(pStatusType) {
@@ -311,7 +312,7 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
     for (pStatusType <- permittedStatusTypes) {
       s"$pStatusType users who went through successesful API 10 and de-enrol should have their save 4 later cleared up" in {
         mocks(deRegSuccess = true)
-        when(mockEmailService.sendCancellationEmail(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+        when(mockEmailService.sendCancellationEmail(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
         setupMockSave4LaterService(fetchAll = cachedData())
 
         testSubmitConfirm(pStatusType) {
@@ -353,12 +354,14 @@ class DeRegistrationControllerTest extends MockKeyStoreService with MockSave4Lat
 
   def getWithAuthorisedAgentUser(status: FormBundleStatus, call: Action[AnyContent])(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
+    setAuthMocks()
     val result = call.apply(buildRequestWithSession(userId, status.name))
     test(result)
   }
 
   def submits(status: FormBundleStatus, call: Action[AnyContent], data: (String, String)*)(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
+    setAuthMocks()
     val result = call.apply(buildRequestWithSession(userId, status.name).withFormUrlEncodedBody(data: _*))
     test(result)
   }

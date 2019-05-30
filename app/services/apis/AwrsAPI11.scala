@@ -17,17 +17,17 @@
 package services.apis
 
 import connectors.AWRSConnector
+import controllers.auth.StandardAuthRetrievals
 import models.FormBundleStatus._
 import models.StatusContactType.MindedToReject
 import models._
 import play.api.mvc.{AnyContent, Request}
 import services.KeyStoreService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.{AccountUtils, LoggingUtils}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import utils.LoggingUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier }
 
 // Unit tests for this class are covered in EtmpLookupService for retrieveApplication
 
@@ -37,17 +37,18 @@ trait AwrsAPI11 extends LoggingUtils {
   val keyStoreService: KeyStoreService
   lazy val noStatusInfo = StatusInfoType(None)
 
-  private def getAwrsRefNo(implicit user: AuthContext, hc: HeaderCarrier) = AccountUtils.getAwrsRefNo.toString()
-
-  private def saveEmpty(implicit user: AuthContext, hc: HeaderCarrier) = keyStoreService.saveStatusInfo(noStatusInfo)
+  private def saveEmpty(implicit hc: HeaderCarrier) = keyStoreService.saveStatusInfo(noStatusInfo)
     .flatMap { _ => Future.successful(Some(noStatusInfo)) }
 
-  def getStatusInfo(statusType: FormBundleStatus, someContactNumber: Option[String], someContactType: Option[StatusContactType])
-                   (implicit hc: HeaderCarrier, user: AuthContext, request: Request[AnyContent]): Future[Option[StatusInfoType]] = {
+  def getStatusInfo(statusType: FormBundleStatus,
+                    someContactNumber: Option[String],
+                    someContactType: Option[StatusContactType],
+                    authRetrievals: StandardAuthRetrievals)
+                   (implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Option[StatusInfoType]] = {
 
     lazy val callAPI11 = someContactNumber match {
       case Some(contactNumber) =>
-        getStatusInfoFromEtmp(contactNumber,statusType,someContactType)
+        getStatusInfoFromEtmp(contactNumber, statusType, someContactType, authRetrievals)
       case _ =>
         val errorStr = "API11 call failure: No business contact number was supplied"
         err(errorStr)
@@ -57,7 +58,6 @@ trait AwrsAPI11 extends LoggingUtils {
 
     keyStoreService.fetchStatusInfo flatMap {
       case None =>
-
         statusType match {
           case Approved | ApprovedWithConditions | Rejected | Revoked | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal => callAPI11
           case Pending =>
@@ -71,12 +71,15 @@ trait AwrsAPI11 extends LoggingUtils {
     }
   }
 
-  @inline def getStatusInfoFromCache(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[Option[StatusInfoType]] =
+  @inline def getStatusInfoFromCache(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Option[StatusInfoType]] =
     keyStoreService.fetchStatusInfo
 
-  private def getStatusInfoFromEtmp(contactNumber: String,formBundleStatus: FormBundleStatus,statusContactType: Option[StatusContactType])(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[Option[StatusInfoType]] =
-    awrsConnector.getStatusInfo(getAwrsRefNo, contactNumber,formBundleStatus, statusContactType) flatMap {
-      case successData: StatusInfoType =>
+  private def getStatusInfoFromEtmp(contactNumber: String,
+                                    formBundleStatus: FormBundleStatus,
+                                    statusContactType: Option[StatusContactType],
+                                    authRetrievals: StandardAuthRetrievals)
+                                   (implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Option[StatusInfoType]] =
+    awrsConnector.getStatusInfo(contactNumber, formBundleStatus, statusContactType, authRetrievals) flatMap { successData =>
         keyStoreService.saveStatusInfo(successData) flatMap { _ => Future.successful(Some(successData)) }
     }
 }

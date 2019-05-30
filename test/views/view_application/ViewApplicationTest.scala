@@ -29,12 +29,13 @@ import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.twirl.api.HtmlFormat
 import services.DataCacheKeys._
 import services.Save4LaterService
 import uk.gov.hmrc.http.cache.client._
 import utils.TestUtil._
 import utils.TestConstants._
-import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits}
+import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import views.view_application.helpers.{OneViewMode, PrintFriendlyMode}
 import views.view_application.subviews.SubviewIds._
 
@@ -50,14 +51,14 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector {
 
     val status = "does not matter"
 
-    def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent]) =
+    def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent]): Boolean => HtmlFormat.Appendable =
       (printFriendly: Boolean) =>
         printFriendly match {
-          case true => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly,implicitly)
-          case _ => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = OneViewMode, implicitly, implicitly,implicitly)
+          case true => views.html.view_application.awrs_view_application_core(dataCache, status, TestUtil.defaultEnrolmentSet)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly)
+          case _ => views.html.view_application.awrs_view_application_core(dataCache, status, TestUtil.defaultEnrolmentSet)(viewApplicationType = OneViewMode, implicitly, implicitly)
         }
 
-    def show(dataCache: CacheMap) = Action.async {
+    def show(dataCache: CacheMap): Action[AnyContent] = Action.async {
       implicit request =>
         Future.successful(Ok(views.html.view_application.awrs_view_application(viewApplicationContent(dataCache, status), printFriendly = true, None, None)))
     }

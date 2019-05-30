@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, SessionBuilder}
+import controllers.auth.ExternalUrls
 import controllers.auth.Utr._
 import forms.BusinessDetailsForm
 import models._
@@ -25,6 +26,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.{KeyStoreService, Save4LaterService, ServicesUnitTestFixture}
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
@@ -42,6 +45,7 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val keyStoreService = TestKeyStoreService
+    val signInUrl = "/sign-in"
   }
 
   "BusinessDetailsController" must {
@@ -89,8 +93,8 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
         fetchBusinessDetails = testBusinessDetails(),
         fetchNewApplicationType = testNewApplicationType
       )
-      if (updatedBusinessName)
-        setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
+      if (updatedBusinessName) setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
+      if (hasAwrs) setAuthMocks() else setAuthMocks(Future.successful(new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation))))
 
       val result = TestBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
       test(result)

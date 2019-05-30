@@ -40,6 +40,7 @@ class UnauthorisedViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtu
     override val indexService = mockIndexService
     override val api9 = TestAPI9
     override val applicationService = mockApplicationService
+    val signInUrl = "/sign-in"
   }
 
   lazy val cachemap = CacheMap("", Map[String, JsValue]())
@@ -72,7 +73,7 @@ class UnauthorisedViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtu
 
   def fetchContentFor(element: String): String = {
     val document = Jsoup.parse(contentAsString(showUnauthorised))
-    document.getElementById(element).text
+    document.select(s"#$element").text
   }
 
   private def showUnauthorised(): Future[Result] = {
@@ -81,6 +82,7 @@ class UnauthorisedViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtu
     setupMockAwrsAPI9(keyStore = None)
     setupMockApplicationService()
     setupMockIndexService()
+    setAuthMocks()
     TestIndexController.unauthorised.apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
   }
 }

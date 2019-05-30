@@ -21,6 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import controllers.auth.Utr._
 import forms.BusinessPremisesForm
 import models.{AdditionalBusinessPremises, AdditionalBusinessPremisesList}
@@ -59,6 +60,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
   object TestAdditionalPremisesController extends AdditionalPremisesController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   "AdditionalPremisesController" should {
@@ -193,12 +195,14 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = testAdditionalBusinessPremisesList,
       fetchBusinessDirectors = None,
       fetchTradingActivity = None)
+    setAuthMocks()
     val result = TestAdditionalPremisesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest.withSession((AwrsSessionKeys.sessionBusinessType, "LTD")), userId))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = testAdditionalBusinessPremisesList)
+    setAuthMocks()
     val result = TestAdditionalPremisesController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest.withSession((AwrsSessionKeys.sessionBusinessType, "LTD")), userId))
     test(result)
   }
@@ -208,18 +212,21 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = testAdditionalBusinessPremisesList,
       fetchBusinessDirectors = None,
       fetchTradingActivity = None)
+    setAuthMocks()
     val result = TestAdditionalPremisesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
   private def showDeleteWithAuthorisedUser(id: Int = 1, premises: AdditionalBusinessPremisesList = testAdditionalBusinessPremisesList)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = premises)
+    setAuthMocks()
     val result = TestAdditionalPremisesController.showDelete(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def deleteWithAuthorisedUser(id: Int = 1, premises: AdditionalBusinessPremisesList = testAdditionalBusinessPremisesList)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = premises)
+    setAuthMocks()
     val result = TestAdditionalPremisesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

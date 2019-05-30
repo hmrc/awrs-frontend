@@ -16,68 +16,69 @@
 
 package utils
 
-import uk.gov.hmrc.domain.AwrsUtr
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import controllers.auth.StandardAuthRetrievals
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 
 object AccountUtils extends AccountUtils
 
 trait AccountUtils extends LoggingUtils {
 
-  def getUtrOrName()(implicit user: AuthContext) = {
-    (user.principal.accounts.sa, user.principal.accounts.ct, user.principal.accounts.org) match {
-      case (Some(sa), _, _) => sa.utr.utr
-      case (None, Some(ct), _) => ct.utr.utr
-      case (None, None, Some(org)) => org.org.org
-      case _ => throw new RuntimeException("No data found")
+  def getUtr(enrolments: Set[Enrolment]): String = {
+    val firstUtr = (enrolments flatMap { enrolment =>
+      enrolment.identifiers.filter(_.key.toLowerCase == "utr")
+    }).headOption
+
+    firstUtr match {
+      case Some(utr) => utr.value.toString
+      case _ => throw new RuntimeException("[getUtr] No UTR found")
     }
   }
 
-  def getAuthType(legalEntityType: String)(implicit user: AuthContext) = {
+  def getAuthType(legalEntityType: String, authRetrievals: StandardAuthRetrievals): String = {
 
     legalEntityType match {
-      case "SOP" => user.principal.accounts.sa.getOrElse {
-        warn( "AWRS User Enrollment" + user.principal.accounts.toMap.toString())
-        throw new RuntimeException("sa link not found")
-      }.link.replace("/individual","")
-      case _ => user.principal.accounts.org.getOrElse {
-        warn( "AWRS User Enrollment" + user.principal.accounts.toMap.toString())
-        throw new RuntimeException("Org link not found")
-      }.link
+      case "SOP" => authRetrievals.enrolments.find(_.key == "IR-SA") match {
+        case Some(enrolment) => s"sa/${enrolment.identifiers.find(_.key == "UTR").get.value}"
+        case _ =>
+          warn("[getAuthType] No SA enrolment")
+          throw new RuntimeException("[getAuthType] No SA enrolment")
+      }
+      case _ =>
+        if (authRetrievals.affinityGroup.get == AffinityGroup.Organisation) {
+          "org/UNUSED"
+        } else {
+          warn("[getAuthType] Not an organisation account")
+          throw new RuntimeException("[getAuthType] Not an organisation account")
+        }
     }
   }
 
-  def authLink(implicit user: AuthContext): String = {
-    (user.principal.accounts.org, user.principal.accounts.sa, user.principal.accounts.agent) match {
-      case (Some(orgAccount), _, _) => orgAccount.link
-      case (None, Some(saAccount), _) => saAccount.link.replaceAllLiterally("/individual", "")
+  def authLink(authRetrievals: StandardAuthRetrievals): String = {
+    (authRetrievals.affinityGroup, authRetrievals.enrolments.find(_.key == "IR-SA")) match {
+      case (Some(AffinityGroup.Organisation), _) => "org/UNUSED"
+      case (_,            Some(enrolment)) => s"sa/${enrolment.identifiers.find(_.key == "UTR").get.value}"
       case _ => throw new RuntimeException("User does not have the correct authorisation")
     }
   }
 
-  def isSaAccount()(implicit user: AuthContext) = {
-    user.principal.accounts.sa.isDefined match {
-      case true => Some(true)
-      case _ => None
+  def isSaAccount(enrolments: Set[Enrolment]): Option[Boolean] = {
+    Some(enrolments.exists(_.key == "IR-SA")).filter(identity)
+  }
+
+  def isOrgAccount(authRetrievals: StandardAuthRetrievals): Option[Boolean] = {
+    Some(authRetrievals.enrolments.exists(_.key == "IR-CT") || authRetrievals.affinityGroup.contains(AffinityGroup.Organisation))
+      .filter(identity)
+  }
+
+  def hasAwrs(enrolments: Set[Enrolment]): Boolean = {
+    enrolments.exists(_.key == "HMRC-AWRS-ORG")
+  }
+
+  def getAwrsRefNo(enrolments: Set[Enrolment]): String = {
+    val refno: Option[String] = enrolments.collectFirst {
+      case enrolment if enrolment.key == "HMRC-AWRS-ORG" => enrolment.identifiers.find(_.key == "AWRSRefNumber").get.value
     }
-  }
 
-  def isOrgAccount()(implicit user: AuthContext) = {
-    user.principal.accounts.ct.isDefined match {
-      case true => Some(true)
-      case _ => {
-        user.principal.accounts.org.isDefined match {
-          case true => Some(true)
-          case _ => None
-        }
-      }
-    }
-  }
-
-  def hasAwrs(implicit user: AuthContext): Boolean = {
-    user.principal.accounts.awrs.isDefined
-  }
-
-  def getAwrsRefNo(implicit user: AuthContext): AwrsUtr = {
-    user.principal.accounts.awrs.get.utr
+    refno.getOrElse("")
   }
 }

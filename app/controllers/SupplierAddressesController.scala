@@ -17,31 +17,32 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import controllers.util._
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.SupplierAddressesForm._
 import models.{Supplier, Suppliers}
+import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 import play.api.mvc._
 import services.DataCacheKeys._
 import services.Save4LaterService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.CountryCodes
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait SupplierAddressesController extends AwrsController
   with JourneyPage
   with Deletable[Suppliers, Supplier] with SaveAndRoutable {
 
-  override def fetch(implicit user: AuthContext, hc: HeaderCarrier) = save4LaterService.mainStore.fetchSuppliers
+  override def fetch(authRetrievals: StandardAuthRetrievals)
+                    (implicit hc: HeaderCarrier) = save4LaterService.mainStore.fetchSuppliers(authRetrievals)
 
-  override def save(data: Suppliers)(implicit user: AuthContext, hc: HeaderCarrier) = save4LaterService.mainStore.saveSuppliers(data)
+  override def save(authRetrievals: StandardAuthRetrievals, data: Suppliers)(implicit hc: HeaderCarrier)
+  = save4LaterService.mainStore.saveSuppliers(authRetrievals, data)
 
   override val listToListObj = (suppliers: List[Supplier]) => Suppliers(suppliers)
   override val listObjToList = (suppliers: Suppliers) => suppliers.suppliers
@@ -54,42 +55,47 @@ trait SupplierAddressesController extends AwrsController
 
   val maxSuppliers = 5
 
-  def showSupplierAddressesPage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
+  def showSupplierAddressesPage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean) = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        implicit val viewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
+        }
+
+        lazy val newEntryAction = (id: Int) =>
+          Future.successful(Ok(views.html.awrs_supplier_addresses(supplierAddressesForm.form, id, isNewRecord)))
+
+        lazy val existingEntryAction = (data: Suppliers, id: Int) => {
+          val supplier = data.suppliers(id - 1)
+          val updatedSupplier = supplier.copy(supplierAddress = CountryCodes.getSupplierAddressWithCountry(supplier))
+          Future.successful(Ok(views.html.awrs_supplier_addresses(supplierAddressesForm.form.fill(updatedSupplier), id, isNewRecord)))
+        }
+
+        lazy val haveAnother = (data: Suppliers) =>
+          data.suppliers.last.additionalSupplier.fold("")(x => x).equals(BooleanRadioEnum.YesString)
+
+        lookup[Suppliers, Supplier](
+          fetchData = fetch(ar),
+          id = id,
+          toList = (suppliers: Suppliers) => suppliers.suppliers,
+          maxEntries = Some(maxSuppliers)
+        )(
+          newEntryAction = newEntryAction,
+          existingEntryAction = existingEntryAction,
+          haveAnother = haveAnother
+        )
       }
-
-      lazy val newEntryAction = (id: Int) =>
-        Future.successful(Ok(views.html.awrs_supplier_addresses(supplierAddressesForm.form, id, isNewRecord)))
-
-      lazy val existingEntryAction = (data: Suppliers, id: Int) => {
-        val supplier = data.suppliers(id - 1)
-        val updatedSupplier = supplier.copy(supplierAddress = CountryCodes.getSupplierAddressWithCountry(supplier))
-        Future.successful(Ok(views.html.awrs_supplier_addresses(supplierAddressesForm.form.fill(updatedSupplier), id, isNewRecord)))
-      }
-
-      lazy val haveAnother = (data: Suppliers) =>
-        data.suppliers.last.additionalSupplier.fold("")(x => x).equals(BooleanRadioEnum.YesString)
-
-      lookup[Suppliers, Supplier](
-        fetchData = fetch,
-        id = id,
-        toList = (suppliers: Suppliers) => suppliers.suppliers,
-        maxEntries = Some(maxSuppliers)
-      )(
-        newEntryAction = newEntryAction,
-        existingEntryAction = existingEntryAction,
-        haveAnother = haveAnother
-      )
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
+  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode = viewApplicationType
     supplierAddressesForm.bindFromRequest.fold(
       formWithErrors =>
-        fetch flatMap {
+        fetch(authRetrievals) flatMap {
           case Some(data) => Future.successful(BadRequest(views.html.awrs_supplier_addresses(formWithErrors, id, isNewRecord)))
           case _ => Future.successful(BadRequest(views.html.awrs_supplier_addresses(formWithErrors, 1, isNewRecord)))
         },
@@ -97,16 +103,17 @@ trait SupplierAddressesController extends AwrsController
         val countryCodeSupplierAddressData = supplierAddressesData.copy(supplierAddress = CountryCodes.getSupplierAddressWithCountryCode(supplierAddressesData))
         countryCodeSupplierAddressData.alcoholSuppliers match {
           case Some("No") =>
-            save(Suppliers(suppliers = List(countryCodeSupplierAddressData))) flatMap {
+            save(authRetrievals, Suppliers(suppliers = List(countryCodeSupplierAddressData))) flatMap {
               _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex())) // No suppliers so return to index
             }
           case _ =>
 
             saveThenRedirect[Suppliers, Supplier](
-              fetchData = fetch,
+              fetchData = fetch(authRetrievals),
               saveData = save,
               id = id,
-              data = countryCodeSupplierAddressData
+              data = countryCodeSupplierAddressData,
+              authRetrievals = authRetrievals
             )(
               haveAnotherAnswer = (data: Supplier) => data.additionalSupplier.fold("")(x => x),
               amendHaveAnotherAnswer = amendHaveAnotherAnswer,
@@ -127,4 +134,6 @@ trait SupplierAddressesController extends AwrsController
 object SupplierAddressesController extends SupplierAddressesController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  val signInUrl = ExternalUrls.signIn
+
 }

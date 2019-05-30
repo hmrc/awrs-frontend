@@ -17,39 +17,44 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.{AwrsController, AwrsRegistrationRegime}
+import controllers.auth.{AwrsController, ExternalUrls}
 import forms.GroupDeclarationForm._
+import play.api.mvc.{Action, AnyContent, Request}
 import services._
 import utils.AccountUtils
+
 import scala.concurrent.Future
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 trait GroupDeclarationController extends AwrsController with AccountUtils {
 
   val save4LaterService: Save4LaterService
 
-  def showGroupDeclaration = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      save4LaterService.mainStore.fetchGroupDeclaration map {
-        case Some(data) => Ok(views.html.awrs_group_declaration(groupDeclarationForm.fill(data)))
-        case _ => Ok(views.html.awrs_group_declaration(groupDeclarationForm))
+  def showGroupDeclaration = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        save4LaterService.mainStore.fetchGroupDeclaration(ar) map {
+          case Some(data) => Ok(views.html.awrs_group_declaration(groupDeclarationForm.fill(data)))
+          case _ => Ok(views.html.awrs_group_declaration(groupDeclarationForm))
+        }
       }
+    }
   }
 
-  def sendConfirmation = async {
-    implicit user => implicit request =>
+  def sendConfirmation = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       groupDeclarationForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.awrs_group_declaration(formWithErrors))),
         groupDeclarationData =>
-          save4LaterService.mainStore.saveGroupDeclaration(groupDeclarationData) flatMap {
+          save4LaterService.mainStore.saveGroupDeclaration(ar, groupDeclarationData) flatMap {
             case _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex()))
           }
       )
+    }
   }
 }
 
 object GroupDeclarationController extends GroupDeclarationController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  val signInUrl = ExternalUrls.signIn
 }

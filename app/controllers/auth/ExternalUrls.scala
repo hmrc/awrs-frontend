@@ -17,6 +17,7 @@
 package controllers.auth
 
 import play.api.{Configuration, Play}
+import play.api.Play.current
 import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -25,16 +26,16 @@ object ExternalUrls extends RunMode with ServicesConfig{
 
   private def loadConfig(key: String) = getConfString(key,throw new Exception(s"Missing configuration key: $key"))
 
-  val companyAuthHost = loadConfig(s"auth.company-auth.host")
-  val loginCallback = loadConfig(s"auth.login-callback.url")
-  val loginPath = loadConfig(s"auth.login-path")
-  val accountType = loadConfig(s"auth.accountType")
-  val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback&accountType=$accountType"
-  val loginURL = s"$companyAuthHost/gg/$loginPath"
-  val logoutCallbackUrl = loadConfig(s"auth.logout-callback.url")
-  val signOut = s"$companyAuthHost/gg/sign-out/?continue=$logoutCallbackUrl"
-  val businessCustomerStartPage = loadConfig(s"business-customer.serviceRedirectUrl")
-  val businessTaxAccountPage = loadConfig(s"business-tax-account.serviceRedirectUrl")
+  lazy val companyAuthHost = loadConfig(s"auth.company-auth.host")
+  lazy val loginCallback = loadConfig(s"auth.login-callback.url")
+  lazy val loginPath = loadConfig(s"auth.login-path")
+  lazy val accountType = loadConfig(s"auth.accountType")
+  lazy val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback&accountType=$accountType"
+  lazy val loginURL = s"$companyAuthHost/gg/$loginPath"
+  lazy val logoutCallbackUrl = loadConfig(s"auth.logout-callback.url")
+  lazy val signOut = s"$companyAuthHost/gg/sign-out/?continue=$logoutCallbackUrl"
+  lazy val businessCustomerStartPage = loadConfig(s"business-customer.serviceRedirectUrl")
+  lazy val businessTaxAccountPage = loadConfig(s"business-tax-account.serviceRedirectUrl")
 
   override protected def mode: Mode = Play.current.mode
 

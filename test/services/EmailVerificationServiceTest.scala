@@ -35,25 +35,25 @@ class EmailVerificationServiceTest extends AwrsUnitTestTraits {
 
   "Email Verification Service" should {
     "return true if the email is sent" in {
-      when(mockEmailVerificationConnector.sendVerificationEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
+      when(mockEmailVerificationConnector.sendVerificationEmail(Matchers.any())(Matchers.any())).thenReturn(Future.successful(true))
       val result = EmailVerificationServiceTest.sendVerificationEmail(testEmail)
       await(result) shouldBe true
     }
 
     "return false if the email is not sent" in {
-      when(mockEmailVerificationConnector.sendVerificationEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(false))
+      when(mockEmailVerificationConnector.sendVerificationEmail(Matchers.any())(Matchers.any())).thenReturn(Future.successful(false))
       val result = EmailVerificationServiceTest.sendVerificationEmail(testEmail)
       await(result) shouldBe false
     }
 
     "return true if the email is verified" in {
-      when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
+      when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any())).thenReturn(Future.successful(true))
       val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
       await(result) shouldBe true
     }
 
     "return false if the email is not verified" in {
-      when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(false))
+      when(mockEmailVerificationConnector.isEmailAddressVerified(Matchers.any())(Matchers.any())).thenReturn(Future.successful(false))
       val result = EmailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
       await(result) shouldBe false
     }

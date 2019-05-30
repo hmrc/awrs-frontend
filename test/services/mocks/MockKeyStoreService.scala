@@ -49,8 +49,10 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
   config ifConfiguredThen (dataToReturn => when(TestKeyStoreService.keyStoreConnector.fetchDataFromKeystore[T](Matchers.eq(key))(Matchers.any(), Matchers.any())).thenReturn(dataToReturn))
 
   // children should not override this method, update here when KeyStoreService changes
-  final def setupMockKeyStoreServiceOnlySaveFunctions(): Unit =
-  when(TestKeyStoreService.keyStoreConnector.saveDataToKeystore(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+  final def setupMockKeyStoreServiceOnlySaveFunctions(): Unit = {
+    when(TestKeyStoreService.keyStoreConnector.saveDataToKeystore(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(returnedCacheMap))
+  }
 
   // children can override in order to customise their default settings
   def setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(

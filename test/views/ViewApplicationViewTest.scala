@@ -19,9 +19,12 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.ViewApplicationController
+import controllers.util.{UnSubmittedBannerUtil, UnSubmittedChangesBannerParam}
 import models.BusinessDetailsEntityTypes._
 import models.{ApplicationDeclaration, Suppliers, _}
 import org.jsoup.Jsoup
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.{Format, JsValue, Json}
@@ -50,6 +53,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     override val keyStoreService = TestKeyStoreService
     override val applicationService = mockApplicationService
     override val indexService = mockIndexService
+    val signInUrl = "/sign-in"
   }
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
@@ -123,6 +127,8 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
 
     def viewSection(sectionName: String, cacheMap: CacheMap, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
       setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = cacheMap)
+      setAuthMocks()
+      when(mockApplicationService.hasAPI5ApplicationChanged(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())) thenReturn Future.successful(false)
       val result = TestViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }

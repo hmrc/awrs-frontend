@@ -19,14 +19,16 @@ package controllers
 import builders.SessionBuilder
 import config.FrontendAuthConnector
 import connectors.mock._
+import controllers.auth.ExternalUrls
 import models._
 import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants._
-
 
 import scala.concurrent.Future
 
@@ -51,6 +53,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val api5 = TestAPI5
+    val signInUrl = ExternalUrls.signIn
   }
 
 
@@ -168,6 +171,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
       case false => testBusinessCustomer
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
+    setAuthMocks()
     val result = TestBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
@@ -179,12 +183,14 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
       case false => testBusinessCustomer
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
+    setAuthMocks()
     val result = TestBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def api4User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
+    setAuthMocks(Future.successful(new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation))))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
@@ -193,6 +199,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
     setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Some(testSubscriptionTypeFrontEnd))
+    setAuthMocks()
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

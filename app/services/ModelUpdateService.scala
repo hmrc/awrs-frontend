@@ -16,22 +16,24 @@
 
 package services
 
+import controllers.auth.StandardAuthRetrievals
 import models._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
 import utils.CacheUtil._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait ModelUpdateService {
-  def ensureAllModelsAreUpToDate(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean]
+  def ensureAllModelsAreUpToDate(authRetrievals: StandardAuthRetrievals
+                                )(implicit hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean]
 }
 
 object NoUpdatesRequired extends ModelUpdateService {
-  override def ensureAllModelsAreUpToDate(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean] = Future.successful(true)
+  override def ensureAllModelsAreUpToDate(authRetrievals: StandardAuthRetrievals)
+                                         (implicit hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean] = Future.successful(true)
 }
 
 object UpdateRequired extends ModelUpdateService {
@@ -43,21 +45,24 @@ def updateTradingActivity(tradingActivity_old: TradingActivity_old): TradingActi
     typeOfAlcoholOrders = tradingActivity_old.typeOfAlcoholOrders,
     otherTypeOfAlcoholOrders = tradingActivity_old.otherTypeOfAlcoholOrders,
     doesBusinessImportAlcohol = tradingActivity_old.doesBusinessImportAlcohol,
-    doYouExportAlcohol = tradingActivity_old.doYouExportAlcohol.contains("no") match {
-      case true => Some("No")
-      case _ => Some("Yes")
+    doYouExportAlcohol = if (tradingActivity_old.doYouExportAlcohol.contains("no")) {
+      Some("No")
+    } else {
+      Some("Yes")
     },
-    exportLocation = tradingActivity_old.doYouExportAlcohol.contains("no") match {
-      case true => None
-      case _ => Some(tradingActivity_old.doYouExportAlcohol)
+    exportLocation = if (tradingActivity_old.doYouExportAlcohol.contains("no")) {
+      None
+    } else {
+      Some(tradingActivity_old.doYouExportAlcohol)
     },
     thirdPartyStorage = tradingActivity_old.thirdPartyStorage
   )
 }
 
-  private def handleSubscriptionFrontEnd(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService) = {
+  private def handleSubscriptionFrontEnd(authRetrievals: StandardAuthRetrievals)
+                                        (implicit hc: HeaderCarrier, save4LaterService: Save4LaterService) = {
     def modelUpdate = // convert from old models
-      save4LaterService.api.fetchSubscriptionTypeFrontEnd_old flatMap {
+      save4LaterService.api.fetchSubscriptionTypeFrontEnd_old(authRetrievals) flatMap {
         case Some(subscriptionTypeFrontEnd) =>
           val newTradingActivity = subscriptionTypeFrontEnd.tradingActivity.fold(None: Option[TradingActivity])(x => Some(updateTradingActivity(x)))
 
@@ -80,50 +85,50 @@ def updateTradingActivity(tradingActivity_old: TradingActivity_old): TradingActi
             applicationDeclaration = subscriptionTypeFrontEnd.applicationDeclaration,
             changeIndicators = subscriptionTypeFrontEnd.changeIndicators
           )
-          save4LaterService.api.saveSubscriptionTypeFrontEnd(subscriptionTypeFrontEndUpdated).map(Some(_))
+          save4LaterService.api.saveSubscriptionTypeFrontEnd(subscriptionTypeFrontEndUpdated, authRetrievals).map(Some(_))
         case None => Future.successful()
       }
 
-    AccountUtils.hasAwrs match {
-      case false => Future.successful(None)
-      case true =>
-        // first read it as the new model
-        save4LaterService.api.fetchSubscriptionTypeFrontEnd flatMap {
-          case updateToDate@Some(subscriptionTypeFrontEnd) =>
-            subscriptionTypeFrontEnd.modelVersion match {
-              case "1.1" => Future.successful(updateToDate)
-              case _ => modelUpdate
-            }
-          case None => modelUpdate
-        }
-
+    if (AccountUtils.hasAwrs(authRetrievals.enrolments)) {
+      save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals) flatMap {
+        case updateToDate@Some(subscriptionTypeFrontEnd) =>
+          subscriptionTypeFrontEnd.modelVersion match {
+            case "1.1" => Future.successful(updateToDate)
+            case _ => modelUpdate
+          }
+        case None => modelUpdate
+      }
+    } else {
+      Future.successful(None)
     }
   }
 
-  private def patchTradingActivity(cacheMap: CacheMap)(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService) = cacheMap.getTradingActivity match {
+  private def patchTradingActivity(cacheMap: CacheMap, authRetrievals: StandardAuthRetrievals)
+                                  (implicit hc: HeaderCarrier, save4LaterService: Save4LaterService) = cacheMap.getTradingActivity match {
     case None =>
       cacheMap.getTradingActivity_old match {
         case Some(oldTradingActivity: TradingActivity_old) =>
           val ty = updateTradingActivity(oldTradingActivity)
-          save4LaterService.mainStore.saveTradingActivity(updateTradingActivity(oldTradingActivity)) map (_ => true)
+          save4LaterService.mainStore.saveTradingActivity(authRetrievals, updateTradingActivity(oldTradingActivity)) map (_ => true)
         case None => Future.successful(true)
       }
     case Some(ta) => ta.doYouExportAlcohol match {
       case None => cacheMap.getTradingActivity_old match {
         case Some(oldTradingActivity: TradingActivity_old) =>
-          save4LaterService.mainStore.saveTradingActivity(updateTradingActivity(oldTradingActivity)) map (_ => true)
+          save4LaterService.mainStore.saveTradingActivity(authRetrievals, updateTradingActivity(oldTradingActivity)) map (_ => true)
         case None => Future.successful(true)
       }
       case Some(_) => Future.successful(true)
     }
   }
 
-  override def ensureAllModelsAreUpToDate(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean] =
-    save4LaterService.mainStore.fetchAll.flatMap {
+  override def ensureAllModelsAreUpToDate(authRetrievals: StandardAuthRetrievals)
+                                         (implicit hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean] =
+    save4LaterService.mainStore.fetchAll(authRetrievals).flatMap {
       case Some(cache) =>
         for {
-          _ <- handleSubscriptionFrontEnd // this function will look at the api store internally
-          bool <- patchTradingActivity(cache)
+          _ <- handleSubscriptionFrontEnd(authRetrievals)
+          bool <- patchTradingActivity(cache, authRetrievals)
         } yield bool
       case None => Future.successful(true)
     }

@@ -41,6 +41,7 @@ class FeedbackViewTest extends AwrsUnitTestTraits
   object TestFeedbackController extends FeedbackController {
     override val authConnector = mockAuthConnector
     override val audit: Audit = new TestAudit
+    val signInUrl = "/sign-in"
   }
 
   def testRequest(feedback: Feedback) =
@@ -64,6 +65,7 @@ class FeedbackViewTest extends AwrsUnitTestTraits
   }
 
   def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    setAuthMocks()
     val result = TestFeedbackController.submitFeedback.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

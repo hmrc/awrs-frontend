@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls}
 import exceptions.DeEnrollException
 import forms.AWRSEnums.ApplicationStatusEnum
 import forms.WithdrawalConfirmationForm._
@@ -27,10 +27,9 @@ import models.{ApplicationStatus, WithdrawalResponse}
 import org.joda.time.LocalDateTime
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import services.apis.{AwrsAPI8, AwrsAPI9}
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.CacheUtil.cacheUtil
 import utils.{AccountUtils, LoggingUtils}
 
@@ -45,6 +44,7 @@ object WithdrawalController extends WithdrawalController {
   override val api8 = AwrsAPI8
   override val api9 = AwrsAPI9
   override val emailService = EmailService
+  val signInUrl = ExternalUrls.signIn
 }
 
 trait WithdrawalController extends AwrsController with LoggingUtils {
@@ -55,8 +55,8 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
   val save4LaterService: Save4LaterService
   val emailService: EmailService
 
-  def showWithdrawalReasons: Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def showWithdrawalReasons: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { _ =>
       for {
         successResponse <- api9.getSubscriptionStatusFromCache
         keyStoreResponse <- keyStoreService.fetchWithdrawalReason
@@ -70,10 +70,11 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
             showErrorPageRaw
         }
       }
+    }
   }
 
-  def submitWithdrawalReasons: Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def submitWithdrawalReasons: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { _ =>
       withdrawalReasonForm.bindFromRequest.fold(
         formWithErrors => {
           Future.successful(BadRequest(views.html.awrs_withdrawal_reasons(formWithErrors)))
@@ -84,15 +85,17 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
           }
         }
       )
+    }
   }
 
-  def showConfirmWithdrawal: Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def showConfirmWithdrawal: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { _ =>
       Future.successful(Ok(views.html.awrs_withdrawal_confirmation(withdrawalConfirmation)))
+    }
   }
 
-  def submitConfirmWithdrawal: Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def submitConfirmWithdrawal: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       withdrawalConfirmation.bindFromRequest.fold(
         formWithErrors =>
           Future.successful(BadRequest(views.html.awrs_withdrawal_confirmation(formWithErrors)))
@@ -101,14 +104,14 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
           withdrawalDetails.confirmation match {
             case Some("Yes") =>
               lazy val deEnrol = () => {
-                val awrsRef = AccountUtils.getUtrOrName()
+                val awrsRef = AccountUtils.getUtr(ar.enrolments)
                 val businessName = getBusinessName.fold("")(x => x)
                 val businessType = getBusinessType.fold("")(x => x)
                 deEnrolService.deEnrolAWRS(awrsRef, businessName, businessType)
               }
               val denrolResult = (for {
                 reason <- keyStoreService.fetchWithdrawalReason
-                api8Response <- api8.withdrawApplication(reason)
+                api8Response <- api8.withdrawApplication(reason, ar)
                 deleteReason <- keyStoreService.deleteWithdrawalReason
                 deEnrolSuccess <- deEnrol()
               } yield (deEnrolSuccess, api8Response)).recover {
@@ -118,10 +121,10 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
               denrolResult flatMap {
                 case (true, api8Response: WithdrawalResponse) =>
                   for {
-                    cache <- save4LaterService.mainStore.fetchAll
+                    cache <- save4LaterService.mainStore.fetchAll(ar)
                     _ <- emailService.sendWithdrawnEmail(cache.get.getBusinessContacts.get.email.get)
-                    _ <- save4LaterService.mainStore.removeAll
-                    _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.Withdrawn, LocalDateTime.now()))
+                    _ <- save4LaterService.mainStore.removeAll(ar)
+                    _ <- save4LaterService.mainStore.saveApplicationStatus(ar, ApplicationStatus(ApplicationStatusEnum.Withdrawn, LocalDateTime.now()))
                   } yield Redirect(controllers.routes.WithdrawalController.showWithdrawalConfirmation()) addProcessingDateToSession api8Response.processingDate
                 case _ =>
                   err("call to government gateway de-enrol failed")
@@ -133,10 +136,12 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
               }
           }
       )
+    }
   }
 
-  def showWithdrawalConfirmation(printFriendly: Boolean): Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def showWithdrawalConfirmation(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { _ =>
       Future.successful(Ok(views.html.awrs_withdrawal_confirmation_status(request.getProcessingDate.fold("")(x => x), printFriendly)))
+    }
   }
 }

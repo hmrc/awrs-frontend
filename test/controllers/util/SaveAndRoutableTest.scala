@@ -20,6 +20,7 @@ import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.mock.MockAuthConnector
+import controllers.auth.StandardAuthRetrievals
 import controllers.auth.Utr._
 import play.api.mvc.{AnyContent, Request, Result}
 import services.mocks.MockSave4LaterService
@@ -42,8 +43,10 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val section = "test"
+    val signInUrl = "/sign-in"
 
-    override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result]
+
+    override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result]
     = Future.successful(Ok)
   }
 

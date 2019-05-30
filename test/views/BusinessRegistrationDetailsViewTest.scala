@@ -45,6 +45,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val matchingUtil = mockMatchingUtil
+    val signInUrl = "/sign-in"
   }
 
   val testUtr: String = "2" * 10
@@ -153,6 +154,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)
     )
+    setAuthMocks()
     val result = TestBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = false).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
@@ -163,6 +165,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       fetchBusinessRegistrationDetails = None
 
     )
+    setAuthMocks()
     val result = TestBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
@@ -172,6 +175,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)
     )
+    setAuthMocks()
     val result = TestBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }

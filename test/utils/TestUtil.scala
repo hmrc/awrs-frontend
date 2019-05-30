@@ -37,6 +37,8 @@ import services.JourneyConstants
 import uk.gov.hmrc.http.cache.client.CacheMap
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
 import TestConstants._
+import controllers.auth.StandardAuthRetrievals
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 
 import scala.annotation.tailrec
 import scala.io.Source
@@ -820,5 +822,13 @@ object TestUtil {
   val deleteConfirmation_No = testDeleteRequest(DeleteConfirmation(No))
   val deleteConfirmation_Yes = testDeleteRequest(DeleteConfirmation(Yes))
   val deleteConfirmation_None = testDeleteRequest(DeleteConfirmation(None))
+
+  val defaultEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
+    Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "6543210")), "activated"), Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+
+  val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
+    Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+
+  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation))
 
 }

@@ -17,34 +17,32 @@
 package services
 
 import connectors.AWRSNotificationConnector
+import controllers.auth.StandardAuthRetrievals
 import models.ApiTypes.ApiType
-import models.FormBundleStatus.{Approved, ApprovedWithConditions, DeRegistered, Pending, Withdrawal}
+import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
 import models.{ApiTypes, DeRegistrationDate, EmailRequest}
 import play.api.mvc.{AnyContent, Request}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.AccountUtils
 import utils.SessionUtil.sessionUtilForRequest
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import uk.gov.hmrc.http.{ HeaderCarrier, InternalServerException }
+import scala.concurrent.Future
 
 trait EmailService {
   val awrsNotificationConnector: AWRSNotificationConnector
 
-  def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean)
-                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
-    implicit def conv(v: ApiType): Future[ApiType] = Future.successful(v)
-
-    val apiTypePromise: Future[ApiType] = AccountUtils.hasAwrs match {
-      case true =>
-        request.getSessionStatus match {
-          case Some(Pending) => ApiTypes.API6Pending
-          case Some(Approved | ApprovedWithConditions) => ApiTypes.API6Approved
-          case Some(status) => Future.failed(new InternalServerException(s"Unexpected status found: $status"))
-          case None => Future.failed(new InternalServerException("Status is missing from session"))
-        }
-      case false => ApiTypes.API4
+  def sendConfirmationEmail(email: String, reference: String, isNewBusiness: Boolean, authRetrievals: StandardAuthRetrievals)
+                           (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+    val apiTypePromise: Future[ApiType] = if (AccountUtils.hasAwrs(authRetrievals.enrolments)) {
+      request.getSessionStatus match {
+        case Some(Pending) => Future.successful(ApiTypes.API6Pending)
+        case Some(Approved | ApprovedWithConditions) => Future.successful(ApiTypes.API6Approved)
+        case Some(status) => Future.failed(new InternalServerException(s"Unexpected status found: $status"))
+        case None => Future.failed(new InternalServerException("Status is missing from session"))
+      }
+    } else {
+      Future.successful(ApiTypes.API4)
     }
 
     apiTypePromise flatMap { apiType =>
@@ -54,22 +52,22 @@ trait EmailService {
   }
 
   def sendWithdrawnEmail(email: String)
-                        (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+                        (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
     sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
   }
 
   def sendCancellationEmail(email: String, deRegistrationDate : Option[DeRegistrationDate])
-                           (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
+                           (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Boolean] = {
     sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10,deRegistrationDate)
   }
 
   private def sendEmail(email: String,
-                        doEmailCall: (EmailRequest) => Future[Boolean],
+                        doEmailCall: EmailRequest => Future[Boolean],
                         apiTypePromise: ApiTypes.ApiType,
                         deRegistrationDate : Option[DeRegistrationDate] = None,
                         reference: Option[String] = None,
                         isNewBusiness: Option[Boolean] = None)
-                       (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier) = {
+                       (implicit request: Request[AnyContent], hc: HeaderCarrier) = {
         val deRegistrationDateStr = deRegistrationDate match {
           case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))
           case _ => None

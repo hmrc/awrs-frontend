@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{AwrsUtr, Nino}
@@ -38,15 +38,20 @@ import uk.gov.hmrc.http.SessionKeys
 class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with MockAuthConnector {
 
   trait TestController extends AwrsController {
-    def show(rowTitle: String, content: Option[String]*) = asyncRestrictedAccess {
-      implicit user => implicit request =>
-        // Run sbt test in terminal to compile tests and generate TableRowTestPage, otherwise it will show up red here
-        Future.successful(Ok(views.html.view_application.TableRowTestPage(rowTitle, content: _*)))
+    def show(rowTitle: String, content: Option[String]*): Action[AnyContent] = Action.async {
+      implicit request =>
+        setAuthMocks()
+        restrictedAccessCheck {
+          authorisedAction { ar =>
+            // Run sbt test in terminal to compile tests and generate TableRowTestPage, otherwise it will show up red here
+            Future.successful(Ok(views.html.view_application.TableRowTestPage(rowTitle, content: _*)))
+          }
+        }
     }
   }
-
   object TestController extends TestController {
     override val authConnector = mockAuthConnector
+    val signInUrl = "/sign-in"
   }
 
   // implicit parameters required by the save4later calls, the actual values are not important as these calls are mocked

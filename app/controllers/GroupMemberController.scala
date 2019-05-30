@@ -17,14 +17,14 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.GroupMemberDetailsForm._
 import models.{GroupMember, GroupMembers}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.api.mvc.{AnyContent, Call, Request, Result}
+import play.api.mvc.{Action, AnyContent, Call, Request, Result}
 import services.DataCacheKeys._
 import services.Save4LaterService
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -38,9 +38,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 trait GroupMemberController extends AwrsController with JourneyPage with AccountUtils with Deletable[GroupMembers, GroupMember] with SaveAndRoutable {
 
   //fetch function
-  override def fetch(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[GroupMembers]] = save4LaterService.mainStore.fetchGroupMembers
+  override def fetch(authRetrievals: StandardAuthRetrievals)(implicit  hc: HeaderCarrier): Future[Option[GroupMembers]] = save4LaterService.mainStore.fetchGroupMembers(authRetrievals)
 
-  override def save(data: GroupMembers)(implicit user: AuthContext, hc: HeaderCarrier): Future[GroupMembers] = save4LaterService.mainStore.saveGroupMembers(data)
+  override def save(authRetrievals: StandardAuthRetrievals, data: GroupMembers)(implicit  hc: HeaderCarrier): Future[GroupMembers] =
+    save4LaterService.mainStore.saveGroupMembers(authRetrievals, data)
 
   override val listToListObj = (groupMemberDetails: List[GroupMember]) => GroupMembers(groupMemberDetails)
   override val listObjToList = (groupMemberDetails: GroupMembers) => groupMemberDetails.members
@@ -51,45 +52,51 @@ trait GroupMemberController extends AwrsController with JourneyPage with Account
   override val addNoAnswerRecord: (List[GroupMember]) => List[GroupMember] = (emptyList) => emptyList
   override val amendHaveAnotherAnswer = (data: GroupMember, newAnswer: String) => data.copy(addAnotherGrpMember = Some(newAnswer))
 
-  def showMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
+  def showMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean) = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        implicit val viewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
+        }
+
+        lazy val newEntryAction = (id: Int) =>
+          Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form, id, isNewRecord, ar.enrolments)))
+
+        lazy val existingEntryAction = (data: GroupMembers, id: Int) =>
+          Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form.fill(data.members(id - 1)), id, isNewRecord, ar.enrolments)))
+
+        lazy val haveAnother = (data: GroupMembers) => {
+          val list = data.members
+          list.last.addAnotherGrpMember.fold("")(x => x).equals(BooleanRadioEnum.YesString)
+        }
+
+        lookup[GroupMembers, GroupMember](
+          fetchData = fetch(ar),
+          id = id,
+          toList = (members: GroupMembers) => members.members
+        )(
+          newEntryAction = newEntryAction,
+          existingEntryAction = existingEntryAction,
+          haveAnother = haveAnother
+        )
       }
-
-      lazy val newEntryAction = (id: Int) =>
-        Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form, id, isNewRecord)))
-
-      lazy val existingEntryAction = (data: GroupMembers, id: Int) =>
-        Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form.fill(data.members(id - 1)), id, isNewRecord)))
-
-      lazy val haveAnother = (data: GroupMembers) => {
-        val list = data.members
-        list.last.addAnotherGrpMember.fold("")(x => x).equals(BooleanRadioEnum.YesString)
-      }
-
-      lookup[GroupMembers, GroupMember](
-        fetchData = fetch,
-        id = id,
-        toList = (members: GroupMembers) => members.members
-      )(
-        newEntryAction = newEntryAction,
-        existingEntryAction = existingEntryAction,
-        haveAnother = haveAnother
-      )
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
+  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, ar: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode = viewApplicationType
     groupMemberForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.awrs_group_member(formWithErrors, id, isNewRecord))),
+      formWithErrors => Future.successful(BadRequest(views.html.awrs_group_member(formWithErrors, id, isNewRecord, ar.enrolments))),
       groupMemberData =>
         saveThenRedirect[GroupMembers, GroupMember](
-          fetchData = fetch,
+          fetchData = fetch(ar),
           saveData = save,
           id = id,
-          data = groupMemberData
+          data = groupMemberData,
+          authRetrievals = ar
         )(
           haveAnotherAnswer = (data: GroupMember) => data.addAnotherGrpMember.fold("")(x => x),
           amendHaveAnotherAnswer = amendHaveAnotherAnswer,
@@ -102,10 +109,11 @@ trait GroupMemberController extends AwrsController with JourneyPage with Account
         )
     )
   }
-
 }
+
 
 object GroupMemberController extends GroupMemberController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  val signInUrl = ExternalUrls.signIn
 }

@@ -48,7 +48,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
   val httpPost: HttpPost
   val metrics: AwrsMetrics
 
-  def sendVerificationEmail(emailAddress: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def sendVerificationEmail(emailAddress: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val verificationRequest = EmailVerificationRequest(email = emailAddress,
       templateId = defaultTemplate,
       templateParameters = None,
@@ -74,7 +74,7 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
     }
   }
 
-  def isEmailAddressVerified(email: Option[String])(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def isEmailAddressVerified(email: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
     email match {
       case Some(emailAddress) =>
         val verifyURL = s"""$serviceURL$baseURI$verifyEmail"""

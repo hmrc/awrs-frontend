@@ -26,9 +26,9 @@
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
 @import utils.AccountUtils
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import uk.gov.hmrc.auth.core.Enrolment
 
-@(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages,user :AuthContext)
+@(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
 
 @implicitFormInstance = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
@@ -52,7 +52,7 @@
 }
 
 @ordinalSuffix = @{
-AccountUtils.hasAwrs match {
+AccountUtils.hasAwrs(enrolments) match {
         case true => ordinalIntSuffix(groupMemberId)
         case _ => ordinalIntSuffix(groupMemberId + 1)
     }

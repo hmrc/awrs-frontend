@@ -91,7 +91,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(sendEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
-    def testPostCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.sendVerificationEmail(testEmail)
+    def testPostCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.sendVerificationEmail(testEmail)
 
     "return success equals true, for successful created email sending" in {
       mockPostResponse(responseStatus = CREATED)

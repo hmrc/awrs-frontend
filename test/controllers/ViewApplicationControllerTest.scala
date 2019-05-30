@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import models.BusinessDetailsEntityTypes._
 import models.{ApplicationDeclaration, Suppliers, _}
 import org.jsoup.Jsoup
@@ -46,6 +47,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
     override val keyStoreService = TestKeyStoreService
     override val applicationService = mockApplicationService
     override val indexService = mockIndexService
+    val signInUrl = ExternalUrls.signIn
   }
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
@@ -87,26 +89,27 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
 
   "showViewApplication" should {
 
-    "redirect the user back to the correct page from the back link" in {
+    "redirect the user back one page using the back link" in {
 
       showViewApplication("/alcohol-wholesale-scheme/index") {
         result =>
           val document = Jsoup.parse(contentAsString(result))
           status(result) shouldBe OK
-          document.getElementById("back").attr("href") shouldBe "/alcohol-wholesale-scheme/lastLocation"
+          document.getElementById("back").attr("href") shouldBe "javascript:history.back()"
       }
 
       showViewApplication("/alcohol-wholesale-scheme/status-page") {
         result =>
           val document = Jsoup.parse(contentAsString(result))
           status(result) shouldBe OK
-          document.getElementById("back").attr("href") shouldBe "/alcohol-wholesale-scheme/lastLocation"
+          document.getElementById("back").attr("href") shouldBe "javascript:history.back()"
       }
 
     }
 
     def showViewApplication(previousLocation: Option[String])(test: Future[Result] => Any) {
       setupMockSave4LaterService(fetchAll = getCustomizedMap())
+      setAuthMocks()
       val result = TestViewApplicationController.show(printFriendly = false).apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
       test(result)
     }

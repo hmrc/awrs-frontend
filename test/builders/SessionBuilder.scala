@@ -94,6 +94,27 @@ object SessionBuilder {
     }
   }
 
+  def buildRequestWithSessionStartLocation(userId: String, businessType: String, startLocation: Option[String]) = {
+    val sessionId = s"session-${UUID.randomUUID}"
+    startLocation match {
+      case Some(startLocation) => FakeRequest().withSession(
+        SessionKeys.sessionId -> sessionId,
+        SessionKeys.token -> "RANDOMTOKEN",
+        SessionKeys.userId -> userId,
+        AwrsSessionKeys.sessionJouneyStartLocation -> startLocation,
+        "businessType" -> businessType,
+        "businessName" -> "North East Wines"
+      )
+      case _ => FakeRequest().withSession(
+        SessionKeys.sessionId -> sessionId,
+        SessionKeys.token -> "RANDOMTOKEN",
+        SessionKeys.userId -> userId,
+        "businessType" -> businessType,
+        "businessName" -> "North East Wines"
+      )
+    }
+  }
+
   def buildRequestWithSessionNoUser() = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(

@@ -17,8 +17,8 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
-import play.api.mvc.{Action, AnyContent}
+import controllers.auth.{AwrsController, ExternalUrls}
+import play.api.mvc.{Action, AnyContent, Request}
 import services._
 import utils.AwrsConfig.emailVerificationEnabled
 import views.html.{awrs_email_verification_error, awrs_email_verification_success}
@@ -31,48 +31,45 @@ trait EmailVerificationController extends AwrsController {
   val emailVerificationService: EmailVerificationService
   val isEmailVerificationEnabled: Boolean
 
-  def checkEmailVerification: Action[AnyContent] = async {
-    implicit user =>
-      implicit request =>
-        isEmailVerificationEnabled match {
-          case true =>
-            for {
-              businessContacts <- save4LaterService.mainStore.fetchBusinessContacts
-              isEmailVerified <- emailVerificationService.isEmailVerified(businessContacts)
-            } yield {
-              isEmailVerified match {
-                case true =>
-                  Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration())
-                case _ =>
-                  Ok(awrs_email_verification_error(businessContacts.fold("")(x => x.email.fold("")(x => x))))
-              }
-            }
-          case _ =>
-            Future.successful(Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration()))
-        }
-  }
-
-  def resend: Action[AnyContent] = async {
-    implicit user =>
-      implicit request =>
-        save4LaterService.mainStore.fetchBusinessContacts flatMap {
-          case Some(businessDetails) => {
-            val email = businessDetails.email
-            email match {
-              case Some(businessEmail) => {
-                emailVerificationService.sendVerificationEmail(businessEmail) map {
-                  case true => {
-                    Ok(awrs_email_verification_error(businessEmail, resent = true))}
-                  case _ => showErrorPageRaw
-                }
-              }
-              case _ => {
-                Future.successful(showErrorPageRaw)
-              }
+  def checkEmailVerification: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      isEmailVerificationEnabled match {
+        case true =>
+          for {
+            businessContacts <- save4LaterService.mainStore.fetchBusinessContacts(ar)
+            isEmailVerified <- emailVerificationService.isEmailVerified(businessContacts)
+          } yield {
+            isEmailVerified match {
+              case true =>
+                Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration())
+              case _ =>
+                Ok(awrs_email_verification_error(businessContacts.fold("")(x => x.email.fold("")(x => x))))
             }
           }
-          case _ => Future.successful(showErrorPageRaw)
-        }
+        case _ =>
+          Future.successful(Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration()))
+      }
+    }
+  }
+
+  def resend: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      save4LaterService.mainStore.fetchBusinessContacts(ar) flatMap {
+        case Some(businessDetails) =>
+          val email = businessDetails.email
+          email match {
+            case Some(businessEmail) =>
+              emailVerificationService.sendVerificationEmail(businessEmail) map {
+                case true =>
+                  Ok(awrs_email_verification_error(businessEmail, resent = true))
+                case _ => showErrorPageRaw
+              }
+            case _ =>
+              Future.successful(showErrorPageRaw)
+          }
+        case _ => Future.successful(showErrorPageRaw)
+      }
+    }
   }
 
   def showSuccess: Action[AnyContent]  = Action.async {
@@ -87,4 +84,5 @@ object EmailVerificationController extends EmailVerificationController {
   override val save4LaterService = Save4LaterService
   override val emailVerificationService = EmailVerificationService
   override val isEmailVerificationEnabled = emailVerificationEnabled
+  val signInUrl = ExternalUrls.signIn
 }

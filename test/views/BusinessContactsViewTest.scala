@@ -46,6 +46,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val emailVerificationService = mock[EmailVerificationService]
+    val signInUrl = "/sign-in"
   }
 
   def reviewDetailMatch(reviewDetail: Element) = {
@@ -121,6 +122,8 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
+
+    setAuthMocks()
     val result = TestBusinessContactsController.showBusinessContacts(false).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
     test(result)
   }
@@ -130,6 +133,8 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = None
     )
+
+    setAuthMocks()
     val result = TestBusinessContactsController.showBusinessContacts(true).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
 
     test(result)
@@ -140,6 +145,8 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
+
+    setAuthMocks()
     val result = TestBusinessContactsController.showBusinessContacts(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }

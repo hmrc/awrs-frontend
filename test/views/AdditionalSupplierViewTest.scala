@@ -43,6 +43,7 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
   object TestSupplierAddressesController extends SupplierAddressesController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   "Additional Supplier Template" should {
@@ -132,6 +133,8 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
 
   private def showSupplier(id: Int, isLinearMode: Boolean = true, isNewRecord: Boolean = true, suppliers: List[Supplier] = testList)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = Suppliers(suppliers))
+    setAuthMocks()
+
     val result = TestSupplierAddressesController.showSupplierAddressesPage(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -141,6 +144,8 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchSuppliers = testSuppliers
     )
+    setAuthMocks()
+
     val result = TestSupplierAddressesController.showSupplierAddressesPage(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }

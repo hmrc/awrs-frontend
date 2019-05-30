@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import config.FrontendAuthConnector
+import controllers.auth.ExternalUrls
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -35,7 +36,7 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
   object TestTradingActivityController extends TradingActivityController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
-
+    val signInUrl = ExternalUrls.signIn
   }
 
   "TradingActivityController" must {
@@ -65,12 +66,14 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
+    setAuthMocks()
     val result = TestTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
+    setAuthMocks()
     val result = TestTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

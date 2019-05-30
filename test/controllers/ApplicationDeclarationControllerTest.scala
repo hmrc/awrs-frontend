@@ -16,10 +16,9 @@
 
 package controllers
 
-import audit.TestAudit
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import exceptions._
 import forms.ApplicationDeclarationForm
 import models.FormBundleStatus._
@@ -27,21 +26,22 @@ import models._
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.{Configuration, Play}
 import services._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.play.audit.model.Audit
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HttpResponse
 
 class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
@@ -69,6 +69,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     override val keyStoreService = TestKeyStoreService
     override val enrolService = mockEnrolService
     override val applicationService = mockApplicationService
+    val signInUrl = ExternalUrls.signIn
 
     override protected def mode: Mode = Play.current.mode
 
@@ -78,6 +79,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   object TestApplicationBusinessDirectorsController extends BusinessDirectorsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = ExternalUrls.signIn
   }
 
   "ApplicationDeclarationController" must {
@@ -91,6 +93,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
 
     "show error page if a GovernmentGatewayException is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), GovernmentGatewayException("There was a problem with the admin service")) { result =>
+        await(result)
         val document = Jsoup.parse(contentAsString(result))
         document.getElementsByClass("page-header").text() should include(Messages("awrs.application_government_gateway_error.heading"))
       }
@@ -189,8 +192,10 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       fetchAll = MockSave4LaterService.defaultFetchAll,
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP")
     )
+    setAuthMocks(Future.successful(new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation))))
     setupMockKeyStoreServiceOnlySaveFunctions()
-    when(mockApplicationService.sendApplication()(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+    when(mockApplicationService.updateApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
+    when(mockApplicationService.sendApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
     when(mockEnrolService.enrolAWRS(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
     val result = TestApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
@@ -200,7 +205,8 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchAll = MockSave4LaterService.defaultFetchAll)
     setupMockKeyStoreServiceOnlySaveFunctions()
-    when(mockApplicationService.updateApplication()(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
+    setAuthMocks()
+    when(mockApplicationService.updateApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     val result = TestApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
@@ -208,7 +214,12 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   private def saveWithException(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], exception: Exception)(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchAll = createCacheMap("SOP"), fetchBusinessCustomerDetails = testReviewDetails, fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"))
     setupMockKeyStoreServiceOnlySaveFunctions()
-    when(mockApplicationService.sendApplication()(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(exception))
+    exception match {
+      case _:DESValidationException => setAuthMocks()
+      case _ => setAuthMocks(Future.successful(new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation))))
+    }
+    when(mockApplicationService.updateApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(exception))
+    when(mockApplicationService.sendApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(exception))
     when(mockEnrolService.enrolAWRS(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
 
     val result = TestApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
@@ -219,7 +230,8 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchAll = createCacheMap("SOP"), fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"))
     setupMockKeyStoreServiceOnlySaveFunctions()
-    when(mockApplicationService.updateApplication()(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(exception))
+    setAuthMocks()
+    when(mockApplicationService.updateApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.failed(exception))
 
     val result = TestApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)

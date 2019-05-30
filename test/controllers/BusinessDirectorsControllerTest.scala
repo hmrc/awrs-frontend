@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import config.FrontendAuthConnector
+import controllers.auth.ExternalUrls
 import models.BusinessDirectors
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -38,6 +39,7 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
   object TestBusinessDirectorsController extends BusinessDirectorsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   "BusinessDirectorsController" must {
@@ -92,12 +94,14 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = testBusinessDirectors)
+    setAuthMocks()
     val result = TestBusinessDirectorsController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def deleteWithAuthorisedUser(id: Int = 1, directors: BusinessDirectors = testBusinessDirectors)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = directors)
+    setAuthMocks()
     val result = TestBusinessDirectorsController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

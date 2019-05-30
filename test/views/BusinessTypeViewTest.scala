@@ -18,16 +18,21 @@ package views
 
 import builders.SessionBuilder
 import controllers.BusinessTypeController
+import models.BusinessDetailsEntityTypes.Llp
 import models._
 import org.jsoup.Jsoup
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.TestUtil._
-import utils.{AwrsUnitTestTraits, TestUtil}
+import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
+import uk.gov.hmrc.auth.core.retrieve.~
 
 import scala.concurrent.Future
 
@@ -46,17 +51,16 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
   lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
   lazy val testNewApplicationType = NewApplicationType(Some(true))
 
-  lazy val testSubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd()
+  lazy val testSubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd(legalEntity = Some(testBusinessDetailsEntityTypes(Llp)))
 
   object TestBusinessTypeController extends BusinessTypeController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val api5 = TestAPI5
+    val signInUrl = "/sign-in"
   }
 
-  "Submitting the Business Type form with " should {
-
-    "Authenticated and authorised users" should {
+    "Submitting the Business Type form with Authenticated and authorised users" should {
       "display validation error when 'Business Type' is not provided" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("typeOfBusiness" -> ""), false) {
           result =>
@@ -98,17 +102,16 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
           loadDataFromS4LWithAuthorisedUser {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("legalEntity_field").text() should include(Messages("awrs.business_verification.limited_company"))
-              document.getElementById("legalEntity_field").text() should include(Messages("awrs.business_verification.limited_liability_partnership"))
-              document.getElementById("legalEntity_field").text() should not include Messages("awrs.business_verification.sole_trader")
-              document.getElementById("legalEntity_field").text() should not include Messages("awrs.business_verification.business_partnership")
-              document.getElementById("legalEntity_field").text() should not include Messages("awrs.business_verification.limited_partnership")
+              document.select("#legalEntity_field").text() should include(Messages("awrs.business_verification.limited_company"))
+              document.select("#legalEntity_field").text() should include(Messages("awrs.business_verification.limited_liability_partnership"))
+              document.select("#legalEntity_field").text() should not include Messages("awrs.business_verification.sole_trader")
+              document.select("#legalEntity_field").text() should not include Messages("awrs.business_verification.business_partnership")
+              document.select("#legalEntity_field").text() should not include Messages("awrs.business_verification.limited_partnership")
           }
         }
 
       }
     }
-  }
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any) {
     val testBusCustomer = isGroup match {
@@ -116,6 +119,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
       case false => testBusinessCustomer
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
+    setAuthMocks()
     val result = TestBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
@@ -125,8 +129,8 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
       fetchBusinessType = testBusinessType,
       fetchBusinessCustomerDetails = testBusinessCustomerGroup
     )
+    setAuthMocks(Future.successful(new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation))))
     val result = TestBusinessTypeController.showBusinessType().apply(SessionBuilder.buildRequestWithSession(userId))
-
     test(result)
   }
 }

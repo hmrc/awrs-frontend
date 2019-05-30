@@ -39,7 +39,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
   object TestTradingActivityController extends TradingActivityController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
-
+    val signInUrl = "/sign-in"
   }
 
   "Submitting the trading activity form with " should {
@@ -206,12 +206,14 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
+    setAuthMocks()
     val result = TestTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
+    setAuthMocks()
     val result = TestTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
@@ -221,6 +223,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchTradingActivity = testTradingActivity()
     )
+    setAuthMocks()
     val result = TestTradingActivityController.showTradingActivity(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }

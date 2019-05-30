@@ -24,10 +24,8 @@ import models.FormBundleStatus.{Approved, Pending, Revoked}
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import play.api.test.FakeRequest
 import services.apis.mocks.MockAwrsAPI12Cache
-import uk.gov.hmrc.domain.{AwrsUtr, Nino}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, _}
-import utils.AwrsUnitTestTraits
+import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants._
 import uk.gov.hmrc.http.SessionKeys
 
@@ -54,7 +52,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = None
       )
 
-      await(TestAPI12Cache.getNotificationCache(Pending)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(TestAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 0)
       verifyKeyStoreService(
@@ -70,7 +68,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(TestAPI12Cache.getNotificationCache(Pending)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(TestAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1)
       verifyKeyStoreService(
@@ -84,7 +82,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = None
       )
 
-      await(TestAPI12Cache.getNotificationCache(Pending)) shouldBe None
+      await(TestAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) shouldBe None
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1)
       verifyKeyStoreService(
@@ -100,7 +98,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(TestAPI12Cache.getNotificationCache(Approved)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(TestAPI12Cache.getNotificationCache(Approved, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1, deleteNotificationFromCache = 1)
       verifyKeyStoreService(
@@ -116,7 +114,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(TestAPI12Cache.getNotificationCache(Revoked)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(TestAPI12Cache.getNotificationCache(Revoked, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1, deleteNotificationFromCache = 1)
       verifyKeyStoreService(
@@ -132,7 +130,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(TestAPI12Cache.getNotificationCache(Approved)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(TestAPI12Cache.getNotificationCache(Approved, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1, deleteNotificationFromCache = 1)
       verifyKeyStoreService(

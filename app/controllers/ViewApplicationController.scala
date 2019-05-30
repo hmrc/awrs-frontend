@@ -17,25 +17,24 @@
 package controllers
 
 import config.{ApplicationGlobal, FrontendAuthConnector}
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import controllers.util.UnSubmittedBannerUtil
-import models.GroupMembers
+import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.mvc.{AnyContent, Call, Request, Result}
-import play.twirl.api.Html
+import play.api.mvc._
+import play.twirl.api.{Html, HtmlFormat}
 import services.DataCacheKeys._
 import services.JourneyConstants._
 import services._
+import uk.gov.hmrc.auth.core.Enrolment
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, CacheUtil}
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.InternalServerException
 
 trait ViewApplicationController extends AwrsController with AccountUtils with UnSubmittedBannerUtil with DataCacheService {
 
@@ -45,24 +44,24 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
   val indexService: IndexService
   implicit val cacheUtil = CacheUtil.cacheUtil
 
-  def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent], user: AuthContext) =
+  def viewApplicationContent(dataCache: CacheMap, status: String, enrolments: Set[Enrolment])(implicit request: Request[AnyContent]): Boolean => HtmlFormat.Appendable =
     (printFriendly: Boolean) =>
-      printFriendly match {
-
-        case true => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = PrintFriendlyMode, implicitly,implicitly,implicitly)
-        case _ => views.html.view_application.awrs_view_application_core(dataCache, status)(viewApplicationType = OneViewMode, implicitly,implicitly,implicitly)
+      if (printFriendly) {
+        views.html.view_application.awrs_view_application_core(dataCache, status, enrolments)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly)
+      } else {
+        views.html.view_application.awrs_view_application_core(dataCache, status, enrolments)(viewApplicationType = OneViewMode, implicitly, implicitly)
       }
 
-  def show(printFriendly: Boolean) = async {
-    implicit user => implicit request =>
+  def show(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       for {
-        subscriptionData <- fetchMainStore
+        subscriptionData <- fetchMainStore(ar)
       } yield {
         lazy val status = getSessionStatusStr.fold(Messages("awrs.index_page.draft"))(x => x)
         (subscriptionData, printFriendly) match {
           case (Some(dataCache), false) => Ok(
             views.html.view_application.awrs_view_application(
-              viewApplicationContent(dataCache, status.toLowerCase.capitalize.replace("/", " / ")),
+              viewApplicationContent(dataCache, status.toLowerCase.capitalize.replace("/", " / "), ar.enrolments),
               printFriendly = false,
               sectionText = None,
               // Un-submitted changes banner is not required on the one view page and it would always appear on the confirmation page version as the change indicator data has been cleared down
@@ -73,7 +72,7 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
             // Don't use AWRSController OK helper as we don't want to add the thank you view to the session location history
             OkNoLocation(
               views.html.view_application.awrs_view_application(
-                viewApplicationContent(dataCache, status.toLowerCase.capitalize.replace("/", " / ")),
+                viewApplicationContent(dataCache, status.toLowerCase.capitalize.replace("/", " / "), ar.enrolments),
                 printFriendly = true,
                 sectionText = None,
                 unSubmittedChangesParam = None
@@ -83,15 +82,15 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
             BadRequest(views.html.awrs_application_error())
         }
       }
+    }
   }
 
-  def viewSection(sectionName: String, printFriendly: Boolean) = async {
-    implicit user => implicit request =>
-
+  def viewSection(sectionName: String, printFriendly: Boolean) = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       for {
-        businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
-        subscriptionData <- save4LaterService.mainStore.fetchAll
-        unSubmittedChangesParam <- unSubmittedChangesBanner(subscriptionData)
+        businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
+        subscriptionData <- save4LaterService.mainStore.fetchAll(ar)
+        unSubmittedChangesParam <- unSubmittedChangesBanner(subscriptionData, ar)
       } yield {
         def showPage(content: Html, legalEntity: String) = Ok(
           views.html.view_application.awrs_view_application(
@@ -101,6 +100,7 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
             unSubmittedChangesParam = unSubmittedChangesParam
           )
         )
+
         subscriptionData match {
           case Some(cacheMap) =>
             val legalEntity = cacheMap.getBusinessType match {
@@ -120,13 +120,13 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
               case `partnersName` => showPage(views.html.view_application.subviews.subview_partner_details(
                 displayName, cacheMap.getPartners)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `groupMembersName` => showPage(views.html.view_application.subviews.subview_group_member_details(
-                displayName, cacheMap.getGroupMembers, legalEntity)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly,implicitly), legalEntity)
+                displayName, cacheMap.getGroupMembers, legalEntity, ar.enrolments)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `additionalBusinessPremisesName` => showPage(views.html.view_application.subviews.subview_additional_premises(
                 displayName, cacheMap.getAdditionalBusinessPremises)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `businessDirectorsName` => showPage(views.html.view_application.subviews.subview_business_directors(
                 displayName, cacheMap.getBusinessDirectors, legalEntity)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
               case `tradingActivityName` => showPage(views.html.view_application.subviews.subview_trading_activity(
-                displayName, cacheMap.getTradingActivity)(viewApplicationType = EditRecordOnlyMode, implicitly,implicitly), legalEntity)
+                displayName, cacheMap.getTradingActivity)(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
               case `productsName` => showPage(views.html.view_application.subviews.subview_products(
                 displayName, cacheMap.getProducts)(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
               case `suppliersName` => showPage(views.html.view_application.subviews.subview_suppliers(
@@ -136,27 +136,28 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
           case _ => NotFound(ApplicationGlobal.notFoundTemplate)
         }
       }
+    }
   }
 
-  private def findLastId(sectionName: String)(implicit user: AuthContext, request: Request[AnyContent]): Future[Int] = {
+  private def findLastId(authRetrievals: StandardAuthRetrievals, sectionName: String)(implicit request: Request[AnyContent]): Future[Int] = {
     sectionName match {
-      case `partnersName` => save4LaterService.mainStore.fetchPartnerDetails.map {
+      case `partnersName` => save4LaterService.mainStore.fetchPartnerDetails(authRetrievals).map {
         case Some(partners) => partners.partners.length
         case None => 1
       }
-      case `groupMembersName` => save4LaterService.mainStore.fetchGroupMembers.map {
+      case `groupMembersName` => save4LaterService.mainStore.fetchGroupMembers(authRetrievals).map {
         case Some(groupMemebers) => groupMemebers.members.length
         case None => 1
       }
-      case `additionalBusinessPremisesName` => save4LaterService.mainStore.fetchAdditionalBusinessPremisesList.map {
+      case `additionalBusinessPremisesName` => save4LaterService.mainStore.fetchAdditionalBusinessPremisesList(authRetrievals).map {
         case Some(premises) => premises.premises.length
         case None => 1
       }
-      case `businessDirectorsName` => save4LaterService.mainStore.fetchBusinessDirectors.map {
+      case `businessDirectorsName` => save4LaterService.mainStore.fetchBusinessDirectors(authRetrievals).map {
         case Some(directors) => directors.directors.length
         case None => 1
       }
-      case `suppliersName` => save4LaterService.mainStore.fetchSuppliers.map {
+      case `suppliersName` => save4LaterService.mainStore.fetchSuppliers(authRetrievals).map {
         case Some(suppliers) => suppliers.suppliers.length
         case None => 1
       }
@@ -167,13 +168,14 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
   /*
    * this internal method is designed to be solely used by the backFrom method to display the correct page
    */
-  private def displayPage(sectionName: String, id: Option[Int])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
+  private def displayPage(sectionName: String, id: Option[Int], authRetrievals: StandardAuthRetrievals)
+                         (implicit request: Request[AnyContent]): Future[Result] = {
     // sub function to goto a page which has subsections
     val pageWithSubsection = (show: (Int) => Call) =>
       id match {
         case Some(entryId) => Future.successful(Redirect(show(entryId)))
         // if the Id is not supplied then find the last page it needs to goto
-        case _ => findLastId(sectionName) map (id => Redirect(show(id)))
+        case _ => findLastId(authRetrievals, sectionName) map (id => Redirect(show(id)))
       }
     sectionName match {
       case `businessDetailsName` => Future.successful(Redirect(controllers.routes.BusinessDetailsController.showBusinessDetails(isLinearMode = true)))
@@ -197,12 +199,12 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
    * once the user has entered something then the back button should goto the one-view version using the viewSection method
    *
    */
-  def backFrom(sectionName: String, id: Option[Int] = None) = async {
-    implicit user => implicit request =>
+  def backFrom(sectionName: String, id: Option[Int] = None) = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       lazy val gotoIndex = Future.successful(Redirect(controllers.routes.IndexController.showIndex()))
       id match {
         // if id is > 1 then simply goto the id - 1 version of the page
-        case Some(entryId) if entryId > 1 => displayPage(sectionName, Some(entryId - 1))
+        case Some(entryId) if entryId > 1 => displayPage(sectionName, Some(entryId - 1), ar)
         case _ =>
           // otherwise find the correct previous page to goto depending on their customer jouney
           // the journeys are dependent on the business type, so if it doens't exists in session then display the error page
@@ -223,12 +225,13 @@ trait ViewApplicationController extends AwrsController with AccountUtils with Un
                     // if some how the current page is already past the journey start location then go back to index
                     // this can only happen if the user did not have a controlled flow, e.g. jumped to a previously bookmarked URL
                     case _ if indexForJourneyStartLocation > indexForThisSection => gotoIndex
-                    case _ => displayPage(journey(ind), None) //goto the previous section in this journey
+                    case _ => displayPage(journey(ind), None, ar) //goto the previous section in this journey
                   }
               }
             case _ => showErrorPage
           }
       }
+    }
   }
 
 }
@@ -239,4 +242,5 @@ object ViewApplicationController extends ViewApplicationController {
   override val keyStoreService = KeyStoreService
   override val applicationService = ApplicationService
   override val indexService = IndexService
+  val signInUrl = ExternalUrls.signIn
 }

@@ -16,14 +16,14 @@
 
 package utils
 
+import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
 import models.{BusinessCustomerDetails, BusinessType, Organisation}
 import services.{BusinessMatchingService, Save4LaterService}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 object MatchingUtil extends MatchingUtil {
   override val businessMatchingService = BusinessMatchingService
@@ -35,11 +35,11 @@ trait MatchingUtil extends LoggingUtils {
   val dataCacheService: Save4LaterService
   val businessMatchingService: BusinessMatchingService
 
-  def isValidMatchedGroupUtr(utr: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def isValidMatchedGroupUtr(utr: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Boolean] = {
     for {
-      bcd <- dataCacheService.mainStore.fetchBusinessCustomerDetails
-      businessType <- dataCacheService.mainStore.fetchBusinessType
-      isMatchFound <- businessMatchingService.matchBusinessWithUTR(utr, getOrganisation(bcd, businessType))
+      bcd <- dataCacheService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
+      businessType <- dataCacheService.mainStore.fetchBusinessType(authRetrievals)
+      isMatchFound <- businessMatchingService.matchBusinessWithUTR(utr, getOrganisation(bcd, businessType), authRetrievals)
     } yield {
       isMatchFound
     }

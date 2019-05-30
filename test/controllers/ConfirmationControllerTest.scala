@@ -22,6 +22,7 @@ import java.util.Calendar
 import builders.SessionBuilder
 import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
 import models.{FormBundleStatus, SuccessfulSubscriptionResponse}
 import org.jsoup.Jsoup
@@ -44,6 +45,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val keystoreService = TestKeyStoreService
+    val signInUrl = ExternalUrls.signIn
   }
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
@@ -157,6 +159,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     val request = SessionBuilder.buildRequestWithSession(userId)
     val newSession: Map[String, String] = request.session.data.+(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber)
     val requestAmended = request.withSession(newSession.toSeq: _*)
+    setAuthMocks()
     val result = TestConfirmationController.showApplicationConfirmation(false).apply(requestAmended)
     test(result)
   }
@@ -165,6 +168,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     val request = SessionBuilder.buildRequestWithSession(userId)
     val newSession: Map[String, String] = request.session.data.+(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber, AwrsSessionKeys.sessionStatusType -> status.name)
     val requestAmended = request.withSession(newSession.toSeq: _*)
+    setAuthMocks()
     val result = TestConfirmationController.showApplicationUpdateConfirmation(false).apply(requestAmended)
     test(result)
   }

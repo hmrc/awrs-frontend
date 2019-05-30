@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import models.{Address, BCAddress}
 import play.api.mvc.{AnyContent, Request, Result}
@@ -153,7 +153,7 @@ private[controllers] trait ControllerUtil {
   }
 
   type RedirectRoute = (String, Int) => Future[Result]
-  type SaveData[C] = (C) => Future[C]
+  type SaveData[C] = (StandardAuthRetrievals, C) => Future[C]
   type HaveAnotherAnswer[C] = (C) => String
   type AmendHaveAnotherAnswer[T] = (T, String) => T
   type HasSingleNoAnswer[C] = (C) => String
@@ -164,7 +164,8 @@ private[controllers] trait ControllerUtil {
   def saveThenRedirect[C, T](fetchData: FetchData[C],
                              saveData: SaveData[C],
                              id: Int,
-                             data: T
+                             data: T,
+                             authRetrievals: StandardAuthRetrievals
                             )(
                               haveAnotherAnswer: HaveAnotherAnswer[T],
                               amendHaveAnotherAnswer: AmendHaveAnotherAnswer[T],
@@ -187,11 +188,11 @@ private[controllers] trait ControllerUtil {
     fetchData flatMap {
       case Some(listObj) =>
         updateList(listObjToList(listObj), id, data, viewMode)(haveAnotherAnswer, amendHaveAnotherAnswer, hasSingleNoAnswer(listObj).equals(no), yes, no) match {
-          case Some(updated) => saveData(listToListObj(updated)) flatMap (_ => redirectTo)
+          case Some(updated) => saveData(authRetrievals, listToListObj(updated)) flatMap (_ => redirectTo)
           case _ => AwrsController.showErrorPage
         }
       case None if id == 1 =>
-        saveData(listToListObj(List(data))) flatMap (_ => redirectTo)
+        saveData(authRetrievals, listToListObj(List(data))) flatMap (_ => redirectTo)
       case None => AwrsController.showBadRequest
     }
   }
