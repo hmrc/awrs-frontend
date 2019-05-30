@@ -38,9 +38,9 @@ trait MockIndexService extends AwrsUnitTestTraits {
   protected final def setupMockIndexService(showOneViewLink: Boolean = defaultTrueBoolean,
                                             showContinueButton: Boolean = defaultTrueBoolean,
                                             getStatus: IndexViewModel = defaultindexViewModelComplete): Unit = {
-    when(mockIndexService.showOneViewLink(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(showOneViewLink))
-    when(mockIndexService.showContinueButton(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(showContinueButton)
-    when(mockIndexService.getStatus(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(getStatus)
+    when(mockIndexService.showOneViewLink(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(showOneViewLink))
+    when(mockIndexService.showContinueButton(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(showContinueButton)
+    when(mockIndexService.getStatus(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(getStatus)
   }
 }
 

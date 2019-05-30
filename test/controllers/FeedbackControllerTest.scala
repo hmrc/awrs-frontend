@@ -21,6 +21,7 @@ import java.util.UUID
 import audit.TestAudit
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import controllers.auth.Utr._
 import forms.FeedbackForm
 import models.Feedback
@@ -40,6 +41,7 @@ class FeedbackControllerTest extends AwrsUnitTestTraits
   object TestFeedbackController extends FeedbackController {
     override val authConnector = mockAuthConnector
     override val audit: Audit = new TestAudit
+    val signInUrl = ExternalUrls.signIn
   }
 
   def testRequest(feedback: Feedback) =
@@ -56,6 +58,7 @@ class FeedbackControllerTest extends AwrsUnitTestTraits
   }
 
   def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    setAuthMocks()
     val result = TestFeedbackController.submitFeedback.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

@@ -20,6 +20,7 @@ import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import controllers.auth.Utr._
 import models._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
@@ -41,6 +42,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     override val keyStoreService = TestKeyStoreService
     override val applicationService = mockApplicationService
     override val indexService = mockIndexService
+    val signInUrl = ExternalUrls.signIn
   }
 
   lazy val urlMap = Map[String, (Option[Int]) => String](
@@ -142,6 +144,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
   }
 
   private def callBackFrom(businessEntity: String, startSection: String = businessDetailsName)(currentSection: String, id: Option[Int] = None) = {
+    setAuthMocks()
     val request = SessionBuilder.buildRequestWithSession(userId, businessEntity)
     val requestWithStart = request.withSession(request.session.+((AwrsSessionKeys.sessionJouneyStartLocation, startSection)).data.toSeq: _*)
     TestViewApplicationController.backFrom(currentSection, id).apply(requestWithStart)

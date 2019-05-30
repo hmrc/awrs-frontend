@@ -18,23 +18,19 @@ package controllers
 
 import _root_.models.FormBundleStatus._
 import config.FrontendAuthConnector
-import connectors.EmailVerificationConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import exceptions._
 import forms.ApplicationDeclarationForm._
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
+import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.mvc.{AnyContent, Request}
-import services.EnrolService.runModeConfiguration
+import play.api.mvc.{Action, AnyContent, Request}
+import play.api.{Configuration, Play}
 import services._
-import uk.gov.hmrc.domain.AwrsUtr
+import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.play.config.RunMode
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
-import utils.AwrsConfig.emailVerificationEnabled
 
 import scala.concurrent.Future
 
@@ -50,70 +46,68 @@ trait ApplicationDeclarationController extends AwrsController with AccountUtils 
     getSessionStatus exists (result => if (result == Pending || result == Approved || result == ApprovedWithConditions) true else false)
   }
 
-  def showApplicationDeclaration = asyncRestrictedAccess {
-    implicit user =>
-      implicit request =>
-        save4LaterService.mainStore.fetchApplicationDeclaration map {
+  def showApplicationDeclaration: Action[AnyContent] = Action.async { implicit request =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        save4LaterService.mainStore.fetchApplicationDeclaration(ar) map {
           case Some(data) => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form.fill(data), isEnrolledApplicant))
           case _ => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form, isEnrolledApplicant))
         }
+      }
+    }
   }
 
-  private def getRefNo(implicit user: AuthContext): String = user.principal.accounts.awrs.fold("")(_.utr.toString)
-
-  def sendApplication = async {
-    implicit user =>
-      implicit request =>
-        hasAwrs match {
-          case true => applicationDeclarationForm.bindFromRequest.fold(
-            formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
-            applicationDeclarationData => {
-              for {
-                savedDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(applicationDeclarationData)
-                _ <- backUpSave4LaterInKeyStore
-                successResponse <- applicationService.updateApplication()
-              } yield Redirect(controllers.routes.ConfirmationController.showApplicationUpdateConfirmation(false)).addAwrsRefToSession(successResponse.etmpFormBundleNumber)
-            }.recover {
-              case error: ResubmissionException => InternalServerError(views.html.error_template(Messages("awrs.application_resubmission_error.title"), Messages("awrs.application_resubmission_error.heading"), Messages("awrs.application_resubmission_error.message")))
-              case error: DESValidationException => InternalServerError(views.html.error_template(Messages("awrs.application_des_validation.title"), Messages("awrs.application_des_validation.heading"), Messages("awrs.application_des_validation.message")))
-              case error =>
-                warn("Exception encountered in Application Declaration Controller :\n" + error)
-                throw error
+  def sendApplication(): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { ar =>
+      if (hasAwrs(ar.enrolments)) {
+        applicationDeclarationForm.bindFromRequest.fold(
+          formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
+          applicationDeclarationData => {
+            for {
+              savedDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(ar, applicationDeclarationData)
+              _ <- backUpSave4LaterInKeyStore(ar)
+              successResponse <- applicationService.updateApplication(ar)
+            } yield Redirect(controllers.routes.ConfirmationController.showApplicationUpdateConfirmation(false)).addAwrsRefToSession(successResponse.etmpFormBundleNumber)
+          }.recover {
+            case error: ResubmissionException => InternalServerError(views.html.error_template(Messages("awrs.application_resubmission_error.title"), Messages("awrs.application_resubmission_error.heading"), Messages("awrs.application_resubmission_error.message")))
+            case error: DESValidationException => InternalServerError(views.html.error_template(Messages("awrs.application_des_validation.title"), Messages("awrs.application_des_validation.heading"), Messages("awrs.application_des_validation.message")))
+            case error =>
+              warn("Exception encountered in Application Declaration Controller :\n" + error.getStackTrace.mkString("\n"))
+              throw error
+          }
+        )
+      } else {
+        val businessType = getBusinessType.getOrElse("")
+        applicationDeclarationForm.bindFromRequest.fold(
+          formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
+          applicationDeclarationData => {
+            for {
+              savedDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(ar, applicationDeclarationData)
+              _ <- backUpSave4LaterInKeyStore(ar)
+              businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
+              businessRegDetails <- save4LaterService.mainStore.fetchBusinessRegistrationDetails(ar)
+              successResponse <- applicationService.sendApplication(ar)
+              _ <- enrolService.enrolAWRS(successResponse,
+                businessPartnerDetails.get,
+                businessType,
+                businessRegDetails.get.utr) // Calls ES8
+            } yield {
+              Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
+                .addAwrsRefToSession(successResponse.etmpFormBundleNumber)
             }
-          )
-          case _ =>
-            val businessType = getBusinessType.getOrElse("")
-            val awrs: String = getRefNo
-            applicationDeclarationForm.bindFromRequest.fold(
-              formWithErrors => Future.successful(BadRequest(views.html.awrs_application_declaration(formWithErrors, isEnrolledApplicant))),
-              applicationDeclarationData => {
-                for {
-                  savedDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(applicationDeclarationData)
-                  _ <- backUpSave4LaterInKeyStore
-                  businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
-                  businessRegDetails <- save4LaterService.mainStore.fetchBusinessRegistrationDetails
-                  successResponse <- applicationService.sendApplication()
-                  _ <- enrolService.enrolAWRS(successResponse,
-                    businessPartnerDetails.get,
-                    businessType,
-                    businessRegDetails.get.utr) // Calls ES8
-                } yield {
-                  Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
-                    .addAwrsRefToSession(successResponse.etmpFormBundleNumber)
-                }
 
-              }.recover {
-                case error: DESValidationException => InternalServerError(views.html.error_template(Messages("awrs.application_des_validation.title"), Messages("awrs.application_des_validation.heading"), Messages("awrs.application_des_validation.message")))
-                case error: DuplicateSubscriptionException => InternalServerError(views.html.error_template(Messages("awrs.application_duplicate_request.title"), Messages("awrs.application_duplicate_request.heading"), Messages("awrs.application_duplicate_request.message")))
-                case error: PendingDeregistrationException => InternalServerError(views.html.error_template(Messages("awrs.application_pending_deregistration.title"), Messages("awrs.application_pending_deregistration.heading"), Messages("awrs.application_pending_deregistration.message")))
-                case error: GovernmentGatewayException => InternalServerError(views.html.error_template(Messages("awrs.application_government_gateway_error.title"), Messages("awrs.application_government_gateway_error.heading"), Messages("awrs.application_government_gateway_error.message")))
-                case error =>
-                  warn("Exception encountered in Application Declaration Controller :\n" + error)
-                  throw error
-              }
-            )
-
-        }
+          }.recover {
+            case error: DESValidationException => InternalServerError(views.html.error_template(Messages("awrs.application_des_validation.title"), Messages("awrs.application_des_validation.heading"), Messages("awrs.application_des_validation.message")))
+            case error: DuplicateSubscriptionException => InternalServerError(views.html.error_template(Messages("awrs.application_duplicate_request.title"), Messages("awrs.application_duplicate_request.heading"), Messages("awrs.application_duplicate_request.message")))
+            case error: PendingDeregistrationException => InternalServerError(views.html.error_template(Messages("awrs.application_pending_deregistration.title"), Messages("awrs.application_pending_deregistration.heading"), Messages("awrs.application_pending_deregistration.message")))
+            case error: GovernmentGatewayException => InternalServerError(views.html.error_template(Messages("awrs.application_government_gateway_error.title"), Messages("awrs.application_government_gateway_error.heading"), Messages("awrs.application_government_gateway_error.message")))
+            case error =>
+              warn("Exception encountered in Application Declaration Controller :\n" + error.getStackTrace.mkString("\n"))
+              throw error
+          }
+        )
+      }
+    }
   }
 
 
@@ -126,6 +120,7 @@ object ApplicationDeclarationController extends ApplicationDeclarationController
   override val enrolService = EnrolService
   override val applicationService = ApplicationService
   override val keyStoreService = KeyStoreService
+  val signInUrl = ExternalUrls.signIn
 
   override protected def mode: Mode = Play.current.mode
 

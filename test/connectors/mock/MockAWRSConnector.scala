@@ -45,7 +45,7 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
                              getStatusInfo: StatusInfoType = defaultStatusTypeInfo,
                              submitAWRSData: SuccessfulSubscriptionResponse = defaultSuccessfulSubscriptionResponse,
                              updateAWRSData: SuccessfulUpdateSubscriptionResponse = defaultSuccessfulUpdateSubscriptionResponse
-                            ) =
+                            ): Unit =
     setupMockAWRSConnectorWithOnly(
       lookupAWRSData = lookupAWRSData,
       checkStatus = checkStatus,
@@ -61,22 +61,22 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
                                       submitAWRSData: MockConfiguration[SuccessfulSubscriptionResponse] = DoNotConfigure,
                                       updateAWRSData: MockConfiguration[SuccessfulUpdateSubscriptionResponse] = DoNotConfigure,
                                       updateGroupBusinessPartner: MockConfiguration[SuccessfulUpdateGroupBusinessPartnerResponse] = DoNotConfigure
-                                    ) = {
-    lookupAWRSData ifConfiguredThen (jsValue => when(mockAWRSConnector.lookupAWRSData(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(jsValue)))
-    checkStatus ifConfiguredThen (status => when(mockAWRSConnector.checkStatus(Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(status)))
-    getStatusInfo ifConfiguredThen (info => when(mockAWRSConnector.getStatusInfo(Matchers.any(), Matchers.any(),Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(info)))
-    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data)))
-    updateAWRSData ifConfiguredThen (data => when(mockAWRSConnector.updateAWRSData(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data)))
-    updateGroupBusinessPartner ifConfiguredThen (data => when(mockAWRSConnector.updateGroupBusinessPartner(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data)))
+                                    ): Unit = {
+    lookupAWRSData ifConfiguredThen (jsValue => when(mockAWRSConnector.lookupAWRSData(Matchers.any())(Matchers.any())).thenReturn(Future.successful(jsValue)))
+    checkStatus ifConfiguredThen (status => when(mockAWRSConnector.checkStatus(Matchers.any(),Matchers.any())(Matchers.any())).thenReturn(Future.successful(status)))
+    getStatusInfo ifConfiguredThen (info => when(mockAWRSConnector.getStatusInfo(Matchers.any(), Matchers.any(),Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(info)))
+    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(data)))
+    updateAWRSData ifConfiguredThen (data => when(mockAWRSConnector.updateAWRSData(Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(data)))
+    updateGroupBusinessPartner ifConfiguredThen (data => when(mockAWRSConnector.updateGroupBusinessPartner(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(data)))
   }
 
   def verifyAWRSConnector(lookupAWRSData: Option[Int] = None,
                           checkStatus: Option[Int] = None,
                           getStatusInfo: Option[Int] = None
-                         ) = {
-    lookupAWRSData ifDefinedThen (count => verify(mockAWRSConnector, times(count)).lookupAWRSData(Matchers.any())(Matchers.any(), Matchers.any()))
-    checkStatus ifDefinedThen (count => verify(mockAWRSConnector, times(count)).checkStatus(Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any()))
-    getStatusInfo ifDefinedThen (count => verify(mockAWRSConnector, times(count)).getStatusInfo(Matchers.any(), Matchers.any(),Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+                         ): Unit = {
+    lookupAWRSData ifDefinedThen (count => verify(mockAWRSConnector, times(count)).lookupAWRSData(Matchers.any())(Matchers.any()))
+    checkStatus ifDefinedThen (count => verify(mockAWRSConnector, times(count)).checkStatus(Matchers.any(),Matchers.any())(Matchers.any()))
+    getStatusInfo ifDefinedThen (count => verify(mockAWRSConnector, times(count)).getStatusInfo(Matchers.any(), Matchers.any(),Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any()))
   }
 
 

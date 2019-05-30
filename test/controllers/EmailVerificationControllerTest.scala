@@ -19,6 +19,7 @@ package controllers
 import builders.SessionBuilder
 import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -45,6 +46,7 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     override val save4LaterService = TestSave4LaterService
     override val emailVerificationService = mockEmailVerificationService
     override val isEmailVerificationEnabled = true
+    val signInUrl = ExternalUrls.signIn
   }
 
   object TestEmailVerificationControllerEmailNotEnabled extends EmailVerificationController {
@@ -52,6 +54,7 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     override val save4LaterService = TestSave4LaterService
     override val emailVerificationService = mockEmailVerificationService
     override val isEmailVerificationEnabled = false
+    val signInUrl = ExternalUrls.signIn
   }
 
   "Page load for Authorised users" should {
@@ -124,7 +127,8 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
-    when(mockEmailVerificationService.isEmailVerified(Matchers.eq(testBusinessContactsDefault()))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(isVerified))
+    setAuthMocks()
+    when(mockEmailVerificationService.isEmailVerified(Matchers.eq(Some(testBusinessContactsDefault())))(Matchers.any())).thenReturn(Future.successful(isVerified))
     val request = SessionBuilder.buildRequestWithSession(userId)
     val result = testController.checkEmailVerification.apply(request)
     test(result)
@@ -135,7 +139,8 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
-    when(mockEmailVerificationService.sendVerificationEmail(Matchers.eq(testEmail))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(isVerified))
+    setAuthMocks()
+    when(mockEmailVerificationService.sendVerificationEmail(Matchers.eq(testEmail))(Matchers.any())).thenReturn(Future.successful(isVerified))
     val request = SessionBuilder.buildRequestWithSession(userId)
     val result = TestEmailVerificationControllerEmailEnabled.resend().apply(request)
     test(result)

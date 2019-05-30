@@ -16,8 +16,7 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.BusinessPremisesForm._
 import models.{AdditionalBusinessPremises, AdditionalBusinessPremisesList, Address}
@@ -27,8 +26,7 @@ import controllers.util._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.api.mvc.{AnyContent, Call, Request, Result}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import play.api.mvc.{Action, AnyContent, Call, Request, Result}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.Future
@@ -39,9 +37,11 @@ trait AdditionalPremisesController extends AwrsController with JourneyPage with 
   val blankAddress = Address("", "", None, None, None)
   val blankPremise = AdditionalBusinessPremises(Some("Yes"), Some(blankAddress), None)
 
-  override def fetch(implicit user: AuthContext, hc: HeaderCarrier) = save4LaterService.mainStore.fetchAdditionalBusinessPremisesList
+  override def fetch(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier) =
+    save4LaterService.mainStore.fetchAdditionalBusinessPremisesList(authRetrievals)
 
-  override def save(data: AdditionalBusinessPremisesList)(implicit user: AuthContext, hc: HeaderCarrier) = save4LaterService.mainStore.saveAdditionalBusinessPremisesList(data)
+  override def save(authRetrievals: StandardAuthRetrievals, data: AdditionalBusinessPremisesList)(implicit hc: HeaderCarrier) =
+    save4LaterService.mainStore.saveAdditionalBusinessPremisesList(authRetrievals, data)
 
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.AdditionalPremisesController.actionDelete(id)
   override val listObjToList = (premises: AdditionalBusinessPremisesList) => premises.premises
@@ -52,34 +52,38 @@ trait AdditionalPremisesController extends AwrsController with JourneyPage with 
   override val addNoAnswerRecord = (emptyList: List[models.AdditionalBusinessPremises]) => List(AdditionalBusinessPremises(Some("No"), None, None))
   override val amendHaveAnotherAnswer = (data: AdditionalBusinessPremises, newAnswer: String) => data.copy(addAnother = Some(newAnswer))
 
-  def showPremisePage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
+  def showPremisePage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request =>
+    restrictedAccessCheck {
+      authorisedAction { authRetrievals =>
+        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
+        }
+        lazy val newEntryAction = (id: Int) =>
+          Future.successful(Ok(views.html.awrs_additional_premises(businessPremisesForm.form, id, isNewRecord)))
+
+        lazy val existingEntryAction = (data: AdditionalBusinessPremisesList, id: Int) =>
+          Future.successful(Ok(views.html.awrs_additional_premises(businessPremisesForm.form.fill(data.premises(id - 1)), id, isNewRecord)))
+
+
+        lazy val haveAnother = (data: AdditionalBusinessPremisesList) =>
+          data.premises.last.addAnother.fold("")(x => x).equals(BooleanRadioEnum.YesString)
+
+        lookup[AdditionalBusinessPremisesList, AdditionalBusinessPremises](
+          fetchData = fetch(authRetrievals),
+          id = id,
+          toList = (premises: AdditionalBusinessPremisesList) => premises.premises
+        )(
+          newEntryAction = newEntryAction,
+          existingEntryAction = existingEntryAction,
+          haveAnother = haveAnother
+        )
       }
-      lazy val newEntryAction = (id: Int) =>
-        Future.successful(Ok(views.html.awrs_additional_premises(businessPremisesForm.form, id, isNewRecord)))
-
-      lazy val existingEntryAction = (data: AdditionalBusinessPremisesList, id: Int) =>
-        Future.successful(Ok(views.html.awrs_additional_premises(businessPremisesForm.form.fill(data.premises(id - 1)), id, isNewRecord)))
-
-
-      lazy val haveAnother = (data: AdditionalBusinessPremisesList) =>
-        data.premises.last.addAnother.fold("")(x => x).equals(BooleanRadioEnum.YesString)
-
-      lookup[AdditionalBusinessPremisesList, AdditionalBusinessPremises](
-        fetchData = fetch,
-        id = id,
-        toList = (premises: AdditionalBusinessPremisesList) => premises.premises
-      )(
-        newEntryAction = newEntryAction,
-        existingEntryAction = existingEntryAction,
-        haveAnother = haveAnother
-      )
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent] , user: AuthContext): Future[Result] = {
+  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode = viewApplicationType
     businessPremisesForm.bindFromRequest.fold(
       formWithErrors => {
@@ -89,16 +93,17 @@ trait AdditionalPremisesController extends AwrsController with JourneyPage with 
         businessPremisesData.additionalPremises match {
           case Some("No") =>
             //Save it.
-            save(AdditionalBusinessPremisesList(premises = List(businessPremisesData))) flatMap {
+            save(authRetrievals, AdditionalBusinessPremisesList(premises = List(businessPremisesData))) flatMap {
               //redirecting to the right page based on session business type
               case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
             }
           case _ =>
             saveThenRedirect[AdditionalBusinessPremisesList, AdditionalBusinessPremises](
-              fetchData = fetch,
+              fetchData = fetch(authRetrievals),
               saveData = save,
               id = id,
-              data = businessPremisesData
+              data = businessPremisesData,
+              authRetrievals = authRetrievals
             )(
               haveAnotherAnswer = (data: AdditionalBusinessPremises) => data.addAnother.fold("")(x => x),
               amendHaveAnotherAnswer = amendHaveAnotherAnswer,
@@ -116,6 +121,6 @@ trait AdditionalPremisesController extends AwrsController with JourneyPage with 
 }
 
 object AdditionalPremisesController extends AdditionalPremisesController {
-  override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  val signInUrl = ExternalUrls.signIn
 }

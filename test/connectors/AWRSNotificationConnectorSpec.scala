@@ -85,7 +85,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
   // these values doesn't really matter since the call itself is mocked
   implicit val request = FakeRequest()
-  val awrsRef = AccountUtils.getAwrsRefNo.toString()
+  val awrsRef = AccountUtils.getAwrsRefNo(TestUtil.defaultEnrolmentSet)
 
   lazy val notificationCacheURI = (awrsRef: String) => s"/$awrsRef"
 
@@ -111,9 +111,9 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.DELETE[HttpResponse](Matchers.endsWith(notificationCacheURI(awrsRef)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus)))
 
-    def testFetchCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.fetchNotificationCache
+    def testFetchCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.fetchNotificationCache(TestUtil.defaultAuthRetrieval)
 
-    def testDeleteCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.deleteFromNotificationCache
+    def testDeleteCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.deleteFromNotificationCache(TestUtil.defaultAuthRetrieval)
 
     val revokeJSon = """{
                        "registrationNumber": "XXAW000001234560",
@@ -209,7 +209,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(notificationViewedStatusURI(awrsRef)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
-    def testGetViewedStatusCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.getNotificationViewedStatus
+    def testGetViewedStatusCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.getNotificationViewedStatus(TestUtil.defaultAuthRetrieval)
 
     "return status as OK or NO_CONTENT, for successful getNotificationViewedStatus" in {
       val viewed = true
@@ -235,7 +235,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
           case false => Future.successful(HttpResponse(NOT_FOUND))
         })
 
-    def testMarkViewedStatusCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.markNotificationViewedStatusAsViewed
+    def testMarkViewedStatusCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.markNotificationViewedStatusAsViewed(TestUtil.defaultAuthRetrieval)
 
     "return the value Some(true), for successful markNotificationViewedStatusAsViewed" in {
       // so long as a response is given then ok is returned

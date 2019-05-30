@@ -21,6 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import controllers.auth.Utr._
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -39,6 +40,7 @@ class ResetControllerTest extends AwrsUnitTestTraits
   object TestResetController extends ResetController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = ExternalUrls.signIn
   }
 
   "ResetController" must {
@@ -84,16 +86,19 @@ class ResetControllerTest extends AwrsUnitTestTraits
   }
 
   private def getWithAuthorisedUserSa(test: Future[Result] => Any) {
+    setAuthMocks()
     val result = TestResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getWithAuthorisedUserCt(test: Future[Result] => Any) {
+    setAuthMocks()
     val result = TestResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getUpdateWithAuthorisedUserCt(test: Future[Result] => Any) {
+    setAuthMocks()
     val result = TestResetController.resetApplicationUpdate.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

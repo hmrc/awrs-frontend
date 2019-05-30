@@ -21,17 +21,18 @@ import java.util.UUID
 import builders.AuthBuilder
 import connectors.AWRSConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.StandardAuthRetrievals
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import services.mocks.MockKeyStoreService
-import uk.gov.hmrc.domain.{AwrsUtr, Nino}
+import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import utils.TestConstants._
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.SessionKeys
+import utils.{TestUtil}
 
 class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
   import MockKeyStoreService._
@@ -68,7 +69,7 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
       case true => deRegistrationSuccessData
       case false => deRegistrationFailureData
     }
-    when(mockAWRSConnector.deRegistration(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(deRegSuccessData.get))
+    when(mockAWRSConnector.deRegistration(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(deRegSuccessData.get))
   }
 
   def mocks(haveDeRegDate: Boolean = true,
@@ -91,28 +92,28 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
     "deRegistration should call ETMP when both date and reason are present" in new HasAwrsUser {
       mocks()
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = TestAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe deRegistrationSuccessData
     }
 
     "deRegistration should not call ETMP when there is no date" in new HasAwrsUser {
       mocks(haveDeRegDate = false)
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = TestAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe None
     }
 
     "deRegistration should not call ETMP when there is no reason" in new HasAwrsUser {
       mocks(haveDeRegReason = false)
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = TestAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe None
     }
 
     "deRegistration should not call ETMP when the user does not have an AWRS reg number" in new NoAwrsUser {
       mocks()
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = TestAwrsAPI10.deRegistration(StandardAuthRetrievals(Set.empty[Enrolment], None))
       await(result) shouldBe None
     }
   }

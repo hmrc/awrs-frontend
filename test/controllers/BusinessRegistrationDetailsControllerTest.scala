@@ -17,6 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
+import controllers.auth.ExternalUrls
 import forms.BusinessRegistrationDetailsForm
 import models._
 import org.jsoup.Jsoup
@@ -47,6 +48,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val matchingUtil = mockMatchingUtil
+    val signInUrl = ExternalUrls.signIn
   }
 
   "BusinessRegistrationDetailsController" must {
@@ -101,8 +103,9 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessRegistrationDetails = businessRegistrationDetails
       )
-      when(mockMatchingUtil.isValidMatchedGroupUtr(Matchers.eq(testNonMatchingUtr))(Matchers.any(), Matchers.any())).thenReturn(false)
-      when(mockMatchingUtil.isValidMatchedGroupUtr(Matchers.eq(testUtr))(Matchers.any(), Matchers.any())).thenReturn(true)
+      setAuthMocks()
+      when(mockMatchingUtil.isValidMatchedGroupUtr(Matchers.eq(testNonMatchingUtr), Matchers.any())(Matchers.any())).thenReturn(false)
+      when(mockMatchingUtil.isValidMatchedGroupUtr(Matchers.eq(testUtr), Matchers.any())(Matchers.any())).thenReturn(true)
       val result = TestBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
       test(result)
     }

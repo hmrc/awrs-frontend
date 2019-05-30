@@ -17,30 +17,33 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls}
+import play.api.mvc.{Action, AnyContent}
 import services.Save4LaterService
-import utils.AccountUtils
 
 import scala.concurrent.Future
 
 trait ResetController extends AwrsController {
   val save4LaterService: Save4LaterService
 
-  def resetApplication = async {
-    implicit user => implicit request =>
-      save4LaterService.mainStore.removeAll
-      Future.successful(Redirect(routes.ApplicationController.logout))
+  def resetApplication: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { ar =>
+      save4LaterService.mainStore.removeAll(ar)
+      Future.successful(Redirect(routes.ApplicationController.logout()))
+    }
   }
 
-  def resetApplicationUpdate = async {
-    implicit user => implicit request =>
-      save4LaterService.mainStore.removeAll
-      save4LaterService.api.removeAll
-      Future.successful(Redirect(routes.ApplicationController.logout))
+  def resetApplicationUpdate: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { ar =>
+      save4LaterService.mainStore.removeAll(ar)
+      save4LaterService.api.removeAll(ar)
+      Future.successful(Redirect(routes.ApplicationController.logout()))
+    }
   }
 }
 
 object ResetController extends ResetController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  val signInUrl = ExternalUrls.signIn
 }

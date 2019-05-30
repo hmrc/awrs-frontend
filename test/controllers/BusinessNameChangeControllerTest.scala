@@ -19,6 +19,7 @@ package controllers
 import builders.SessionBuilder
 import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import models._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -46,6 +47,7 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
     override val save4LaterService = TestSave4LaterService
     override val keyStoreService = TestKeyStoreService
     override val indexService = mock[IndexService]
+    val signInUrl = ExternalUrls.signIn
   }
 
   "Submitting the business name change confirmation form with " should {
@@ -69,6 +71,7 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
     setupMockSave4LaterService()
+    setAuthMocks()
     val result = TestBusinessNameChangeController.callToAction().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

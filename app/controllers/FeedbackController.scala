@@ -17,28 +17,29 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.{AwrsController, AwrsRegistrationRegime}
+import controllers.auth.{AwrsController, ExternalUrls}
 import forms.FeedbackForm._
 import models.Feedback
-import uk.gov.hmrc.play.frontend.auth.Actions
+import play.api.mvc.{Action, AnyContent, Request}
 import utils.AccountUtils
 
 import scala.concurrent.Future
 
-trait FeedbackController extends AwrsController with Actions with AccountUtils {
+trait FeedbackController extends AwrsController with AccountUtils {
 
-  def showFeedback = async {
-    implicit user => implicit request => Future.successful(Ok(views.html.awrs_feedback(feedbackForm.form)))
+  def showFeedback = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar => Future.successful(Ok(views.html.awrs_feedback(feedbackForm.form))) }
   }
 
-  def showFeedbackThanks = async {
-    implicit user => implicit request =>
+  def showFeedbackThanks = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       // Don't use AWRSController OK helper as we don't want to add the thank you view to the session location history
       Future.successful(OkNoLocation(views.html.awrs_feedback_thanks()))
+    }
   }
 
-  def submitFeedback = async {
-    implicit user => implicit request =>
+  def submitFeedback = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       feedbackForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.awrs_feedback(formWithErrors))),
         feedbackDetails => {
@@ -46,6 +47,7 @@ trait FeedbackController extends AwrsController with Actions with AccountUtils {
           Future.successful(Redirect(routes.FeedbackController.showFeedbackThanks()))
         }
       )
+    }
   }
 
   private def feedbackFormDataToMap(formData: Feedback): Map[String, String] = {
@@ -64,4 +66,5 @@ trait FeedbackController extends AwrsController with Actions with AccountUtils {
 
 object FeedbackController extends FeedbackController {
   override val authConnector = FrontendAuthConnector
+  val signInUrl = ExternalUrls.signIn
 }

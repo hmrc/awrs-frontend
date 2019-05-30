@@ -18,13 +18,11 @@ package controllers
 
 import controllers.auth.ExternalUrls
 import play.api.Mode.Mode
-import play.api.{Configuration, Play}
+import play.api.i18n.Messages
 import play.api.mvc.Action
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
-import utils.SessionUtil._
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 object ApplicationController extends ApplicationController {
   override protected def mode: Mode = Play.current.mode
@@ -34,9 +32,7 @@ object ApplicationController extends ApplicationController {
 
 trait ApplicationController extends FrontendController with RunMode {
 
-  import play.api.Play.current
-
-  def unauthorised = Action { implicit request =>
+  def unauthorised(implicit messages: Messages) = Action { implicit request =>
     Unauthorized(views.html.unauthorised())
   }
 

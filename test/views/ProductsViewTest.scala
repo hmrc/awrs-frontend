@@ -39,6 +39,7 @@ class ProductsViewTest extends AwrsUnitTestTraits
   object TestProductsController extends ProductsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   "Submitting the additional information form with " should {
@@ -169,6 +170,7 @@ class ProductsViewTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
+    setAuthMocks()
     val result = TestProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
@@ -178,6 +180,7 @@ class ProductsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchProducts = testProducts()
     )
+    setAuthMocks()
     val result = TestProductsController.showProducts(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }

@@ -24,13 +24,12 @@ import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.hooks.HttpHooks
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
-import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
+import uk.gov.hmrc.http.{CorePost, HttpDelete, HttpGet, HttpPost, HttpPut}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
 
 object AwrsFrontendAuditConnector extends AuditConnector with AppName {
@@ -57,12 +56,17 @@ object CachedStaticHtmlPartialProvider extends CachedStaticHtmlPartialRetriever 
   override val httpGet = WSHttp
 }
 
-object FrontendAuthConnector extends AuthConnector with ServicesConfig {
-  val serviceUrl = baseUrl("auth")
-  lazy val http = WSHttp
-
+object FrontendAuthConnector extends FrontendAuthConnector {
+  override lazy val serviceUrl = baseUrl("auth")
+  override def http: CorePost = WSHttp
   override protected def mode: Mode = Play.current.mode
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
+}
 
+trait FrontendAuthConnector extends PlayAuthConnector with ServicesConfig {
+  override lazy val serviceUrl = baseUrl("auth")
+  override def http: CorePost = WSHttp
+  override protected def mode: Mode = Play.current.mode
   override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 

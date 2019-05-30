@@ -25,12 +25,14 @@ import models.FormBundleStatus.Pending
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
+import org.mockito.Matchers
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
+import services.mocks.MockTestStatusManagementService
 import uk.gov.hmrc.domain.AwrsUtr
 import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
 
@@ -73,10 +75,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     case false => TestUtil.testBusinessDetails()
   }
 
-  object TestApplicationStatusController extends ApplicationStatusController {
+  object TestApplicationStatusController extends ApplicationStatusController()(implicitly) {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val statusManagementService = TestStatusManagementService
+    override val signInUrl = "/sign-in"
   }
 
   "ApplicationStatusController" should {
@@ -177,17 +180,12 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = StandardLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.lede.verb_in_main.approved"),
                 testApprovedSubscriptionStatusType.processingDate,
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
       }
     }
@@ -198,16 +196,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testPendingSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -219,16 +212,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.no_longer_mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeNoLongerMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -240,17 +228,12 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = StandardLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.lede.verb_in_main.approved_with_conditions"),
                 testApprovedWithConditionsSubscriptionStatusType.processingDate,
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testApprovedWithConditionsStatusInfoType.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -262,16 +245,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -283,16 +261,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.no_longer_mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeNoLongerMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -369,23 +342,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testRevokedStatusInfoType.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
-    }
-  }
-
-  def getAwrsUtr: Option[AwrsUtr] = {
-    implicit val hc = HeaderCarrier()
-    // the convertToOption implicit conversion function was conflicting with another one defined else where
-    def convertToOption = ???
-    def convertToMockConfiguration = ???
-    def convertToMockConfiguration2 = ???
-    def convertToMockConfiguration3 = ???
-    def convertToMockConfiguration4 = ???
-    def convertToMockConfiguration5 = ???
-
-    val auth = mockAuthConnector.currentAuthority.get
-    auth.accounts.awrs match {
-      case Some(awrs) => Some(awrs.utr)
-      case _ => None
     }
   }
 
@@ -495,12 +451,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   def statusInfoMessageIsDisplayed(document: Document, expected: String): Unit =
     document.select(".form-group").first().text() should include(expected)
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) = {
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestApplicationStatusController.showStatus(printFriendly = false, mustShow = true).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
   def statusTestUser(status: SubscriptionStatusType,
                      statusInfo: MockConfiguration[Option[StatusInfoType]] = DoNotConfigure,
                      notification: Option[StatusNotification] = None,
@@ -525,6 +475,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
         api12Cache = CachedLocally
       )
     )
+    setAuthMocks()
 
     val result = TestApplicationStatusController.showStatus(printFriendly = false, mustShow = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -560,6 +511,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
         statusPageViewed = !initialVisit
       )
     )
+    setAuthMocks()
 
     val result = TestApplicationStatusController.showStatus(
       printFriendly = false,

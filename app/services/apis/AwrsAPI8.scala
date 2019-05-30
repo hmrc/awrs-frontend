@@ -17,25 +17,25 @@
 package services.apis
 
 import connectors.AWRSConnector
+import controllers.auth.StandardAuthRetrievals
 import models.{WithdrawalReason, WithdrawalResponse}
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Request}
 import services.KeyStoreService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.AccountUtils
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 
 trait AwrsAPI8 {
   val awrsConnector: AWRSConnector
   val keyStoreService: KeyStoreService
 
-  def withdrawApplication(reason: Option[WithdrawalReason])(implicit hc: HeaderCarrier, user: AuthContext, request: Request[AnyContent]): Future[WithdrawalResponse] =
+  def withdrawApplication(reason: Option[WithdrawalReason], authRetrievals: StandardAuthRetrievals)
+                         (implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[WithdrawalResponse] =
     reason match {
       case Some(resultReason) =>
-        awrsConnector.withdrawApplication(AccountUtils.getAwrsRefNo.utr, Json.toJson(resultReason))
+        awrsConnector.withdrawApplication(authRetrievals, Json.toJson(resultReason))
       case _ =>
         Future.failed(new NoSuchElementException("KeyStore is empty"))
     }

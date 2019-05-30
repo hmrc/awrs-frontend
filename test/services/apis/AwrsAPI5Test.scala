@@ -16,13 +16,11 @@
 
 package services.apis
 
-import builders.AuthBuilder
 import models.{AWRSFEModel, BusinessType}
 import play.api.test.FakeRequest
 import services.apis.mocks.MockAwrsAPI5
 import utils.AwrsTestJson._
-import utils.AwrsUnitTestTraits
-import utils.TestConstants._
+import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestUtil._
 
 class AwrsAPI5Test extends AwrsUnitTestTraits
@@ -44,7 +42,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchBusinessType = businessType)
       setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd)
 
-      await(TestAPI5.retrieveApplication)
+      await(TestAPI5.retrieveApplication(TestUtil.defaultAuthRetrieval))
 
       verifyAWRSConnector(lookupAWRSData = 0)
     }
@@ -60,7 +58,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
       )
       setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = None)
 
-      await(TestAPI5.retrieveApplication)
+      await(TestAPI5.retrieveApplication(TestUtil.defaultAuthRetrieval))
 
       verifyAWRSConnector(lookupAWRSData = 1)
     }
@@ -74,7 +72,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LTD")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = TestAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LTD")
@@ -102,7 +100,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = TestAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("SOP")
@@ -130,7 +128,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("Partnership")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = TestAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("Partnership")
@@ -158,7 +156,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LLP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = TestAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LLP")
@@ -186,7 +184,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LLP_GRP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = TestAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LLP_GRP")
@@ -214,7 +212,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LTD_GRP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = TestAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LTD_GRP")

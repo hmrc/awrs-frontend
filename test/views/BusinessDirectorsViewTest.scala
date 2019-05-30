@@ -43,6 +43,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
   object TestBusinessDirectorsController extends BusinessDirectorsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   "Business Director Template" should {
@@ -157,6 +158,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
 
   private def showDirector(id: Int, isLinearMode: Boolean = true, isNewRecord: Boolean = true, directors: Option[BusinessDirectors] = testList)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = directors)
+    setAuthMocks()
     val result = TestBusinessDirectorsController.showBusinessDirectors(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -166,6 +168,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessDirectors = testBusinessDirectors
     )
+    setAuthMocks()
     val result = TestBusinessDirectorsController.showBusinessDirectors(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }

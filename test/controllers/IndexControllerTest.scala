@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import config.FrontendAuthConnector
+import controllers.auth.ExternalUrls
 import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
@@ -46,6 +47,7 @@ class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
     override val indexService = mockIndexService
     override val api9 = TestAPI9
     override val applicationService = mockApplicationService
+    val signInUrl = "/sign-in"
   }
 
   "IndexController" must {
@@ -87,6 +89,7 @@ class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
   }
 
   private def callShowLastLocationWith(previousLocation: Option[String], cacheMap: CacheMap = cachemap)(test: Future[Result] => Any) {
+    setAuthMocks()
     val result = TestIndexController.showLastLocation.apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
     test(result)
   }
@@ -101,6 +104,7 @@ class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
     setupMockAwrsAPI9(keyStore = testSubscriptionStatusTypePending, connector = DoNotConfigure)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
     setupMockIndexService()
+    setAuthMocks()
 
     val request = businessType match {
       case Some(bt) => SessionBuilder.buildRequestWithSession(userId, bt)

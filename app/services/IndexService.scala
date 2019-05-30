@@ -17,16 +17,16 @@
 package services
 
 import _root_.models._
+import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
 import forms.AWRSEnums.BooleanRadioEnum
 import services.DataCacheKeys._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, CacheUtil}
-import view_models.{IndexViewModel, SectionComplete, SectionEdited, SectionIncomplete, SectionModel, SectionNotStarted}
+import view_models._
 
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait IndexService {
 
@@ -74,12 +74,12 @@ trait IndexService {
     }
   }
 
-  def showContinueButton(indexViewModel: IndexViewModel)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
+  def showContinueButton(indexViewModel: IndexViewModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
     val listWithoutEdited = indexViewModel.sectionModels.filterNot(_.status.equals(SectionEdited))
     listWithoutEdited.forall(_.status.equals(SectionComplete))
   }
 
-  def showOneViewLink(indexViewModel: IndexViewModel)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Boolean =
+  def showOneViewLink(indexViewModel: IndexViewModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean =
     !indexViewModel.sectionModels.forall(_.status.equals(SectionNotStarted))
 
 
@@ -99,9 +99,8 @@ trait IndexService {
       cache.get.mainPlaceOfBusiness.isEmpty
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         false
-      }
     }
   }
 
@@ -110,28 +109,30 @@ trait IndexService {
       cache.get.contactFirstName.isEmpty
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         false
-      }
     }
   }
 
 
-  def getStatus(cacheMap: Option[CacheMap], businessType: String)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
+  def getStatus(cacheMap: Option[CacheMap], businessType: String, authRetrievals: StandardAuthRetrievals)
+               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
 
-    applicationService.getApi5ChangeIndicators(cacheMap) map {
+    applicationService.getApi5ChangeIndicators(cacheMap, authRetrievals) map {
       changeIndicators =>
         val someBusinessType = Some(businessType)
         val cache = cacheMap.get
 
         val businessDetailsStatus = cacheMap match {
           case Some(cache) => cache.getBusinessDetails  match {
-            case Some(businessDetails)  => changeIndicators.businessDetailsChanged match {
-              case false => isNewAWBusinessAnswered(businessDetails) match {
-                case false => SectionIncomplete
-                case true => SectionComplete
+            case Some(businessDetails)  => if (changeIndicators.businessDetailsChanged) {
+              SectionEdited
+            } else {
+              if (isNewAWBusinessAnswered(businessDetails)) {
+                SectionComplete
+              } else {
+                SectionIncomplete
               }
-              case true => SectionEdited
             }
             case _ => SectionNotStarted
           }
@@ -140,12 +141,14 @@ trait IndexService {
 
         val businessRegistrationDetailsStatus = cacheMap match {
           case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEnityNone(cache.getBusinessRegistrationDetails)) match {
-            case (Some(businessRegistrationDetails), false) => changeIndicators.businessRegistrationDetailsChanged match {
-              case false => displayCompleteForBusinessType(businessRegistrationDetails, someBusinessType) match {
-                case false => SectionIncomplete
-                case true => SectionComplete
+            case (Some(businessRegistrationDetails), false) => if (changeIndicators.businessRegistrationDetailsChanged) {
+              SectionEdited
+            } else {
+              if (displayCompleteForBusinessType(businessRegistrationDetails, someBusinessType)) {
+                SectionComplete
+              } else {
+                SectionIncomplete
               }
-              case true => SectionEdited
             }
             case (_, _) => SectionNotStarted
           }
@@ -402,7 +405,7 @@ trait IndexService {
         val groupMemberDetailsSection = SectionModel(
           "groupMembers", groupMembersHref, "awrs.index_page.group_member_details_text", groupMembersStatus,
           size = cache.getGroupMembers.getOrElseSize match {
-            case Some(x) if AccountUtils.hasAwrs => Some(x - 1)
+            case Some(x) if AccountUtils.hasAwrs(authRetrievals.enrolments) => Some(x - 1)
             case Some(x) => Some(x)
             case _ => Some(0)
           }

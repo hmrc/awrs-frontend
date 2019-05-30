@@ -17,6 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
+import controllers.auth.ExternalUrls
 import forms.BusinessContactsForm
 import models.BusinessContacts
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -41,6 +42,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val emailVerificationService = mock[EmailVerificationService]
+    val signInUrl = "/sign-in"
   }
 
   "BusinessContactsController" must {
@@ -101,6 +103,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchPartnerDetails = None,
       fetchAdditionalBusinessPremisesList = None
     )
+    setAuthMocks()
     val result = TestBusinessContactsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
@@ -110,6 +113,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
+    setAuthMocks()
     val result = TestBusinessContactsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails("SOP").businessType.get))
     test(result)
   }

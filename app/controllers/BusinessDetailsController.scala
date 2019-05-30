@@ -17,41 +17,40 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessDetailsForm._
 import models._
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.DataCacheKeys._
 import services.{DataCacheService, KeyStoreService, Save4LaterService}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AccountUtils
 import views.Configuration.{NewApplicationMode, NewBusinessStartDateConfiguration, ReturnedApplicationEditMode, ReturnedApplicationMode}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait BusinessDetailsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable with DataCacheService {
 
   override val section = businessDetailsName
 
-  def renderMode(newApplicationType: Option[NewApplicationType])(implicit hc: HeaderCarrier, authContext: AuthContext): Future[NewBusinessStartDateConfiguration] = {
+  def renderMode(newApplicationType: Option[NewApplicationType], authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[NewBusinessStartDateConfiguration] = {
     val isNewApplication = newApplicationType.getOrElse(NewApplicationType(Some(false))).isNewApplication.get
     val etmpBug =
-      isNewApplication match {
-        case true => Future.successful(false)
-        case false =>
-          save4LaterService.api.fetchBusinessDetailsSupport flatMap {
-            case Some(BusinessDetailsSupport(missingProposedStartDate)) => Future.successful(missingProposedStartDate)
-            // the fetchBusinessDetailsSupport should have checked the api cache for the api5 data, if None is still returned then
-            // it can only mean that the API 5 data is missing
-            // this should never happen since this call can only happens post api4 submission
-            // given this is api5 businessDetail and subsequent newBusiness fields must exists
-            case None => throw new RuntimeException("Unable to find API 5 data")
-          }
+      if (isNewApplication) {
+        Future.successful(false)
+      } else {
+        save4LaterService.api.fetchBusinessDetailsSupport(authRetrievals) flatMap {
+          case Some(BusinessDetailsSupport(missingProposedStartDate)) => Future.successful(missingProposedStartDate)
+          // the fetchBusinessDetailsSupport should have checked the api cache for the api5 data, if None is still returned then
+          // it can only mean that the API 5 data is missing
+          // this should never happen since this call can only happens post api4 submission
+          // given this is api5 businessDetail and subsequent newBusiness fields must exists
+          case None => throw new RuntimeException("Unable to find API 5 data")
+        }
       }
     etmpBug flatMap { case x =>
       (isNewApplication, x) match {
@@ -62,54 +61,67 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
     }
   }
 
-  def showBusinessDetails(isLinearMode: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
-      }
-      val businessType = request.getBusinessType
-      for {
-        businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
-        businessDetails <- save4LaterService.mainStore.fetchBusinessDetails
-        newApplicationType <- save4LaterService.mainStore.fetchNewApplicationType
-        mode <- renderMode(newApplicationType)
-      } yield {
-        val businessName = businessCustomerDetails.fold("")(x => x.businessName)
-        businessDetails match {
-          case Some(data) => {
-            val extendedBusinessDetails = ExtendedBusinessDetails(Some(businessName), data.doYouHaveTradingName, data.tradingName, data.newAWBusiness)
-            Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs).form.fill(extendedBusinessDetails), mode))
+  def showBusinessDetails(isLinearMode: Boolean) = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        implicit val viewApplicationType = isLinearMode match {
+          case true => LinearViewMode
+          case false => EditSectionOnlyMode
+        }
+        val businessType = request.getBusinessType
+        for {
+          businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
+          businessDetails <- save4LaterService.mainStore.fetchBusinessDetails(ar)
+          newApplicationType <- save4LaterService.mainStore.fetchNewApplicationType(ar)
+          mode <- renderMode(newApplicationType, ar)
+        } yield {
+          val businessName = businessCustomerDetails.fold("")(x => x.businessName)
+          businessDetails match {
+            case Some(data) => {
+              val extendedBusinessDetails = ExtendedBusinessDetails(Some(businessName), data.doYouHaveTradingName, data.tradingName, data.newAWBusiness)
+              Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs(ar.enrolments)).form.fill(extendedBusinessDetails), mode, ar.enrolments))
+            }
+            case _ => Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs(ar.enrolments)).form, mode, ar.enrolments))
           }
-          case _ => Ok(views.html.awrs_business_details(businessType, businessName, businessDetailsForm(businessType.get, AccountUtils.hasAwrs).form, mode))
         }
       }
+    }
   }
 
-  def saveBusinessDetails(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], isNewRecord: Boolean, businessDetails: BusinessDetails)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
-    save4LaterService.mainStore.saveBusinessDetails(businessDetails) flatMap {
+  def saveBusinessDetails(id: Int,
+                          redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+                          isNewRecord: Boolean,
+                          businessDetails: BusinessDetails,
+                          authRetrievals: StandardAuthRetrievals)
+                         (implicit request: Request[AnyContent]): Future[Result] = {
+    save4LaterService.mainStore.saveBusinessDetails(authRetrievals, businessDetails) flatMap {
       case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
     }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
+  def save(id: Int,
+           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+           viewApplicationType: ViewApplicationType,
+           isNewRecord: Boolean,
+           authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode = viewApplicationType
     val businessType = request.getBusinessType
-    businessDetailsForm(businessType.get, AccountUtils.hasAwrs).bindFromRequest.fold(
+    businessDetailsForm(businessType.get, AccountUtils.hasAwrs(authRetrievals.enrolments)).bindFromRequest.fold(
       formWithErrors =>
         for {
-          businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
-          newApplicationType <- save4LaterService.mainStore.fetchNewApplicationType
-          mode <- renderMode(newApplicationType)
+          businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
+          newApplicationType <- save4LaterService.mainStore.fetchNewApplicationType(authRetrievals)
+          mode <- renderMode(newApplicationType, authRetrievals)
         } yield {
-          BadRequest(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), formWithErrors, mode))
+          BadRequest(views.html.awrs_business_details(businessType, businessCustomerDetails.fold("")(x => x.businessName), formWithErrors, mode, authRetrievals.enrolments))
         }
       ,
       extendedBusinessDetails => {
-        (AccountUtils.hasAwrs, businessType) match {
-          case (false, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
+        (AccountUtils.hasAwrs(authRetrievals.enrolments), businessType) match {
+          case (false, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails, authRetrievals)
           case (true, (Some("LLP_GRP") | Some("LTD_GRP"))) => {
-            save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
+            save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
               case Some(businessCustomerDetails) => {
                 businessCustomerDetails.businessName != extendedBusinessDetails.businessName.get match {
                   case true => {
@@ -117,13 +129,13 @@ trait BusinessDetailsController extends AwrsController with JourneyPage with Acc
                       case _ => Future.successful(Redirect(routes.BusinessNameChangeController.showConfirm()))
                     }
                   }
-                  case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
+                  case false => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails, authRetrievals)
                 }
               }
-              case None => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
+              case None => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails, authRetrievals)
             }
           }
-          case (true, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails)
+          case (true, _) => saveBusinessDetails(id, redirectRoute, isNewRecord, extendedBusinessDetails.getBusinessDetails, authRetrievals)
         }
       }
     )
@@ -134,4 +146,5 @@ object BusinessDetailsController extends BusinessDetailsController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
   override val keyStoreService = KeyStoreService
+  val signInUrl = ExternalUrls.signIn
 }

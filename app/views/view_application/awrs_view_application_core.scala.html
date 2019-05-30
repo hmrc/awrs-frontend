@@ -23,9 +23,9 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.html.helpers._
 @import utils.AccountUtils
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import uk.gov.hmrc.auth.core.Enrolment
 
-@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, user :AuthContext)
+@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String, enrolments: Set[Enrolment])(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages)
 
 @businessLegalEntity = @{
     cache.getBusinessType.get.legalEntity.get
@@ -53,7 +53,7 @@
 @subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity), false)
 @subview_place_of_business(getHeading(placeOfBusinessName), cache.getPlaceOfBusiness, false)
 @subview_business_contacts(getHeading(businessContactsName), cache.getBusinessContacts, cache.getBusinessCustomerDetails, false)
-@subview_group_member_details(getHeading(groupMembersName), cache.getGroupMembers, businessLegalEntity)
+@subview_group_member_details(getHeading(groupMembersName), cache.getGroupMembers, businessLegalEntity, enrolments)
 @subview_partner_details(getHeading(partnersName), cache.getPartners)
 @subview_additional_premises(getHeading(additionalBusinessPremisesName), cache.getAdditionalBusinessPremises)
 @subview_business_directors(getHeading(businessDirectorsName), cache.getBusinessDirectors, businessLegalEntity)

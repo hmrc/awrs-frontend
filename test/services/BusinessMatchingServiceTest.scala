@@ -16,7 +16,6 @@
 
 package services
 
-import builders.AuthBuilder
 import connectors._
 import forms.AWRSEnums
 import models.Organisation
@@ -24,7 +23,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito.when
 import services.mocks.MockKeyStoreService
 import utils.AwrsTestJson._
-import utils.AwrsUnitTestTraits
+import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants.testUtr
 
 import scala.concurrent.Future
@@ -44,14 +43,14 @@ class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreSe
     }
 
     "validate a UTR is correct by business matching" in {
-      when(mockBusinessMatchingConnector.lookup(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(matchSuccessResponseJson))
-      val result = BusinessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)))
+      when(mockBusinessMatchingConnector.lookup(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(matchSuccessResponseJson))
+      val result = BusinessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)), TestUtil.defaultAuthRetrieval)
       await(result) shouldBe true
     }
 
     "validate a UTR is incorrect by business matching" in {
-      when(mockBusinessMatchingConnector.lookup(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(matchFailureResponseJson))
-      val result = BusinessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)))
+      when(mockBusinessMatchingConnector.lookup(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(matchFailureResponseJson))
+      val result = BusinessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)), TestUtil.defaultAuthRetrieval)
       await(result) shouldBe false
     }
   }

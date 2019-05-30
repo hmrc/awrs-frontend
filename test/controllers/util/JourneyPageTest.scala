@@ -22,6 +22,7 @@ import builders.{AuthBuilder, SessionBuilder}
 import connectors.mock.MockAuthConnector
 import controllers.auth.Utr._
 import org.jsoup.Jsoup
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
@@ -36,43 +37,27 @@ class JourneyPageTest extends AwrsUnitTestTraits
     override val section: String = "testPageSection"
     override val authConnector = mockAuthConnector
     val noVariableFound = "Not Found"
+    val signInUrl = "/sign-in"
 
-    def getJouneyStartLocation = asyncRestrictedAccess {
-      implicit user => implicit request =>
-        Future.successful(Ok(request.getJourneyStartLocation.getOrElse(noVariableFound)))
+
+    def getJouneyStartLocation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+      restrictedAccessCheck {
+        setAuthMocks()
+        authorisedAction { ar =>
+          Future.successful(Ok(request.getJourneyStartLocation.getOrElse(noVariableFound)))
+        }
+      }
     }
   }
 
   "JourneyPage trait" should {
-    "add the JouneyStartLocation session variable into the session if it's not already in the session" in {
-      val result = testAsync()
-      val responseSessionMap = await(result).session(FakeRequest()).data
+    "Retrieve the JourneyStartLocation from the session" in {
+      val request = SessionBuilder.buildRequestWithSessionStartLocation(userId, "LTD_GRP", Some(TestPage.section))
+      val result = TestPage.getJouneyStartLocation.apply(request)
+      val responseSessionMap = await(result).session(request).data
       val doc = Jsoup.parse(contentAsString(result))
-      // the original request should not have contained a session variable for sessionJouneyStartLocation
-      doc.body().text() shouldBe TestPage.noVariableFound
-      // the response should contain the session varaible for sessionJouneyStartLocation
+      doc.body().text() shouldBe TestPage.section
       responseSessionMap(AwrsSessionKeys.sessionJouneyStartLocation) shouldBe TestPage.section
     }
-
-    "if JouneyStartLocation already exists then do not edit the JouneyStartLocation session variable " in {
-      val existingVariable = "existing variable"
-      val result = testAsync(existingVariable)
-      val responseSessionMap = await(result).session(FakeRequest()).data
-      val doc = Jsoup.parse(contentAsString(result))
-      // the original request should have contained the specified variable for sessionJouneyStartLocation
-      doc.body().text() shouldBe existingVariable
-      // the response should contain the same session varaible for sessionJouneyStartLocation
-      responseSessionMap(AwrsSessionKeys.sessionJouneyStartLocation) shouldBe existingVariable
-    }
   }
-
-  private def testAsync(startSection: Option[String] = None) = {
-    val request = SessionBuilder.buildRequestWithSession(userId)
-    val requestWithStart = startSection match {
-      case Some(definedSection) => request.withSession(request.session.+((AwrsSessionKeys.sessionJouneyStartLocation, definedSection)).data.toSeq: _*)
-      case _ => request
-    }
-    TestPage.getJouneyStartLocation.apply(requestWithStart)
-  }
-
 }

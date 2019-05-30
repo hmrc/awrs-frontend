@@ -19,6 +19,7 @@ package controllers
 import builders.SessionBuilder
 import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
+import controllers.auth.ExternalUrls
 import models._
 import org.jsoup.Jsoup
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -43,6 +44,7 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   object TestGroupDeclarationController extends GroupDeclarationController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = ExternalUrls.signIn
   }
 
   "GroupDeclarationController" must {
@@ -71,6 +73,7 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
+    setAuthMocks()
     val result = TestGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

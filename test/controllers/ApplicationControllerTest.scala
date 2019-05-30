@@ -45,6 +45,7 @@ class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnecto
   }
 
   def getWithAuthorisedUser(test: Future[Result] => Any) {
+    setAuthMocks()
     val result = TestApplicationController.logout.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

@@ -18,21 +18,20 @@ package connectors
 
 import com.fasterxml.jackson.core.JsonParseException
 import config.{AwrsFrontendAuditConnector, WSHttp}
+import controllers.auth.StandardAuthRetrievals
 import models.MatchBusinessData
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.play.config.ServicesConfig
 import utils.AccountUtils._
 import utils.LoggingUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException}
 
 object BusinessMatchingConnector extends BusinessMatchingConnector {
   override val appName = "awrs-frontend"
@@ -57,10 +56,9 @@ trait BusinessMatchingConnector extends ServicesConfig with RawResponseReads wit
 
   def http: HttpGet with HttpPost
 
-  def lookup(lookupData: MatchBusinessData, userType: String)
-            (implicit user: AuthContext, hc: HeaderCarrier): Future[JsValue] = {
+  def lookup(lookupData: MatchBusinessData, userType: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[JsValue] = {
 
-    val url = s"""$serviceUrl$authLink/$baseUri/$lookupUri/${lookupData.utr}/$userType"""
+    val url = s"""$serviceUrl/${authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"""
     debug(s"[BusinessMatchingConnector][lookup] Call $url")
     http.POST[JsValue, HttpResponse](url, Json.toJson(lookupData)) map { response =>
       auditMatchCall(lookupData, userType, response)

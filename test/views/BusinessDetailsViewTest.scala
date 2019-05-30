@@ -33,8 +33,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.{JourneyConstants, ServicesUnitTestFixture}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import utils.TestUtil._
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
+import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.SessionKeys
@@ -49,6 +51,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
     override val keyStoreService = TestKeyStoreService
+    val signInUrl = "/sign-in"
   }
 
   "BusinessDetailsController" must {
@@ -61,7 +64,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
           getWithAuthorisedUser(isNewApplication = false)(testRequest(testExtendedBusinessDetails(), "SOP", false)) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("notNewBusiness").text shouldBe Messages("awrs.business_details.new_AWBusiness_No")
+              document.select("#notNewBusiness").text shouldBe Messages("awrs.business_details.new_AWBusiness_No")
           }
         }
 
@@ -177,6 +180,12 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
       } else {
         setupMockSave4LaterServiceWithOnly(fetchBusinessDetails = None)
       }
+      if (hasAwrs) {
+        setAuthMocks()
+      } else {
+        setAuthMocks(Future.successful(new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation))))
+      }
+
       val result = TestBusinessDetailsController.showBusinessDetails(isLinearjourney).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
       test(result)
     }
@@ -205,6 +214,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
           AwrsSessionKeys.sessionStatusType -> status.name
         )
       }
+      setAuthMocks()
 
       val result = TestBusinessDetailsController.showBusinessDetails(true).apply(buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
       test(result)

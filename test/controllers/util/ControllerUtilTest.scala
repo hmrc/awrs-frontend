@@ -28,9 +28,8 @@ import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.Actions
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import utils.AwrsUnitTestTraits
+import uk.gov.hmrc.play.frontend.controller.FrontendController
+import utils.{TestUtil, AwrsUnitTestTraits}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.Future
@@ -38,10 +37,7 @@ import scala.concurrent.Future
 case class DummyData(doYouHaveAnyEntries: String, data: Option[String], doYouHaveAnotherEntry: Option[String])
 
 class ControllerUtilTest extends AwrsUnitTestTraits
-  with Actions
-  with MockAuthConnector {
-
-  override protected def authConnector: AuthConnector = mockAuthConnector
+  with MockAuthConnector with FrontendController {
 
   val data = "data"
 
@@ -334,7 +330,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits
   "saveThenRedirect" should {
     val redirect = (haveAnotherAnswer: String, id: Int) => Future.successful(Ok(test_util_template(id, None)))
     val fetch = (data: Option[List[DummyData]]) => Future.successful(data)
-    val save = (data: List[DummyData]) => Future.successful(data)
+    val save: SaveData[List[DummyData]] = (_, data) => Future.successful(data)
     val conv = (list: List[DummyData]) => list
 
 
@@ -344,12 +340,17 @@ class ControllerUtilTest extends AwrsUnitTestTraits
       reset(mockSave)
       val mockSaveAndTestItsInput = new Answer[Future[Option[Any]]] {
         def answer(invocation: InvocationOnMock) = {
-          val firstArg: List[DummyData] = invocation.getArguments.head.asInstanceOf[List[DummyData]]
-          testFunction(firstArg)
-          Future.successful(Some(firstArg))
+          val dummyDataArg: List[DummyData] = {
+            invocation.getArguments.find {
+              case arg: List[DummyData] => true
+              case _ => false
+            }.map(_.asInstanceOf[List[DummyData]]).getOrElse(List.empty[DummyData])
+          }
+          testFunction(dummyDataArg)
+          Future.successful(Some(dummyDataArg))
         }
       }
-      when(mockSave(Matchers.any())).thenAnswer(mockSaveAndTestItsInput)
+      when(mockSave(Matchers.any(), Matchers.any())).thenAnswer(mockSaveAndTestItsInput)
     }
 
     def testSaveThenRedirect(
@@ -364,7 +365,8 @@ class ControllerUtilTest extends AwrsUnitTestTraits
         fetchData,
         saveData,
         id,
-        data
+        data,
+        TestUtil.defaultAuthRetrieval
       )(
         haveAnotherAnswer = haveAnotherAnswer,
         amendHaveAnotherAnswer = amendHaveAnotherAnswer,
@@ -407,8 +409,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits
       val id = 2
 
       allModes.foreach { viewMode =>
-        val result = testSaveThenRedirect(
-          fetchData = fetch(returnedData),
+        val result = testSaveThenRedirect(fetch(returnedData),
           saveData = save,
           id = id,
           data = entry
@@ -440,7 +441,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits
         )
         val result = testSaveThenRedirect(
           fetchData = fetch(returnedData),
-          saveData = mockSave,
+          saveData = save,
           id = id,
           data = newData
         )(

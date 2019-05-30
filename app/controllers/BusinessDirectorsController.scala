@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.BusinessDirectorsForm._
 import models.{BusinessDirector, BusinessDirectors}
@@ -26,7 +26,7 @@ import controllers.util._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.api.mvc.{AnyContent, Call, Request, Result}
+import play.api.mvc._
 import services.DataCacheKeys._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
@@ -39,9 +39,9 @@ trait BusinessDirectorsController extends AwrsController
   with Deletable[BusinessDirectors, BusinessDirector]
   with SaveAndRoutable {
 
-  override def fetch(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[BusinessDirectors]] = save4LaterService.mainStore.fetchBusinessDirectors
+  override def fetch(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[BusinessDirectors]] = save4LaterService.mainStore.fetchBusinessDirectors(authRetrievals)
 
-  override def save(data: BusinessDirectors)(implicit user: AuthContext, hc: HeaderCarrier): Future[BusinessDirectors] = save4LaterService.mainStore.saveBusinessDirectors(data)
+  override def save(authRetrievals: StandardAuthRetrievals, data: BusinessDirectors)(implicit  hc: HeaderCarrier): Future[BusinessDirectors] = save4LaterService.mainStore.saveBusinessDirectors(authRetrievals, data)
 
   override val deleteFormAction = (id: Int) => controllers.routes.BusinessDirectorsController.actionDelete(id)
   override val listObjToList = (directors: BusinessDirectors) => directors.directors
@@ -52,48 +52,57 @@ trait BusinessDirectorsController extends AwrsController
   override val addNoAnswerRecord = (emptyList: List[models.BusinessDirector]) => emptyList // in the directors page ignores this
   override val amendHaveAnotherAnswer = (data: BusinessDirector, newAnswer: String) => data.copy(otherDirectors = Some(newAnswer))
 
-  def showBusinessDirectors(id: Int, isLinearMode: Boolean, isNewRecord: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
+  def showBusinessDirectors(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      restrictedAccessCheck {
+            implicit val viewApplicationType = isLinearMode match {
+              case true => LinearViewMode
+              case false => EditSectionOnlyMode
+            }
+
+            lazy val newEntryAction = (id: Int) =>
+              Future.successful(Ok(views.html.awrs_business_directors(businessDirectorsForm.form, id, isNewRecord)))
+
+            lazy val existingEntryAction = (data: BusinessDirectors, id: Int) =>
+              Future.successful(Ok(views.html.awrs_business_directors(businessDirectorsForm.form.fill(data.directors(id - 1)), id, isNewRecord)))
+
+            lazy val haveAnother = (data: BusinessDirectors) =>
+              data.directors match {
+                case Nil => true // this is added for testing purposes,
+                // it's so we can still hit the linear journey by manipulating the URL after the user has deleted all their existing directors.
+                // needs to return true because otherwise it'll return page not found
+                case _ => data.directors.last.otherDirectors.fold("")(x => x).equals(BooleanRadioEnum.YesString)
+              }
+
+            lookup[BusinessDirectors, BusinessDirector](
+              fetchData = fetch(ar),
+              id = id,
+              toList = (directors: BusinessDirectors) => directors.directors
+            )(
+              newEntryAction = newEntryAction,
+              existingEntryAction = existingEntryAction,
+              haveAnother = haveAnother
+            )
       }
-
-      lazy val newEntryAction = (id: Int) =>
-        Future.successful(Ok(views.html.awrs_business_directors(businessDirectorsForm.form, id, isNewRecord)))
-
-      lazy val existingEntryAction = (data: BusinessDirectors, id: Int) =>
-        Future.successful(Ok(views.html.awrs_business_directors(businessDirectorsForm.form.fill(data.directors(id - 1)), id, isNewRecord)))
-
-      lazy val haveAnother = (data: BusinessDirectors) =>
-        data.directors match {
-          case Nil => true // this is added for testing purposes,
-            // it's so we can still hit the linear journey by manipulating the URL after the user has deleted all their existing directors.
-            // needs to return true because otherwise it'll return page not found
-          case _ => data.directors.last.otherDirectors.fold("")(x => x).equals(BooleanRadioEnum.YesString)
-        }
-
-      lookup[BusinessDirectors, BusinessDirector](
-        fetchData = fetch,
-        id = id,
-        toList = (directors: BusinessDirectors) => directors.directors
-      )(
-        newEntryAction = newEntryAction,
-        existingEntryAction = existingEntryAction,
-        haveAnother = haveAnother
-      )
+    }
   }
 
-  override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
+  override def save(id: Int,
+                    redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+                    viewApplicationType: ViewApplicationType,
+                    isNewRecord: Boolean,
+                    authRetrievals: StandardAuthRetrievals)
+                   (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode = viewApplicationType
     businessDirectorsForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.awrs_business_directors(formWithErrors, id, isNewRecord))),
       businessDirectorsData =>
         saveThenRedirect[BusinessDirectors, BusinessDirector](
-          fetchData = fetch,
+          fetchData = fetch(authRetrievals),
           saveData = save,
           id = id,
-          data = businessDirectorsData
+          data = businessDirectorsData,
+          authRetrievals
         )(
           haveAnotherAnswer = (data: BusinessDirector) => data.otherDirectors.get,
           amendHaveAnotherAnswer = amendHaveAnotherAnswer,
@@ -112,4 +121,5 @@ trait BusinessDirectorsController extends AwrsController
 object BusinessDirectorsController extends BusinessDirectorsController {
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
+  val signInUrl = ExternalUrls.signIn
 }

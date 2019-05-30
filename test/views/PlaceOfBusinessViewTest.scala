@@ -44,6 +44,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
   object TestPlaceOfBusinessController extends PlaceOfBusinessController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   "BusinessContactsController" must {
@@ -103,6 +104,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchPlaceOfBusiness = testPlaceOfBusinessDefault()
     )
+    setAuthMocks()
     val result = TestPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = false).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
     test(result)
   }
@@ -112,6 +114,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchPlaceOfBusiness = None
     )
+    setAuthMocks()
     val result = TestPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
 
     test(result)
@@ -122,6 +125,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchPlaceOfBusiness = testPlaceOfBusinessDefault()
     )
+    setAuthMocks()
     val result = TestPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }

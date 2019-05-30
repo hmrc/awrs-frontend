@@ -18,17 +18,15 @@ package services
 
 import _root_.models._
 import connectors.{AwrsKeyStoreConnector, KeyStoreConnector, Save4LaterConnector}
-import play.api.libs.json
-import play.api.libs.json.Json
+import controllers.auth.StandardAuthRetrievals
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AccountUtils
+import utils.CacheUtil.cacheUtil
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import utils.CacheUtil.cacheUtil
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait KeyStoreService {
 
@@ -79,15 +77,15 @@ trait KeyStoreService {
   @inline def deleteDeRegistrationReason(implicit hc: HeaderCarrier): Future[CacheMap] =
     saveDeRegistrationReason(None)
 
-  @inline def saveSubscriptionStatus(subscriptionStatusType: SubscriptionStatusType)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+  @inline def saveSubscriptionStatus(subscriptionStatusType: SubscriptionStatusType)(implicit hc: HeaderCarrier): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[SubscriptionStatusType](subscriptionStatusTypeName, subscriptionStatusType)
 
-  @inline def fetchSubscriptionStatus(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[SubscriptionStatusType]] =
+  @inline def fetchSubscriptionStatus(implicit hc: HeaderCarrier): Future[Option[SubscriptionStatusType]] =
     keyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](subscriptionStatusTypeName) flatMap {
       successData: Option[SubscriptionStatusType] => Future.successful(successData)
     }
 
-  @inline def saveStatusInfo(statusInfoType: StatusInfoType)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+  @inline def saveStatusInfo(statusInfoType: StatusInfoType)(implicit hc: HeaderCarrier): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[StatusInfoType](statusInfoTypeName, statusInfoType)
 
   @inline def fetchStatusInfo(implicit hc: HeaderCarrier): Future[Option[StatusInfoType]] =
@@ -95,45 +93,46 @@ trait KeyStoreService {
       successData: Option[StatusInfoType] => Future.successful(successData)
     }
 
-  @inline def saveStatusNotification(notificationStatus: StatusNotification)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+  @inline def saveStatusNotification(notificationStatus: StatusNotification)(implicit hc: HeaderCarrier): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[StatusNotification](statusNotificationName, notificationStatus)
 
   @inline def fetchStatusNotification(implicit hc: HeaderCarrier): Future[Option[StatusNotification]] =
     keyStoreConnector.fetchDataFromKeystore[StatusNotification](statusNotificationName)
 
-  @inline def saveIsNewBusiness(isNewBusiness: Boolean)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+  @inline def saveIsNewBusiness(isNewBusiness: Boolean)(implicit hc: HeaderCarrier): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[Boolean](isNewBusinessName, isNewBusiness)
 
   @inline def fetchIsNewBusiness(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     keyStoreConnector.fetchDataFromKeystore[Boolean](isNewBusinessName)
 
-  @inline def saveViewedStatus(wasViewed: Boolean)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+  @inline def saveViewedStatus(wasViewed: Boolean)(implicit hc: HeaderCarrier): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[Boolean](viewedStatusName, wasViewed)
 
   @inline def fetchViewedStatus(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     keyStoreConnector.fetchDataFromKeystore[Boolean](viewedStatusName)
 
-  @inline def saveExtendedBusinessDetails(extendedBusinessDetails: ExtendedBusinessDetails)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+  @inline def saveExtendedBusinessDetails(extendedBusinessDetails: ExtendedBusinessDetails)(implicit hc: HeaderCarrier): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[ExtendedBusinessDetails](extendedBusinessDetailsName, extendedBusinessDetails)
 
-  @inline def fetchExtendedBusinessDetails(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ExtendedBusinessDetails]] =
+  @inline def fetchExtendedBusinessDetails(implicit hc: HeaderCarrier): Future[Option[ExtendedBusinessDetails]] =
     keyStoreConnector.fetchDataFromKeystore[ExtendedBusinessDetails](extendedBusinessDetailsName)
 
-  @inline def saveBusinessCustomerAddress(businessCustomerAddress: BCAddressApi3)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] =
+  @inline def saveBusinessCustomerAddress(businessCustomerAddress: BCAddressApi3)(implicit hc: HeaderCarrier): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[BCAddressApi3](businessCustomerAddressName, businessCustomerAddress)
 
-  @inline def fetchBusinessCustomerAddresss(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[BCAddressApi3]] =
+  @inline def fetchBusinessCustomerAddresss(implicit hc: HeaderCarrier): Future[Option[BCAddressApi3]] =
     keyStoreConnector.fetchDataFromKeystore[BCAddressApi3](businessCustomerAddressName)
 
 
-  @inline def saveSave4LaterBackup(save4LaterConnector: Save4LaterConnector)(implicit user: AuthContext, hc: HeaderCarrier): Future[CacheMap] = {
-    save4LaterConnector.fetchAll(AccountUtils.getUtrOrName()).flatMap {
+  @inline def saveSave4LaterBackup(save4LaterConnector: Save4LaterConnector, authRetrievals: StandardAuthRetrievals)
+                                  (implicit hc: HeaderCarrier): Future[CacheMap] = {
+    save4LaterConnector.fetchAll(AccountUtils.getUtr(authRetrievals.enrolments)).flatMap {
       case Some(cacheMap) => keyStoreConnector.saveDataToKeystore(save4LaterBackupName, cacheMap.copyOfSave4Later)
       case None => throw new RuntimeException("Backup save4Later to keystore failed, not data found in save4later")
     }
   }
 
-  @inline def fetchSave4LaterBackup(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[CacheMap]] =
+  @inline def fetchSave4LaterBackup(implicit hc: HeaderCarrier): Future[Option[CacheMap]] =
     keyStoreConnector.fetchDataFromKeystore[CacheMap](save4LaterBackupName)
 
   @inline def removeAll(implicit hc: HeaderCarrier): Future[HttpResponse] = keyStoreConnector.removeAll()

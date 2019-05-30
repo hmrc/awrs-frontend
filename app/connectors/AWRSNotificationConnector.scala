@@ -17,20 +17,19 @@
 package connectors
 
 import config.{AwrsFrontendAuditConnector, WSHttp}
+import controllers.auth.StandardAuthRetrievals
 import metrics.AwrsMetrics
 import models._
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
+import play.api.http.Status._
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.play.config.ServicesConfig
+import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import play.api.http.Status._
-import utils.{AccountUtils, LoggingUtils}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, ServiceUnavailableException}
 
 trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
 
@@ -49,8 +48,8 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   val httpPost: HttpPost
   val metrics: AwrsMetrics
 
-  def fetchNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[StatusNotification]] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def fetchNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[StatusNotification]] = {
+    val awrsRefNo = AccountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val getURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
     mapResult("", awrsRefNo, httpGet.GET(getURL)).map {
       case Some(response: HttpResponse) => Some(response.json.as[StatusNotification])
@@ -58,8 +57,8 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     }
   }
 
-  def getNotificationViewedStatus(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def getNotificationViewedStatus(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = {
+    val awrsRefNo = AccountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
     mapResult("", awrsRefNo, httpGet.GET(getURL)).map {
       case Some(response: HttpResponse) => Some(response.json.as[ViewedStatusResponse])
@@ -67,8 +66,8 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     }
   }
 
-  def markNotificationViewedStatusAsViewed(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[Boolean]] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def markNotificationViewedStatusAsViewed(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+    val awrsRefNo = AccountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
     mapResult("", awrsRefNo, httpPut.PUT(getURL, "")).map {
       case Some(response: HttpResponse) => Some(true)
@@ -79,8 +78,8 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   // Currently the delete call will return a response with OK even if the entity does not exists, which means this method
   // will return true in the cases where the entity does not exist.
   // However, this will only ever be called call if a valid status has been found that qualifies for deletion
-  def deleteFromNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def deleteFromNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    val awrsRefNo = AccountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val deleteURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
     mapResult("", awrsRefNo, httpDelete.DELETE(deleteURL)).map {
       case Some(_) => true
@@ -90,19 +89,19 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
     }
   }
 
-  def sendConfirmationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def sendConfirmationEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier): Future[Boolean] = {
     doEmailCall(emailRequest, auditConfirmationEmailTxName, confirmationEmailURI)
   }
 
-  def sendCancellationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+  def sendCancellationEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier): Future[Boolean] ={
     doEmailCall(emailRequest, auditCancellationEmailTxName, cancellationEmailURI)
   }
 
-  def sendWithdrawnEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+  def sendWithdrawnEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier): Future[Boolean] ={
     doEmailCall(emailRequest, auditWithdrawnEmailTxtName, withdrawnEmailURI)
   }
 
-  private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier, user: AuthContext) = {
+  private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier) = {
     mapResult(auditTxt, emailRequest.reference.fold("")(x => x), httpPost.POST(s"$serviceURL${uri}", emailRequest)).map {
       case Some(_) => true
       case _ => false
@@ -112,7 +111,7 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   private def mapResult(auditTxName: String,
                         awrsRefNo: String,
                         result: Future[HttpResponse])
-                       (implicit user: AuthContext, hc: HeaderCarrier): Future[Option[HttpResponse]] =
+                       (implicit hc: HeaderCarrier): Future[Option[HttpResponse]] =
     result map {
       response =>
         response.status match {

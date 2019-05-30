@@ -17,11 +17,11 @@
 package controllers
 
 import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, ExternalUrls, StandardAuthRetrievals}
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessRegistrationDetailsForm._
 import models._
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.DataCacheKeys._
 import services.Save4LaterService
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -38,26 +38,33 @@ trait BusinessRegistrationDetailsController extends AwrsController with JourneyP
 
   def matchingUtil: MatchingUtil
 
-  def showBusinessRegistrationDetails(isLinearMode: Boolean) = asyncRestrictedAccess {
-    implicit user =>
-      implicit request =>
+  def showBusinessRegistrationDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request : Request[AnyContent] =>
+    authorisedAction { ar =>
+      restrictedAccessCheck {
         implicit val viewApplicationType = isLinearMode match {
           case true => LinearViewMode
           case false => EditSectionOnlyMode
         }
         val businessType = request.getBusinessType
-        save4LaterService.mainStore.fetchBusinessRegistrationDetails.flatMap {
+        save4LaterService.mainStore.fetchBusinessRegistrationDetails(ar).flatMap {
           case Some(data) => Future.successful(Ok(views.html.awrs_business_registration_details(businessType, businessRegistrationDetailsForm(businessType.get).form.fill(data))))
           case _ =>
-            save4LaterService.mainStore.fetchBusinessCustomerDetails.flatMap {
+            save4LaterService.mainStore.fetchBusinessCustomerDetails(ar).flatMap {
               businessCustomerDetails =>
                 val data = BusinessRegistrationDetails(utr = businessCustomerDetails.get.utr)
                 Future.successful(Ok(views.html.awrs_business_registration_details(businessType, businessRegistrationDetailsForm(businessType.get).form.fill(data))))
             }
         }
+      }
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
+  def save(id: Int,
+           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+           viewApplicationType: ViewApplicationType,
+           isNewRecord: Boolean,
+           authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode = viewApplicationType
     val businessType = request.getBusinessType
     businessRegistrationDetailsForm(businessType.get).bindFromRequest.fold(
@@ -67,9 +74,9 @@ trait BusinessRegistrationDetailsController extends AwrsController with JourneyP
         businessType match {
           case Some("LTD_GRP" | "LLP_GRP") => businessRegistrationDetails.utr match {
             case Some(utr) => {
-              matchingUtil.isValidMatchedGroupUtr(utr) map {
+              matchingUtil.isValidMatchedGroupUtr(utr, authRetrievals) map {
                 case true =>
-                  save4LaterService.mainStore.saveBusinessRegistrationDetails(businessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
+                  save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, businessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
                 case false =>
                   val errorMsg = "awrs.generic.error.utr_invalid_match"
                   val errorForm = businessRegistrationDetailsForm(businessType.get).form.withError(key = "utr", message = errorMsg).fill(businessRegistrationDetails)
@@ -81,7 +88,7 @@ trait BusinessRegistrationDetailsController extends AwrsController with JourneyP
               val errorForm = businessRegistrationDetailsForm(businessType.get).form.withError(key = "utr", message = errorMsg).fill(businessRegistrationDetails)
               Future.successful(BadRequest(views.html.awrs_business_registration_details(businessType, errorForm)))
           }
-          case _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(businessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
+          case _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, businessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
         }
     )
   }
@@ -91,4 +98,5 @@ object BusinessRegistrationDetailsController extends BusinessRegistrationDetails
   override val authConnector = FrontendAuthConnector
   override val save4LaterService = Save4LaterService
   override val matchingUtil = MatchingUtil
+  val signInUrl = ExternalUrls.signIn
 }

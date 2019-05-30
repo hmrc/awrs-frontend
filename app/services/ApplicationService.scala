@@ -18,6 +18,7 @@ package services
 
 import _root_.models._
 import connectors.AWRSConnector
+import controllers.auth.StandardAuthRetrievals
 import exceptions.{InvalidStateException, ResubmissionException}
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.AwrsFormFields
@@ -27,7 +28,6 @@ import play.api.mvc.{AnyContent, Request}
 import services.helper._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 
@@ -57,8 +57,8 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       case _ => suppliers
     }
 
-  def getSections(cacheID: String)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext) =
-    save4LaterService.mainStore.fetchAll.map {
+  def getSections(cacheID: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext) =
+    save4LaterService.mainStore.fetchAll(authRetrievals).map {
       res => res.get.getEntry[BusinessType]("legalEntity") match {
         case Some(BusinessType(Some("SOP"), _, _)) => Sections(soleTraderBusinessDetails = true)
         case Some(BusinessType(Some("LTD"), _, _)) => Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
@@ -135,49 +135,63 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     }
   }
 
-  def sendApplication()(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
+  def sendApplication(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
     for {
-      cached <- save4LaterService.mainStore.fetchAll
+      cached <- save4LaterService.mainStore.fetchAll(authRetrievals)
       businessCustomerDetails = cached.get.getBusinessCustomerDetails
-      sections <- getSections(AccountUtils.getUtrOrName())
+      sections <- getSections(AccountUtils.getUtr(authRetrievals.enrolments), authRetrievals)
       awrsData <- {
         val schema = assembleAWRSFEModel(cached, businessCustomerDetails, sections)
-        awrsConnector.submitAWRSData(Json.toJson(schema))
+        awrsConnector.submitAWRSData(Json.toJson(schema), authRetrievals)
       }
       isNewBusiness <- isNewBusiness(cached)
-      _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
+      _ <- emailService.sendConfirmationEmail(
+        email = cached.get.getBusinessContacts.get.email.get,
+        reference = awrsData.etmpFormBundleNumber,
+        isNewBusiness = isNewBusiness,
+        authRetrievals = authRetrievals
+      )
     } yield awrsData
   }
 
-  def hasAPI5ApplicationChanged(cacheID: String)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    AccountUtils.hasAwrs match {
-      case true => for {
-        cached <- fetchMainStore
-        cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
+  def hasAPI5ApplicationChanged(cacheID: String, authRetrievals: StandardAuthRetrievals)
+                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    if (AccountUtils.hasAwrs(authRetrievals.enrolments)) {
+      for {
+        cached <- fetchMainStore(authRetrievals)
+        cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
         hasAppChanged <- isApplicationDifferent(cached, cachedSubscription)
       } yield {
         hasAppChanged
       }
-      case _ => Future.successful(false)
+    } else {
+      Future.successful(false)
     }
 
-  def updateApplication()(implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulUpdateSubscriptionResponse] =
+  def updateApplication(authRetrievals: StandardAuthRetrievals)
+                       (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulUpdateSubscriptionResponse] =
     for {
-      cached <- save4LaterService.mainStore.fetchAll
-      cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
+      cached <- save4LaterService.mainStore.fetchAll(authRetrievals)
+      cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
       subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
-      _ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus) else Future("OK")
-      awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))))
+      _ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus, authRetrievals) else Future("OK")
+      awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))), authRetrievals)
       isNewBusiness <- isNewBusiness(cached)
-      _ <- emailService.sendConfirmationEmail(email = cached.get.getBusinessContacts.get.email.get, reference = awrsData.etmpFormBundleNumber, isNewBusiness = isNewBusiness)
+      _ <- emailService.sendConfirmationEmail(
+        email = cached.get.getBusinessContacts.get.email.get,
+        reference = awrsData.etmpFormBundleNumber,
+        isNewBusiness = isNewBusiness,
+        authRetrievals = authRetrievals
+      )
     } yield {
       awrsData
     }
 
   def callUpdateGroupBusinessPartner(cached: Option[CacheMap],
                                      cachedSubscription: Option[SubscriptionTypeFrontEnd],
-                                     subscriptionStatus: Option[SubscriptionStatusType])
-                                    (implicit user: AuthContext, request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext)
+                                     subscriptionStatus: Option[SubscriptionStatusType],
+                                     authRetrievals: StandardAuthRetrievals)
+                                    (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext)
                                     : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
     def createUpdateRegistrationDetailsRequest(businessCustomerAddress: BCAddressApi3): UpdateRegistrationDetailsRequest = {
       val businessContacts = cached.get.getBusinessContacts.get
@@ -192,13 +206,14 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     }
 
     keyStoreService.fetchBusinessCustomerAddresss flatMap {
-      case Some(businessCustomerAddress) => {
+      case Some(businessCustomerAddress) =>
         awrsConnector.updateGroupBusinessPartner(
           cachedSubscription.get.businessPartnerName.get,
           cached.get.getBusinessType.get.legalEntity.get,
           subscriptionStatus.get.safeId.get,
-          createUpdateRegistrationDetailsRequest(businessCustomerAddress))
-      }
+          createUpdateRegistrationDetailsRequest(businessCustomerAddress),
+          authRetrievals
+        )
     }
 
   }
@@ -274,15 +289,15 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     }
   }
 
-  def getApi5ChangeIndicators(cached: Option[CacheMap])(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Future[SectionChangeIndicators] = {
-    AccountUtils.hasAwrs match {
-      case true =>
-        for {
-          cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd
-        } yield {
-          getChangeIndicators(cached, cachedSubscription).fold(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false))(x => x)
-        }
-      case false => Future.successful(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false))
+  def getApi5ChangeIndicators(cached: Option[CacheMap], authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SectionChangeIndicators] = {
+    if (AccountUtils.hasAwrs(authRetrievals.enrolments)) {
+      for {
+        cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
+      } yield {
+        getChangeIndicators(cached, cachedSubscription).fold(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false))(x => x)
+      }
+    } else {
+      Future.successful(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false))
     }
   }
 

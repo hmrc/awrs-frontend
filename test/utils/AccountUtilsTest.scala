@@ -16,6 +16,8 @@
 
 package utils
 
+import controllers.auth.StandardAuthRetrievals
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.TestConstants._
 
@@ -23,45 +25,37 @@ class AccountUtilsTest extends UnitSpec {
 
   "getUtr" should {
     "Return the user SA utr " in {
-      implicit val user = builders.AuthBuilder.createUserAuthContextIndSa("userId", "Geoff Fisher", testUtr)
-      val utr = AccountUtils.getUtrOrName()
-      utr shouldBe testUtr
+      val utr = AccountUtils.getUtr(TestUtil.defaultSaEnrolmentSet)
+      utr shouldBe "0123456"
     }
 
     "Return the user CT utr for org" in {
-      implicit val auth = builders.AuthBuilder.createUserAuthContextIndCt("userId", "", testCTUtr)
-      val utr = AccountUtils.getUtrOrName()
-      utr shouldBe testCTUtr
-    }
-
-    "Return the org name " in {
-      implicit val auth = builders.AuthBuilder.createUserAuthContextOrg("userId", "name", testOrg)
-      val orgId = AccountUtils.getUtrOrName()
-      orgId shouldBe testOrg
+      val utr = AccountUtils.getUtr(TestUtil.defaultEnrolmentSet)
+      utr shouldBe "6543210"
     }
 
     "throw exception if no details are found" in {
-      implicit val auth = builders.AuthBuilder.createUserAuthFailure("", "")
-      val thrown = the[RuntimeException] thrownBy AccountUtils.getUtrOrName()
-      thrown.getMessage should include("No data found")
+      val thrown = the[RuntimeException] thrownBy AccountUtils.getUtr(Set.empty[Enrolment])
+      thrown.getMessage should include("[getUtr] No UTR found")
     }
   }
 
   "getAuthType " should {
     "return the correct auth link based on a sole trader legal entity type" in {
-      implicit val auth = builders.AuthBuilder.createUserAuthContextIndSa("userId", "Geoff Fisher", testUtr)
-      val result = AccountUtils.getAuthType("SOP")
-      result shouldBe s"/sa/$testUtr"
+      val result = AccountUtils.getAuthType("SOP", TestUtil.defaultAuthRetrieval)
+      result shouldBe s"sa/0123456"
     }
     "return the correct auth link based on a partnership legal entity type" in {
-      implicit val auth = builders.AuthBuilder.createUserAuthContextOrg("userId", "Geoff Fisher", testOrg)
-      val result = AccountUtils.getAuthType("Partnership")
-      result shouldBe s"/org/$testOrg"
+      val result = AccountUtils.getAuthType("Partnership", TestUtil.defaultAuthRetrieval)
+      result shouldBe "org/UNUSED"
     }
     "return the correct auth link based on a limited company legal entity type" in {
-      implicit val auth = builders.AuthBuilder.createUserAuthContextOrg("userId", "Geoff Fisher", testOrg)
-      val result = AccountUtils.getAuthType("LTD")
-      result shouldBe s"/org/$testOrg"
+      val result = AccountUtils.getAuthType("LTD", TestUtil.defaultAuthRetrieval)
+      result shouldBe "org/UNUSED"
+    }
+    "throw an exception if Partnership legal entity enrolment and not an organisation" in {
+      val thrown = the[RuntimeException] thrownBy  AccountUtils.getAuthType("Partnership", StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Individual)))
+      thrown.getMessage shouldBe "[getAuthType] Not an organisation account"
     }
   }
 }

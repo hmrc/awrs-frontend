@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import config.FrontendAuthConnector
+import controllers.auth.ExternalUrls
 import forms.BusinessDirectorsForm
 import models.BusinessDirector
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -40,6 +41,7 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
   object TestBusinessDirectorsController extends BusinessDirectorsController {
     override val authConnector = mockAuthConnector
     override val save4LaterService = TestSave4LaterService
+    val signInUrl = "/sign-in"
   }
 
   def testRequest(director: BusinessDirector) =
@@ -106,6 +108,7 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
 
   def getWithAuthorisedUserNoCache(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = None)
+    setAuthMocks()
     val result = TestBusinessDirectorsController.showBusinessDirectors(2, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -115,6 +118,7 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
       fetchBusinessDirectors = testBusinessDirectors,
       fetchTradingActivity = None
     )
+    setAuthMocks()
     val result = TestBusinessDirectorsController.saveAndContinue(id, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
