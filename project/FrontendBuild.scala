@@ -14,7 +14,7 @@ private object AppDependencies {
 
   private val frontendbootstrap = "12.7.0"
   private val domainVersion = "5.6.0-play-25"
-  private val hmrcTestVersion = "3.8.0-play-25"
+  private val hmrcTestVersion = "3.6.0-play-25"
 
   private val urlBuilderVersion = "3.1.0"
   private val httpCachingClientVersion = "8.3.0"
