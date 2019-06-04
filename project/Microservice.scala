@@ -47,7 +47,7 @@ trait MicroService {
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       parallelExecution in Test := false,
-      fork in Test := false,
+      fork in Test := true,
       evictionWarningOptions in update :=
         EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
         routesGenerator := StaticRoutesGenerator
