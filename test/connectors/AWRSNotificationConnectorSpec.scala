@@ -31,6 +31,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
@@ -42,7 +43,7 @@ import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http._
-
+import _root_.controllers.auth.StandardAuthRetrievals
 
 class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   val MockAuditConnector = mock[AuditConnector]
@@ -82,10 +83,18 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
+  val defaultEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
+    Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "6543210")), "activated"), Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+
+  val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
+    Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+
+  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation))
+
 
   // these values doesn't really matter since the call itself is mocked
   implicit val request = FakeRequest()
-  val awrsRef = AccountUtils.getAwrsRefNo(TestUtil.defaultEnrolmentSet)
+  val awrsRef = AccountUtils.getAwrsRefNo(defaultEnrolmentSet)
 
   lazy val notificationCacheURI = (awrsRef: String) => s"/$awrsRef"
 
@@ -111,9 +120,9 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.DELETE[HttpResponse](Matchers.endsWith(notificationCacheURI(awrsRef)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus)))
 
-    def testFetchCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.fetchNotificationCache(TestUtil.defaultAuthRetrieval)
+    def testFetchCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.fetchNotificationCache(defaultAuthRetrieval)
 
-    def testDeleteCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.deleteFromNotificationCache(TestUtil.defaultAuthRetrieval)
+    def testDeleteCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.deleteFromNotificationCache(defaultAuthRetrieval)
 
     val revokeJSon = """{
                        "registrationNumber": "XXAW000001234560",
@@ -209,7 +218,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.GET[HttpResponse](Matchers.endsWith(notificationViewedStatusURI(awrsRef)))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
-    def testGetViewedStatusCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.getNotificationViewedStatus(TestUtil.defaultAuthRetrieval)
+    def testGetViewedStatusCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.getNotificationViewedStatus(defaultAuthRetrieval)
 
     "return status as OK or NO_CONTENT, for successful getNotificationViewedStatus" in {
       val viewed = true
@@ -235,7 +244,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
           case false => Future.successful(HttpResponse(NOT_FOUND))
         })
 
-    def testMarkViewedStatusCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.markNotificationViewedStatusAsViewed(TestUtil.defaultAuthRetrieval)
+    def testMarkViewedStatusCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = TestAWRSNotificationConnector.markNotificationViewedStatusAsViewed(defaultAuthRetrieval)
 
     "return the value Some(true), for successful markNotificationViewedStatusAsViewed" in {
       // so long as a response is given then ok is returned
