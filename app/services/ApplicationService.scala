@@ -139,7 +139,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     for {
       cached <- save4LaterService.mainStore.fetchAll(authRetrievals)
       businessCustomerDetails = cached.get.getBusinessCustomerDetails
-      sections <- getSections(AccountUtils.getUtr(authRetrievals.enrolments), authRetrievals)
+      sections <- getSections(AccountUtils.getUtr(authRetrievals), authRetrievals)
       awrsData <- {
         val schema = assembleAWRSFEModel(cached, businessCustomerDetails, sections)
         awrsConnector.submitAWRSData(Json.toJson(schema), authRetrievals)
