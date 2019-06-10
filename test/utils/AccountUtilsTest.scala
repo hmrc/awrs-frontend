@@ -25,17 +25,22 @@ class AccountUtilsTest extends UnitSpec {
 
   "getUtr" should {
     "Return the user SA utr " in {
-      val utr = AccountUtils.getUtr(TestUtil.defaultSaEnrolmentSet)
+      val utr = AccountUtils.getUtr(StandardAuthRetrievals(TestUtil.defaultSaEnrolmentSet, Some(AffinityGroup.Individual)))
       utr shouldBe "0123456"
     }
 
     "Return the user CT utr for org" in {
-      val utr = AccountUtils.getUtr(TestUtil.defaultEnrolmentSet)
+      val utr = AccountUtils.getUtr(StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Individual)))
       utr shouldBe "6543210"
     }
 
+    "Return the org name " in {
+      val orgId = AccountUtils.getUtr(StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation)))
+      orgId shouldBe "Organisation"
+    }
+
     "throw exception if no details are found" in {
-      val thrown = the[RuntimeException] thrownBy AccountUtils.getUtr(Set.empty[Enrolment])
+      val thrown = the[RuntimeException] thrownBy AccountUtils.getUtr(StandardAuthRetrievals(Set.empty[Enrolment], Some(AffinityGroup.Individual)))
       thrown.getMessage should include("[getUtr] No UTR found")
     }
   }

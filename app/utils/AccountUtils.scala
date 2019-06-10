@@ -17,19 +17,21 @@
 package utils
 
 import controllers.auth.StandardAuthRetrievals
+import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 
 object AccountUtils extends AccountUtils
 
 trait AccountUtils extends LoggingUtils {
 
-  def getUtr(enrolments: Set[Enrolment]): String = {
-    val firstUtr = (enrolments flatMap { enrolment =>
+  def getUtr(authRetrievals: StandardAuthRetrievals): String = {
+    val firstUtr = (authRetrievals.enrolments flatMap { enrolment =>
       enrolment.identifiers.filter(_.key.toLowerCase == "utr")
     }).headOption
 
-    firstUtr match {
-      case Some(utr) => utr.value.toString
+    (firstUtr, authRetrievals.affinityGroup) match {
+      case (Some(utr), _) => utr.value.toString
+      case (_, Some(org)) if org == AffinityGroup.Organisation => org.toString
       case _ => throw new RuntimeException("[getUtr] No UTR found")
     }
   }

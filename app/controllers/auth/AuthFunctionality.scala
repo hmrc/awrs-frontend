@@ -48,7 +48,7 @@ trait AuthFunctionality extends AuthorisedFunctions {
       Logger.warn(s"[recoverAuthorisedCalls] Auth exception: $er")
       Unauthorized(views.html.unauthorised())
     case er                         =>
-      Logger.warn(s"[recoverAuthorisedCalls] Unhandled error occured - ${er.getStackTrace.mkString("\n")}")
+      Logger.warn(s"[recoverAuthorisedCalls] Unhandled error occured - ${er.getMessage}\n ${er.getStackTrace.mkString("\n")}")
       AwrsController.showErrorPageRaw
   }
 
