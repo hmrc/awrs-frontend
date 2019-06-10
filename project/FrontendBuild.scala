@@ -12,9 +12,9 @@ private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
 
-  private val frontendbootstrap = "12.7.0"
+  private val frontendbootstrap = "12.8.0"
   private val domainVersion = "5.6.0-play-25"
-  private val hmrcTestVersion = "3.6.0-play-25"
+  private val hmrcTestVersion = "3.9.0-play-25"
 
   private val urlBuilderVersion = "3.1.0"
   private val httpCachingClientVersion = "8.3.0"
@@ -35,7 +35,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "domain" % domainVersion,
     "uk.gov.hmrc" %% "json-encryption" % jSonEncryptionVersion,
     "com.mohiva" %% "play-html-compressor" % "0.6.3", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc" %% "auth-client" % "2.21.0-play-25"
+    "uk.gov.hmrc" %% "auth-client" % "2.22.0-play-25"
   )
 
 
