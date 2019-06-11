@@ -126,7 +126,7 @@ trait KeyStoreService {
 
   @inline def saveSave4LaterBackup(save4LaterConnector: Save4LaterConnector, authRetrievals: StandardAuthRetrievals)
                                   (implicit hc: HeaderCarrier): Future[CacheMap] = {
-    save4LaterConnector.fetchAll(AccountUtils.getUtr(authRetrievals)).flatMap {
+    save4LaterConnector.fetchAll(AccountUtils.getS4LCacheID(authRetrievals)).flatMap {
       case Some(cacheMap) => keyStoreConnector.saveDataToKeystore(save4LaterBackupName, cacheMap.copyOfSave4Later)
       case None => throw new RuntimeException("Backup save4Later to keystore failed, not data found in save4later")
     }
