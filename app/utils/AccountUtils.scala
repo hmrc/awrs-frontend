@@ -17,22 +17,25 @@
 package utils
 
 import controllers.auth.StandardAuthRetrievals
-import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
 
 object AccountUtils extends AccountUtils
 
 trait AccountUtils extends LoggingUtils {
 
-  def getUtr(authRetrievals: StandardAuthRetrievals): String = {
-    val firstUtr = (authRetrievals.enrolments flatMap { enrolment =>
+  def getS4LCacheID(enrolments: Set[Enrolment]): String = {
+    val firstUtr = (enrolments flatMap { enrolment =>
       enrolment.identifiers.filter(_.key.toLowerCase == "utr")
     }).headOption
 
-    (firstUtr, authRetrievals.affinityGroup) match {
-      case (Some(utr), _) => utr.value.toString
-      case (_, Some(org)) if org == AffinityGroup.Organisation => org.toString
-      case _ => throw new RuntimeException("[getUtr] No UTR found")
+    val awrsRefNo = (enrolments flatMap { enrolment =>
+      enrolment.identifiers.filter(_.key.toLowerCase == "awrsrefnumber")
+    }).headOption
+
+    (firstUtr, awrsRefNo) match {
+      case (Some(utr), _)   => utr.value.toString
+      case (_, Some(refno)) => refno.value.toString
+      case _ => throw new RuntimeException("[getS4LCacheID] No UTR found")
     }
   }
 

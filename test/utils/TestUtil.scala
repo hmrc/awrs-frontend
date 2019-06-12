@@ -827,7 +827,9 @@ object TestUtil {
     Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "6543210")), "activated"), Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
 
   val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
-    Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+    Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "123987")), "activated"))
+
+  val defaultOnlyAwrsOfSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"))
 
   val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation))
 

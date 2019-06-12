@@ -104,7 +104,7 @@ trait WithdrawalController extends AwrsController with LoggingUtils {
           withdrawalDetails.confirmation match {
             case Some("Yes") =>
               lazy val deEnrol = () => {
-                val awrsRef = AccountUtils.getUtr(ar)
+                val awrsRef = AccountUtils.getS4LCacheID(ar.enrolments)
                 val businessName = getBusinessName.fold("")(x => x)
                 val businessType = getBusinessType.fold("")(x => x)
                 deEnrolService.deEnrolAWRS(awrsRef, businessName, businessType)

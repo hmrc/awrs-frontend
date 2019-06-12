@@ -57,7 +57,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
       case _ => suppliers
     }
 
-  def getSections(cacheID: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext) =
+  def getSections(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext) =
     save4LaterService.mainStore.fetchAll(authRetrievals).map {
       res => res.get.getEntry[BusinessType]("legalEntity") match {
         case Some(BusinessType(Some("SOP"), _, _)) => Sections(soleTraderBusinessDetails = true)
@@ -139,7 +139,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     for {
       cached <- save4LaterService.mainStore.fetchAll(authRetrievals)
       businessCustomerDetails = cached.get.getBusinessCustomerDetails
-      sections <- getSections(AccountUtils.getUtr(authRetrievals), authRetrievals)
+      sections <- getSections(authRetrievals)
       awrsData <- {
         val schema = assembleAWRSFEModel(cached, businessCustomerDetails, sections)
         awrsConnector.submitAWRSData(Json.toJson(schema), authRetrievals)
@@ -154,8 +154,7 @@ trait ApplicationService extends AccountUtils with AwrsAPI5Helper with DataCache
     } yield awrsData
   }
 
-  def hasAPI5ApplicationChanged(cacheID: String, authRetrievals: StandardAuthRetrievals)
-                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+  def hasAPI5ApplicationChanged(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     if (AccountUtils.hasAwrs(authRetrievals.enrolments)) {
       for {
         cached <- fetchMainStore(authRetrievals)

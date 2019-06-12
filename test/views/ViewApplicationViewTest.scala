@@ -128,7 +128,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     def viewSection(sectionName: String, cacheMap: CacheMap, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
       setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = cacheMap)
       setAuthMocks()
-      when(mockApplicationService.hasAPI5ApplicationChanged(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())) thenReturn Future.successful(false)
+      when(mockApplicationService.hasAPI5ApplicationChanged(Matchers.any())(Matchers.any(), Matchers.any())) thenReturn Future.successful(false)
       val result = TestViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }

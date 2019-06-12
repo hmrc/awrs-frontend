@@ -19,29 +19,28 @@ package utils
 import controllers.auth.StandardAuthRetrievals
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.TestConstants._
 
 class AccountUtilsTest extends UnitSpec {
 
-  "getUtr" should {
-    "Return the user SA utr " in {
-      val utr = AccountUtils.getUtr(StandardAuthRetrievals(TestUtil.defaultSaEnrolmentSet, Some(AffinityGroup.Individual)))
-      utr shouldBe "0123456"
+  "getS4LCacheID" should {
+    "Return the user SA utr" in {
+      val utr = AccountUtils.getS4LCacheID(TestUtil.defaultSaEnrolmentSet)
+      utr shouldBe "123987"
     }
 
     "Return the user CT utr for org" in {
-      val utr = AccountUtils.getUtr(StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Individual)))
+      val utr = AccountUtils.getS4LCacheID(TestUtil.defaultEnrolmentSet)
       utr shouldBe "6543210"
     }
 
-    "Return the org name " in {
-      val orgId = AccountUtils.getUtr(StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation)))
-      orgId shouldBe "Organisation"
+    "Return the user AWRS-REF-ORG if there is no UTR" in {
+      val utr = AccountUtils.getS4LCacheID(TestUtil.defaultOnlyAwrsOfSet)
+      utr shouldBe "0123456"
     }
 
     "throw exception if no details are found" in {
-      val thrown = the[RuntimeException] thrownBy AccountUtils.getUtr(StandardAuthRetrievals(Set.empty[Enrolment], Some(AffinityGroup.Individual)))
-      thrown.getMessage should include("[getUtr] No UTR found")
+      val thrown = the[RuntimeException] thrownBy AccountUtils.getS4LCacheID(Set.empty[Enrolment])
+      thrown.getMessage should include("[getS4LCacheID] No UTR found")
     }
   }
 
