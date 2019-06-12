@@ -32,17 +32,17 @@ trait Save4LaterUtil {
   val save4LaterConnector: Save4LaterConnector
 
   @inline def fetchData4Later[T](formId: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, formats: play.api.libs.json.Format[T]): Future[Option[T]] = {
-    save4LaterConnector.fetchData4Later[T](AccountUtils.getUtr(authRetrievals), formId)
+    save4LaterConnector.fetchData4Later[T](AccountUtils.getS4LCacheID(authRetrievals.enrolments), formId)
   }
 
   @inline def saveData4Later[T](formId: String, data: T, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, formats: play.api.libs.json.Format[T]): Future[T] =
-    save4LaterConnector.saveData4Later[T](AccountUtils.getUtr(authRetrievals), formId, data) map (_.get)
+    save4LaterConnector.saveData4Later[T](AccountUtils.getS4LCacheID(authRetrievals.enrolments), formId, data) map (_.get)
 
   @inline def fetchAll(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[CacheMap]] =
-    save4LaterConnector.fetchAll(AccountUtils.getUtr(authRetrievals))
+    save4LaterConnector.fetchAll(AccountUtils.getS4LCacheID(authRetrievals.enrolments))
 
   @inline def removeAll(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    save4LaterConnector.removeAll(AccountUtils.getUtr(authRetrievals))
+    save4LaterConnector.removeAll(AccountUtils.getS4LCacheID(authRetrievals.enrolments))
 }
 
 trait Save4LaterService {

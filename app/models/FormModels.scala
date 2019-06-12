@@ -634,7 +634,7 @@ object TradingActivity {
   val Other = "99"
   val Delimiter = " "
 
-  implicit val writer = new Writes[TradingActivity] {
+  implicit lazy val writer = new Writes[TradingActivity] {
 
     // remove the Producer and Broker wholesaler codes if required as they will be sent via the 'Other' field from now on
     // and add the 'Other' code to the wholesaler type if either Producer or Broker are selected
@@ -670,7 +670,7 @@ object TradingActivity {
         .++(tradingActivity.exportLocation.fold(Json.obj())(x => Json.obj("exportLocation" -> x)))
   }
 
-  implicit val reader = new Reads[TradingActivity] {
+  implicit lazy val reader = new Reads[TradingActivity] {
 
     // remove the 'Other' wholesaler type if it only contained Producer and Broker so it is not selected on the screen
     // add the Producer and Broker wholesaler codes if required so they are selected on the screen
