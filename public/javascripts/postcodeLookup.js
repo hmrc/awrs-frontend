@@ -222,7 +222,6 @@
             $('#result-' + num).addClass('show').focus();
             $(".dropdown-menu").show();
             hideErrorMessage(num);
-            $(".postcode-results-fieldset").find("input").first().prop("checked",true)
         }
     }
 
