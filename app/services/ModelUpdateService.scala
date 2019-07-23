@@ -30,9 +30,6 @@ trait ModelUpdateService {
   def ensureAllModelsAreUpToDate(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean]
 }
 
-object NoUpdatesRequired extends ModelUpdateService {
-  override def ensureAllModelsAreUpToDate(implicit user: AuthContext, hc: HeaderCarrier, save4LaterService: Save4LaterService): Future[Boolean] = Future.successful(true)
-}
 
 object UpdateRequired extends ModelUpdateService {
 

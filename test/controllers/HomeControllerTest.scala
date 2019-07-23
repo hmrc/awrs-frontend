@@ -31,8 +31,8 @@ import play.api.libs.json.JsResultException
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.BusinessCustomerService
 import services.mocks.MockSave4LaterService
-import services.{BusinessCustomerService, NoUpdatesRequired}
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
@@ -50,7 +50,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     override val authConnector = mockAuthConnector
     override val businessCustomerService = mockBusinessCustomerService
     override val save4LaterService = TestSave4LaterService
-    override val modelUpdateService = NoUpdatesRequired
+
   }
 
   override def beforeEach(): Unit = {
