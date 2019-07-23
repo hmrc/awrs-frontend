@@ -38,7 +38,6 @@ trait HomeController extends AwrsController with AccountUtils {
 
   val businessCustomerService: BusinessCustomerService
   implicit val save4LaterService: Save4LaterService
-  val modelUpdateService: ModelUpdateService
 
 
   private def awrsIdentifier(implicit user: AuthContext, hc: HeaderCarrier): String = {
@@ -122,15 +121,15 @@ trait HomeController extends AwrsController with AccountUtils {
       case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
     }
 
-  def startJourney(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] =
-    modelUpdateService.ensureAllModelsAreUpToDate.flatMap {
-      case true =>
-        AccountUtils.hasAwrs match {
-          case true => api5Journey(callerId)
-          case false => api4Journey(callerId)
-        }
-      case _ => showErrorPage
+  def startJourney(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
+
+    if (AccountUtils.hasAwrs){
+      api5Journey(callerId)
+    } else {
+      api4Journey(callerId)
     }
+  }
+
 
 }
 
@@ -138,6 +137,5 @@ object HomeController extends HomeController {
   override val authConnector = FrontendAuthConnector
   override val businessCustomerService = BusinessCustomerService
   override val save4LaterService = Save4LaterService
-  /* TODO save4later update for AWRS-1800 to be replaced by NoUpdatesRequired after 28 days*/
-  override val modelUpdateService = NoUpdatesRequired //NoUpdatesRequired
+
 }
