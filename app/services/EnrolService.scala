@@ -18,7 +18,7 @@ package services
 
 
 import config.AuthClientConnector
-import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
+import connectors.TaxEnrolmentsConnector
 import forms.AWRSEnums.BooleanRadioEnum
 import models._
 import play.api.Mode.Mode
@@ -37,10 +37,8 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 trait EnrolService extends RunMode with AuthorisedFunctions {
-  val ggConnector: GovernmentGatewayConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector
 
-  val isEmacFeatureToggle: Boolean
 
   val enrolmentType = "principal"
 
@@ -54,7 +52,6 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
                 businessType: String,
                 utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
-    if (isEmacFeatureToggle) {
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
       val verifiers = createVerifiers(businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
@@ -67,11 +64,8 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
         case Credentials(_, _) ~ _ =>
           Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
       }
-    } else {
-      Logger.info("EMAC is switched OFF so enrolling using GG")
-      ggConnector.enrol(enrolment, businessPartnerDetails, businessType)
     }
-  }
+
 
   private def createVerifiers(utr: Option[String], businessType: String, postcode: String) = {
     val utrVerifier = businessType match {
@@ -108,9 +102,7 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
 }
 
 object EnrolService extends EnrolService {
-  val ggConnector = GovernmentGatewayConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
-  val isEmacFeatureToggle = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
   override val authConnector = AuthClientConnector
 
   override protected def mode: Mode = Play.current.mode
