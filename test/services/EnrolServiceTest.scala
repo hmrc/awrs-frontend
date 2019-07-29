@@ -17,7 +17,7 @@
 package services
 
 import _root_.models._
-import connectors.{GovernmentGatewayConnector, TaxEnrolmentsConnector}
+import connectors.TaxEnrolmentsConnector
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.{Configuration, Play}
@@ -36,8 +36,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 class EnrolServiceTest extends AwrsUnitTestTraits {
-  val mockGovernmentGatewayConnector: GovernmentGatewayConnector = mock[GovernmentGatewayConnector]
-
   val userId = ""
   val saUtr: String = testUtr
   val ctUtr: String = testCTUtr
@@ -61,10 +59,8 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   val mockTaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
 
   object EnrolServiceTest extends EnrolService {
-    override val ggConnector = mockGovernmentGatewayConnector
     override val authConnector = mockAuthConnector
     override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
-    override val isEmacFeatureToggle = false
 
     override protected def mode: Mode = Play.current.mode
 
@@ -72,10 +68,8 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   }
 
   object EnrolServiceEMACTest extends EnrolService {
-    override val ggConnector = mockGovernmentGatewayConnector
     override val authConnector = mockAuthConnector
     override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
-    override val isEmacFeatureToggle = true
 
     override protected def mode: Mode = Play.current.mode
 
@@ -83,7 +77,7 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   }
 
   override def beforeEach(): Unit = {
-    reset(mockGovernmentGatewayConnector)
+    reset(mockTaxEnrolmentsConnector)
   }
 
   "Enrol Service" should {
@@ -107,8 +101,6 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   def enrolService(enrolService: EnrolService): Unit = {
     "fetch data if found in save4later" in {
       mockAuthorise(EmptyPredicate, credentials and groupIdentifier)(new ~(Credentials(testCredId, EnrolService.GGProviderId), Some(testGroupId)))
-      when(mockGovernmentGatewayConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(successfulEnrolResponse))
       when(mockTaxEnrolmentsConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(successfulEnrolResponse))
       val result = enrolService.enrolAWRS(successfulSubscriptionResponse,

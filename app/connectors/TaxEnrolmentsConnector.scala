@@ -103,21 +103,21 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
         response
       case BAD_REQUEST =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
-          s"gg url:$postUrl, " +
+        Logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
+          s"enrolment url:$postUrl, " +
           s"Bad Request Exception account Ref:${requestPayload.verifiers}, " +
           s"Service: $AWRS_SERVICE_NAME")
         throw new BadRequestException(response.body)
       case NOT_FOUND =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
+        Logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"Not Found Exception account Ref:${requestPayload.verifiers}, " +
           s"Service: $AWRS_SERVICE_NAME}")
         throw new NotFoundException(response.body)
       case SERVICE_UNAVAILABLE =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
-          s"gg url:$postUrl, " +
+        Logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
+          s"enrolment url:$postUrl, " +
           s"Service Unavailable Exception account Ref:${requestPayload.verifiers}, " +
           s"Service: $AWRS_SERVICE_NAME}")
         throw new ServiceUnavailableException(response.body)
@@ -139,8 +139,8 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
                             responseStatus: Int,
                             optionErrorStatus: Option[String] = None) = {
     val errorStatus = optionErrorStatus.fold("")(status => " - " + status)
-    Logger.warn(s"[GovernmentGatewayConnector][enrol]$errorStatus" +
-      s"gg url:$postUrl, " +
+    Logger.warn(s"[TaxEnrolmentsConnector][enrol]$errorStatus" +
+      s"enrolment url:$postUrl, " +
       optionStatus.map(status => s"status:$status Exception account Ref:$verifiers, ") +
       s"Service: $AWRS_SERVICE_NAME" +
       s"Reponse Body: $responseBody," +
