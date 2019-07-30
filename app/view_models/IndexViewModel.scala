@@ -21,7 +21,7 @@ import utils.SessionSectionHashUtil
 sealed trait IndexStatus {
   val messagesKey: String
 
-  final override def toString = messagesKey
+  final override def toString: String = messagesKey
 }
 
 case object SectionComplete extends IndexStatus {

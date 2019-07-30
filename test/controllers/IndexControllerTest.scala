@@ -17,7 +17,6 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
@@ -27,25 +26,21 @@ import play.api.test.Helpers._
 import services._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.TestUtil._
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
+import utils.AwrsSessionKeys
 
 import scala.concurrent.Future
 
-class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
+class IndexControllerTest extends ServicesUnitTestFixture {
 
   lazy val cachemap = CacheMap("", Map[String, JsValue]())
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockApplicationService)
   }
 
-  object TestIndexController extends IndexController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val indexService = mockIndexService
-    override val api9 = TestAPI9
-    override val applicationService = mockApplicationService
+  lazy val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl = "/sign-in"
   }
 
   "IndexController" must {
@@ -87,7 +82,8 @@ class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
   }
 
   private def callShowLastLocationWith(previousLocation: Option[String], cacheMap: CacheMap = cachemap)(test: Future[Result] => Any) {
-    val result = TestIndexController.showLastLocation.apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
+    setAuthMocks()
+    val result = testIndexController.showLastLocation.apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
     test(result)
   }
 
@@ -101,6 +97,7 @@ class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
     setupMockAwrsAPI9(keyStore = testSubscriptionStatusTypePending, connector = DoNotConfigure)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
     setupMockIndexService()
+    setAuthMocks()
 
     val request = businessType match {
       case Some(bt) => SessionBuilder.buildRequestWithSession(userId, bt)
@@ -110,7 +107,7 @@ class IndexControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
       case Some(definedSection) => request.withSession(request.session.+((AwrsSessionKeys.sessionJouneyStartLocation, definedSection)).data.toSeq: _*)
       case _ => request
     }
-    TestIndexController.showIndex.apply(requestWithStart)
+    testIndexController.showIndex.apply(requestWithStart)
   }
 
 }

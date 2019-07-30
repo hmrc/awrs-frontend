@@ -17,8 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -30,19 +29,13 @@ import scala.concurrent.Future
 class TradingActivityControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val request = FakeRequest()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  object TestTradingActivityController extends TradingActivityController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-
+  val testTradingActivityController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   "TradingActivityController" must {
-    "use the correct AuthConnector" in {
-      TradingActivityController.authConnector shouldBe FrontendAuthConnector
-    }
-
     "redirect to products page when valid data is provided" in {
       continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("wholesalerType[0]" -> "01", "wholesalerType[1]" -> "05", "typeOfAlcoholOrders[0]" -> "01",
         "doesBusinessImportAlcohol" -> "Yes", "otherWholesaler" -> "None", "doYouExportAlcohol" -> "No", "thirdPartyStorage" -> "Yes")) {
@@ -65,13 +58,15 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
-    val result = TestTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
-    val result = TestTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

@@ -48,6 +48,8 @@
   * ********************************************************************************************************************/
 package forms.validation.util
 
+import play.api.i18n.Messages
+
 /**
   * MessageArguments is a case class used in the MessageConfig objects to specify the message arguments in the
   * conf/messages file
@@ -150,7 +152,7 @@ case class TargetFieldIds(anchor: String, otherIds: String*)
   * All types inheriting this trait must contain a message key.
   */
 trait MessageLookup extends MessageConfig[String] {
-  override def toString: String = ErrorMessageLookup.messageLookup(this)
+  def toString(implicit messages: Messages): String = ErrorMessageLookup.messageLookup(this)
 }
 
 /**

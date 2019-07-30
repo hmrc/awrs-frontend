@@ -19,37 +19,35 @@ package services
 import _root_.models.{BCAddress, BusinessCustomerDetails}
 import connectors._
 import connectors.mock.MockKeyStoreConnector
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class BusinessCustomerServiceTest extends AwrsUnitTestTraits
   with MockKeyStoreConnector {
 
   val testAddress = BCAddress("line_1", "line_2", None, None, None, Some("U.K."))
   val testReviewBusinessDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
-
-  object BusinessCustomerTest extends BusinessCustomerService {
-    override val businessCustomerConnector = mockKeyStoreConnector
-  }
-
-  "Business Customer Services" should {
-    "must use correct CacheConnector" in {
-      BusinessCustomerService.businessCustomerConnector shouldBe BusinessCustomerDataCacheConnector
-    }
-  }
+  val mockBusCusCacheConnector: BusinessCustomerDataCacheConnector = mock[BusinessCustomerDataCacheConnector]
+  val businessCustomerTest = new BusinessCustomerService(mockBusCusCacheConnector)
 
   "fetch review details, if found from Business Customer Keystore" in {
-    when(mockKeyStoreConnector.fetchDataFromKeystore[BusinessCustomerDetails](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testReviewBusinessDetails)))
-    val result = BusinessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]
+    when(mockBusCusCacheConnector.fetchDataFromKeystore[BusinessCustomerDetails](any())(any(), any(), any()))
+      .thenReturn(Future.successful(Some(testReviewBusinessDetails)))
+
+    val result = businessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]
     await(result).get shouldBe testReviewBusinessDetails
   }
 
   "return None, if no details are found in BC keystore" in {
-    when(mockKeyStoreConnector.fetchDataFromKeystore[BusinessCustomerDetails](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    val result = BusinessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]
+    when(mockBusCusCacheConnector.fetchDataFromKeystore[BusinessCustomerDetails](any())(any(), any(), any()))
+      .thenReturn(Future.successful(None))
+
+    val result = businessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]
     await(result) shouldBe None
   }
 }

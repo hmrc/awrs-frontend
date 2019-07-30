@@ -16,11 +16,11 @@
 
 package services.apis.mocks
 
-import connectors.AWRSConnector
 import connectors.mock.MockAWRSConnector
-import models.{FormBundleStatus, SubscriptionStatusType}
+import models.{BusinessCustomerDetails, FormBundleStatus, SubscriptionStatusType}
 import models.FormBundleStatus._
-import services.{KeyStoreService, Save4LaterService}
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import services.apis.AwrsAPI9
 import services.mocks.MockKeyStoreService
 import services.mocks.MockSave4LaterService
@@ -29,20 +29,19 @@ import utils.{AwrsUnitTestTraits, TestUtil}
 
 trait MockAwrsAPI9 extends AwrsUnitTestTraits with MockKeyStoreService with MockSave4LaterService with MockAWRSConnector {
 
-  object TestAPI9 extends AwrsAPI9 {
-    override val awrsConnector: AWRSConnector = mockAWRSConnector
-    override val keyStoreService: KeyStoreService = TestKeyStoreService
-    override val save4LaterService : Save4LaterService = TestSave4LaterService
-  }
+  val testAPI9 = new AwrsAPI9(mockAccountUtils, mockAWRSConnector, testKeyStoreService, testSave4LaterService)
 
   def setupMockAwrsAPI9(keyStore: Option[SubscriptionStatusType],
-                        connector: MockConfiguration[SubscriptionStatusType] = DoNotConfigure) = {
+                        connector: MockConfiguration[SubscriptionStatusType] = DoNotConfigure): Unit = {
     connector match {
       case Configure(status) => setupMockAWRSConnectorWithOnly(checkStatus = status)
       case _ =>
     }
     setupMockKeyStoreServiceWithOnly(subscriptionStatusType = keyStore)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = MockAwrsAPI9.defaultBusinessCustomerDetails)
+
+    when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
+      .thenReturn(true)
   }
 
 }
@@ -62,6 +61,6 @@ object MockAwrsAPI9 extends MockAwrsAPI9 {
       case _ => throw new NoSuchElementException("unimplemented default notification type in MockAwrsAPI9.defaultSubscriptionStatusType")
     }
 
-  val defaultBusinessCustomerDetails = MockSave4LaterService.defaultBusinessCustomerDetails
+  val defaultBusinessCustomerDetails: BusinessCustomerDetails = MockSave4LaterService.defaultBusinessCustomerDetails
 
 }

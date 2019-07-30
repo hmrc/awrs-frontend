@@ -17,6 +17,7 @@
 package views
 
 import builders.SessionBuilder
+import config.ApplicationConfig
 import controllers.PlaceOfBusinessController
 import forms.PlaceOfBusinessForm
 import models.PlaceOfBusiness
@@ -38,13 +39,12 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
 
   val businessCustomerDetailsFormId = "businessCustomerDetails"
 
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
+
   def testRequest(premises: PlaceOfBusiness) =
     TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm, premises)
 
-  object TestPlaceOfBusinessController extends PlaceOfBusinessController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
+  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "BusinessContactsController" must {
 
@@ -103,7 +103,8 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchPlaceOfBusiness = testPlaceOfBusinessDefault()
     )
-    val result = TestPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = false).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
+    setAuthMocks()
+    val result = testPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = false).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
     test(result)
   }
 
@@ -112,7 +113,8 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchPlaceOfBusiness = None
     )
-    val result = TestPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
+    setAuthMocks()
+    val result = testPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
 
     test(result)
   }
@@ -122,7 +124,8 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchPlaceOfBusiness = testPlaceOfBusinessDefault()
     )
-    val result = TestPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

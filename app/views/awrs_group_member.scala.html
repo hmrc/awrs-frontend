@@ -17,18 +17,17 @@
 @import play.twirl.api.Html
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.helpers._
-@import utils.CountryCodes
 @import views.view_application.helpers._
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
-@import utils.AccountUtils
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import uk.gov.hmrc.auth.core.Enrolment
 
-@(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages,user :AuthContext)
+@import config.ApplicationConfig
+@import utils.{CountryCodes, AccountUtils}
+
+@(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
@@ -38,31 +37,34 @@
 }
 
 @actionRoute = @{
-  isEditMode match {
-    case true => controllers.routes.GroupMemberController.saveAndReturn(groupMemberId, isNewRecord)
-    case false => controllers.routes.GroupMemberController.saveAndContinue(groupMemberId, isNewRecord)
+  if(isEditMode) {
+      controllers.routes.GroupMemberController.saveAndReturn(groupMemberId, isNewRecord)
+  } else {
+      controllers.routes.GroupMemberController.saveAndContinue(groupMemberId, isNewRecord)
   }
 }
 
 @ctaMessage = @{
-  isEditMode match {
-    case true => Messages("awrs.generic.save_return")
-    case false => Messages("awrs.generic.save_continue")
+  if(isEditMode) {
+      messages("awrs.generic.save_return")
+  } else {
+      messages("awrs.generic.save_continue")
   }
 }
 
 @ordinalSuffix = @{
-AccountUtils.hasAwrs match {
-        case true => ordinalIntSuffix(groupMemberId)
-        case _ => ordinalIntSuffix(groupMemberId + 1)
-    }
+if(accountUtils.hasAwrs(enrolments)) {
+    ordinalIntSuffix(groupMemberId)
+} else {
+    ordinalIntSuffix(groupMemberId + 1)
+}
 }
 
 @pageHeading = @{
-    Messages("awrs.group_member.top_heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalSuffix)
+    messages("awrs.group_member.top_heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalSuffix)
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
 <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
     <div class="grid grid-2-3">
@@ -72,21 +74,21 @@ AccountUtils.hasAwrs match {
         @errorSummaryTemplate(groupMemberForm)
         <header class="page-header">
             <h1 id="group-member-heading" class="heading-xlarge">
-                @Messages("awrs.group_member.top_heading", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalSuffix)
+                @messages("awrs.group_member.top_heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalSuffix)
             </h1>
             @awrsProgressHelper(businessType, groupMembersName)
         </header>
 
-        <p id="group-member-lead-paragraph" class="lede">@Messages("awrs.group_member.lead_paragraph")</p>
+        <p id="group-member-lead-paragraph" class="lede">@messages("awrs.group_member.lead_paragraph")</p>
 
         @form(action = actionRoute){
             @awrsInputTypeText(
                 InputTypeTextParams(
                     groupMemberForm("companyNames.businessName"),
                     inputId = "companyNames.businessName",
-                    label = Messages("awrs.business_directors.business_name"),
+                    label = messages("awrs.business_directors.business_name"),
                     labelHighlight = true,
-                    maxLength = AwrsFieldConfig.companyNameLen.toString,
+                    maxLength = applicationConfig.companyNameLen.toString,
                     required = true
                 )
             )
@@ -94,12 +96,12 @@ AccountUtils.hasAwrs match {
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         groupMemberForm("companyNames.doYouHaveTradingName"),
-                        Seq("Yes" -> Messages("awrs.generic.yes"),
-                            "No" -> Messages("awrs.generic.no")),
+                        Seq("Yes" -> messages("awrs.generic.yes"),
+                            "No" -> messages("awrs.generic.no")),
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
                         legendId = "companyNames.doYouHaveTradingName-legend",
-                        legend = Messages("awrs.generic.do_they_have_trading_name")
+                        legend = messages("awrs.generic.do_they_have_trading_name")
                     )
                 )
                 <div id="companyNames.doYouHaveTradingName-yes-content">
@@ -107,8 +109,8 @@ AccountUtils.hasAwrs match {
                     InputTypeTextParams(
                         groupMemberForm("companyNames.tradingName"),
                         inputId = "companyNames.tradingName",
-                        label = Messages("awrs.generic.trading_name"),
-                        maxLength = AwrsFieldConfig.tradingNameLen.toString,
+                        label = messages("awrs.generic.trading_name"),
+                        maxLength = applicationConfig.tradingNameLen.toString,
                         required = true,
                         labelHighlight = true,
                         wrapperClass = "panel-indent"
@@ -117,12 +119,12 @@ AccountUtils.hasAwrs match {
                 </div>
             </div>
             <div id="address-group">
-                <h2 class="heading-medium">@Messages("awrs.generic.registered_address")</h2>
+                <h2 class="heading-medium">@messages("awrs.generic.registered_address")</h2>
                 @awrsAddressHelper(groupMemberForm("address"),
                     AddressHelperParams()
                 )
             </div>
-            <h2 class="heading-medium">@Messages("awrs.generic.company_reg_details")</h2>
+            <h2 class="heading-medium">@messages("awrs.generic.company_reg_details")</h2>
             @awrsIdUTRHelper(
                 businessType,
                 None,
@@ -151,9 +153,9 @@ AccountUtils.hasAwrs match {
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             groupMemberForm("addAnotherGrpMember"),
-                            Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                                Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                            legend = Messages("awrs.group_member.addAnother"),
+                            Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                                messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                            legend = messages("awrs.group_member.addAnother"),
                             legendId = "addAnotherGrpMember",
                             fieldSetAttributes = "id=addAnotherGrpMember_field",
                             fieldSetClass = "inline"

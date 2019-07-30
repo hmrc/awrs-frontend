@@ -17,13 +17,12 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
+import config.ApplicationConfig
 import connectors.mock.MockAuthConnector
 import forms.GroupMemberDetailsForm
 import models._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -38,25 +37,16 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService
   with MockAuthConnector {
 
-  val request = FakeRequest()
-
   val formId = "groupMember"
+
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
 
   private def testRequest(group: GroupMember) =
     TestUtil.populateFakeRequest[GroupMember](FakeRequest(), GroupMemberDetailsForm.groupMemberValidationForm, group)
 
-  lazy val fakeRequest = testRequest(testGroupMember)
+  lazy val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = testRequest(testGroupMember)
 
-  object TestGroupMemberController extends GroupMemberController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
-
-  "GroupMemberController" must {
-    "use the correct AuthConnector" in {
-      GroupMemberController.authConnector shouldBe FrontendAuthConnector
-    }
-  }
+  val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Submitting the application declaration form with " should {
 
@@ -170,31 +160,36 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
 
   private def getWithAuthorisedUserCt(memberId: Int)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = testGroupMemberDetails)
-    val result = TestGroupMemberController.showMemberDetails(memberId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
+    setAuthMocks()
+    val result = testGroupMemberController.showMemberDetails(memberId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
     test(result)
   }
 
   private def continueWithAuthorisedUser(memberId: Int, testDetailsFetch: Option[GroupMembers], testDetailsSave: GroupMembers, businessType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = testDetailsFetch, fetchPartnerDetails = None, fetchAdditionalBusinessPremisesList = None)
-    val result = TestGroupMemberController.saveAndContinue(memberId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+    setAuthMocks()
+    val result = testGroupMemberController.saveAndContinue(memberId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
   private def returnWithAuthorisedUser(memberId: Int, testDetailsFetch: Option[GroupMembers], testDetailsSave: GroupMembers, businessType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = testDetailsFetch)
-    val result = TestGroupMemberController.saveAndReturn(memberId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+    setAuthMocks()
+    val result = testGroupMemberController.saveAndReturn(memberId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
   private def showDeleteWithAuthorisedUser(id: Int = 1, members: GroupMembers = testGroupMemberDetails)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = members)
-    val result = TestGroupMemberController.showDelete(id).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testGroupMemberController.showDelete(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def deleteWithAuthorisedUser(id: Int = 1, members: GroupMembers = testGroupMemberDetails)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = members)
-    val result = TestGroupMemberController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testGroupMemberController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 }

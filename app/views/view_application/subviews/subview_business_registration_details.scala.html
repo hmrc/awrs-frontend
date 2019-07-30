@@ -20,11 +20,13 @@
 @import views.view_application.subviews.SubviewIds
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String],
+@(headingKey: String,
   someModel: Option[models.BusinessRegistrationDetails],
   legalEntity : Option[String],
   showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.businessRegistrationDetailsId
@@ -45,11 +47,11 @@
     @if(showTableHeader) {
         @table_row(
             "",
-            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_registration_details_text"))(x => x))
-        )(cssClass = "record-header")
+            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.business_registration_details_text")}"))
+        )(cssClass = Some("record-header"), messages = messages)
     }
     @identification_helper(
-        model,
+        Some(model),
         legalEntity
     )
 }
@@ -62,9 +64,9 @@
     </table>
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(heading, wrapperId, href, businessRegistrationDetailsName)(content(hideQuestionsInModel(model)), preContent = preContent, postContent = postContent)
+@someModel match {
+    case Some(model) => {
+        @subview_core(heading, wrapperId, href, Some(businessRegistrationDetailsName))(content(hideQuestionsInModel(model)), preContent = Some(preContent), postContent = Some(postContent))
     }
     case _ => {}
 }

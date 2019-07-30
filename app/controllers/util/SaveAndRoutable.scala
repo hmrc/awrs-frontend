@@ -16,43 +16,52 @@
 
 package controllers.util
 
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import play.api.mvc._
 import services.DataCacheKeys._
 import services.{JourneyConstants, Save4LaterService}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.SessionSectionHashUtil
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait SaveAndRoutable extends AwrsController {
+trait SaveAndRoutable extends FrontendController with AwrsController {
 
   val ErrorString = "error"
 
   val save4LaterService: Save4LaterService
+  val mcc: MessagesControllerComponents
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   val section: String
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result]
+  def save(id: Int,
+           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+           viewApplicationType: ViewApplicationType,
+           isNewRecord: Boolean,
+           authRetrievals: StandardAuthRetrievals
+          )(implicit request: Request[AnyContent]): Future[Result]
 
   // shortcut methods for single record pages as the id is not relevant
-  def saveAndContinue: Action[AnyContent] = saveAndContinue(1, true)
+  def saveAndContinue(): Action[AnyContent] = saveAndContinue(1, isNewRecord = true)
 
-  def saveAndReturn: Action[AnyContent] = saveAndReturn(1, true)
+  def saveAndReturn(): Action[AnyContent] = saveAndReturn(1, isNewRecord = true)
 
-  def saveAndContinue(id: Int, isNewRecord: Boolean) = async {
-    implicit user => implicit request =>
-      save(id, doRedirect, LinearViewMode, isNewRecord)
+  def saveAndContinue(id: Int, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      save(id, doRedirect, LinearViewMode, isNewRecord, ar)
+    }
   }
 
-  def saveAndReturn(id: Int, isNewRecord: Boolean) = async {
-    implicit user => implicit request =>
-      save(id, doRedirectReturn, EditSectionOnlyMode, isNewRecord)
+  def saveAndReturn(id: Int, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      save(id, doRedirectReturn, EditSectionOnlyMode, isNewRecord, ar)
+    }
   }
 
-  private def doRedirect(param: Option[RedirectParam], isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext) =
+  private def doRedirect(param: Option[RedirectParam], isNewRecord: Boolean)(implicit request: Request[AnyContent]) =
     param match {
       case Some(RedirectParam(BooleanRadioEnum.YesString, id)) => nextInSection(id, isNewRecord)
       case _ => nextSection(isNewRecord)
@@ -94,19 +103,19 @@ trait SaveAndRoutable extends AwrsController {
     (businessDetailsName, (businessType: Option[String]) => businessRegistrationDetailsName),
     (businessRegistrationDetailsName, (businessType: Option[String]) => placeOfBusinessName),
     (placeOfBusinessName, (businessType: Option[String]) => businessContactsName),
-    (businessContactsName, (businessType: Option[String]) => businessType match {
+    (businessContactsName, {
       case Some("LTD_GRP") | Some("LLP_GRP") => groupMembersName
       case Some("Partnership") | Some("LP") | Some("LLP") => partnersName
       case Some(_) => additionalBusinessPremisesName
       case _ => ErrorString
     }),
     (partnersName, (businessType: Option[String]) => additionalBusinessPremisesName),
-    (additionalBusinessPremisesName, (businessType: Option[String]) => businessType match {
+    (additionalBusinessPremisesName, {
       case Some("LTD") | Some("LTD_GRP") => businessDirectorsName
       case Some(_) => tradingActivityName
       case _ => ErrorString
     }),
-    (groupMembersName, (businessType: Option[String]) => businessType match {
+    (groupMembersName, {
       case Some("LTD_GRP") => additionalBusinessPremisesName
       case Some(_) => partnersName
       case _ => ErrorString
@@ -161,6 +170,4 @@ trait SaveAndRoutable extends AwrsController {
           case false => Redirect(goToSection(nextSection, isNewRecord))
         }
     }
-
-
 }

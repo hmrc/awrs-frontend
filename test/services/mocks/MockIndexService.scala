@@ -16,7 +16,7 @@
 
 package services.mocks
 
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import services.IndexService
 import utils.AwrsUnitTestTraits
@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 trait MockIndexService extends AwrsUnitTestTraits {
 
-  val mockIndexService = mock[IndexService]
+  val mockIndexService: IndexService = mock[IndexService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -38,9 +38,9 @@ trait MockIndexService extends AwrsUnitTestTraits {
   protected final def setupMockIndexService(showOneViewLink: Boolean = defaultTrueBoolean,
                                             showContinueButton: Boolean = defaultTrueBoolean,
                                             getStatus: IndexViewModel = defaultindexViewModelComplete): Unit = {
-    when(mockIndexService.showOneViewLink(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(showOneViewLink))
-    when(mockIndexService.showContinueButton(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(showContinueButton)
-    when(mockIndexService.getStatus(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(getStatus)
+    when(mockIndexService.showOneViewLink(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(showOneViewLink))
+    when(mockIndexService.showContinueButton(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(showContinueButton)
+    when(mockIndexService.getStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(getStatus)
   }
 }
 

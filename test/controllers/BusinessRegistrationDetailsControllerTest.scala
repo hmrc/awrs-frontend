@@ -24,14 +24,13 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{Save4LaterService, ServicesUnitTestFixture}
+import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, MatchingUtil, TestUtil}
 import utils.TestConstants._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 import scala.concurrent.Future
 
@@ -40,20 +39,15 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
 
   val mockMatchingUtil: MatchingUtil = mock[MatchingUtil]
 
-  def testRequest(businessRegistrationDetails: BusinessRegistrationDetails, entityType: String) =
+  def testRequest(businessRegistrationDetails: BusinessRegistrationDetails, entityType: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegistrationDetails)
 
-  object TestBusinessRegistrationDetailsController extends BusinessRegistrationDetailsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val matchingUtil = mockMatchingUtil
+  val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
+    new BusinessRegistrationDetailsController(mockMCC, mockMatchingUtil, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   "BusinessRegistrationDetailsController" must {
-
-    "use the correct AwrsService" in {
-      BusinessRegistrationDetailsController.save4LaterService shouldBe Save4LaterService
-    }
 
     "Users who entered from the summary edit view" should {
       "return to the summary view after clicking return" in {
@@ -79,7 +73,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
           returnWithAuthorisedUser(testBusinessRegistrationDetails(doYouHaveUTR = "Yes", utr = testNonMatchingUtr, legalEntity = legalEntity), legalEntity) {
             result =>
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("utr_errorLink").text shouldBe Messages("awrs.generic.error.utr_invalid_match.summary")
+              doc.getElementById("utr_errorLink").text shouldBe Messages("awrs.generic.error.utr_invalid_match")
               doc.getElementById("utr-error-0").text shouldBe Messages("awrs.generic.error.utr_invalid_match")
               verifySave4LaterService(saveBusinessRegistrationDetails = 0)
           }
@@ -89,7 +83,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
           returnWithAuthorisedUser(testBusinessRegistrationDetails(doYouHaveUTR = "Yes", utr = None, legalEntity = legalEntity), legalEntity) {
             result =>
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("utr_errorLink").text shouldBe Messages("awrs.generic.error.utr_empty.summary")
+              doc.getElementById("utr_errorLink").text shouldBe Messages("awrs.generic.error.utr_empty")
               doc.getElementById("utr-error-0").text shouldBe Messages("awrs.generic.error.utr_empty")
               verifySave4LaterService(saveBusinessRegistrationDetails = 0)
           }
@@ -101,9 +95,10 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessRegistrationDetails = businessRegistrationDetails
       )
-      when(mockMatchingUtil.isValidMatchedGroupUtr(Matchers.eq(testNonMatchingUtr))(Matchers.any(), Matchers.any())).thenReturn(false)
-      when(mockMatchingUtil.isValidMatchedGroupUtr(Matchers.eq(testUtr))(Matchers.any(), Matchers.any())).thenReturn(true)
-      val result = TestBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
+      setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+      when(mockMatchingUtil.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(false)
+      when(mockMatchingUtil.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      val result = testBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
       test(result)
     }
 

@@ -16,10 +16,8 @@
 
 package services.apis.mocks
 
-import connectors.AWRSConnector
 import connectors.mock.MockAWRSConnector
 import models.SubscriptionTypeFrontEnd
-import services.Save4LaterService
 import services.apis.AwrsAPI5
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
@@ -29,13 +27,10 @@ trait MockAwrsAPI5 extends AwrsUnitTestTraits
   with MockAWRSConnector
   with MockSave4LaterService {
 
-  object TestAPI5 extends AwrsAPI5 {
-    override val awrsConnector: AWRSConnector = mockAWRSConnector
-    override val save4LaterService: Save4LaterService = TestSave4LaterService
-  }
+  val testAPI5: AwrsAPI5 = new AwrsAPI5(mockAWRSConnector, testSave4LaterService)
 
   def setupMockAwrsAPI5(apiSave4later: Option[SubscriptionTypeFrontEnd],
-                        connector: MockConfiguration[SubscriptionTypeFrontEnd] = DoNotConfigure) = {
+                        connector: MockConfiguration[SubscriptionTypeFrontEnd] = DoNotConfigure): Unit = {
     connector match {
       case Configure(subscriptionTypeFrontEnd) => setupMockAWRSConnectorWithOnly(lookupAWRSData = SubscriptionTypeFrontEnd.formats.writes(subscriptionTypeFrontEnd))
       case _ =>
@@ -43,8 +38,4 @@ trait MockAwrsAPI5 extends AwrsUnitTestTraits
     setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = apiSave4later)
     setupMockSave4LaterServiceOnlySaveFunctions()
   }
-}
-
-object MockAwrsAPI5 extends MockAwrsAPI5 {
-
 }

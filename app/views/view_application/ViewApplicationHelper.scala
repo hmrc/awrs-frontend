@@ -24,7 +24,9 @@ import services.DataCacheKeys._
 import utils.CacheUtil
 import views.view_application.helpers.SubViewTemplateHelper._
 import views.view_application.helpers.ViewApplicationType
+
 import scala.language.implicitConversions
+import scala.util.matching.Regex
 import scala.xml.Elem
 
 object ViewApplicationHelper {
@@ -48,9 +50,8 @@ object ViewApplicationHelper {
     // written here.
     // the x symbol function is defined for the cases where the desired concatation needs to be led by a string
     def `x`(anotherSomeStr: Option[String]): Option[String] = anotherSomeStr match {
-      case None => str
-      case _ =>
-        Some(str + anotherSomeStr.fold("")(x => x))
+      case None => Some(str)
+      case _    => Some(str + anotherSomeStr.fold("")(x => x))
     }
   }
 
@@ -65,8 +66,6 @@ object ViewApplicationHelper {
           case _ => 0
         }))
 
-  implicit def someConversion[A](any: A): Option[A] = Some(any)
-
   implicit def intConversionToString(int: Int): Option[String] = Some(int.toString)
 
   implicit def htmlToString(html: Html): String = html.toString()
@@ -79,10 +78,11 @@ object ViewApplicationHelper {
 
   def link(href: Option[String], message: String, classAttr: String, idAttr: Option[String] = None, visuallyHidden: String = ""): String = {
     "<a " + {
-      idAttr match {
+      val ida = idAttr match {
         case Some(id) => "id=\"" + id + "\""
         case _ => ""
       }
+      ida
     } + " class=\"" + classAttr + "\" href=\"" + href.get + "\">" + message + {
       visuallyHidden match {
         case "" => ""
@@ -91,14 +91,14 @@ object ViewApplicationHelper {
     } + "</a>"
   }
 
-  def edit_link(editUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType) = {
+  def edit_link(editUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
     if (isSectionEdit) {
       link(
         Some(editUrl(id)),
-        Messages("awrs.view_application.edit"),
+        "Edit",
         classAttr = "edit-link",
-        idAttr = "edit-" + id,
+        idAttr = Some("edit-" + id),
         visuallyHidden = visuallyHidden
       )
     } else {
@@ -106,14 +106,14 @@ object ViewApplicationHelper {
     }
   }
 
-  def edit_link_s(editUrl: String, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType) = {
+  def edit_link_s(editUrl: String, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
     if (isRecordEdit) {
       link(
         Some(editUrl),
-        Messages("awrs.view_application.edit"),
+        "Edit",
         classAttr = "edit-link",
-        idAttr = "edit-link",
+        idAttr = Some("edit-link"),
         visuallyHidden = visuallyHidden
       )
     } else {
@@ -121,14 +121,14 @@ object ViewApplicationHelper {
     }
   }
 
-  def delete_link(deleteUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType) = {
+  def delete_link(deleteUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
     if (isSectionEdit) {
       link(
         Some(deleteUrl(id)),
-        Messages("awrs.view_application.delete"),
+        "Delete",
         classAttr = "edit-link",
-        idAttr = "delete-" + id,
+        idAttr = Some("delete-" + id),
         visuallyHidden = visuallyHidden
       )
     } else {
@@ -137,32 +137,32 @@ object ViewApplicationHelper {
   }
 
   implicit class CaseInsensitiveRegex(sc: StringContext) {
-    def ci = ( "(?i)" + sc.parts.mkString ).r
+    def ci: Regex = ( "(?i)" + sc.parts.mkString ).r
   }
 
-  def getSectionDisplayName(sectionName: String, legalEntity: String): Option[String] = {
+  def getSectionDisplayName(sectionName: String, legalEntity: String): String = {
     (sectionName, legalEntity) match {
-      case (`businessDetailsName`, "Partnership" | "LP" | "LLP") => Messages("awrs.view_application.partnership_details_text")
-      case (`businessDetailsName`, "LLP_GRP" | "LTD_GRP") => Messages("awrs.view_application.group_business_details_text")
-      case (`businessDetailsName`, _) => Messages("awrs.view_application.business_details_text")
-      case (`businessRegistrationDetailsName`, "Partnership" | "LP" | "LLP") => Messages("awrs.view_application.partnership_registration_details_text")
-      case (`businessRegistrationDetailsName`, "LLP_GRP" | "LTD_GRP") => Messages("awrs.view_application.group_business_registration_details_text")
-      case (`businessRegistrationDetailsName`, _) => Messages("awrs.view_application.business_registration_details_text")
-      case (`placeOfBusinessName`, "Partnership" | "LP" | "LLP") => Messages("awrs.view_application.partnership_place_of_business_text")
-      case (`placeOfBusinessName`, "LLP_GRP" | "LTD_GRP") => Messages("awrs.view_application.group_place_of_business_text")
-      case (`placeOfBusinessName`, _) => Messages("awrs.view_application.place_of_business_text")
-      case (`businessContactsName`, "Partnership" | "LP" | "LLP") => Messages("awrs.view_application.partnership_contacts_text")
-      case (`businessContactsName`, "LLP_GRP" | "LTD_GRP") => Messages("awrs.view_application.group_business_contacts_text")
-      case (`businessContactsName`, _) => Messages("awrs.view_application.business_contacts_text")
-      case (`partnersName`, _) => Messages("awrs.view_application.business_partners_text")
-      case (`groupMembersName`, _) => Messages("awrs.view_application.group_member_details_text")
-      case (`additionalBusinessPremisesName`, _) => Messages("awrs.view_application.additional_premises_text")
-      case (`businessDirectorsName`, _) => Messages("awrs.view_application.business_directors.index_text")
-      case (`tradingActivityName`, _) => Messages("awrs.view_application.trading_activity_text")
-      case (`productsName`, _) => Messages("awrs.view_application.products_text")
-      case (`suppliersName`, _) => Messages("awrs.view_application.suppliers_text")
-      case (`applicationDeclarationName`, _) => Messages("awrs.view_application.application_declaration_text")
-      case _ => None
+      case (`businessDetailsName`, "Partnership" | "LP" | "LLP") => "awrs.view_application.partnership_details_text"
+      case (`businessDetailsName`, "LLP_GRP" | "LTD_GRP") => "awrs.view_application.group_business_details_text"
+      case (`businessDetailsName`, _) => "awrs.view_application.business_details_text"
+      case (`businessRegistrationDetailsName`, "Partnership" | "LP" | "LLP") => "awrs.view_application.partnership_registration_details_text"
+      case (`businessRegistrationDetailsName`, "LLP_GRP" | "LTD_GRP") => "awrs.view_application.group_business_registration_details_text"
+      case (`businessRegistrationDetailsName`, _) => "awrs.view_application.business_registration_details_text"
+      case (`placeOfBusinessName`, "Partnership" | "LP" | "LLP") => "awrs.view_application.partnership_place_of_business_text"
+      case (`placeOfBusinessName`, "LLP_GRP" | "LTD_GRP") => "awrs.view_application.group_place_of_business_text"
+      case (`placeOfBusinessName`, _) => "awrs.view_application.place_of_business_text"
+      case (`businessContactsName`, "Partnership" | "LP" | "LLP") => "awrs.view_application.partnership_contacts_text"
+      case (`businessContactsName`, "LLP_GRP" | "LTD_GRP") => "awrs.view_application.group_business_contacts_text"
+      case (`businessContactsName`, _) => "awrs.view_application.business_contacts_text"
+      case (`partnersName`, _) => "awrs.view_application.business_partners_text"
+      case (`groupMembersName`, _) => "awrs.view_application.group_member_details_text"
+      case (`additionalBusinessPremisesName`, _) => "awrs.view_application.additional_premises_text"
+      case (`businessDirectorsName`, _) => "awrs.view_application.business_directors.index_text"
+      case (`tradingActivityName`, _) => "awrs.view_application.trading_activity_text"
+      case (`productsName`, _) => "awrs.view_application.products_text"
+      case (`suppliersName`, _) => "awrs.view_application.suppliers_text"
+      case (`applicationDeclarationName`, _) => "awrs.view_application.application_declaration_text"
+      case _ => ""
     }
   }
 

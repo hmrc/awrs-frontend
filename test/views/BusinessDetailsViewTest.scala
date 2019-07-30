@@ -27,28 +27,36 @@ import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.{JourneyConstants, ServicesUnitTestFixture}
+import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.http.SessionKeys
 import utils.TestUtil._
+import org.mockito.Mockito._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.SessionKeys
 
 class BusinessDetailsViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean) =
+  def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
 
-  object TestBusinessDetailsController extends BusinessDetailsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
+  val testBusinessDetailsController: BusinessDetailsController =
+    new BusinessDetailsController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+      override val signInUrl = "/sign-in"
+    }
+
+
+  override def beforeEach: Unit = {
+    reset(mockAccountUtils)
+
+    super.beforeEach()
   }
 
   "BusinessDetailsController" must {
@@ -61,7 +69,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
           getWithAuthorisedUser(isNewApplication = false)(testRequest(testExtendedBusinessDetails(), "SOP", false)) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("notNewBusiness").text shouldBe Messages("awrs.business_details.new_AWBusiness_No")
+              document.select("#notNewBusiness").text shouldBe Messages("awrs.business_details.new_AWBusiness_No")
           }
         }
 
@@ -164,7 +172,7 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
       }
     }
 
-    def getWithAuthorisedUser(isNewApplication: Boolean = true, isLinearjourney: Boolean = true, businessType: String = "SOP", hasAwrs: Boolean = false)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    def getWithAuthorisedUser(isNewApplication: Boolean = true, isLinearjourney: Boolean = true, businessType: String = "SOP", hasAwrs: Boolean = false)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
       setUser(hasAwrs = hasAwrs)
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
@@ -177,11 +185,17 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
       } else {
         setupMockSave4LaterServiceWithOnly(fetchBusinessDetails = None)
       }
-      val result = TestBusinessDetailsController.showBusinessDetails(isLinearjourney).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
+      if (hasAwrs) {
+        setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+      } else {
+        setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+      }
+
+      val result = testBusinessDetailsController.showBusinessDetails(isLinearjourney).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
       test(result)
     }
 
-    def getWithAuthorisedUserDataWithMissingStartDate(status: FormBundleStatus, haveDate: Boolean)(test: Future[Result] => Any) {
+    def getWithAuthorisedUserDataWithMissingStartDate(status: FormBundleStatus, haveDate: Boolean)(test: Future[Result] => Any): Unit = {
       val bd = testBusinessDetails(newBusiness = Some(NewAWBusiness(newAWBusiness = BooleanRadioEnum.YesString, proposedStartDate =
         haveDate match {
           case true => Some(TupleDate("01", "01", "2017"))
@@ -205,8 +219,9 @@ class BusinessDetailsViewTest extends AwrsUnitTestTraits
           AwrsSessionKeys.sessionStatusType -> status.name
         )
       }
+      setAuthMocks()
 
-      val result = TestBusinessDetailsController.showBusinessDetails(true).apply(buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
+      val result = testBusinessDetailsController.showBusinessDetails(true).apply(buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
       test(result)
     }
   }

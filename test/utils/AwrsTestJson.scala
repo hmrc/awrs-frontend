@@ -16,28 +16,29 @@
 
 package utils
 
+import play.api.libs.json.JsValue
 import utils.JsonUtil._
 
 object AwrsTestJson extends AwrsTestJson
 
 trait AwrsTestJson extends AwrsPathConstants {
 
-  lazy val api4SOPJson = loadAndParseJsonWithDummyData(api4SOP)
-  lazy val api4PartnerJson = loadAndParseJsonWithDummyData(api4Partner)
+  lazy val api4SOPJson: JsValue = loadAndParseJsonWithDummyData(api4SOP)
+  lazy val api4PartnerJson: JsValue = loadAndParseJsonWithDummyData(api4Partner)
 
-  lazy val api5LTDJson = loadAndParseJsonWithDummyData(api5LTD)
-  lazy val api5SoleTraderJson = loadAndParseJsonWithDummyData(api5SoleTrader)
-  lazy val api5PartnerJson = loadAndParseJsonWithDummyData(api5Partner)
-  lazy val api5LLPJson = loadAndParseJsonWithDummyData(api5LLP)
-  lazy val api5LLPGRPJson = loadAndParseJsonWithDummyData(api5LLPGRP)
-  lazy val api5LTDGRPJson = loadAndParseJsonWithDummyData(api5LTDGRP)
+  lazy val api5LTDJson: JsValue = loadAndParseJsonWithDummyData(api5LTD)
+  lazy val api5SoleTraderJson: JsValue = loadAndParseJsonWithDummyData(api5SoleTrader)
+  lazy val api5PartnerJson: JsValue = loadAndParseJsonWithDummyData(api5Partner)
+  lazy val api5LLPJson: JsValue = loadAndParseJsonWithDummyData(api5LLP)
+  lazy val api5LLPGRPJson: JsValue = loadAndParseJsonWithDummyData(api5LLPGRP)
+  lazy val api5LTDGRPJson: JsValue = loadAndParseJsonWithDummyData(api5LTDGRP)
 
-  lazy val api6LTDJson = loadAndParseJsonWithDummyData(api6LTD)
-  lazy val api3RequestJson = loadAndParseJsonWithDummyData(api3Json)
+  lazy val api6LTDJson: JsValue = loadAndParseJsonWithDummyData(api6LTD)
+  lazy val api3RequestJson: JsValue = loadAndParseJsonWithDummyData(api3Json)
 
-  lazy val auditAddressJson = loadAndParseJsonWithDummyData(auditAddress)
+  lazy val auditAddressJson: JsValue = loadAndParseJsonWithDummyData(auditAddress)
 
-  lazy val matchSuccessResponseJson = loadAndParseJsonWithDummyData(matchSuccessResponse)
-  lazy val matchFailureResponseJson = loadAndParseJsonWithDummyData(matchFailureResponse)
+  lazy val matchSuccessResponseJson: JsValue = loadAndParseJsonWithDummyData(matchSuccessResponse)
+  lazy val matchFailureResponseJson: JsValue = loadAndParseJsonWithDummyData(matchFailureResponse)
 
 }

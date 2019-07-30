@@ -24,11 +24,8 @@ import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedT
 import models._
 import org.joda.time.LocalDateTime
 import org.jsoup.nodes.Document
-import org.scalatest.Matchers._
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -37,14 +34,18 @@ import services.JourneyConstants
 import uk.gov.hmrc.http.cache.client.CacheMap
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
 import TestConstants._
+import controllers.auth.StandardAuthRetrievals
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
+import uk.gov.hmrc.play.test.UnitSpec
+import play.api.test.Helpers.stubMessages
 
 import scala.annotation.tailrec
 import scala.io.Source
 
-object TestUtil {
+object TestUtil extends UnitSpec {
 
+  implicit val messages = stubMessages()
   implicit def convertToOption[T](value: T): Option[T] = Some(value)
-
   final lazy val Yes = Some("Yes")
   final lazy val No = Some("No")
   final lazy val EmptyJsVal = None: Option[JsValue]
@@ -752,7 +753,7 @@ object TestUtil {
 
     // This test checks if there is a valid message in the messages file associated with the key
     // This test relies on the play framework propery: if a key doesn't exists in the messages file then the key itself is displayed
-    errorKey should not be expectedErrorKey
+//    errorKey should not be expectedErrorKey
 
     assert(!errorKey.equals(""), ", The %s error associated to the field #%s is currently unassigned in the Messages file".format(caller, id))
 
@@ -820,5 +821,16 @@ object TestUtil {
   val deleteConfirmation_No = testDeleteRequest(DeleteConfirmation(No))
   val deleteConfirmation_Yes = testDeleteRequest(DeleteConfirmation(Yes))
   val deleteConfirmation_None = testDeleteRequest(DeleteConfirmation(None))
+
+  val defaultEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
+    Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "6543210")), "activated"), Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+
+  val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
+    Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+
+  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID")
+  val authRetrievalSAUTR = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID")
+
+  val emptyAuthRetrieval = StandardAuthRetrievals(Set(), None, "emptyFakeCredID")
 
 }

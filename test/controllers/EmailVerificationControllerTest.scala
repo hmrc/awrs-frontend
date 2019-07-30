@@ -17,14 +17,12 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Result
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers._
 import services.EmailVerificationService
 import services.mocks.MockSave4LaterService
@@ -38,49 +36,50 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  val mockEmailVerificationService = mock[EmailVerificationService]
+  val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
-  object TestEmailVerificationControllerEmailEnabled extends EmailVerificationController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val emailVerificationService = mockEmailVerificationService
-    override val isEmailVerificationEnabled = true
+  implicit val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val realMessages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
+
+  val testEmailVerificationControllerEmailEnabled: EmailVerificationController =
+    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, testSave4LaterService, mockAuthConnector, mockAppConfig) {
+      override lazy val signInUrl: String = applicationConfig.signIn
+      override lazy val isEmailVerificationEnabled = true
   }
 
-  object TestEmailVerificationControllerEmailNotEnabled extends EmailVerificationController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val emailVerificationService = mockEmailVerificationService
-    override val isEmailVerificationEnabled = false
+  val testEmailVerificationControllerEmailNotEnabled: EmailVerificationController =
+    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, testSave4LaterService, mockAuthConnector, mockAppConfig) {
+      override lazy val isEmailVerificationEnabled = false
+      override lazy val signInUrl: String = applicationConfig.signIn
   }
 
   "Page load for Authorised users" should {
 
     "redirect to the declaration page if the email verification is turned off" in {
-      checkEmailVerification(testController = TestEmailVerificationControllerEmailNotEnabled) {
+      checkEmailVerification(testController = testEmailVerificationControllerEmailNotEnabled) {
         result =>
           redirectLocation(result).get shouldBe controllers.routes.ApplicationDeclarationController.showApplicationDeclaration.url
       }
     }
 
     "redirect to the declaration page if the email has been verified" in {
-      checkEmailVerification(testController = TestEmailVerificationControllerEmailEnabled, isVerified = true) {
+      checkEmailVerification(testController = testEmailVerificationControllerEmailEnabled, isVerified = true) {
         result =>
           redirectLocation(result).get shouldBe controllers.routes.ApplicationDeclarationController.showApplicationDeclaration.url
       }
     }
 
     "display the email verification reminder page if the email has not yet been verified" in {
-      checkEmailVerification(testController = TestEmailVerificationControllerEmailEnabled, isVerified = false) {
+      checkEmailVerification(testController = testEmailVerificationControllerEmailEnabled, isVerified = false) {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("email-verification-error-header").text shouldBe Messages("awrs.email_verification_error.heading")
-          document.getElementById("email-verification-error-lede").text shouldBe Messages("awrs.email_verification_error.lede")
-          document.getElementById("email-verification-error-description-1").text shouldBe Messages("awrs.email_verification_error.info_1", testEmail + ".")
-          document.getElementById("email-verification-error-description-2").text shouldBe Messages("awrs.email_verification_error.info_2")
-          document.getElementById("email-verification-error-description-3").text should include(Messages("awrs.email_verification_error.contacts_link"))
-          document.getElementById("email-verification-error-description-3").text should include(Messages("awrs.email_verification_error.resend_link"))
-          document.getElementById("return-to-summary").text shouldBe Messages("awrs.generic.return_to_app_summary")
+          document.getElementById("email-verification-error-header").text shouldBe realMessages("awrs.email_verification_error.heading")
+          document.getElementById("email-verification-error-lede").text shouldBe realMessages("awrs.email_verification_error.lede")
+          document.getElementById("email-verification-error-description-1").text shouldBe realMessages("awrs.email_verification_error.info_1", testEmail + ".")
+          document.getElementById("email-verification-error-description-2").text shouldBe realMessages("awrs.email_verification_error.info_2")
+          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.contacts_link"))
+          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.resend_link"))
+          document.getElementById("return-to-summary").text shouldBe realMessages("awrs.generic.return_to_app_summary")
       }
     }
 
@@ -88,14 +87,14 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       resendEmail(isVerified = true) {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("email-verification-error-header").text shouldBe Messages("awrs.email_verification_error.heading")
-          document.getElementById("email-verification-error-lede").text shouldBe Messages("awrs.email_verification_error.lede")
-          document.getElementById("email-verification-error-description-1").text shouldBe Messages("awrs.email_verification_error.info_1", testEmail + ".")
-          document.getElementById("email-verification-error-description-2").text shouldBe Messages("awrs.email_verification_error.info_2")
-          document.getElementById("email-verification-error-description-3").text should include(Messages("awrs.email_verification_error.contacts_link"))
-          document.getElementById("email-verification-error-description-3").text should include(Messages("awrs.email_verification_error.resend_link"))
-          document.getElementById("email-verification-error-resent").text should include(Messages("awrs.email_verification_error.resent", testEmail + "."))
-          document.getElementById("continue").text shouldBe Messages("awrs.confirmation.button")
+          document.getElementById("email-verification-error-header").text shouldBe realMessages("awrs.email_verification_error.heading")
+          document.getElementById("email-verification-error-lede").text shouldBe realMessages("awrs.email_verification_error.lede")
+          document.getElementById("email-verification-error-description-1").text shouldBe realMessages("awrs.email_verification_error.info_1", testEmail + ".")
+          document.getElementById("email-verification-error-description-2").text shouldBe realMessages("awrs.email_verification_error.info_2")
+          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.contacts_link"))
+          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.resend_link"))
+          document.getElementById("email-verification-error-resent").text should include(realMessages("awrs.email_verification_error.resent", testEmail + "."))
+          document.getElementById("continue").text shouldBe realMessages("awrs.confirmation.button")
       }
     }
 
@@ -103,8 +102,8 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       resendEmail(isVerified = false) {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("application-error-header").text shouldBe Messages("awrs.generic.error.title")
-          document.getElementById("application-error-description").text shouldBe Messages("awrs.generic.error.status")
+          document.getElementById("application-error-header").text shouldBe realMessages("awrs.generic.error.title")
+          document.getElementById("application-error-description").text shouldBe realMessages("awrs.generic.error.status")
       }
     }
 
@@ -112,9 +111,9 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       showSuccess {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("email-verification-success-header").text shouldBe Messages("awrs.email_verification_success.heading")
-          document.getElementById("email-verification-success-lede").text shouldBe Messages("awrs.email_verification_success.lede", ".")
-          document.getElementById("return-to-summary").text shouldBe Messages("awrs.generic.return_to_app_summary")
+          document.getElementById("email-verification-success-header").text shouldBe realMessages("awrs.email_verification_success.heading")
+          document.getElementById("email-verification-success-lede").text shouldBe realMessages("awrs.email_verification_success.lede", ".")
+          document.getElementById("return-to-summary").text shouldBe realMessages("awrs.generic.return_to_app_summary")
       }
     }
   }
@@ -124,7 +123,8 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
-    when(mockEmailVerificationService.isEmailVerified(Matchers.eq(testBusinessContactsDefault()))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(isVerified))
+    setAuthMocks()
+    when(mockEmailVerificationService.isEmailVerified(ArgumentMatchers.eq(Some(testBusinessContactsDefault())))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(isVerified))
     val request = SessionBuilder.buildRequestWithSession(userId)
     val result = testController.checkEmailVerification.apply(request)
     test(result)
@@ -135,15 +135,16 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
-    when(mockEmailVerificationService.sendVerificationEmail(Matchers.eq(testEmail))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(isVerified))
+    setAuthMocks()
+    when(mockEmailVerificationService.sendVerificationEmail(ArgumentMatchers.eq(testEmail))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(isVerified))
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = TestEmailVerificationControllerEmailEnabled.resend().apply(request)
+    val result = testEmailVerificationControllerEmailEnabled.resend().apply(request)
     test(result)
   }
 
   def showSuccess(test: Future[Result] => Any) {
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = TestEmailVerificationControllerEmailEnabled.showSuccess().apply(request)
+    val result = testEmailVerificationControllerEmailEnabled.showSuccess().apply(request)
     test(result)
   }
 

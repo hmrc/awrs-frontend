@@ -29,8 +29,8 @@
 @director.doYouHaveUTR match {
     case Some(answer) => {
         @table_row(
-            legend.get,
-            answer
+            Some(legend).get,
+            Some(answer)
         )
     }
     case _ => {}
@@ -40,7 +40,7 @@
     case Some(utr) => {
         @table_row(
             Messages("awrs.generic.UTR_number"),
-            utr
+            Some(utr)
         )
     }
     case _ => {}
@@ -52,7 +52,7 @@
     case Some(answer) => {
         @table_row(
             Messages("awrs.generic.do_they_have_NINO"),
-            answer
+            Some(answer)
         )
     }
     case _ => {}
@@ -61,7 +61,7 @@
     case Some(nino) => {
         @table_row(
             Messages("awrs.generic.NINO"),
-            nino
+            Some(nino)
         )
     }
     case _ => {}
@@ -70,7 +70,7 @@
     case Some(passportNumber) => {
         @table_row(
             Messages("awrs.generic.passport_no"),
-            passportNumber
+            Some(passportNumber)
         )
     }
     case _ => {}
@@ -79,7 +79,7 @@
     case Some(nationalID) => {
         @table_row(
             Messages("awrs.generic.national_id_no"),
-            nationalID
+            Some(nationalID)
         )
     }
     case _ => {}
@@ -90,7 +90,7 @@
     case Some(answer) => {
         @table_row(
             Messages("awrs.generic.do_they_have_company_reg"),
-            answer
+            Some(answer)
         )
     }
     case _ => {}
@@ -100,7 +100,7 @@
     case Some(data) => {
         @table_row(
             Messages("awrs.generic.company_reg"),
-            data
+            Some(data)
         )
     }
     case _ => {}
@@ -111,7 +111,7 @@
     case Some(answer) => {
         @table_row(
             Messages("awrs.generic.do_they_have_VAT"),
-            answer
+            Some(answer)
         )
     }
     case _ => {}
@@ -121,7 +121,7 @@
     case Some(vrn) => {
         @table_row(
             Messages("awrs.generic.VAT_registration_number"),
-            vrn
+            Some(vrn)
         )
     }
     case _ => {}

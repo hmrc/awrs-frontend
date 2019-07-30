@@ -25,14 +25,15 @@
 @import utils.AwrsFieldConfig
 @import forms.AWRSEnums._
 
-@(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+@import config.ApplicationConfig
+@(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
     Some(partnerForm)
 }
 
 @isNinoPresent = @{
-    if(partnerId == 1) Messages("awrs.business-partner.doYouHaveNino") else Messages("awrs.business-partner.doTheyHaveNino")
+    if(partnerId == 1) messages("awrs.business-partner.doYouHaveNino") else messages("awrs.business-partner.doTheyHaveNino")
 }
 @businessType = @{
     request.getBusinessType.fold("")(x => x)
@@ -44,23 +45,25 @@
 }
 
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.BusinessPartnersController.saveAndReturn(partnerId, isNewRecord)
-        case false => controllers.routes.BusinessPartnersController.saveAndContinue(partnerId, isNewRecord)
+    if(isEditMode) {
+        controllers.routes.BusinessPartnersController.saveAndReturn(partnerId, isNewRecord)
+    } else {
+        controllers.routes.BusinessPartnersController.saveAndContinue(partnerId, isNewRecord)
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @h1text = @{
     partnerId match {
-        case 1 => Messages("awrs.business-partner.heading_1", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord))
-        case _ => Messages("awrs.business-partner.heading_2_or_more", headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord), ordinalIntSuffix(partnerId - 1))
+        case 1 => messages("awrs.business-partner.heading_1", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)))
+        case _ => messages("awrs.business-partner.heading_2_or_more", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalIntSuffix(partnerId - 1))
     }
 }
 
@@ -73,7 +76,7 @@
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
@@ -85,24 +88,24 @@
                 <h1 id="business_partner-title" class="heading-xlarge">@h1text</h1>
                 @awrsProgressHelper(businessType, partnersName)
             </header>
-            <p id="business_partners-subtext" class="lede">@Messages("awrs.business-partner.topText")</p>
+            <p id="business_partners-subtext" class="lede">@messages("awrs.business-partner.topText")</p>
             @form(action = actionRoute) {
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         partnerForm("entityType"),
-                        Seq(IndividualString -> Messages("awrs.business-partner.entityType_individual"),
-                            CorporateBodyString -> Messages("awrs.business-partner.entityType_corporate_body"),
-                            SoleTraderString -> Messages("awrs.business-partner.entityType_sole_trader")
+                        Seq(IndividualString -> messages("awrs.business-partner.entityType_individual"),
+                            CorporateBodyString -> messages("awrs.business-partner.entityType_corporate_body"),
+                            SoleTraderString -> messages("awrs.business-partner.entityType_sole_trader")
                         ),
-                        legend = Messages("awrs.business-partner.partner_role"),
+                        legend = messages("awrs.business-partner.partner_role"),
                         legendId = "partnerMember-legend",
                         fieldSetClass = "form-group",
                         fieldSetAttributes = "id=entityType_field",
-                        formHint = Messages("awrs.business-partner.role_hint_text"),
+                        formHint = messages("awrs.business-partner.role_hint_text"),
                         formHintId = "partner_role-hint",
-                        fieldSetQuestion = Messages("awrs.business-partner.role_question_text"),
+                        fieldSetQuestion = messages("awrs.business-partner.role_question_text"),
                         fieldSetQuestionId = "entity-HelpLink",
-                        fieldSetQuestionAnswer = Html(Messages("awrs.business-partner.role_help_text", "<br><br>")),
+                        fieldSetQuestionAnswer = Html(messages("awrs.business-partner.role_help_text", "<br><br>")),
                         fieldSetQuestionWrapperClass = "panel-indent"
                     )
                 )
@@ -111,18 +114,18 @@
                         @awrsInputTypeText(
                             InputTypeTextParams(
                                 partnerForm("firstName"),
-                                maxLength = AwrsFieldConfig.firstNameLen.toString,
+                                maxLength = applicationConfig.firstNameLen.toString,
                                 required = true,
-                                label = Messages("awrs.generic.first_name"),
+                                label = messages("awrs.generic.first_name"),
                                 labelHighlight = true
                             )
                         )
                         @awrsInputTypeText(
                             InputTypeTextParams(
                                 partnerForm("lastName"),
-                                maxLength = AwrsFieldConfig.lastNameLen.toString,
+                                maxLength = applicationConfig.lastNameLen.toString,
                                 required = true,
-                                label = Messages("awrs.generic.surname"),
+                                label = messages("awrs.generic.surname"),
                                 labelHighlight = true
                             )
                         )
@@ -133,8 +136,8 @@
                             InputTypeTextParams(
                                 partnerForm("companyNames.businessName"),
                                 inputId = "companyNames.businessName",
-                                label = Messages("awrs.generic.business_name"),
-                                maxLength = AwrsFieldConfig.companyNameLen.toString,
+                                label = messages("awrs.generic.business_name"),
+                                maxLength = applicationConfig.companyNameLen.toString,
                                 required = true,
                                 labelHighlight = true
                             )
@@ -145,11 +148,11 @@
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     partnerForm("companyNames.doYouHaveTradingName"),
-                                    Seq("Yes" -> Messages("awrs.generic.yes"),
-                                        "No" -> Messages("awrs.generic.no")),
+                                    Seq("Yes" -> messages("awrs.generic.yes"),
+                                        "No" -> messages("awrs.generic.no")),
                                     fieldSetClass = "inline",
                                     fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
-                                    legend = Messages("awrs.generic.do_they_have_trading_name"),
+                                    legend = messages("awrs.generic.do_they_have_trading_name"),
                                     legendId = "companyNames.doYouHaveTradingName-legend"
                                 )
                             )
@@ -158,8 +161,8 @@
                                 InputTypeTextParams(
                                     partnerForm("companyNames.tradingName"),
                                     inputId = "companyNames.tradingName",
-                                    label = Messages("awrs.generic.trading_name"),
-                                    maxLength = AwrsFieldConfig.tradingNameLen.toString,
+                                    label = messages("awrs.generic.trading_name"),
+                                    maxLength = applicationConfig.tradingNameLen.toString,
                                     required = true,
                                     labelHighlight = true,
                                     wrapperClass = "panel-indent"
@@ -224,9 +227,9 @@
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     partnerForm("otherPartners"),
-                                    Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                                        Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                                    legend = Messages("awrs.business-partner.add_more_partners"),
+                                    Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                                        messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                                    legend = messages("awrs.business-partner.add_more_partners"),
                                     legendId = "otherPartners",
                                     fieldSetAttributes = "id=otherPartners_field",
                                     fieldSetClass = "inline"

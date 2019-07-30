@@ -18,18 +18,18 @@ package forms.validation.util
 
 import forms.validation.util.ConstraintUtil.{FieldFormatConstraintParameter, FieldIsEmptyConstraintParameter, FieldMaxLengthConstraintParameter}
 import forms.validation.util.ErrorMessageFactory._
-import play.api.data.validation.Valid
+import play.api.data.validation.{Invalid, Valid}
 
 
 object ErrorMessagesUtilAPI {
 
-  val simpleErrorMessage = (fieldId: String, msgId: String) =>
+  val simpleErrorMessage: (String, String) => Invalid = (fieldId: String, msgId: String) =>
     createErrorMessage(
       TargetFieldIds(fieldId),
       FieldErrorConfig(msgId)
     )
 
-  val simpleCrossFieldErrorMessage = (ids:TargetFieldIds, msgId: String) =>
+  val simpleCrossFieldErrorMessage: (TargetFieldIds, String) => Invalid = (ids:TargetFieldIds, msgId: String) =>
     createErrorMessage(
       ids,
       FieldErrorConfig(msgId)
@@ -42,14 +42,13 @@ object ErrorMessagesUtilAPI {
   def genericInvalidFormatConstraintParameter(validationFunction: (String) => Boolean, fieldId: String, fieldNameInErrorMessage: String, errorMsg: String = "awrs.generic.error.character_invalid"): Seq[FieldFormatConstraintParameter] =
     Seq[FieldFormatConstraintParameter](
       FieldFormatConstraintParameter(
-        (name: String) => validationFunction(name) match {
-          case true =>
-            Valid
-          case false =>
-            createErrorMessage(
-              TargetFieldIds(fieldId),
-              FieldErrorConfig(errorMsg),
-              SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage)))
+        (name: String) => if (validationFunction(name)) {
+          Valid
+        } else {
+          createErrorMessage(
+            TargetFieldIds(fieldId),
+            FieldErrorConfig(errorMsg),
+            SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage)))
         }
       )
     )

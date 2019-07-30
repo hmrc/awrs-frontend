@@ -21,8 +21,8 @@
 @legend = @{
     businessType.map {
         case "SOP" => { Messages("awrs.generic.do_you_have_sa_UTR") }
-        case "Partnership" | "LP" | "LLP" | "LLP_GRP" => { Messages("awrs.generic.do_you_have_partnership_UTR") }
-        case _ => { Messages("awrs.generic.do_you_have_CT_UTR") }
+        case "Partnership" | "LP" | "LLP" | "LLP_GRP" => { messages("awrs.generic.do_you_have_partnership_UTR") }
+        case _ => { messages("awrs.generic.do_you_have_CT_UTR") }
     }
 }
 
@@ -30,7 +30,7 @@
     case Some(answer) => {
         @table_row(
             legend.get,
-            answer
+            Some(answer)
         )
     }
     case _ => {}
@@ -39,12 +39,12 @@
 @someId.get.utr match {
     case Some(utr) => {
         @table_row(
-            (businessType.map {
-                case "SOP" => { Messages("awrs.generic.sa_UTR_number") }
-                case "Partnership" | "LP" | "LLP" | "LLP_GRP" => { Messages("awrs.generic.partnership_UTR_number") }
-                case _ => { Messages("awrs.generic.CT_UTR_number") }
-            }).get,
-            utr
+            businessType.map {
+                case "SOP" => { messages("awrs.generic.sa_UTR_number") }
+                case "Partnership" | "LP" | "LLP" | "LLP_GRP" => { messages("awrs.generic.partnership_UTR_number") }
+                case _ => { messages("awrs.generic.CT_UTR_number") }
+            }.get,
+            Some(utr)
         )
     }
     case _ => {}
@@ -54,8 +54,8 @@
 @someId.get.doYouHaveNino match {
     case Some(answer) => {
         @table_row(
-            Messages("awrs.generic.do_you_have_NINO"),
-            answer
+            messages("awrs.generic.do_you_have_NINO"),
+            Some(answer)
         )
     }
     case _ => {}
@@ -64,8 +64,8 @@
 @someId.get.nino match {
     case Some(nino) => {
         @table_row(
-            Messages("awrs.generic.NINO"),
-            nino
+            messages("awrs.generic.NINO"),
+            Some(nino)
         )
     }
     case _ => {}
@@ -75,8 +75,8 @@
 @someId.get.isBusinessIncorporated match {
     case Some(answer) => {
         @table_row(
-            Messages("awrs.generic.do_you_have_company_reg"),
-            answer
+            messages("awrs.generic.do_you_have_company_reg"),
+            Some(answer)
         )
     }
     case _ => {}
@@ -85,12 +85,12 @@
 @someId.get.companyRegDetails match {
     case Some(data) => {
         @table_row(
-            Messages("awrs.generic.company_reg"),
-            data.companyRegistrationNumber
+            messages("awrs.generic.company_reg"),
+            Some(data.companyRegistrationNumber)
         )
         @table_row(
-            Messages("awrs.generic.date_of_incorporation"),
-            data.dateOfIncorporation.toString("dd MMMM yyyy")
+            messages("awrs.generic.date_of_incorporation"),
+            Some(data.dateOfIncorporation.toString("dd MMMM yyyy"))
         )
     }
     case _ => {}
@@ -100,8 +100,8 @@
 @someId.get.doYouHaveVRN match {
     case Some(answer) => {
         @table_row(
-            Messages("awrs.generic.do_you_have_VAT"),
-            answer
+            messages("awrs.generic.do_you_have_VAT"),
+            Some(answer)
         )
     }
     case _ => {}
@@ -110,8 +110,8 @@
 @someId.get.vrn match {
     case Some(vrn) => {
         @table_row(
-            Messages("awrs.generic.VAT_registration_number"),
-            vrn
+            messages("awrs.generic.VAT_registration_number"),
+            Some(vrn)
         )
     }
     case _ => {}

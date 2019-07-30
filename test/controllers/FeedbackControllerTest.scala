@@ -16,12 +16,8 @@
 
 package controllers
 
-import java.util.UUID
-
-import audit.TestAudit
-import builders.{AuthBuilder, SessionBuilder}
+import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import controllers.auth.Utr._
 import forms.FeedbackForm
 import models.Feedback
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -35,14 +31,10 @@ import scala.concurrent.Future
 class FeedbackControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector {
 
-  val mockAudit = mock[Audit]
+  val mockAudit: Audit = mock[Audit]
+  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
-  object TestFeedbackController extends FeedbackController {
-    override val authConnector = mockAuthConnector
-    override val audit: Audit = new TestAudit
-  }
-
-  def testRequest(feedback: Feedback) =
+  def testRequest(feedback: Feedback): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[Feedback](FakeRequest(), FeedbackForm.feedbackForm.form, feedback)
 
   "Feedback Controller" should {
@@ -56,7 +48,8 @@ class FeedbackControllerTest extends AwrsUnitTestTraits
   }
 
   def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val result = TestFeedbackController.submitFeedback.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testFeedbackController.submitFeedback.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

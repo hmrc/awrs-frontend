@@ -19,24 +19,22 @@ package controllers.auth
 import java.io.{PrintWriter, StringWriter}
 
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor
-import config.ApplicationGlobal
+import config.ApplicationConfig
 import models.FormBundleStatus
 import models.FormBundleStatus.{Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal}
+import play.api.Play
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc._
-import play.twirl.api._
-import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.twirl.api.Content
+import uk.gov.hmrc.auth.core.AuthConnector
 import utils.{AccountUtils, LoggingUtils, SessionUtil}
 
-
-
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
-import scala.concurrent.ExecutionContext.Implicits.global
 
-trait AwrsController extends FrontendController with Actions with LoggingUtils with AccountUtils {
+trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSupport with Results {
 
-  type AsyncUserRequest = (AuthContext) => (Request[AnyContent]) => Future[Result]
+  val authConnector: AuthConnector
+  val accountUtils: AccountUtils
 
   implicit class StackTraceUtil(e: Throwable) {
     def getStacktraceString: String = {
@@ -47,47 +45,11 @@ trait AwrsController extends FrontendController with Actions with LoggingUtils w
     }
   }
 
-  @inline def async(body: AsyncUserRequest): Action[AnyContent] =
-    AuthorisedFor(AwrsRegistrationRegime, pageVisibility = GGConfidence).async {
-      implicit user => implicit request =>
-        Try(executeBody(body)) match {
-          case Success(future) => future
-          case Failure(ex) =>
-            val logInfo = s"Error occured for:\nBusiness name : ${getBusinessName.fold("unknown")(x => x)}\nAWRS reference : " + {
-              hasAwrs match {
-                case true => s"${getUtrOrName()}\n"
-                case _ => "Does not have an AWRS reference number\n"
-              }
-            } + "stacktrace : " + ex.getStacktraceString + "\n"
-            warn(logInfo)
-            showErrorPage
-        }
-    }
-
-  private def executeBody(body: AsyncUserRequest)(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] =
-    body(user)(request).recover {
-      case error =>
-        warn(error.getStacktraceString)
-        showErrorPageRaw
-    }
-
-  def asyncRestrictedAccess(body: AsyncUserRequest): Action[AnyContent] =
-    async {
-      implicit user => implicit request =>
-        getSessionStatus match {
-          case Some(Rejected) | Some(RejectedUnderReviewOrAppeal) | Some(Revoked) | Some(RevokedUnderReviewOrAppeal) =>
-            Future.successful(Redirect(controllers.routes.ApplicationStatusController.showStatus()))
-          case _ => body(user)(request)
-        }
-    }
-
-  def asyncPostSubmission(body: AsyncUserRequest): Action[AnyContent] =
-    async {
-      implicit user => implicit request =>
-        getSessionStatus match {
-          case Some(models.FormBundleStatus.NotFound(_)) | None => showNotFoundPage
-          case _ => body(user)(request)
-        }
+  def restrictedAccessCheck(body: => Future[Result])(implicit request: Request[AnyContent]): Future[Result] =
+    getSessionStatus match {
+      case Some(Rejected) | Some(RejectedUnderReviewOrAppeal) | Some(Revoked) | Some(RevokedUnderReviewOrAppeal) =>
+        Future.successful(Redirect(controllers.routes.ApplicationStatusController.showStatus()))
+      case _ => body
     }
 
   def showErrorPageRaw(implicit request: Request[AnyContent]): Result =
@@ -108,8 +70,8 @@ trait AwrsController extends FrontendController with Actions with LoggingUtils w
   def showNotFoundPage(implicit request: Request[AnyContent]): Future[Result] =
     AwrsController.showNotFoundPage
 
-  implicit val sessionUtil = SessionUtil.sessionUtilForRequest
-  implicit val sessionUtilForResult = SessionUtil.sessionUtilForResult
+  implicit val sessionUtil: Request[AnyContent] => SessionUtil.SessionUtilForRequest = SessionUtil.sessionUtilForRequest
+  implicit val sessionUtilForResult: Result => SessionUtil.SessionUtilForResult = SessionUtil.sessionUtilForResult
 
   def getSessionStatus(implicit request: Request[AnyContent]): Option[FormBundleStatus] =
     request getSessionStatus
@@ -123,32 +85,32 @@ trait AwrsController extends FrontendController with Actions with LoggingUtils w
   def getBusinessName(implicit request: Request[AnyContent]): Option[String] =
     request getBusinessName
 
-  def Ok(content: Content)(implicit request: Request[AnyContent]) = OkNoLocation(content) addLocation
+  def Ok(content: Content)(implicit request: Request[AnyContent]): Result = OkNoLocation(content) addLocation
 
   // OKNoLocation helper is used to avoid storing the location history to the session
-  def OkNoLocation(content: Content)(implicit request: Request[AnyContent]) = play.api.mvc.Results.Ok(AwrsController.prettify(content)).as("text/html; charset=utf-8")
+  def OkNoLocation(content: Content)(implicit request: Request[AnyContent]): Result = play.api.mvc.Results.Ok(AwrsController.prettify(content)).as("text/html; charset=utf-8")
 
 }
 
 
 object AwrsController extends Results {
 
-  def showErrorPageRaw(implicit request: Request[AnyContent]): Result =
-    InternalServerError(views.html.awrs_application_error()(request))
+  def showErrorPageRaw(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
+    InternalServerError(views.html.awrs_application_error())
 
-  def showErrorPage(implicit request: Request[AnyContent]): Future[Result] =
+  def showErrorPage(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
     Future.successful(showErrorPageRaw)
 
-  def showBadRequestRaw(implicit request: Request[AnyContent]): Result =
-    BadRequest(views.html.awrs_application_error()(request))
+  def showBadRequestRaw(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
+    BadRequest(views.html.awrs_application_error())
 
-  def showBadRequest(implicit request: Request[AnyContent]): Future[Result] =
+  def showBadRequest(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
     Future.successful(showBadRequestRaw)
 
-  def showNotFoundPageRaw(implicit request: Request[AnyContent]): Result =
-    NotFound(ApplicationGlobal.notFoundTemplate(request))
+  def showNotFoundPageRaw(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
+    NotFound(views.html.helpers.awrsErrorNotFoundTemplate())
 
-  def showNotFoundPage(implicit request: Request[AnyContent]): Future[Result] =
+  def showNotFoundPage(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
     Future.successful(showNotFoundPageRaw)
 
   private val compressor: HtmlCompressor = new HtmlCompressor()

@@ -16,6 +16,7 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.{BooleanRadioEnum, EntityTypeEnum}
 import forms.prevalidation._
 import forms.submapping.CompanyNamesMapping._
@@ -37,7 +38,7 @@ object PartnershipDetailsForm {
   import submapping.AddressMapping._
   import submapping.CompanyRegMapping._
 
-  val partnerTypes = Set(Individual, CorporateBody, SoleTrader)
+  val partnerTypes: Set[AWRSEnums.EntityTypeEnum.Value] = Set(Individual, CorporateBody, SoleTrader)
 
   val doYouHaveNino = "doYouHaveNino"
   val doYouHaveVrn = "doYouHaveVRN"
@@ -50,13 +51,13 @@ object PartnershipDetailsForm {
   val companyNames = "companyNames"
 
 
-  @inline def answeredYesToDoYouHaveCRN = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveCRN: FormData => Boolean = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
 
-  @inline def answeredYesToDoYouHaveNino = whenAnswerToFieldIs(doYouHaveNino, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveNino: FormData => Boolean = whenAnswerToFieldIs(doYouHaveNino, BooleanRadioEnum.YesString)(_)
 
-  @inline def answeredYesToDoYouHaveVRN = whenAnswerToFieldIs(doYouHaveVrn, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveVRN: FormData => Boolean = whenAnswerToFieldIs(doYouHaveVrn, BooleanRadioEnum.YesString)(_)
 
-  @inline def answeredYesToDoYouHaveUTR = whenAnswerToFieldIs(doYouHaveUtr, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveUTR: FormData => Boolean = whenAnswerToFieldIs(doYouHaveUtr, BooleanRadioEnum.YesString)(_)
 
   private val getPartner = (data: FormData) =>
     data.getOrElse("entityType", "")
@@ -143,10 +144,10 @@ object PartnershipDetailsForm {
 
   @inline def idExistsForQuestion(ids: FormData => Seq[String])(associatedQuestion: String)(data: FormData): Boolean = ids(data).contains(associatedQuestion)
 
-  val mustHaveVRNorCRNorUTR = mustHaveAtLeastOneId(TargetFieldIds("doYouHaveVRN", "isBusinessIncorporated", "doYouHaveUTR"), "awrs.generic.error.identification_provided")
-  val mustHaveNinoOrVRNorUTR = mustHaveAtLeastOneId(TargetFieldIds("doYouHaveNino", "doYouHaveVRN", "doYouHaveUTR"), "awrs.generic.error.identification_provided")
+  val mustHaveVRNorCRNorUTR: CrossFieldConstraint = mustHaveAtLeastOneId(TargetFieldIds("doYouHaveVRN", "isBusinessIncorporated", "doYouHaveUTR"), "awrs.generic.error.identification_provided")
+  val mustHaveNinoOrVRNorUTR: CrossFieldConstraint = mustHaveAtLeastOneId(TargetFieldIds("doYouHaveNino", "doYouHaveVRN", "doYouHaveUTR"), "awrs.generic.error.identification_provided")
 
-  val whenAnsweredYesToCRN =
+  val whenAnsweredYesToCRN: FormData => Boolean =
     (data: FormData) => whenAnswerToIdTypeIs("isBusinessIncorporated", BooleanRadioEnum.Yes)(data)
 
   // this mapping only run validations if partnerType is already answered
@@ -154,7 +155,7 @@ object PartnershipDetailsForm {
   val companyNamesMapping_rules: Mapping[Option[CompanyNames]] =
     companyNamesMapping(companyNames, validateBusinessName = whenPartnerIsCorporateBody).toOptional iff whenPartnerTypeIsAnsweredButNotIndividual
 
-  val partnershipDetailsValidationForm = {
+  def partnershipDetailsValidationForm(implicit applicationConfig: ApplicationConfig): Form[Partner] = {
     val noIdIsSupplied = (associatedQuestion: String) => noIdsHaveBeenSupplied(getIds)(associatedQuestion)(_)
     val idExists = (associatedQuestion: String) => idExistsForQuestion(getIds)(associatedQuestion)(_)
     Form(
@@ -165,7 +166,7 @@ object PartnershipDetailsForm {
         //        "companyName" -> ((companyName_optional("company name") + companyNameAndTradingNameCannotBothBeEmpty) iff whenPartnerIsCorporateBody),
         //        "tradingName" -> (tradingName_optional iff whenPartnerTypeIsAnsweredButNotIndividual),
         companyNames -> companyNamesMapping_rules,
-        "partnerAddress" -> (ukAddress_compulsory(prefix = "partnerAddress").toOptionalAddressMapping iff whenPartnerTypeIsAnswered),
+        "partnerAddress" -> (ukAddress_compulsory(prefix = "partnerAddress", "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenPartnerTypeIsAnswered),
         doYouHaveNino -> ((doYouHaveNino_compulsory() iff whenPartnerTypeIsAnsweredAndNotCorporateBody) + (mustHaveNinoOrVRNorUTR xiff whenPartnerIsSoleTrader)),
         nino -> (nino_compulsory(nino) iff (answeredYesToNino(doYouHaveNinoFieldId = doYouHaveNino) &&& whenPartnerTypeIsAnsweredAndNotCorporateBody)),
         doYouHaveUtr -> (doYouHaveUTR_compulsory(doYouHaveUtr) iff idExists(doYouHaveUtr)),
@@ -178,6 +179,6 @@ object PartnershipDetailsForm {
       )(Partner.apply)(Partner.unapply))
   }
 
-  val partnershipDetailsForm = PreprocessedForm(partnershipDetailsValidationForm).addNewPreprocessFunction(inferDoYouHave)
+  def partnershipDetailsForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[Partner] = PreprocessedForm(partnershipDetailsValidationForm).addNewPreprocessFunction(inferDoYouHave)
 
 }

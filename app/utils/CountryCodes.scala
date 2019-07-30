@@ -16,43 +16,47 @@
 
 package utils
 
+import java.io.InputStream
+
+import javax.inject.Inject
 import models.{Address, Supplier}
-import play.api.Play
-import play.api.Play.current
-import play.api.libs.json.{JsValue, Json}
+import play.api.Environment
+import play.api.libs.json.{JsValue, Json, OFormat}
 
 import scala.io.Source
 
-object CountryCodes extends CountryCodes
+class CountryCodesImpl @Inject()(val environment: Environment) extends CountryCodes {
+
+}
 
 trait CountryCodes {
+
+  def environment: Environment
 
   case class Country(country: String, countryCode: String)
 
   object Country {
-    implicit val formats = Json.format[Country]
+    implicit val formats: OFormat[Country] = Json.format[Country]
   }
 
-  val jsonInputStream = Play.application.resourceAsStream("country-code.json")
-
-  private val json: JsValue = {
-    jsonInputStream match {
+  private[utils] val readJson: JsValue = {
+    environment.resourceAsStream("country-code.json") match {
       case Some(inputStream) => Json.parse(Source.fromInputStream(inputStream, "UTF-8").mkString)
-      case _ => throw new Exception("Country codes file not found")
+      case _                 => throw new Exception("Country codes file not found")
     }
   }
 
   val countries: String = {
-    Json.toJson(json.\\("country").toList.map(x => x.toString().replaceAll("\"", ""))).toString()
+    Json.toJson(readJson.\\("country").toList.map(x => x.toString().replaceAll("\"", ""))).toString()
   }
 
   private val countryCodesMap: Map[String, String] = {
-    val countryCodeList = json.validate[List[Country]].get
+    val countryCodeList = readJson.validate[List[Country]].get
     countryCodeList.map(country => (country.countryCode, country.country)).toMap
   }
 
   private val countriesMap: Map[String, String] = {
-    val countryList = json.validate[List[Country]].get
+    val countryList = readJson.validate[List[Country]].get
     countryList.map(country => (country.country.toLowerCase, country.countryCode)).toMap
   }
 
@@ -66,13 +70,12 @@ trait CountryCodes {
 
   def getSupplierAddressWithCountryCode(supplierAddressesData: Supplier): Option[Address] = {
     val supplierAddress: Option[Address] = supplierAddressesData.supplierAddress match {
-      case Some(address) => {
-        val countryCode = CountryCodes.getCountryCode(address.addressCountry.getOrElse("")) match {
+      case Some(address) =>
+        val countryCode = getCountryCode(address.addressCountry.getOrElse("")) match {
           case Some(cc) => Some(cc)
           case _ => Some("GB")
         }
         Some(address.copy(addressCountryCode = countryCode))
-      }
       case _ => None
     }
     supplierAddress
@@ -80,13 +83,12 @@ trait CountryCodes {
 
   def getSupplierAddressWithCountry(supplierAddressesData: Supplier): Option[Address] = {
     val supplierAddress: Option[Address] = supplierAddressesData.supplierAddress match {
-      case Some(address) => {
-        val country = CountryCodes.getCountry(address.addressCountryCode.getOrElse("")) match {
+      case Some(address) =>
+        val country = getCountry(address.addressCountryCode.getOrElse("")) match {
           case Some(country) => Some(country)
           case _ => Some("United Kingdom")
         }
         Some(address.copy(addressCountry = country))
-      }
       case _ => None
     }
     supplierAddress
@@ -94,25 +96,23 @@ trait CountryCodes {
 
   def getAddressWithCountryCode(addressesData: Option[Address]): Option[Address] =
     addressesData match {
-      case Some(address) => {
-        val countryCode = CountryCodes.getCountryCode(address.addressCountry.getOrElse("")) match {
+      case Some(address) =>
+        val countryCode = getCountryCode(address.addressCountry.getOrElse("")) match {
           case Some(cc) => Some(cc)
           case _ => Some("GB")
         }
         Some(address.copy(addressCountryCode = countryCode))
-      }
       case _ => None
     }
 
   def getAddressWithCountry(addressesData: Option[Address]): Option[Address] =
     addressesData match {
-      case Some(address) => {
-        val country = CountryCodes.getCountry(address.addressCountryCode.getOrElse("")) match {
+      case Some(address) =>
+        val country = getCountry(address.addressCountryCode.getOrElse("")) match {
           case Some(country) => Some(country)
           case _ => Some("United Kingdom")
         }
         Some(address.copy(addressCountry = country))
-      }
       case _ => None
     }
 

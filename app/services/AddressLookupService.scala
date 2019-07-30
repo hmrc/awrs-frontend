@@ -16,30 +16,31 @@
 
 package services
 
-import config.WSHttp
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
+import audit.Auditable
+import javax.inject.Inject
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.address.client.v1.RecordSet
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import utils.LoggingUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpReads}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait AddressLookupResponse
+
 case class AddressLookupSuccessResponse(addressList: RecordSet) extends AddressLookupResponse
+
 case class AddressLookupErrorResponse(cause: Exception) extends AddressLookupResponse
 
-trait AddressLookupService extends LoggingUtils {
+class AddressLookupService @Inject()(servicesConfig: ServicesConfig,
+                                     val http: DefaultHttpClient,
+                                     val auditable: Auditable) extends LoggingUtils {
 
-  def http: HttpGet
-  def addressLookupUrl: String
+  val addressLookupUrl: String = servicesConfig.baseUrl("address-lookup")
 
-  def lookup(postcode: String)(implicit hc: HeaderCarrier): Future[AddressLookupResponse] = {
+  def lookup(postcode: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AddressLookupResponse] = {
     val awrsHc = hc.withExtraHeaders("X-Hmrc-Origin" -> "AWRS")
     http.GET[JsValue](s"$addressLookupUrl/uk/addresses?postcode=$postcode")(implicitly[HttpReads[JsValue]], awrsHc, MdcLoggingExecutionContext.fromLoggingDetails(hc)
     ) map {
@@ -51,15 +52,6 @@ trait AddressLookupService extends LoggingUtils {
         AddressLookupErrorResponse(e)
     }
   }
-}
-
-object AddressLookupService extends AddressLookupService with ServicesConfig {
-  override val http = WSHttp
-  override val addressLookupUrl = baseUrl("address-lookup")
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
 trait HasAddressLookupService {

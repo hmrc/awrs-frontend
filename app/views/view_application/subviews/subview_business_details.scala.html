@@ -21,11 +21,13 @@
 @import utils.SessionUtil.sessionUtilForRequest
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String],
+@(headingKey: String,
   someModel: Option[models.BusinessDetails],
   someBusinessName: Option[String],
   showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.businessDetailsId
@@ -35,40 +37,45 @@
     controllers.routes.BusinessDetailsController.showBusinessDetails(false).url
 }
 
+@businessTypeValue = @{
+    request.getBusinessType match {
+        case Some("Partnership") => messages("awrs.business_details.business_partnership")
+        case Some("LP") => messages("awrs.business_details.limited_partnership_body")
+        case Some("LLP" | "LLP_GRP") => messages("awrs.business_details.limited_liability_partnership_body")
+        case Some("LTD" | "LTD_GRP") => messages("awrs.business_details.corporate_body")
+        case Some("SOP") => messages("awrs.business_details.sole_trader")
+        case _ => messages("awrs.business_details.unknown_body")
+    }
+}
+
 @content(model: models.BusinessDetails, businessName: String) = {
 
     @if(showTableHeader) {
         @table_row(
             "",
-            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_details_text"))(x => x))
-        )(cssClass = "record-header")
+            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.business_details_text")}")
+        ))(cssClass = Option("record-header"), messages = messages)
     }
     @table_row(
-        Messages("awrs.business_details.name"),
-        businessName
+        messages("awrs.business_details.name"),
+        Some(businessName)
+    )
+
+    @table_row(
+        messages("awrs.business_details.type_of_business"),
+        Some(businessTypeValue)
     )
     @table_row(
-        Messages("awrs.business_details.type_of_business"),
-        request.getBusinessType match {
-            case Some("Partnership") => Messages("awrs.business_details.business_partnership")
-            case Some("LP") => Messages("awrs.business_details.limited_partnership_body")
-            case Some("LLP" | "LLP_GRP") => Messages("awrs.business_details.limited_liability_partnership_body")
-            case Some("LTD" | "LTD_GRP") => Messages("awrs.business_details.corporate_body")
-            case Some("SOP") => Messages("awrs.business_details.sole_trader")
-            case _ => Messages("awrs.business_details.unknown_body")
-        }
-    )
-    @table_row(
-        Messages("awrs.generic.trading_name"),
+        messages("awrs.generic.trading_name"),
         model.tradingName
     )
     @table_row(
-        Html(Messages("awrs.business_details.new_AWBusiness")),
-        model.newAWBusiness.fold("")(x => x.newAWBusiness)
+        messages("awrs.business_details.new_AWBusiness"),
+        Some(model.newAWBusiness.fold("")(x => x.newAWBusiness))
     )
     @table_row(
-        Messages("awrs.business_details.begin_trading"),
-        model.newAWBusiness.fold("")(x => x.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy")))
+        messages("awrs.business_details.begin_trading"),
+        Some(model.newAWBusiness.fold("")(x => x.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy"))))
     )
 }
 
@@ -80,9 +87,9 @@
     </table>
 }
 
-@(someHeading, someModel, someBusinessName) match {
-    case (Some(heading), Some(model), Some(businessName)) => {
-        @subview_core(heading, wrapperId, sectionName = businessDetailsName)(content(model, businessName), preContent = preContent, postContent = postContent)
+@(someModel, someBusinessName) match {
+    case (Some(model), Some(businessName)) => {
+        @subview_core(heading, wrapperId, sectionName = Some(businessDetailsName))(content(model, businessName), preContent = Some(preContent), postContent = Some(postContent))
     }
     case _ => {}
 }

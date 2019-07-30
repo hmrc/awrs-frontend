@@ -16,18 +16,13 @@
 
 package forms
 
-import forms.AWRSEnums.BooleanRadioEnum
 import forms.prevalidation._
 import forms.submapping.NewAWBusinessMapping._
-import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, CompulsoryTextFieldMappingParameter}
-import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models._
+import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.{Form, Mapping}
-import utils.AwrsFieldConfig
-import utils.AwrsValidator._
 
 object BusinessDetailsForm {
 
@@ -40,19 +35,19 @@ object BusinessDetailsForm {
   private val otherIds = Seq[String](doYouHaveTradingName, tradingName, newAWBusiness)
 
   private val entityIds = (entityType: String, hasAwrs: Boolean) => entityType match {
-    case "LLP_GRP" | "LTD_GRP" => {
-      hasAwrs match {
-        case true => groupIds
-        case _ => otherIds
+    case "LLP_GRP" | "LTD_GRP" =>
+      if (hasAwrs) {
+        groupIds
+      } else {
+        otherIds
       }
-    }
     case _ => otherIds
   }
 
   private val nbToOptional = (business: NewAWBusiness) => Some(business): Option[NewAWBusiness]
   private val nbFromOptional = (business: Option[NewAWBusiness]) => business.fold(NewAWBusiness("", None))(x => x): NewAWBusiness
 
-  val businessDetailsValidationForm = (entityType: String, hasAwrs: Boolean) => {
+  val businessDetailsValidationForm: (String, Boolean) => Form[ExtendedBusinessDetails] = (entityType: String, hasAwrs: Boolean) => {
     val ids = entityIds(entityType, hasAwrs)
     Form(
       mapping(
@@ -64,7 +59,7 @@ object BusinessDetailsForm {
     )
   }
 
-  val businessDetailsForm = (entityType: String, hasAwrs: Boolean) => PreprocessedForm(businessDetailsValidationForm(entityType, hasAwrs))
+  val businessDetailsForm: (String, Boolean) => PrevalidationAPI[ExtendedBusinessDetails] = (entityType: String, hasAwrs: Boolean) => PreprocessedForm(businessDetailsValidationForm(entityType, hasAwrs))
 }
 
 object BusinessNameChangeConfirmationForm {

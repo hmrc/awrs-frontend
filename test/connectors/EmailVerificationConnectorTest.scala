@@ -16,82 +16,53 @@
 
 package connectors
 
-import akka.actor.ActorSystem
-import audit.TestAudit
-import com.typesafe.config.Config
 import metrics.AwrsMetrics
-import org.mockito.Matchers
-import org.mockito.Matchers.{any, endsWith}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, endsWith}
 import org.mockito.Mockito._
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
 import play.api.libs.json.{JsObject, JsValue}
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
-  val MockAuditConnector = mock[AuditConnector]
+  val MockAuditConnector: AuditConnector = mock[AuditConnector]
+  val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
-  val dummyAppName = "awrs-frontend"
-
-  class MockHttp extends HttpGet with WSGet with HttpPost with WSPost with HttpPut with WSPut with HttpAuditing with HttpDelete with WSDelete {
-    override val hooks = Seq(AuditingHook)
-
-    override def auditConnector: AuditConnector = MockAuditConnector
-
-    override def appName = dummyAppName
-
-    override protected def actorSystem: ActorSystem = Play.current.actorSystem
-
-    override protected def configuration: Option[Config] = Option(Play.current.configuration.underlying)
-}
-
-  val mockWSHttp = mock[MockHttp]
-
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockWSHttp)
-    reset(MockAuditConnector)
+
+    when(mockAppConfig.servicesConfig)
+      .thenReturn(mockServicesConfig)
+    when(mockServicesConfig.baseUrl(ArgumentMatchers.eq("awrs")))
+      .thenReturn("testURL")
   }
 
-  object TestEmailVerificationConnector extends EmailVerificationConnector {
-    override val httpGet: MockHttp = mockWSHttp
-    override val httpPost: MockHttp = mockWSHttp
-    override val appName = dummyAppName
-    override val metrics = mock[AwrsMetrics]
-    override val audit: Audit = new TestAudit
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
-
+  val testEmailVerificationConnector = new EmailVerificationConnector(mockWSHttp, mockAuditable, mockAppConfig)
 
   // these values doesn't really matter since the call itself is mocked
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  lazy val sendEmailURI = TestEmailVerificationConnector.sendEmail
-  lazy val verifiyEmailURI = TestEmailVerificationConnector.verifyEmail
+  lazy val sendEmailURI: String = testEmailVerificationConnector.sendEmail
+  lazy val verifiyEmailURI: String = testEmailVerificationConnector.verifyEmail
 
   "sendVerificationEmail" should {
 
     def mockPostResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](Matchers.endsWith(sendEmailURI), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(sendEmailURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
 
-    def testPostCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.sendVerificationEmail(testEmail)
+    def testPostCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = testEmailVerificationConnector.sendVerificationEmail(testEmail)
 
     "return success equals true, for successful created email sending" in {
       mockPostResponse(responseStatus = CREATED)
@@ -121,7 +92,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
 
   "isEmailAddressVerified" should {
 
-    def testGetCall(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]) = TestEmailVerificationConnector.isEmailAddressVerified(testEmail)
+    def testGetCall: Future[Boolean] = testEmailVerificationConnector.isEmailAddressVerified(testEmail)
 
     "return success equals true, for successful verification of email" in {
       when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))

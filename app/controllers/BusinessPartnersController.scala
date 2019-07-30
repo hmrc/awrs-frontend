@@ -16,87 +16,105 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.StandardAuthRetrievals
 import controllers.util._
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.PartnershipDetailsForm._
+import javax.inject.Inject
 import models._
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.mvc.{AnyContent, Call, Request, Result}
+import play.api.i18n.MessagesApi
+import play.api.mvc._
 import services.DataCacheKeys._
 import services.Save4LaterService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AccountUtils, CountryCodes}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.{ExecutionContext, Future}
 
-trait BusinessPartnersController extends AwrsController with JourneyPage with AccountUtils with Deletable[Partners, Partner] with SaveAndRoutable {
+class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
+                                           val save4LaterService: Save4LaterService,
+                                           val authConnector: DefaultAuthConnector,
+                                           val auditable: Auditable,
+                                           val accountUtils: AccountUtils,
+                                           implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with Deletable[Partners, Partner] with SaveAndRoutable {
+
+  override implicit val ec: ExecutionContext = mcc.executionContext
+  val signInUrl: String = applicationConfig.signIn
 
   //fetch function
-  override def fetch(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[Partners]] = save4LaterService.mainStore.fetchPartnerDetails
+  override def fetch(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[Partners]] = save4LaterService.mainStore.fetchPartnerDetails(authRetrievals)
 
-  override def save(data: Partners)(implicit user: AuthContext, hc: HeaderCarrier): Future[Partners] = save4LaterService.mainStore.savePartnerDetails(data)
+  override def save(authRetrievals: StandardAuthRetrievals, data: Partners)(implicit hc: HeaderCarrier): Future[Partners] = save4LaterService.mainStore.savePartnerDetails(authRetrievals, data)
 
-  override val listToListObj = (partnerDetails: List[Partner]) => Partners(partnerDetails)
-  override val listObjToList = (partnerDetails: Partners) => partnerDetails.partners
-  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(partnersName)
+  override val listToListObj: List[Partner] => Partners = (partnerDetails: List[Partner]) => Partners(partnerDetails)
+  override val listObjToList: Partners => List[Partner] = (partnerDetails: Partners) => partnerDetails.partners
+  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(partnersName)
   override val section: String = partnersName
-  override val deleteHeadingParameter: String = Messages("awrs.view_application.partner")
+  override val deleteHeadingParameter: String = "awrs.view_application.partner"
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.BusinessPartnersController.actionDelete(id)
-  override val addNoAnswerRecord: (List[Partner]) => List[Partner] = (emptyList) => emptyList
-  override val amendHaveAnotherAnswer = (data: Partner, newAnswer: String) => data.copy(otherPartners = Some(newAnswer))
+  override val addNoAnswerRecord: List[Partner] => List[Partner] = emptyList => emptyList
+  override val amendHaveAnotherAnswer: (Partner, String) => Partner = (data: Partner, newAnswer: String) => data.copy(otherPartners = Some(newAnswer))
 
-  def showPartnerMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
-      }
-
-      lazy val newEntryAction = (id: Int) =>
-        Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form, id, isNewRecord)))
-
-      lazy val existingEntryAction = (data: Partners, id: Int) =>
-        data.partners.isEmpty match {
-          case true =>
-            Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form, 1, isNewRecord)))
-          case false =>
-            val partner = data.partners(id - 1)
-            val updatedSupplier = partner.copy(partnerAddress = CountryCodes.getAddressWithCountry(partner.partnerAddress))
-            Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form.fill(updatedSupplier), id, isNewRecord)))
+  def showPartnerMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      restrictedAccessCheck {
+        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
         }
 
-      lazy val haveAnother = (data: Partners) =>
-        data.partners.last.otherPartners.fold("")(x => x).equals(BooleanRadioEnum.YesString)
+        lazy val newEntryAction = (id: Int) =>
+          Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form, id, isNewRecord)))
 
-      lookup[Partners, Partner](
-        fetchData = fetch,
-        id = id,
-        toList = (partners: Partners) => partners.partners
-      )(
-        newEntryAction = newEntryAction,
-        existingEntryAction = existingEntryAction,
-        haveAnother = haveAnother
-      )
+        lazy val existingEntryAction = (data: Partners, id: Int) =>
+          if (data.partners.isEmpty) {
+            Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form, 1, isNewRecord)))
+          } else {
+            val partner = data.partners(id - 1)
+            val updatedSupplier = partner.copy(partnerAddress = applicationConfig.countryCodes.getAddressWithCountry(partner.partnerAddress))
+            Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form.fill(updatedSupplier), id, isNewRecord)))
+          }
+
+        lazy val haveAnother = (data: Partners) =>
+          data.partners.last.otherPartners.fold("")(x => x).equals(BooleanRadioEnum.YesString)
+
+        lookup[Partners, Partner](
+          fetchData = fetch(ar),
+          id = id,
+          toList = (partners: Partners) => partners.partners
+        )(
+          newEntryAction = newEntryAction,
+          existingEntryAction = existingEntryAction,
+          haveAnother = haveAnother
+        )
+      }
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
-    implicit val viewMode = viewApplicationType
+  def save(id: Int,
+           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+           viewApplicationType: ViewApplicationType,
+           isNewRecord: Boolean,
+           authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
+    implicit val viewMode: ViewApplicationType = viewApplicationType
     partnershipDetailsForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.awrs_partner_member_details(formWithErrors, id, isNewRecord))),
       partnerData => {
-        val countryCodePartnerData = partnerData.copy(partnerAddress = CountryCodes.getAddressWithCountryCode(partnerData.partnerAddress))
+        val countryCodePartnerData = partnerData.copy(partnerAddress = applicationConfig.countryCodes.getAddressWithCountryCode(partnerData.partnerAddress))
 
         saveThenRedirect[Partners, Partner](
-          fetchData = fetch,
+          fetchData = fetch(authRetrievals),
           saveData = save,
           id = id,
-          data = countryCodePartnerData
+          data = countryCodePartnerData,
+          authRetrievals
         )(
           haveAnotherAnswer = (data: Partner) => data.otherPartners.fold("")(x => x),
           amendHaveAnotherAnswer = amendHaveAnotherAnswer,
@@ -110,10 +128,5 @@ trait BusinessPartnersController extends AwrsController with JourneyPage with Ac
       }
     )
   }
-
 }
 
-object BusinessPartnersController extends BusinessPartnersController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
-}

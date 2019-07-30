@@ -18,7 +18,7 @@ package connectors.mock
 
 import connectors.AWRSNotificationConnector
 import models.{StatusNotification, ViewedStatusResponse}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
@@ -43,7 +43,7 @@ trait MockAWRSNotificationConnector extends AwrsUnitTestTraits {
                                          getNotificationViewedStatus: Future[Option[ViewedStatusResponse]] = ViewedStatusResponse(true),
                                          markNotificationViewedStatusAsViewed: Future[Option[Boolean]] = true,
                                          sendConfirmationEmail: Future[Boolean] = true
-                                        ) = {
+                                        ): Unit = {
     setupMockAWRSNotificationConnectorWithOnly(
       fetchNotificationCache = fetchNotificationCache,
       deleteNotificationFromCache = deleteNotificationFromCache,
@@ -58,12 +58,12 @@ trait MockAWRSNotificationConnector extends AwrsUnitTestTraits {
                                                  getNotificationViewedStatus: MockConfiguration[Future[Option[ViewedStatusResponse]]] = DoNotConfigure,
                                                  markNotificationViewedStatusAsViewed: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure,
                                                  sendConfirmationEmail: MockConfiguration[Future[Boolean]] = DoNotConfigure
-                                                ) = {
-    fetchNotificationCache ifConfiguredThen (config => when(mockAWRSNotificationConnector.fetchNotificationCache(Matchers.any(), Matchers.any())).thenReturn(config))
-    deleteNotificationFromCache ifConfiguredThen (config => when(mockAWRSNotificationConnector.deleteFromNotificationCache(Matchers.any(), Matchers.any())).thenReturn(config))
-    getNotificationViewedStatus ifConfiguredThen (config => when(mockAWRSNotificationConnector.getNotificationViewedStatus(Matchers.any(), Matchers.any())).thenReturn(config))
-    markNotificationViewedStatusAsViewed ifConfiguredThen (config => when(mockAWRSNotificationConnector.markNotificationViewedStatusAsViewed(Matchers.any(), Matchers.any())).thenReturn(config))
-    sendConfirmationEmail ifConfiguredThen (config => when(mockAWRSNotificationConnector.sendConfirmationEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(config))
+                                                ): Unit = {
+    fetchNotificationCache ifConfiguredThen (config => when(mockAWRSNotificationConnector.fetchNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(config))
+    deleteNotificationFromCache ifConfiguredThen (config => when(mockAWRSNotificationConnector.deleteFromNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(config))
+    getNotificationViewedStatus ifConfiguredThen (config => when(mockAWRSNotificationConnector.getNotificationViewedStatus(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(config))
+    markNotificationViewedStatusAsViewed ifConfiguredThen (config => when(mockAWRSNotificationConnector.markNotificationViewedStatusAsViewed(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(config))
+    sendConfirmationEmail ifConfiguredThen (config => when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(config))
   }
 
   def verifyAWRSNotificationConnector(fetchNotificationCache: Option[Int] = None,
@@ -71,12 +71,12 @@ trait MockAWRSNotificationConnector extends AwrsUnitTestTraits {
                                       getNotificationViewedStatus: Option[Int] = None,
                                       markNotificationViewedStatusAsViewed: Option[Int] = None,
                                       sendConfirmationEmail: Option[Int] = None
-                                     ) = {
-    fetchNotificationCache ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).fetchNotificationCache(Matchers.any(), Matchers.any()))
-    deleteNotificationFromCache ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).deleteFromNotificationCache(Matchers.any(), Matchers.any()))
-    getNotificationViewedStatus ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).getNotificationViewedStatus(Matchers.any(), Matchers.any()))
-    markNotificationViewedStatusAsViewed ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).markNotificationViewedStatusAsViewed(Matchers.any(), Matchers.any()))
-    sendConfirmationEmail ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).sendConfirmationEmail(Matchers.any())(Matchers.any(), Matchers.any()))
+                                     ): Unit = {
+    fetchNotificationCache ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).fetchNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    deleteNotificationFromCache ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).deleteFromNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    getNotificationViewedStatus ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).getNotificationViewedStatus(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    markNotificationViewedStatusAsViewed ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).markNotificationViewedStatusAsViewed(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    sendConfirmationEmail ifDefinedThen (count => verify(mockAWRSNotificationConnector, times(count)).sendConfirmationEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
   }
 
 }

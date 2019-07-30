@@ -18,55 +18,43 @@ package utils
 
 import uk.gov.hmrc.play.test.UnitSpec
 
-class AwrsFieldConfigTest extends UnitSpec with FakeAWRSPlayApplication with AwrsFieldConfig{
+class AwrsFieldConfigTest extends UnitSpec with AwrsFieldConfig {
   "AWRS Field Config" should {
 
     "populate max length for declaration name" in {
-      AwrsFieldConfig.applicationDeclarationNameLen shouldBe 140
+      applicationDeclarationNameLen shouldBe 140
     }
 
     "populate max length for address postcode" in {
-      AwrsFieldConfig.addressPostcodeLen shouldBe 20
+      addressPostcodeLen shouldBe 20
     }
 
     "populate max length for declaration role" in {
-      AwrsFieldConfig.applicationDeclarationRoleLen shouldBe 40
+      applicationDeclarationRoleLen shouldBe 40
     }
 
     "populate max length for business details trading name" in {
-      AwrsFieldConfig.tradingNameLen shouldBe 120
+      tradingNameLen shouldBe 120
     }
 
     "populate max length for business details address line 1" in {
-      AwrsFieldConfig.addressLine1Len shouldBe 35
-    }
-
-    "populate max length for business details address line 2" in {
-      AwrsFieldConfig.addressLine2Len shouldBe 35
-    }
-
-    "populate max length for business details address line 3" in {
-      AwrsFieldConfig.addressLine3Len shouldBe 35
-    }
-
-    "populate max length for business details address line 4" in {
-      AwrsFieldConfig.addressLine4Len shouldBe 35
+      addressLineLen shouldBe 35
     }
 
     "populate max length for business details contact First Name" in {
-      AwrsFieldConfig.firstNameLen shouldBe 35
+      firstNameLen shouldBe 35
     }
 
     "populate max length for business details contact Last Name" in {
-      AwrsFieldConfig.lastNameLen shouldBe 35
+      lastNameLen shouldBe 35
     }
 
     "populate max length for business details contact Email" in {
-      AwrsFieldConfig.emailLen shouldBe 100
+      emailLen shouldBe 100
     }
 
     "populate max length for business details contact Telephone" in {
-      AwrsFieldConfig.telephoneLen shouldBe 24
+      telephoneLen shouldBe 24
     }
   }
 }

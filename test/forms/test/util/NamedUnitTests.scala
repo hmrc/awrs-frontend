@@ -21,7 +21,6 @@ import forms.AWRSEnums._
 import forms.submapping.CompanyNamesMapping
 import forms.validation.util.{FieldError, MessageArguments, SummaryError}
 import models.TupleDate
-import org.scalatest.Matchers._
 import play.api.data.Form
 import utils.AwrsFieldConfig
 
@@ -40,7 +39,7 @@ object NamedUnitTests {
     lastNameIsCompulsory(preCondition, ignoreCondition, idPrefix, lastNameId)
   }
 
-  def feildIsCompulsoryAndValid(idPrefix: IdPrefix = None,
+  def fieldIsCompulsoryAndValid(idPrefix: IdPrefix = None,
                                 fieldId: String = "",
                                 emptyErrorMsg: String,
                                 invalidFormatErrorMsg: String)(implicit form: Form[_]): Unit = {
@@ -184,7 +183,7 @@ object NamedUnitTests {
   }
 }
 
-private object AddressVerifications {
+private object AddressVerifications extends AwrsFieldConfig {
   private def addressLinex(lineNumber: Int,
                            preCondition: Map[String, String],
                            ignoreCondition: Set[Map[String, String]],
@@ -196,7 +195,7 @@ private object AddressVerifications {
       Map((idPrefix attach "addressLine2") -> "")
 
     val fieldId: String = idPrefix attach f"addressLine$lineNumber"
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, f"$nameInErrorMessage address line $lineNumber", AwrsFieldConfig.addressLine1Len)
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, f"$nameInErrorMessage address line $lineNumber", addressLineLen)
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, f"$nameInErrorMessage address line $lineNumber"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -294,7 +293,7 @@ private object AddressVerifications {
   }
 }
 
-private object IdentityVerifications {
+private object IdentityVerifications extends AwrsFieldConfig {
 
   def firstNameIsCompulsory(preCondition: Map[String, String],
                             ignoreCondition: Set[Map[String, String]],
@@ -305,7 +304,7 @@ private object IdentityVerifications {
       case id => id
     })
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.first_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "First name", AwrsFieldConfig.firstNameLen, "awrs.generic.error.name.maximum_length")
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "First name", firstNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "first name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -326,7 +325,7 @@ private object IdentityVerifications {
     })
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.last_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "Last name", AwrsFieldConfig.lastNameLen, "awrs.generic.error.name.maximum_length")
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "Last name", lastNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "last name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -351,7 +350,7 @@ private object IdentityVerifications {
 
     val businessNameExpectations = (fieldId: String) => {
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", AwrsFieldConfig.companyNameLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", companyNameLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "business name"))
       val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -366,7 +365,7 @@ private object IdentityVerifications {
 
     val tradingNameExpectations = (fieldId: String) => {
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.tradingName_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", AwrsFieldConfig.tradingNameLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", tradingNameLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "trading name"))
       val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -427,7 +426,7 @@ private object IdentityVerifications {
                            )(implicit form: Form[_]): Unit = {
     val fieldId = idPrefix attach "companyName"
 
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, companyNameDescString, AwrsFieldConfig.companyNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, companyNameDescString, companyNameLen)
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, companyNameDescString))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -442,7 +441,7 @@ private object IdentityVerifications {
                             idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
     val fieldId = idPrefix attach "tradingName"
 
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", AwrsFieldConfig.tradingNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", tradingNameLen)
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "trading name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 

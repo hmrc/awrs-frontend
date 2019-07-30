@@ -16,69 +16,81 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessContactsForm._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{AnyContent, Request, Result}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.DataCacheKeys._
 import services.{EmailVerificationService, Save4LaterService}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
-import utils.AwrsConfig._
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait BusinessContactsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
+class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents,
+                                           emailVerificationService: EmailVerificationService,
+                                           val save4LaterService: Save4LaterService,
+                                           val authConnector: DefaultAuthConnector,
+                                           val auditable: Auditable,
+                                           val accountUtils: AccountUtils,
+                                           implicit val applicationConfig: ApplicationConfig
+                                          ) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  val emailVerificationService: EmailVerificationService
+  override implicit val ec: ExecutionContext = mcc.executionContext
+  override val section: String = businessContactsName
+  val signInUrl: String = applicationConfig.signIn
 
-  override val section = businessContactsName
+  def showBusinessContacts(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
+        }
 
-  def showBusinessContacts(isLinearMode: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
-      }
-
-      val businessType = request.getBusinessType
-      save4LaterService.mainStore.fetchBusinessCustomerDetails.flatMap {
-        case Some(businessCustomerDetails) =>
-          // if this is the first time the user enters this form, then populate the main principal place of business with the address from business customers frontend
-          save4LaterService.mainStore.fetchBusinessContacts.flatMap {
-            case Some(data) => Future.successful(Ok(views.html.awrs_business_contacts(AccountUtils.hasAwrs,
-              businessType,
-              businessCustomerDetails.businessAddress,
-              businessContactsForm.form.fill(data))))
-            case _ =>
-              val firstTimeForm = businessContactsForm.form
-              Future.successful(Ok(views.html.awrs_business_contacts(AccountUtils.hasAwrs,
+        val businessType = request.getBusinessType
+        save4LaterService.mainStore.fetchBusinessCustomerDetails(ar).flatMap {
+          case Some(businessCustomerDetails) =>
+            save4LaterService.mainStore.fetchBusinessContacts(ar).flatMap {
+              case Some(data) => Future.successful(Ok(views.html.awrs_business_contacts(accountUtils.hasAwrs(ar.enrolments),
                 businessType,
                 businessCustomerDetails.businessAddress,
-                firstTimeForm)))
-          }
-        case None => showErrorPage // given the user started the journey correctly from the home controller, this should never happen
+                businessContactsForm.form.fill(data))))
+              case _ =>
+                val firstTimeForm = businessContactsForm.form
+                Future.successful(Ok(views.html.awrs_business_contacts(accountUtils.hasAwrs(ar.enrolments),
+                  businessType,
+                  businessCustomerDetails.businessAddress,
+                  firstTimeForm)))
+            }
+          case None => showErrorPage
+        }
       }
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
-    implicit val viewMode = viewApplicationType
+  override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
+    implicit val viewMode: ViewApplicationType = viewApplicationType
     businessContactsForm.bindFromRequest.fold(
       formWithErrors =>
-        save4LaterService.mainStore.fetchBusinessCustomerDetails.flatMap {
+        save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals).flatMap {
           case Some(businessCustomerDetails) =>
-            Future.successful(BadRequest(views.html.awrs_business_contacts(AccountUtils.hasAwrs, request.getBusinessType, businessCustomerDetails.businessAddress, formWithErrors)))
+            Future.successful(BadRequest(views.html.awrs_business_contacts(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, businessCustomerDetails.businessAddress, formWithErrors)))
           case _ => showErrorPage
         }
       ,
       addressesAndContactDetailsData =>
-        save4LaterService.mainStore.saveBusinessContacts(addressesAndContactDetailsData) flatMap {
+        save4LaterService.mainStore.saveBusinessContacts(authRetrievals, addressesAndContactDetailsData) flatMap {
           _ =>
-            if (emailVerificationEnabled) {
+            if (applicationConfig.emailVerificationEnabled) {
               emailVerificationService.sendVerificationEmail(addressesAndContactDetailsData.email.get)
             }
             redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
@@ -86,10 +98,4 @@ trait BusinessContactsController extends AwrsController with JourneyPage with Ac
     )
   }
 
-}
-
-object BusinessContactsController extends BusinessContactsController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
-  override val emailVerificationService = EmailVerificationService
 }

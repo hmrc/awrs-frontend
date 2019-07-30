@@ -16,19 +16,20 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.AWRSEnums.BooleanRadioEnum._
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 import utils.TestConstants._
 
-class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form = SupplierAddressesForm.supplierAddressesForm.form
-
 
   "Form validations" should {
     "display the correct validation errors for alcoholSupplier" in {
@@ -44,7 +45,7 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
       val fieldId = "supplierName"
 
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.supplier-addresses.error.supplier_name_blank"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "supplier name", AwrsFieldConfig.supplierNameLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "supplier name", supplierNameLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "supplier name"))
       val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -112,9 +113,18 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
     }
 
     "display the correct validation errors for supplierAddress when it is a foreign address" in {
-      val preCondition = Map("alcoholSupplier" -> "Yes", "ukSupplier" -> "No")
-      val ignoreConditions = Set(Map("alcoholSupplier" -> "No"))
-      NamedUnitTests.foreignAddressIsCompulsoryAndValid(preCondition, ignoreCondition = ignoreConditions, idPrefix = "supplierAddress", nameInErrorMessage = "supplier")
+      val data = Map(
+        "alcoholSupplier" -> Seq("Yes"),
+        "supplierName" -> Seq("Supplier Name"),
+        "ukSupplier" -> Seq("No"),
+        "supplierAddress.addressLine1" -> Seq("1 Testing Ton"),
+        "supplierAddress.addressLine2" -> Seq("Testton"),
+        "supplierAddress.addressCountry" -> Seq("France"),
+        "additionalSupplier" -> Seq("No")
+      )
+
+      val testForm = form.bindFromRequest(data)
+      testForm.errors shouldBe Seq()
     }
 
     "display the correct validation errors for additionalSupplier" in {

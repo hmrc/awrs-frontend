@@ -1,9 +1,7 @@
-import play.routes.compiler.StaticRoutesGenerator
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import sbt._
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
-import play.sbt.routes.RoutesKeys.routesGenerator
 
 trait MicroService {
 
@@ -49,8 +47,7 @@ trait MicroService {
       parallelExecution in Test := false,
       fork in Test := false,
       evictionWarningOptions in update :=
-        EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-        routesGenerator := StaticRoutesGenerator
+        EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
     )
     .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
     .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)

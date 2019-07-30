@@ -19,26 +19,25 @@ package services
 import _root_.models.BusinessDetailsEntityTypes._
 import exceptions.{InvalidStateException, ResubmissionException}
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import services.DataCacheKeys._
-import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.AwrsTestJson._
 import utils.TestConstants._
 import utils.TestUtil._
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
+import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ApplicationServiceTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
-  val mockDataCacheService = mock[Save4LaterService]
-  val mockEnrolService = mock[EnrolService]
-  val mockEmailService = mock[EmailService]
+  val mockDataCacheService: Save4LaterService = mock[Save4LaterService]
+  val mockEnrolService: EnrolService = mock[EnrolService]
+  val mockEmailService: EmailService = mock[EmailService]
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
   val subscribeUpdateSuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
@@ -52,6 +51,13 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     supplierAddress = Some(baseAddress),
     additionalSupplier = "No",
     ukSupplier = "No")
+
+  override def beforeEach() = {
+    when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
+      .thenReturn(true)
+
+    super.beforeEach()
+  }
 
   def cachedData(legalEntity: BusinessType = testLegalEntity) =
     CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
@@ -112,16 +118,10 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
   // the below feModel and cachedSubscription fields needs to be lazy because otherwise when ran from intellij if the
   // .as[AWRSFEModel] call fails it kills the entire test framework before any tests even starts to run
-  lazy val feModel = api6LTDJson.as[AWRSFEModel]
-  lazy val cachedSubscription = feModel.subscriptionTypeFrontEnd
+  lazy val feModel: AWRSFEModel = api6LTDJson.as[AWRSFEModel]
+  lazy val cachedSubscription: SubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd
 
-  object TestApplicationService extends ApplicationService {
-    override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
-    override val enrolService = mockEnrolService
-    override val awrsConnector = mockAWRSConnector
-    override val emailService: EmailService = mockEmailService
-  }
+  val testApplicationService: ApplicationService = new ApplicationService(mockEnrolService, mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
 
   "Application Service" should {
     "send data to right hand service and handle success" in {
@@ -158,7 +158,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "with no changes" in {
         val thrown = the[ResubmissionException] thrownBy
-          TestApplicationService.getModifiedSubscriptionType(
+          testApplicationService.getModifiedSubscriptionType(
             Some(cachedData()),
             Some(testSubscriptionTypeFrontEnd())
           )
@@ -176,7 +176,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
         val testGroupMemberDetailsOrig = GroupMembers(List(testGroupMemberOrig))
 
-        val result = TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(groupMemberDetails =
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(groupMemberDetails =
           Some(testGroupMemberDetailsOrig), businessCustomerDetails = Some(testBusinessCustomerDetailsOrig))))
 
         result.changeIndicators.get shouldBe getChangeIndicators(groupMembersChanged = true)
@@ -186,7 +186,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val testAdditionalBusinessPremisesOrig = AdditionalBusinessPremises(additionalPremises = "No", Some(testAddress()), addAnother = "No")
         val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesOrig1, testAdditionalBusinessPremisesOrig))
 
-        val result = TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(
           additionalPremises = Some(testAdditionalPremisesListOrig))))
 
         result.changeIndicators.get shouldBe getChangeIndicators(premisesChanged = true)
@@ -202,25 +202,25 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           additionalSupplier = "No",
           ukSupplier = "No")))
 
-        val result = TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplier))))
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplier))))
 
         result.changeIndicators.get shouldBe getChangeIndicators(suppliersChanged = true)
       }
 
       "Suppliers Changed should update the correct flag for Non UK Suppliers" in {
-        val thrown = the[ResubmissionException] thrownBy TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
+        val thrown = the[ResubmissionException] thrownBy testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
         thrown.getMessage shouldBe ResubmissionException.resubmissionMessage
       }
 
       "Suppliers Changed should update the correct flag for UK Suppliers" in {
-        val thrown = the[ResubmissionException] thrownBy TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
+        val thrown = the[ResubmissionException] thrownBy testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
         thrown.getMessage shouldBe ResubmissionException.resubmissionMessage
       }
 
       "Declaration Changed should update the correct flag" in {
         val testApplicationDeclarationOrig = ApplicationDeclaration(declarationName = Some("Paul Smith"), declarationRole = Some("Owner"), Option(true))
 
-        val result = TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(applicationDeclaration =
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(applicationDeclaration =
           Some(testApplicationDeclarationOrig))))
 
         result.changeIndicators.get shouldBe getChangeIndicators(declarationChanged = true)
@@ -231,7 +231,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
         val testBusinessDirectorsOrig = BusinessDirectors(List(testBusinessDirectorOrig))
 
-        val result = TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(businessDirectors = Some(testBusinessDirectorsOrig))))
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(businessDirectors = Some(testBusinessDirectorsOrig))))
 
         result.changeIndicators.get shouldBe getChangeIndicators(coOfficialsChanged = true)
       }
@@ -247,7 +247,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           doYouExportAlcohol = Some("No"),
           exportLocation = None)
 
-        val result = TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(tradingActivity = Some(testTradingActivity))))
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(tradingActivity = Some(testTradingActivity))))
 
         result.changeIndicators.get shouldBe getChangeIndicators(additionalBusinessInfoChanged = true)
       }
@@ -258,7 +258,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           otherMainCustomers = Option("Off_License"),
           productType = List("01"),
           otherProductType = None)
-        val result = TestApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(products = Some(testProducts))))
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(products = Some(testProducts))))
 
         result.changeIndicators.get shouldBe getChangeIndicators(additionalBusinessInfoChanged = true)
       }
@@ -280,7 +280,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -303,7 +303,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -327,7 +327,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -351,7 +351,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -372,7 +372,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
             )
           val testCorporateBodyBusinessRegDetailsOrig = testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, isBusinessIncorporated = "No", doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "No")
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -392,7 +392,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testCorporateBodyBusinessRegDetailsOrig =
             testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, isBusinessIncorporated = "No", companyRegDetails = Some(CompanyRegDetails(testCrn, TupleDate("09", "06", "1985"))), doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "No")
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -412,7 +412,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
             )
           val testLlpBusinessRegDetailsOrig = testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, isBusinessIncorporated = "No", doYouHaveVRN = "Yes", vrn = Some("132456789"), doYouHaveUTR = "No")
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -434,7 +434,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
             testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, isBusinessIncorporated = "No", doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "No")
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -456,7 +456,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
             testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, isBusinessIncorporated = "No", doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "Yes", utr = testUtr)
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -478,7 +478,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testPartnershipBusinessRegDetails =
             testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "No")
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -500,7 +500,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
             testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "No")
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -522,7 +522,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
             testBusinessRegistrationDetails(legalEntity = entityType.legalEntity, doYouHaveVRN = "Yes", vrn = testVrn, doYouHaveUTR = "Yes", utr = prefixedLowerCaseUTR.toString())
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -545,7 +545,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val newAddress = Address("my address", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE28 8ER"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -559,7 +559,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         "with Sole Trader operation duration Change" in {
           val entityType = testBusinessDetailsEntityTypes(SoleTrader)
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -573,7 +573,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val entityType = testBusinessDetailsEntityTypes(SoleTrader)
           val testBusinessAddress = Address("Line1", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE2 1AP"))
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -593,7 +593,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -609,7 +609,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val entityType = testBusinessDetailsEntityTypes(CorporateBody)
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -625,7 +625,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testBusinessAddress = Address("address Line1", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE2 1AP"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -645,7 +645,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -662,7 +662,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testBusinessAddress = Address("address Line1", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE2 1AP"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -683,7 +683,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -700,7 +700,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testBusinessAddress = Address("address Line1", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE2 1AP"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -725,7 +725,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -746,7 +746,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesMainPlace, testAdditionalBusinessPremises))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -763,7 +763,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testBusinessCustomerDetailsOrig = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("address Line1", "address Line2", Option("address Line3"), Option("address Line4"), Option("NE28 8ER")), "sap123", "safe123", false, Some("agent123"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -780,7 +780,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testContactAddress = Address("Line1", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE2 1AP"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -797,7 +797,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testBusinessCustomerDetailsOrig = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("address Line1", "address Line2", Option("address Line3"), Option("address Line4"), Option("NE28 8ER")), "sap123", "safe123", false, Some("agent123"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -815,7 +815,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testContactAddress = Address("Line1", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE2 1AP"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -832,7 +832,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testBusinessCustomerDetailsOrig = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("address Line1", "address Line2", Option("address Line3"), Option("address Line4"), Option("NE28 8ER")), "sap123", "safe123", false, Some("agent123"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -851,7 +851,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           val testContactAddress = Address("Line1", "address Line2", Some("address Line3"), Some("address Line4"), Some("NE2 1AP"))
 
           val result =
-            TestApplicationService.getModifiedSubscriptionType(
+            testApplicationService.getModifiedSubscriptionType(
               Some(cachedData(legalEntity = entityType)),
               Some(testSubscriptionTypeFrontEnd(
                 legalEntity = Some(entityType),
@@ -865,7 +865,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         "if trim suppliers is supplied with a list greater than 5 it will only return the first 5" in {
           val oldSuppliers = Suppliers(List(baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier))
           oldSuppliers.suppliers.size shouldBe 7
-          val newSuppliers = TestApplicationService.trimSuppliers(Some(oldSuppliers))
+          val newSuppliers = testApplicationService.trimSuppliers(Some(oldSuppliers))
           newSuppliers.get.suppliers.size shouldBe 5
         }
 
@@ -876,55 +876,55 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       "return valid Section object when legal entity is LTD" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData())
         val expectedSection = Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
-        val outputSection = await(TestApplicationService.getSections("cacheID"))
+        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         outputSection shouldBe expectedSection
       }
 
       "return valid Section object when legal entity is SOP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("SOP")))
         val expectedSection = Sections(soleTraderBusinessDetails = true)
-        val outputSection = await(TestApplicationService.getSections("cacheID"))
+        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         outputSection shouldBe expectedSection
       }
 
       "return valid Section object when legal entity is Partnership" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("Partnership")))
         val expectedSection = Sections(partnershipBusinessDetails = true, partnership = true)
-        val outputSection = await(TestApplicationService.getSections("cacheID"))
+        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         outputSection shouldBe expectedSection
       }
 
       "return valid Section object when legal entity is LP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LP")))
         val expectedSection = Sections(llpBusinessDetails = true, partnership = true)
-        val outputSection = await(TestApplicationService.getSections("cacheID"))
+        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         outputSection shouldBe expectedSection
       }
 
       "return valid Section object when legal entity is LLP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LLP")))
         val expectedSection = Sections(llpBusinessDetails = true, partnership = true)
-        val outputSection = await(TestApplicationService.getSections("cacheID"))
+        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         outputSection shouldBe expectedSection
       }
 
       "return valid Section object when legal entity is LTD_GRP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LTD_GRP")))
         val expectedSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, businessDirectors = true)
-        val outputSection = await(TestApplicationService.getSections("cacheID"))
+        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         outputSection shouldBe expectedSection
       }
 
       "return valid Section object when legal entity is LLP_GRP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LLP_GRP")))
         val expectedSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, partnership = true)
-        val outputSection = await(TestApplicationService.getSections("cacheID"))
+        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         outputSection shouldBe expectedSection
       }
 
       "return exception when legal entity is invalid" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("XYZ")))
-        val thrown = the[InvalidStateException] thrownBy await(TestApplicationService.getSections("cacheID"))
+        val thrown = the[InvalidStateException] thrownBy await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
         thrown.getMessage shouldBe "Invalid Legal entity"
       }
     }
@@ -932,7 +932,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     "remove the unnecessary attributes from subscription type " should {
       "return valid AWRSFEModel when entity type is LTD" in {
         val ltdSection = Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
-        val outputSubscriptionType = TestApplicationService.assembleAWRSFEModel(Some(cachedData()), Some(testBusinessCustomerDetails("LTD")), ltdSection)
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData()), Some(testBusinessCustomerDetails("LTD")), ltdSection)
 
         outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
         outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "LTD"
@@ -945,7 +945,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "return valid AWRSFEModel when entity type is SOP" in {
         val soleSection = Sections(soleTraderBusinessDetails = true)
-        val outputSubscriptionType = TestApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("SOP"))),
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("SOP"))),
           Some(testBusinessCustomerDetails("SOP")), soleSection)
 
         outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
@@ -959,7 +959,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "return valid AWRSFEModel when entity type is Partnership" in {
         val partnershipSection = Sections(partnershipBusinessDetails = true, partnership = true)
-        val outputSubscriptionType = TestApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("Partnership"))),
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("Partnership"))),
           Some(testBusinessCustomerDetails("Partnership")), partnershipSection)
 
         outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
@@ -973,7 +973,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "return valid AWRSFEModel when entity type is LP" in {
         val lpSection = Sections(llpBusinessDetails = true, partnership = true)
-        val outputSubscriptionType = TestApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LP"))),
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LP"))),
           Some(testBusinessCustomerDetails("LP")), lpSection)
 
         outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
@@ -987,7 +987,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "return valid AWRSFEModel when entity type is LLP" in {
         val llpSection = Sections(llpBusinessDetails = true, partnership = true)
-        val outputSubscriptionType = TestApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LLP"))),
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LLP"))),
           Some(testBusinessCustomerDetails("LLP")), llpSection)
 
         outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
@@ -1001,7 +1001,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "return valid AWRSFEModel when entity type is LTD_GRP" in {
         val ltdGrpSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, businessDirectors = true)
-        val outputSubscriptionType = TestApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LTD_GRP"))),
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LTD_GRP"))),
           Some(testBusinessCustomerDetails("LTD_GRP")), ltdGrpSection)
 
         outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
@@ -1015,7 +1015,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "return valid AWRSFEModel when entity type is LLP_GRP" in {
         val llpGrpSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, partnership = true)
-        val outputSubscriptionType = TestApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LLP_GRP"))),
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LLP_GRP"))),
           Some(testBusinessCustomerDetails("LLP_GRP")), llpGrpSection)
 
         outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
@@ -1029,12 +1029,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
     "isApplicationDifferent " should {
       "return false if no section has changed" in {
-        val result = TestApplicationService.isApplicationDifferent(matchingSoleTraderCacheMap, soleTraderSubscriptionTypeFrontEnd)
+        val result = testApplicationService.isApplicationDifferent(matchingSoleTraderCacheMap, soleTraderSubscriptionTypeFrontEnd)
         await(result) shouldBe false
       }
 
       "return true if any section has changed" in {
-        val result = TestApplicationService.isApplicationDifferent(matchingSoleTraderCacheMap, differentSoleTraderSubscriptionTypeFrontEnd)
+        val result = testApplicationService.isApplicationDifferent(matchingSoleTraderCacheMap, differentSoleTraderSubscriptionTypeFrontEnd)
         await(result) shouldBe true
       }
     }
@@ -1043,14 +1043,14 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       "return false if no section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = soleTraderSubscriptionTypeFrontEnd)
-        val result = TestApplicationService.hasAPI5ApplicationChanged(testUtr)
+        val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
         await(result) shouldBe false
       }
 
       "return true if any section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = differentSoleTraderSubscriptionTypeFrontEnd)
-        val result = TestApplicationService.hasAPI5ApplicationChanged(testUtr)
+        val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
         await(result) shouldBe true
       }
     }
@@ -1058,13 +1058,13 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     "getApi5ChangeIndicators " should {
       "return all false indicators if no section has changed" in {
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = soleTraderSubscriptionTypeFrontEnd)
-        val result = TestApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap)
+        val result = testApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap, TestUtil.defaultAuthRetrieval)
         await(result) shouldBe SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)
       }
 
       "return at least one true indicator if any section has changed" in {
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = differentSoleTraderSubscriptionTypeFrontEnd)
-        val result = TestApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap)
+        val result = testApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap, TestUtil.defaultAuthRetrieval)
         await(result) shouldBe SectionChangeIndicators(true, false, false, false, false, false, false, false, false, false, false, false)
       }
     }
@@ -1100,9 +1100,9 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
               s"return the correct value for legalEntity: $legalEntity and updatedBusinessName: $updatedBusinessName" in {
                 val businessType = BusinessType(Some(legalEntity), None, Some(true))
                 (updatedBusinessName, legalEntity) match {
-                  case (true, ("LTD_GRP" | "LLP_GRP")) => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe true
-                  case (true, _) => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe false
-                  case _ => TestApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) shouldBe false
+                  case (true, ("LTD_GRP" | "LLP_GRP")) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe true
+                  case (true, _) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe false
+                  case _ => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) shouldBe false
                 }
               }
           }
@@ -1112,7 +1112,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
   def testAddGroupRepToGroupMembers: (CacheMap,Option[GroupMembers]) = {
     val cached = cachedData()
-    (cached, TestApplicationService.addGroupRepToGroupMembers(Some(cached)))
+    (cached, testApplicationService.addGroupRepToGroupMembers(Some(cached)))
   }
 
   def testReplaceGroupRepInGroupMembers: (CacheMap, Option[GroupMembers]) = {
@@ -1125,15 +1125,15 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
       groupMembersName -> Json.toJson(testGroupMemberDetails)))
 
-    (cached, TestApplicationService.replaceGroupRepInGroupMembers(Some(changed)))
+    (cached, testApplicationService.replaceGroupRepInGroupMembers(Some(changed)))
   }
 
   def sendWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any): Unit = {
     setupMockSave4LaterService(fetchAll = cachedData())
     setupMockAWRSConnectorWithOnly(submitAWRSData = subscribeSuccessResponse)
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
-    when(mockEmailService.sendConfirmationEmail(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
-    val result = TestApplicationService.sendApplication()
+    when(mockEmailService.sendConfirmationEmail(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+    val result = testApplicationService.sendApplication(TestUtil.defaultAuthRetrieval)
     test(result)
   }
 
@@ -1142,7 +1142,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSubscription)
     setupMockAWRSConnectorWithOnly(updateAWRSData = subscribeUpdateSuccessResponse)
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
-    TestApplicationService.updateApplication()
+    testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)
   }
 
   def sendCallUpdateGroupBusinessPartnerWithAuthorisedUser(test: Future[SuccessfulUpdateGroupBusinessPartnerResponse] => Any) : Unit = {
@@ -1150,6 +1150,6 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSubscription)
     setupMockAWRSConnectorWithOnly(updateGroupBusinessPartner = updateGroupBusinessPartnerResponse)
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
-    TestApplicationService.callUpdateGroupBusinessPartner(cachedData(), Some(cachedSubscription), testSubscriptionStatusTypeApproved)
+    testApplicationService.callUpdateGroupBusinessPartner(cachedData(), Some(cachedSubscription), testSubscriptionStatusTypeApproved, TestUtil.defaultAuthRetrieval)
   }
 }

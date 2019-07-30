@@ -23,13 +23,13 @@ import forms.test.util._
 import forms.validation.util.ConstraintUtil.FormData
 import forms.validation.util.FieldError
 import models.TupleDate
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 import utils.TestConstants._
 
-class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
   lazy val forms = (entity: String, hasAwrs: Boolean) => BusinessDetailsForm.businessDetailsForm(entity, hasAwrs).form
   val SoleTrader = "SOP"
   val Ltd = "LTD"
@@ -50,7 +50,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
             val fieldId = "companyName"
 
             val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty"))
-            val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", AwrsFieldConfig.companyNameLen)
+            val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", companyNameLen)
             val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "business name"))
             val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -79,8 +79,8 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
 
         val preCondition: Map[String, String] = Map("doYouHaveTradingName" -> BooleanRadioEnum.Yes.toString)
 
-        val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.business_details.error.tradingName_empty"))
-        val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", AwrsFieldConfig.tradingNameLen)
+        val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.tradingName_empty"))
+        val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", tradingNameLen)
         val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "trading name"))
         val formatError = ExpectedFieldFormat(invalidFormats)
 

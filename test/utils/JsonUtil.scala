@@ -25,7 +25,7 @@ object JsonUtil extends JsonUtil
 
 trait JsonUtil {
 
-  lazy val dummyDataMap = Map("$nino" -> testNino,
+  lazy val dummyDataMap: Map[String, String] = Map("$nino" -> testNino,
     "$utr" -> testUtr,
     "$grpJoinDate" -> testGrpJoinDate,
     "$testRefNo" -> testRefNo,

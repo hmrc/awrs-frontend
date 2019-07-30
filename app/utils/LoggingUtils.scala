@@ -24,7 +24,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 // This means that any Splunk audit calls will automatically be logged as DEBUG to aid local debugging but not appear in
 // the production logs. All trace and debug calls will only appear locally so should only be used for local debugging
 // and not for anything that you would want to see logged in production.
-trait LoggingUtils extends Auditable {
+trait LoggingUtils {
+
+  val auditable: Auditable
 
   final val auditAPI4TxName: String = "API4"
   final val auditAPI5TxName: String = "API5"
@@ -62,7 +64,7 @@ trait LoggingUtils extends Auditable {
 
   private def splunkFunction(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier) = {
     Logger.debug(splunkString + splunkToLogger(transactionName, detail, eventType))
-    sendDataEvent(
+    auditable.sendDataEvent(
       transactionName = transactionName,
       detail = detail,
       eventType = eventType

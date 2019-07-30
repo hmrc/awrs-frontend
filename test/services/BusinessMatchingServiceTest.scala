@@ -16,42 +16,37 @@
 
 package services
 
-import builders.AuthBuilder
 import connectors._
 import forms.AWRSEnums
 import models.Organisation
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import services.mocks.MockKeyStoreService
 import utils.AwrsTestJson._
-import utils.AwrsUnitTestTraits
+import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants.testUtr
 
 import scala.concurrent.Future
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
 class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreService {
 
   val mockBusinessMatchingConnector: BusinessMatchingConnector = mock[BusinessMatchingConnector]
-
-  object BusinessMatchingServiceTest extends BusinessMatchingService {
-    override val businessMatchingConnector = mockBusinessMatchingConnector
-    override val keyStoreService = TestKeyStoreService
-  }
+  val businessMatchingServiceTest: BusinessMatchingService = new BusinessMatchingService(testKeyStoreService, mockBusinessMatchingConnector, mockAuditable)
 
   "Business Matching Services" should {
-    "use correct Connector" in {
-      BusinessMatchingService.businessMatchingConnector shouldBe BusinessMatchingConnector
-    }
 
     "validate a UTR is correct by business matching" in {
-      when(mockBusinessMatchingConnector.lookup(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(matchSuccessResponseJson))
-      val result = BusinessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)))
+      when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchSuccessResponseJson))
+      val result = businessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)), TestUtil.defaultAuthRetrieval)
       await(result) shouldBe true
     }
 
     "validate a UTR is incorrect by business matching" in {
-      when(mockBusinessMatchingConnector.lookup(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(matchFailureResponseJson))
-      val result = BusinessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)))
+      when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchFailureResponseJson))
+      val result = businessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)), TestUtil.defaultAuthRetrieval)
       await(result) shouldBe false
     }
   }

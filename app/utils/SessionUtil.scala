@@ -79,7 +79,7 @@ object SessionUtil {
     @inline def addBusinessNameToSession(businessName: String)(implicit request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionBusinessName -> businessName)
 
-    @inline def addJouneyStartLocationToSession(startLocation: String)(implicit request: Request[AnyContent]): Result =
+    @inline def addJourneyStartLocationToSession(startLocation: String)(implicit request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionJouneyStartLocation -> startLocation)
 
     @inline def removeJouneyStartLocationFromSession(implicit request: Request[AnyContent]): Result =

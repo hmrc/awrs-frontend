@@ -14,9 +14,26 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import builders.SessionBuilder
+import config.ApplicationConfig
 import forms.BusinessContactsForm
 import models.BusinessContacts
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -32,15 +49,18 @@ import scala.concurrent.Future
 class BusinessContactsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val businessCustomerDetailsFormId = "businessCustomerDetails"
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
 
-  def testRequest(premises: BusinessContacts) =
+  val businessCustomerDetailsFormId = "businessCustomerDetails"
+  val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
+
+
+  def testRequest(premises: BusinessContacts): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessContacts](FakeRequest(), BusinessContactsForm.businessContactsValidationForm, premises)
 
-  object TestBusinessContactsController extends BusinessContactsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val emailVerificationService = mock[EmailVerificationService]
+  val testBusinessContactsController: BusinessContactsController =
+    new BusinessContactsController(mockMCC, mockEmailVerificationService,testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl = "/sign-in"
   }
 
   "BusinessContactsController" must {
@@ -101,7 +121,8 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchPartnerDetails = None,
       fetchAdditionalBusinessPremisesList = None
     )
-    val result = TestBusinessContactsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+    setAuthMocks()
+    val result = testBusinessContactsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
@@ -110,7 +131,8 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
-    val result = TestBusinessContactsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails("SOP").businessType.get))
+    setAuthMocks()
+    val result = testBusinessContactsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails("SOP").businessType.get))
     test(result)
   }
 

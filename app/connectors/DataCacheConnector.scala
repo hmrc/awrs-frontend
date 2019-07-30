@@ -17,28 +17,28 @@
 package connectors
 
 import config.{AwrsAPIShortLivedCache, AwrsSessionCache, AwrsShortLivedCache, BusinessCustomerSessionCache}
+import javax.inject.Inject
 import play.api.libs.json
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 
-object AwrsDataCacheConnector extends Save4LaterConnector {
-  override val shortLivedCache: ShortLivedCache = AwrsShortLivedCache
+class AwrsDataCacheConnector @Inject()(awrsShortLivedCache: AwrsShortLivedCache) extends Save4LaterConnector {
+  override val shortLivedCache: ShortLivedCache = awrsShortLivedCache
 }
 
-object AwrsAPIDataCacheConnector extends Save4LaterConnector {
-  override val shortLivedCache: ShortLivedCache = AwrsAPIShortLivedCache
+class AwrsAPIDataCacheConnector @Inject()(awrsAPIShortLivedCache: AwrsAPIShortLivedCache) extends Save4LaterConnector {
+  override val shortLivedCache: ShortLivedCache = awrsAPIShortLivedCache
 }
 
-object AwrsKeyStoreConnector extends KeyStoreConnector {
-  override val sessionCache: SessionCache = AwrsSessionCache
+class AwrsKeyStoreConnector @Inject()(awrsSessionCache: AwrsSessionCache) extends KeyStoreConnector {
+  override val sessionCache: SessionCache = awrsSessionCache
 }
 
-object BusinessCustomerDataCacheConnector extends KeyStoreConnector {
-  override val sessionCache: SessionCache = BusinessCustomerSessionCache
+class BusinessCustomerDataCacheConnector @Inject()(businessCustomerSessionCache: BusinessCustomerSessionCache) extends KeyStoreConnector {
+  override val sessionCache: SessionCache = businessCustomerSessionCache
 }
 
 
@@ -46,13 +46,13 @@ trait KeyStoreConnector {
 
   val sessionCache: SessionCache
 
-  @inline def fetchDataFromKeystore[T](key: String)(implicit hc: HeaderCarrier, formats: json.Format[T]): Future[Option[T]] =
+  @inline def fetchDataFromKeystore[T](key: String)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
     sessionCache.fetchAndGetEntry[T](key)
 
-  @inline def saveDataToKeystore[T](formID: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T]): Future[CacheMap] =
+  @inline def saveDataToKeystore[T](formID: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[CacheMap] =
     sessionCache.cache(formID, data)
 
-  @inline def removeAll()(implicit hc: HeaderCarrier): Future[HttpResponse] =
+  @inline def removeAll()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
     sessionCache.remove()
 
 }
@@ -61,18 +61,18 @@ trait Save4LaterConnector {
 
   val shortLivedCache: ShortLivedCache
 
-  @inline def fetchData4Later[T](utr: String, formId: String)(implicit hc: HeaderCarrier, formats: json.Format[T]): Future[Option[T]] =
+  @inline def fetchData4Later[T](utr: String, formId: String)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
     shortLivedCache.fetchAndGetEntry[T](utr, formId)
 
-  @inline def saveData4Later[T](utr: String, formId: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T]): Future[Option[T]] =
+  @inline def saveData4Later[T](utr: String, formId: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
     shortLivedCache.cache(utr, formId, data) flatMap {
       data => Future.successful(data.getEntry[T](formId))
     }
 
-  @inline def fetchAll(utr: String)(implicit hc: HeaderCarrier): Future[Option[CacheMap]] =
+  @inline def fetchAll(utr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
     shortLivedCache.fetch(utr)
 
-  @inline def removeAll(cacheId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+  @inline def removeAll(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
     shortLivedCache.remove(cacheId)
 
 }

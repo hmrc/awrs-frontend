@@ -16,14 +16,13 @@
 
 package controllers.util
 
-import java.util.UUID
-
-import builders.{AuthBuilder, SessionBuilder}
+import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import controllers.auth.Utr._
-import play.api.mvc.{AnyContent, Request, Result}
+import controllers.TradingActivityController
+import controllers.auth.StandardAuthRetrievals
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request, Result}
+import play.api.test.FakeRequest
 import services.mocks.MockSave4LaterService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import views.view_application.helpers.ViewApplicationType
 
@@ -38,17 +37,14 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  object TestController extends SaveAndRoutable {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val section = "test"
-
-    override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result]
+  val testController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl = "/sign-in"
+    override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result]
     = Future.successful(Ok)
   }
 
   setUser(hasAwrs = true)
-  lazy val baseRequest = SessionBuilder.buildRequestWithSession(userId, "SOP") // use sole trader journey as the foundation for these tests
+  lazy val baseRequest: FakeRequest[AnyContentAsEmpty.type] = SessionBuilder.buildRequestWithSession(userId, "SOP") // use sole trader journey as the foundation for these tests
 
   "redirectToIndex" should {
     "return true if the section name is index" in {
@@ -67,7 +63,7 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
 
   def testWasSectionCompletedWhenCurrentJourneyStarted(sectionName: String, sessionSectionStatusHash: String): Future[Boolean] = {
     implicit val implicitRequest = baseRequest.withSession(baseRequest.session.+((AwrsSessionKeys.sessionSectionStatus, sessionSectionStatusHash)).data.toSeq: _*)
-    TestController.redirectToIndex(sectionName)
+    testController.redirectToIndex(sectionName)
   }
 
 }

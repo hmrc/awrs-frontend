@@ -16,6 +16,7 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.submapping.AddressMapping._
 import forms.prevalidation._
@@ -24,12 +25,12 @@ import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.Supplier
-import play.api.data.{Mapping, Form}
+import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
-object SupplierAddressesForm {
+object SupplierAddressesForm extends AwrsFieldConfig {
   private val addressPrefix = "supplierAddress"
   private val addressErrorMessageArg = "supplier"
   private val vatNumber = "vatNumber"
@@ -47,13 +48,14 @@ object SupplierAddressesForm {
     val supplierNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.supplier-addresses.error.supplier_name_blank"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.supplierNameLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameter(supplierNameLen, fieldId, fieldNameInErrorMessage),
         genericInvalidFormatConstraintParameter(validText, fieldId = "supplierName", fieldNameInErrorMessage)
       )
     compulsoryText(supplierNameConstraintParameters)
   }
 
-  @inline def vatRegistered_compulsory() = yesNoQuestion_compulsory("vatRegistered", "awrs.generic.error.supplier.do_you_have_vat_reg_empty")
+  @inline def vatRegistered_compulsory(): Mapping[Option[String]] =
+    yesNoQuestion_compulsory("vatRegistered", "awrs.generic.error.supplier.do_you_have_vat_reg_empty")
 
   private def vatNumber_compulsory: Mapping[Option[String]] =
     commonIdConstraints(
@@ -63,17 +65,19 @@ object SupplierAddressesForm {
       isInvalidErrMessage = "awrs.generic.error.vrn_invalid"
     )
 
-  val supplierAddressesValidationForm = Form(
+  def supplierAddressesValidationForm(implicit applicationConfig: ApplicationConfig): Form[Supplier] = Form(
     mapping(
       "alcoholSupplier" -> alcoholSupplier_compulsory,
       "supplierName" -> (supplierName_compulsory iff whenThereAreAlcoholSuppliers),
       "ukSupplier" -> (isUkSupplier_compulsory iff whenThereAreAlcoholSuppliers),
-      addressPrefix -> (ukOrForeignAddressMapping(addressPrefix, addressErrorMessageArg).toOptionalAddressMapping iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered)),
+      addressPrefix -> (ukOrForeignAddressMapping(addressPrefix, addressErrorMessageArg, applicationConfig.countryCodes).toOptionalAddressMapping iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered)),
       "vatRegistered" -> (vatRegistered_compulsory iff whenThereAreUkAlcoholSuppliers),
       vatNumber -> (vatNumber_compulsory iff whenSupplierIsVatRegistered),
       "additionalSupplier" -> (additionalSupplier_compulsory iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered))
     )(Supplier.apply)(Supplier.unapply)
   )
 
-  val supplierAddressesForm = PreprocessedForm(supplierAddressesValidationForm)
+  def supplierAddressesForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[Supplier] = {
+    PreprocessedForm(supplierAddressesValidationForm)
+  }
 }

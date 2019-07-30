@@ -17,14 +17,12 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
 import models._
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.IndexService
-import services.mocks.{MockKeyStoreService, MockSave4LaterService}
+import services.mocks.{MockIndexService, MockKeyStoreService, MockSave4LaterService}
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
@@ -33,19 +31,18 @@ import scala.concurrent.Future
 class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService
-  with MockKeyStoreService {
+  with MockKeyStoreService
+  with MockIndexService {
 
-  val request = FakeRequest()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   val newBusinessName = "Changed"
 
   val testBusinessNameChange = BusinessNameChangeConfirmation("Yes")
 
-  object TestBusinessNameChangeController extends BusinessNameChangeController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
-    override val indexService = mock[IndexService]
+  val testBusinessNameChangeController: BusinessNameChangeController =
+    new BusinessNameChangeController(mockMCC, testKeyStoreService, testSave4LaterService, mockIndexService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   "Submitting the business name change confirmation form with " should {
@@ -69,7 +66,8 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
     setupMockSave4LaterService()
-    val result = TestBusinessNameChangeController.callToAction().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testBusinessNameChangeController.callToAction().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

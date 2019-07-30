@@ -20,11 +20,14 @@
 @import views.view_application.subviews.SubviewIds
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String],
+@import config.ApplicationConfig
+@(headingKey: String,
   someModel: Option[models.BusinessContacts],
   someBCDetails:  Option[models.BusinessCustomerDetails],
   showTableHeader: Boolean = true
-)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.businessContactsId
@@ -53,7 +56,7 @@
                         addressLine2 = bcAddress.line_2,
                         addressLine3 = bcAddress.line_3,
                         addressLine4 = bcAddress.line_4,
-                        postcode = postcodeHelper(bcAddress.postcode.get),
+                        postcode = Some(postcodeHelper(bcAddress.postcode.get)),
                         addressCountry = None,
                         addressCountryCode = bcAddress.country
                     ))
@@ -67,24 +70,23 @@
     @if(showTableHeader) {
         @table_row(
             "",
-            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.business_contacts_text"))(x => x))
-        )(cssClass = "record-header")
+            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.business_contacts_text")}"))
+        )(cssClass = Some("record-header"), messages = messages)
     }
     @table_row(
-        Messages("awrs.view_application.contact_name"),
-        model.contactFirstName + " " +
-        model.contactLastName
+        messages("awrs.view_application.contact_name"),
+        Some(model.contactFirstName.getOrElse("") + " " + model.contactLastName.getOrElse(""))
     )
     @table_row(
-        Messages("awrs.generic.telephone"),
+        messages("awrs.generic.telephone"),
         model.telephone
     )
     @table_row(
-        Messages("awrs.generic.email"),
+        messages("awrs.generic.email"),
         model.email
     )
     @address_helper(
-        Messages("awrs.view_application.contact_address"),
+        messages("awrs.view_application.contact_address"),
         contactAddressToDisplay
     )
 }
@@ -97,9 +99,9 @@
     </table>
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(heading, wrapperId, href, businessContactsName)(content(model), preContent = preContent, postContent = postContent)
+@someModel match {
+    case Some(model) => {
+        @subview_core(heading, wrapperId, href, Some(businessContactsName))(content(model), preContent = Some(preContent), postContent = Some(postContent))
     }
     case _ => {}
 }

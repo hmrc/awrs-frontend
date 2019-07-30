@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@(declarationTxt: String, id: String)
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
+@(declarationTxt: String, id: String)(implicit messages: Messages)
+
+
 <div id=@id class="form-group text-disclaimer">
     <i>
         <span class="visuallyhidden">@Messages("awrs.generic.warning_icon_text")</span>

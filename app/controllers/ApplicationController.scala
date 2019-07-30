@@ -16,40 +16,31 @@
 
 package controllers
 
-import controllers.auth.ExternalUrls
-import play.api.Mode.Mode
-import play.api.{Configuration, Play}
-import play.api.mvc.Action
-import uk.gov.hmrc.play.config.RunMode
-import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
-import utils.SessionUtil._
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
+import config.ApplicationConfig
+import javax.inject.Inject
+import play.api.i18n.Messages
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-object ApplicationController extends ApplicationController {
-  override protected def mode: Mode = Play.current.mode
+class ApplicationController @Inject()(servicesConfig: ServicesConfig,
+                                      mcc: MessagesControllerComponents,
+                                      implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) {
 
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-trait ApplicationController extends FrontendController with RunMode {
-
-  import play.api.Play.current
-
-  def unauthorised = Action { implicit request =>
+  def unauthorised(implicit messages: Messages): Action[AnyContent] = Action { implicit request =>
     Unauthorized(views.html.unauthorised())
   }
 
-  def logout = Action { implicit request =>
-    Redirect(ExternalUrls.signOut)
+  def logout: Action[AnyContent] = Action { implicit request =>
+    Redirect(applicationConfig.signOut)
   }
 
-  def timedOut() = UnauthorisedAction {
+  def timedOut(): Action[AnyContent] = Action {
     implicit request =>
-      Redirect(ExternalUrls.signOut)
+      Redirect(applicationConfig.signOut)
   }
 
-  def keepAlive = UnauthorisedAction {
+  def keepAlive: Action[AnyContent] = Action {
     implicit request =>
       Ok("OK")
   }

@@ -23,31 +23,33 @@
 @import views.view_application.helpers._
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
 
-@(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode)
+@import config.ApplicationConfig
+@(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent],
+        viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.TradingActivityController.saveAndReturn
-        case false => controllers.routes.TradingActivityController.saveAndContinue
+    if(isEditMode) {
+        controllers.routes.TradingActivityController.saveAndReturn
+    } else {
+        controllers.routes.TradingActivityController.saveAndContinue
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @pageHeading = @{
-    Messages("awrs.additional_information.trading_activity.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))
+    messages("awrs.additional_information.trading_activity.heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about")))
 }
 
 @includes.awrs_main(
-    title = Messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
+    title = messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(
@@ -67,9 +69,9 @@
                     InputTypeGroupCheckboxParams(
                         tradingActivityForm("wholesalerType"),
                         wholesaler,
-                        legend = Messages("awrs.additional_information.wholesaler_type"),
+                        legend = messages("awrs.additional_information.wholesaler_type"),
                         fieldSetAttributes = "id=wholesalerType_field",
-                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHint = messages("awrs.additional_information.form_hint"),
                         formHintId = "wholesalerType-hint",
                         ariaDescribedBy = "wholesalerType-legend wholesalerType-hint",
                         formHasErrors = tradingActivityForm.hasErrors
@@ -79,10 +81,10 @@
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             tradingActivityForm("otherWholesaler"),
-                            label = Messages("awrs.additional_information.other.wholesaler_type"),
+                            label = messages("awrs.additional_information.other.wholesaler_type"),
                             labelHighlight = true,
                             inputId = "otherWholesaler",
-                            maxLength = frontendDefaultLen.toString,
+                            maxLength = frontendDefaultLen,
                             wrapperClass = "panel-indent",
                             required = true
                         )
@@ -94,9 +96,9 @@
                     InputTypeGroupCheckboxParams(
                         tradingActivityForm("typeOfAlcoholOrders"),
                         orders,
-                        legend = Messages("awrs.additional_information.orders.orders_question"),
+                        legend = messages("awrs.additional_information.orders.orders_question"),
                         fieldSetAttributes = "id=typeOfAlcoholOrders_field",
-                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHint = messages("awrs.additional_information.form_hint"),
                         formHintId = "typeOfAlcoholOrders-hint",
                         ariaDescribedBy = "typeOfAlcoholOrders-legend typeOfAlcoholOrders-hint",
                         formHasErrors = tradingActivityForm.hasErrors
@@ -106,10 +108,10 @@
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             tradingActivityForm("otherTypeOfAlcoholOrders"),
-                            label = Messages("awrs.additional_information.orders.other.orders_question"),
+                            label = messages("awrs.additional_information.orders.other.orders_question"),
                             labelHighlight = true,
                             inputId = "otherTypeOfAlcoholOrders",
-                            maxLength = frontendDefaultLen.toString,
+                            maxLength = frontendDefaultLen,
                             wrapperClass = "panel-indent",
                             required = true
                         )
@@ -121,9 +123,9 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         tradingActivityForm("doesBusinessImportAlcohol"),
-                        Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                            Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                        legend = Messages("awrs.additional_information.alcohol_import"),
+                        Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                            messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                        legend = messages("awrs.additional_information.alcohol_import"),
                         legendId = "doesBusinessImportAlcohol-legend",
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=doesBusinessImportAlcohol_field"
@@ -134,9 +136,9 @@
             @awrsInputTypeRadioGroup(
                 InputTypeRadioGroupParams(
                     tradingActivityForm("doYouExportAlcohol"),
-                    Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                        Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                    legend = Messages("awrs.additional_information.alcohol_export"),
+                    Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                        messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                    legend = messages("awrs.additional_information.alcohol_export"),
                     legendId = "doYouExportAlcohol-legend",
                     fieldSetClass = "inline",
                     fieldSetAttributes = "id=doYouExportAlcohol_field"
@@ -149,7 +151,7 @@
                         InputTypeGroupCheckboxParams(
                             tradingActivityForm("exportLocation"),
                             exportAlcohol,
-                            legend = Messages("awrs.additional_information.export_location"),
+                            legend = messages("awrs.additional_information.export_location"),
                             fieldSetAttributes = "id=exportLocation_field"
                         )
                     )
@@ -159,13 +161,13 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         tradingActivityForm("thirdPartyStorage"),
-                        Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                            Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                        legend = Messages("awrs.additional_information.third_party_storage"),
+                        Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                            messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                        legend = messages("awrs.additional_information.third_party_storage"),
                         legendId = "thirdPartyStorage-legend",
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=thirdPartyStorage_field",
-                        formHint = Messages("awrs.additional_information.third_party_storage_help_text"),
+                        formHint = messages("awrs.additional_information.third_party_storage_help_text"),
                         formHintId = "thirdPartyStorage-hint",
                         ariaDescribedBy = "thirdPartyStorage-legend thirdPartyStorage-hint",
                         formHasErrors = tradingActivityForm.hasErrors

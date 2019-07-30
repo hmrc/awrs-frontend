@@ -16,51 +16,41 @@
 
 package connectors
 
+import audit.Auditable
 import com.fasterxml.jackson.core.JsonParseException
-import config.{AwrsFrontendAuditConnector, WSHttp}
+import controllers.auth.StandardAuthRetrievals
+import javax.inject.Inject
 import models.MatchBusinessData
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
-import utils.AccountUtils._
-import utils.LoggingUtils
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.audit.model.EventTypes
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import utils.{AccountUtils, LoggingUtils}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException, ServiceUnavailableException}
+import scala.concurrent.{ExecutionContext, Future}
 
-object BusinessMatchingConnector extends BusinessMatchingConnector {
-  override val appName = "awrs-frontend"
-  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
+class BusinessMatchingConnectorImpl @Inject()(servicesConfig: ServicesConfig,
+                                          val auditable: Auditable,
+                                          val accountUtils: AccountUtils,
+                                          val http: DefaultHttpClient) extends BusinessMatchingConnector {
+  val serviceUrl: String = servicesConfig.baseUrl("business-matching")
   val baseUri = "business-matching"
   val lookupUri = "business-lookup"
-  val serviceUrl = baseUrl("business-matching")
-  val http: HttpGet with HttpPost = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }
 
-trait BusinessMatchingConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
+trait BusinessMatchingConnector extends RawResponseReads with LoggingUtils {
 
-  def serviceUrl: String
+  val baseUri: String
+  val serviceUrl: String
+  val lookupUri: String
+  val http: DefaultHttpClient
+  val accountUtils: AccountUtils
 
-  def baseUri: String
+  def lookup(lookupData: MatchBusinessData, userType: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[JsValue] = {
 
-  def lookupUri: String
-
-  def http: HttpGet with HttpPost
-
-  def lookup(lookupData: MatchBusinessData, userType: String)
-            (implicit user: AuthContext, hc: HeaderCarrier): Future[JsValue] = {
-
-    val url = s"""$serviceUrl$authLink/$baseUri/$lookupUri/${lookupData.utr}/$userType"""
+    val url = s"""$serviceUrl/${accountUtils.authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"""
     debug(s"[BusinessMatchingConnector][lookup] Call $url")
     http.POST[JsValue, HttpResponse](url, Json.toJson(lookupData)) map { response =>
       auditMatchCall(lookupData, userType, response)
@@ -100,7 +90,7 @@ trait BusinessMatchingConnector extends ServicesConfig with RawResponseReads wit
   }
 
   private def auditMatchCall(input: MatchBusinessData, userType: String, response: HttpResponse)
-                            (implicit hc: HeaderCarrier) = {
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val eventType = response.status match {
       case OK | NOT_FOUND => EventTypes.Succeeded
       case _ => EventTypes.Failed

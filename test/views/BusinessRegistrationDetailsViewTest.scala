@@ -22,7 +22,6 @@ import forms.BusinessRegistrationDetailsForm
 import models._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -41,11 +40,10 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
   def testRequest(businessRegDetails: BusinessRegistrationDetails, entityType: String) =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegDetails)
 
-  object TestBusinessRegistrationDetailsController extends BusinessRegistrationDetailsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val matchingUtil = mockMatchingUtil
-  }
+  val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
+    new BusinessRegistrationDetailsController(mockMCC, mockMatchingUtil, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+      override val signInUrl: String = applicationConfig.signIn
+    }
 
   val testUtr: String = "2" * 10
 
@@ -153,7 +151,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)
     )
-    val result = TestBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = false).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = false).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 
@@ -163,7 +162,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       fetchBusinessRegistrationDetails = None
 
     )
-    val result = TestBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 
@@ -172,7 +172,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)
     )
-    val result = TestBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

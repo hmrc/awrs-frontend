@@ -18,21 +18,22 @@ package services
 
 import java.util.UUID
 
-import _root_.models.FormBundleStatus
+import _root_.models.{FormBundleStatus, StatusContactType}
 import _root_.models.FormBundleStatus._
 import _root_.models.StatusContactType.{MindedToReject, MindedToRevoke}
-import builders.AuthBuilder
 import connectors.mock.MockAuthConnector
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.{MockKeyStoreService, MockTestStatusManagementService}
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
-import utils.TestConstants._
+import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import uk.gov.hmrc.http.SessionKeys
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class StatusManagementServiceTest extends AwrsUnitTestTraits
   with MockTestStatusManagementService with MockAuthConnector {
 
-  implicit lazy val fakeRequest = {
+  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
@@ -44,10 +45,10 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
   }
 
   // alias for the function which maps to the expected output using the input of setupMockTestStatusManagementService
-  val expected = MockTestStatusManagementService.expectedRetrieveStatusOutput
+  val expected: (FormBundleStatus, Option[StatusContactType]) => StatusReturnType = MockTestStatusManagementService.expectedRetrieveStatusOutput
 
   "StatusManagementService" should {
-    "do not call any apis if the data is already locally cached" in {
+    "not call any apis if the data is already locally cached" in {
       // currently the existence of "AwrsSessionKeys.sessionStatusType" in the session is used to determine if the data
       // is cached locally.
       implicit val fakeRequest = {
@@ -63,7 +64,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
       }
       setupMockKeyStoreService()
 
-      val result = TestStatusManagementService.retrieveStatus
+      val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
       val statusReturnType = await(result)
 
       val subscriptionStatus = statusReturnType.status
@@ -95,7 +96,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         status = Pending,
         notification = MindedToReject
       )
-      val result = TestStatusManagementService.retrieveStatus
+      val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe expected(Pending, MindedToReject)
 
       verifyAWRSConnector(
@@ -114,7 +115,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         status = Pending,
         notification = None
       )
-      val result = TestStatusManagementService.retrieveStatus
+      val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe expected(Pending, None)
 
 
@@ -135,7 +136,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         status = Approved,
         notification = MindedToRevoke
       )
-      val result = TestStatusManagementService.retrieveStatus
+      val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe expected(Approved, MindedToRevoke)
 
       verifyAWRSConnector(
@@ -154,7 +155,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         status = Approved,
         notification = None
       )
-      val result = TestStatusManagementService.retrieveStatus
+      val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe expected(Approved, None)
 
       verifyAWRSConnector(
@@ -175,7 +176,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         status = ApprovedWithConditions,
         notification = MindedToRevoke
       )
-      val result = TestStatusManagementService.retrieveStatus
+      val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe expected(ApprovedWithConditions, MindedToRevoke)
 
       verifyAWRSConnector(
@@ -195,7 +196,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         status = ApprovedWithConditions,
         notification = None
       )
-      val result = TestStatusManagementService.retrieveStatus
+      val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe expected(ApprovedWithConditions, None)
 
       verifyAWRSConnector(
@@ -217,7 +218,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
           status = status,
           notification = None
         )
-        val result = TestStatusManagementService.retrieveStatus
+        val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
         await(result) shouldBe expected(status, None)
 
         verifyAWRSConnector(

@@ -20,15 +20,15 @@ import forms.test.util._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, _}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatest.WordSpecLike
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.Forms._
 import play.api.data.validation.Invalid
-import play.api.data.{Form, FormError}
+import play.api.data.{FieldMapping, Form, FormError}
 import utils.AwrsValidator._
 
-class MappingTest extends WordSpecLike with Matchers with MockitoSugar with OneAppPerSuite {
+class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
 
   val defaultMaxLength = 10
 
@@ -56,13 +56,13 @@ class MappingTest extends WordSpecLike with Matchers with MockitoSugar with OneA
       })
   }
 
-  val defaultCompulsoryMapping = (fieldId: String) => compulsoryText(CompulsoryTextFieldMappingParameter(
+  val defaultCompulsoryMapping: String => FieldMapping[Option[String]] = (fieldId: String) => compulsoryText(CompulsoryTextFieldMappingParameter(
     simpleFieldIsEmptyConstraintParameter(fieldId, "testkey1"),
     genericFieldMaxLengthConstraintParameter(defaultMaxLength, fieldId, fieldNameInErrorMessage = ""),
     genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage = ""))
   )
 
-  val defaultOptionalMapping = (fieldId: String) => optionalText(OptionalTextFieldMappingParameter(
+  val defaultOptionalMapping: String => FieldMapping[Option[String]] = (fieldId: String) => optionalText(OptionalTextFieldMappingParameter(
     genericFieldMaxLengthConstraintParameter(defaultMaxLength, fieldId, fieldNameInErrorMessage = ""),
     genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage = ""))
   )

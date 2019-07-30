@@ -17,23 +17,22 @@
 package services
 
 import _root_.models._
+import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
 import forms.AWRSEnums.BooleanRadioEnum
+import javax.inject.Inject
 import services.DataCacheKeys._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AccountUtils, CacheUtil}
-import view_models.{IndexViewModel, SectionComplete, SectionEdited, SectionIncomplete, SectionModel, SectionNotStarted}
+import view_models._
 
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HeaderCarrier
 
-trait IndexService {
-
-  val dataCacheService: Save4LaterService
-  val applicationService: ApplicationService
-
-  implicit val cacheUtil = CacheUtil.cacheUtil
+class IndexService @Inject()(dataCacheService: Save4LaterService,
+                             applicationService: ApplicationService,
+                             accountUtils: AccountUtils) {
+  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
 
   implicit class OptionUtil[T](option: Option[T]) {
     // internal function used to determine if suppliers or premises has any entries or if the user has chosen "No" when
@@ -41,13 +40,13 @@ trait IndexService {
     // haveAny needs to be a call by name function so that it is not evaluated on input. otherwise if the list is empty
     // it will cause erroneous behaviours
     private def isAnswered(size: Int, haveAny: => Option[String]) =
-    size match {
-      case 1 => haveAny match {
-        case Some(BooleanRadioEnum.YesString) => 1
-        case _ => 0 // this will be transformed into None by the match at the end of this function
+      size match {
+        case 1 => haveAny match {
+          case Some(BooleanRadioEnum.YesString) => 1
+          case _ => 0 // this will be transformed into None by the match at the end of this function
+        }
+        case size@_ => size
       }
-      case size@_ => size
-    }
 
     def getOrElseSize: Option[Int] = {
       option match {
@@ -74,23 +73,22 @@ trait IndexService {
     }
   }
 
-  def showContinueButton(indexViewModel: IndexViewModel)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
+  def showContinueButton(indexViewModel: IndexViewModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
     val listWithoutEdited = indexViewModel.sectionModels.filterNot(_.status.equals(SectionEdited))
     listWithoutEdited.forall(_.status.equals(SectionComplete))
   }
 
-  def showOneViewLink(indexViewModel: IndexViewModel)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Boolean =
+  def showOneViewLink(indexViewModel: IndexViewModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean =
     !indexViewModel.sectionModels.forall(_.status.equals(SectionNotStarted))
 
 
-  def isLegalEnityNone(cache: Option[BusinessRegistrationDetails] ): Boolean = {
+  def isLegalEntityNone(cache: Option[BusinessRegistrationDetails]): Boolean = {
     try {
       cache.get.legalEntity.isEmpty
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         false
-      }
     }
   }
 
@@ -99,9 +97,8 @@ trait IndexService {
       cache.get.mainPlaceOfBusiness.isEmpty
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         false
-      }
     }
   }
 
@@ -110,28 +107,30 @@ trait IndexService {
       cache.get.contactFirstName.isEmpty
     }
     catch {
-      case e: Throwable => {
+      case e: Throwable =>
         false
-      }
     }
   }
 
 
-  def getStatus(cacheMap: Option[CacheMap], businessType: String)(implicit user: AuthContext, hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
+  def getStatus(cacheMap: Option[CacheMap], businessType: String, authRetrievals: StandardAuthRetrievals)
+               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
 
-    applicationService.getApi5ChangeIndicators(cacheMap) map {
+    applicationService.getApi5ChangeIndicators(cacheMap, authRetrievals) map {
       changeIndicators =>
         val someBusinessType = Some(businessType)
         val cache = cacheMap.get
 
         val businessDetailsStatus = cacheMap match {
-          case Some(cache) => cache.getBusinessDetails  match {
-            case Some(businessDetails)  => changeIndicators.businessDetailsChanged match {
-              case false => isNewAWBusinessAnswered(businessDetails) match {
-                case false => SectionIncomplete
-                case true => SectionComplete
+          case Some(cache) => cache.getBusinessDetails match {
+            case Some(businessDetails) => if (changeIndicators.businessDetailsChanged) {
+              SectionEdited
+            } else {
+              if (isNewAWBusinessAnswered(businessDetails)) {
+                SectionComplete
+              } else {
+                SectionIncomplete
               }
-              case true => SectionEdited
             }
             case _ => SectionNotStarted
           }
@@ -139,13 +138,15 @@ trait IndexService {
         }
 
         val businessRegistrationDetailsStatus = cacheMap match {
-          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEnityNone(cache.getBusinessRegistrationDetails)) match {
-            case (Some(businessRegistrationDetails), false) => changeIndicators.businessRegistrationDetailsChanged match {
-              case false => displayCompleteForBusinessType(businessRegistrationDetails, someBusinessType) match {
-                case false => SectionIncomplete
-                case true => SectionComplete
+          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
+            case (Some(businessRegistrationDetails), false) => if (changeIndicators.businessRegistrationDetailsChanged) {
+              SectionEdited
+            } else {
+              if (displayCompleteForBusinessType(businessRegistrationDetails, someBusinessType)) {
+                SectionComplete
+              } else {
+                SectionIncomplete
               }
-              case true => SectionEdited
             }
             case (_, _) => SectionNotStarted
           }
@@ -161,7 +162,7 @@ trait IndexService {
         }
 
         val businessRegistrationDetailsHref = cacheMap match {
-          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEnityNone(cache.getBusinessRegistrationDetails)) match {
+          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
             case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(businessRegistrationDetailsName).url
             case (_, _) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url
           }
@@ -170,7 +171,7 @@ trait IndexService {
 
         val businessContactsStatus = cacheMap match {
           case Some(cache) => (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
-            case (Some(businessContacts),false) => changeIndicators.contactDetailsChanged match {
+            case (Some(businessContacts), false) => changeIndicators.contactDetailsChanged match {
               case true => SectionEdited
               case false => SectionComplete
             }
@@ -181,7 +182,7 @@ trait IndexService {
 
         val placeOfBusinessStatus = cacheMap match {
           case Some(cache) => (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
-            case (Some(placeOfBusiness),false) => changeIndicators.businessAddressChanged match {
+            case (Some(placeOfBusiness), false) => changeIndicators.businessAddressChanged match {
               case false => placeOfBusiness.operatingDuration.exists(_.isEmpty) || !placeOfBusiness.mainAddress.get.postcode.exists(_.nonEmpty) match {
                 case true => SectionIncomplete
                 case _ => SectionComplete
@@ -195,16 +196,16 @@ trait IndexService {
 
         val businessContactsHref = cacheMap match {
           case Some(cache) => (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
-            case (Some(_),false) => controllers.routes.ViewApplicationController.viewSection(businessContactsName).url
-            case (_,_) => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
+            case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(businessContactsName).url
+            case (_, _) => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
           }
           case _ => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
         }
 
         val placeOfBusinessHref = cacheMap match {
           case Some(cache) => (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
-            case (Some(_),false) => controllers.routes.ViewApplicationController.viewSection(placeOfBusinessName).url
-            case (_,_) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
+            case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(placeOfBusinessName).url
+            case (_, _) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
           }
           case _ => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
         }
@@ -402,7 +403,7 @@ trait IndexService {
         val groupMemberDetailsSection = SectionModel(
           "groupMembers", groupMembersHref, "awrs.index_page.group_member_details_text", groupMembersStatus,
           size = cache.getGroupMembers.getOrElseSize match {
-            case Some(x) if AccountUtils.hasAwrs => Some(x - 1)
+            case Some(x) if accountUtils.hasAwrs(authRetrievals.enrolments) => Some(x - 1)
             case Some(x) => Some(x)
             case _ => Some(0)
           }
@@ -433,7 +434,7 @@ trait IndexService {
   }
 
   // Can remove this when we are confident that no old applications have an empty newAWBusiness (should be after 28 days)
-  def isNewAWBusinessAnswered(businessDetails: BusinessDetails) = businessDetails.newAWBusiness match {
+  def isNewAWBusinessAnswered(businessDetails: BusinessDetails): Boolean = businessDetails.newAWBusiness match {
     case Some(newBusiness) =>
       newBusiness.newAWBusiness match {
         case AWRSEnums.BooleanRadioEnum.NoString => true
@@ -448,14 +449,9 @@ trait IndexService {
   }
 
   // SOP and Partnership have their own combination of Identities required, all the rest are the same
-  def isSameEntityIdCategory(previousLegalEntity: String, newLegalEntity: String) = previousLegalEntity match {
+  def isSameEntityIdCategory(previousLegalEntity: String, newLegalEntity: String): Boolean = previousLegalEntity match {
     case "SOP" | "Partnership" => previousLegalEntity.equalsIgnoreCase(newLegalEntity)
     case _ => !newLegalEntity.equalsIgnoreCase("SOP") && !newLegalEntity.equalsIgnoreCase("Partnership")
   }
 
-}
-
-object IndexService extends IndexService {
-  override val dataCacheService = Save4LaterService
-  override val applicationService = ApplicationService
 }

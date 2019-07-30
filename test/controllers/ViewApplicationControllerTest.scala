@@ -40,13 +40,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with ServicesUnitTestFixture {
 
-  object TestViewApplicationController extends ViewApplicationController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
-    override val applicationService = mockApplicationService
-    override val indexService = mockIndexService
-  }
+  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
                        businessCustomerDetails: Option[BusinessCustomerDetails] = None,
@@ -87,27 +81,28 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
 
   "showViewApplication" should {
 
-    "redirect the user back to the correct page from the back link" in {
+    "redirect the user back one page using the back link" in {
 
       showViewApplication("/alcohol-wholesale-scheme/index") {
         result =>
           val document = Jsoup.parse(contentAsString(result))
           status(result) shouldBe OK
-          document.getElementById("back").attr("href") shouldBe "/alcohol-wholesale-scheme/lastLocation"
+          document.getElementById("back").attr("href") shouldBe "javascript:history.back()"
       }
 
       showViewApplication("/alcohol-wholesale-scheme/status-page") {
         result =>
           val document = Jsoup.parse(contentAsString(result))
           status(result) shouldBe OK
-          document.getElementById("back").attr("href") shouldBe "/alcohol-wholesale-scheme/lastLocation"
+          document.getElementById("back").attr("href") shouldBe "javascript:history.back()"
       }
 
     }
 
     def showViewApplication(previousLocation: Option[String])(test: Future[Result] => Any) {
       setupMockSave4LaterService(fetchAll = getCustomizedMap())
-      val result = TestViewApplicationController.show(printFriendly = false).apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
+      setAuthMocks()
+      val result = testViewApplicationController.show(printFriendly = false).apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
       test(result)
     }
 

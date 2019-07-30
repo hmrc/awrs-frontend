@@ -14,40 +14,38 @@
  * limitations under the License.
  *@
 
-@(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_])
+@import config.ApplicationConfig
+@(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @import views.html.helpers._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import forms.AwrsFormFields._
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
-
 
 @implicitFormInstance = @{
     Some(groupDeclarationForm)
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.group_declaration.heading")), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.group_declaration.heading")), userLoggedIn = true) {
 
     @errorSummaryTemplate(groupDeclarationForm)
     <div class="grid">
         <div class="grid grid-2-3">
-            <h1 id="group-declaration-heading" class="heading-xlarge">@Html(Messages("awrs.group_declaration.heading"))</h1>
+            <h1 id="group-declaration-heading" class="heading-xlarge">@Html(messages("awrs.group_declaration.heading"))</h1>
 
             <div id="declaration-group">
-                <div id="lead-paragraph">@Html(Messages("awrs.group_declaration.declaration_statement_lead"))</div>
+                <div id="lead-paragraph">@Html(messages("awrs.group_declaration.declaration_statement_lead"))</div>
                 <ul style="list-style-type: disc;
                     padding-left: 1em;">
-                    <li id="bullet-1">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_1"))</li>
-                    <li id="bullet-2">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_2"))</li>
-                    <li id="bullet-3">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_3"))</li>
-                    <li id="bullet-4">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_4"))</li>
-                    <li id="bullet-5">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_5"))</li>
-                    <li id="bullet-6">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_6"))</li>
-                    <li id="bullet-7">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_7"))</li>
-                    <li id="bullet-8">@Html(Messages("awrs.group_declaration.declaration_statement_bullet_8"))</li>
+                    <li id="bullet-1">@Html(messages("awrs.group_declaration.declaration_statement_bullet_1"))</li>
+                    <li id="bullet-2">@Html(messages("awrs.group_declaration.declaration_statement_bullet_2"))</li>
+                    <li id="bullet-3">@Html(messages("awrs.group_declaration.declaration_statement_bullet_3"))</li>
+                    <li id="bullet-4">@Html(messages("awrs.group_declaration.declaration_statement_bullet_4"))</li>
+                    <li id="bullet-5">@Html(messages("awrs.group_declaration.declaration_statement_bullet_5"))</li>
+                    <li id="bullet-6">@Html(messages("awrs.group_declaration.declaration_statement_bullet_6"))</li>
+                    <li id="bullet-7">@Html(messages("awrs.group_declaration.declaration_statement_bullet_7"))</li>
+                    <li id="bullet-8">@Html(messages("awrs.group_declaration.declaration_statement_bullet_8"))</li>
                 </ul>
             </div>
 
@@ -55,9 +53,9 @@
 
                 <input type="hidden" name="groupRepConfirmation" value="true">
 
-                @awrsWarningHelper(declarationTxt = Messages("awrs.group_declaration.declaration_statement_confirmation"), id = "confirmation-text-disclaimer")
+                @awrsWarningHelper(declarationTxt = messages("awrs.group_declaration.declaration_statement_confirmation"), id = "confirmation-text-disclaimer")
 
-                @awrsSubmitButton(Messages("awrs.confirmation.button"))(id = "sendGroupNowButton", classAttr = "button")
+                @awrsSubmitButton(messages("awrs.confirmation.button"))(id = "sendGroupNowButton", classAttr = "button")
             }
         </div>
     </div>

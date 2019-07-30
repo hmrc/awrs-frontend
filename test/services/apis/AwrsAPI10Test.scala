@@ -17,38 +17,32 @@
 package services.apis
 
 import java.util.UUID
-
-import builders.AuthBuilder
 import connectors.AWRSConnector
 import connectors.mock.MockAuthConnector
-import org.mockito.Matchers
+import controllers.auth.StandardAuthRetrievals
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import services.mocks.MockKeyStoreService
-import uk.gov.hmrc.domain.{AwrsUtr, Nino}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
+import uk.gov.hmrc.auth.core.Enrolment
 import utils.TestConstants._
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.SessionKeys
+import utils.TestUtil
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
   import MockKeyStoreService._
 
-  lazy val mockAWRSConnector = mock[AWRSConnector]
-
-  object TestAwrsAPI10 extends AwrsAPI10 {
-    override val awrsConnector = mockAWRSConnector
-    override val dataCacheService = TestKeyStoreService
-  }
+  lazy val mockAWRSConnector: AWRSConnector = mock[AWRSConnector]
+  val testAwrsAPI10: AwrsAPI10 = new AwrsAPI10(mockAccountUtils, mockAWRSConnector, testKeyStoreService)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockAWRSConnector)
   }
-
-  def newUser(hasAwrs: Boolean): AuthContext = AuthBuilder.createAuthContextWithOrWithoutAWWRS("userId", testUserName, testUtr,hasAwrs)
 
   implicit lazy val fakeRequest = {
     val sessionId = s"session-${UUID.randomUUID}"
@@ -68,51 +62,48 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
       case true => deRegistrationSuccessData
       case false => deRegistrationFailureData
     }
-    when(mockAWRSConnector.deRegistration(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(deRegSuccessData.get))
+    when(mockAWRSConnector.deRegistration(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(deRegSuccessData.get))
   }
 
   def mocks(haveDeRegDate: Boolean = true,
             haveDeRegReason: Boolean = true,
             deRegSuccess: Boolean = true,
-            deRegistrationCorrupt: Boolean = false): Unit = {
+            deRegistrationCorrupt: Boolean = false,
+            awrsNo: Boolean = true): Unit = {
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveDeRegDate = haveDeRegDate, haveDeRegReason = haveDeRegReason)
     mockAPI10(deRegSuccess = deRegSuccess, deRegistrationCorrupt = deRegistrationCorrupt)
+
+    when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
+      .thenReturn(awrsNo)
   }
 
   "AwrsAPI10 " should {
-    trait HasAwrsUser {
-      implicit val user = newUser(true)
-    }
 
-    trait NoAwrsUser {
-      implicit val user = newUser(false)
-    }
-
-    "deRegistration should call ETMP when both date and reason are present" in new HasAwrsUser {
+    "deRegistration should call ETMP when both date and reason are present" in {
       mocks()
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = testAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe deRegistrationSuccessData
     }
 
-    "deRegistration should not call ETMP when there is no date" in new HasAwrsUser {
+    "deRegistration should not call ETMP when there is no date" in {
       mocks(haveDeRegDate = false)
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = testAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe None
     }
 
-    "deRegistration should not call ETMP when there is no reason" in new HasAwrsUser {
+    "deRegistration should not call ETMP when there is no reason" in {
       mocks(haveDeRegReason = false)
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = testAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
       await(result) shouldBe None
     }
 
-    "deRegistration should not call ETMP when the user does not have an AWRS reg number" in new NoAwrsUser {
-      mocks()
+    "deRegistration should not call ETMP when the user does not have an AWRS reg number" in {
+      mocks(awrsNo = false)
 
-      val result = TestAwrsAPI10.deRegistration()
+      val result = testAwrsAPI10.deRegistration(StandardAuthRetrievals(Set.empty[Enrolment], None, "fakeCredID"))
       await(result) shouldBe None
     }
   }

@@ -37,14 +37,13 @@ import scala.concurrent.Future
 class AdditionalSupplierViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  lazy val testSupplier = (addAnother: Option[String]) => testSupplierDefault(alcoholSuppliers = Some("Yes"), supplierName = Some("Supplier Name"), ukSupplier = Some("Yes"), vatRegistered = Some("Yes"), vatNumber = testUtr, supplierAddress = Some(testAddress), additionalSupplier = Some("Yes"))
+  lazy val testSupplier: Option[String] => Supplier = (addAnother: Option[String]) => testSupplierDefault(alcoholSuppliers = Some("Yes"), supplierName = Some("Supplier Name"), ukSupplier = Some("Yes"), vatRegistered = Some("Yes"), vatNumber = testUtr, supplierAddress = Some(testAddress), additionalSupplier = Some("Yes"))
   lazy val testList = List(testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("No")))
 
-  object TestSupplierAddressesController extends SupplierAddressesController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
+  val testSupplierAddressesController: SupplierAddressesController =
+    new SupplierAddressesController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = "/sign-in"
   }
-
   "Additional Supplier Template" should {
 
     "display h1 with correct supplier number for linear mode" in {
@@ -132,7 +131,9 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
 
   private def showSupplier(id: Int, isLinearMode: Boolean = true, isNewRecord: Boolean = true, suppliers: List[Supplier] = testList)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = Suppliers(suppliers))
-    val result = TestSupplierAddressesController.showSupplierAddressesPage(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+
+    val result = testSupplierAddressesController.showSupplierAddressesPage(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -141,7 +142,9 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchSuppliers = testSuppliers
     )
-    val result = TestSupplierAddressesController.showSupplierAddressesPage(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+
+    val result = testSupplierAddressesController.showSupplierAddressesPage(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

@@ -14,6 +14,22 @@
  * limitations under the License.
  *@
 
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
 @import play.twirl.api.Html
 @import uk.gov.hmrc.play.views.html.helpers._
 @import models._
@@ -22,6 +38,7 @@
 @import views.helpers._
 @import controllers.util.UnSubmittedChangesBannerParam
 @import utils.AwrsNumberFormatter
+@import config.ApplicationConfig
 @(
     awrsRef: Option[String],
     hasApplicationChanged: Boolean,
@@ -31,7 +48,7 @@
     indexStatusModel: view_models.IndexViewModel,
     someStatus: Option[SubscriptionStatusType],
     isHappyPathEnrollment: Boolean
-)(implicit request: Request[AnyRef], messages: Messages )
+)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @changesBanner = {
     @awrsUnSubmittedBanner(
@@ -40,17 +57,17 @@
             hasApplicationChanged = hasApplicationChanged,
             allSectionComplete = allSectionComplete
         ),
-        Messages("awrs.index_page.modified_application_incomplete.index"),
-        Messages("awrs.index_page.not_submitted_changes")
+        messages("awrs.index_page.modified_application_incomplete.index"),
+        messages("awrs.index_page.not_submitted_changes")
     )
 }
 
 @pageHeading = @{
-    Messages("awrs.index_page.top_heading", businessName)
+    messages("awrs.index_page.top_heading", businessName)
 }
 
-
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.index_page.application")), nameBusiness = Some(businessName), userLoggedIn = true){
+    
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.index_page.application")), nameBusiness = Some(businessName), userLoggedIn = true){
 
     <div class="grid">
        @changesBanner
@@ -58,22 +75,22 @@
             <h1 id="index-top-heading" class="heading-xlarge">@pageHeading</h1>
                 @someStatus match {
                     case Some(status) => {
-                        <h3 class="heading-medium" id="application-status">@Messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h3>
+                        <h3 class="heading-medium" id="application-status">@messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h3>
                         <p class="font-xsmall">
                             <a id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">
-                                @Messages("awrs.index_page.view_application_status_link_text")
+                                @messages("awrs.index_page.view_application_status_link_text")
                             </a>
                         </p>
                         @if(status.formBundleStatus.name == Pending.name){
                             <p class="font-xsmall">
-                                <a id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@Messages("awrs.index_page.withdraw_link")
+                                <a id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@messages("awrs.index_page.withdraw_link")
                                 </a>
                             </p>
                         }
                     }
                     case None => {
 
-                        <h3 class="heading-medium" id="application-status">@Messages("awrs.index_page.draft") @Messages("awrs.index_page.application_status_text").toLowerCase</h3>
+                        <h3 class="heading-medium" id="application-status">@messages("awrs.index_page.draft") @messages("awrs.index_page.application_status_text").toLowerCase</h3>
                     }
                 }
 
@@ -83,12 +100,12 @@
                         case Approved | ApprovedWithConditions => {
                             @awrsRef match {
                                 case Some(ref) => {
-                                    <p id="awrsRefNo">@Messages("awrs.index_page.awrs_ref")<br>@{AwrsNumberFormatter.format(ref)}</p>
+                                    <p id="awrsRefNo">@messages("awrs.index_page.awrs_ref")<br>@{AwrsNumberFormatter.format(ref)}</p>
                                 }
                                 case _ => {}
                             }
                             <p class="font-xsmall">
-                                <a id="de_reg_page_link" href="@routes.DeRegistrationController.showReason">@Messages("awrs.index_page.de_registration_link")</a>
+                                <a id="de_reg_page_link" href="@routes.DeRegistrationController.showReason">@messages("awrs.index_page.de_registration_link")</a>
                             </p>
                         }
                         case _ => {}
@@ -102,20 +119,20 @@
                     <a id="view-application"
                     data-journey-click="view-print-application-index-page:click:print"
                     href="@controllers.routes.ViewApplicationController.show(false)">
-                    @Messages("awrs.generic.print_application")
+                    @messages("awrs.generic.print_application")
                     </a>
                 </div>
             }
 
-            <p id="applicationInfo">@Messages("awrs.index_page.topText")</p>
+            <p id="applicationInfo">@messages("awrs.index_page.topText")</p>
 
             <div class="form-group">
                 <table id="index-table">
                     <thead>
                         <tr>
-                            <th id="section-text">@Messages("awrs.index_page.section_text")</th>
-                            <th id="status-text">@Messages("awrs.index_page.status_text")</th>
-                            <th id="action-text">@Messages("awrs.index_page.action_text")</th>
+                            <th id="section-text">@messages("awrs.index_page.section_text")</th>
+                            <th id="status-text">@messages("awrs.index_page.status_text")</th>
+                            <th id="action-text">@messages("awrs.index_page.action_text")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -123,7 +140,7 @@
                     <tr>
                         <td id="@i.id">
                             <p>
-                                @{id+1}. @Messages(i.text)
+                                @{id+1}. @messages(i.text)
                                 @i.size match {
                                     case Some(size) => {&nbsp;(@size)<span class="visuallyhidden">entries</span>}
                                     case _ => {}
@@ -131,13 +148,13 @@
                             </p>
                         </td>
                         <td class="awrs-status">
-                            <span id="@{i.id + "_status"}" class="@Messages({i.status + "_class"})">
-                            @Messages(i.status.messagesKey)
+                            <span id="@{i.id + "_status"}" class="@messages({i.status + "_class"})">
+                            @messages(i.status.messagesKey)
                             </span>
                         </td>
                         <td>
                             <a id="@{i.id + "_link"}" href="@i.href">
-                            @Html(Messages({i.status + "_link" +
+                            @Html(messages({i.status + "_link" +
                                     {
                                         someStatus match {
                                             case Some(subStatus :SubscriptionStatusType) =>
@@ -148,7 +165,7 @@
                                             case _ => ""
                                         }
                                     }
-                            }, Messages(i.text) + Messages("awrs.index_page.status_description_text") + " " + Messages(i.status.messagesKey) + ", "))
+                            }, messages(i.text) + messages("awrs.index_page.status_description_text") + " " + messages(i.status.messagesKey) + ", "))
                     </a>
                     </td>
                     </tr>

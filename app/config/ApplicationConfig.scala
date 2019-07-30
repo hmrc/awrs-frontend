@@ -16,44 +16,44 @@
 
 package config
 
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
-import play.api.Play._
-import uk.gov.hmrc.play.config.ServicesConfig
+import audit.Auditable
+import javax.inject.Inject
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import utils.{AwrsFieldConfig, CountryCodes}
+
+class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
+                                  val countryCodes: CountryCodes,
+                                  val auditable: Auditable) extends AwrsFieldConfig {
+
+  private def loadConfig(key: String) = servicesConfig.getConfString(key, throw new Exception(s"Missing configuration key: $key"))
+
+  private lazy val contactHost = loadConfig("contact-frontend.host")
+  private lazy val awrsHost = loadConfig("awrs.host")
+
+  lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
+  lazy val betaFeedbackUrl = "/alcohol-wholesale-scheme/feedback"
+  lazy val analyticsToken: Option[String] = Some(servicesConfig.getString("google-analytics.token"))
+  lazy val analyticsHost: String = servicesConfig.getString("google-analytics.host")
+  lazy val externalReportProblemUrl = s"$contactHost/contact/problem_reports"
+  lazy val contactFormServiceIdentifier = "AWRS"
+  lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  lazy val homeUrl = s"$awrsHost/"
+  lazy val defaultTimeoutSeconds: Int = servicesConfig.getInt("defaultTimeoutSeconds")
+  lazy val timeoutCountdown: Int = servicesConfig.getInt("timeoutCountdown")
+  lazy val emailVerificationEnabled: Boolean = servicesConfig.getBoolean("email-verification.enabled")
+  lazy val emailVerificationBaseUrl: String = servicesConfig.getString("email-verification.continue.baseUrl")
 
 
-trait ApplicationConfig {
-
-  val assetsPrefix: String
-  val betaFeedbackUrl: String
-  val analyticsToken: Option[String]
-  val analyticsHost: String
-  val externalReportProblemUrl: String
-  val reportAProblemPartialUrl:String
-  val homeUrl: String
-  val defaultTimeoutSeconds: Int
-  val timeoutCountdown: Int
-}
-
-object ApplicationConfig extends ApplicationConfig with ServicesConfig {
-
-  private def loadConfig(key: String) = getConfString(key,throw new Exception(s"Missing configuration key: $key"))
-
-  private val contactFrontendService = baseUrl("contact-frontend")
-  private val contactHost = loadConfig(s"contact-frontend.host")
-  private val awrsHost = loadConfig(s"awrs.host")
-
-  override lazy val assetsPrefix: String = getString(s"assets.url") + getString(s"assets.version")
-  override lazy val betaFeedbackUrl = "/alcohol-wholesale-scheme/feedback"
-  override lazy val analyticsToken: Option[String] = Some(getString(s"google-analytics.token"))
-  override lazy val analyticsHost: String = getString(s"google-analytics.host")
-  override lazy val externalReportProblemUrl = s"$contactHost/contact/problem_reports"
-  override lazy val reportAProblemPartialUrl = s"$contactFrontendService/contact/problem_reports?secure=true"
-  override lazy val homeUrl = s"$awrsHost/"
-  override lazy val defaultTimeoutSeconds: Int = getString(s"defaultTimeoutSeconds").toInt
-  override lazy val timeoutCountdown: Int = getString(s"timeoutCountdown").toInt
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
+  //From ExternalUrls
+  lazy val companyAuthHost: String = loadConfig("auth.company-auth.host")
+  lazy val loginCallback: String = loadConfig("auth.login-callback.url")
+  lazy val loginPath: String = loadConfig("auth.login-path")
+  lazy val accountType: String = loadConfig("auth.accountType")
+  lazy val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback&accountType=$accountType"
+  lazy val loginURL = s"$companyAuthHost/gg/$loginPath"
+  lazy val logoutCallbackUrl: String = loadConfig("auth.logout-callback.url")
+  lazy val signOut = s"$companyAuthHost/gg/sign-out/?continue=$logoutCallbackUrl"
+  lazy val businessCustomerStartPage: String = loadConfig("business-customer.serviceRedirectUrl")
+  lazy val businessTaxAccountPage: String = loadConfig("business-tax-account.serviceRedirectUrl")
 }

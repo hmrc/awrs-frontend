@@ -16,46 +16,40 @@
 
 package connectors
 
-import config.{AwrsFrontendAuditConnector, WSHttp}
-import metrics.AwrsMetrics
+import audit.Auditable
+import config.ApplicationConfig
+import javax.inject.Inject
 import models._
 import org.joda.time.Period
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.LoggingUtils
-import utils.AwrsConfig._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, NotFoundException}
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EmailVerificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
+class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
+                                           val auditable: Auditable,
+                                           implicit val applicationConfig: ApplicationConfig
+                                          ) extends RawResponseReads with LoggingUtils {
 
-  lazy val serviceURL = baseUrl("email-verification")
+  lazy val serviceURL: String = applicationConfig.servicesConfig.baseUrl("email-verification")
   val baseURI = "/email-verification"
   val sendEmail = "/verification-requests"
   val verifyEmail = "/verified-email-check"
-  val continueUrl = emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess.url
-  val defaultEmailExpiryPeriod = Period.days(1).toString
+  val continueUrl: String = applicationConfig.emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess().url
+  val defaultEmailExpiryPeriod: String = Period.days(1).toString
   val defaultTemplate = "awrs_email_verification"
-  val httpGet: HttpGet
-  val httpPost: HttpPost
-  val metrics: AwrsMetrics
 
-  def sendVerificationEmail(emailAddress: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def sendVerificationEmail(emailAddress: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val verificationRequest = EmailVerificationRequest(email = emailAddress,
       templateId = defaultTemplate,
       templateParameters = None,
       linkExpiryDuration = defaultEmailExpiryPeriod,
       continueUrl = continueUrl)
     val postURL = s"""$serviceURL$baseURI$sendEmail"""
-    httpPost.POST(postURL, verificationRequest).map {
+    http.POST(postURL, verificationRequest).map {
       response =>
         response.status match {
           case OK | CREATED =>
@@ -74,12 +68,12 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
     }
   }
 
-  def isEmailAddressVerified(email: Option[String])(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def isEmailAddressVerified(email: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     email match {
       case Some(emailAddress) =>
         val verifyURL = s"""$serviceURL$baseURI$verifyEmail"""
 
-        httpPost.POST(verifyURL, Json.obj("email" -> emailAddress)).map { _ =>
+        http.POST(verifyURL, Json.obj("email" -> emailAddress)).map { _ =>
           audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
           true
         } recover {
@@ -98,16 +92,4 @@ trait EmailVerificationConnector extends ServicesConfig with RawResponseReads wi
     }
   }
 
-}
-
-object EmailVerificationConnector extends EmailVerificationConnector {
-  override val appName = "awrs-frontend"
-  override val metrics = AwrsMetrics
-  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
-  override val httpGet: HttpGet = WSHttp
-  override val httpPost: HttpPost = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

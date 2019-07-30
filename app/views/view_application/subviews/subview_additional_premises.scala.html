@@ -19,12 +19,15 @@
 @import views.html.view_application.helpers._
 @import views.view_application.subviews.SubviewIds
 @import views.view_application.helpers.SubViewTemplateHelper._
-@import contents._
 @import services.DataCacheKeys._
+@import contents._
 
-@(someHeading: Option[String],
+@import config.ApplicationConfig
+@(headingKey: String,
   someModel: Option[models.AdditionalBusinessPremisesList]
-)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.additionalPremisesId
@@ -40,24 +43,23 @@
 @addLinkHref(someModel: models.AdditionalBusinessPremisesList) = @{
     someModel match {
         case model@AdditionalBusinessPremisesList(List(AdditionalBusinessPremises(Some("No"), _, _))) =>
-            controllers.routes.AdditionalPremisesController.showPremisePage(model.premises.length, false, true).url
+            controllers.routes.AdditionalPremisesController.showPremisePage(model.premises.length, isLinearMode = false, isNewRecord = true).url
         case model =>
-            controllers.routes.AdditionalPremisesController.showPremisePage(model.premises.length + 1, false, true).url
+            controllers.routes.AdditionalPremisesController.showPremisePage(model.premises.length + 1, isLinearMode = false, isNewRecord = true).url
     }
 }
 
 @content(model: models.AdditionalBusinessPremisesList) = {
     @model match {
         case AdditionalBusinessPremisesList(List(AdditionalBusinessPremises(Some("No"), _, _))) => {
-            <p id="no-premises" class="lede">@Messages("awrs.view_application.no_premises")</p>
+            <p id="no-premises" class="lede">@messages("awrs.view_application.no_premises")</p>
         }
         case _ => {
             @model.premises.zipWithIndex.map { case (premises, id) =>
                 @content_additional_premises(premises, id + 1)(implicitly, cssClass = {isSectionEdit match {
-                        case true => Some("short-row-title")
-                        case false => None
-                    }}
-                )
+                    case true => Some("short-row-title")
+                    case false => None
+                }}, implicitly, implicitly)
             }
         }
     }
@@ -65,17 +67,17 @@
 
 @topAdd(model : models.AdditionalBusinessPremisesList) = {
     @if(model.premises.size > 1) {
-        <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), Messages("awrs.view_application.premises"))</div>
+        <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.premises"))</div>
     }
 }
 
 @bottomAdd(model : models.AdditionalBusinessPremisesList)  = {
-    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), Messages("awrs.view_application.premises"))
+    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.premises"))
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(getHeading(heading, model), wrapperId, sectionName = additionalBusinessPremisesName)(content(model), preContent = topAdd(model), postContent = bottomAdd(model))
+@someModel match {
+    case Some(model) => {
+        @subview_core(getHeading(heading, model), wrapperId, sectionName = Some(additionalBusinessPremisesName))(content(model), preContent = Some(topAdd(model)), postContent = Some(bottomAdd(model)))
     }
     case _ => {}
 }

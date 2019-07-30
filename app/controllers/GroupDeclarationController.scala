@@ -16,40 +16,47 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.{AwrsController, AwrsRegistrationRegime}
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.AwrsController
 import forms.GroupDeclarationForm._
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services._
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
-import scala.concurrent.Future
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
-trait GroupDeclarationController extends AwrsController with AccountUtils {
+import scala.concurrent.{ExecutionContext, Future}
 
-  val save4LaterService: Save4LaterService
+class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
+                                           val save4LaterService: Save4LaterService,
+                                           val authConnector: DefaultAuthConnector,
+                                           val auditable: Auditable,
+                                           val accountUtils: AccountUtils,
+                                           implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  def showGroupDeclaration = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      save4LaterService.mainStore.fetchGroupDeclaration map {
-        case Some(data) => Ok(views.html.awrs_group_declaration(groupDeclarationForm.fill(data)))
-        case _ => Ok(views.html.awrs_group_declaration(groupDeclarationForm))
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val signInUrl: String = applicationConfig.signIn
+
+  def showGroupDeclaration: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        save4LaterService.mainStore.fetchGroupDeclaration(ar) map {
+          case Some(data) => Ok(views.html.awrs_group_declaration(groupDeclarationForm.fill(data)))
+          case _ => Ok(views.html.awrs_group_declaration(groupDeclarationForm))
+        }
       }
+    }
   }
 
-  def sendConfirmation = async {
-    implicit user => implicit request =>
+  def sendConfirmation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       groupDeclarationForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.awrs_group_declaration(formWithErrors))),
         groupDeclarationData =>
-          save4LaterService.mainStore.saveGroupDeclaration(groupDeclarationData) flatMap {
-            case _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex()))
-          }
+          save4LaterService.mainStore.saveGroupDeclaration(ar, groupDeclarationData) flatMap (_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex())))
       )
+    }
   }
-}
-
-object GroupDeclarationController extends GroupDeclarationController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
 }

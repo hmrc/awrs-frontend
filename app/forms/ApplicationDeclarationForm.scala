@@ -27,18 +27,18 @@ import play.api.data.Forms._
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
-object ApplicationDeclarationForm {
+object ApplicationDeclarationForm extends AwrsFieldConfig {
   val declarationNameConstraintParameters =
     CompulsoryTextFieldMappingParameter(
       simpleFieldIsEmptyConstraintParameter(fieldId = "declarationName", "awrs.application_declaration.error.declaration_name_empty"),
-      genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.applicationDeclarationNameLen, fieldId = "declarationName", fieldNameInErrorMessage = "your name"),
+      genericFieldMaxLengthConstraintParameter(applicationDeclarationNameLen, fieldId = "declarationName", fieldNameInErrorMessage = "your name"),
       genericInvalidFormatConstraintParameter(validText, fieldId = "declarationName", fieldNameInErrorMessage = "your name")
     )
 
   val declarationRoleConstraintParameters =
     CompulsoryTextFieldMappingParameter(
       simpleFieldIsEmptyConstraintParameter(fieldId = "declarationRole", "awrs.application_declaration.error.declaration_role_empty"),
-      genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.applicationDeclarationRoleLen, fieldId = "declarationRole", fieldNameInErrorMessage = "your role"),
+      genericFieldMaxLengthConstraintParameter(applicationDeclarationRoleLen, fieldId = "declarationRole", fieldNameInErrorMessage = "your role"),
       genericInvalidFormatConstraintParameter(validText, fieldId = "declarationRole", fieldNameInErrorMessage = "your role")
     )
 
@@ -51,5 +51,5 @@ object ApplicationDeclarationForm {
     "confirmation" -> compulsoryBoolean(confirmationConstraintParameters)
   )(ApplicationDeclaration.apply)(ApplicationDeclaration.unapply))
 
-  val applicationDeclarationForm = PreprocessedForm(applicationDeclarationValidationForm)
+  val applicationDeclarationForm: PrevalidationAPI[ApplicationDeclaration] = PreprocessedForm(applicationDeclarationValidationForm)
 }

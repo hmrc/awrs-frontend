@@ -17,22 +17,21 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums
 import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.JsResultException
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.BusinessCustomerService
 import services.mocks.MockSave4LaterService
+import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
@@ -43,25 +42,26 @@ class HomeControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  val request = FakeRequest()
-  val mockBusinessCustomerService = mock[BusinessCustomerService]
+  val mockBusinessCustomerService: BusinessCustomerService = mock[BusinessCustomerService]
 
-  object TestHomeController extends HomeController {
-    override val authConnector = mockAuthConnector
-    override val businessCustomerService = mockBusinessCustomerService
-    override val save4LaterService = TestSave4LaterService
-
+  val testHomeController: HomeController = new HomeController(mockMCC, mockBusinessCustomerService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockBusinessCustomerService)
+    reset(mockBusinessCustomerService, mockAppConfig)
+
+    when(mockAppConfig.countryCodes)
+      .thenReturn(mockCountryCodes)
+    when(mockCountryCodes.countries)
+      .thenReturn(
+        """[
+          |"United Kingdom"
+          |]""".stripMargin)
   }
 
   "HomeController" should {
-    "use the correct AuthConnector" in {
-      HomeController.authConnector shouldBe FrontendAuthConnector
-    }
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
       showWithSave4Later() { result =>
@@ -71,6 +71,9 @@ class HomeControllerTest extends AwrsUnitTestTraits
     }
 
     "redirect to the Business customer matching if the save4Later review details are present WITHOUT SAFEID and the user does not have an AWRS enrolment" in {
+      when(mockAppConfig.businessCustomerStartPage)
+        .thenReturn("http://localhost:9923/business-customer/awrs")
+
       showWithSave4LaterWithoutSafeId() { result =>
         status(result) shouldBe 303
         redirectLocation(result).get should include("http://localhost:9923/business-customer/awrs")
@@ -107,6 +110,9 @@ class HomeControllerTest extends AwrsUnitTestTraits
     }
 
     "redirect to the Business Customer Frontend if the save4Later and keystore review details are not present" in {
+      when(mockAppConfig.businessCustomerStartPage)
+        .thenReturn("http://localhost:9923/business-customer/awrs")
+
       showWithoutKeystore { result =>
         status(result) shouldBe 303
         redirectLocation(result).get should include("/business-customer/awrs")
@@ -122,8 +128,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
 
     "show error page if a runtime error is produced" in {
       showWithException() { result =>
-        val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be("Sorry, we are experiencing technical difficulties")
+        status(result) shouldBe 500
       }
     }
 
@@ -144,14 +149,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
     "show recent withdrawal error page if the user has withdrawn within 24 hours" in {
       showWithException(testApplicationStatus()) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_withdraw")))
+        document.select("#application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_withdraw")))
       }
     }
 
     "show recent re-registration error page if the user has de-registered within 24 hours" in {
       showWithException(testApplicationStatus(AWRSEnums.ApplicationStatusEnum.DeRegistered)) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
+        document.select("#application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
       }
     }
 
@@ -166,66 +171,77 @@ class HomeControllerTest extends AwrsUnitTestTraits
 
   private def showWithSave4Later(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
-    val result = TestHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
   private def showWithSave4LaterWithoutSafeId(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetailsWithoutSafeID("SOP"), fetchApplicationStatus = applicationStatus)
-    val result = TestHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
 
   private def showWithKeystore(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = None)
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
-    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
+    setAuthMocks()
+    val result = testHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def showWithSave4LaterAndAwrs(callerId: Option[String] = None)(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = None)
-    val result = TestHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def showWithKeystoreAndAwrs(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = None)
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
-    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
+    setAuthMocks()
+    val result = testHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def showWithoutKeystore(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = None)
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    setAuthMocks(Future.successful(
+      new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    val result = testHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def showWithException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = applicationStatus)
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.failed(new RuntimeException("An error occurred")))
-    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new RuntimeException("An error occurred")))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    val result = testHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def showWithJsResultExceptionAndAwrs(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus =  applicationStatus)
-    when(mockMainStoreSave4LaterConnector.fetchData4Later[ApplicationStatus](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(None))
-    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[ApplicationStatus](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(None))
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
+    setAuthMocks()
+    val result = testHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def showWithJsResultException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
     setUser(hasAwrs = false)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
-    when(mockMainStoreSave4LaterConnector.fetchData4Later[ApplicationStatus](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(applicationStatus))
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
-    val result = TestHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[ApplicationStatus](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(applicationStatus))
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
+    setAuthMocks()
+    val result = testHomeController.showOrRedirect().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 }

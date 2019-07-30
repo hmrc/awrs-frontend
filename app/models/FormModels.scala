@@ -22,7 +22,6 @@ import forms.AWRSEnums.ApplicationStatusEnum
 import forms.AwrsFormFields
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{LocalDate, LocalDateTime}
-import play.api.data.format.Formats
 import play.api.libs.json._
 import utils.AwrsFieldConfig
 
@@ -533,10 +532,10 @@ object GroupMembers {
 }
 
 // This can be replaced by an implicit format if CapGemini update their schema
-object TradingActivity_old {
+object TradingActivity_old extends AwrsFieldConfig {
 
-  val Producer = ("Producer", "04")
-  val Broker = ("Broker", "05")
+  val Producer: (String, String) = ("Producer", "04")
+  val Broker: (String, String) = ("Broker", "05")
   val Other = "99"
   val Delimiter = " "
 
@@ -545,14 +544,16 @@ object TradingActivity_old {
     // remove the Producer and Broker wholesaler codes if required as they will be sent via the 'Other' field from now on
     // and add the 'Other' code to the wholesaler type if either Producer or Broker are selected
     def updateWholesaler(wholesalerType: List[String]): List[String] =
-    wholesalerType.contains(Producer._2) || wholesalerType.contains(Broker._2) match {
-      case true => wholesalerType.filterNot(x => x == Producer._2 || x == Broker._2 || x == Other).::(Other)
-      case _ => wholesalerType
+    if (wholesalerType.contains(Producer._2) || wholesalerType.contains(Broker._2)) {
+      wholesalerType.filterNot(x => x == Producer._2 || x == Broker._2 || x == Other).::(Other)
+    } else {
+      wholesalerType
     }
 
-    val trimOtherWholesaler = (otherField: String) => otherField.length > AwrsFieldConfig.otherWholesalerLen match {
-      case true => otherField.substring(0, AwrsFieldConfig.otherWholesalerLen)
-      case _ => otherField
+    val trimOtherWholesaler: String => String = (otherField: String) => if (otherField.length > otherWholesalerLen) {
+      otherField.substring(0, otherWholesalerLen)
+    } else {
+      otherField
     }
 
     // add the Producer and Broker to the other field if they have been selected
@@ -627,7 +628,7 @@ object TradingActivity_old {
 }
 
 // This can be replaced by an implicit format if CapGemini update their schema
-object TradingActivity {
+object TradingActivity extends AwrsFieldConfig {
 
   val Producer = ("Producer", "04")
   val Broker = ("Broker", "05")
@@ -639,14 +640,16 @@ object TradingActivity {
     // remove the Producer and Broker wholesaler codes if required as they will be sent via the 'Other' field from now on
     // and add the 'Other' code to the wholesaler type if either Producer or Broker are selected
     def updateWholesaler(wholesalerType: List[String]): List[String] =
-    wholesalerType.contains(Producer._2) || wholesalerType.contains(Broker._2) match {
-      case true => wholesalerType.filterNot(x => x == Producer._2 || x == Broker._2 || x == Other).::(Other)
-      case _ => wholesalerType
+    if (wholesalerType.contains(Producer._2) || wholesalerType.contains(Broker._2)) {
+      wholesalerType.filterNot(x => x == Producer._2 || x == Broker._2 || x == Other).::(Other)
+    } else {
+      wholesalerType
     }
 
-    val trimOtherWholesaler = (otherField: String) => otherField.length > AwrsFieldConfig.otherWholesalerLen match {
-      case true => otherField.substring(0, AwrsFieldConfig.otherWholesalerLen)
-      case _ => otherField
+    val trimOtherWholesaler: String => String = (otherField: String) => if (otherField.length > otherWholesalerLen) {
+      otherField.substring(0, otherWholesalerLen)
+    } else {
+      otherField
     }
 
     // add the Producer and Broker to the other field if they have been selected

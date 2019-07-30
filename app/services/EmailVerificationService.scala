@@ -18,32 +18,26 @@ package services
 
 import _root_.models._
 import connectors.EmailVerificationConnector
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-
-import scala.concurrent.Future
+import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 
-trait EmailVerificationService {
+import scala.concurrent.{ExecutionContext, Future}
 
-  val emailVerificationConnector: EmailVerificationConnector
+class EmailVerificationService @Inject()(emailVerificationConnector: EmailVerificationConnector) {
 
-  def sendVerificationEmail(emailAddress: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def sendVerificationEmail(emailAddress: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     emailVerificationConnector.sendVerificationEmail(emailAddress)
   }
 
-  def isEmailVerified(businessContacts: Option[BusinessContacts])(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def isEmailVerified(businessContacts: Option[BusinessContacts])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     businessContacts match {
       case Some(data) => isEmailAddressVerified(data.email)
       case _ => Future.successful(false)
     }
   }
 
-  def isEmailAddressVerified(email: Option[String])(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def isEmailAddressVerified(email: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     emailVerificationConnector.isEmailAddressVerified(email)
   }
 
-}
-
-object EmailVerificationService extends EmailVerificationService {
-  override val emailVerificationConnector = EmailVerificationConnector
 }

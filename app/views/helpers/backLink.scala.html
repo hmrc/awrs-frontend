@@ -21,9 +21,9 @@
 @{
     (isOneViewMode, alwaysShow) match {
         case (true, true) =>
-            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a></p>
+            <p><a id="back" class="back-link print-hidden" href="javascript:history.back()">{Messages("awrs.generic.back")}</a></p>
         case (false, _) =>
-            <p><a id="back" class="back-link print-hidden" href={backUrl}>{Messages("awrs.generic.back")}</a></p>
+            <p><a id="back" class="back-link print-hidden" href="javascript:history.back()">{Messages("awrs.generic.back")}</a></p>
         case _ =>
     }
 }

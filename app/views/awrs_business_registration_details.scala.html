@@ -27,36 +27,39 @@
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
 
+@import config.ApplicationConfig
 @(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails]
-)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
 
 
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.BusinessRegistrationDetailsController.saveAndReturn
-        case false => controllers.routes.BusinessRegistrationDetailsController.saveAndContinue
+    if(isEditMode) {
+        controllers.routes.BusinessRegistrationDetailsController.saveAndReturn
+    } else {
+        controllers.routes.BusinessRegistrationDetailsController.saveAndContinue
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @businessTypeHeading = {
     @businessType.map {
-        case "Partnership" | "LP" | "LLP" => { @Messages("awrs.business_registration_details.heading.partnership", headingPrefix()) }
-        case "LLP_GRP" | "LTD_GRP" => { @Messages("awrs.business_registration_details.heading.group", headingPrefix()) }
-        case _ => { @Messages("awrs.business_registration_details.heading", headingPrefix()) }
+        case "Partnership" | "LP" | "LLP" => { @messages("awrs.business_registration_details.heading.partnership", messages(headingPrefix())) }
+        case "LLP_GRP" | "LTD_GRP" => { @messages("awrs.business_registration_details.heading.group", messages(headingPrefix())) }
+        case _ => { @messages("awrs.business_registration_details.heading", messages(headingPrefix())) }
     }
 }
 
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", businessTypeHeading), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", businessTypeHeading), userLoggedIn = true) {
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(

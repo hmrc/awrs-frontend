@@ -16,62 +16,71 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable, convertBCAddressToAddress}
 import forms.PlaceOfBusinessForm._
+import javax.inject.Inject
 import models.PlaceOfBusiness
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.DataCacheKeys._
 import services.Save4LaterService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait PlaceOfBusinessController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
+class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
+                                          val save4LaterService: Save4LaterService,
+                                          val authConnector: DefaultAuthConnector,
+                                          val auditable: Auditable,
+                                          val accountUtils: AccountUtils,
+                                          implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override val section = placeOfBusinessName
+  override implicit val ec: ExecutionContext = mcc.executionContext
+  override val section: String = placeOfBusinessName
+  val signInUrl: String = applicationConfig.signIn
 
-  def showPlaceOfBusiness(isLinearMode: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
+  def showPlaceOfBusiness(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
+        }
+
+        val businessType = request.getBusinessType
+
+        // if this is the first time the user enters this form, then populate the main principal place of business with the address from business customers frontend
+        save4LaterService.mainStore.fetchPlaceOfBusiness(ar).flatMap {
+          case Some(data) => Future.successful(Ok(views.html.awrs_principal_place_of_business(accountUtils.hasAwrs(ar.enrolments), businessType, placeOfBusinessForm.form.fill(data))))
+          case _ =>
+            save4LaterService.mainStore.fetchBusinessCustomerDetails(ar).flatMap {
+              case Some(businessCustomerDetails) =>
+                val firstTimeForm = placeOfBusinessForm.form.fill(PlaceOfBusiness(mainAddress = convertBCAddressToAddress(businessCustomerDetails.businessAddress)))
+                Future.successful(Ok(views.html.awrs_principal_place_of_business(accountUtils.hasAwrs(ar.enrolments), businessType, firstTimeForm)))
+              case None => showErrorPage // given the user started the journey correctly from the home controller, this should never happen
+            }
+        }
       }
-
-      val businessType = request.getBusinessType
-
-      // if this is the first time the user enters this form, then populate the main principal place of business with the address from business customers frontend
-      save4LaterService.mainStore.fetchPlaceOfBusiness.flatMap {
-        case Some(data) => Future.successful(Ok(views.html.awrs_principal_place_of_business(AccountUtils.hasAwrs, businessType, placeOfBusinessForm.form.fill(data))))
-        case _ =>
-          save4LaterService.mainStore.fetchBusinessCustomerDetails.flatMap {
-            case Some(businessCustomerDetails) =>
-              val firstTimeForm = placeOfBusinessForm.form.fill(PlaceOfBusiness(mainAddress = convertBCAddressToAddress(businessCustomerDetails.businessAddress)))
-              Future.successful(Ok(views.html.awrs_principal_place_of_business(AccountUtils.hasAwrs, businessType, firstTimeForm)))
-            case None => showErrorPage // given the user started the journey correctly from the home controller, this should never happen
-          }
-      }
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
+  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode = viewApplicationType
     placeOfBusinessForm.bindFromRequest.fold(
       formWithErrors =>
-        Future.successful(BadRequest(views.html.awrs_principal_place_of_business(AccountUtils.hasAwrs, request.getBusinessType, formWithErrors)))
+        Future.successful(BadRequest(views.html.awrs_principal_place_of_business(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, formWithErrors)))
       ,
       placeOfBusinessData =>
-        save4LaterService.mainStore.savePlaceOfBusiness(placeOfBusinessData) flatMap {
+        save4LaterService.mainStore.savePlaceOfBusiness(authRetrievals, placeOfBusinessData) flatMap {
           _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
         }
     )
   }
-
-}
-
-object PlaceOfBusinessController extends PlaceOfBusinessController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
 }

@@ -17,10 +17,9 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import forms.BusinessDirectorsForm
 import models.BusinessDirector
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
@@ -32,24 +31,17 @@ import scala.concurrent.Future
 
 class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
 
-  val request = FakeRequest()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val directorPageURL: Int => String = (id: Int) => s"/alcohol-wholesale-scheme/business-directors?id=$id"
+  val directorPage2URL: String = directorPageURL(2)
 
-  val directorPageURL = (id: Int) => s"/alcohol-wholesale-scheme/business-directors?id=$id"
-  val directorPage2URL = directorPageURL(2)
-
-  object TestBusinessDirectorsController extends BusinessDirectorsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
+  val testBusinessDirectorsController: BusinessDirectorsController =
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig){
+    override val signInUrl = "/sign-in"
   }
 
-  def testRequest(director: BusinessDirector) =
+  def testRequest(director: BusinessDirector): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessDirector](FakeRequest(), BusinessDirectorsForm.businessDirectorsValidationForm, director)
-
-  "BusinessDirectorsController" must {
-    "use the correct AuthConnector" in {
-      BusinessDirectorsController.authConnector shouldBe FrontendAuthConnector
-    }
-  }
 
   "Business Directors Page load for Authorised users" should {
     "do not load a blank page for Director 2 if cache is empty" in {
@@ -106,7 +98,8 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
 
   def getWithAuthorisedUserNoCache(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = None)
-    val result = TestBusinessDirectorsController.showBusinessDirectors(2, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testBusinessDirectorsController.showBusinessDirectors(2, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -115,7 +108,8 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
       fetchBusinessDirectors = testBusinessDirectors,
       fetchTradingActivity = None
     )
-    val result = TestBusinessDirectorsController.saveAndContinue(id, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testBusinessDirectorsController.saveAndContinue(id, isNewRecord = true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

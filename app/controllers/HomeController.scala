@@ -16,126 +16,115 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.{AwrsController, ExternalUrls}
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.{AwrsController, StandardAuthRetrievals}
+import javax.inject.Inject
 import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
-import play.api.mvc.{AnyContent, Request, Result}
-import services._
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.{AccountUtils, AwrsSessionKeys}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 import play.api.libs.json.JsResultException
-import play.api.mvc.Action
-
-import scala.concurrent.Future
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import services._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.{AccountUtils, AwrsSessionKeys}
 
-trait HomeController extends AwrsController with AccountUtils {
+import scala.concurrent.{ExecutionContext, Future}
+
+class HomeController @Inject()(mcc: MessagesControllerComponents,
+                               businessCustomerService: BusinessCustomerService,
+                               val authConnector: DefaultAuthConnector,
+                               val auditable: Auditable,
+                               val accountUtils: AccountUtils,
+                               implicit val save4LaterService: Save4LaterService,
+                               implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
   private final lazy val MinReturnHours = 24
 
-  val businessCustomerService: BusinessCustomerService
-  implicit val save4LaterService: Save4LaterService
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val signInUrl: String = applicationConfig.signIn
 
-
-  private def awrsIdentifier(implicit user: AuthContext, hc: HeaderCarrier): String = {
-    val awrsIdentifier = AccountUtils.hasAwrs match {
-      case true => AccountUtils.getAwrsRefNo.toString()
-      case false => save4LaterService.mainStore.fetchBusinessCustomerDetails.map(_.get.safeId)
+  private def awrsIdentifier(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): String = {
+    val awrsIdentifier = if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
+      accountUtils.getAwrsRefNo(authRetrievals.enrolments)
+    } else {
+      save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals).map(_.get.safeId)
     }
     awrsIdentifier.toString
   }
 
-  def api5Journey(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
+  def api5Journey(callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
     debug("API5 journey triggered")
     gotoBusinessTypePage(callerId)
   }
 
-  private def gotoBusinessTypePage(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]) = callerId match {
+  private def gotoBusinessTypePage(callerId: Option[String])(implicit request: Request[AnyContent]) = callerId match {
     case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
     case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
   }
 
-  def api4Journey(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
+  def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
 
-    save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
-      case Some(data) => {
-
-        data.safeId.isEmpty match {
-          case true => Future.successful(Redirect(ExternalUrls.businessCustomerStartPage))
-          case _ => gotoBusinessTypePage(callerId)
+    save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
+      case Some(data) =>
+        if (data.safeId.isEmpty) {
+          Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
+        } else {
+          gotoBusinessTypePage(callerId)
         }
-      }
       case _ =>
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails] flatMap {
           case Some(data) =>
-            save4LaterService.mainStore.saveBusinessCustomerDetails(data) flatMap {
+            save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data) flatMap {
               _ => gotoBusinessTypePage(callerId)
             }
-          case _ => Future.successful(Redirect(ExternalUrls.businessCustomerStartPage))
+          case _ => Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
         }
     }
   }
 
-  def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = async {
-    implicit user => implicit request => {
-      chooseScenario(callerId)
-    }.recoverWith {
-      case e: JsResultException => {
-        AccountUtils.hasAwrs match {
-          case true => {
-            save4LaterService.mainStore.removeAll
-            save4LaterService.api.removeAll
-            chooseScenario(callerId)
+  def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { authRetrievals =>
+      chooseScenario(callerId, authRetrievals) recoverWith {
+        case _: JsResultException =>
+          if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
+            save4LaterService.mainStore.removeAll(authRetrievals)
+            save4LaterService.api.removeAll(authRetrievals)
+            chooseScenario(callerId, authRetrievals)
+          } else {
+            save4LaterService.mainStore.removeAll(authRetrievals)
+            chooseScenario(callerId, authRetrievals)
           }
-          case false => {
-            save4LaterService.mainStore.removeAll
-            chooseScenario(callerId)
-          }
-        }
-      }
-      case error@_ => {
-        warn("Exception encountered in Home Controller: " + awrsIdentifier + " \nERROR: " + error)
-        showErrorPage
+        case error =>
+          warn("Exception encountered in Home Controller: " + awrsIdentifier(authRetrievals) + " \nERROR: " + error)
+          showErrorPage
       }
     }
   }
 
-  private def chooseScenario(callerId: Option[String] = None)(implicit user: AuthContext, request: Request[AnyContent]) = {
-    save4LaterService.mainStore.fetchApplicationStatus flatMap {
-      case Some(data) => {
-        checkValidApplicationStatus(data, callerId)
-      }
-      case _ => {
-        startJourney(callerId)
-      }
+  private def chooseScenario(callerId: Option[String] = None, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]) = {
+    save4LaterService.mainStore.fetchApplicationStatus(authRetrievals) flatMap {
+      case Some(data) =>
+        checkValidApplicationStatus(data, callerId, authRetrievals)
+      case _ =>
+        startJourney(callerId, authRetrievals)
     }
   }
 
-  def checkValidApplicationStatus(applicationStatus: ApplicationStatus, callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] =
+  def checkValidApplicationStatus(applicationStatus: ApplicationStatus, callerId: Option[String], authRetrievals: StandardAuthRetrievals)
+                                 (implicit request: Request[AnyContent]): Future[Result] =
   // check that the user has not returned within the specified amount of hours since de-registering or withdrawing their application
-    applicationStatus.updatedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours)) match {
-      case true => startJourney(callerId)
-      case _ => Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
+    if (applicationStatus.updatedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours))) {
+      startJourney(callerId, authRetrievals)
+    } else {
+      Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
     }
 
-  def startJourney(callerId: Option[String])(implicit user: AuthContext, request: Request[AnyContent]): Future[Result] = {
-
-    if (AccountUtils.hasAwrs){
+  def startJourney(callerId: Option[String], authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
+    if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
       api5Journey(callerId)
     } else {
-      api4Journey(callerId)
+      api4Journey(authRetrievals, callerId)
     }
-  }
-
-
-}
-
-object HomeController extends HomeController {
-  override val authConnector = FrontendAuthConnector
-  override val businessCustomerService = BusinessCustomerService
-  override val save4LaterService = Save4LaterService
-
 }

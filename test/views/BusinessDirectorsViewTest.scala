@@ -40,10 +40,10 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
 
   lazy val testList = BusinessDirectors(List(testBusinessDirectorPerson, testBusinessDirectorPerson, testBusinessDirectorCompany, testBusinessDirectorCompany))
 
-  object TestBusinessDirectorsController extends BusinessDirectorsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
+  val testBusinessDirectorsController: BusinessDirectorsController =
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+      override val signInUrl = "/sign-in"
+    }
 
   "Business Director Template" should {
 
@@ -56,7 +56,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
             val document = Jsoup.parse(contentAsString(result))
             val heading = document.getElementById("business-directors-heading").text()
             val personOrCompanySection = document.getElementById("personOrCompany_field")
-            val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-company_secretary")
+            val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
             id match {
               case 1 =>
                 heading should be(Messages("awrs.business_directors.heading.first"))
@@ -84,7 +84,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
           val personOrCompanySection = document.getElementById("personOrCompany_field")
           personOrCompanySection shouldBe null
 
-          val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-company_secretary")
+          val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
           companySecretaryOption shouldBe null
       }
     }
@@ -100,7 +100,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
           val personOrCompanySection = document.getElementById("personOrCompany_field")
           personOrCompanySection should not be null
 
-          val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-company_secretary")
+          val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
           companySecretaryOption should not be null
       }
     }
@@ -124,7 +124,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
             val personOrCompanySection = document.getElementById("personOrCompany_field")
             personOrCompanySection should not be null
 
-            val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-company_secretary")
+            val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
             companySecretaryOption should not be null
         }
       }
@@ -157,7 +157,8 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
 
   private def showDirector(id: Int, isLinearMode: Boolean = true, isNewRecord: Boolean = true, directors: Option[BusinessDirectors] = testList)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = directors)
-    val result = TestBusinessDirectorsController.showBusinessDirectors(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testBusinessDirectorsController.showBusinessDirectors(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -166,7 +167,8 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessDirectors = testBusinessDirectors
     )
-    val result = TestBusinessDirectorsController.showBusinessDirectors(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testBusinessDirectorsController.showBusinessDirectors(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

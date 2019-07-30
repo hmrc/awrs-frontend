@@ -17,52 +17,49 @@
 package services.apis
 
 import connectors.AWRSConnector
+import controllers.auth.StandardAuthRetrievals
+import javax.inject.Inject
 import models.SubscriptionStatusType
 import services.{KeyStoreService, Save4LaterService}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AccountUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.{ExecutionContext, Future}
 
 // Unit tests for this class are covered in EtmpLookupService for retrieveApplication
 
-trait AwrsAPI9 {
-  val awrsConnector: AWRSConnector
-  val keyStoreService: KeyStoreService
-  val save4LaterService: Save4LaterService
+class AwrsAPI9 @Inject()(
+                          val accountUtils: AccountUtils,
+                          val awrsConnector: AWRSConnector,
+                          val keyStoreService: KeyStoreService,
+                          val save4LaterService: Save4LaterService
+                        ){
 
-  def getSubscriptionStatus(implicit hc: HeaderCarrier, user: AuthContext): Future[Option[SubscriptionStatusType]] =
+  def getSubscriptionStatus(authRetrievals: StandardAuthRetrievals)
+                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
     getSubscriptionStatusFromCache flatMap {
-      case None => getSubscriptionStatusFromEtmp
+      case None => getSubscriptionStatusFromEtmp(authRetrievals)
       case successData: Option[SubscriptionStatusType] => Future.successful(successData)
     }
 
-  @inline def getSubscriptionStatusFromCache(implicit user: AuthContext, hc: HeaderCarrier) =
+  @inline def getSubscriptionStatusFromCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
     keyStoreService.fetchSubscriptionStatus
 
-  private def getAwrsRefNo(implicit user: AuthContext, hc: HeaderCarrier) = AccountUtils.getAwrsRefNo.toString()
+  private def getSubscriptionStatusFromEtmp(authRetrievals: StandardAuthRetrievals)
+                                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
 
-  private def getSubscriptionStatusFromEtmp(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[SubscriptionStatusType]] =
-
-      save4LaterService.mainStore.fetchBusinessCustomerDetails flatMap {
-        businessDetails =>
-          AccountUtils.hasAwrs match {
-            case false => Future.successful(None)
-            case true => awrsConnector.checkStatus(getAwrsRefNo,businessDetails.get.businessName) flatMap {
-              case successData: SubscriptionStatusType =>
-                keyStoreService.saveSubscriptionStatus(successData) flatMap {
-                  _ => Future.successful(Some(successData))
-                }
-            }
+    save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
+      businessDetails =>
+        if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
+          awrsConnector.checkStatus(authRetrievals, businessDetails.get.businessName) flatMap {
+            successData: SubscriptionStatusType =>
+              keyStoreService.saveSubscriptionStatus(successData) flatMap {
+                _ => Future.successful(Some(successData))
+              }
           }
-      }
+        } else {
+          Future.successful(None)
+        }
+    }
 
-}
-
-object AwrsAPI9 extends AwrsAPI9 {
-  override val awrsConnector = AWRSConnector
-  override val keyStoreService = KeyStoreService
-  override val save4LaterService = Save4LaterService
 }

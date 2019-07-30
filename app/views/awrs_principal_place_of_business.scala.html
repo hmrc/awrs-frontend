@@ -21,10 +21,11 @@
 @import views.helpers._
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
 
-@(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode)
+@import config.ApplicationConfig
+@import utils.AwrsFieldConfig
+@(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent],
+        viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
     Some(placeOfBusinessForm)
@@ -36,34 +37,36 @@
 }
 
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.PlaceOfBusinessController.saveAndReturn
-        case false => controllers.routes.PlaceOfBusinessController.saveAndContinue
+    if(isEditMode) {
+        controllers.routes.PlaceOfBusinessController.saveAndReturn
+    } else {
+        controllers.routes.PlaceOfBusinessController.saveAndContinue
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @businessTypeHeading = {
     @businessType.map {
         case "Partnership" | "LP" | "LLP" => {
-            @Messages("awrs.place_of_business.heading.partnership", headingPrefix())
+            @messages("awrs.place_of_business.heading.partnership", messages(headingPrefix()))
         }
         case "LLP_GRP" | "LTD_GRP" => {
-            @Messages("awrs.place_of_business.heading.group", headingPrefix())
+            @messages("awrs.place_of_business.heading.group", messages(headingPrefix()))
         }
         case _ => {
-            @Messages("awrs.place_of_business.heading", headingPrefix())
+            @messages("awrs.place_of_business.heading", messages(headingPrefix()))
         }
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
@@ -78,12 +81,12 @@
 
             @form(action = actionRoute) {
 
-                <p class="lede">@Messages("awrs.business_contacts.place_of_business_help_text")</p>
+                <p class="lede">@messages("awrs.business_contacts.place_of_business_help_text")</p>
 
                   <ul class="bullets">
-                	    <li>@Messages("awrs.business_contacts.place_of_business_help_text.bullet1")</li>
-                      <li> @Messages("awrs.business_contacts.place_of_business_help_text.bullet2")</li>
-                      <li> @Messages("awrs.business_contacts.place_of_business_help_text.bullet3")</li>
+                	    <li>@messages("awrs.business_contacts.place_of_business_help_text.bullet1")</li>
+                      <li> @messages("awrs.business_contacts.place_of_business_help_text.bullet2")</li>
+                      <li> @messages("awrs.business_contacts.place_of_business_help_text.bullet3")</li>
                   </ul>
 
                 <input type="hidden" name="mainPlaceOfBusiness" value="No">
@@ -99,20 +102,20 @@
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             placeOfBusinessForm("placeOfBusinessLast3Years"),
-                            Seq("Yes" -> Messages("awrs.generic.yes"),
-                                "No" -> Messages("awrs.generic.no")),
-                            legend = Messages("awrs.business_contacts.place_of_business_changed_last_3_years"),
+                            Seq("Yes" -> messages("awrs.generic.yes"),
+                                "No" -> messages("awrs.generic.no")),
+                            legend = messages("awrs.business_contacts.place_of_business_changed_last_3_years"),
                             legendId = "placeOfBusinessLast3Years-legend",
                             fieldSetClass = "inline",
                             fieldSetAttributes = "id=placeOfBusinessLast3Years_field",
-                            fieldSetQuestion = Messages("awrs.business_contacts.last_3_years_help_question"),
+                            fieldSetQuestion = messages("awrs.business_contacts.last_3_years_help_question"),
                             fieldSetQuestionId = "trading-HelpLink",
-                            fieldSetQuestionAnswer = Html(Messages("awrs.business_contacts.last_3_years_help_text")),
+                            fieldSetQuestionAnswer = Html(messages("awrs.business_contacts.last_3_years_help_text")),
                             fieldSetQuestionWrapperClass = "panel-indent"
                         )
                     )
                     <div id="placeOfBusinessLast3Years-no-content">
-                        <h2 id="addYourPreviousAddress" class="heading-small panel-indent">@Messages("awrs.business_details.awrs_add_your_previous_address")</h2>
+                        <h2 id="addYourPreviousAddress" class="heading-small panel-indent">@messages("awrs.business_details.awrs_add_your_previous_address")</h2>
                         @awrsAddressHelper(
                             placeOfBusinessForm("placeOfBusinessAddressLast3Years"),
                             AddressHelperParams(
@@ -128,12 +131,12 @@
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             placeOfBusinessForm("operatingDuration"),
-                            Seq(Messages("awrs.generic.0to2years.value") -> Messages("awrs.generic.0to2years"),
-                                Messages("awrs.generic.2to4years.value") -> Messages("awrs.generic.2to4years"),
-                                Messages("awrs.generic.5to9years.value") -> Messages("awrs.generic.5to9years"),
-                                Messages("awrs.generic.10plusYears.value") -> Messages("awrs.generic.10plusYears")
+                            Seq(messages("awrs.generic.0to2years.value") -> messages("awrs.generic.0to2years"),
+                                messages("awrs.generic.2to4years.value") -> messages("awrs.generic.2to4years"),
+                                messages("awrs.generic.5to9years.value") -> messages("awrs.generic.5to9years"),
+                                messages("awrs.generic.10plusYears.value") -> messages("awrs.generic.10plusYears")
                             ),
-                            legend = Messages("awrs.business_contacts.business_operating_from_current_address"),
+                            legend = messages("awrs.business_contacts.business_operating_from_current_address"),
                             legendId = "operatingDuration-legend",
                             fieldSetAttributes = "id=operatingDuration_field"
                         )

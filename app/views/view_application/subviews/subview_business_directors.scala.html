@@ -22,10 +22,12 @@
 @import contents._
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String],
+@(headingKey: String,
   someModel: Option[models.BusinessDirectors],
   businessLegalEntity: String
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.businessDirectorsId
@@ -36,9 +38,10 @@
 }
 
 @getHeading(heading: String, model: models.BusinessDirectors) = @{
-    model.directors.isEmpty match {
-        case true => heading
-        case _ => f"$heading (${model.directors.size})"
+    if(model.directors.isEmpty) {
+        heading
+    } else {
+        f"$heading (${model.directors.size})"
     }
 }
 
@@ -48,26 +51,26 @@
 
 @ledeAndTopAdd(model: models.BusinessDirectors) = {
     @if(model.directors.size > 1) {
-        <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), Messages("awrs.view_application.director"))</div>
+        <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.director"))</div>
     }
 }
 
 @bottomAdd(model: models.BusinessDirectors)  = {
-    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), Messages("awrs.view_application.director"))
+    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.director"))
 }
 
 @content(model: models.BusinessDirectors) = {
-    @if(model.directors.size == 0) {
-        <p id="business_directors-subtext" class="lede">@Messages("awrs.business_directors.edit")</p>
+    @if(model.directors.isEmpty) {
+        <p id="business_directors-subtext" class="lede">@messages("awrs.business_directors.edit")</p>
     }
     @model.directors.zipWithIndex.map { case (director, id) =>
         @content_director(director, businessLegalEntity, id + 1)
     }
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(getHeading(heading, model), wrapperId, sectionName = businessDirectorsName)(content(model), preContent = ledeAndTopAdd(model), postContent = bottomAdd(model))
+@someModel match {
+    case Some(model) => {
+        @subview_core(getHeading(heading, model), wrapperId, sectionName = Some(businessDirectorsName))(content(model), preContent = Some(ledeAndTopAdd(model)), postContent = Some(bottomAdd(model)))
     }
     case _ => {}
 }

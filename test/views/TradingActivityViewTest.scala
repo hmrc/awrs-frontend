@@ -21,7 +21,7 @@ import controllers.TradingActivityController
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import services.DataCacheKeys._
@@ -31,15 +31,11 @@ import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
 
 import scala.concurrent.Future
 
-class TradingActivityViewTest extends AwrsUnitTestTraits
-  with ServicesUnitTestFixture {
+class TradingActivityViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture with AwrsFieldConfig {
 
-  val request = FakeRequest()
-
-  object TestTradingActivityController extends TradingActivityController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val testTradingActivityController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   "Submitting the trading activity form with " should {
@@ -71,7 +67,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
 
       "if 'type of wholesaler' is Other - additional data must not be more than 40 chars" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(
-          "wholesalerType[0]" -> "99", "otherWholesaler" -> "a" * (AwrsFieldConfig.otherWholesalerLen + 1),
+          "wholesalerType[0]" -> "99", "otherWholesaler" -> "a" * (otherWholesalerLen + 1),
           "mainCustomers[0]" -> "3", "doesBusinessImportAlcohol" -> "Yes", "productType[0]" -> "01")) {
           result =>
             val document = Jsoup.parse(contentAsString(result))
@@ -79,7 +75,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
             val id = "otherWholesaler"
             val expectedErrorKey = "awrs.view_application.error.trading_activity.order.maxlength"
 
-            testErrorMessageValidation(document, id, expectedErrorKey, "wholesaler type other", AwrsFieldConfig.otherWholesalerLen)
+            testErrorMessageValidation(document, id, expectedErrorKey, "wholesaler type other", otherWholesalerLen)
         }
       }
 
@@ -121,14 +117,14 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
 
       "if 'How do you currently take orders?' is Other - additional data must not be more than 40 chars" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(
-          "typeOfAlcoholOrders[0]" -> "99", "otherTypeOfAlcoholOrders" -> "a" * (AwrsFieldConfig.otherOrdersLen + 1))) {
+          "typeOfAlcoholOrders[0]" -> "99", "otherTypeOfAlcoholOrders" -> "a" * (otherOrdersLen + 1))) {
           result =>
             val document = Jsoup.parse(contentAsString(result))
 
             val id = "otherTypeOfAlcoholOrders"
             val expectedErrorKey = "awrs.view_application.error.trading_activity.maxlength"
 
-            testErrorMessageValidation(document, id, expectedErrorKey, "other orders", AwrsFieldConfig.otherOrdersLen)
+            testErrorMessageValidation(document, id, expectedErrorKey, "other orders", otherOrdersLen)
         }
       }
 
@@ -206,13 +202,15 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
-    val result = TestTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
-    val result = TestTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
@@ -221,7 +219,8 @@ class TradingActivityViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchTradingActivity = testTradingActivity()
     )
-    val result = TestTradingActivityController.showTradingActivity(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testTradingActivityController.showTradingActivity(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

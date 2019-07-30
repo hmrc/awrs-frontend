@@ -23,7 +23,7 @@
 @import _root_.forms.validation.util.ErrorMessageInterpreter._
 @import _root_.forms.validation.util.ErrorMessageLookup._
 
-@fieldErrors = @{ ErrorMessageInterpreter.getFieldErrorsByName(params.fieldName)(Some(params.formItem)) }
+@fieldErrors = @{ ErrorMessageInterpreter.getFieldErrorsByName(params.fieldName)(Some(params.formItem), messages)}
 @legend = {
     @params.label match {
         case Some(label) => {<legend id="@params.fieldName-legend">@label</legend>}

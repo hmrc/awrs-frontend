@@ -16,14 +16,15 @@
 
 package forms.validation.util
 
-import org.scalatest.Matchers
-import org.scalatest.mock.MockitoSugar
-import play.api.test.FakeApplication
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import forms.validation.util.ErrorMessageLookup._
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.test.Helpers.stubMessages
 
-class ErrorMessageLookupLookupTest extends UnitSpec with Matchers with MockitoSugar with OneServerPerSuite {
+class ErrorMessageLookupLookupTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
 
   private val messagesArgumentMarkupRegex = "\\{\\d+\\}"
 
@@ -43,7 +44,9 @@ class ErrorMessageLookupLookupTest extends UnitSpec with Matchers with MockitoSu
   private def trimString(str: String): String =
     str.trim
 
-  implicit override lazy val app: FakeApplication = FakeApplication()
+  implicit val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  implicit val messages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
+
   "The Message Handler" should {
     // currently using messages.en as the inputs for these tests
     // better to replace these with mock data somehow

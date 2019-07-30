@@ -16,29 +16,23 @@
 
 package services
 
-
-import config.AuthClientConnector
 import connectors.TaxEnrolmentsConnector
-import forms.AWRSEnums.BooleanRadioEnum
+import javax.inject.Inject
 import models._
-import play.api.Mode.Mode
-import play.api.{Configuration, Logger, Play}
 import services.GGConstants._
 import uk.gov.hmrc.auth.core.AuthorisedFunctions
 import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.play.config.RunMode
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EnrolService extends RunMode with AuthorisedFunctions {
-  val taxEnrolmentsConnector: TaxEnrolmentsConnector
-
+class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
+                             servicesConfig: ServicesConfig,
+                             val authConnector: DefaultAuthConnector) extends AuthorisedFunctions {
 
   val enrolmentType = "principal"
 
@@ -98,14 +92,4 @@ trait EnrolService extends RunMode with AuthorisedFunctions {
       friendlyName = friendly,
       knownFacts = knownFacts)
   }
-
-}
-
-object EnrolService extends EnrolService {
-  val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
-  override val authConnector = AuthClientConnector
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

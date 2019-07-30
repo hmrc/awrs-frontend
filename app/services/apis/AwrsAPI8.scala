@@ -17,31 +17,27 @@
 package services.apis
 
 import connectors.AWRSConnector
+import controllers.auth.StandardAuthRetrievals
+import javax.inject.Inject
 import models.{WithdrawalReason, WithdrawalResponse}
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Request}
 import services.KeyStoreService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.AccountUtils
-
-import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 
+import scala.concurrent.{ExecutionContext, Future}
 
-trait AwrsAPI8 {
-  val awrsConnector: AWRSConnector
-  val keyStoreService: KeyStoreService
 
-  def withdrawApplication(reason: Option[WithdrawalReason])(implicit hc: HeaderCarrier, user: AuthContext, request: Request[AnyContent]): Future[WithdrawalResponse] =
+class AwrsAPI8 @Inject()(val awrsConnector: AWRSConnector,
+                         val keyStoreService: KeyStoreService
+                        ){
+
+  def withdrawApplication(reason: Option[WithdrawalReason], authRetrievals: StandardAuthRetrievals)
+                         (implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[WithdrawalResponse] =
     reason match {
       case Some(resultReason) =>
-        awrsConnector.withdrawApplication(AccountUtils.getAwrsRefNo.utr, Json.toJson(resultReason))
+        awrsConnector.withdrawApplication(authRetrievals, Json.toJson(resultReason))
       case _ =>
         Future.failed(new NoSuchElementException("KeyStore is empty"))
     }
-}
-
-object AwrsAPI8 extends AwrsAPI8 {
-  override val awrsConnector: AWRSConnector = AWRSConnector
-  override val keyStoreService: KeyStoreService = KeyStoreService
 }

@@ -17,6 +17,7 @@
 package views
 
 import builders.SessionBuilder
+import config.ApplicationConfig
 import controllers.BusinessContactsController
 import forms.BusinessContactsForm
 import models.BusinessContacts
@@ -24,7 +25,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -38,15 +39,17 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   val businessCustomerDetailsFormId = "businessCustomerDetails"
+  val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
-  def testRequest(premises: BusinessContacts) =
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
+
+  def testRequest(premises: BusinessContacts): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessContacts](FakeRequest(), BusinessContactsForm.businessContactsValidationForm, premises)
 
-  object TestBusinessContactsController extends BusinessContactsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val emailVerificationService = mock[EmailVerificationService]
-  }
+  val testBusinessContactsController: BusinessContactsController =
+    new BusinessContactsController(mockMCC, mockEmailVerificationService,testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+      override val signInUrl = "/sign-in"
+    }
 
   def reviewDetailMatch(reviewDetail: Element) = {
 
@@ -121,7 +124,9 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
-    val result = TestBusinessContactsController.showBusinessContacts(false).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
+
+    setAuthMocks()
+    val result = testBusinessContactsController.showBusinessContacts(false).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
     test(result)
   }
 
@@ -130,7 +135,9 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = None
     )
-    val result = TestBusinessContactsController.showBusinessContacts(true).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
+
+    setAuthMocks()
+    val result = testBusinessContactsController.showBusinessContacts(true).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetails("SOP").businessType.get))
 
     test(result)
   }
@@ -140,7 +147,9 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessContacts = testBusinessContactsDefault()
     )
-    val result = TestBusinessContactsController.showBusinessContacts(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+
+    setAuthMocks()
+    val result = testBusinessContactsController.showBusinessContacts(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

@@ -16,6 +16,7 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.submapping.AddressMapping._
 import forms.prevalidation._
@@ -31,14 +32,14 @@ object BusinessPremisesForm {
   private val additionalPremises_compulsory = yesNoQuestion_compulsory("additionalPremises", "awrs.additional-premises.error.do_you_have_additional_premises")
   private val addAnother_compulsory = yesNoQuestion_compulsory("addAnother", "awrs.additional-premises.error.add_another")
 
-  val businessPremisesValidationForm = Form(
+  def businessPremisesValidationForm(implicit applicationConfig: ApplicationConfig) = Form(
     mapping(
       "additionalPremises" -> additionalPremises_compulsory,
-      "additionalAddress" -> (ukAddress_compulsory(prefix = "additionalAddress").toOptionalAddressMapping iff whenThereAreAdditionalTradingPremises),
+      "additionalAddress" -> (ukAddress_compulsory(prefix = "additionalAddress", "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenThereAreAdditionalTradingPremises),
       "addAnother" -> (addAnother_compulsory iff whenThereAreAdditionalTradingPremises)
     )
     (AdditionalBusinessPremises.apply)(AdditionalBusinessPremises.unapply)
   )
 
-  val businessPremisesForm = PreprocessedForm(businessPremisesValidationForm)
+  def businessPremisesForm(implicit applicationConfig: ApplicationConfig) = PreprocessedForm(businessPremisesValidationForm)
 }

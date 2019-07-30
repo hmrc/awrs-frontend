@@ -16,6 +16,7 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.prevalidation._
 import forms.submapping.AddressMapping._
@@ -29,14 +30,12 @@ import forms.validation.util.NamedMappingAndUtil._
 import forms.validation.util.TargetFieldIds
 import models.GroupMember
 import play.api.data.Forms._
-import play.api.data.{Form, Mapping}
-import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import play.api.data.Form
 
 object GroupMemberDetailsForm {
-  @inline def answeredYesToDoYouHaveCRN = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveCRN: FormData => Boolean = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
 
-  @inline def answeredYesToDoYouHaveUTR = whenAnswerToFieldIs(doYouHaveUtr, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveUTR: FormData => Boolean = whenAnswerToFieldIs(doYouHaveUtr, BooleanRadioEnum.YesString)(_)
 
   private val otherMembers_compulsory = yesNoQuestion_compulsory("addAnotherGrpMember", "awrs.group_member.addAnother.empty")
   private val mustHaveVRNorCRNorUTR = mustHaveAtLeastOneId(TargetFieldIds("doYouHaveVRN", "isBusinessIncorporated", "doYouHaveUTR"), "awrs.generic.error.identification_provided")
@@ -57,28 +56,6 @@ object GroupMemberDetailsForm {
       companyNameIsEmpty &&& tradingNameIsEmpty,
       simpleCrossFieldErrorMessage(TargetFieldIds("names.companyName", "names.tradingName"),
         "awrs.generic.error.company_trading_name"))
-
-  private def companyName_optional: Mapping[Option[String]] = {
-    val fieldId = "names.companyName"
-    val fieldNameInErrorMessage = "business name"
-    val companyNameConstraintParameters =
-      OptionalTextFieldMappingParameter(
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.companyNameLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
-      )
-    optionalText(companyNameConstraintParameters)
-  }
-
-  private def tradingName_optional: Mapping[Option[String]] = {
-    val fieldId = "names.tradingName"
-    val fieldNameInErrorMessage = "trading name"
-    val companyNameConstraintParameters =
-      OptionalTextFieldMappingParameter(
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.tradingNameLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
-      )
-    optionalText(companyNameConstraintParameters)
-  }
 
   private val inferBasedOn = (dependentField: Option[String]) => dependentField.map(x => x.trim) match {
     case None | Some("") => BooleanRadioEnum.NoString
@@ -108,12 +85,12 @@ object GroupMemberDetailsForm {
       (!yesToDoYouHaveVRN || yesToDoYouHaveVRN && vrnIsNotAnswered) // if doYouhaveVRN is not answered or if it is answered with yes but no VRN is supplied
   }
 
-  val groupMemberValidationForm = {
-    val noIdIsSupplied = noIdsHaveBeenSupplied(_)
+  def groupMemberValidationForm(implicit applicationConfig: ApplicationConfig): Form[GroupMember] = {
+    val noIdIsSupplied = noIdsHaveBeenSupplied _
     Form(
       mapping(
         names -> companyNamesMapping(names),
-        "address" -> ukAddress_compulsory(prefix = "address").toOptionalAddressMapping,
+        "address" -> ukAddress_compulsory(prefix = "address", "", applicationConfig.countryCodes).toOptionalAddressMapping,
         "groupJoiningDate" -> optional(text),
         doYouHaveUtr -> doYouHaveUTR_compulsory(doYouHaveUtr),
         utr -> (utr_compulsory(utr) iff noIdIsSupplied ||| answeredYesToDoYouHaveUTR),
@@ -127,6 +104,6 @@ object GroupMemberDetailsForm {
     )
   }
 
-  val groupMemberForm = PreprocessedForm(groupMemberValidationForm).addNewPreprocessFunction(inferDoYouHave)
+  def groupMemberForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[GroupMember] = PreprocessedForm(groupMemberValidationForm).addNewPreprocessFunction(inferDoYouHave)
 
 }

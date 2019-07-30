@@ -22,8 +22,9 @@ import controllers.BusinessPartnersController
 import forms.AWRSEnums.BooleanRadioEnum
 import models._
 import org.jsoup.Jsoup
+import org.mockito.{ArgumentMatcher, ArgumentMatchers}
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -41,21 +42,31 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
 
   val businessPartnerDetails = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), testNino, None, None, Some("Yes"), None, None, None, None)
 
-  object TestBusinessPartnersController extends BusinessPartnersController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
+  val testBusinessPartnersController: BusinessPartnersController =
+    new BusinessPartnersController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+      override val signInUrl = "/sign-in"
+    }
 
   private def testPartner(haveMore: Boolean = true) = TestUtil.testPartner(
     firstName = "Bob",
     lastName = "Smith",
     otherPartners = {
-      haveMore match {
-        case true => BooleanRadioEnum.YesString
-        case false => BooleanRadioEnum.NoString
+      if (haveMore) {
+        BooleanRadioEnum.YesString
+      } else {
+        BooleanRadioEnum.NoString
       }
     }
   )
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    when(mockAppConfig.countryCodes)
+      .thenReturn(mockCountryCodes)
+    when(mockCountryCodes.getAddressWithCountry(ArgumentMatchers.any()))
+      .thenReturn(Some(TestUtil.testAddress))
+  }
 
   lazy val testPartnerDetails = Partners(List(testPartner(), testPartner(), testPartner(false)))
 
@@ -66,20 +77,21 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
       partnerType =>
 
         s"display the correct heading on the first page for for $partnerType" in {
+
           linearJourney(1, partnerType) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
+              document.select("#business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
           }
           editJourney(1, partnerType) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.edit")))
+              document.select("#business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.edit")))
           }
           postLinearJourneyAddition(1, partnerType) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
+              document.select("#business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
           }
         }
 
@@ -222,22 +234,24 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
 
   private def getWithAuthorisedUserSa(partnerId: Int)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = testPartnerDetails)
+    setAuthMocks()
 
-    val result = TestBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def linearJourney(partnerId: Int, businessType: String)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = testPartnerDetails)
+    setAuthMocks()
 
-    val result = TestBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
+    val result = testBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
     test(result)
   }
 
   private def editJourney(partnerId: Int, businessType: String)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = testPartnerDetails)
-
-    val result = TestBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = false, isNewRecord = false).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
+    setAuthMocks()
+    val result = testBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = false, isNewRecord = false).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
     test(result)
   }
 
@@ -256,8 +270,9 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
         Partners(partners = list)
     }
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = partners)
+    setAuthMocks()
 
-    val result = TestBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = false, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
+    val result = testBusinessPartnersController.showPartnerMemberDetails(partnerId, isLinearMode = false, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId, businessType))
 
     test(result)
   }
@@ -267,7 +282,9 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchPartnerDetails = testPartnerDetails
     )
-    val result = TestBusinessPartnersController.showPartnerMemberDetails(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+
+    val result = testBusinessPartnersController.showPartnerMemberDetails(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

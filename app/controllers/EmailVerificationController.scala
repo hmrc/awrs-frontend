@@ -16,75 +16,73 @@
 
 package controllers
 
-import config.FrontendAuthConnector
+import audit.Auditable
+import config.ApplicationConfig
 import controllers.auth.AwrsController
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services._
-import utils.AwrsConfig.emailVerificationEnabled
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.AccountUtils
 import views.html.{awrs_email_verification_error, awrs_email_verification_success}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait EmailVerificationController extends AwrsController {
+class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
+                                            emailVerificationService: EmailVerificationService,
+                                            val auditable: Auditable,
+                                            val accountUtils: AccountUtils,
+                                            val save4LaterService: Save4LaterService,
+                                            val authConnector: DefaultAuthConnector,
+                                            implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  val save4LaterService: Save4LaterService
-  val emailVerificationService: EmailVerificationService
-  val isEmailVerificationEnabled: Boolean
+  implicit val ec: ExecutionContext = mcc.executionContext
+  lazy val isEmailVerificationEnabled: Boolean = applicationConfig.emailVerificationEnabled
+  lazy val signInUrl: String = applicationConfig.signIn
 
-  def checkEmailVerification: Action[AnyContent] = async {
-    implicit user =>
-      implicit request =>
-        isEmailVerificationEnabled match {
-          case true =>
-            for {
-              businessContacts <- save4LaterService.mainStore.fetchBusinessContacts
-              isEmailVerified <- emailVerificationService.isEmailVerified(businessContacts)
-            } yield {
-              isEmailVerified match {
-                case true =>
-                  Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration())
-                case _ =>
-                  Ok(awrs_email_verification_error(businessContacts.fold("")(x => x.email.fold("")(x => x))))
-              }
-            }
-          case _ =>
-            Future.successful(Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration()))
-        }
-  }
-
-  def resend: Action[AnyContent] = async {
-    implicit user =>
-      implicit request =>
-        save4LaterService.mainStore.fetchBusinessContacts flatMap {
-          case Some(businessDetails) => {
-            val email = businessDetails.email
-            email match {
-              case Some(businessEmail) => {
-                emailVerificationService.sendVerificationEmail(businessEmail) map {
-                  case true => {
-                    Ok(awrs_email_verification_error(businessEmail, resent = true))}
-                  case _ => showErrorPageRaw
-                }
-              }
-              case _ => {
-                Future.successful(showErrorPageRaw)
-              }
-            }
+  def checkEmailVerification: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      if (isEmailVerificationEnabled) {
+        for {
+          businessContacts <- save4LaterService.mainStore.fetchBusinessContacts(ar)
+          isEmailVerified <- emailVerificationService.isEmailVerified(businessContacts)
+        } yield {
+          if (isEmailVerified) {
+            Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration())
+          } else {
+            Ok(awrs_email_verification_error(businessContacts.fold("")(x => x.email.fold("")(x => x))))
           }
-          case _ => Future.successful(showErrorPageRaw)
         }
+      } else {
+        Future.successful(Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration()))
+      }
+    }
   }
 
-  def showSuccess: Action[AnyContent]  = Action.async {
+  def resend: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      save4LaterService.mainStore.fetchBusinessContacts(ar) flatMap {
+        case Some(businessDetails) =>
+          val email = businessDetails.email
+          email match {
+            case Some(businessEmail) =>
+              emailVerificationService.sendVerificationEmail(businessEmail) map {
+                case true =>
+                  Ok(awrs_email_verification_error(businessEmail, resent = true))
+                case _ => showErrorPageRaw
+              }
+            case _ =>
+              Future.successful(showErrorPageRaw)
+          }
+        case _ => Future.successful(showErrorPageRaw)
+      }
+    }
+  }
+
+  def showSuccess: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(Ok(awrs_email_verification_success()))
   }
 
-}
-
-object EmailVerificationController extends EmailVerificationController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
-  override val emailVerificationService = EmailVerificationService
-  override val isEmailVerificationEnabled = emailVerificationEnabled
 }
