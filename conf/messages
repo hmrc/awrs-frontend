@@ -326,6 +326,7 @@ awrs.application_status.info.no_longer_minded_to_revoke.heading=What this means
 # Index Page
 #============================================================
 awrs.index_page.top_heading={0} application summary
+awrs.index_page.application = Application summary
 awrs.index_page.not_submitted_changes.return=You must return to the application summary to submit your changes
 awrs.index_page.not_submitted_changes=You must submit your changes before you sign out
 awrs.index_page.modified_application_incomplete.index=Your application is incomplete. You must complete all sections before you can submit.
