@@ -29,20 +29,20 @@
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
 
-
-@(confirmationForm: Form[models.BusinessNameChangeConfirmation], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages )
+@import config.ApplicationConfig
+@(confirmationForm: Form[models.BusinessNameChangeConfirmation], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 
 @warningText = {
-<p id="businessNameChangeConfirmation-warning">@Messages("awrs.business_name_change.warning")</p>
+<p id="businessNameChangeConfirmation-warning">@messages("awrs.business_name_change.warning")</p>
 <ul id="businessNameChangeConfirmation-bullets" class="bullets">
-    <li>@Messages("awrs.business_name_change.warning.bullet.1")</li>
-    <li>@Messages("awrs.business_name_change.warning.bullet.2")</li>
-    <li>@Messages("awrs.business_name_change.warning.bullet.3")</li>
+    <li>@messages("awrs.business_name_change.warning.bullet.1")</li>
+    <li>@messages("awrs.business_name_change.warning.bullet.2")</li>
+    <li>@messages("awrs.business_name_change.warning.bullet.3")</li>
 </ul>
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.business_name_change.heading")), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.business_name_change.heading")), userLoggedIn = true) {
 
 @backLink()
 
@@ -50,7 +50,7 @@
 <div class="grid">
     <div class="grid grid-2-3">
         <header class="page-header">
-            <h1 id="businessNameChangeConfirmation-heading" class="heading-xlarge">@Messages("awrs.business_name_change.heading")</h1>
+            <h1 id="businessNameChangeConfirmation-heading" class="heading-xlarge">@messages("awrs.business_name_change.heading")</h1>
             @awrsProgressHelper(businessType, businessDetailsName)
         </header>
         @warningText
@@ -60,11 +60,11 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         confirmationForm("businessNameChangeConfirmation"),
-                        Seq("Yes" -> Messages("awrs.generic.yes"),
-                            "No" -> Messages("awrs.generic.no")),
+                        Seq("Yes" -> messages("awrs.generic.yes"),
+                            "No" -> messages("awrs.generic.no")),
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=businessNameChangeConfirmation_field",
-                        legend = Messages("awrs.business_name_change.heading"),
+                        legend = messages("awrs.business_name_change.heading"),
                         legendId = "businessNameChangeConfirmation-legend",
                         legendClass = "visuallyhidden",
                         ariaDescribedBy = "businessNameChangeConfirmation-legend businessNameChangeConfirmation-warning businessNameChangeConfirmation-bullets",
@@ -72,7 +72,7 @@
                     )
                 )
             </div>
-            @awrsSubmitButton(Messages("awrs.business_name_change.cta"))(id = "save-and-continue", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.business_name_change.cta"))(id = "save-and-continue", classAttr = "button")
         }
     </div>
 </div>

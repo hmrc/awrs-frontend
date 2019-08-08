@@ -16,125 +16,54 @@
 
 package config
 
-import akka.actor.ActorSystem
-import com.typesafe.config.Config
-import play.api.Mode.Mode
+import javax.inject.Inject
 import play.api.{Configuration, Play}
-import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.http.hooks.HttpHooks
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.http.HttpAuditing
-import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
-import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
-import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
 
-object AwrsFrontendAuditConnector extends AuditConnector with AppName {
-  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
+class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) extends CachedStaticHtmlPartialRetriever
 
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
+class BusinessCustomerSessionCache @Inject()(servicesConfig: ServicesConfig,
+                                             val http: DefaultHttpClient) extends SessionCache {
+  override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.review-details.cache", "business-customer-frontend")
+
+  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.session-cache")
+  override lazy val domain: String = servicesConfig.getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
 }
 
-trait Hooks extends HttpHooks with HttpAuditing {
-  override val hooks = Seq(AuditingHook)
-  override lazy val auditConnector: AuditConnector = AwrsFrontendAuditConnector
+class AwrsSessionCache @Inject()(servicesConfig: ServicesConfig,
+                                 val http: DefaultHttpClient) extends SessionCache {
+  override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.awrs-frontend.cache", "awrs-frontend")
+
+  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.session-cache")
+  override lazy val domain: String = servicesConfig.getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
 }
 
-trait WSHttp extends HttpGet with WSGet with HttpPut with WSPut with HttpPost with WSPost with HttpDelete with WSDelete with Hooks with AppName
-object WSHttp extends WSHttp {
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
+class AwrsShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
+                                      val http: DefaultHttpClient) extends ShortLivedHttpCaching {
 
-  override protected def actorSystem: ActorSystem = Play.current.actorSystem
-
-  override protected def configuration: Option[Config] = Option(Play.current.configuration.underlying)
+  override lazy val defaultSource: String = servicesConfig.getConfString("cachableshort-lived-cache.awrs-frontend.cache", "awrs-frontend")
+  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache")
+  override lazy val domain: String = servicesConfig.getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
 }
 
-object CachedStaticHtmlPartialProvider extends CachedStaticHtmlPartialRetriever {
-  override val httpGet = WSHttp
+class AwrsAPIDataShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
+                                             val http: DefaultHttpClient) extends ShortLivedHttpCaching {
+
+  override lazy val defaultSource: String = servicesConfig.getConfString("cachableshort-lived-cache.awrs-frontend-api.cache", "awrs-frontend-api")
+  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache")
+  override lazy val domain: String = servicesConfig.getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
 }
 
-object FrontendAuthConnector extends AuthConnector with ServicesConfig {
-  val serviceUrl = baseUrl("auth")
-  lazy val http = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
+class AwrsShortLivedCache @Inject()(awrsShortLivedCaching: AwrsShortLivedCaching) extends ShortLivedCache {
+  override implicit lazy val crypto: CryptoWithKeysFromConfig = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
+  override lazy val shortLiveCache: ShortLivedHttpCaching = awrsShortLivedCaching
 }
 
-object BusinessCustomerSessionCache extends SessionCache with AppName with ServicesConfig{
-  override lazy val http = WSHttp
-  override lazy val defaultSource: String = getConfString("cachable.session-cache.review-details.cache","business-customer-frontend")
-
-  override lazy val baseUri = baseUrl("cachable.session-cache")
-  override lazy val domain = getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-object AwrsSessionCache extends SessionCache with AppName with ServicesConfig{
-  override lazy val http = WSHttp
-  override lazy val defaultSource: String = getConfString("cachable.session-cache.awrs-frontend.cache","awrs-frontend")
-
-  override lazy val baseUri = baseUrl("cachable.session-cache")
-  override lazy val domain = getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-object AwrsShortLivedCaching extends ShortLivedHttpCaching with ServicesConfig{
-
-  override lazy val defaultSource: String = getConfString("cachableshort-lived-cache.awrs-frontend.cache","awrs-frontend")
-  override lazy val baseUri: String = baseUrl("cachable.short-lived-cache")
-  override lazy val domain: String = getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
-
-  override def http: HttpGet with HttpPut with HttpDelete = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-object AwrsAPIDataShortLivedCaching extends ShortLivedHttpCaching with ServicesConfig{
-
-  override lazy val defaultSource: String = getConfString("cachableshort-lived-cache.awrs-frontend-api.cache","awrs-frontend-api")
-  override lazy val baseUri: String = baseUrl("cachable.short-lived-cache")
-  override lazy val domain: String = getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
-
-  override def http: HttpGet with HttpPut with HttpDelete = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-object AwrsShortLivedCache extends ShortLivedCache {
-  override implicit lazy val crypto = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
-  override lazy val shortLiveCache = AwrsShortLivedCaching
-}
-
-object AwrsAPIShortLivedCache extends ShortLivedCache {
-  override implicit lazy val crypto = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
-  override lazy val shortLiveCache = AwrsAPIDataShortLivedCaching
-}
-
-object AuthClientConnector extends PlayAuthConnector with ServicesConfig {
-  val serviceUrl: String = baseUrl("auth")
-  lazy val http = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
+class AwrsAPIShortLivedCache @Inject()(awrsAPIDataShortLivedCaching: AwrsAPIDataShortLivedCaching) extends ShortLivedCache {
+  override implicit lazy val crypto: CryptoWithKeysFromConfig = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
+  override lazy val shortLiveCache: ShortLivedHttpCaching = awrsAPIDataShortLivedCaching
 }

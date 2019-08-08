@@ -22,11 +22,11 @@ import forms.AWRSEnums.WithdrawalReasonEnum
 import forms.{WithdrawalConfirmationForm, WithdrawalReasonForm}
 import models._
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.apis.AwrsAPI8
@@ -45,20 +45,12 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with MockSave4LaterService {
 
-  val request = FakeRequest()
-  val mockAwrsAPI8 = mock[AwrsAPI8]
-  val mockDeEnrolService = mock[DeEnrolService]
-  val mockEmailService = mock[EmailService]
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val mockAwrsAPI8: AwrsAPI8 = mock[AwrsAPI8]
+  val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
+  val mockEmailService: EmailService = mock[EmailService]
 
-  object TestWithdrawalController extends WithdrawalController {
-    override val authConnector = mockAuthConnector
-    override val keyStoreService = TestKeyStoreService
-    override val deEnrolService = mockDeEnrolService
-    override val api9 = TestAPI9
-    override val api8: AwrsAPI8 = mockAwrsAPI8
-    override val save4LaterService = TestSave4LaterService
-    override val emailService = mockEmailService
-  }
+  val testWithdrawalController: WithdrawalController = new WithdrawalController(mockMCC, testAPI9, mockAwrsAPI8, mockDeEnrolService, mockEmailService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   private def testConfirmationRequest(confirmation: WithdrawalConfirmation) =
     TestUtil.populateFakeRequest[WithdrawalConfirmation](FakeRequest(), WithdrawalConfirmationForm.withdrawalConfirmation, confirmation)
@@ -161,27 +153,31 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
   private def continueUpdateWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = true)
-    val result = TestWithdrawalController.submitConfirmWithdrawal().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testWithdrawalController.submitConfirmWithdrawal().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def continueWithAuthorisedUserReasons(userStatus: SubscriptionStatusType)(test: Future[Result] => Any) {
     setupMockAwrsAPI9(keyStore = userStatus)
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = true)
-    val result = TestWithdrawalController.showWithdrawalReasons.apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testWithdrawalController.showWithdrawalReasons.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def continueWithSubmitWithdrawalReasons(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockKeyStoreServiceOnlySaveFunctions()
-    val result = TestWithdrawalController.submitWithdrawalReasons.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testWithdrawalController.submitWithdrawalReasons.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def continueWithAuthorisedUserReasonsNoKeyStore(userStatus: SubscriptionStatusType)(test: Future[Result] => Any) {
     setupMockAwrsAPI9(keyStore = userStatus)
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = false)
-    val result = TestWithdrawalController.showWithdrawalReasons.apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testWithdrawalController.showWithdrawalReasons.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -190,12 +186,13 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
       haveWithdrawalReason = false,
       fetchNoneType = FetchNoneType.DeletedData
     )
-    when(mockAwrsAPI8.withdrawApplication(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(api8Repsonse))
-    when(mockDeEnrolService.deEnrolAWRS(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(deEnrol))
+    when(mockAwrsAPI8.withdrawApplication(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(api8Repsonse))
+    when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(deEnrol))
     setupMockSave4LaterServiceWithOnly(removeAll = MockSave4LaterService.defaultRemoveAll)
-    when(mockEmailService.sendWithdrawnEmail(Matchers.any())(Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(true))
+    when(mockEmailService.sendWithdrawnEmail(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     setupMockSave4LaterService(fetchAll = cachedData())
-    val result = TestWithdrawalController.submitConfirmWithdrawal.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testWithdrawalController.submitConfirmWithdrawal.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

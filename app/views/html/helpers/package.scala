@@ -16,19 +16,20 @@
 
 package views.html
 
+import play.api.mvc.{AnyContent, Request}
 import utils.SessionUtil
 import utils.AwrsFieldConfig
 
-package object helpers {
+package object helpers extends AwrsFieldConfig {
 
   implicit def argConv[T](arg: T): Option[T] = Some(arg)
 
-  implicit val sessionUtil = SessionUtil.sessionUtilForRequest
+  implicit val sessionUtil: Request[AnyContent] => SessionUtil.SessionUtilForRequest = SessionUtil.sessionUtilForRequest
 
-  val frontendDefaultLen = "\"" + AwrsFieldConfig.frontendDefaultLen + "\""
+  val frontendDefaultLen: String = "40"
 
   val ordinalIntSuffix: Int => String =
-    (number: Int) => number match {
+    {
       case 1 => "first"
       case 2 => "second"
       case 3 => "third"
@@ -49,7 +50,7 @@ package object helpers {
       case 18 => "eighteenth"
       case 19 => "nineteenth"
       case 20 => "twentieth"
-      case _ =>
+      case number =>
         number % 100 match {
           case 11 | 12 | 13 => s"${number}th" // now made redundant due to the above case statements, but left in in case we need it in the future
           case _ => number % 10 match {

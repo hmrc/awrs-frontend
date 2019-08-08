@@ -188,7 +188,7 @@ case class ExpectedValidFieldFormat(validCase: String)
 
 case class ExpectedFieldFormat(invalidFormats: List[ExpectedInvalidFieldFormat], validFormats: List[ExpectedValidFieldFormat] = List[ExpectedValidFieldFormat]())
 
-case class CompulsoryFieldValidationExpectations(val fieldIsEmptyExpectation: ExpectedFieldIsEmpty, val maxLengthExpectation: MaxLengthOption[ExpectedFieldExceedsMaxLength], val formatExpectations: ExpectedFieldFormat) {
+case class CompulsoryFieldValidationExpectations(fieldIsEmptyExpectation: ExpectedFieldIsEmpty, maxLengthExpectation: MaxLengthOption[ExpectedFieldExceedsMaxLength], val formatExpectations: ExpectedFieldFormat) {
   def toOptionalFieldValidationExpectations: OptionalFieldValidationExpectations = new OptionalFieldValidationExpectations(maxLengthExpectation, formatExpectations)
 
   def toFieldToIgnore: FieldToIgnore = new FieldToIgnore(

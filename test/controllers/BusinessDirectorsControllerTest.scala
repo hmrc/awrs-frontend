@@ -17,9 +17,8 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import models.BusinessDirectors
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -33,17 +32,11 @@ import scala.concurrent.Future
 class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val request = FakeRequest()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  object TestBusinessDirectorsController extends BusinessDirectorsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
-
-  "BusinessDirectorsController" must {
-    "use the correct AuthConnector" in {
-      BusinessDirectorsController.authConnector shouldBe FrontendAuthConnector
-    }
+  val testBusinessDirectorsController: BusinessDirectorsController =
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl = "/sign-in"
   }
 
   "Users who entered from the summary edit view" should {
@@ -92,13 +85,15 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = testBusinessDirectors)
-    val result = TestBusinessDirectorsController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testBusinessDirectorsController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def deleteWithAuthorisedUser(id: Int = 1, directors: BusinessDirectors = testBusinessDirectors)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = directors)
-    val result = TestBusinessDirectorsController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testBusinessDirectorsController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 }

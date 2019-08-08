@@ -16,11 +16,10 @@
 
 package services.mocks
 
-import connectors.KeyStoreConnector
 import connectors.mock.MockKeyStoreConnector
 import models.{StatusNotification, _}
 import org.mockito.Mockito._
-import org.mockito.{AdditionalMatchers, Matchers}
+import org.mockito.{AdditionalMatchers, ArgumentMatchers}
 import services.DataCacheKeys._
 import services.KeyStoreService
 import utils.TestUtil._
@@ -33,9 +32,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
   import MockKeyStoreService._
 
-  object TestKeyStoreService extends KeyStoreService {
-    override val keyStoreConnector = mockKeyStoreConnector
-  }
+  val testKeyStoreService: KeyStoreService = new KeyStoreService(mockKeyStoreConnector)
 
   object FetchNoneType extends Enumeration {
     val NoData = Value("NoData")
@@ -46,11 +43,13 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
   // children should not override this method, update here when KeyStoreService changes
   protected final def mockFetchFromKeyStore[T](key: String, config: MockConfiguration[Future[Option[T]]]): Unit =
-  config ifConfiguredThen (dataToReturn => when(TestKeyStoreService.keyStoreConnector.fetchDataFromKeystore[T](Matchers.eq(key))(Matchers.any(), Matchers.any())).thenReturn(dataToReturn))
+  config ifConfiguredThen (dataToReturn => when(mockKeyStoreConnector.fetchDataFromKeystore[T](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(dataToReturn))
 
   // children should not override this method, update here when KeyStoreService changes
-  final def setupMockKeyStoreServiceOnlySaveFunctions(): Unit =
-  when(TestKeyStoreService.keyStoreConnector.saveDataToKeystore(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+  final def setupMockKeyStoreServiceOnlySaveFunctions(): Unit = {
+    when(mockKeyStoreConnector.saveDataToKeystore(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(returnedCacheMap))
+  }
 
   // children can override in order to customise their default settings
   def setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(
@@ -154,19 +153,19 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              saveViewedStatus: Option[Int] = None
                                            ): Unit = {
     def verifyDeleteSupportFetch[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[Option[T]](Matchers.eq(key))(Matchers.any(), Matchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[Option[T]](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifyDeleteSupportSave[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](Matchers.eq(key), AdditionalMatchers.not(Matchers.eq(None)))(Matchers.any(), Matchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](ArgumentMatchers.eq(key), AdditionalMatchers.not(ArgumentMatchers.eq(None)))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifyDelete[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](Matchers.eq(key), Matchers.eq(None))(Matchers.any(), Matchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](ArgumentMatchers.eq(key), ArgumentMatchers.eq(None))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifyFetch[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[T](Matchers.eq(key))(Matchers.any(), Matchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[T](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifySave[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[T](Matchers.eq(key), Matchers.any())(Matchers.any(), Matchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[T](ArgumentMatchers.eq(key), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     verifyDeleteSupportFetch(deRegistrationDateName, fetchDeRegistrationDate)
     verifyDeleteSupportSave(deRegistrationDateName, saveDeRegistrationDate)

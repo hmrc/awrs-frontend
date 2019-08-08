@@ -28,7 +28,7 @@ import play.api.data.{Form, Forms, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
-object TradingActivityForm {
+object TradingActivityForm extends AwrsFieldConfig {
 
   private val wholesalerTypeOtherIsSelected = whenListContainsAnswer(listId = "wholesalerType", answer = "99")
 
@@ -38,7 +38,7 @@ object TradingActivityForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_wholesaler"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages (AwrsFieldConfig.otherWholesalerLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.order.maxlength"),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages (otherWholesalerLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.order.maxlength"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.wholesaler_validation")
       )
     compulsoryText(companyNameConstraintParameters)
@@ -54,13 +54,13 @@ object TradingActivityForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_order"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages (AwrsFieldConfig.otherOrdersLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.maxlength"),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages (otherOrdersLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.maxlength"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.order_validation")
       )
     compulsoryText(companyNameConstraintParameters)
   }
 
-  val compulsoryOptStringList = (fieldId: String, emptyErrorMsgId: String) =>
+  val compulsoryOptStringList: (String, String) => Mapping[Option[List[String]]] = (fieldId: String, emptyErrorMsgId: String) =>
     compulsoryOptList(CompulsoryListMappingParameter[String](Forms.text, simpleErrorMessage(fieldId, emptyErrorMsgId)))
 
   val tradingActivityForm = Form(mapping(

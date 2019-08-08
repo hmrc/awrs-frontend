@@ -17,7 +17,6 @@
 package views
 
 
-import audit.TestAudit
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.FeedbackController
@@ -36,12 +35,9 @@ import scala.concurrent.Future
 class FeedbackViewTest extends AwrsUnitTestTraits
   with MockAuthConnector {
 
-  val mockAudit = mock[Audit]
+  val mockAudit: Audit = mock[Audit]
+  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
-  object TestFeedbackController extends FeedbackController {
-    override val authConnector = mockAuthConnector
-    override val audit: Audit = new TestAudit
-  }
 
   def testRequest(feedback: Feedback) =
     TestUtil.populateFakeRequest[Feedback](FakeRequest(), FeedbackForm.feedbackForm.form, feedback)
@@ -64,7 +60,8 @@ class FeedbackViewTest extends AwrsUnitTestTraits
   }
 
   def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val result = TestFeedbackController.submitFeedback.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testFeedbackController.submitFeedback.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 }

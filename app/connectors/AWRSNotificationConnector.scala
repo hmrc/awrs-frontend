@@ -16,25 +16,26 @@
 
 package connectors
 
-import config.{AwrsFrontendAuditConnector, WSHttp}
-import metrics.AwrsMetrics
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.StandardAuthRetrievals
+import javax.inject.Inject
 import models._
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
-import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import play.api.Logger
 import play.api.http.Status._
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AccountUtils, LoggingUtils}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, ServiceUnavailableException}
 
-trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads with LoggingUtils {
+import scala.concurrent.{ExecutionContext, Future}
 
-  lazy val serviceURL = baseUrl("awrs-notification")
+class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
+                                          applicationConfig: ApplicationConfig,
+                                          val auditable: Auditable,
+                                          val accountUtils: AccountUtils
+                                         ) extends RawResponseReads with LoggingUtils {
+
+  lazy val serviceURL: String = applicationConfig.servicesConfig.baseUrl("awrs-notification")
 
   val baseURI = "/awrs-notification"
   val cacheURI = s"$baseURI/cache"
@@ -43,34 +44,28 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   val cancellationEmailURI = s"$baseURI/email/cancellation"
   val withdrawnEmailURI = s"$baseURI/email/withdrawn"
 
-  val httpGet: HttpGet
-  val httpDelete: HttpDelete
-  val httpPut: HttpPut
-  val httpPost: HttpPost
-  val metrics: AwrsMetrics
-
-  def fetchNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[StatusNotification]] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def fetchNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusNotification]] = {
+    val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val getURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, httpGet.GET(getURL)).map {
+    mapResult("", awrsRefNo, http.GET(getURL)).map {
       case Some(response: HttpResponse) => Some(response.json.as[StatusNotification])
       case None => None
     }
   }
 
-  def getNotificationViewedStatus(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def getNotificationViewedStatus(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ViewedStatusResponse]] = {
+    val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, httpGet.GET(getURL)).map {
+    mapResult("", awrsRefNo, http.GET(getURL)).map {
       case Some(response: HttpResponse) => Some(response.json.as[ViewedStatusResponse])
       case None => None
     }
   }
 
-  def markNotificationViewedStatusAsViewed(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[Boolean]] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def markNotificationViewedStatusAsViewed(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
+    val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, httpPut.PUT(getURL, "")).map {
+    mapResult("", awrsRefNo, http.PUT(getURL, "")).map {
       case Some(response: HttpResponse) => Some(true)
       case None => None
     }
@@ -79,31 +74,33 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   // Currently the delete call will return a response with OK even if the entity does not exists, which means this method
   // will return true in the cases where the entity does not exist.
   // However, this will only ever be called call if a valid status has been found that qualifies for deletion
-  def deleteFromNotificationCache(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
-    val awrsRefNo = AccountUtils.getAwrsRefNo.toString
+  def deleteFromNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
     val deleteURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, httpDelete.DELETE(deleteURL)).map {
+    mapResult("", awrsRefNo, http.DELETE(deleteURL)).map {
       case Some(_) => true
       case _ => false
     }.recover {
-      case e: InternalServerException => println("going into recover");false
+      case _: InternalServerException =>
+        Logger.info("[deleteFromNotificationCache] Internal server error occurred when deleting from notification cache")
+        false
     }
   }
 
-  def sendConfirmationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def sendConfirmationEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     doEmailCall(emailRequest, auditConfirmationEmailTxName, confirmationEmailURI)
   }
 
-  def sendCancellationEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+  def sendCancellationEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     doEmailCall(emailRequest, auditCancellationEmailTxName, cancellationEmailURI)
   }
 
-  def sendWithdrawnEmail(emailRequest: EmailRequest)(implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] ={
+  def sendWithdrawnEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     doEmailCall(emailRequest, auditWithdrawnEmailTxtName, withdrawnEmailURI)
   }
 
-  private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc:HeaderCarrier, user: AuthContext) = {
-    mapResult(auditTxt, emailRequest.reference.fold("")(x => x), httpPost.POST(s"$serviceURL${uri}", emailRequest)).map {
+  private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
+    mapResult(auditTxt, emailRequest.reference.fold("")(x => x), http.POST(s"$serviceURL${uri}", emailRequest)).map {
       case Some(_) => true
       case _ => false
     }
@@ -112,14 +109,15 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
   private def mapResult(auditTxName: String,
                         awrsRefNo: String,
                         result: Future[HttpResponse])
-                       (implicit user: AuthContext, hc: HeaderCarrier): Future[Option[HttpResponse]] =
+                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[HttpResponse]] =
     result map {
       response =>
         response.status match {
-          case (OK | NO_CONTENT) =>
+          case OK | NO_CONTENT =>
             warn(f"[$auditTxName] - Successful return of data")
-            if(auditTxName.nonEmpty)
-            audit(transactionName = auditTxName, detail = Map("awrsRegistrationNumber" -> awrsRefNo), eventType = eventTypeSuccess)
+            if (auditTxName.nonEmpty) {
+              audit(transactionName = auditTxName, detail = Map("awrsRegistrationNumber" -> awrsRefNo), eventType = eventTypeSuccess)
+            }
             Some(response)
           case NOT_FOUND =>
             warn(f"[$auditTxName - $awrsRefNo ] - No data found in awrs-notification cache")
@@ -138,19 +136,4 @@ trait AWRSNotificationConnector extends ServicesConfig with RawResponseReads wit
             throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
         }
     }
-}
-
-object AWRSNotificationConnector extends AWRSNotificationConnector {
-  override val appName = "awrs-frontend"
-  override val metrics = AwrsMetrics
-  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
-
-  override val httpGet: HttpGet = WSHttp
-  override val httpDelete: HttpDelete = WSHttp
-  override val httpPut: HttpPut = WSHttp
-  override val httpPost: HttpPost = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

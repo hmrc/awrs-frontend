@@ -31,18 +31,10 @@
     val tradingName = director.companyNames.tradingName
 
     (director.firstName, director.lastName, businessName, tradingName) match {
-        case (Some(fn), Some(ln), _, _) => {
-            fn + " " + ln
-        }
-        case (_, _, Some(cn), _) => {
-            cn
-        }
-        case (_, _, _, Some(tn)) => {
-            tn
-        }
-        case _ => {
-            ""
-        } // this should never happen
+        case (Some(fn), Some(ln), _, _) => fn + " " + ln
+        case (_, _, Some(cn), _) => cn
+        case (_, _, _, Some(tn)) => tn
+        case _ => "" // this should never happen
     }
 }
 @content = {
@@ -50,21 +42,21 @@
     @* Top row with edit delete links *@
     @table_row(
         directorName(director),
-        edit_link(editUrl, id, directorName(director)),
-        delete_link(deleteUrl, id, directorName(director))
-    )(cssClass = "record-header")
+        Some(edit_link(editUrl, id, directorName(director))),
+        Some(delete_link(deleteUrl, id, directorName(director)))
+    )(cssClass = Some("record-header"), messages = messages)
     @* table body with the content *@
     @table_row(
-        Messages("awrs.generic.trading_name"),
+        messages("awrs.generic.trading_name"),
         director.companyNames.tradingName
     )
     @table_row(
-        Messages("awrs.business_directors.role_question.additional"),
-        DirectorAndSecretaryEnum.getText(director.directorsAndCompanySecretaries.get)
+        messages("awrs.business_directors.role_question.additional"),
+        Some(messages(DirectorAndSecretaryEnum.getMessageKey(director.directorsAndCompanySecretaries)))
     )
     @table_row(
-        Messages("awrs.business_directors.personOrCompany_question"),
-        PersonOrCompanyEnum.getText(director.personOrCompany.get)
+        messages("awrs.business_directors.personOrCompany_question"),
+        Some(messages(PersonOrCompanyEnum.getMessageKey(director.personOrCompany)))
     )
     @identification_helper_director(
         director,

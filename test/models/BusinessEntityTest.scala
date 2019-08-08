@@ -16,13 +16,12 @@
 
 package models
 
-import org.scalatest.Matchers
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 import BusinessDetailsEntityTypes._
 
-class BusinessEntityTest extends UnitSpec with Matchers with MockitoSugar {
+class BusinessEntityTest extends UnitSpec with MockitoSugar {
   "BusinessEntity" should {
     "transform the enums correctly back and forth to json" in {
       values.foreach { eValue =>

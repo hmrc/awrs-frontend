@@ -14,17 +14,18 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[AnyRef], messages: Messages )
-@import play.twirl.api.Html
+@import config.ApplicationConfig
+@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html.helpers._
+@import play.twirl.api.Html
 
 <link rel="stylesheet" href=@routes.Assets.at("stylesheets/custom.css")>
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.application_notification.heading")), userLoggedIn = true){
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.application_notification.heading")), userLoggedIn = true){
 
 
 <div>
-    <h1 id="application-submission-header" class="heading-xlarge">@Html(Messages("awrs.application_notification.heading"))</h1>
-    <h2 id="application-submission-description" class="heading-medium">@Html(Messages("awrs.application_notification.status"))</h2>
+    <h1 id="application-submission-header" class="heading-xlarge">@Html(messages("awrs.application_notification.heading"))</h1>
+    <h2 id="application-submission-description" class="heading-medium">@Html(messages("awrs.application_notification.status"))</h2>
 </div>
 
 

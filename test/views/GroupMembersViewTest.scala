@@ -36,13 +36,11 @@ import scala.concurrent.Future
 class GroupMembersViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  lazy val groupMember = TestUtil.testGroupMember
+  lazy val groupMember: GroupMember = TestUtil.testGroupMember
   lazy val testGroupMembers = GroupMembers(List(groupMember, groupMember, groupMember))
 
-  object TestGroupMemberController extends GroupMemberController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
+  val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+
 
   "Group member page" should {
 
@@ -53,13 +51,13 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
             result =>
               status(result) shouldBe OK
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id + 1)))
+              document.select("#group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
           }
           editJourney(id) {
             result =>
               status(result) shouldBe OK
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id + 1)))
+              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
           }
       }
       // if the user adds a new group member from the section view
@@ -67,7 +65,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
         result =>
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(2)))
+          document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(1)))
       }
     }
 
@@ -97,22 +95,22 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
 
   private def linearJourney(memberId: Int)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = testGroupMembers)
-
-    val result = TestGroupMemberController.showMemberDetails(memberId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testGroupMemberController.showMemberDetails(memberId, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def editJourney(memberId: Int)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = testGroupMembers)
-
-    val result = TestGroupMemberController.showMemberDetails(memberId, isLinearMode = false, isNewRecord = false).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testGroupMemberController.showMemberDetails(memberId, isLinearMode = false, isNewRecord = false).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def postLinearJourneyAddition(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = None)
-
-    val result = TestGroupMemberController.showMemberDetails(1, isLinearMode = false, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testGroupMemberController.showMemberDetails(1, isLinearMode = false, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -121,7 +119,8 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchGroupMemberDetails = testGroupMembers
     )
-    val result = TestGroupMemberController.showMemberDetails(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testGroupMemberController.showMemberDetails(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 }

@@ -16,13 +16,12 @@
 
 package models
 
-import org.scalatest.Matchers
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import services.helper.AddressComparator
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsTestJson._
 
-class AddressAuditModelTest extends UnitSpec with Matchers with MockitoSugar {
+class AddressAuditModelTest extends UnitSpec with MockitoSugar {
   "AddressAudits" should {
     "be built correctly from a relevant posted http body" in {
       val model = auditAddressJson.as[AddressAudits]

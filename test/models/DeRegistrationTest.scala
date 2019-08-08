@@ -16,12 +16,11 @@
 
 package models
 
-import org.scalatest.Matchers
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 
-class DeRegistrationTest extends UnitSpec with Matchers with MockitoSugar {
+class DeRegistrationTest extends UnitSpec with MockitoSugar {
   "DeRegistration.toDeRegistration" should {
     "transform the date into the correct format" in {
       val day = "31"

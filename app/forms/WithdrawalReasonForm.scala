@@ -27,7 +27,7 @@ import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 import forms.prevalidation._
 
-object WithdrawalReasonForm {
+object WithdrawalReasonForm extends AwrsFieldConfig {
 
   val withdrawalReason = "reason"
   val withdrawalReasonOther = "reasonOther"
@@ -45,19 +45,19 @@ object WithdrawalReasonForm {
     val fieldId = "withdrawalReason-other"
     val params = CompulsoryTextFieldMappingParameter(
       empty = simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.withdrawal.error.other.reason_empty"),
-      maxLengthValidation = genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.withdrawalOtherReasonsLen, fieldId, fieldNameInErrorMessage),
+      maxLengthValidation = genericFieldMaxLengthConstraintParameter(withdrawalOtherReasonsLen, fieldId, fieldNameInErrorMessage),
       formatValidations = genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
     )
     compulsoryText(params)
   }
 
-  val whenOtherReasonIsSelected = (data: FormData) => data.getOrElse(withdrawalReason, "").equals(WithdrawalReasonEnum.Other.toString)
+  val whenOtherReasonIsSelected: FormData => Boolean = (data: FormData) => data.getOrElse(withdrawalReason, "").equals(WithdrawalReasonEnum.Other.toString)
 
   val withdrawalReasonValidationForm = Form(mapping(
     withdrawalReason -> withdrawalReasons_compulsory,
     withdrawalReasonOther -> (withdrawalReasonOther_compulsory iff whenOtherReasonIsSelected)
   )(WithdrawalReason.apply)(WithdrawalReason.unapply))
 
-  val withdrawalReasonForm = PreprocessedForm(withdrawalReasonValidationForm)
+  val withdrawalReasonForm: PrevalidationAPI[WithdrawalReason] = PreprocessedForm(withdrawalReasonValidationForm)
 
 }

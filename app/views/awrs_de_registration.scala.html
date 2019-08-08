@@ -14,24 +14,25 @@
  * limitations under the License.
  *@
 
-@(deRegistrationForm: Form[models.DeRegistrationDate])(implicit request: Request[AnyRef], messages: Messages )
+@import config.ApplicationConfig
+@(deRegistrationForm: Form[models.DeRegistrationDate])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
 
 @hintText = {
-<span aria-hidden="true">@Messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@Messages("awrs.generic.date_hint.reader")</span>
+<span aria-hidden="true">@messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@messages("awrs.generic.date_hint.reader")</span>
 }
 
 @ariaDayMonthYear = {
-    <span id="proposedEndDate-day_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_day.reader")</span>
-    <span id="proposedEndDate-month_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_month.reader")</span>
-    <span id="proposedEndDate-year_reader" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.date_year.reader")</span>
+    <span id="proposedEndDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+    <span id="proposedEndDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+    <span id="proposedEndDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
 }
 
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.de_registration.heading")), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.de_registration.heading")), userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
 @errorSummaryTemplate(deRegistrationForm)
@@ -39,8 +40,8 @@
 
 <div class="grid">
     <div class="grid grid-2-3">
-        <h1 id="de_registration-heading" class="heading-xlarge">@Messages("awrs.de_registration.heading")</h1>
-        <p class="lede">@Messages("awrs.de_registration.lede")</p>
+        <h1 id="de_registration-heading" class="heading-xlarge">@messages("awrs.de_registration.heading")</h1>
+        <p class="lede">@messages("awrs.de_registration.lede")</p>
         @form(action = controllers.routes.DeRegistrationController.submitDate) {
             <div class="form-group">
                 @awrsDateField(
@@ -54,7 +55,7 @@
                     )
                 )
             </div>
-            @awrsSubmitButton(Messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
         }
     </div>
 </div>

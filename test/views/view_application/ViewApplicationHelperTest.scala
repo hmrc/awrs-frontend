@@ -17,12 +17,12 @@
 package views.view_application
 
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import views.view_application.ViewApplicationHelper._
 
-class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite {
 
   type TestData = Seq[Option[String]]
   val dummyString = "dummyString"
@@ -45,10 +45,10 @@ class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAn
 
     "return the count of strings when the sequence has some or none values " in {
       val testCases = Seq(
-        TestCase(TestData(dummyString, dummyString), Expectations(2)),
-        TestCase(TestData(dummyString, dummyString, dummyString), Expectations(3)),
-        TestCase(TestData(dummyString, None), Expectations(1)),
-        TestCase(TestData(dummyString, ""), Expectations(1))
+        TestCase(TestData(Some(dummyString), Some(dummyString)), Expectations(2)),
+        TestCase(TestData(Some(dummyString), Some(dummyString), Some(dummyString)), Expectations(3)),
+        TestCase(TestData(Some(dummyString), None), Expectations(1)),
+        TestCase(TestData(Some(dummyString), Some("")), Expectations(1))
       )
 
       runTests(testCases: _*)
@@ -56,8 +56,8 @@ class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAn
 
     "return the count as 0 when the sequence has all None or empty values" in {
       val testCases = Seq(
-        TestCase(TestData("", None), Expectations(0)),
-        TestCase(TestData("", ""), Expectations(0)),
+        TestCase(TestData(Some(""), None), Expectations(0)),
+        TestCase(TestData(Some(""), Some("")), Expectations(0)),
         TestCase(TestData(), Expectations(0))
       )
 
@@ -68,8 +68,8 @@ class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAn
   "One view helper Option String Util " should {
 
     "concatenate the strings " in {
-      Some(dummyString) + " " + Some(dummyString) shouldBe Some("dummyString dummyString")
-      Some(dummyString) + "" shouldBe Some("dummyString")
+      Some(Some(dummyString).getOrElse("") + " " + Some(dummyString).getOrElse("")) shouldBe Some("dummyString dummyString")
+      Some(Some(dummyString).getOrElse("") + "") shouldBe Some("dummyString")
       None + Some(dummyString) shouldBe Some("dummyString")
       //  " " + Some(dummyString) will return " Some(dummyString)". the x symbol is required if the latter is desired
       " " x Some(dummyString) shouldBe Some(" dummyString")

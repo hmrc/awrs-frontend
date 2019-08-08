@@ -16,25 +16,20 @@
 
 package services
 
-import connectors.{BusinessCustomerDataCacheConnector, KeyStoreConnector}
+import connectors.BusinessCustomerDataCacheConnector
+import javax.inject.Inject
 import play.api.libs.json
-
-import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 
-trait BusinessCustomerService {
+import scala.concurrent.{ExecutionContext, Future}
 
-  def businessCustomerConnector: KeyStoreConnector
+class BusinessCustomerService @Inject()(businessCustomerConnector: BusinessCustomerDataCacheConnector) {
 
   val bcSourceId: String = "BC_Business_Details"
 
   // N.B. this keystore is populated when we call the business customer front end, we do not populate this database
   // in our application
-  def getReviewBusinessDetails[T](implicit hc: HeaderCarrier, formats: json.Format[T]): Future[Option[T]] =
-  businessCustomerConnector.fetchDataFromKeystore[T](bcSourceId)
+  def getReviewBusinessDetails[T](implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
+    businessCustomerConnector.fetchDataFromKeystore[T](bcSourceId)
 
-}
-
-object BusinessCustomerService extends BusinessCustomerService {
-  override val businessCustomerConnector: KeyStoreConnector = BusinessCustomerDataCacheConnector
 }

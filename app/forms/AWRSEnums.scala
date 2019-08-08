@@ -16,11 +16,6 @@
 
 package forms
 
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-
-
 object AWRSEnums {
 
   val DeRegistrationString = "De-registered"
@@ -41,11 +36,11 @@ object AWRSEnums {
   }
 
   object ApplicationStatusEnum extends AWRSEnumeration {
-    val DeRegistered = Value(DeRegistrationString)
-    val Withdrawn = Value(WithdrawnString)
-    val Rejected = Value(RejectedString)
-    val Revoked = Value(RevokedString)
-    val blankString = Value("")
+    val DeRegistered: ApplicationStatusEnum.Value = Value(DeRegistrationString)
+    val Withdrawn: ApplicationStatusEnum.Value = Value(WithdrawnString)
+    val Rejected: ApplicationStatusEnum.Value = Value(RejectedString)
+    val Revoked: ApplicationStatusEnum.Value = Value(RevokedString)
+    val blankString: ApplicationStatusEnum.Value = Value("")
   }
 
   trait BooleanEnumeration extends AWRSEnumeration {
@@ -61,12 +56,12 @@ object AWRSEnums {
   }
 
   object BooleanCheckboxEnum extends BooleanEnumeration {
-    val True = Value("true")
-    val False = Value("false")
+    val True: BooleanCheckboxEnum.Value = Value("true")
+    val False: BooleanCheckboxEnum.Value = Value("false")
 
     // stable identifiers for usage in match functions
-    val TrueString = True.toString
-    val FalseString = False.toString
+    val TrueString: String = True.toString
+    val FalseString: String = False.toString
 
     def toBoolean(value: BooleanEnumeration#Value): Option[Boolean] = value match {
       case True => Some(true)
@@ -76,12 +71,12 @@ object AWRSEnums {
   }
 
   object BooleanRadioEnum extends BooleanEnumeration {
-    val Yes = Value("Yes")
-    val No = Value("No")
+    val Yes: BooleanRadioEnum.Value = Value("Yes")
+    val No: BooleanRadioEnum.Value = Value("No")
 
     // stable identifiers for usage in match functions
-    val YesString = Yes.toString
-    val NoString = No.toString
+    val YesString: String = Yes.toString
+    val NoString: String = No.toString
 
     def toBoolean(value: BooleanEnumeration#Value): Option[Boolean] = value match {
       case Yes => Some(true)
@@ -92,77 +87,68 @@ object AWRSEnums {
   }
 
   object DirectorAndSecretaryEnum extends AWRSEnumeration {
-    val Director = Value("Director")
-    val CompanySecretary = Value("Company Secretary")
-    val DirectorAndSecretary = Value("Director and Company Secretary")
+    val Director: DirectorAndSecretaryEnum.Value = Value("Director")
+    val CompanySecretary: DirectorAndSecretaryEnum.Value = Value("Company Secretary")
+    val DirectorAndSecretary: DirectorAndSecretaryEnum.Value = Value("Director and Company Secretary")
 
-    def getText(enum:DirectorAndSecretaryEnum.Value) :Option[String] = enum match {
-      case Director => Some(Messages("awrs.generic.status.director"))
-      case CompanySecretary => Some(Messages("awrs.generic.status.company_secretary"))
-      case DirectorAndSecretary => Some(Messages("awrs.generic.status.both"))
-      case _ => None
+    def getText(enum:DirectorAndSecretaryEnum.Value) : String = enum match {
+      case Director => "awrs.generic.status.director"
+      case CompanySecretary => "awrs.generic.status.company_secretary"
+      case DirectorAndSecretary => "awrs.generic.status.both"
     }
 
-    def getText(enumStr:String) :Option[String] = getText(withName(enumStr))
+    def getMessageKey(enumStr: Option[String]) : String =  enumStr match {case Some(x) => getText(withName(x))}
   }
 
   object PersonOrCompanyEnum extends AWRSEnumeration {
-    val Person = Value("person")
-    val Company = Value("company")
+    val Person: PersonOrCompanyEnum.Value = Value("person")
+    val Company: PersonOrCompanyEnum.Value = Value("company")
 
-    def getText(enum:PersonOrCompanyEnum.Value) :Option[String] = enum match {
-      case Person => Some(Messages("awrs.generic.status.person"))
-      case Company => Some(Messages("awrs.generic.status.company"))
-      case _ => None
+    def getText(enum:PersonOrCompanyEnum.Value) :String = enum match {
+      case Person => "awrs.generic.status.person"
+      case Company => "awrs.generic.status.company"
     }
 
-    def getText(enumStr:String) :Option[String] = getText(withName(enumStr))
+    def getMessageKey(enumStr: Option[String]) : String =  enumStr match {case Some(x) => getText(withName(x))}
   }
 
   object EntityTypeEnum extends AWRSEnumeration {
-    val Individual = Value(IndividualString)
-    val CorporateBody = Value(CorporateBodyString)
-    val SoleTrader = Value(SoleTraderString)
+    val Individual: EntityTypeEnum.Value = Value(IndividualString)
+    val CorporateBody: EntityTypeEnum.Value = Value(CorporateBodyString)
+    val SoleTrader: EntityTypeEnum.Value = Value(SoleTraderString)
 
-    def getText(enum:EntityTypeEnum.Value) :Option[String] = enum match {
-      case Individual => Some(Messages("awrs.business-partner.entityType_individual"))
-      case CorporateBody => Some(Messages("awrs.business-partner.entityType_corporate_body"))
-      case SoleTrader => Some(Messages("awrs.business-partner.entityType_sole_trader"))
-      case _ => None
+    def getText(enum:EntityTypeEnum.Value) : String = enum match {
+      case Individual => "awrs.business-partner.entityType_individual"
+      case CorporateBody => "awrs.business-partner.entityType_corporate_body"
+      case SoleTrader => "awrs.business-partner.entityType_sole_trader"
     }
 
-    def getText(enumStr:String) :Option[String] = getText(withName(enumStr))
+    def getMessageKey(enumStr: Option[String]) : String =  enumStr match {case Some(x) => getText(withName(x))}
   }
 
   object OperatingDurationEnum extends AWRSEnumeration {
-    val ZeroToTwoYears = Value(Messages("awrs.generic.0to2years.value"))
-    val TwoToFiveYears = Value(Messages("awrs.generic.2to4years.value"))
-    val FiveToTenYears = Value(Messages("awrs.generic.5to9years.value"))
-    val TenPlusYears = Value(Messages("awrs.generic.10plusYears.value"))
+    val ZeroToTwoYears: OperatingDurationEnum.Value = Value("Less than 2 years")
+    val TwoToFiveYears: OperatingDurationEnum.Value = Value("2 to 4 years")
+    val FiveToTenYears: OperatingDurationEnum.Value = Value("5 to 9 years")
+    val TenPlusYears: OperatingDurationEnum.Value = Value("10 or more years")
   }
 
   object DeRegistrationReasonEnum extends AWRSEnumeration {
-    val CeasesToBeRegisterableForTheScheme = Value(Messages("awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme.schema_enum"))
-    val CeasesToTradeAsAnAlcoholWholesaler = Value(Messages("awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler.schema_enum"))
-    val JoiningAGroupToRegisterForAWRS = Value(Messages("awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum"))
-    val JoiningAPartnershipToRegisterForAWRS = Value(Messages("awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum"))
-    val GroupDisbanded = Value(Messages("awrs.de_registration.reason.group_disbanded.schema_enum"))
-    val PartnershipDisbanded = Value(Messages("awrs.de_registration.reason.partnership_disbanded.schema_enum"))
-    val Other = Value(Messages("awrs.de_registration.reason.other.schema_enum"))
+    val CeasesToBeRegisterableForTheScheme: DeRegistrationReasonEnum.Value = Value("Ceases to be registerable for the scheme")
+    val CeasesToTradeAsAnAlcoholWholesaler: DeRegistrationReasonEnum.Value = Value("Ceases to trade as an alcohol wholesaler")
+    val JoiningAGroupToRegisterForAWRS: DeRegistrationReasonEnum.Value = Value("Registering with a group")
+    val JoiningAPartnershipToRegisterForAWRS: DeRegistrationReasonEnum.Value = Value("Registering with a partnership")
+    val GroupDisbanded: DeRegistrationReasonEnum.Value = Value("Group ended")
+    val PartnershipDisbanded: DeRegistrationReasonEnum.Value = Value("Partnership disbanded")
+    val Other: DeRegistrationReasonEnum.Value = Value("Others")
   }
 
   object WithdrawalReasonEnum extends AWRSEnumeration {
-    val AppliedInError = Value("Applied in error")
-    val NoLongerTrading = Value("No Longer trading")
-    val DuplicateApplication = Value("Duplicate Application")
-    val JoinedAWRSGroup = Value("Joined AWRS Group")
-    val Other = Value("Others")
-
-/*    val AppliedInError = Value("Registered by mistake")
-    val NoLongerTrading = Value("No longer trading as an alcohol wholesaler or producer")
-    val DuplicateApplication = Value("Registered more than once")
-    val JoinedAWRSGroup = Value("Registering with a group")
-    val Other = Value("Others")*/
+    val AppliedInError: WithdrawalReasonEnum.Value = Value("Applied in error")
+    val NoLongerTrading: WithdrawalReasonEnum.Value = Value("No Longer trading")
+    val DuplicateApplication: WithdrawalReasonEnum.Value = Value("Duplicate Application")
+    val JoinedAWRSGroup: WithdrawalReasonEnum.Value = Value("Joined AWRS Group")
+    val Other: WithdrawalReasonEnum.Value = Value("Others")
   }
 
 }

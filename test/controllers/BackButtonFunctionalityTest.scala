@@ -16,12 +16,11 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.{AuthBuilder, SessionBuilder}
+import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import controllers.auth.Utr._
 import models._
+import org.scalatest.Assertion
+import play.api.mvc.Result
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import utils.TestUtil._
@@ -29,21 +28,17 @@ import services.DataCacheKeys._
 import play.api.test.Helpers._
 import services.{JourneyConstants, ServicesUnitTestFixture}
 
+import scala.concurrent.Future
+
 class BackButtonFunctionalityTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService
   with MockKeyStoreService
   with ServicesUnitTestFixture {
 
-  object TestViewApplicationController extends ViewApplicationController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
-    override val applicationService = mockApplicationService
-    override val indexService = mockIndexService
-  }
+  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
 
-  lazy val urlMap = Map[String, (Option[Int]) => String](
+  lazy val urlMap: Map[String, Option[Int] => String] = Map[String, (Option[Int]) => String](
     (businessDetailsName, (id: Option[Int]) => controllers.routes.BusinessDetailsController.showBusinessDetails(isLinearMode = true).url),
     (businessRegistrationDetailsName, (id: Option[Int]) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).url),
     (placeOfBusinessName, (id: Option[Int]) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).url),
@@ -57,11 +52,11 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     (suppliersName, (id: Option[Int]) => controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url)
   )
 
-  lazy val urlIndex = controllers.routes.IndexController.showIndex().url
+  lazy val urlIndex: String = controllers.routes.IndexController.showIndex().url
 
   lazy val defaultEntriesForMultiEntryPages = 3
 
-  lazy val testGroup = (total: Int) => {
+  lazy val testGroup: Int => Option[GroupMembers] = (total: Int) => {
     require(total >= 0)
     total match {
       case 0 => None
@@ -69,7 +64,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     }
   }: Option[GroupMembers]
 
-  lazy val testPartners = (total: Int) => {
+  lazy val testPartners: Int => Option[Partners] = (total: Int) => {
     require(total >= 0)
     total match {
       case 0 => None
@@ -77,7 +72,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     }
   }: Option[Partners]
 
-  lazy val testPremises = (total: Int) => {
+  lazy val testPremises: Int => Option[AdditionalBusinessPremisesList] = (total: Int) => {
     require(total >= 0)
     total match {
       case 0 => None
@@ -85,7 +80,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     }
   }: Option[AdditionalBusinessPremisesList]
 
-  lazy val testDirectors = (total: Int) => {
+  lazy val testDirectors: Int => Option[BusinessDirectors] = (total: Int) => {
     require(total >= 0)
     total match {
       case 0 => None
@@ -93,7 +88,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     }
   }: Option[BusinessDirectors]
 
-  lazy val testSuppliers = (total: Int) => {
+  lazy val testSuppliers: Int => Option[Suppliers] = (total: Int) => {
     require(total >= 0)
     total match {
       case 0 => None
@@ -106,7 +101,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
            premises: Int = defaultEntriesForMultiEntryPages,
            directors: Int = defaultEntriesForMultiEntryPages,
            suppliers: Int = defaultEntriesForMultiEntryPages
-          ) = {
+          ): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchGroupMemberDetails = testGroup(groupMembers),
       fetchPartnerDetails = testPartners(partners),
@@ -116,7 +111,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     )
   }
 
-  def getPreviousPageInJourney(journey: Seq[String], startLocation: String, expectedIdFunction: (String) => Option[Int])(section: String, id: Option[Int] = None) = {
+  def getPreviousPageInJourney(journey: Seq[String], startLocation: String, expectedIdFunction: (String) => Option[Int])(section: String, id: Option[Int] = None): String = {
     val idGetOrElse = id.fold(1)(x => x)
     section match {
       // if the current section is the same as where the journey began then the expected back url is the index page
@@ -141,10 +136,11 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     }
   }
 
-  private def callBackFrom(businessEntity: String, startSection: String = businessDetailsName)(currentSection: String, id: Option[Int] = None) = {
+  private def callBackFrom(businessEntity: String, startSection: String = businessDetailsName)(currentSection: String, id: Option[Int] = None): Future[Result] = {
+    setAuthMocks()
     val request = SessionBuilder.buildRequestWithSession(userId, businessEntity)
     val requestWithStart = request.withSession(request.session.+((AwrsSessionKeys.sessionJouneyStartLocation, startSection)).data.toSeq: _*)
-    TestViewApplicationController.backFrom(currentSection, id).apply(requestWithStart)
+    testViewApplicationController.backFrom(currentSection, id).apply(requestWithStart)
   }
 
   lazy val legalEntityList = List("SOP", "Partnership", "LTD", "LLP", "LP", "LLP_GRP", "LTD_GRP")
@@ -154,7 +150,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
                premises: Int = defaultEntriesForMultiEntryPages,
                directors: Int = defaultEntriesForMultiEntryPages,
                suppliers: Int = defaultEntriesForMultiEntryPages)
-              (legal: String, startSection: String = businessDetailsName)(currentSection: String, id: Option[Int] = None) = {
+              (legal: String, startSection: String = businessDetailsName)(currentSection: String, id: Option[Int] = None): Assertion = {
     require(groupMembers >= 0)
     require(partners >= 0)
     require(premises >= 0)
@@ -188,7 +184,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
                   premises: Int = defaultEntriesForMultiEntryPages,
                   directors: Int = defaultEntriesForMultiEntryPages,
                   suppliers: Int = defaultEntriesForMultiEntryPages)
-                 (startSection: String = businessDetailsName) =
+                 (startSection: String = businessDetailsName): String => Unit =
     (legal: String) => {
       require(groupMembers >= 0)
       require(partners >= 0)

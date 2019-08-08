@@ -42,9 +42,10 @@
 }
 
 @tabValue = {
-    @isOneViewMode match {
-        case true => {tabindex="0"}
-        case _ => {}
+    @if(isOneViewMode) {
+        tabindex = "0"
+    } else {
+        {}
     }
 }
 
@@ -55,7 +56,7 @@
             @awrsProgressHelper(request.getBusinessType, sectionName)
         </header>
         @dynamicContent(
-            ifOneViewMode = oneViewModeLink
+            ifOneViewMode = Some(oneViewModeLink)
         )
     @preContent match{
         case Some(content) => {
@@ -72,5 +73,5 @@
     }
 </div>
 @dynamicContent(
-    ifEditMode = editLinks
+    ifEditMode = Option(editLinks)
 )

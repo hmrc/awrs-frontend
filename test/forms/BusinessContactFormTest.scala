@@ -16,17 +16,29 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.test.util._
-import forms.validation.util.{FieldError, SummaryError}
-import org.scalatest.mock.MockitoSugar
+import forms.validation.util.{FieldError, MessageArguments, SummaryError, TargetFieldIds}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.mockito.MockitoSugar
+import org.mockito.Mockito._
 import org.scalatestplus.play.OneServerPerSuite
+import play.api.data.FormError
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.views.html.helpers.form
 import utils.TestConstants._
 
-class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with BeforeAndAfterEach {
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val forms = BusinessContactsForm.businessContactsForm.form
+
+  override def beforeEach(): Unit = {
+    when(mockAppConfig.countryCodes)
+      .thenReturn(mockCountryCodes)
+
+    super.beforeEach()
+  }
 
   "Business contacts form" should {
 
@@ -41,13 +53,32 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
     "check validations for contactFirstName and contactLastName" in
       NamedUnitTests.firstNameAndLastNameIsCompulsoryAndValid(firstNameId = "contactFirstName", lastNameId = "contactLastName")
 
-    "check validations for email" in
-      NamedUnitTests.feildIsCompulsoryAndValid(fieldId = "email",
-        emptyErrorMsg = "awrs.generic.error.email_empty",
-        invalidFormatErrorMsg = "awrs.generic.error.email_invalid")
+    "check validations for email" in {
+      val goodData = Map(
+        BusinessContactsForm.contactFirstName -> Seq("test"),
+        BusinessContactsForm.contactLastName -> Seq("test"),
+        BusinessContactsForm.telephone -> Seq("01234 567890"),
+        BusinessContactsForm.email -> Seq("test@test.com"),
+        BusinessContactsForm.contactAddressSame -> Seq(BooleanRadioEnum.Yes.toString)
+      )
+
+      val badData = Map(
+        BusinessContactsForm.contactFirstName -> Seq("test"),
+        BusinessContactsForm.contactLastName -> Seq("test"),
+        BusinessContactsForm.telephone -> Seq("01234 567890"),
+        BusinessContactsForm.email -> Seq("FAKE-EMAIL@test"),
+        BusinessContactsForm.contactAddressSame -> Seq(BooleanRadioEnum.Yes.toString)
+      )
+
+      val bindedForm = forms.bindFromRequest(badData)
+      bindedForm.errors.size shouldBe 1
+
+      val bindedFormGood = forms.bindFromRequest(goodData)
+      bindedFormGood.errors shouldBe Seq()
+    }
 
     "check validations for telephone" in
-      NamedUnitTests.feildIsCompulsoryAndValid(fieldId = "telephone",
+      NamedUnitTests.fieldIsCompulsoryAndValid(fieldId = "telephone",
         emptyErrorMsg = "awrs.generic.error.telephone_empty",
         invalidFormatErrorMsg = "awrs.generic.error.telephone_numeric")
 

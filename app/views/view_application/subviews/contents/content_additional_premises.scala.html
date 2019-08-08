@@ -20,7 +20,8 @@
 @import views.view_application.subviews.SubviewIds
 @import views.view_application.helpers.SubViewTemplateHelper._
 
-@(premises: models.AdditionalBusinessPremises, id: Int)(implicit viewApplicationType: ViewApplicationType, cssClass: Option[String] = None)
+@import config.ApplicationConfig
+@(premises: models.AdditionalBusinessPremises, id: Int)(implicit viewApplicationType: ViewApplicationType, cssClass: Option[String] = None, messages: Messages, applicationConfig: ApplicationConfig)
 
 @editUrl(id: Int) = @{controllers.routes.AdditionalPremisesController.showPremisePage(id, false, false).url}
 
@@ -40,5 +41,5 @@
     premisesCounter,
     premises.additionalAddress,
     links
-)(cssClass = cssClass)
+)
 </table>

@@ -23,51 +23,39 @@ import play.api.Play.current
 
 object JourneyConstants {
 
-  val getJourney = (businessType: String) =>
-    businessType match {
-      case "SOP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
-      case "Partnership" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, partnersName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
-      case "LLP" | "LP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, partnersName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
-      case "LTD_GRP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, groupMembersName, additionalBusinessPremisesName, businessDirectorsName, tradingActivityName, productsName, suppliersName)
-      case "LLP_GRP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, groupMembersName, partnersName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
-      case _ => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, additionalBusinessPremisesName, businessDirectorsName, tradingActivityName, productsName, suppliersName)
-    }
+  val getJourney: String => Seq[String] = {
+    case "SOP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
+    case "Partnership" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, partnersName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
+    case "LLP" | "LP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, partnersName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
+    case "LTD_GRP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, groupMembersName, additionalBusinessPremisesName, businessDirectorsName, tradingActivityName, productsName, suppliersName)
+    case "LLP_GRP" => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, groupMembersName, partnersName, additionalBusinessPremisesName, tradingActivityName, productsName, suppliersName)
+    case _ => Seq(businessDetailsName, businessRegistrationDetailsName, placeOfBusinessName, businessContactsName, additionalBusinessPremisesName, businessDirectorsName, tradingActivityName, productsName, suppliersName)
+  }
 
-  val getJourneyProgress = (businessType: Option[String], sectionName: String) => {
+  val getJourneyProgress: (Option[String], String) => (Int, Int, String) = (businessType: Option[String], sectionName: String) => {
     val journey = getJourney(businessType.fold("")(x => x))
     val totalSections = journey.size
     val sectionIndex = journey.indexOf(sectionName) + 1
     (businessType, sectionName) match {
-      case (Some("LTD_GRP" | "LLP_GRP"), `businessDetailsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.group_business_details_text"))
-      case (Some("Partnership" | "LP" | "LLP"), `businessDetailsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.partnership_details_text"))
-      case (_, `businessDetailsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.business_details_text"))
-      case (Some("LTD_GRP" | "LLP_GRP"), `businessRegistrationDetailsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.group_business_registration_details_text"))
-      case (Some("Partnership" | "LP" | "LLP"), `businessRegistrationDetailsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.partnership_registration_details_text"))
-      case (_, `businessRegistrationDetailsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.business_registration_details_text"))
-      case (Some("LTD_GRP" | "LLP_GRP"), `placeOfBusinessName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.group_business_place_of_business_text"))
-      case (Some("Partnership" | "LP" | "LLP"), `placeOfBusinessName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.partnership_place_of_business_text"))
-      case (_, `placeOfBusinessName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.business_place_of_business_text"))
-      case (Some("LTD_GRP" | "LLP_GRP"), `businessContactsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.group_business_contacts_text"))
-      case (Some("Partnership" | "LP" | "LLP"), `businessContactsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.partnership_contacts_text"))
-      case (_, `businessContactsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.business_contacts_text"))
-      case (_, `partnersName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.business_partners_text"))
-      case (_, `groupMembersName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.group_member_details_text"))
-      case (_, `businessDirectorsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.business_directors.index_text"))
-      case (_, `additionalBusinessPremisesName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.additional_premises_text"))
-      case (_, `tradingActivityName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.trading_activity_text"))
-      case (_, `productsName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.products_text"))
-      case (_, `suppliersName`) => Messages("awrs.generic.section_progress", sectionIndex, totalSections, Messages("awrs.index_page.suppliers_text"))
+      case (Some("LTD_GRP" | "LLP_GRP"), `businessDetailsName`) => (sectionIndex, totalSections, "awrs.index_page.group_business_details_text")
+      case (Some("Partnership" | "LP" | "LLP"), `businessDetailsName`) => (sectionIndex, totalSections,"awrs.index_page.partnership_details_text")
+      case (_, `businessDetailsName`) => (sectionIndex, totalSections,"awrs.index_page.business_details_text")
+      case (Some("LTD_GRP" | "LLP_GRP"), `businessRegistrationDetailsName`) => (sectionIndex, totalSections,"awrs.index_page.group_business_registration_details_text")
+      case (Some("Partnership" | "LP" | "LLP"), `businessRegistrationDetailsName`) => (sectionIndex, totalSections,"awrs.index_page.partnership_registration_details_text")
+      case (_, `businessRegistrationDetailsName`) => (sectionIndex, totalSections,"awrs.index_page.business_registration_details_text")
+      case (Some("LTD_GRP" | "LLP_GRP"), `placeOfBusinessName`) => (sectionIndex, totalSections,"awrs.index_page.group_business_place_of_business_text")
+      case (Some("Partnership" | "LP" | "LLP"), `placeOfBusinessName`) => (sectionIndex, totalSections,"awrs.index_page.partnership_place_of_business_text")
+      case (_, `placeOfBusinessName`) => (sectionIndex, totalSections,"awrs.index_page.business_place_of_business_text")
+      case (Some("LTD_GRP" | "LLP_GRP"), `businessContactsName`) => (sectionIndex, totalSections,"awrs.index_page.group_business_contacts_text")
+      case (Some("Partnership" | "LP" | "LLP"), `businessContactsName`) => (sectionIndex, totalSections,"awrs.index_page.partnership_contacts_text")
+      case (_, `businessContactsName`) => (sectionIndex, totalSections,"awrs.index_page.business_contacts_text")
+      case (_, `partnersName`) => (sectionIndex, totalSections,"awrs.index_page.business_partners_text")
+      case (_, `groupMembersName`) => (sectionIndex, totalSections,"awrs.index_page.group_member_details_text")
+      case (_, `businessDirectorsName`) => (sectionIndex, totalSections,"awrs.index_page.business_directors.index_text")
+      case (_, `additionalBusinessPremisesName`) => (sectionIndex, totalSections,"awrs.index_page.additional_premises_text")
+      case (_, `tradingActivityName`) => (sectionIndex, totalSections,"awrs.index_page.trading_activity_text")
+      case (_, `productsName`) => (sectionIndex, totalSections,"awrs.index_page.products_text")
+      case (_, `suppliersName`) => (sectionIndex, totalSections,"awrs.index_page.suppliers_text")
     }
-
   }
-
-  val getSectionProgress = (businessType: Option[String], sectionName: String) => {
-    val journey = getJourney(businessType.fold("")(x => x))
-    val totalSections = journey.size
-    val sectionIndex = journey.indexOf(sectionName) + 1
-    Messages("awrs.generic.section",sectionIndex,totalSections)
-  }
-
-
-
 }

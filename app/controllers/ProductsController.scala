@@ -16,52 +16,60 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.ProductsForm._
-import play.api.Logger
-import play.api.mvc.{AnyContent, Request, Result}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.DataCacheKeys._
 import services.Save4LaterService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ProductsController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
+class ProductsController @Inject()(val mcc: MessagesControllerComponents,
+                                   val save4LaterService: Save4LaterService,
+                                   val authConnector: DefaultAuthConnector,
+                                   val auditable: Auditable,
+                                   val accountUtils: AccountUtils,
+                                   implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override val section = productsName
+  override implicit val ec: ExecutionContext = mcc.executionContext
+  override val section: String = productsName
+  val signInUrl: String = applicationConfig.signIn
 
-  def showProducts(isLinearMode: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
+  def showProducts(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
+        }
+
+        save4LaterService.mainStore.fetchProducts(ar) flatMap {
+          case Some(data) => Future.successful(Ok(views.html.awrs_products(productsForm.fill(data))))
+          case _ => Future.successful(Ok(views.html.awrs_products(productsForm)))
+        }
       }
-
-      save4LaterService.mainStore.fetchProducts flatMap {
-        case Some(data) => Future.successful(Ok(views.html.awrs_products(productsForm.fill(data))))
-        case _ => Future.successful(Ok(views.html.awrs_products(productsForm)))
-      }
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
-    implicit val viewMode = viewApplicationType
+  override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
+    implicit val viewMode: ViewApplicationType = viewApplicationType
     productsForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.awrs_products(formWithErrors)))
       ,
       productsData =>
-        save4LaterService.mainStore.saveProducts(productsData) flatMap {
+        save4LaterService.mainStore.saveProducts(authRetrievals, productsData) flatMap {
           _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
         }
     )
   }
-
-}
-
-object ProductsController extends ProductsController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
 }

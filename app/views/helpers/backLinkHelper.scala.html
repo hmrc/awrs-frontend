@@ -17,9 +17,9 @@
 @import views.html.helpers._
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers.ViewApplicationType
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
-@(params: BackLinkParams)(implicit viewApplicationType: ViewApplicationType)
+
+
+@(params: BackLinkParams)(implicit viewApplicationType: ViewApplicationType, messages: Messages)
 
 @backUrl = @{
     isEditMode() match {

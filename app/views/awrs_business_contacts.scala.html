@@ -22,10 +22,9 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 @import utils.AwrsFieldConfig
-@import utils.AwrsConfig._
 
-
-@(isAPI5: Boolean, businessType: Option[String], business: models.BCAddress, businessContactsForm: Form[models.BusinessContacts])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+@import config.ApplicationConfig
+@(isAPI5: Boolean, businessType: Option[String], business: models.BCAddress, businessContactsForm: Form[models.BusinessContacts])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
     Some(businessContactsForm)
@@ -37,36 +36,39 @@
 }
 
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.BusinessContactsController.saveAndReturn
-        case false => controllers.routes.BusinessContactsController.saveAndContinue
+    if(isEditMode) {
+        controllers.routes.BusinessContactsController.saveAndReturn
+    } else {
+        controllers.routes.BusinessContactsController.saveAndContinue
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @emailMessage = @{
-    emailVerificationEnabled match {
-        case true => Some(Messages("awrs.business_contacts.email_info"))
-        case false => None
+    if(applicationConfig.emailVerificationEnabled) {
+        Some(messages("awrs.business_contacts.email_info"))
+    } else {
+        None
     }
 }
 
 @businessTypeHeading = {
     @businessType.map {
         case "Partnership" | "LP" | "LLP" => {
-            @Messages("awrs.business_contacts.heading.partnership", headingPrefix())
+            @messages("awrs.business_contacts.heading.partnership", messages(headingPrefix()))
         }
         case "LLP_GRP" | "LTD_GRP" => {
-            @Messages("awrs.business_contacts.heading.group", headingPrefix())
+            @messages("awrs.business_contacts.heading.group", messages(headingPrefix()))
         }
         case _ => {
-            @Messages("awrs.business_contacts.heading", headingPrefix())
+            @messages("awrs.business_contacts.heading", messages(headingPrefix()))
         }
     }
 }
@@ -79,7 +81,7 @@
 }
 
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
@@ -93,13 +95,13 @@
             </header>
 
             @form(action = actionRoute) {
-                <p id="contactDetailsNominatedPerson" class="lede">@Messages("awrs.business_contacts.contact_detail_nominated_person")</p>
+                <p id="contactDetailsNominatedPerson" class="lede">@messages("awrs.business_contacts.contact_detail_nominated_person")</p>
                 <div class="form-group">
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             businessContactsForm("contactFirstName"),
                             inputId = "contactFirstName",
-                            label = Messages("awrs.generic.first_name"),
+                            label = messages("awrs.generic.first_name"),
                             labelHighlight = true,
                             required = true
                         )
@@ -108,7 +110,7 @@
                         InputTypeTextParams(
                             businessContactsForm("contactLastName"),
                             inputId = "contactLastName",
-                            label = Messages("awrs.generic.surname"),
+                            label = messages("awrs.generic.surname"),
                             labelHighlight = true,
                             required = true
                         )
@@ -117,7 +119,7 @@
                         InputTypeTextParams(
                             businessContactsForm("telephone"),
                             inputId = "telephone",
-                            label = Messages("awrs.generic.telephone"),
+                            label = messages("awrs.generic.telephone"),
                             labelHighlight = true,
                             required = true
                         )
@@ -126,7 +128,7 @@
                         InputTypeTextParams(
                             businessContactsForm("email"),
                             inputId = "email",
-                            label = Messages("awrs.generic.email"),
+                            label = messages("awrs.generic.email"),
                             labelHighlight = true,
                             required = true,
                             formHint = emailMessage
@@ -135,7 +137,7 @@
                 </div>
 
                 <div id="review-details" class="form-group">
-                    <strong>@Messages("awrs.generic.registered_address")</strong><br>
+                    <strong>@messages("awrs.generic.registered_address")</strong><br>
                     @business.line_1<br>
                     @business.line_2<br>
                     @if(business.line_3.nonEmpty) {@business.line_3<br>}
@@ -146,9 +148,9 @@
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             businessContactsForm("contactAddressSame"),
-                            Seq("Yes" -> Messages("awrs.generic.yes"),
-                                "No" -> Messages("awrs.generic.no")),
-                            legend = Messages("awrs.business_contacts.contact_address_same"),
+                            Seq("Yes" -> messages("awrs.generic.yes"),
+                                "No" -> messages("awrs.generic.no")),
+                            legend = messages("awrs.business_contacts.contact_address_same"),
                             legendId = "contactAddressSame-legend",
                             fieldSetClass = "inline",
                             fieldSetAttributes = "id=contactAddressSame_field"

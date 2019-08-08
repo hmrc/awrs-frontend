@@ -21,16 +21,18 @@
 @import forms.AWRSEnums._
 @import forms.AWRSEnums.EntityTypeEnum._
 
-@(partner: models.Partner, showSubHeadings: Boolean, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
+@import config.ApplicationConfig
+@(partner: models.Partner, showSubHeadings: Boolean, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages, applicationConfig: ApplicationConfig)
 
 @editUrl(id: Int) = @{controllers.routes.BusinessPartnersController.showPartnerMemberDetails(id, isLinearMode = false, isNewRecord = false).url}
 
 @deleteUrl(id: Int) = @{controllers.routes.BusinessPartnersController.showDelete(id).url}
 
 @partnerTypeHeading(text:String) = @{
-    showSubHeadings match {
-        case true => {s"""<h2 class="heading-small">$text</h2>"""}
-        case false => {""}
+    if(showSubHeadings) {
+        s"""<h2 class="heading-small">$text</h2>"""
+    } else {
+        ""
     }
 }
 
@@ -48,14 +50,14 @@
     @id match {
         case 1 => {
             @table_row(
-                partnerTypeHeading(Messages("awrs.business-partner.partner")),
-                NoneBreakingSpace
+                partnerTypeHeading(messages("awrs.business-partner.partner")),
+                Some(NoneBreakingSpace)
             )
         }
         case 2 => {
             @table_row(
-                partnerTypeHeading(Messages("awrs.business-partner.additional_partners")),
-                NoneBreakingSpace
+                partnerTypeHeading(messages("awrs.business-partner.additional_partners")),
+                Some(NoneBreakingSpace)
             )
         }
         case _ => {}
@@ -64,14 +66,14 @@
     @* Top record row including edit and delete links *@
     @table_row(
         tableRowTitle,
-        edit_link(editUrl, id, tableRowTitle),
-        delete_link(deleteUrl, id, tableRowTitle)
-    )(cssClass = "record-header")
+        Some(edit_link(editUrl, id, tableRowTitle)),
+        Some(delete_link(deleteUrl, id, tableRowTitle))
+    )(cssClass = Some("record-header"), messages = messages)
 
     @partner.entityType.get match {
         case CorporateBodyString | SoleTraderString => {
             @table_row(
-                Messages("awrs.generic.trading_name"),
+                messages("awrs.generic.trading_name"),
                 partner.companyNames.tradingName
             )
         }
@@ -80,11 +82,11 @@
 
     @* Body of record *@
     @table_row(
-        Messages("awrs.business-partner.partner_role"),
-        EntityTypeEnum.getText(partner.entityType.get)
+        messages("awrs.business-partner.partner_role"),
+        Some(messages(EntityTypeEnum.getMessageKey(partner.entityType)))
     )
     @address_helper(
-        Messages("awrs.generic.address"),
+        messages("awrs.generic.address"),
         partner.partnerAddress
     )
     @identification_helper_partner(

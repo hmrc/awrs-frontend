@@ -17,8 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -30,20 +29,13 @@ import scala.concurrent.Future
 class ProductsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val request = FakeRequest()
-
-  object TestProductsController extends ProductsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val testProductsController: ProductsController = new ProductsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   "ProductsController" must {
-    "use the correct AuthConnector" in {
-      ProductsController.authConnector shouldBe FrontendAuthConnector
-    }
-
      "redirect to supplier addresses page when valid data is provided" in {
-
       continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("mainCustomers[0]" -> "2", "productType[0]" -> "01")) {
         result =>
           redirectLocation(result).get should be("/alcohol-wholesale-scheme/supplier-addresses")
@@ -63,13 +55,15 @@ class ProductsControllerTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
-    val result = TestProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
-    val result = TestProductsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testProductsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

@@ -16,12 +16,13 @@
 
 @import views.html.helpers._
 @import controllers.util.UnSubmittedChangesBannerParam
+@import config.ApplicationConfig
 @(
     coreContent: Boolean => play.twirl.api.Html,
     printFriendly: Boolean,
     sectionText: Option[String],
     unSubmittedChangesParam: Option[UnSubmittedChangesBannerParam]
-)(implicit request: Request[AnyRef], messages: Messages )
+)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @content = @{
     coreContent(printFriendly)
@@ -30,15 +31,15 @@
 
 @titleString = @{
     sectionText match {
-        case Some(section) => Messages("awrs.view_application.section_title", section)
-        case None => Messages("awrs.view_application.title")
+        case Some(section) => messages("awrs.view_application.section_title", messages(section))
+        case None => messages("awrs.view_application.title")
     }
 }
 
 @govWrapper(content: Html) = {
-    @includes.awrs_main(title = Messages("awrs.generic.tab.title", titleString), userLoggedIn = true) {
+    @includes.awrs_main(title = messages("awrs.generic.tab.title", titleString), userLoggedIn = true) {
         <div class="grid">
-            @awrsUnSubmittedBanner(unSubmittedChangesParam, Messages("awrs.index_page.modified_application_incomplete.edit"), Messages("awrs.index_page.not_submitted_changes.return"))
+            @awrsUnSubmittedBanner(unSubmittedChangesParam, messages("awrs.index_page.modified_application_incomplete.edit"), messages("awrs.index_page.not_submitted_changes.return"))
             <div class="grid grid-2-3">
                 @content
             </div>
@@ -46,11 +47,8 @@
     }
 }
 
-@printFriendly match {
-    case true => {
-        @awrsPrintFriendlyWrapper(content)
-    }
-    case false => {
-        @govWrapper(content)
-    }
+@if(printFriendly) {
+    @awrsPrintFriendlyWrapper(content)
+} else {
+    @govWrapper(content)
 }

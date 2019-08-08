@@ -18,39 +18,30 @@ package views.view_application
 
 import java.util.UUID
 
+import audit.Auditable
+import config.ApplicationConfig
 import connectors.mock.MockAuthConnector
-import controllers.auth.AwrsController
+import controllers.BusinessDirectorsController
+import javax.inject.Inject
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.mvc.Result
+import org.scalatest.mockito.MockitoSugar
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.{AwrsUtr, Nino}
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, _}
+import services.Save4LaterService
+import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.play.test._
-import utils.TestConstants._
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import utils.AccountUtils
 
-class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with MockAuthConnector {
-
-  trait TestController extends AwrsController {
-    def show(rowTitle: String, content: Option[String]*) = asyncRestrictedAccess {
-      implicit user => implicit request =>
-        // Run sbt test in terminal to compile tests and generate TableRowTestPage, otherwise it will show up red here
-        Future.successful(Ok(views.html.view_application.TableRowTestPage(rowTitle, content: _*)))
-    }
-  }
-
-  object TestController extends TestController {
-    override val authConnector = mockAuthConnector
-  }
+class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector with MockSave4LaterService {
 
   // implicit parameters required by the save4later calls, the actual values are not important as these calls are mocked
-  implicit lazy val fakeRequest = {
+  implicit lazy val fakeRequest: FakeRequest[AnyContent] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
@@ -60,6 +51,31 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
       "businessName" -> "North East Wines"
     )
   }
+
+  class TestController @Inject()(override val mcc: MessagesControllerComponents,
+                                 override val save4LaterService: Save4LaterService,
+                                 override val authConnector: DefaultAuthConnector,
+                                 override val auditable: Auditable,
+                                 override val accountUtils: AccountUtils,
+                                 override implicit val applicationConfig: ApplicationConfig) extends BusinessDirectorsController(mcc, save4LaterService, authConnector, auditable, accountUtils, applicationConfig) {
+
+    def show(rowTitle: String, content: Option[String]*): Action[AnyContent] = Action.async {
+      request =>
+        val messages = mcc.messagesApi.preferred(request)
+        setAuthMocks()
+        restrictedAccessCheck {
+          authorisedAction { ar =>
+            // Run sbt test in terminal to compile tests and generate TableRowTestPage, otherwise it will show up red here
+            Future.successful(Ok(views.html.view_application.TableRowTestPage(rowTitle, content: _*)(messages)))
+          }(request, ec, hc, messages)
+        }(request)
+    }
+  }
+
+  val testController: TestController =
+    new TestController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig){
+      override val signInUrl = "/sign-in"
+    }
 
   implicit def conv(str: String): Option[String] = Some(str)
 
@@ -94,7 +110,7 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
 
     def runTests(testCases: TestCase*): Unit = {
       val rowTitle = "does not matter"
-      testCases.foreach(testCase => testExpectations(TestController.show(rowTitle, testCase.data: _*)(fakeRequest), testCase.expecations))
+      testCases.foreach(testCase => testExpectations(testController.show(rowTitle, testCase.data: _*)(fakeRequest), testCase.expecations))
     }
 
     val line1 = "line 1"

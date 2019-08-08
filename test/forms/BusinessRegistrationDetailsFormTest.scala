@@ -21,12 +21,11 @@ import forms.BusinessRegistrationDetailsForm._
 import forms.test.util.{ExpectedFieldIsEmpty, _}
 import forms.validation.util.FieldError
 import models.BusinessRegistrationDetails
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.TestUtil
-import utils.TestUtil._
 import utils.TestConstants._
 
 class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
@@ -127,22 +126,27 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
       }
 
       s"check the validations of crn for entity: $entity" in {
-        targetIds.contains(doYouHaveCrn) match {
-          case false =>
-          case true =>
-            ProofOfIdentiticationVerifications.companyRegNumberIsValidWhenDoYouHaveCRNIsAnsweredWithYes(
-              preCondition = Map(),
-              ignoreCondition = Set(),
-              doYouHaveCRNNameString = doYouHaveCrn,
-              CRNNameString = crnField,
-              alsoTestWhenDoYouHaveCRNIsAnsweredWithNo = false
-            )
-            ProofOfIdentiticationVerifications.dateOfIncorporationIsCompulsoryAndValidWhenDoYouHaveCRNIsAnsweredWithYes(
-              preCondition = Map(),
-              ignoreCondition = Set(),
-              idPrefix = "companyRegDetails",
-              doYouHaveCRNNameString = doYouHaveCrn
-            )
+        if (targetIds.contains(doYouHaveCrn)) {
+          val data = Map(
+            "companyNames.businessName" -> Seq("Business Name"),
+            "companyNames.doYouHaveTradingName" -> Seq("No"),
+            "address.addressLine1" -> Seq("1 Testing Test Road"),
+            "address.addressLine2" -> Seq("Testton"),
+            "address.postcode" -> Seq("NE98 1ZZ"),
+            "doYouHaveUTR" -> Seq("No"),
+            "isBusinessIncorporated" -> Seq("Yes"),
+            "companyRegDetails.companyRegistrationNumber" -> Seq("10101010"),
+            "companyRegDetails.dateOfIncorporation.day" -> Seq("20"),
+            "companyRegDetails.dateOfIncorporation.month" -> Seq("5"),
+            "companyRegDetails.dateOfIncorporation.year" -> Seq("2015"),
+            "doYouHaveVRN" -> Seq("No"),
+            "addAnotherGrpMember" -> Seq("No")
+          )
+
+          val testForm = form.bindFromRequest(data)
+          testForm.errors shouldBe Seq()
+        } else {
+
         }
       }
 
@@ -219,15 +223,15 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
       isBusinessIncorporated = None,
       companyRegDetails = None,
       doYouHaveVRN = Some(BooleanRadioEnum.YesString),
-      vrn = testVrn
+      vrn = Some(testVrn)
     )
 
     lazy val onlyUTR = (legalEntity: String) => BusinessRegistrationDetails(
       legalEntity = Some(legalEntity),
       doYouHaveUTR = None,
-      utr = testUtr,
+      utr = Some(testUtr),
       doYouHaveNino = None,
-      nino = testNino,
+      nino = Some(testNino),
       isBusinessIncorporated = None,
       companyRegDetails = Some(TestUtil.testCompanyRegDetails()),
       doYouHaveVRN = Some(BooleanRadioEnum.NoString),

@@ -55,12 +55,10 @@ object MappingUtilAPI {
 
     // attach the key to the mapping if they do not have the expected key
     private def checkKey(expectedKey: String, mapping: Mapping[Option[T]]): Mapping[Option[T]] = {
-      val mappingKey = mapping.key
-      expectedKey.equals(mappingKey) match {
-        case true => mapping
-        case false => //TODO need more tests to see if this can be simplified, could prob just append
-          val prefix = expectedKey.replace(mappingKey, "")
-          mapping.withPrefix(expectedKey)
+      if (expectedKey.equals(mapping.key)) {
+        mapping
+      } else {
+        mapping.withPrefix(expectedKey)
       }
     }
 
@@ -210,15 +208,15 @@ object MappingUtilAPI {
 
       def error = Left(config.empty.errorMessage.errors.map { e => FormError(key, e.message, e.args) })
 
-      isEnum match {
-        case false => error
-        case true =>
-          val enumValue: AWRSEnumeration#Value = config.enumType.withName(value)
-          val invalidChoices = config.invalidChoices
-          invalidChoices.nonEmpty && invalidChoices.contains(enumValue) match {
-            case true => error
-            case false => Right(Some(enumValue.toString))
-          }
+      if (isEnum) {
+        val enumValue: AWRSEnumeration#Value = config.enumType.withName(value)
+        val invalidChoices = config.invalidChoices
+        invalidChoices.nonEmpty && invalidChoices.contains(enumValue) match {
+          case true => error
+          case false => Right(Some(enumValue.toString))
+        }
+      } else {
+        error
       }
     }
 

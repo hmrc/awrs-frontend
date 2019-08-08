@@ -14,13 +14,13 @@
  * limitations under the License.
  *@
 
-@(field: Field, params: views.helpers.AddressHelperParams, isPrincipalPlace : Option[Boolean] =  false, PrincipalPrevious: String =  "")(implicit messages: Messages, formInstance: Option[Form[_]] = None)
-
 @import play.api.i18n._
 @import views.html.helper._
 @import views.html.helpers._
 @import views.helpers._
-@import utils.AwrsFieldConfig
+@import config.ApplicationConfig
+
+@(field: Field, params: views.helpers.AddressHelperParams, isPrincipalPlace : Option[Boolean] =  false, PrincipalPrevious: String =  "")(implicit messages: Messages, formInstance: Option[Form[_]] = None, applicationConfig: ApplicationConfig)
 
 @isUkAddress = @{params.isUk}
 @number = @{params.number.fold("0")(x => x)}
@@ -56,7 +56,7 @@
                field("addressLine1"),
                 inputId = field("addressLine1").name,
                 label = adressLineMessages("line1"),
-                maxLength = AwrsFieldConfig.addressLine1Len.toString,
+                maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
                 required = true
@@ -67,7 +67,7 @@
                 field("addressLine2"),
                 inputId = field("addressLine2").name,
                 label = adressLineMessages("line2"),
-                maxLength = AwrsFieldConfig.addressLine2Len.toString,
+                maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
                 required = true
@@ -78,10 +78,9 @@
                 field("addressLine3"),
                 inputId = field("addressLine3").name,
                 label = adressLineMessages("line3"),
-                maxLength = AwrsFieldConfig.addressLine3Len.toString,
+                maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
-                labelHighlight = true,
-                required = false
+                labelHighlight = true
             )
         )
         @awrsInputTypeText(
@@ -89,10 +88,9 @@
                 field("addressLine4"),
                 inputId = field("addressLine4").name,
                 label = adressLineMessages("line4"),
-                maxLength = AwrsFieldConfig.addressLine4Len.toString,
+                maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
-                labelHighlight = true,
-                required = false
+                labelHighlight = true
             )
         )
     </div>
@@ -103,7 +101,7 @@
                 inputId = field("postcode").name,
                 inputClass = "input--normal",
                 label = postCodeMessage,
-                maxLength = AwrsFieldConfig.addressPostcodeLen.toString,
+                maxLength = applicationConfig.addressPostcodeLen.toString,
                 wrapperClass = wrapperClass,
                 required = true,
                 labelHighlight = true,

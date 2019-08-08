@@ -17,12 +17,15 @@
 package forms.test
 
 import forms.validation.util.ErrorMessageInterpreter._
-import forms.validation.util.{FieldError, MessageLookup, SummaryError}
-import org.scalatest.Matchers._
+import forms.validation.util.{FieldError, MessageArguments, MessageLookup, SummaryError}
 import play.api.data.Form
+import utils.AwrsUnitTestTraits
+
+import scala.collection.mutable
+import scala.util.{Failure, Success, Try}
 
 
-package object util extends FormValidationTestAPI with TestUtilAPI {
+package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnitTestTraits {
 
   /**
     * function to allow easy attachment of prefix to field ids regardless of whether the
@@ -42,7 +45,6 @@ package object util extends FormValidationTestAPI with TestUtilAPI {
 
     def attachToAll(fieldIds: Set[String]): Set[String] = fieldIds.map(fieldId => this.attach(fieldId))
   }
-
 
   def assertErrorMessageIsCorrectlyPopulated(errorMessage: MessageLookup): Unit = {
     val message = errorMessage.toString()
@@ -93,7 +95,12 @@ package object util extends FormValidationTestAPI with TestUtilAPI {
         val actualError = fieldError.head
         withClue("The error message for the field differs from the expected:\n") {
           withClue(s"actual:\n$actualError\n") {
-            trimBothAndCompressFunc(actualError.toString) should equal(trimBothAndCompressFunc(expected.toString))
+            val messageArgsToWrapped = (value: String) => value.trim.replaceAll(
+              "List",
+              "WrappedArray"
+            )
+
+            trimBothAndCompressFunc(actualError.toString()) should equal(messageArgsToWrapped(trimBothAndCompressFunc(expected.toString())))
           }
         }
         assertErrorMessageIsCorrectlyPopulated(actualError)
@@ -125,9 +132,12 @@ package object util extends FormValidationTestAPI with TestUtilAPI {
   def assertSummaryError(formWithErrors: Form[_], fieldId: String, expected: SummaryError): Unit = {
     import forms.prevalidation._
     val summaryErrors = getSummaryErrors(formWithErrors)
-    val summaryErrorStrs = summaryErrors.map(err => err.anchor + trimBothAndCompressFunc(err.toString))
-    withClue(f"Cannot find the expected summary error message:\nexpected=$expected\nexpected anchor=${expected.anchor}\nin:\nsummaryErrors=$summaryErrors\nsummaryErrors.anchors=${summaryErrors.map(a => f"anchor=${a.anchor}")}") {
-      summaryErrorStrs should contain(trimBothAndCompressFunc(expected.anchor + expected.toString))
+    val summaryErrorStrs = summaryErrors.map(err => err.anchor + trimBothAndCompressFunc(err.toString()))
+
+    val trimmedExpectedAnchorAndError: String = trimBothAndCompressFunc(expected.anchor + expected.toString())
+
+    withClue(f"Cannot find the expected summary error message:\nexpected=$trimmedExpectedAnchorAndError\nin:\nsummaryErrors=$summaryErrorStrs") {
+      summaryErrorStrs should contain(trimmedExpectedAnchorAndError)
     }
     assertErrorMessageIsCorrectlyPopulated(expected)
   }

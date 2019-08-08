@@ -16,40 +16,33 @@
 
 package controllers
 
-import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendAuthConnector
-import controllers.auth.Utr._
+import builders.SessionBuilder
+import config.ApplicationConfig
 import forms.SupplierAddressesForm
-import models.{Address, Supplier, Suppliers}
+import models.{Supplier, Suppliers}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.ServicesUnitTestFixture
-import utils.{AwrsUnitTestTraits, TestUtil}
 import services.DataCacheKeys._
+import services.ServicesUnitTestFixture
 import utils.TestUtil._
+import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 
 class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  def testRequest(supplier: Supplier) =
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
+
+  def testRequest(supplier: Supplier): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[Supplier](FakeRequest(), SupplierAddressesForm.supplierAddressesValidationForm, supplier)
 
-  val supplierPageURL = (id: Int) => s"/alcohol-wholesale-scheme/supplier-addresses?id=$id"
-  val supplierPage2URL = supplierPageURL(2)
-
-  "SupplierAddressesController" must {
-    "use the correct AuthConnector" in {
-      SupplierAddressesController.authConnector shouldBe FrontendAuthConnector
-    }
-  }
+  val supplierPageURL: Int => String = (id: Int) => s"/alcohol-wholesale-scheme/supplier-addresses?id=$id"
+  val supplierPage2URL: String = supplierPageURL(2)
 
   val id = "alcoholSupplier"
   "Authenticated and authorised users" should {
@@ -162,8 +155,6 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
         result =>
           val document = Jsoup.parse(contentAsString(result))
           status(result) shouldBe OK
-
-          document.getElementById("supplierAddress.addressCountry").`val`() shouldBe "Spain"
       }
     }
   }
@@ -184,7 +175,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
       deleteWithAuthorisedUser()(deleteConfirmation_Yes) {
         result =>
           status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/suppliers")
+          redirectLocation(result).get should include("/view-section/suppliers")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
@@ -192,7 +183,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
       deleteWithAuthorisedUser()(deleteConfirmation_No) {
         result =>
           status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/suppliers")
+          redirectLocation(result).get should include("/view-section/suppliers")
           verifySave4LaterService(saveSuppliers = 0)
       }
     }
@@ -206,75 +197,84 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
       deleteWithAuthorisedUser(id = 2, suppliers = Suppliers(List(testSupplier(), testSupplier(), testSupplier())))(deleteConfirmation_Yes) {
         result =>
           status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/suppliers")
+          redirectLocation(result).get should include("/view-section/suppliers")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
   }
 
+
+  val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = "/sign-in"
+  }
+
   private def getWithAuthorisedUserSa(id: Int = 1)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = testSuppliersInternational)
-    val result = TestSupplierAddressesController.showSupplierAddressesPage(id, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.showSupplierAddressesPage(id, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getWithAuthorisedUser5Suppliers(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = testSuppliers)
-    val result = TestSupplierAddressesController.showSupplierAddressesPage(1, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.showSupplierAddressesPage(1, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = testSuppliers)
-    val result = TestSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = testSuppliers)
-    val result = TestSupplierAddressesController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def continueWithAuthorisedUserNoSuppliersFirstQuestion(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
-    val result = TestSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def continueWithAuthorisedUserMultipleSuppliersYesAdditionalSuppliers(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = Suppliers(List(testSupplier(), testSupplier(), testSupplier())))
-    val result = TestSupplierAddressesController.saveAndContinue(2, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.saveAndContinue(2, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def continueWithAuthorisedUserNoSupplier(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
-    val result = TestSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def showDeleteWithAuthorisedUser(id: Int = 1, suppliers: Suppliers = testSuppliers)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = suppliers)
-    val result = TestSupplierAddressesController.showDelete(id).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.showDelete(id).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def deleteWithAuthorisedUser(id: Int = 1, suppliers: Suppliers = testSuppliers)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = suppliers)
-    val result = TestSupplierAddressesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def continueWithAuthorisedUserFirstTimeSupplier(id: Int, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
-    val result = TestSupplierAddressesController.saveAndContinue(id, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testSupplierAddressesController.saveAndContinue(id, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
-
-  object TestSupplierAddressesController extends SupplierAddressesController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
-
 }

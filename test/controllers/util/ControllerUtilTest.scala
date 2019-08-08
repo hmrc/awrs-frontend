@@ -23,25 +23,25 @@ import controllers.util.html.test_util_template
 import forms.AWRSEnums.BooleanRadioEnum
 import models.{Address, BCAddress}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.Actions
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import utils.AwrsUnitTestTraits
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.{AwrsUnitTestTraits, TestUtil}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
+import play.api.mvc.MessagesControllerComponents
 
 import scala.concurrent.Future
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
 case class DummyData(doYouHaveAnyEntries: String, data: Option[String], doYouHaveAnotherEntry: Option[String])
 
-class ControllerUtilTest extends AwrsUnitTestTraits
-  with Actions
+class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendController(mcc) with AwrsUnitTestTraits
   with MockAuthConnector {
-
-  override protected def authConnector: AuthConnector = mockAuthConnector
 
   val data = "data"
 
@@ -84,7 +84,10 @@ class ControllerUtilTest extends AwrsUnitTestTraits
         haveAnother
       )(
         SessionBuilder.buildRequestWithSessionNoUser(),
-        viewMode
+        viewMode,
+        mockMessages,
+        mockAppConfig,
+        implicitly
       )
 
     "display a new page with id = 1 when no data is cached and id = 1 is requested" in {
@@ -334,7 +337,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits
   "saveThenRedirect" should {
     val redirect = (haveAnotherAnswer: String, id: Int) => Future.successful(Ok(test_util_template(id, None)))
     val fetch = (data: Option[List[DummyData]]) => Future.successful(data)
-    val save = (data: List[DummyData]) => Future.successful(data)
+    val save: SaveData[List[DummyData]] = (_, data) => Future.successful(data)
     val conv = (list: List[DummyData]) => list
 
 
@@ -344,12 +347,17 @@ class ControllerUtilTest extends AwrsUnitTestTraits
       reset(mockSave)
       val mockSaveAndTestItsInput = new Answer[Future[Option[Any]]] {
         def answer(invocation: InvocationOnMock) = {
-          val firstArg: List[DummyData] = invocation.getArguments.head.asInstanceOf[List[DummyData]]
-          testFunction(firstArg)
-          Future.successful(Some(firstArg))
+          val dummyDataArg: List[DummyData] = {
+            invocation.getArguments.find {
+              case arg: List[DummyData] => true
+              case _ => false
+            }.map(_.asInstanceOf[List[DummyData]]).getOrElse(List.empty[DummyData])
+          }
+          testFunction(dummyDataArg)
+          Future.successful(Some(dummyDataArg))
         }
       }
-      when(mockSave(Matchers.any())).thenAnswer(mockSaveAndTestItsInput)
+      when(mockSave(ArgumentMatchers.any(), ArgumentMatchers.any())).thenAnswer(mockSaveAndTestItsInput)
     }
 
     def testSaveThenRedirect(
@@ -364,7 +372,8 @@ class ControllerUtilTest extends AwrsUnitTestTraits
         fetchData,
         saveData,
         id,
-        data
+        data,
+        TestUtil.defaultAuthRetrieval
       )(
         haveAnotherAnswer = haveAnotherAnswer,
         amendHaveAnotherAnswer = amendHaveAnotherAnswer,
@@ -376,7 +385,10 @@ class ControllerUtilTest extends AwrsUnitTestTraits
         redirectRoute = redirect
       )(
         SessionBuilder.buildRequestWithSessionNoUser(),
-        viewMode
+        viewMode,
+        mockMessages,
+        mockAppConfig,
+        implicitly
       )
 
 
@@ -407,8 +419,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits
       val id = 2
 
       allModes.foreach { viewMode =>
-        val result = testSaveThenRedirect(
-          fetchData = fetch(returnedData),
+        val result = testSaveThenRedirect(fetch(returnedData),
           saveData = save,
           id = id,
           data = entry
@@ -440,7 +451,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits
         )
         val result = testSaveThenRedirect(
           fetchData = fetch(returnedData),
-          saveData = mockSave,
+          saveData = save,
           id = id,
           data = newData
         )(

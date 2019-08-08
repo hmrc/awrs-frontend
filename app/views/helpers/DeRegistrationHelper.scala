@@ -28,10 +28,10 @@ import play.api.Play.current
 
 object DeRegistrationHelper {
 
-  private val frontendKey = (name: String) => Messages(f"awrs.de_registration.reason.$name")
-  private val backendKey = (name: String) => Messages(f"awrs.de_registration.reason.$name.schema_enum")
+  private val frontendKey = (name: String) => f"awrs.de_registration.reason.$name"
+  private val backendKey = (name: String) => f"awrs.de_registration.reason.$name.schema_enum"
 
-  def enumPair(enumName: String) = backendKey(enumName) -> frontendKey(enumName)
+  def enumPair(enumName: String): (String, String) = backendKey(enumName) -> frontendKey(enumName)
 
   lazy val dateFormat = new SimpleDateFormat("dd MMMM yyyy")
 

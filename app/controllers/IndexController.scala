@@ -16,74 +16,85 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.{AwrsController, AwrsRegistrationGovernmentGateway}
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.AwrsController
+import javax.inject.Inject
 import models.FormBundleStatus._
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.apis.AwrsAPI9
 import services.{ApplicationService, IndexService, Save4LaterService}
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-object IndexController extends IndexController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
-  override val indexService = IndexService
-  override val api9 = AwrsAPI9
-  override val applicationService = ApplicationService
-}
+class IndexController @Inject()(mcc: MessagesControllerComponents,
+                                indexService: IndexService,
+                                api9: AwrsAPI9,
+                                applicationService: ApplicationService,
+                                val save4LaterService: Save4LaterService,
+                                val authConnector: DefaultAuthConnector,
+                                val auditable: Auditable,
+                                val accountUtils: AccountUtils,
+                                implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-trait IndexController extends AwrsController {
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val signInUrl: String = applicationConfig.signIn
 
-  val save4LaterService: Save4LaterService
-  val indexService: IndexService
-  val api9: AwrsAPI9
-  val applicationService: ApplicationService
-
-  def showIndex = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      request.session.get("businessType").fold("")(x => x) match {
-        case "" =>
-          debug("No business Type found")
-          Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession)
-        case businessType =>
-          debug(s"Business Type : $businessType")
-          for {
-            businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails
-            subscriptionStatus <- api9.getSubscriptionStatusFromCache
-            awrsDataMap <- save4LaterService.mainStore.fetchAll
-            applicationChangeFlag <- applicationService.hasAPI5ApplicationChanged(AccountUtils.getUtrOrName())
-            sectionStatus <- indexService.getStatus(awrsDataMap, businessType)
-          } yield {
-            val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
-            val showOneViewLink = indexService.showOneViewLink(sectionStatus)
-            val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
-            Ok(views.html.awrs_index(
-              awrsRef = {AccountUtils.hasAwrs match {
-                case true => Some(AccountUtils.getAwrsRefNo.toString())
-                case _ => None
-                }
-              },
-              hasApplicationChanged = applicationChangeFlag,
-              allSectionComplete = allSectionCompletedFlag,
-              showOneViewLink = showOneViewLink,
-              businessPartnerDetails.get.businessName,
-              sectionStatus,
-              subscriptionStatus,
-              isHappyPathEnrollment
-            )).addBusinessNameToSession(businessPartnerDetails.get.businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
-          }
+  def showIndex(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        request.session.get("businessType").fold("")(x => x) match {
+          case "" =>
+            debug("No business Type found")
+            Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession)
+          case businessType =>
+            debug(s"Business Type : $businessType")
+            for {
+              businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
+              subscriptionStatus <- api9.getSubscriptionStatusFromCache
+              awrsDataMap <- save4LaterService.mainStore.fetchAll(ar)
+              applicationChangeFlag <- applicationService.hasAPI5ApplicationChanged(accountUtils.getUtr(ar), ar)
+              sectionStatus <- indexService.getStatus(awrsDataMap, businessType, ar)
+            } yield {
+              val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
+              val showOneViewLink = indexService.showOneViewLink(sectionStatus)
+              val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
+              Ok(views.html.awrs_index(
+                awrsRef = {
+                  if (accountUtils.hasAwrs(ar.enrolments)) {
+                    Some(accountUtils.getAwrsRefNo(ar.enrolments))
+                  } else {
+                    None
+                  }
+                },
+                hasApplicationChanged = applicationChangeFlag,
+                allSectionComplete = allSectionCompletedFlag,
+                showOneViewLink = showOneViewLink,
+                businessPartnerDetails.get.businessName,
+                sectionStatus,
+                subscriptionStatus,
+                isHappyPathEnrollment
+              )).addBusinessNameToSession(businessPartnerDetails.get.businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
+            }
+        }
       }
+    }
   }
 
-  def showLastLocation = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/index")(x => x)))
+  def showLastLocation(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/index")(x => x)))
+      }
+    }
   }
 
-  def unauthorised = AuthenticatedBy(AwrsRegistrationGovernmentGateway, pageVisibility = GGConfidence).async {
-    implicit user => implicit request => Future.successful(Unauthorized(views.html.unauthorised()))
+  def unauthorised(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction {
+      _ => Future.successful(Unauthorized(views.html.unauthorised()))
+    }
   }
 }

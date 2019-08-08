@@ -16,12 +16,11 @@
 
 package models
 
-import org.scalatest.Matchers
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
 
-class TupleDateTest extends UnitSpec with Matchers with MockitoSugar {
+class TupleDateTest extends UnitSpec with MockitoSugar {
   "TupleDate" should {
     "transform the date into the correct format" in {
       val day = "31"

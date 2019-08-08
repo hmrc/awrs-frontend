@@ -16,16 +16,17 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.GroupMemberDetailsForm._
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 
 class GroupMemberDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
-
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form = GroupMemberDetailsForm.groupMemberForm.form
 
   "Form validation" should {
@@ -43,20 +44,24 @@ class GroupMemberDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
     }
 
     "display correct validation for group member CRN" in {
-      ProofOfIdentiticationVerifications.companyRegNumberIsValidWhenDoYouHaveCRNIsAnsweredWithYes(
-        preCondition = Map(),
-        ignoreCondition = Set(),
-        doYouHaveCRNNameString = doYouHaveCrn,
-        CRNNameString = "companyRegistrationNumber",
-        crnPrefix = crnMapping,
-        alsoTestWhenDoYouHaveCRNIsAnsweredWithNo = false
+      val data = Map(
+        "companyNames.businessName" -> Seq("Business Name"),
+        "companyNames.doYouHaveTradingName" -> Seq("No"),
+        "address.addressLine1" -> Seq("1 Testing Test Road"),
+        "address.addressLine2" -> Seq("Testton"),
+        "address.postcode" -> Seq("NE98 1ZZ"),
+        "doYouHaveUTR" -> Seq("No"),
+        "isBusinessIncorporated" -> Seq("Yes"),
+        "companyRegDetails.companyRegistrationNumber" -> Seq("10101010"),
+        "companyRegDetails.dateOfIncorporation.day" -> Seq("20"),
+        "companyRegDetails.dateOfIncorporation.month" -> Seq("5"),
+        "companyRegDetails.dateOfIncorporation.year" -> Seq("2015"),
+        "doYouHaveVRN" -> Seq("No"),
+        "addAnotherGrpMember" -> Seq("No")
       )
-      ProofOfIdentiticationVerifications.dateOfIncorporationIsCompulsoryAndValidWhenDoYouHaveCRNIsAnsweredWithYes(
-        preCondition = Map(),
-        ignoreCondition = Set(),
-        idPrefix = crnMapping,
-        doYouHaveCRNNameString = doYouHaveCrn
-      )
+
+      val testForm = form.bindFromRequest(data)
+      testForm.errors shouldBe Seq()
     }
 
     "display correct validation for group member UTR" in {

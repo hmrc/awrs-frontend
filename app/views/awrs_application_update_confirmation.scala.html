@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(resubmissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false)(implicit request: Request[AnyContent],  messages: Messages )
+@import config.ApplicationConfig
+@(resubmissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false)(implicit request: Request[AnyContent],  messages: Messages, applicationConfig: ApplicationConfig)
 @import play.twirl.api.Html
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -24,7 +25,7 @@
 @awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
 
 @govWrapper = {
-    @includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.confirmation.title")), userLoggedIn = true){
+    @includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.confirmation.title")), userLoggedIn = true){
         <div class="grid">
             <div class="grid grid-2-3">
                 @confirmationHelper(
@@ -32,19 +33,19 @@
                     "awrs.update.confirmation.description_1",
                     Some(resubmissionDate)
                 )
-                <h2 class="print-heading heading-small">@Messages("awrs.confirmation.prompt_print_heading")</h2>
+                <h2 class="print-heading heading-small">@messages("awrs.confirmation.prompt_print_heading")</h2>
                 <div class="print-hidden">
-                    <a id="print-confirmation" href="javascript:window.print();" class="print-link print-hidden">@Messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="link print-hidden"
+                    <a id="print-confirmation" href="javascript:window.print();" class="print-link print-hidden">@messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="link print-hidden"
                        href="@routes.ViewApplicationController.show(printFriendly = false)">
-                        @Messages("awrs.generic.application")
+                        @messages("awrs.generic.application")
                     </a>
                 </div>
                 <hr aria-hidden="true">
                 @list
-                <p id="detailed-information">@Html(Messages("awrs.confirmation.detailed_information","<a class='external_link' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
-                <p><a id="inform-us-link" class="print-hidden element-inline external_link" href="https://www.gov.uk/government/publications/excise-notice-2002-alcohol-wholesaler-registration-scheme/excise-notice-2002-alcohol-wholesaler-registration-scheme#approval-details-change">@Messages("awrs.index_page.changes.answer.para_3_link")</a><div class="screen-hidden element-inline">@Messages("awrs.index_page.changes.answer.para_3_link")</div>&nbsp;@Messages("awrs.index_page.changes.answer.para_3")
+                <p id="detailed-information">@Html(messages("awrs.confirmation.detailed_information","<a class='external_link' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
+                <p><a id="inform-us-link" class="print-hidden element-inline external_link" href="https://www.gov.uk/government/publications/excise-notice-2002-alcohol-wholesaler-registration-scheme/excise-notice-2002-alcohol-wholesaler-registration-scheme#approval-details-change">@messages("awrs.index_page.changes.answer.para_3_link")</a><div class="screen-hidden element-inline">@messages("awrs.index_page.changes.answer.para_3_link")</div>&nbsp;@messages("awrs.index_page.changes.answer.para_3")
                 <div class="form-group">
-                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@Messages("awrs.confirmation.finish")</a>
+                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
                 </div>
 
             </div>
@@ -52,21 +53,21 @@
     }
 }
 @list = {
-    <h2 class="heading-medium" id="ConfirmationNoteHeadingText">@Messages("awrs.confirmation.information")</h2>
+    <h2 class="heading-medium" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
     <ul id="application-confirmation-list" class="list list-bullet">
         @*  In the current setting, information_what_next_0 is a message key reserved for:
         whether they are allowed to trade whilst their amendments are being reviewed.
         *@
         @request.getSessionStatus match {
             case Some(Pending) => {
-                <li id="confirmationNoteLine0aText">@Messages("awrs.update.confirmation.pending.information_what_next_0")</li>
-                <li id="confirmationNoteLine1Text">@Messages("awrs.update.confirmation.pending.information_what_next_1", awrsRef)</li>
+                <li id="confirmationNoteLine0aText">@messages("awrs.update.confirmation.pending.information_what_next_0")</li>
+                <li id="confirmationNoteLine1Text">@messages("awrs.update.confirmation.pending.information_what_next_1", awrsRef)</li>
             }
             case _ => {
-                <li id="confirmationNoteLine0Text">@Messages("awrs.update.confirmation.information_what_next_0", awrsRef)</li>
+                <li id="confirmationNoteLine0Text">@messages("awrs.update.confirmation.information_what_next_0", awrsRef)</li>
             }
         }
-        <li id="confirmationNoteLine2Text">@Messages("awrs.update.confirmation.information_what_next_2")</li>
+        <li id="confirmationNoteLine2Text">@messages("awrs.update.confirmation.information_what_next_2")</li>
     </ul>
 }
 

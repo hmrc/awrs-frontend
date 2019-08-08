@@ -27,7 +27,7 @@ import play.api.data.Mapping
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
-object CompanyNamesMapping {
+object CompanyNamesMapping extends AwrsFieldConfig {
 
   val businessName = "businessName"
   val doYouHaveTradingName = "doYouHaveTradingName"
@@ -40,7 +40,7 @@ object CompanyNamesMapping {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.businessName_empty"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.companyNameLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameter(companyNameLen, fieldId, fieldNameInErrorMessage),
         genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
       )
     compulsoryText(companyNameConstraintParameters)
@@ -56,15 +56,15 @@ object CompanyNamesMapping {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.tradingName_empty"),
-        genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.tradingNameLen, fieldId, fieldNameInErrorMessage),
+        genericFieldMaxLengthConstraintParameter(tradingNameLen, fieldId, fieldNameInErrorMessage),
         genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
       )
     compulsoryText(companyNameConstraintParameters)
   }
 
-  val whenDoYouHaveTradingNameIsAnsweredYes = (prefix: String) => answerGivenInFieldIs(prefix attach doYouHaveTradingName, BooleanRadioEnum.YesString)
+  val whenDoYouHaveTradingNameIsAnsweredYes: String => FormData => Boolean = (prefix: String) => answerGivenInFieldIs(prefix attach doYouHaveTradingName, BooleanRadioEnum.YesString)
 
-  private val alwaysValidate = (data: FormData) => true
+  private val alwaysValidate = (_: FormData) => true
 
   def companyNamesMapping(prefix: String, validateBusinessName: FormQuery = alwaysValidate): Mapping[CompanyNames] =
     mapping(
@@ -79,11 +79,11 @@ object CompanyNamesMapping {
   private val cnFromOptional = (companyNames: Option[CompanyNames]) => companyNames.fold(CompanyNames(None, None, None))(x => x): CompanyNames
 
   implicit class CompanyNamesOptionUtil(mapping: Mapping[CompanyNames]) {
-    def toOptional = mapping.transform(cnToOptional, cnFromOptional)
+    def toOptional: Mapping[Option[CompanyNames]] = mapping.transform(cnToOptional, cnFromOptional)
   }
 
   implicit class CompanyNamesOptionUtil2(mapping: Mapping[Option[CompanyNames]]) {
-    def toCompulsory = mapping.transform(cnFromOptional, cnToOptional)
+    def toCompulsory: Mapping[CompanyNames] = mapping.transform(cnFromOptional, cnToOptional)
   }
 
 

@@ -18,22 +18,18 @@ package services
 
 import _root_.models._
 import connectors.TaxEnrolmentsConnector
-import org.mockito.Matchers
+import org.mockito.{ArgumentMatchers, Matchers}
 import org.mockito.Mockito._
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
-import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
+import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-
-
 
 class EnrolServiceTest extends AwrsUnitTestTraits {
   val userId = ""
@@ -55,44 +51,30 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   val businessTypeSOP = "SOP"
 
   val successfulSubscriptionResponse = SuccessfulSubscriptionResponse("","XAAW000000123456","")
-  val mockAuthConnector = mock[AuthConnector]
-  val mockTaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
+  val mockAuthConnector: DefaultAuthConnector = mock[DefaultAuthConnector]
+  val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
 
-  object EnrolServiceTest extends EnrolService {
-    override val authConnector = mockAuthConnector
-    override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
+  val enrolServiceTest: EnrolService = new EnrolService(mockTaxEnrolmentsConnector, mockServicesConfig, mockAuthConnector)
 
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
-
-  object EnrolServiceEMACTest extends EnrolService {
-    override val authConnector = mockAuthConnector
-    override val taxEnrolmentsConnector = mockTaxEnrolmentsConnector
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
+  val enrolServiceEMACTest: EnrolService = new EnrolService(mockTaxEnrolmentsConnector, mockServicesConfig, mockAuthConnector)
 
   override def beforeEach(): Unit = {
     reset(mockTaxEnrolmentsConnector)
   }
 
   "Enrol Service" should {
-    behave like enrolService(EnrolServiceTest)
+    behave like enrolService(enrolServiceTest)
   }
 
   "Enrol Service with EMAC switched on" should {
-    behave like enrolService(EnrolServiceEMACTest)
+    behave like enrolService(enrolServiceEMACTest)
   }
 
   def mockAuthorise[T](predicate: Predicate, retrieval: Retrieval[T])(result: T): Unit =
     when(mockAuthConnector.authorise[T](
-      Matchers.eq(predicate),
-      Matchers.any[Retrieval[T]]
-    )(Matchers.any[HeaderCarrier], Matchers.any[ExecutionContext]))
+      ArgumentMatchers.eq(predicate),
+      ArgumentMatchers.any[Retrieval[T]]
+    )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext]))
       .thenReturn(Future.successful(result))
 
   val testCredId = ""
@@ -100,8 +82,8 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
 
   def enrolService(enrolService: EnrolService): Unit = {
     "fetch data if found in save4later" in {
-      mockAuthorise(EmptyPredicate, credentials and groupIdentifier)(new ~(Credentials(testCredId, EnrolService.GGProviderId), Some(testGroupId)))
-      when(mockTaxEnrolmentsConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+      mockAuthorise(EmptyPredicate, credentials and groupIdentifier)(new ~(Credentials(testCredId, enrolService.GGProviderId), Some(testGroupId)))
+      when(mockTaxEnrolmentsConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(successfulEnrolResponse))
       val result = enrolService.enrolAWRS(successfulSubscriptionResponse,
         testBusinessCustomerDetails, businessType, Some(testUtr))

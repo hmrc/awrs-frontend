@@ -26,11 +26,12 @@ businessLegalEntity match {
     }
 }
 
+
 @member.doYouHaveUTR match {
     case Some(answer) => {
         @table_row(
-            legend.get,
-            answer
+            Some(legend).get,
+            Some(answer)
         )
     }
     case _ => {}
@@ -40,7 +41,7 @@ businessLegalEntity match {
     case Some(utr) => {
         @table_row(
             Messages("awrs.generic.UTR_number"),
-            utr
+            Some(utr)
         )
     }
     case _ => {}
@@ -51,7 +52,7 @@ businessLegalEntity match {
     case Some(answer) => {
         @table_row(
             Messages("awrs.generic.do_they_have_company_reg"),
-            answer
+            Some(answer)
         )
     }
     case _ => {}
@@ -61,11 +62,11 @@ businessLegalEntity match {
     case Some(data) => {
         @table_row(
             Messages("awrs.generic.company_reg"),
-            data.companyRegistrationNumber
+            Some(data.companyRegistrationNumber)
         )
         @table_row(
             Messages("awrs.generic.date_of_incorporation"),
-            data.dateOfIncorporation.toString("dd MMMM yyyy")
+            Some(data.dateOfIncorporation.toString("dd MMMM yyyy"))
         )
     }
     case _ => {}
@@ -76,7 +77,7 @@ businessLegalEntity match {
     case Some(answer) => {
         @table_row(
             Messages("awrs.generic.do_they_have_VAT"),
-            answer
+            Some(answer)
         )
     }
     case _ => {}
@@ -86,7 +87,7 @@ businessLegalEntity match {
     case Some(vrn) => {
         @table_row(
             Messages("awrs.generic.VAT_registration_number"),
-            vrn
+            Some(vrn)
         )
     }
     case _ => {}

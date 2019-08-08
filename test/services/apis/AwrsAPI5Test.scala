@@ -16,19 +16,20 @@
 
 package services.apis
 
-import builders.AuthBuilder
 import models.{AWRSFEModel, BusinessType}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.apis.mocks.MockAwrsAPI5
 import utils.AwrsTestJson._
-import utils.AwrsUnitTestTraits
-import utils.TestConstants._
+import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestUtil._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class AwrsAPI5Test extends AwrsUnitTestTraits
   with MockAwrsAPI5 {
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
 
   "API 5" should {
@@ -44,7 +45,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchBusinessType = businessType)
       setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd)
 
-      await(TestAPI5.retrieveApplication)
+      await(testAPI5.retrieveApplication(TestUtil.defaultAuthRetrieval))
 
       verifyAWRSConnector(lookupAWRSData = 0)
     }
@@ -60,7 +61,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
       )
       setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = None)
 
-      await(TestAPI5.retrieveApplication)
+      await(testAPI5.retrieveApplication(TestUtil.defaultAuthRetrieval))
 
       verifyAWRSConnector(lookupAWRSData = 1)
     }
@@ -74,7 +75,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LTD")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LTD")
@@ -102,7 +103,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("SOP")
@@ -130,7 +131,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("Partnership")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("Partnership")
@@ -158,7 +159,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LLP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LLP")
@@ -186,7 +187,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LLP_GRP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LLP_GRP")
@@ -214,7 +215,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
         fetchBusinessCustomerDetails = testBusinessCustomerDetails("LTD_GRP")
       )
 
-      val result = TestAPI5.saveReturnedApplication(feModel)
+      val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
       await(result) shouldBe feModel.subscriptionTypeFrontEnd
       await(result).legalEntity.get.legalEntity shouldBe Some("LTD_GRP")

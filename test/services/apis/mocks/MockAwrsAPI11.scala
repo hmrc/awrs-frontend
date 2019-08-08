@@ -16,12 +16,10 @@
 
 package services.apis.mocks
 
-import connectors.AWRSConnector
 import connectors.mock.MockAWRSConnector
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import models.{FormBundleStatus, StatusContactType, StatusInfoType}
 import models.FormBundleStatus._
-import services.KeyStoreService
 import services.apis.AwrsAPI11
 import services.mocks.MockKeyStoreService
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -29,13 +27,10 @@ import utils.{AwrsUnitTestTraits, TestUtil}
 
 trait MockAwrsAPI11 extends AwrsUnitTestTraits with MockKeyStoreService with MockAWRSConnector {
 
-  object TestAPI11 extends AwrsAPI11 {
-    override val awrsConnector: AWRSConnector = mockAWRSConnector
-    override val keyStoreService: KeyStoreService = TestKeyStoreService
-  }
+  val testAPI11 = new AwrsAPI11(mockAWRSConnector, testKeyStoreService, mockAuditable)
 
   def setupMockAwrsAPI11(keyStore: Option[StatusInfoType],
-                         connector: MockConfiguration[StatusInfoType] = DoNotConfigure) = {
+                         connector: MockConfiguration[StatusInfoType] = DoNotConfigure): Unit = {
     connector match {
       case Configure(status) => setupMockAWRSConnectorWithOnly(getStatusInfo = status)
       case _ =>

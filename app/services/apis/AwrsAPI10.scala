@@ -17,48 +17,43 @@
 package services.apis
 
 import connectors.AWRSConnector
+import controllers.auth.StandardAuthRetrievals
+import javax.inject.Inject
 import models.{DeRegistration, DeRegistrationType}
 import play.api.mvc.{AnyContent, Request}
 import services.KeyStoreService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.AccountUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.{ExecutionContext, Future}
 
+class AwrsAPI10 @Inject() (val accountUtils: AccountUtils,
+                           val awrsConnector: AWRSConnector,
+                           val dataCacheService: KeyStoreService
+                          ){
 
-trait AwrsAPI10 {
-  val awrsConnector: AWRSConnector
-  val dataCacheService: KeyStoreService
-
-  def deRegistration()(implicit request: Request[AnyContent], hc: HeaderCarrier, user: AuthContext): Future[Option[DeRegistrationType]] =
+  def deRegistration(authRetrievals: StandardAuthRetrievals)
+                    (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[DeRegistrationType]] =
     for {
       someDate <- dataCacheService.fetchDeRegistrationDate
       someReason <- dataCacheService.fetchDeRegistrationReason
-      response <- deRegistrationEtmp(DeRegistration.toDeRegistration(someDate, someReason))
+      response <- deRegistrationEtmp(authRetrievals)(DeRegistration.toDeRegistration(someDate, someReason))
     } yield {
       response
     }
 
-
-  private def getAwrsRefNo(implicit user: AuthContext, hc: HeaderCarrier) = AccountUtils.getAwrsRefNo.toString()
-
-  private def deRegistrationEtmp(someDeRegistration: Option[DeRegistration])(implicit request: Request[AnyContent], user: AuthContext, hc: HeaderCarrier): Future[Option[DeRegistrationType]] =
+  private def deRegistrationEtmp(authRetrievals: StandardAuthRetrievals)
+                                (someDeRegistration: Option[DeRegistration])
+                                (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[DeRegistrationType]] =
     someDeRegistration match {
       case Some(deRegistration) =>
-        AccountUtils.hasAwrs match {
-          case false => Future.successful(None)
-          case true => awrsConnector.deRegistration(getAwrsRefNo, deRegistration) flatMap {
-            case successData: DeRegistrationType =>
-              Future.successful(Some(successData))
+        if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
+          awrsConnector.deRegistration(deRegistration, authRetrievals) flatMap { successData =>
+            Future.successful(Some(successData))
           }
+        } else {
+          Future.successful(None)
         }
       case _ => Future.successful(None)
     }
-}
-
-object AwrsAPI10 extends AwrsAPI10 {
-  override val awrsConnector = AWRSConnector
-  override val dataCacheService = KeyStoreService
 }

@@ -56,40 +56,40 @@ object SubViewTemplateHelper {
   def dynamicContent(oneView: Html, edit: Html, printFriendly: Html)(implicit viewType: ViewApplicationType): Html =
     dynamicContent(None, Some(oneView), Some(edit), Some(printFriendly))
 
-  def isEditMode()(implicit viewType: ViewApplicationType) =
+  def isEditMode()(implicit viewType: ViewApplicationType): Boolean =
     viewType match {
       case EditRecordOnlyMode | EditSectionOnlyMode | EditMode => true
       case _ => false
     }
 
-  def isSectionEdit()(implicit viewType: ViewApplicationType) =
+  def isSectionEdit()(implicit viewType: ViewApplicationType): Boolean =
     viewType match {
       case EditSectionOnlyMode | EditMode => true
       case _ => false
     }
 
-  def isRecordEdit()(implicit viewType: ViewApplicationType) =
+  def isRecordEdit()(implicit viewType: ViewApplicationType): Boolean =
     viewType match {
       case EditRecordOnlyMode | EditMode => true
       case _ => false
     }
 
-  def isPrintFriendly()(implicit viewType: ViewApplicationType) =
+  def isPrintFriendly()(implicit viewType: ViewApplicationType): Boolean =
     viewType match {
       case PrintFriendlyMode => true
       case _ => false
     }
 
-  def isOneViewMode()(implicit viewType: ViewApplicationType) =
+  def isOneViewMode()(implicit viewType: ViewApplicationType): Boolean =
     viewType match {
       case OneViewMode => true
       case _ => false
     }
 
-  def headingPrefix(enter: String = "awrs.generic.enter", edit: String = "awrs.generic.edit", isNewRecord: Boolean = false)(implicit viewType: ViewApplicationType) =
+  def headingPrefix(enter: String = "awrs.generic.enter", edit: String = "awrs.generic.edit", isNewRecord: Boolean = false)(implicit viewType: ViewApplicationType): String =
     (isEditMode, isNewRecord) match {
-      case (true, false) => Messages(edit)
-      case (_, _) => Messages(enter)
+      case (true, false) => edit
+      case (_, _) => enter
     }
 
 }

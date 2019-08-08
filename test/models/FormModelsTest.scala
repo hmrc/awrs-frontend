@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import utils.TestUtil._
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
 
-class FormModelsTest extends AwrsUnitTestTraits {
+class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
 
   "TradingActivity" should {
 
@@ -74,13 +74,13 @@ class FormModelsTest extends AwrsUnitTestTraits {
     }
 
     "trim the fields to the correct length when producer or broker is selected" in {
-      val maxLength = "a" * AwrsFieldConfig.otherWholesalerLen
-      val notMaxLength = "a" * (AwrsFieldConfig.otherWholesalerLen - 1)
+      val maxLength = "a" * otherWholesalerLen
+      val notMaxLength = "a" * (otherWholesalerLen - 1)
 
       val testCases = Seq(
-        (List("04", "99"), maxLength, AwrsFieldConfig.otherWholesalerLen),
-        (List("05", "99"), maxLength, AwrsFieldConfig.otherWholesalerLen),
-        (List("04", "05", "99"), maxLength, AwrsFieldConfig.otherWholesalerLen),
+        (List("04", "99"), maxLength, otherWholesalerLen),
+        (List("05", "99"), maxLength, otherWholesalerLen),
+        (List("04", "05", "99"), maxLength, otherWholesalerLen),
         (List("99"), notMaxLength, notMaxLength.length)
       )
 

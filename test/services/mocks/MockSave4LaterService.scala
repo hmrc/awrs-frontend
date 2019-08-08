@@ -20,7 +20,7 @@ import connectors.Save4LaterConnector
 import connectors.mock.MockSave4LaterConnector
 import models.BusinessDetailsEntityTypes._
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
@@ -39,14 +39,11 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
 
   import MockSave4LaterService._
 
-  object TestSave4LaterService extends Save4LaterService {
-    override val mainStoreSave4LaterConnector: Save4LaterConnector = mockMainStoreSave4LaterConnector
-    override val apiSave4LaterConnector: Save4LaterConnector = mockApiSave4LaterConnector
-  }
+  val testSave4LaterService = new Save4LaterService(mockMainStoreSave4LaterConnector, mockApiSave4LaterConnector, mockAccountUtils)
 
   // children should not override this method, update here when Save4LaterService changes
   protected final def mockFetchFromSave4Later[T](key: String, config: MockConfiguration[Future[Option[T]]])(implicit connector: Save4LaterConnector): Unit =
-  config ifConfiguredThen (dataToReturn => when(connector.fetchData4Later[T](Matchers.any(), Matchers.eq(key))(Matchers.any(), Matchers.any())).thenReturn(dataToReturn))
+  config ifConfiguredThen (dataToReturn => when(connector.fetchData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(dataToReturn))
 
   // children should not override this method, update here when Save4LaterService changes
   protected final def setupMockSave4LaterServiceOnlySaveFunctions(): Unit = {
@@ -57,17 +54,17 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
       }
     }
 
-    when(TestSave4LaterService.mainStoreSave4LaterConnector.saveData4Later(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenAnswer(defaultSaveMock)
-    when(TestSave4LaterService.apiSave4LaterConnector.saveData4Later(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenAnswer(defaultSaveMock)
+    when(testSave4LaterService.mainStore.save4LaterConnector.saveData4Later(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenAnswer(defaultSaveMock)
+    when(testSave4LaterService.api.save4LaterConnector.saveData4Later(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenAnswer(defaultSaveMock)
   }
 
   // internal function for this trait only, should not be made visable to children
   private final def verifySave4LaterFetch[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterConnector): Unit =
-  someCount ifDefinedThen (count => verify(connector, times(count)).fetchData4Later[T](Matchers.any(), Matchers.eq(key))(Matchers.any(), Matchers.any()))
+  someCount ifDefinedThen (count => verify(connector, times(count)).fetchData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
   // internal function for this trait only, should not be made visable to children
   private final def verifySave4LaterSave[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterConnector): Unit =
-  someCount ifDefinedThen (count => verify(connector, times(count)).saveData4Later[T](Matchers.any(), Matchers.eq(key), Matchers.any())(Matchers.any(), Matchers.any()))
+  someCount ifDefinedThen (count => verify(connector, times(count)).saveData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
   // children can override in order to customise their default settings
   def setupMockSave4LaterService(
@@ -153,8 +150,8 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
     mockFetchFromSave4Later(businessContactsName, fetchBusinessContacts)
     mockFetchFromSave4Later(placeOfBusinessName, fetchPlaceOfBusiness)
 
-    fetchAll ifConfiguredThen (dataCache => when(connector.fetchAll(Matchers.any())(Matchers.any())).thenReturn(dataCache))
-    removeAll ifConfiguredThen (response => when(connector.removeAll(Matchers.any())(Matchers.any())).thenReturn(response))
+    fetchAll ifConfiguredThen (dataCache => when(connector.fetchAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(dataCache))
+    removeAll ifConfiguredThen (response => when(connector.removeAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(response))
 
     setupMockSave4LaterServiceOnlySaveFunctions()
   }
@@ -177,11 +174,11 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                              fetchBusinessDetailsSupport: MockConfiguration[Future[Option[BusinessDetailsSupport]]] = DoNotConfigure,
                                                              removeAll: MockConfiguration[Future[HttpResponse]] = DoNotConfigure
                                                            ): Unit = {
-    implicit val connector: Save4LaterConnector = TestSave4LaterService.apiSave4LaterConnector
+    implicit val connector: Save4LaterConnector = testSave4LaterService.api.save4LaterConnector
 
     mockFetchFromSave4Later(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     mockFetchFromSave4Later(businessDetailsSupportName, fetchBusinessDetailsSupport)
-    removeAll ifConfiguredThen (response => when(connector.removeAll(Matchers.any())(Matchers.any())).thenReturn(response))
+    removeAll ifConfiguredThen (response => when(connector.removeAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(response))
 
     setupMockSave4LaterServiceOnlySaveFunctions()
   }
@@ -224,7 +221,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                removeAll: Option[Int] = None
                                              ): Unit = {
 
-    implicit val connector: Save4LaterConnector = TestSave4LaterService.mainStoreSave4LaterConnector
+    implicit val connector: Save4LaterConnector = testSave4LaterService.mainStore.save4LaterConnector
 
     verifySave4LaterFetch(businessTypeName, fetchBusinessType)
     verifySave4LaterSave(businessTypeName, saveBusinessType)
@@ -258,8 +255,8 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
     verifySave4LaterSave(businessContactsName, saveBusinessContacts)
     verifySave4LaterFetch(placeOfBusinessName, fetchPlaceOfBusiness)
     verifySave4LaterSave(placeOfBusinessName, savePlaceOfBusiness)
-    fetchAll ifDefinedThen (count => verify(connector, times(count)).fetchAll(Matchers.any())(Matchers.any()))
-    removeAll ifDefinedThen (count => verify(connector, times(count)).removeAll(Matchers.any())(Matchers.any()))
+    fetchAll ifDefinedThen (count => verify(connector, times(count)).fetchAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    removeAll ifDefinedThen (count => verify(connector, times(count)).removeAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
   }
 
   // children should not override this method, update here when Save4LaterService changes
@@ -272,14 +269,14 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                   removeAll: Option[Int] = None
                                                 ): Unit = {
 
-    implicit val connector: Save4LaterConnector = TestSave4LaterService.apiSave4LaterConnector
+    implicit val connector: Save4LaterConnector = testSave4LaterService.api.save4LaterConnector
 
     verifySave4LaterFetch(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     verifySave4LaterSave(subscriptionTypeFrontEndName, saveSubscriptionTypeFrontEnd)
     verifySave4LaterFetch(businessDetailsSupportName, fetchBusinessDetailsSupport)
     verifySave4LaterSave(businessDetailsSupportName, saveBusinessDetailsSupport)
-    fetchAll ifDefinedThen (count => verify(connector, times(count)).fetchAll(Matchers.any())(Matchers.any()))
-    removeAll ifDefinedThen (count => verify(connector, times(count)).removeAll(Matchers.any())(Matchers.any()))
+    fetchAll ifDefinedThen (count => verify(connector, times(count)).fetchAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    removeAll ifDefinedThen (count => verify(connector, times(count)).removeAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
   }
 
 }

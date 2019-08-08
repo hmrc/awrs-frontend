@@ -14,23 +14,22 @@
  * limitations under the License.
  *@
 
-@(resent: Boolean = false)(implicit request: Request[AnyRef])
-@import play.api.Play.current
-@import play.api.i18n.Messages.Implicits._
+@import config.ApplicationConfig
+@(resent: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+
 @import play.twirl.api.Html
 
-
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.email_verification_success.title"))) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_success.title"))) {
 
     <div class="grid">
         <div class="grid grid-2-3">
             <div>
-                <h1 id="email-verification-success-header" class="heading-xlarge">@Html(Messages("awrs.email_verification_success.heading"))</h1>
-                <p id="email-verification-success-lede" class="lede">@Html(Messages("awrs.email_verification_success.lede"))</p>
+                <h1 id="email-verification-success-header" class="heading-xlarge">@Html(messages("awrs.email_verification_success.heading"))</h1>
+                <p id="email-verification-success-lede" class="lede">@Html(messages("awrs.email_verification_success.lede"))</p>
             </div>
             <div class="form-group">
                 <br/>
-                <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.return_to_app_summary")</a>
+                <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@messages("awrs.generic.return_to_app_summary")</a>
             </div>
         </div>
     </div>

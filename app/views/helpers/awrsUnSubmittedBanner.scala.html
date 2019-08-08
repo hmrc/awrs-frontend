@@ -15,15 +15,15 @@
  *@
 
 @import controllers.util.UnSubmittedChangesBannerParam
-@(param: Option[UnSubmittedChangesBannerParam], incompleteMessage: Option[String] = None, unsubmittedMessage: Option[String] = None)(implicit messages: Messages)
+@(param: Option[UnSubmittedChangesBannerParam], incompleteMessage: String, unsubmittedMessage: String)(implicit messages: Messages)
 @bannerClass = @{
     param match {
-        case Some(ucParam) => {
-            ucParam.allSectionComplete match {
-                case true => "complete"
-                case false => "incomplete"
+        case Some(ucParam) =>
+            if(ucParam.allSectionComplete) {
+                "complete"
+            } else {
+                "incomplete"
             }
-        }
         case None => {}
     }
 }
@@ -32,9 +32,10 @@
         <div class="grid grid-3-3 banner-@bannerClass print-hidden" id="changes-banner">
             <div class="grid grid-3-3">
                 <div class="inner-block">
-                    @ucParam.allSectionComplete match {
-                        case true => { @unsubmittedMessage }
-                        case false => { @incompleteMessage }
+                    @if(ucParam.allSectionComplete) {
+                        @unsubmittedMessage
+                    } else {
+                        @incompleteMessage
                     }
                 </div>
             </div>

@@ -16,7 +16,8 @@
 
 package controllers
 
-import config.FrontendAuthConnector
+import audit.Auditable
+import config.ApplicationConfig
 import controllers.auth.AwrsController
 import exceptions.DeEnrollException
 import forms.AWRSEnums.BooleanRadioEnum._
@@ -24,85 +25,98 @@ import forms.AWRSEnums._
 import forms.DeRegistrationConfirmationForm._
 import forms.DeRegistrationForm._
 import forms.DeRegistrationReasonForm._
+import javax.inject.Inject
 import models.FormBundleStatus._
 import models._
 import org.joda.time.LocalDateTime
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.apis.AwrsAPI10
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.CacheUtil.cacheUtil
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.{ExecutionContext, Future}
 
-trait DeRegistrationController extends AwrsController with AccountUtils {
+class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
+                                         api10: AwrsAPI10,
+                                         deEnrolService: DeEnrolService,
+                                         emailService: EmailService,
+                                         val keyStoreService: KeyStoreService,
+                                         val save4LaterService: Save4LaterService,
+                                         val authConnector: DefaultAuthConnector,
+                                         val auditable: Auditable,
+                                         val accountUtils: AccountUtils,
+                                         implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  val keyStoreService: KeyStoreService
+  implicit val ec: ExecutionContext = mcc.executionContext
   val permittedStatusTypes: Set[FormBundleStatus] = Set[FormBundleStatus](Approved, ApprovedWithConditions)
-  val save4LaterService: Save4LaterService
-
-  val api10: AwrsAPI10
-  val deEnrolService: DeEnrolService
-  val emailService: EmailService
-
+  val signInUrl: String = applicationConfig.signIn
 
   private def statusPermission(permittedResult: Future[Result])(implicit request: Request[AnyContent]): Future[Result] =
-    permittedStatusTypes.contains(getSessionStatus.getOrElse(models.FormBundleStatus.NotFound(""))) match {
-      case true => permittedResult
-      case false => showNotFoundPage
+    if (permittedStatusTypes.contains(getSessionStatus.getOrElse(models.FormBundleStatus.NotFound("")))) {
+      permittedResult
+    } else {
+      showNotFoundPage
     }
 
   private def returnToIndexSubroutine(implicit hc: HeaderCarrier) =
     keyStoreService.deleteDeRegistrationDate flatMap {
-      _ => keyStoreService.deleteDeRegistrationReason flatMap {
-        _ => Future.successful(Redirect(routes.IndexController.showIndex()))
-      }
+      _ =>
+        keyStoreService.deleteDeRegistrationReason flatMap {
+          _ => Future.successful(Redirect(routes.IndexController.showIndex()))
+        }
     }
 
-  def showReason: Action[AnyContent] = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      statusPermission(
-        // if reason exists then fill the form with the data
-        keyStoreService.fetchDeRegistrationReason flatMap {
-          case Some(data) => Future.successful(Ok(views.html.awrs_de_registration_reason(deRegistrationReasonForm.form.fill(data))))
-          case _ => Future.successful(Ok(views.html.awrs_de_registration_reason(deRegistrationReasonForm.form)))
-        }
-      )
+  def showReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        statusPermission(
+          // if reason exists then fill the form with the data
+          keyStoreService.fetchDeRegistrationReason flatMap {
+            case Some(data) => Future.successful(Ok(views.html.awrs_de_registration_reason(deRegistrationReasonForm.form.fill(data))))
+            case _ => Future.successful(Ok(views.html.awrs_de_registration_reason(deRegistrationReasonForm.form)))
+          }
+        )
+      }
+    }
   }
 
-  def submitReason: Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def submitReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       deRegistrationReasonForm.bindFromRequest.fold(
-        formWithErrors =>
+        formWithErrors => {
           Future.successful(BadRequest(views.html.awrs_de_registration_reason(formWithErrors)))
-        ,
+        },
         deRegistrationReasonForm =>
           keyStoreService.saveDeRegistrationReason(deRegistrationReasonForm) flatMap {
             _ => Future.successful(Redirect(routes.DeRegistrationController.showDate()))
           }
       )
+    }
   }
 
-  def showDate: Action[AnyContent] = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      statusPermission(
-        keyStoreService.fetchDeRegistrationReason flatMap {
-          case Some(reason) =>
-            keyStoreService.fetchDeRegistrationDate flatMap {
-              case Some(data) => Future.successful(Ok(views.html.awrs_de_registration(deRegistrationForm.fill(data))))
-              case _ => Future.successful(Ok(views.html.awrs_de_registration(deRegistrationForm)))
-            }
-          case _ => Future.successful(Redirect(routes.DeRegistrationController.showReason()))
-        }
-      )
+  def showDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        statusPermission(
+          keyStoreService.fetchDeRegistrationReason flatMap {
+            case Some(reason) =>
+              keyStoreService.fetchDeRegistrationDate flatMap {
+                case Some(data) => Future.successful(Ok(views.html.awrs_de_registration(deRegistrationForm.fill(data))))
+                case _ => Future.successful(Ok(views.html.awrs_de_registration(deRegistrationForm)))
+              }
+            case _ => Future.successful(Redirect(routes.DeRegistrationController.showReason()))
+          }
+        )
+      }
+    }
   }
 
-  def submitDate: Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def submitDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       deRegistrationForm.bindFromRequest.fold(
         formWithErrors =>
           Future.successful(BadRequest(views.html.awrs_de_registration(formWithErrors)))
@@ -112,9 +126,10 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
             _ => Future.successful(Redirect(routes.DeRegistrationController.showConfirm()))
           }
       )
+    }
   }
 
-  def confirmationJourneyPrerequisiteCheck(callToAction: (TupleDate) => Future[Result])
+  def confirmationJourneyPrerequisiteCheck(callToAction: TupleDate => Future[Result])
                                           (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] =
     statusPermission(
       keyStoreService.fetchDeRegistrationReason flatMap {
@@ -128,14 +143,17 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
           }
       })
 
-  def showConfirm: Action[AnyContent] = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
-        Future.successful(Ok(views.html.awrs_de_registration_confirm(deRegistrationConfirmationForm, proposedEndDate))))
+  def showConfirm(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
+          Future.successful(Ok(views.html.awrs_de_registration_confirm(deRegistrationConfirmationForm, proposedEndDate))))
+      }
+    }
   }
 
-  def callToAction: Action[AnyContent] = async {
-    implicit user => implicit request =>
+  def callToAction(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
       confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
 
         deRegistrationConfirmationForm.bindFromRequest.fold(
@@ -143,7 +161,7 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
             Future.successful(BadRequest(views.html.awrs_de_registration_confirm(formWithErrors, proposedEndDate)))
           ,
           confirmationData => {
-            val awrsRef = AccountUtils.getUtrOrName()
+            val awrsRef = accountUtils.getAwrsRefNo(ar.enrolments)
             confirmationData.deRegistrationConfirmation match {
               case Some(YesString) =>
 
@@ -151,15 +169,15 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
                 def success(): Future[Result] =
                   for {
                     deristrationDate <- keyStoreService.fetchDeRegistrationDate
-                    cache <- save4LaterService.mainStore.fetchAll
+                    cache <- save4LaterService.mainStore.fetchAll(ar)
                     _ <- emailService.sendCancellationEmail(cache.get.getBusinessContacts.get.email.get, deristrationDate)
-                    _ <- save4LaterService.mainStore.removeAll
-                    _ <- save4LaterService.api.removeAll
-                    _ <- save4LaterService.mainStore.saveApplicationStatus(ApplicationStatus(ApplicationStatusEnum.DeRegistered,
+                    _ <- save4LaterService.mainStore.removeAll(ar)
+                    _ <- save4LaterService.api.removeAll(ar)
+                    _ <- save4LaterService.mainStore.saveApplicationStatus(ar, ApplicationStatus(ApplicationStatusEnum.DeRegistered,
                       LocalDateTime.now()))
                   } yield Redirect(routes.DeRegistrationController.showConfirmation())
 
-                def callAPI10(success: () => Future[Result]): Future[Result] = api10.deRegistration() flatMap {
+                def callAPI10(success: () => Future[Result]): Future[Result] = api10.deRegistration(ar) flatMap {
                   case Some(DeRegistrationType(Some(DeRegistrationSuccessResponseType(_)))) => success()
                   case _ =>
                     err("call to API 10 failed")
@@ -170,7 +188,7 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
                   val businessName = getBusinessName.fold("")(x => x)
                   val businessType = getBusinessType.fold("")(x => x)
                   deEnrolService.deEnrolAWRS(awrsRef, businessName, businessType) flatMap {
-                    case (true) =>
+                    case true =>
                       success()
                     case _ =>
                       err("call to government gateway de-enrol failed")
@@ -188,25 +206,21 @@ trait DeRegistrationController extends AwrsController with AccountUtils {
           }
         )
       )
+    }
   }
 
-  def showConfirmation(printFriendly: Boolean): Action[AnyContent] = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) => Future.successful
-      (Ok(views.html.awrs_de_registration_confirmation_evidence(proposedEndDate, printFriendly))))
+  def showConfirmation(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) => Future.successful
+        (Ok(views.html.awrs_de_registration_confirmation_evidence(proposedEndDate, printFriendly))))
+      }
+    }
   }
 
-  def returnToIndex: Action[AnyContent] = async {
-    implicit user => implicit request => returnToIndexSubroutine
+  def returnToIndex: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    authorisedAction { ar =>
+      returnToIndexSubroutine
+    }
   }
-
-}
-
-object DeRegistrationController extends DeRegistrationController {
-  override val authConnector = FrontendAuthConnector
-  override val keyStoreService = KeyStoreService
-  override val api10 = AwrsAPI10
-  override val deEnrolService = DeEnrolService
-  override val save4LaterService = Save4LaterService
-  override val emailService = EmailService
 }

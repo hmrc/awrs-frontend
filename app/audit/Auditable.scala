@@ -16,19 +16,17 @@
 
 package audit
 
-import config.AwrsFrontendAuditConnector
-import play.api.Play
-import uk.gov.hmrc.play.audit.model.DataEvent
-import uk.gov.hmrc.play.audit.AuditExtensions
-import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.AppName
+import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.AuditExtensions
+import uk.gov.hmrc.play.audit.model.{Audit, DataEvent}
+import uk.gov.hmrc.play.bootstrap.audit.DefaultAuditConnector
 
-trait Auditable {
+class Auditable @Inject()(auditConnector: DefaultAuditConnector) {
 
-  def appName: String = AppName(Play.current.configuration).appName
+  def appName: String = "awrs-frontend"
 
-  def audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
+  def audit: Audit = new Audit(appName, auditConnector)
 
   def sendDataEvent(transactionName: String,
                     path: String = "N/A",

@@ -18,16 +18,17 @@
 @import views.html.helpers._
 @import views.helpers._
 
-@(businessTypeForm: Form[models.BusinessType], businessName : String, isAGroup : Boolean = false, isSaAccount : Option[Boolean], isOrgAccount : Option[Boolean])(implicit request: Request[AnyContent],  messages: Messages)
+@import config.ApplicationConfig
+@(businessTypeForm: Form[models.BusinessType], businessName : String, isAGroup : Boolean = false, isSaAccount : Option[Boolean], isOrgAccount : Option[Boolean])(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessTypeForm) }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.business_verification.heading")), nameBusiness = Some(businessName), userLoggedIn = true){
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.business_verification.heading")), nameBusiness = Some(businessName), userLoggedIn = true){
 
 @errorSummaryTemplate(businessTypeForm)
 <div class="grid">
     <div class="grid grid-2-3">
-        <h1 id="business-verification-heading" class="heading-xlarge">@Messages("awrs.business_verification.heading")</h1>
+        <h1 id="business-verification-heading" class="heading-xlarge">@messages("awrs.business_verification.heading")</h1>
         @form(action = controllers.routes.BusinessTypeController.saveAndContinue){
             <input type="hidden" name="isSaAccount" value="@{isSaAccount}">
             <input type="hidden" name="isOrgAccount" value="@{isOrgAccount}">
@@ -35,9 +36,9 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         businessTypeForm("legalEntity"),
-                        Seq("LTD_GRP" -> Messages("awrs.business_verification.limited_company"),
-                            "LLP_GRP" -> Messages("awrs.business_verification.limited_liability_partnership")),
-                        legend = Messages("awrs.business_verification.heading"),
+                        Seq("LTD_GRP" -> messages("awrs.business_verification.limited_company"),
+                            "LLP_GRP" -> messages("awrs.business_verification.limited_liability_partnership")),
+                        legend = messages("awrs.business_verification.heading"),
                         legendId = "legalEntity-legend",
                         legendClass = "visuallyhidden",
                         fieldSetClass = "form-group",
@@ -48,12 +49,12 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         businessTypeForm("legalEntity"),
-                        Seq("Partnership" -> Messages("awrs.business_verification.business_partnership"),
-                            "LTD" -> Messages("awrs.business_verification.limited_company"),
-                            "LLP" -> Messages("awrs.business_verification.limited_liability_partnership"),
-                            "LP" -> Messages("awrs.business_verification.limited_partnership"),
-                            "SOP" -> Messages("awrs.business_verification.sole_trader")),
-                        legend = Messages("awrs.business_verification.heading"),
+                        Seq("Partnership" -> messages("awrs.business_verification.business_partnership"),
+                            "LTD" -> messages("awrs.business_verification.limited_company"),
+                            "LLP" -> messages("awrs.business_verification.limited_liability_partnership"),
+                            "LP" -> messages("awrs.business_verification.limited_partnership"),
+                            "SOP" -> messages("awrs.business_verification.sole_trader")),
+                        legend = messages("awrs.business_verification.heading"),
                         legendId = "legalEntity-legend",
                         legendClass = "visuallyhidden",
                         fieldSetClass = "form-group",
@@ -61,7 +62,7 @@
                     )
                 )
             }
-            @awrsSubmitButton(Messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
         }
     </div>
 </div>

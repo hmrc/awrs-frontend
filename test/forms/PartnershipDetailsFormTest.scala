@@ -16,16 +16,19 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums._
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import forms.PartnershipDetailsForm._
 import utils.TestConstants._
 
 class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
 
   implicit lazy val form = PartnershipDetailsForm.partnershipDetailsForm.form
 
@@ -111,19 +114,28 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
       }
 
       "check that if 'companyRegNumber' is entered, it is correctly validated, when partner is Corporate Body" in {
-        ProofOfIdentiticationVerifications.companyRegNumberIsValidWhenDoYouHaveCRNIsAnsweredWithYes(
-          preCondition = Map(),
-          ignoreCondition = Set(),
-          doYouHaveCRNNameString = doYouHaveCrn,
-          CRNNameString = crnField,
-          alsoTestWhenDoYouHaveCRNIsAnsweredWithNo = false
+        val data = Map(
+          "companyNames.businessName" -> Seq("Business Name"),
+          "companyNames.doYouHaveTradingName" -> Seq("No"),
+          "address.addressLine1" -> Seq("1 Testing Test Road"),
+          "address.addressLine2" -> Seq("Testton"),
+          "address.postcode" -> Seq("NE98 1ZZ"),
+          "doYouHaveUTR" -> Seq("No"),
+          "isBusinessIncorporated" -> Seq("Yes"),
+          "companyRegDetails.companyRegistrationNumber" -> Seq("10101010"),
+          "companyRegDetails.dateOfIncorporation.day" -> Seq("20"),
+          "companyRegDetails.dateOfIncorporation.month" -> Seq("5"),
+          "companyRegDetails.dateOfIncorporation.year" -> Seq("2015"),
+          "doYouHaveVRN" -> Seq("No"),
+          "otherPartners" -> Seq("No"),
+          "entityType" -> Seq("Corporate Body"),
+          "partnerAddress.addressLine1" -> Seq("1 Testing Test Road"),
+          "partnerAddress.addressLine2" -> Seq("Testton"),
+          "partnerAddress.postcode" -> Seq("NE98 1ZZ")
         )
-        ProofOfIdentiticationVerifications.dateOfIncorporationIsCompulsoryAndValidWhenDoYouHaveCRNIsAnsweredWithYes(
-          preCondition = Map(),
-          ignoreCondition = Set(),
-          idPrefix = "companyRegDetails",
-          doYouHaveCRNNameString = doYouHaveCrn
-        )
+
+        val testForm = form.bindFromRequest(data)
+        testForm.errors shouldBe Seq()
       }
 
       "check validations for at least one in ('doYouHaveVRN' or 'isBusinessIncorporated' or 'doYouHaveUTR'), when partner is Corporate Body" in {

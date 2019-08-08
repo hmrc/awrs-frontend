@@ -18,14 +18,14 @@ package controllers.auth
 
 import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.SessionBuilder
 import controllers.IndexController
 import controllers.auth.Utr._
 import models.FormBundleStatus._
 import models._
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -34,26 +34,21 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.TestUtil._
 import utils.TestConstants._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
-import view_models.{IndexViewModel, SectionModel, SectionComplete}
+import view_models.{IndexViewModel, SectionComplete, SectionModel}
 
 import scala.concurrent.Future
 
 class AwrsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockIndexService)
   }
 
-  val request = FakeRequest()
-
-  object TestIndexController extends IndexController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val indexService = mockIndexService
-    override val api9 = TestAPI9
-    override val applicationService = mockApplicationService
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = "/sign-in"
   }
 
   "The index page which implements AwrsController" should {
@@ -103,9 +98,9 @@ class AwrsControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testReviewDetails,
       fetchAll = returnedCachemap
     )
-
     setupMockIndexService()
-    val result = TestIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -120,7 +115,8 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     setupMockKeyStoreService(subscriptionStatusType = testSubscriptionStatusType)
     setupMockIndexService(showContinueButton = false)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
-    val result = TestIndexController.showIndex.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
+    setAuthMocks()
+    val result = testIndexController.showIndex.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
 
@@ -137,7 +133,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     getWithAuthorisedUserCtWithStatus(testSubscriptionStatusTypeRejected)(_)
 
   def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestIndexController.showIndex.apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 }

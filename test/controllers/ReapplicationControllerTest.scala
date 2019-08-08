@@ -16,7 +16,6 @@
 
 package controllers
 
-import audit.TestAudit
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import connectors.{AWRSNotificationConnector, TaxEnrolmentsConnector}
@@ -25,10 +24,9 @@ import models.{ReapplicationConfirmation, StatusContactType, StatusNotification}
 import org.joda.time.LocalDateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -36,7 +34,6 @@ import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,20 +42,11 @@ import scala.concurrent.Future
 class ReapplicationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector with MockKeyStoreService with MockSave4LaterService{
 
-  val mockAudit: Audit = mock[Audit]
-  val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
   val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockKeyStoreService: KeyStoreService = mock[KeyStoreService]
   val mockAWRSNotificationConnector: AWRSNotificationConnector = mock[AWRSNotificationConnector]
 
-  object TestReapplicationController extends ReapplicationController {
-    override val authConnector: AuthConnector = mockAuthConnector
-    override val audit: Audit = new TestAudit
-    override val keyStoreService: KeyStoreService = mockKeyStoreService
-    override val deEnrolService = mockDeEnrolService
-    override val save4LaterService = TestSave4LaterService
-    override val awrsNotificationConnector = mockAWRSNotificationConnector
-  }
+  lazy val testReapplicationController: ReapplicationController = new ReapplicationController(mockMCC, mockDeEnrolService, mockAWRSNotificationConnector, mockKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Reapplication Controller" should {
     "submit confirmation and redirect to root home page when yes selected" in {
@@ -116,11 +104,11 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  def testRequest(reapplication: ReapplicationConfirmation) =
+  def testRequest(reapplication: ReapplicationConfirmation): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[ReapplicationConfirmation](FakeRequest(), ReapplicationForm.reapplicationForm, reapplication)
 
   def testStatusNotification(contactType: StatusContactType = StatusContactType.Rejected,
-                             storageDatetime: Option[LocalDateTime] = Some(LocalDateTime.now())) = {
+                             storageDatetime: Option[LocalDateTime] = Some(LocalDateTime.now())): StatusNotification = {
     storageDatetime match {
       case Some(storageDatetime) => {
         val fmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss")
@@ -133,8 +121,9 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
   }
 
   private def showWithException(statusNotification: Option[StatusNotification] = None)(test: Future[Result] => Any) {
-    when(mockAWRSNotificationConnector.fetchNotificationCache(Matchers.any(), Matchers.any())).thenReturn(Future(statusNotification))
-    val result = TestReapplicationController.show().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockAWRSNotificationConnector.fetchNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(statusNotification))
+    setAuthMocks()
+    val result = testReapplicationController.show().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -142,9 +131,10 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterService()
     setupMockApiSave4LaterService()
-    when(mockDeEnrolService.deEnrolAWRS(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(true))
-    when(mockKeyStoreService.removeAll(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
-    val result = TestReapplicationController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD"))
+    setAuthMocks()
+    when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+    when(mockKeyStoreService.removeAll(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+    val result = testReapplicationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD"))
     test(result)
   }
 }

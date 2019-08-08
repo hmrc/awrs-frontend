@@ -16,6 +16,7 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.prevalidation._
 import forms.submapping.AddressMapping._
@@ -37,16 +38,18 @@ object BusinessContactsForm {
   private val contactAddress_compulsory = yesNoQuestion_compulsory("contactAddressSame", "awrs.business_contacts.error.contact_address_same_empty")
   private val whenContactAddressNo = whenAnswerToFieldIs("contactAddressSame", BooleanRadioEnum.No.toString)(_)
 
-  val businessContactsValidationForm = Form(mapping(
-    contactFirstName -> firstName_compulsory(contactFirstName),
-    contactLastName -> lastName_compulsory(contactLastName),
-    telephone -> telephone_compulsory(),
-    email -> email_compulsory(fieldId = email),
-    contactAddressSame -> contactAddress_compulsory,
-    contactAddress -> (ukAddress_compulsory(prefix = contactAddress).toOptionalAddressMapping iff whenContactAddressNo),
-    "modelVersion" -> ignored[String](BusinessContacts.latestModelVersion)
-  )(BusinessContacts.apply)(BusinessContacts.unapply))
+  def businessContactsValidationForm(implicit applicationConfig: ApplicationConfig): Form[BusinessContacts] = {
+    Form(mapping(
+      contactFirstName -> firstName_compulsory(contactFirstName),
+      contactLastName -> lastName_compulsory(contactLastName),
+      telephone -> telephone_compulsory(),
+      email -> email_compulsory(fieldId = email),
+      contactAddressSame -> contactAddress_compulsory,
+      contactAddress -> (ukAddress_compulsory(prefix = contactAddress, "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenContactAddressNo),
+      "modelVersion" -> ignored[String](BusinessContacts.latestModelVersion)
+    )(BusinessContacts.apply)(BusinessContacts.unapply))
+  }
 
-  val businessContactsForm = PreprocessedForm(businessContactsValidationForm)
+  def businessContactsForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[BusinessContacts] = PreprocessedForm(businessContactsValidationForm)
 
 }

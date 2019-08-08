@@ -20,13 +20,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
 import models.{FormBundleStatus, SuccessfulSubscriptionResponse}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
@@ -40,23 +38,13 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService
   with MockKeyStoreService {
 
-  object TestConfirmationController extends ConfirmationController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val keystoreService = TestKeyStoreService
+  val testConfirmationController: ConfirmationController = new ConfirmationController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
 
-  "ConfirmationController" must {
-
-    "use the correct AuthConnector" in {
-      ConfirmationController.authConnector shouldBe FrontendAuthConnector
-    }
-
-  }
-
-  def validateForBothNewAndOldBusiness(test: (Boolean) => Unit) = {
+  def validateForBothNewAndOldBusiness(test: (Boolean) => Unit): Unit = {
     Seq(true, false).foreach {
       bool =>
         beforeEach()
@@ -81,7 +69,6 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
               val document = Jsoup.parse(contentAsString(result))
 
               document.getElementById("confirmation").text() should include(s"$companyName")
-              document.getElementById("confirmation0Text").text() should include(s"$uniqueRef")
               document.getElementById("confirmation").text() should include(submissionDate)
               document.getElementById("print-confirmation").text() should be(Messages("awrs.generic.print_confirmation"))
               document.getElementById("print-application").text() should be(Messages("awrs.generic.application"))
@@ -157,7 +144,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     val request = SessionBuilder.buildRequestWithSession(userId)
     val newSession: Map[String, String] = request.session.data.+(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber)
     val requestAmended = request.withSession(newSession.toSeq: _*)
-    val result = TestConfirmationController.showApplicationConfirmation(false).apply(requestAmended)
+    setAuthMocks()
+    val result = testConfirmationController.showApplicationConfirmation(false).apply(requestAmended)
     test(result)
   }
 
@@ -165,7 +153,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     val request = SessionBuilder.buildRequestWithSession(userId)
     val newSession: Map[String, String] = request.session.data.+(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber, AwrsSessionKeys.sessionStatusType -> status.name)
     val requestAmended = request.withSession(newSession.toSeq: _*)
-    val result = TestConfirmationController.showApplicationUpdateConfirmation(false).apply(requestAmended)
+    setAuthMocks()
+    val result = testConfirmationController.showApplicationUpdateConfirmation(false).apply(requestAmended)
     test(result)
   }
 

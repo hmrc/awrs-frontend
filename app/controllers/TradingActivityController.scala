@@ -16,50 +16,61 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AwrsController
+import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.TradingActivityForm._
-import play.api.mvc.{AnyContent, Request, Result}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.DataCacheKeys._
 import services.Save4LaterService
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait TradingActivityController extends AwrsController with JourneyPage with AccountUtils with SaveAndRoutable {
+class TradingActivityController @Inject()(val mcc: MessagesControllerComponents,
+                                          val save4LaterService: Save4LaterService,
+                                          val authConnector: DefaultAuthConnector,
+                                          val auditable: Auditable,
+                                          val accountUtils: AccountUtils,
+                                          implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override val section = tradingActivityName
+  override implicit val ec: ExecutionContext = mcc.executionContext
+  override val section: String = tradingActivityName
+  val signInUrl: String = applicationConfig.signIn
 
-  def showTradingActivity(isLinearMode: Boolean) = asyncRestrictedAccess {
-    implicit user => implicit request =>
-      implicit val viewApplicationType = isLinearMode match {
-        case true => LinearViewMode
-        case false => EditSectionOnlyMode
+  def showTradingActivity(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request =>
+    restrictedAccessCheck {
+      authorisedAction { ar =>
+        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+          LinearViewMode
+        } else {
+          EditSectionOnlyMode
+        }
+
+        save4LaterService.mainStore.fetchTradingActivity(ar) map {
+          case Some(data) => Ok(views.html.awrs_trading_activity(tradingActivityForm.fill(data)))
+          case _ => Ok(views.html.awrs_trading_activity(tradingActivityForm))
+        }
       }
-      save4LaterService.mainStore.fetchTradingActivity map {
-        case Some(data) => Ok(views.html.awrs_trading_activity(tradingActivityForm.fill(data)))
-        case _ => Ok(views.html.awrs_trading_activity(tradingActivityForm))
-      }
+    }
   }
 
-  def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean)(implicit request: Request[AnyContent], user: AuthContext): Future[Result] = {
-    implicit val viewMode = viewApplicationType
+  override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
+          (implicit request: Request[AnyContent]): Future[Result] = {
+    implicit val viewMode: ViewApplicationType = viewApplicationType
+
     tradingActivityForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.awrs_trading_activity(formWithErrors))),
-      tradingActivityData =>{
+      tradingActivityData => {
 
-        save4LaterService.mainStore.saveTradingActivity(tradingActivityData) flatMap {
-          case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
-        }
+        save4LaterService.mainStore.saveTradingActivity(authRetrievals, tradingActivityData) flatMap
+          (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
       }
     )
   }
-}
-
-object TradingActivityController extends TradingActivityController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
 }

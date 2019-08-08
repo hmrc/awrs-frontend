@@ -16,36 +16,37 @@
 
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers._
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
-@import views.helpers.InputTypeRadioGroupParams
-@(feedbackForm: Form[models.Feedback])(implicit request: Request[_])
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.feedback.heading")), userLoggedIn = true) {
+
+@import views.helpers.InputTypeRadioGroupParams
+@import config.ApplicationConfig
+@(feedbackForm: Form[models.Feedback])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
+
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.feedback.heading")), userLoggedIn = true) {
     @backLink()
     @errorSummaryTemplate(feedbackForm)
     <div class="grid">
         <div class="grid-2-3">
             <header class="page-header">
-                <h1 id="feedback-title" class="heading-xlarge">@Messages("awrs.feedback.heading")</h1>
+                <h1 id="feedback-title" class="heading-xlarge">@messages("awrs.feedback.heading")</h1>
             </header>
 
-            <p>@Html(Messages("awrs.feedback.intro.instructions.line1","<a id=\"feedbackLedeLink\" href=\"#get-help-action\">", "</a>"))</p>
+            <p>@Html(messages("awrs.feedback.intro.instructions.line1","<a id=\"feedbackLedeLink\" href=\"#get-help-action\">", "</a>"))</p>
 
             <div class="feedback-questionnaire">
-                <h2 class="heading-medium">@Messages("awrs.feedback.subheading")</h2>
+                <h2 class="heading-medium">@messages("awrs.feedback.subheading")</h2>
 
                 @form(action = controllers.routes.FeedbackController.submitFeedback) {
 
                     @awrsTextBox(feedbackForm("visitReason"),
-                        '_label -> Html(Messages("awrs.feedback.questions.visit_reason")),
+                        '_label -> Html(messages("awrs.feedback.questions.visit_reason")),
                         '_id -> "visitReason",
                         '_maxLength -> "2500",
                         '_showConstraints -> false
                     )
 
                     @awrsTextBox(feedbackForm("comments"),
-                        '_label -> Html(Messages("awrs.feedback.questions.comments")),
+                        '_label -> Html(messages("awrs.feedback.questions.comments")),
                         '_id -> "comments",
                         '_maxLength -> "2500",
                         '_showConstraints -> false
@@ -55,19 +56,19 @@
                         @awrsInputTypeRadioGroup(
                             InputTypeRadioGroupParams(
                                 feedbackForm("satisfactionRating"),
-                                Seq("very satisfied" -> Messages("awrs.feedback.answers.very_satisfied"),
-                                    "satisfied" -> Messages("awrs.feedback.answers.satisfied"),
-                                    "neutral" -> Messages("awrs.feedback.answers.neutral"),
-                                    "dissatisfied" -> Messages("awrs.feedback.answers.dissatisfied"),
-                                    "very dissatisfied" -> Messages("awrs.feedback.answers.very_dissatisfied")),
-                                legend = Messages("awrs.feedback.questions.satisfaction_rating"),
+                                Seq("very satisfied" -> messages("awrs.feedback.answers.very_satisfied"),
+                                    "satisfied" -> messages("awrs.feedback.answers.satisfied"),
+                                    "neutral" -> messages("awrs.feedback.answers.neutral"),
+                                    "dissatisfied" -> messages("awrs.feedback.answers.dissatisfied"),
+                                    "very dissatisfied" -> messages("awrs.feedback.answers.very_dissatisfied")),
+                                legend = messages("awrs.feedback.questions.satisfaction_rating"),
                                 legendId = "satisfactionRating-legend",
                                 fieldSetClass = "form-group",
                                 fieldSetAttributes = "id=satisfaction-rating_field"
                             )
                         )
                     </fieldset>
-                    @awrsSubmitButton(Messages("awrs.feedback.submit"))(id = "submit-feedback-button", classAttr = "button")
+                    @awrsSubmitButton(messages("awrs.feedback.submit"))(id = "submit-feedback-button", classAttr = "button")
                 }
             </div>
         </div>

@@ -19,7 +19,8 @@
 @import views.html.view_application.helpers._
 @import views.view_application.subviews.SubviewIds
 
-@(supplier: models.Supplier, id: Int)(implicit viewApplicationType: ViewApplicationType, messages: Messages)
+@import config.ApplicationConfig
+@(supplier: models.Supplier, id: Int)(implicit viewApplicationType: ViewApplicationType, messages: Messages, applicationConfig: ApplicationConfig)
 
 @editUrl(id: Int) = @{controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id, isLinearMode = false, isNewRecord = false).url}
 
@@ -32,9 +33,9 @@
     @* Top record row including edit and delete links *@
     @table_row(
         tableRowTitle,
-        edit_link(editUrl, id, tableRowTitle),
-        delete_link(deleteUrl, id, tableRowTitle)
-    )(cssClass = "record-header")
+        Some(edit_link(editUrl, id, tableRowTitle)),
+        Some(delete_link(deleteUrl, id, tableRowTitle))
+    )(cssClass = Some("record-header"), messages = messages)
 
     @* body of record *@
     @table_row(
@@ -53,7 +54,7 @@
         case Some(vatNumber) => {
             @table_row(
                 Messages("awrs.generic.VAT_registration_number"),
-                vatNumber
+                Some(vatNumber)
             )
         }
         case _ => {}

@@ -16,28 +16,26 @@
 
 package connectors
 
-import config.{AwrsFrontendAuditConnector, WSHttp}
+import audit.Auditable
+import javax.inject.Inject
 import metrics.AwrsMetrics
 import models.{RequestPayload, _}
-import play.api.Mode.Mode
-import play.api.{Configuration, Logger, Play}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import play.api.Logger
 import services.GGConstants._
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.LoggingUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
-  val serviceURL = baseUrl("tax-enrolments")//
-
-  val http: HttpGet with HttpPost = WSHttp//
-  val metrics: AwrsMetrics//
-
+class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
+                                       http: DefaultHttpClient,
+                                       metrics: AwrsMetrics,
+                                       val auditable: Auditable) extends LoggingUtils {
+  val serviceURL: String = servicesConfig.baseUrl("tax-enrolments")
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val EnrolmentIdentifierName = "AWRSRefNumber"
   val retryLimit = 7
@@ -52,7 +50,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
             groupId: String,
             awrsRegistrationNumber: String,
             businessPartnerDetails: BusinessCustomerDetails,
-            businessType: String)(implicit hc: HeaderCarrier): Future[Option[EnrolResponse]] = {
+            businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val timer = metrics.startTimer(ApiType.API4Enrolment)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
@@ -60,14 +58,14 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
       "safeId" -> businessPartnerDetails.safeId,
       "UserDetail" -> businessPartnerDetails.businessName,
       "legal-entity" -> businessType)
-    val response = trySend(0, postUrl, requestPayload, auditMap).map(_=>Option(emptyResponse))
+    val response = trySend(0, postUrl, requestPayload, auditMap).map(_ => Option(emptyResponse))
     timer.stop()
     response
   }
 
   def trySend(tries: Int, postUrl: String,
               requestPayload: RequestPayload,
-              auditMap: Map[String, String])(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+              auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val jsonData: JsValue = Json.toJson(requestPayload)
     http.POST[JsValue, HttpResponse](postUrl, jsonData).flatMap {
       response =>
@@ -93,7 +91,8 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
     }
   }
 
-  def processResponse(response: HttpResponse, postUrl: String, requestPayload: RequestPayload)(implicit hc: HeaderCarrier): HttpResponse = {
+  def processResponse(response: HttpResponse, postUrl: String, requestPayload: RequestPayload)
+                     (implicit hc: HeaderCarrier, ec: ExecutionContext): HttpResponse = {
     response.status match {
       case OK =>
         metrics.incrementSuccessCounter(ApiType.API4Enrolment)
@@ -137,7 +136,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
                             verifiers: List[Verifier],
                             responseBody: String,
                             responseStatus: Int,
-                            optionErrorStatus: Option[String] = None) = {
+                            optionErrorStatus: Option[String] = None): Unit = {
     val errorStatus = optionErrorStatus.fold("")(status => " - " + status)
     Logger.warn(s"[TaxEnrolmentsConnector][enrol]$errorStatus" +
       s"enrolment url:$postUrl, " +
@@ -147,7 +146,8 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
       s"Reponse Status: $responseStatus")
   }
 
-  def deEnrol(awrsRef: String, businessName: String, businessType: String)(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
+  def deEnrol(awrsRef: String, businessName: String, businessType: String)
+             (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val timer = metrics.startTimer(ApiType.API10DeEnrolment)
     val jsonData = Json.toJson(DeEnrolRequest(keepAgentAllocations))
 
@@ -174,14 +174,4 @@ trait TaxEnrolmentsConnector extends ServicesConfig with LoggingUtils {
         }
     }
   }
-}
-
-object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
-  override val appName = "awrs-frontend"
-  override val metrics = AwrsMetrics
-  override val audit: Audit = new Audit(appName, AwrsFrontendAuditConnector)
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

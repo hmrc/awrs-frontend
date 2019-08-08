@@ -17,13 +17,14 @@
 @import services.JourneyConstants
 @import views.view_application.helpers._
 @import views.view_application.helpers.SubViewTemplateHelper._
-@import play.api.i18n.Messages.Implicits._
+
 
 @(businessType: Option[String], sectionName: Option[String])(implicit viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
 @{
     (isEditMode, isOneViewMode, sectionName) match {
         case (_, false, Some(secName)) => {
-            <span id="progress-text" class="heading-secondary">{JourneyConstants.getJourneyProgress(businessType, secName)}</span>
+            val (sectionIndex, totalSections, messageKey) = JourneyConstants.getJourneyProgress(businessType, secName)
+            <span id="progress-text" class="heading-secondary">{messages("awrs.generic.section_progress", sectionIndex, totalSections, messages(messageKey))}</span>
         }
         case (_ , _, _) =>
     }

@@ -14,8 +14,7 @@
  * limitations under the License.
  *@
 
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
+@()(implicit messages: Messages)
 
 <div class="form-group">
     <a id="print"   href="javascript:window.print();" class="print-link print-hidden">@Messages("awrs.view_application.print")</a>

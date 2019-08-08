@@ -22,48 +22,51 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
-@(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages)
+@import config.ApplicationConfig
+@(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessDirectorsForm) }
 
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.BusinessDirectorsController.saveAndReturn(businessDirectorId, isNewRecord)
-        case false => controllers.routes.BusinessDirectorsController.saveAndContinue(businessDirectorId, isNewRecord)
+    if(isEditMode) {
+        controllers.routes.BusinessDirectorsController.saveAndReturn(businessDirectorId, isNewRecord)
+    } else {
+        controllers.routes.BusinessDirectorsController.saveAndContinue(businessDirectorId, isNewRecord)
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @h1text = @{
     businessDirectorId match {
-        case  1 if isEditMode & !isNewRecord => Messages("awrs.business_directors.heading.first.edit")
-        case  1                              => Messages("awrs.business_directors.heading.first")
-        case id                              => Messages("awrs.business_directors.heading", headingPrefix(enter = "awrs.director.what.are", isNewRecord = isNewRecord), ordinalIntSuffix(id))
+        case  1 if isEditMode & !isNewRecord => messages("awrs.business_directors.heading.first.edit")
+        case  1                              => messages("awrs.business_directors.heading.first")
+        case id                              => messages("awrs.business_directors.heading", messages(headingPrefix(enter = "awrs.director.what.are", isNewRecord = isNewRecord)), ordinalIntSuffix(id))
     }
 }
 
 @directorHeading = @{
     (businessDirectorId, isEditMode) match {
-        case (1, false) => Messages("awrs.business_directors.role_question.first")
-        case _ => Messages("awrs.business_directors.role_question.additional")
+        case (1, false) => messages("awrs.business_directors.role_question.first")
+        case _ => messages("awrs.business_directors.role_question.additional")
     }
 }
 
 @directorSeq = @{
     (businessDirectorId, isNewRecord) match {
-        case (1, true) => Seq(Messages("awrs.generic.status.director_value") -> Messages("awrs.generic.status.director"),
-            Messages("awrs.generic.status.both_value") -> Messages("awrs.generic.status.both"))
-        case _ => Seq(Messages("awrs.generic.status.director_value") -> Messages("awrs.generic.status.director"),
-            Messages("awrs.generic.status.company_secretary_value") -> Messages("awrs.generic.status.company_secretary"),
-            Messages("awrs.generic.status.both_value") -> Messages("awrs.generic.status.both"))
+        case (1, true) => Seq(messages("awrs.generic.status.director_value") -> messages("awrs.generic.status.director"),
+            messages("awrs.generic.status.both_value") -> messages("awrs.generic.status.both"))
+        case _ => Seq(messages("awrs.generic.status.director_value") -> messages("awrs.generic.status.director"),
+            messages("awrs.generic.status.company_secretary_value") -> messages("awrs.generic.status.company_secretary"),
+            messages("awrs.generic.status.both_value") -> messages("awrs.generic.status.both"))
     }
 }
 
@@ -81,7 +84,7 @@
                 businessDirectorsForm("firstName"),
                 required = true,
                 labelHighlight = true,
-                label = Messages("awrs.generic.first_name")
+                label = messages("awrs.generic.first_name")
             )
         )
         @awrsInputTypeText(
@@ -89,7 +92,7 @@
                 businessDirectorsForm("lastName"),
                 required = true,
                 labelHighlight = true,
-                label = Messages("awrs.generic.surname")
+                label = messages("awrs.generic.surname")
             )
         )
     </div>
@@ -110,16 +113,16 @@
     @awrsInputTypeRadioGroup(
         InputTypeRadioGroupParams(
             businessDirectorsForm("personOrCompany"),
-            Seq(Messages("awrs.generic.status.person_value") -> Messages("awrs.generic.status.person"),
-                Messages("awrs.generic.status.company_value") -> Messages("awrs.generic.status.company")
+            Seq(messages("awrs.generic.status.person_value") -> messages("awrs.generic.status.person"),
+                messages("awrs.generic.status.company_value") -> messages("awrs.generic.status.company")
             ),
-            legend = Messages("awrs.business_directors.personOrCompany_question"),
+            legend = messages("awrs.business_directors.personOrCompany_question"),
             legendId = "personOrCompany-legend",
             fieldSetClass = "form-group inline" + personOrCompanyClass,
             fieldSetQuestionId = "crn-HelpLink",
-            fieldSetQuestionAnswer = Html(Messages("awrs.business_directors.personOrCompany_answer_text", "<br><br>")),
+            fieldSetQuestionAnswer = Html(messages("awrs.business_directors.personOrCompany_answer_text", "<br><br>")),
             fieldSetQuestionWrapperClass = "panel-indent",
-            formHint = Messages("awrs.business_directors.personOrCompany_hint_text"),
+            formHint = messages("awrs.business_directors.personOrCompany_hint_text"),
             formHintId = "personOrCompany-hint",
             fieldSetAttributes = "id=personOrCompany_field",
             ariaDescribedBy = "personOrCompany-legend personOrCompany-hint"
@@ -132,8 +135,8 @@
                 InputTypeTextParams(
                     businessDirectorsForm("companyNames.businessName"),
                     inputId = "companyNames.businessName",
-                    label = Messages("awrs.business_directors.business_name"),
-                    maxLength = AwrsFieldConfig.companyNameLen.toString,
+                    label = messages("awrs.business_directors.business_name"),
+                    maxLength = applicationConfig.companyNameLen.toString,
                     labelHighlight = true,
                     required = true
                 )
@@ -142,12 +145,12 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         businessDirectorsForm("companyNames.doYouHaveTradingName"),
-                        Seq("Yes" -> Messages("awrs.generic.yes"),
-                            "No" -> Messages("awrs.generic.no")),
+                        Seq("Yes" -> messages("awrs.generic.yes"),
+                            "No" -> messages("awrs.generic.no")),
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
                         legendId = "companyNames.doYouHaveTradingName-legend",
-                        legend = Messages("awrs.generic.do_they_have_trading_name")
+                        legend = messages("awrs.generic.do_they_have_trading_name")
                     )
                 )
                 <div id="companyNames.doYouHaveTradingName-yes-content">
@@ -155,9 +158,9 @@
                     InputTypeTextParams(
                         businessDirectorsForm("companyNames.tradingName"),
                         inputId = "companyNames.tradingName",
-                        label = Messages("awrs.generic.trading_name"),
+                        label = messages("awrs.generic.trading_name"),
                         labelHighlight = true,
-                        maxLength = AwrsFieldConfig.tradingNameLen.toString,
+                        maxLength = applicationConfig.tradingNameLen.toString,
                         required = true,
                         wrapperClass = "panel-indent"
                     )
@@ -196,7 +199,7 @@
 }
 
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", h1text), userLoggedIn = true){
+@includes.awrs_main(title = messages("awrs.generic.tab.title", h1text), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(
@@ -208,7 +211,7 @@
             @awrsProgressHelper(businessType, businessDirectorsName)
         </header>
 
-        <p class="lede" id="directorsAndCompanySecretariesDescription">@Messages("awrs.business_directors.topText")</p>
+        <p class="lede" id="directorsAndCompanySecretariesDescription">@messages("awrs.business_directors.topText")</p>
 
         @form(action = actionRoute) {
 
@@ -240,9 +243,9 @@
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             businessDirectorsForm("otherDirectors"),
-                            Seq("Yes" -> Messages("awrs.generic.yes"),
-                                "No" -> Messages("awrs.generic.no")),
-                            legend = Messages("awrs.business_directors.add_another_director"),
+                            Seq("Yes" -> messages("awrs.generic.yes"),
+                                "No" -> messages("awrs.generic.no")),
+                            legend = messages("awrs.business_directors.add_another_director"),
                             legendId = "otherDirectors-legend",
                             fieldSetClass = "inline",
                             fieldSetAttributes = "id=otherDirectors_field"

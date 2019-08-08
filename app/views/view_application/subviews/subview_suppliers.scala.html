@@ -22,10 +22,12 @@
 @import contents._
 @import services.DataCacheKeys._
 
-
-@(someHeading: Option[String],
+@import config.ApplicationConfig
+@(headingKey: String,
   someModel: Option[models.Suppliers]
-)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.suppliersId
@@ -49,21 +51,21 @@
 
 
 @topAdd(model: models.Suppliers) = {
-    @if(model.suppliers.size < SupplierAddressesController.maxSuppliers && model.suppliers.size > 1) {
-        <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), Messages("awrs.view_application.supplier"))</div>
+    @if(model.suppliers.size < 5 && model.suppliers.size > 1) {
+        <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.supplier"))</div>
     }
 }
 
 @bottomAdd(model: models.Suppliers)  = {
-    @if(model.suppliers.size < SupplierAddressesController.maxSuppliers) {
-        @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), Messages("awrs.view_application.supplier"))
+    @if(model.suppliers.size < 5) {
+        @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.supplier"))
     }
 }
 
 @content(model: models.Suppliers) = {
     @model match {
         case Suppliers(List(Supplier(Some("No"), _, _, _, _, _, _))) => {
-            <p id="no-suppliers" class="lede">@Messages("awrs.view_application.no_suppliers")</p>
+            <p id="no-suppliers" class="lede">@messages("awrs.view_application.no_suppliers")</p>
         }
         case _ => {
             @model.suppliers.zipWithIndex.map { case (supplier, id) =>
@@ -73,9 +75,9 @@
     }
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(getHeading(heading, model), wrapperId, sectionName = suppliersName)(content(model), preContent = topAdd(model), postContent = bottomAdd(model))
+@someModel match {
+    case Some(model) => {
+        @subview_core(getHeading(heading, model), wrapperId, sectionName = Some(suppliersName))(content(model), preContent = Some(topAdd(model)), postContent = Some(bottomAdd(model)))
     }
     case _ => {}
 }

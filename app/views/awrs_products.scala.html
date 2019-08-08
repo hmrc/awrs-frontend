@@ -24,33 +24,35 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
 @import utils.AwrsFieldConfig
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
 
-@(productsForm: Form[models.Products])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode)
+@import config.ApplicationConfig
+@(productsForm: Form[models.Products])(implicit request: Request[AnyContent],
+        viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(productsForm) }
 
 
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.ProductsController.saveAndReturn
-        case false => controllers.routes.ProductsController.saveAndContinue
+    if(isEditMode) {
+        controllers.routes.ProductsController.saveAndReturn
+    } else {
+        controllers.routes.ProductsController.saveAndContinue
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @pageHeading = @{
-    Messages("awrs.additional_information.products.heading", headingPrefix(enter = "awrs.generic.tell_us_about"))
+    messages("awrs.additional_information.products.heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about")))
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
+@includes.awrs_main(title = messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
 
 <div class="grid">
     <div class="grid grid-2-3">
@@ -72,11 +74,11 @@
                     InputTypeGroupCheckboxParams(
                         productsForm("mainCustomers"),
                         mainCustomerOptions,
-                        legend = Messages("awrs.additional_information.main_customers"),
+                        legend = messages("awrs.additional_information.main_customers"),
                         fieldSetAttributes = "id=mainCustomers_field",
                         fieldSetClass = "test",
                         legendClass = "test",
-                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHint = messages("awrs.additional_information.form_hint"),
                         formHintId = "mainCustomers-hint",
                         ariaDescribedBy = "mainCustomers-legend mainCustomers-hint",
                         formHasErrors = productsForm.hasErrors
@@ -86,10 +88,10 @@
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             productsForm("otherMainCustomers"),
-                            label = Messages("awrs.additional_information.other.main_customers"),
+                            label = messages("awrs.additional_information.other.main_customers"),
                             labelHighlight = true,
                             inputId = "otherMainCustomers",
-                            maxLength = frontendDefaultLen.toString,
+                            maxLength = frontendDefaultLen,
                             wrapperClass = "panel-indent",
                             required = true
                         )
@@ -101,9 +103,9 @@
                     InputTypeGroupCheckboxParams(
                         productsForm("productType"),
                         products,
-                        legend = Messages("awrs.additional_information.products"),
+                        legend = messages("awrs.additional_information.products"),
                         fieldSetAttributes = "id=productType_field",
-                        formHint = Messages("awrs.additional_information.form_hint"),
+                        formHint = messages("awrs.additional_information.form_hint"),
                         formHintId = "productType-hint",
                         ariaDescribedBy = "productType-legend productType-hint",
                         formHasErrors = productsForm.hasErrors
@@ -113,10 +115,10 @@
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             productsForm("otherProductType"),
-                            label = Messages("awrs.additional_information.other.products"),
+                            label = messages("awrs.additional_information.other.products"),
                             inputId = "otherProductType",
                             labelHighlight = true,
-                            maxLength = frontendDefaultLen.toString,
+                            maxLength = frontendDefaultLen,
                             wrapperClass = "panel-indent",
                             required = true,
                             ariaLabelledBy = "product"

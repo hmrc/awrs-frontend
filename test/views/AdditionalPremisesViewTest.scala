@@ -36,15 +36,16 @@ import scala.concurrent.Future
 class AdditionalPremisesViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  def testPremises(addAnother: Option[String]) = testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"),
+  def testPremises(addAnother: Option[String]): AdditionalBusinessPremises = testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"),
     additionalAddress = Some(testAddress), addAnother = addAnother)
 
   lazy val testList = List(testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("No")))
 
-  object TestAdditionalPremisesController extends AdditionalPremisesController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
+  val testAdditionalPremisesController: AdditionalPremisesController =
+    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
+      override val signInUrl = "/sign-in"
+    }
+
 
   "Additional Premises Template" should {
 
@@ -149,7 +150,8 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
 
   private def showPremises(id: Int, isLinearMode: Boolean = true, isNewRecord: Boolean = true, premises: List[AdditionalBusinessPremises] = testList)(test: Future[Result] => Any): Future[Any] = {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = AdditionalBusinessPremisesList(premises))
-    val result = TestAdditionalPremisesController.showPremisePage(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testAdditionalPremisesController.showPremisePage(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -158,7 +160,8 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchAdditionalBusinessPremisesList = testAdditionalPremisesList
     )
-    val result = TestAdditionalPremisesController.showPremisePage(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
+    setAuthMocks()
+    val result = testAdditionalPremisesController.showPremisePage(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
 

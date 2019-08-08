@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(field: Field, fieldErrors: Seq[_root_.forms.validation.util.FieldError])(implicit lang: Lang)
+@(field: Field, fieldErrors: Seq[_root_.forms.validation.util.FieldError])(implicit messages: Messages)
 @import _root_.forms.validation.util.ErrorMessageInterpreter._
 @import _root_.forms.validation.util.ErrorMessageLookup._
 @fieldErrors.zipWithIndex.map { case (fieldError, index) =>

@@ -18,14 +18,14 @@ package forms
 
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 import forms.AWRSEnums._
 import utils.TestConstants._
 
-class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
 
   implicit lazy val form = ApplicationDeclarationForm.applicationDeclarationForm.form
 
@@ -34,7 +34,7 @@ class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with One
       val fieldId = "declarationName"
 
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.application_declaration.error.declaration_name_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "your name", AwrsFieldConfig.applicationDeclarationNameLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "your name", applicationDeclarationNameLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "your name"))
       //      val validFormats = List(ValidFormatConfig("a"))
       //      val formatError = FormatConfig(invalidFormats,validFormats)
@@ -49,7 +49,7 @@ class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with One
       val fieldId = "declarationRole"
 
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.application_declaration.error.declaration_role_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "your role", AwrsFieldConfig.applicationDeclarationRoleLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "your role", applicationDeclarationRoleLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "your role"))
       val formatError = ExpectedFieldFormat(invalidFormats)
 

@@ -16,13 +16,9 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendAuthConnector
+import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import controllers.auth.Utr._
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.mocks.MockSave4LaterService
@@ -34,20 +30,8 @@ class ResetControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  val request = FakeRequest()
-
-  object TestResetController extends ResetController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
-
-  "ResetController" must {
-
-    "use the correct AuthConnector" in {
-      ResetController.authConnector shouldBe FrontendAuthConnector
-    }
-
-  }
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val testResetController: ResetController = new ResetController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Reset application page " should {
     "return a Signed out view for SA utr" in {
@@ -84,17 +68,20 @@ class ResetControllerTest extends AwrsUnitTestTraits
   }
 
   private def getWithAuthorisedUserSa(test: Future[Result] => Any) {
-    val result = TestResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getWithAuthorisedUserCt(test: Future[Result] => Any) {
-    val result = TestResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getUpdateWithAuthorisedUserCt(test: Future[Result] => Any) {
-    val result = TestResetController.resetApplicationUpdate.apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+    val result = testResetController.resetApplicationUpdate.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 

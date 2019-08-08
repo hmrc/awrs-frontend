@@ -16,68 +16,57 @@
 
 package controllers
 
-import java.util.UUID
 
-import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendAuthConnector
-import controllers.auth.Utr._
+import builders.SessionBuilder
 import models.FormBundleStatus.Pending
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
-import uk.gov.hmrc.domain.AwrsUtr
 import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 import scala.util.Try
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 
 
 class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val request = FakeRequest()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  lazy val testBusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
-  lazy val testBusinessCustomerDetails = TestUtil.testBusinessCustomerDetails("LLP")
-  lazy val testPendingSubscriptionStatusType = TestUtil.testSubscriptionStatusTypePending
-  lazy val testApprovedSubscriptionStatusType = TestUtil.testSubscriptionStatusTypeApproved
-  lazy val testApprovedWithConditionsSubscriptionStatusType = TestUtil.testSubscriptionStatusTypeApprovedWithConditions
-  lazy val testApprovedWithConditionsStatusInfoType = TestUtil.testStatusInfoTypeApprovedWithConditions
-  lazy val testRejectedSubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRejected
-  lazy val testRejectedReviewSubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRejectedUnderReviewOrAppeal
-  lazy val testRevokedSubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRevoked
-  lazy val testRevokedReviewSubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRevokedUnderReviewOrAppeal
-  lazy val testRejectedStatusInfoType = TestUtil.testStatusInfoTypeRejected
-  lazy val testRejectedReviewStatusInfoType = TestUtil.testStatusInfoTypeRejectedUnderReviewOrAppeal
-  lazy val testRevokedStatusInfoType = TestUtil.testStatusInfoTypeRevoked
-  lazy val testRevokedReviewStatusInfoType = TestUtil.testStatusInfoTypeRevokedUnderReviewOrAppeal
+  lazy val testBusinessType: BusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
+  lazy val testBusinessCustomerDetails: BusinessCustomerDetails = TestUtil.testBusinessCustomerDetails("LLP")
+  lazy val testPendingSubscriptionStatusType: SubscriptionStatusType = TestUtil.testSubscriptionStatusTypePending
+  lazy val testApprovedSubscriptionStatusType: SubscriptionStatusType = TestUtil.testSubscriptionStatusTypeApproved
+  lazy val testApprovedWithConditionsSubscriptionStatusType: SubscriptionStatusType = TestUtil.testSubscriptionStatusTypeApprovedWithConditions
+  lazy val testApprovedWithConditionsStatusInfoType: StatusInfoType = TestUtil.testStatusInfoTypeApprovedWithConditions
+  lazy val testRejectedSubscriptionStatusType: SubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRejected
+  lazy val testRejectedReviewSubscriptionStatusType: SubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRejectedUnderReviewOrAppeal
+  lazy val testRevokedSubscriptionStatusType: SubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRevoked
+  lazy val testRevokedReviewSubscriptionStatusType: SubscriptionStatusType = TestUtil.testSubscriptionStatusTypeRevokedUnderReviewOrAppeal
+  lazy val testRejectedStatusInfoType: StatusInfoType = TestUtil.testStatusInfoTypeRejected
+  lazy val testRejectedReviewStatusInfoType: StatusInfoType = TestUtil.testStatusInfoTypeRejectedUnderReviewOrAppeal
+  lazy val testRevokedStatusInfoType: StatusInfoType = TestUtil.testStatusInfoTypeRevoked
+  lazy val testRevokedReviewStatusInfoType: StatusInfoType = TestUtil.testStatusInfoTypeRevokedUnderReviewOrAppeal
 
-  lazy val testStatusNotificationMindedToReject = TestUtil.testStatusNotificationMindedToReject
-  lazy val testStatusInfoTypeMindedToReject = TestUtil.testStatusInfoTypeMindedToReject
-  lazy val testStatusInfoTypeNoLongerMindedToReject = TestUtil.testStatusInfoTypeNoLongerMindedToReject
-  lazy val testStatusNotificationMindedToRevoke = TestUtil.testStatusNotificationMindedToRevoke
-  lazy val testStatusNotificationNoLongerMindedToRevoke = TestUtil.testStatusNotificationNoLongerMindedToRevoke
-  lazy val testStatusInfoTypeMindedToRevoke = TestUtil.testStatusInfoTypeMindedToRevoke
-  lazy val testStatusInfoTypeNoLongerMindedToRevoke = TestUtil.testStatusInfoTypeNoLongerMindedToRevoke
-  lazy val testBusinessDetails = (isNewBusiness: Boolean) => isNewBusiness match {
+  lazy val testStatusNotificationMindedToReject: Option[StatusNotification] = TestUtil.testStatusNotificationMindedToReject
+  lazy val testStatusInfoTypeMindedToReject: StatusInfoType = TestUtil.testStatusInfoTypeMindedToReject
+  lazy val testStatusInfoTypeNoLongerMindedToReject: StatusInfoType = TestUtil.testStatusInfoTypeNoLongerMindedToReject
+  lazy val testStatusNotificationMindedToRevoke: Option[StatusNotification] = TestUtil.testStatusNotificationMindedToRevoke
+  lazy val testStatusNotificationNoLongerMindedToRevoke: Option[StatusNotification] = TestUtil.testStatusNotificationNoLongerMindedToRevoke
+  lazy val testStatusInfoTypeMindedToRevoke: StatusInfoType = TestUtil.testStatusInfoTypeMindedToRevoke
+  lazy val testStatusInfoTypeNoLongerMindedToRevoke: StatusInfoType = TestUtil.testStatusInfoTypeNoLongerMindedToRevoke
+  lazy val testBusinessDetails: tickBox => BusinessDetails = {
     case true => TestUtil.testBusinessDetails(newBusiness = TestUtil.testIsNewBusiness)
     case false => TestUtil.testBusinessDetails()
   }
 
-  object TestApplicationStatusController extends ApplicationStatusController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val statusManagementService = TestStatusManagementService
-  }
+  val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService, mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockAppConfig)
 
   "ApplicationStatusController" should {
     def testPageIsDisplayed(result: Future[Result]) = status(result) shouldBe OK
@@ -114,40 +103,13 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
         checkStatusProgressBarIsCorrect(document, pendingProgressBarParam)
         document
       }: Document
-      lazy val verifyInfoSection = (document: Document, expectedCountMessageKey: String, expectedMessageKey: (Int) => String) => {
-        val li = document.getElementsByClass("list-bullet").first().getElementsByTag("li")
-        // the total number of bullet points is specified in the messages file which should match the total number of bullet points
-        li.size shouldBe Try(Messages(expectedCountMessageKey).toInt).get
-        (1 to li.size).foreach {
-          i =>
-            li.get(i - 1).text() should include(Messages(expectedMessageKey(i)))
-        }
-      }
 
       getWithPendingUser(isNewBusiness = true, {
-        result =>
-          // verify the correct info is displayed
-          val document = verifyHeadingAndReturnDocument(result)
-          withClue("when the user is a new business, the information section should be customised for the new business\n") {
-            verifyInfoSection(
-              document,
-              "awrs.application_status.info.pending.newBusiness.count",
-              (i: Int) => f"awrs.application_status.info.pending.newBusiness.line$i"
-            )
-          }
+        result => verifyHeadingAndReturnDocument(result)
       })
       beforeEach()
       getWithPendingUser(isNewBusiness = false, {
-        result =>
-          // verify the correct info is displayed
-          val document = verifyHeadingAndReturnDocument(result)
-          withClue("when the user is a new business, the information section should be the default\n") {
-            verifyInfoSection(
-              document,
-              "awrs.application_status.info.pending.count",
-              (i: Int) => f"awrs.application_status.info.pending.line$i"
-            )
-          }
+        result => verifyHeadingAndReturnDocument(result)
       })
     }
 
@@ -177,17 +139,12 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = StandardLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.lede.verb_in_main.approved"),
                 testApprovedSubscriptionStatusType.processingDate,
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
       }
     }
@@ -198,16 +155,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testPendingSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -219,16 +171,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.no_longer_mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeNoLongerMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -240,17 +187,12 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = StandardLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.lede.verb_in_main.approved_with_conditions"),
                 testApprovedWithConditionsSubscriptionStatusType.processingDate,
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testApprovedWithConditionsStatusInfoType.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -262,16 +204,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -283,16 +220,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
-          val awrsUtr: Option[AwrsUtr] = getAwrsUtr
-          awrsUtr match {
-            case None => fail("No AWRS UTR found")
-            case Some(awrs) =>
               val lede = AlertLedeParam(
                 testBusinessCustomerDetails.businessName,
                 Messages("awrs.application_status.alert_lede.verb_in_main.no_longer_mindful_to_revoke"),
-                Some(awrs.toString))
+                Some("0123456"))
               checkLedeIsCorrect(document, lede)
-          }
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeNoLongerMindedToRevoke.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
@@ -369,23 +301,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testRevokedStatusInfoType.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
-    }
-  }
-
-  def getAwrsUtr: Option[AwrsUtr] = {
-    implicit val hc = HeaderCarrier()
-    // the convertToOption implicit conversion function was conflicting with another one defined else where
-    def convertToOption = ???
-    def convertToMockConfiguration = ???
-    def convertToMockConfiguration2 = ???
-    def convertToMockConfiguration3 = ???
-    def convertToMockConfiguration4 = ???
-    def convertToMockConfiguration5 = ???
-
-    val auth = mockAuthConnector.currentAuthority.get
-    auth.accounts.awrs match {
-      case Some(awrs) => Some(awrs.utr)
-      case _ => None
     }
   }
 
@@ -495,12 +410,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   def statusInfoMessageIsDisplayed(document: Document, expected: String): Unit =
     document.select(".form-group").first().text() should include(expected)
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) = {
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestApplicationStatusController.showStatus(printFriendly = false, mustShow = true).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
   def statusTestUser(status: SubscriptionStatusType,
                      statusInfo: MockConfiguration[Option[StatusInfoType]] = DoNotConfigure,
                      notification: Option[StatusNotification] = None,
@@ -525,8 +434,9 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
         api12Cache = CachedLocally
       )
     )
+    setAuthMocks()
 
-    val result = TestApplicationStatusController.showStatus(printFriendly = false, mustShow = true).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testApplicationStatusController.showStatus(printFriendly = false, mustShow = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -560,8 +470,9 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
         statusPageViewed = !initialVisit
       )
     )
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
 
-    val result = TestApplicationStatusController.showStatus(
+    val result = testApplicationStatusController.showStatus(
       printFriendly = false,
       mustShow = visitFrom match {
         case FromHomeController => false

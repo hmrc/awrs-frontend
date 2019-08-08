@@ -120,15 +120,15 @@ GET         /confirm-withdrawal                             controllers.Withdraw
 POST        /confirm-withdrawal                             controllers.WithdrawalController.submitConfirmWithdrawal
 GET         /withdrawal-confirmation                        controllers.WithdrawalController.showWithdrawalConfirmation(printFriendly: Boolean ?= false)
 
-GET         /cancellation-date                               controllers.DeRegistrationController.showDate
-POST        /cancellation-date/submit                        controllers.DeRegistrationController.submitDate
+GET         /cancellation-date                              controllers.DeRegistrationController.showDate
+POST        /cancellation-date/submit                       controllers.DeRegistrationController.submitDate
 GET         /de-register/abort                              controllers.DeRegistrationController.returnToIndex
 
 GET         /cancel-registration                            controllers.DeRegistrationController.showReason
 POST        /cancel-registration/submit                     controllers.DeRegistrationController.submitReason
 
-GET         /confirm-cancellation                            controllers.DeRegistrationController.showConfirm
-POST        /confirm-cancellation/submit                     controllers.DeRegistrationController.callToAction
+GET         /confirm-cancellation                           controllers.DeRegistrationController.showConfirm
+POST        /confirm-cancellation/submit                    controllers.DeRegistrationController.callToAction
 GET         /de-register-confirmation                       controllers.DeRegistrationController.showConfirmation(printFriendly: Boolean ?= false)
 
 GET         /view-application                               controllers.ViewApplicationController.show(printFriendly: Boolean ?= false)
@@ -139,7 +139,7 @@ GET         /back                                           controllers.ViewAppl
 GET         /signed-out                                     controllers.ApplicationController.timedOut()
 
 # This is for AWRS-1595
-GET         /re-apply                                        controllers.ReapplicationController.show
-POST        /re-apply                                        controllers.ReapplicationController.submit
+GET         /re-apply                                       controllers.ReapplicationController.show
+POST        /re-apply                                       controllers.ReapplicationController.submit
 
 

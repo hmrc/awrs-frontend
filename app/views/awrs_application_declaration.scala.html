@@ -14,7 +14,10 @@
  * limitations under the License.
  *@
 
-@(applicationDeclarationForm: Form[models.ApplicationDeclaration], isEnrolledApplicant: Boolean)(implicit request: Request[_],  messages: Messages)
+@import utils.AwrsFieldConfig
+@import config.ApplicationConfig
+
+@(applicationDeclarationForm: Form[models.ApplicationDeclaration], isEnrolledApplicant: Boolean)(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @import views.helpers.InputTypeTextParams
 @import views.html.helpers._
@@ -22,39 +25,39 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import forms.AwrsFormFields._
-@import utils.AwrsFieldConfig
 
 @declarationTxt = @{
-    isEnrolledApplicant match {
-        case true => Messages("awrs.application_declaration.declaration_statement.amend", request.session.get("businessName").getOrElse("")).toString
-        case false => Messages("awrs.application_declaration.declaration_statement", request.session.get("businessName").getOrElse("")).toString
+    if(isEnrolledApplicant) {
+        messages("awrs.application_declaration.declaration_statement.amend", request.session.get("businessName").getOrElse("")).toString
+    } else {
+        messages("awrs.application_declaration.declaration_statement", request.session.get("businessName").getOrElse("")).toString
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.application_declaration.heading")), userLoggedIn = true){
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading")), userLoggedIn = true){
 
 @errorSummaryTemplate(applicationDeclarationForm)
 <div class="grid">
     <div class="grid grid-2-3">
         @backLink(backUrl = controllers.routes.IndexController.showIndex().url)
-        <h1 id="application-declaration-heading" class="heading-xlarge">@Html(Messages("awrs.application_declaration.heading"))</h1>
-        <p class="lede">@Messages("awrs.application_declaration.lede")</p>
+        <h1 id="application-declaration-heading" class="heading-xlarge">@Html(messages("awrs.application_declaration.heading"))</h1>
+        <p class="lede">@messages("awrs.application_declaration.lede")</p>
         @form(action = controllers.routes.ApplicationDeclarationController.sendApplication){
             @awrsInputTypeText(
                 InputTypeTextParams(
                     applicationDeclarationForm("declarationName"),
-                    label = Messages("awrs.generic.full_name"),
+                    label = messages("awrs.generic.full_name"),
                     inputId = "declarationName",
-                    maxLength = AwrsFieldConfig.applicationDeclarationNameLen.toString,
+                    maxLength = applicationConfig.applicationDeclarationNameLen.toString,
                     required = true
                 )
             )
             @awrsInputTypeText(
                 InputTypeTextParams(
                     applicationDeclarationForm("declarationRole"),
-                    label = Messages("awrs.application_declaration.declaration_role"),
+                    label = messages("awrs.application_declaration.declaration_role"),
                     inputId = "declarationRole",
-                    maxLength = AwrsFieldConfig.applicationDeclarationRoleLen.toString,
+                    maxLength = applicationConfig.applicationDeclarationRoleLen.toString,
                     required = true
                 )
             )
@@ -63,7 +66,7 @@
 
             @awrsWarningHelper(declarationTxt = declarationTxt, id = "confirmation-text-disclaimer")
 
-            @awrsSubmitButton(Messages("awrs.application_declaration.confirmation_and_send_application"))(id = "sendApplicationNowButton", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.application_declaration.confirmation_and_send_application"))(id = "sendApplicationNowButton", classAttr = "button")
             @returnToIndex()
         }
     </div>

@@ -17,23 +17,23 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock._
 import models._
-import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
+import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants._
-
 
 import scala.concurrent.Future
 
 class BusinessTypeControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val request = FakeRequest()
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   val businessCustomerDetailsFormID = "businessCustomerDetails"
   val formId = "legalEntity"
@@ -45,19 +45,10 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
   lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
   lazy val testNewApplicationType = NewApplicationType(Some(true))
 
-  lazy val testSubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd()
+  lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd()
 
-  object TestBusinessTypeController extends BusinessTypeController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val api5 = TestAPI5
-  }
-
-
-  "BusinessTypeController" must {
-    "use the correct AuthConnector" in {
-      BusinessTypeController.authConnector shouldBe FrontendAuthConnector
-    }
+  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl: String = applicationConfig.signIn
   }
 
   "Submitting the Business Type form with " should {
@@ -118,7 +109,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     val invalidSubmission = FakeRequest().withFormUrlEncodedBody("legalEntity" -> "")
 
     "add the correct businessType and businessName to the session for API4 user" in {
-      api4User(validSubmission)(TestBusinessTypeController.showBusinessType()) {
+      api4User(validSubmission)(testBusinessTypeController.showBusinessType()) {
         implicit result =>
           status(result) shouldBe OK
           assertBusinessName(testBusinessCustomer.businessName)
@@ -126,13 +117,13 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
           // from save4later
           assertBusinessType(testBusinessCustomer.businessType.fold("")(x => x))
       }
-      api4User(invalidSubmission)(TestBusinessTypeController.saveAndContinue) {
+      api4User(invalidSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
           status(result) shouldBe BAD_REQUEST
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType("") // should not have any business type added since the submission was false
       }
-      api4User(validSubmission)(TestBusinessTypeController.saveAndContinue) {
+      api4User(validSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
           status(result) shouldBe SEE_OTHER
           assertBusinessName(testBusinessCustomer.businessName)
@@ -141,19 +132,19 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     }
 
     "add the correct businessType and businessName to the session for API5 user" in {
-      api5User(validSubmission)(TestBusinessTypeController.showBusinessType(showBusinessType = false)) {
+      api5User(validSubmission)(testBusinessTypeController.showBusinessType(showBusinessType = false)) {
         implicit result =>
           status(result) shouldBe SEE_OTHER // this page should be skipped in the api 5 journey
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType(testBusinessCustomer.businessType.fold("")(x => x))
       }
-      api5User(invalidSubmission)(TestBusinessTypeController.saveAndContinue) {
+      api5User(invalidSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
           status(result) shouldBe BAD_REQUEST
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType("") // should not have any business type added since the submission was false
       }
-      api5User(validSubmission)(TestBusinessTypeController.saveAndContinue) {
+      api5User(validSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
           status(result) shouldBe SEE_OTHER
           assertBusinessName(testBusinessCustomer.businessName)
@@ -168,7 +159,8 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
       case false => testBusinessCustomer
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
-    val result = TestBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
@@ -179,12 +171,14 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
       case false => testBusinessCustomer
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
-    val result = TestBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def api4User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
@@ -193,6 +187,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
     setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Some(testSubscriptionTypeFrontEnd))
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

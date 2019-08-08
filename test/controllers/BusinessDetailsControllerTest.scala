@@ -16,15 +16,18 @@
 
 package controllers
 
-import builders.{AuthBuilder, SessionBuilder}
+import builders.SessionBuilder
 import controllers.auth.Utr._
 import forms.BusinessDetailsForm
 import models._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import org.mockito.Mockito._
 import services.DataCacheKeys._
 import services.{KeyStoreService, Save4LaterService, ServicesUnitTestFixture}
+import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
@@ -35,21 +38,21 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
 
   val newBusinessName = "Changed"
 
-  def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean) =
+  def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
 
-  object TestBusinessDetailsController extends BusinessDetailsController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
+  val testBusinessDetailsController: BusinessDetailsController =
+    new BusinessDetailsController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    override val signInUrl = "/sign-in"
+  }
+
+  override def beforeEach(): Unit = {
+    reset(mockAccountUtils)
+
+    super.beforeEach()
   }
 
   "BusinessDetailsController" must {
-
-    "use the correct AwrsService" in {
-      BusinessDetailsController.save4LaterService shouldBe Save4LaterService
-      BusinessDetailsController.keyStoreService shouldBe KeyStoreService
-    }
 
     "Users who entered from the summary edit view" should {
       allEntities.foreach {
@@ -63,10 +66,9 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
                       result =>
                         (hasAwrs, updatedBusinessName, businessType) match {
                           case (true, true, "LLP_GRP" | "LTD_GRP") => redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-details/group-representative")
-                          case _ => {
+                          case _ =>
                             redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessDetailsName")
                             verifySave4LaterService(saveBusinessDetails = 1)
-                          }
                         }
                     }
                   }
@@ -89,10 +91,10 @@ class BusinessDetailsControllerTest extends AwrsUnitTestTraits
         fetchBusinessDetails = testBusinessDetails(),
         fetchNewApplicationType = testNewApplicationType
       )
-      if (updatedBusinessName)
-        setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
+      if (updatedBusinessName) setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
+      if (hasAwrs) setAuthMocks(mockAccountUtils = Some(mockAccountUtils)) else setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
 
-      val result = TestBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+      val result = testBusinessDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
       test(result)
     }
 

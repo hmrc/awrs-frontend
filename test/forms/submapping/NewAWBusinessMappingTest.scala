@@ -21,7 +21,7 @@ import forms.test.util._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.FieldError
 import models.{TupleDate, NewAWBusiness}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Form
 import play.api.data.Forms._

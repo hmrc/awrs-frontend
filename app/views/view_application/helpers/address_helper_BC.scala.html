@@ -21,8 +21,8 @@
     case Some(bcDetails) => {
         @table_row(
             legend,
-            bcDetails.businessAddress.line_1,
-            bcDetails.businessAddress.line_2,
+            Some(bcDetails.businessAddress.line_1),
+            Some(bcDetails.businessAddress.line_2),
             bcDetails.businessAddress.line_3,
             bcDetails.businessAddress.line_4,
             bcDetails.businessAddress.postcode

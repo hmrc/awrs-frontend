@@ -16,27 +16,67 @@
 
 package utils
 
-import builders.AuthBuilder
+import audit.Auditable
+import config.ApplicationConfig
 import org.jsoup.nodes.Document
+import org.mockito.ArgumentMatchers
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.{UnitSpec}
-import utils.TestConstants.testUtr
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{AnyContent, DefaultActionBuilder, DefaultMessagesActionBuilderImpl, DefaultMessagesControllerComponents, MessagesActionBuilder, MessagesControllerComponents}
+import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi}
+import uk.gov.hmrc.play.test.UnitSpec
 
-
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
+
+  private val messagesActionBuilder: MessagesActionBuilder = new DefaultMessagesActionBuilderImpl(stubBodyParser[AnyContent](), stubMessagesApi())
+  private val stubCC = stubControllerComponents()
+
+  lazy val mockMCC: MessagesControllerComponents = DefaultMessagesControllerComponents(
+    messagesActionBuilder,
+    DefaultActionBuilder(stubBodyParser[AnyContent]()),
+    stubCC.parsers,
+    stubMessagesApi(),
+    stubCC.langs,
+    stubCC.fileMimeTypes,
+    ExecutionContext.global
+  )
+
+  val mockAccountUtils: AccountUtils = mock[AccountUtils]
+  val mockAuditable: Auditable = mock[Auditable]
+  val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
+  val mockCountryCodes: CountryCodes = mock[CountryCodes]
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  val mockMessages: Messages = mock[Messages]
+  implicit val messages: Messages = stubMessages()
+
+  when(mockAppConfig.countryCodes)
+    .thenReturn(mockCountryCodes)
+  when(mockCountryCodes.countries)
+    .thenReturn(
+      """[
+        |"United Kingdom"
+        |]""".stripMargin)
+  when(mockCountryCodes.getCountryCode(ArgumentMatchers.any()))
+    .thenReturn(Some("ES"))
+  when(mockCountryCodes.getSupplierAddressWithCountry(ArgumentMatchers.any()))
+    .thenReturn(Some(TestUtil.testAddressInternational))
+
 
   lazy val allEntities = List("SOP", "LTD", "Partnership", "LLP", "LTD_GRP", "LLP_GRP")
   lazy val directorEntities = List("LTD", "LTD_GRP")
   lazy val partnerEntities = List("Partnership", "LLP", "LLP_GRP")
   lazy val groupEntities = List("LTD_GRP", "LLP_GRP")
 
-  implicit lazy val hc = HeaderCarrier()
-  implicit val user = AuthBuilder.createUserAuthContextOrgWithAWRS("userId", "joe bloggs", testUtr)
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   implicit def convertToOption[T](value: T): Option[T] = Some(value)
 

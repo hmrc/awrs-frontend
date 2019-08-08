@@ -14,18 +14,16 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[AnyRef])
+@import config.ApplicationConfig
+@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html.helpers._
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.generic.error.title"))){
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.generic.error.title"))){
 
 
 <div>
-    <h1 id="application-error-header" class="heading-xlarge">@Html(Messages("awrs.generic.error.title"))</h1>
-    <h2 id="application-error-description" class="heading-medium">@Html(Messages("awrs.generic.error.status"))</h2>
+    <h1 id="application-error-header" class="heading-xlarge">@Html(messages("awrs.generic.error.title"))</h1>
+    <h2 id="application-error-description" class="heading-medium">@Html(messages("awrs.generic.error.status"))</h2>
 </div>
 
 }

@@ -22,9 +22,9 @@
 @import views.view_application.helpers._
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
 
-@(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+@import config.ApplicationConfig
+@(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(supplierAddressForm) }
 
@@ -34,35 +34,37 @@
 <script type="text/javascript" src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
 }
 @actionRoute = @{
-    isEditMode match {
-        case true => controllers.routes.SupplierAddressesController.saveAndReturn(supplierAddressId, isNewRecord)
-        case false => controllers.routes.SupplierAddressesController.saveAndContinue(supplierAddressId, isNewRecord)
+    if(isEditMode) {
+        controllers.routes.SupplierAddressesController.saveAndReturn(supplierAddressId, isNewRecord)
+    } else {
+        controllers.routes.SupplierAddressesController.saveAndContinue(supplierAddressId, isNewRecord)
     }
 }
 
 @ctaMessage = @{
-    isEditMode match {
-        case true => Messages("awrs.generic.save_return")
-        case false => Messages("awrs.generic.save_continue")
+    if(isEditMode) {
+        messages("awrs.generic.save_return")
+    } else {
+        messages("awrs.generic.save_continue")
     }
 }
 
 @pageHeading = @{
     (isEditMode(), isNewRecord, supplierAddressId) match {
         case (true, true, 1) | (false, true, 1) | (false, false, 1) => {
-            Messages("awrs.supplier-addresses.heading.first")
+            messages("awrs.supplier-addresses.heading.first")
         }
         case (_, _, _) => {
-            Messages("awrs.supplier-addresses.heading", headingPrefix(enter = "awrs.generic.tell_us_about"), ordinalIntSuffix(supplierAddressId))
+            messages("awrs.supplier-addresses.heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about")), ordinalIntSuffix(supplierAddressId))
         }
     }
 }
 
 @pageTitle = @{
-    Messages("awrs.generic.tab.title", pageHeading)
+    messages("awrs.generic.tab.title", pageHeading)
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true){
+@includes.awrs_main(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true){
 <link rel="stylesheet" href='@routes.Assets.at("stylesheets/jquery-ui.min.css")'/>
 <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
@@ -75,7 +77,7 @@
             <h1 id="supplier-addresses-title" class="heading-xlarge">@pageHeading</h1>
             @awrsProgressHelper(request.getBusinessType, suppliersName)
         </header>
-        <p id="supplier-address-description" class="lede">@Html(Messages("awrs.supplier-addresses.description"))</p>
+        <p id="supplier-address-description" class="lede">@Html(messages("awrs.supplier-addresses.description"))</p>
         @form(action = actionRoute){
             @if(isEditMode() || supplierAddressId > 1){
                 <input type="hidden" name="alcoholSupplier" id="alcoholSupplier-yes" value="Yes">
@@ -84,9 +86,9 @@
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             supplierAddressForm("alcoholSupplier"),
-                            Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                                Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                            legend = Messages("awrs.supplier-addresses.heading.first"),
+                            Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                                messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                            legend = messages("awrs.supplier-addresses.heading.first"),
                             legendId = "alcoholSupplierAddress-legend",
                             legendClass = "visuallyhidden",
                             fieldSetClass = "inline",
@@ -101,8 +103,8 @@
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             supplierAddressForm("supplierName"),
-                            label = Messages("awrs.supplier-addresses.supplier_name"),
-                            maxLength = AwrsFieldConfig.supplierNameLen.toString,
+                            label = messages("awrs.supplier-addresses.supplier_name"),
+                            maxLength = supplierNameLen.toString,
                             labelHighlight = true,
                             required = true,
                             inputClass = "alcoholSupplierName"
@@ -112,9 +114,9 @@
                         @awrsInputTypeRadioGroup(
                             InputTypeRadioGroupParams(
                                 supplierAddressForm("ukSupplier"),
-                                Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                                    Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                                legend = Messages("awrs.supplier-addresses.uk_supplier"),
+                                Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                                    messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                                legend = messages("awrs.supplier-addresses.uk_supplier"),
                                 legendId = "ukSupplierAddress-legend",
                                 fieldSetClass = "inline",
                                 fieldSetAttributes = "id=ukSupplier_field"
@@ -133,7 +135,7 @@
                                 @awrsIdVRNHelper(
                                     supplierAddressForm("vatRegistered"),
                                     supplierAddressForm("vatNumber"),
-                                    legend = Some(Messages("awrs.supplier-addresses.vat_registered")),
+                                    legend = Some(messages("awrs.supplier-addresses.vat_registered")),
                                     ariaLabelledBy = "vatNumber_field vrn-information",
                                     formHasErrors = supplierAddressForm.hasErrors
                                 )
@@ -145,9 +147,9 @@
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     supplierAddressForm("additionalSupplier"),
-                                    Seq(Messages("awrs.generic.yes") -> Messages("awrs.generic.yes"),
-                                        Messages("awrs.generic.no") -> Messages("awrs.generic.no")),
-                                    legend = Messages("awrs.supplier-addresses.add_supplier"),
+                                    Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
+                                        messages("awrs.generic.no") -> messages("awrs.generic.no")),
+                                    legend = messages("awrs.supplier-addresses.add_supplier"),
                                     legendId = "additionalSupplier-legend",
                                     fieldSetClass = "inline",
                                     fieldSetAttributes = "id=additionalSupplier_field"

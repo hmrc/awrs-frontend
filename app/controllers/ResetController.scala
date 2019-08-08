@@ -16,31 +16,40 @@
 
 package controllers
 
-import config.FrontendAuthConnector
+import audit.Auditable
+import config.ApplicationConfig
 import controllers.auth.AwrsController
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.Save4LaterService
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ResetController extends AwrsController {
-  val save4LaterService: Save4LaterService
+class ResetController @Inject()(mcc: MessagesControllerComponents,
+                                val save4LaterService: Save4LaterService,
+                                val authConnector: DefaultAuthConnector,
+                                val auditable: Auditable,
+                                val accountUtils: AccountUtils,
+                                val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  def resetApplication = async {
-    implicit user => implicit request =>
-      save4LaterService.mainStore.removeAll
-      Future.successful(Redirect(routes.ApplicationController.logout))
+  implicit val ec: ExecutionContext = mcc.executionContext
+  val signInUrl: String = applicationConfig.signIn
+
+  def resetApplication: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { ar =>
+      save4LaterService.mainStore.removeAll(ar)
+      Future.successful(Redirect(routes.ApplicationController.logout()))
+    }
   }
 
-  def resetApplicationUpdate = async {
-    implicit user => implicit request =>
-      save4LaterService.mainStore.removeAll
-      save4LaterService.api.removeAll
-      Future.successful(Redirect(routes.ApplicationController.logout))
+  def resetApplicationUpdate: Action[AnyContent] = Action.async { implicit request =>
+    authorisedAction { ar =>
+      save4LaterService.mainStore.removeAll(ar)
+      save4LaterService.api.removeAll(ar)
+      Future.successful(Redirect(routes.ApplicationController.logout()))
+    }
   }
-}
-
-object ResetController extends ResetController {
-  override val authConnector = FrontendAuthConnector
-  override val save4LaterService = Save4LaterService
 }

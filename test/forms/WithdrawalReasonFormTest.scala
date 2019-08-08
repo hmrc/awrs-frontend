@@ -20,17 +20,18 @@ import forms.AWRSEnums.WithdrawalReasonEnum
 import forms.AWRSEnums.WithdrawalReasonEnum._
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mock.MockitoSugar
+import models.WithdrawalReason
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
+import play.api.data.Form
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig
 
-class WithdrawalReasonFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class WithdrawalReasonFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
 
   // lazy required when AwrsFieldConfig is used to make sure the app is started before the config is accessed
-  implicit lazy val testForm = WithdrawalReasonForm.withdrawalReasonForm.form
-
-  val preDefinedTypes = Set(AppliedInError, NoLongerTrading, DuplicateApplication, JoinedAWRSGroup)
+  implicit lazy val testForm: Form[WithdrawalReason] = WithdrawalReasonForm.withdrawalReasonForm.form
+  val preDefinedTypes: Set[AWRSEnums.WithdrawalReasonEnum.Value] = Set(AppliedInError, NoLongerTrading, DuplicateApplication, JoinedAWRSGroup)
 
   "Withdrawal Reason Form" should {
     "Correctly validate that at least one selection is made" in {
@@ -55,7 +56,7 @@ class WithdrawalReasonFormTest extends UnitSpec with MockitoSugar with OneServer
       val fieldName = "reasonOther"
 
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.withdrawal.error.other.reason_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "other reasons", AwrsFieldConfig.withdrawalOtherReasonsLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "other reasons", withdrawalOtherReasonsLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "other reasons"))
       val formatError = ExpectedFieldFormat(invalidFormats)
 

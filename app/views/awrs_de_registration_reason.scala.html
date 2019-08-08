@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@(deRegistrationReason: Form[models.DeRegistrationReason])(implicit request: Request[AnyRef], messages: Messages )
 @import views.helpers.InputTypeRadioGroupParams
 @import views.helpers.InputTypeTextParams
 @import forms.DeRegistrationReasonForm._
@@ -23,45 +22,54 @@
 @import views.html.helpers._
 @import utils.AwrsFieldConfig
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.de_registration_reason.page_heading")), userLoggedIn = true) {
+@import config.ApplicationConfig
+@(deRegistrationReason: Form[models.DeRegistrationReason])(implicit request: Request[AnyRef], messages: Messages, awrsFieldConfig: AwrsFieldConfig, applicationConfig: ApplicationConfig)
+
+@enumPairToMessage(msgKey: String) = @{
+    val (key, value) = enumPair(msgKey)
+    messages(key) -> messages(value)
+}
+
+
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.de_registration_reason.page_heading")), userLoggedIn = true) {
 <div class="grid">
     <div class="grid grid-2-3">
         @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
         @errorSummaryTemplate(deRegistrationReason)
-        <h1 id="de_registration-heading" class="heading-xlarge">@Messages("awrs.de_registration_reason.page_heading")</h1>
+        <h1 id="de_registration-heading" class="heading-xlarge">@messages("awrs.de_registration_reason.page_heading")</h1>
         @form(action = controllers.routes.DeRegistrationController.submitReason) {
             <div class="form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         deRegistrationReason(deRegistrationReasonId),
-                        Seq(enumPair("cases_to_be_registerable_for_the_scheme"),
-                            enumPair("ceases_to_trade_as_an_alcohol_wholesaler"),
-                            enumPair("joining_a_group_to_register_for_awrs"),
-                            enumPair("joining_a_partnership_to_register_for_awrs"),
-                            enumPair("group_disbanded"),
-                            enumPair("partnership_disbanded"),
-                            enumPair("other")),
-                        legend = Messages("awrs.de_registration_reason.page_heading"),
+                        Seq(enumPairToMessage("cases_to_be_registerable_for_the_scheme"),
+                            enumPairToMessage("ceases_to_trade_as_an_alcohol_wholesaler"),
+                            enumPairToMessage("joining_a_group_to_register_for_awrs"),
+                            enumPairToMessage("joining_a_partnership_to_register_for_awrs"),
+                            enumPairToMessage("group_disbanded"),
+                            enumPairToMessage("partnership_disbanded"),
+                            enumPairToMessage("other")),
+                        legend = messages("awrs.de_registration_reason.page_heading"),
                         legendId = "deRegistrationReason-legend",
                         legendClass = "visuallyhidden",
                         fieldSetAttributes = "id=deRegistrationReason_field"
                     )
                 )
-                <div id="@Messages("awrs.de_registration.reason.other.schema_enum").toLowerCase.replace(" ","_")">
+                <div id="@messages("awrs.de_registration.reason.other.schema_enum").toLowerCase.replace(" ","_")">
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             deRegistrationReason(deRegReasonOtherId),
                             inputId = "deRegistrationReason-other",
-                            label = Messages("awrs.de_registration_reason.other_input_label"),
+                            label = messages("awrs.de_registration_reason.other_input_label"),
                             labelHighlight = true,
-                            maxLength = AwrsFieldConfig.frontendDefaultLen.toString,
+                            maxLength = frontendDefaultLen,
                             wrapperClass = "panel-indent",
                             required = true
                         )
                     )
                 </div>
             </div>
-            @awrsSubmitButton(Messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
         }
     </div>
 </div>

@@ -17,41 +17,41 @@
 package services
 
 import _root_.models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
+import audit.Auditable
+import controllers.auth.StandardAuthRetrievals
+import javax.inject.Inject
 import models._
 import play.api.mvc.{AnyContent, Request}
 import services.apis.{AwrsAPI11, AwrsAPI12Cache, AwrsAPI9}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.LoggingUtils
 import utils.SessionUtil._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier }
+import scala.concurrent.{ExecutionContext, Future}
 
 case class StatusReturnType(wasViewed: Boolean,
                             status: Option[SubscriptionStatusType],
                             notification: Option[StatusNotification],
                             info: Option[StatusInfoType])
 
-trait StatusManagementService extends LoggingUtils {
-
-  val api9: AwrsAPI9
-  val api11: AwrsAPI11
-  val api12: AwrsAPI12Cache
-  val save4LaterService: Save4LaterService
-  val keyStoreService: KeyStoreService
-
+class StatusManagementService @Inject()(api9: AwrsAPI9,
+                                        api11: AwrsAPI11,
+                                        api12: AwrsAPI12Cache,
+                                        save4LaterService: Save4LaterService,
+                                        keyStoreService: KeyStoreService,
+                                        val auditable: Auditable) extends LoggingUtils {
 
   // This method will call api 9 first and depending on the status decides whether to call api 12 or not before calling api 11.
   // when changing the routing conditions also review the impl in api 11, as it will have safe guards of its own within its methods.
-  private def deepFetch(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[StatusReturnType] = {
+  private def deepFetch(authRetrievals: StandardAuthRetrievals)
+                       (implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] = {
     lazy val onComplete =
       (status: Option[SubscriptionStatusType], notification: Option[StatusNotification], info: Option[StatusInfoType]) =>
-        api12.getNotificationViewedStatus flatMap {
+        api12.getNotificationViewedStatus(authRetrievals) flatMap {
           case Some(viewedStatusResponse) =>
             val wasViewed = viewedStatusResponse.viewed
             keyStoreService.saveViewedStatus(wasViewed).flatMap { _ =>
-              api12.markNotificationViewedStatusAsViewed map {
+              api12.markNotificationViewedStatusAsViewed(authRetrievals) map {
                 _ => StatusReturnType(wasViewed = wasViewed, status = status, notification = notification, info = info)
               }
             }
@@ -63,12 +63,12 @@ trait StatusManagementService extends LoggingUtils {
 
     lazy val callAPI11 =
       (status: SubscriptionStatusType, contactNumber: Option[String], notification: Option[StatusNotification]) =>
-        api11.getStatusInfo(status.formBundleStatus, contactNumber, notification.fold[Option[StatusContactType]](None)(x => x.contactType)) flatMap {
+        api11.getStatusInfo(status.formBundleStatus, contactNumber, notification.fold[Option[StatusContactType]](None)(x => x.contactType), authRetrievals) flatMap {
           info => onComplete(Some(status), notification, info)
         }
 
     lazy val callAPI12 =
-      (status: SubscriptionStatusType, api9ContactNumber: Option[String]) => api12.getNotificationCache(status.formBundleStatus) flatMap {
+      (status: SubscriptionStatusType, api9ContactNumber: Option[String]) => api12.getNotificationCache(status.formBundleStatus, authRetrievals) flatMap {
         // N.B. we also get a status code back from API 12, this should be the same as the status from API9
         // (except pending). We are not policing this check here because the likelihood of these two status being
         // different is negligible
@@ -82,7 +82,7 @@ trait StatusManagementService extends LoggingUtils {
         }
       }
 
-    api9.getSubscriptionStatus flatMap {
+    api9.getSubscriptionStatus(authRetrievals) flatMap {
       case Some(subscriptionStatus) =>
         subscriptionStatus.formBundleStatus match {
           case Pending | Approved | ApprovedWithConditions => callAPI12(subscriptionStatus, subscriptionStatus.businessContactNumber)
@@ -95,7 +95,7 @@ trait StatusManagementService extends LoggingUtils {
     }
   }
 
-  private def localFetch(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[StatusReturnType] =
+  private def localFetch(implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] =
     for {
       subscriptionStatus <- api9.getSubscriptionStatusFromCache
       alertStatus <- api12.getAlertFromCache
@@ -105,18 +105,10 @@ trait StatusManagementService extends LoggingUtils {
 
 
   // if all the api calls were successful then the status should be in the session, and the session variable can only exist if all the status related apis were called successfully
-  def retrieveStatus(implicit user: AuthContext, hc: HeaderCarrier, request: Request[AnyContent]): Future[StatusReturnType] =
-  request getSessionStatus match {
-    case Some(status) => localFetch
-    case _ => deepFetch
-  }
+  def retrieveStatus(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] =
+    request.getSessionStatus match {
+      case Some(_) => localFetch
+      case _       => deepFetch(authRetrievals)
+    }
 
-}
-
-object StatusManagementService extends StatusManagementService {
-  val api9 = AwrsAPI9
-  val api11 = AwrsAPI11
-  val api12 = AwrsAPI12Cache
-  val save4LaterService = Save4LaterService
-  val keyStoreService = KeyStoreService
 }

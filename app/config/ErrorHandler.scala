@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package controllers.auth
+package config
 
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
-import uk.gov.hmrc.play.frontend.auth.{AuthenticationProvider, TaxRegime}
+import javax.inject.Inject
+import play.api.Configuration
+import play.api.i18n.MessagesApi
+import play.api.mvc.Request
+import play.twirl.api.Html
+import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
-  object AwrsRegistrationRegime extends TaxRegime {
+class ErrorHandler @Inject()(val messagesApi: MessagesApi, val configuration: Configuration, implicit val applicationConfig: ApplicationConfig) extends FrontendErrorHandler {
 
-  override def isAuthorised(accounts: Accounts): Boolean = accounts.ct.isDefined || accounts.org.isDefined || accounts.sa.isDefined || accounts.awrs.isDefined
-
-  override def authenticationType: AuthenticationProvider = AwrsRegistrationGovernmentGateway
-
-  override def unauthorisedLandingPage: Option[String] = Some(controllers.routes.IndexController.unauthorised().url)
-
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
+    views.html.error_template(pageTitle, heading, message)
 }

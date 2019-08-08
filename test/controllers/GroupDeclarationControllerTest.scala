@@ -17,16 +17,12 @@
 package controllers
 
 import builders.SessionBuilder
-import config.FrontendAuthConnector
 import connectors.mock.MockAuthConnector
-import models._
-import org.jsoup.Jsoup
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
 
 import scala.concurrent.Future
 
@@ -34,22 +30,9 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  val request = FakeRequest()
-
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val formId = "groupDeclaration"
-
-  val testGroupDeclaration = GroupDeclaration(true)
-
-  object TestGroupDeclarationController extends GroupDeclarationController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-  }
-
-  "GroupDeclarationController" must {
-    "use the correct AuthConnector" in {
-      GroupDeclarationController.authConnector shouldBe FrontendAuthConnector
-    }
-  }
+  val testGroupDeclarationController: GroupDeclarationController = new GroupDeclarationController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Submitting the application declaration form with " should {
     "Authenticated and authorised users" should {
@@ -71,7 +54,8 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
-    val result = TestGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    setAuthMocks()
+    val result = testGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

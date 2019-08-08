@@ -28,13 +28,7 @@ trait MockTestStatusManagementService extends AwrsUnitTestTraits
   with MockSave4LaterService
   with MockKeyStoreService {
 
-  object TestStatusManagementService extends StatusManagementService {
-    override val api9 = TestAPI9
-    override val api11 = TestAPI11
-    override val api12 = TestAPI12Cache
-    override val save4LaterService = TestSave4LaterService
-    override val keyStoreService = TestKeyStoreService
-  }
+  val testStatusManagementService = new StatusManagementService(testAPI9, testAPI11, testAPI12Cache, testSave4LaterService, testKeyStoreService, mockAuditable)
 
   case class MockStatusManagementServiceConfiguration(api9: CacheConfigurationLocation = NotCachedLocally,
                                                       api11: CacheConfigurationLocation = NotCachedLocally,
@@ -44,7 +38,7 @@ trait MockTestStatusManagementService extends AwrsUnitTestTraits
   def setupMockTestStatusManagementService(status: FormBundleStatus,
                                            notification: Option[StatusContactType],
                                            statusInfo: MockConfiguration[Option[StatusInfoType]] = DoNotConfigure, // here the DoNotConfigure will use default configuration instead
-                                           configuration: MockStatusManagementServiceConfiguration = MockStatusManagementServiceConfiguration()) = {
+                                           configuration: MockStatusManagementServiceConfiguration = MockStatusManagementServiceConfiguration()): Unit = {
 
     implicit def optionToMockConfig[T](someValue: Option[T]): MockConfiguration[T] =
       someValue match {
@@ -94,7 +88,7 @@ object MockTestStatusManagementService extends MockTestStatusManagementService {
 
   val defaultMarkViewedConnector = true
 
-  val expectedRetrieveStatusOutput = (status: FormBundleStatus, notification: Option[StatusContactType]) =>
+  val expectedRetrieveStatusOutput: (FormBundleStatus, Option[StatusContactType]) => StatusReturnType = (status: FormBundleStatus, notification: Option[StatusContactType]) =>
     StatusReturnType(
       wasViewed = defaultViewedStatusConnector,
       MockAwrsAPI9.defaultSubscriptionStatusType(status),

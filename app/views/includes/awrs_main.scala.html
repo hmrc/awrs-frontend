@@ -15,8 +15,8 @@
  *@
 
 @import uk.gov.hmrc.play.views.html.layouts
-@import utils.AwrsSessionKeys
-@import utils.CountryCodes
+@import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
 @(
     title: String,
     pageScripts: Option[Html] = None,
@@ -30,7 +30,9 @@
     nameBusiness: Option[String] = None,
     signOutToSurvey: Boolean = true,
     showSignOutLink: Boolean = true
-)(mainContent: Html)(implicit request : Request[_], messages: Messages)
+)(mainContent: Html)(implicit request : Request[_], messages: Messages, applicationConfig: ApplicationConfig)
+
+@import utils.{CountryCodes, AwrsSessionKeys}
 
 @linkElement = {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/custom.css")'/>
@@ -50,17 +52,17 @@
     <script type="text/javascript" src='@routes.Assets.at("javascripts/countryCode.js")'></script>
     <script type="text/javascript" src='@routes.Assets.at("javascripts/details.polyfill.js")'></script>
     <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
-    <script type="text/javascript">var countries = @Html(CountryCodes.countries);</script>
+    <script type="text/javascript">var countries = @Html(applicationConfig.countryCodes.countries);</script>
     <script type="text/javascript" src='@routes.Assets.at("javascripts/timeout-dialog.js")'></script>
     <script type="text/javascript" charset="utf-8">
     @if(userLoggedIn) {
-        $.timeoutDialog({timeout: @config.ApplicationConfig.defaultTimeoutSeconds, countdown: @config.ApplicationConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.timedOut', logout_redirect_url: '@controllers.routes.ApplicationController.timedOut', restart_on_yes: true, background_no_scroll: true});
+        $.timeoutDialog({timeout: @applicationConfig.defaultTimeoutSeconds, countdown: @applicationConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.timedOut', logout_redirect_url: '@controllers.routes.ApplicationController.timedOut', restart_on_yes: true, background_no_scroll: true});
     }
   </script>
 }
 
 @govuk_wrapper(
-    appConfig = config.ApplicationConfig,
+    appConfig = applicationConfig,
     title = title,
     mainClass = mainClass,
     bodyClasses = bodyClasses,

@@ -19,9 +19,8 @@ package views
 import builders.SessionBuilder
 import controllers.{IndexController, routes}
 import models.FormBundleStatus._
-import models.{IndexStatus => _, _}
+import models.SubscriptionStatusType
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -30,35 +29,24 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services._
+import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import utils.TestConstants._
 import utils.TestUtil._
-import utils.{AwrsNumberFormatter, AwrsUnitTestTraits}
+import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
 import view_models._
 
 import scala.concurrent.Future
 
 class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockApplicationService)
   }
 
-  object TestIndexController extends IndexController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val indexService = mockIndexService
-    override val api9 = TestAPI9
-    override val applicationService = mockApplicationService
-  }
-
-  object TestIndexControllerWithoutIndexMock extends IndexController {
-    override val authConnector = mockAuthConnector
-    override val save4LaterService = TestSave4LaterService
-    override val indexService = IndexService
-    override val api9 = TestAPI9
-    override val applicationService = mockApplicationService
+  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    override val signInUrl = "/sign-in"
   }
 
   lazy val cachemap = CacheMap("", Map[String, JsValue]())
@@ -79,11 +67,11 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
   "IndexView" must {
 
     "Index-table" should {
-      def checkSectionStatus(testData: IndexViewModel)(implicit result: Future[Result]) = {
+      def checkSectionStatus(testData: IndexViewModel)(implicit result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         testData.sectionModels.foreach {
           spec =>
-            val sectionName = document.getElementById(spec.id).text()
+            val sectionName = document.select(s"#${spec.id}").text()
             spec.size match {
               case Some(count) =>
                 sectionName should include(Messages(spec.text, count))
@@ -92,7 +80,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
                 sectionName should include(Messages(spec.text))
 
             }
-            document.getElementById(s"${spec.id}_status").text() shouldBe Messages(spec.status.messagesKey)
+            document.select(s"#${spec.id}_status").text() shouldBe Messages(spec.status.messagesKey)
         }
       }
 
@@ -112,17 +100,17 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         "When the application is incomplete, the call to action button should be save_and_logout" in {
           val result = showIndexPageAPI4(allSectionComplete = false)
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("save_and_logout") should not be null
-          document.getElementById("continue") shouldBe null
-          document.getElementById("submit_changes") shouldBe null
+          document.select("#save_and_logout") should not be null
+          document.select("#continue").size shouldBe 0
+          document.select("#submit_changes").size shouldBe 0
         }
 
         "When the application is complete, the call to action button should be continue" in {
           val result = showIndexPageAPI4(allSectionComplete = true)
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("save_and_logout") shouldBe null
-          document.getElementById("continue") should not be null
-          document.getElementById("submit_changes") shouldBe null
+          document.select("#save_and_logout").size() shouldBe 0
+          document.select("#continue") should not be null
+          document.select("#submit_changes").size shouldBe 0
         }
       }
 
@@ -133,30 +121,30 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
             case (allSectionComplete, hasApplicationChanged) =>
               val result = showIndexPageAPI5(allSectionComplete = allSectionComplete, hasApplicationChanged = hasApplicationChanged)
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("save_and_logout") shouldBe null
-              document.getElementById("continue") shouldBe null
-              document.getElementById("submit_changes") shouldBe null
+              document.select("#save_and_logout").size() shouldBe 0
+              document.select("#continue").size() shouldBe 0
+              document.select("#submit_changes").size() shouldBe 0
           }
         }
 
         "When the application is modified and complete, the call to action button should be submit_changes" in {
           val result = showIndexPageAPI5(allSectionComplete = true, hasApplicationChanged = true)
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("save_and_logout") shouldBe null
-          document.getElementById("continue") shouldBe null
-          document.getElementById("submit_changes") should not be null
+          document.select("#save_and_logout").size() shouldBe 0
+          document.select("#continue").size() shouldBe 0
+          document.select("#submit_changes") should not be null
         }
 
         "When the application is unmodified, do not display the unsubmitted changes banner" in {
           val result = showIndexPageAPI5(hasApplicationChanged = false)
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("changes-banner") shouldBe null
+          document.select("#changes-banner").size() shouldBe 0
         }
 
         "When the application is modified, display the unsubmitted changes banner" in {
           val result = showIndexPageAPI5(hasApplicationChanged = true)
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("changes-banner") should not be null
+          document.select("#changes-banner") should not be null
         }
       }
 
@@ -165,17 +153,16 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
     "The status window" should {
       def checkElementsText(elementId: String, expected: String)(implicit result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById(elementId).text() should include(expected)
+        document.select(s"#$elementId").text() should include(expected)
       }
 
       def checkAwrsRefNo(shouldExists: Boolean)(implicit result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         shouldExists match {
           case true =>
-            document.getElementById("awrsRefNo") should not be null
-            document.getElementById("awrsRefNo").text should include(AwrsNumberFormatter.format(testAWRSUtr))
+            document.select("#awrsRefNo") should not be null
           case false =>
-            document.getElementById("awrsRefNo") shouldBe null
+            document.select("#awrsRefNo").size() shouldBe 0
         }
       }
 
@@ -183,14 +170,14 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
       def checkLinks(linkId: String, expectations: Option[LinkExpectations])(implicit result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
-        val link: Element = document.getElementById(linkId)
+        val link = document.select(s"#$linkId")
         expectations match {
           case Some(exp) =>
             link.attr("href") should be(exp.href)
             link.toString should include(exp.href)
             link.text() shouldBe exp.text
           case None =>
-            link shouldBe null
+            link.size() shouldBe 0
         }
       }
 
@@ -290,7 +277,8 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       showContinueButton = allSectionComplete,
       getStatus = indexStatusModel
     )
-    TestIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
   }
 
 

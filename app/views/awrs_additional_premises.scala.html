@@ -14,16 +14,17 @@
  * limitations under the License.
  *@
 
+@import config.ApplicationConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.view_application.helpers._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import views.helpers._
-@import utils.AwrsFieldConfig
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
 
-@(businessPremisesForm: Form[models.AdditionalBusinessPremises], businessPremisesId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent] , viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+@(businessPremisesForm: Form[models.AdditionalBusinessPremises], businessPremisesId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent] , viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
+
 
     @implicitFormInstance = @{
         Some(businessPremisesForm)
@@ -35,27 +36,29 @@
     }
 
     @actionRoute = @{
-        isEditMode match {
-            case true => controllers.routes.AdditionalPremisesController.saveAndReturn(businessPremisesId, isNewRecord)
-            case false => controllers.routes.AdditionalPremisesController.saveAndContinue(businessPremisesId, isNewRecord)
+        if(isEditMode) {
+            controllers.routes.AdditionalPremisesController.saveAndReturn(businessPremisesId, isNewRecord)
+        } else {
+            controllers.routes.AdditionalPremisesController.saveAndContinue(businessPremisesId, isNewRecord)
         }
     }
 
     @ctaMessage = @{
-        isEditMode match {
-            case true => Messages("awrs.generic.save_return")
-            case false => Messages("awrs.generic.save_continue")
+        if(isEditMode) {
+            messages("awrs.generic.save_return")
+        } else {
+            messages("awrs.generic.save_continue")
         }
     }
 
 @businessPremisesIdHeading = @{
     businessPremisesId match {
-        case 1 if !isEditMode => Messages("awrs.additional-premises.top-heading.first")
-        case id               => Messages("awrs.additional-premises.top-heading", headingPrefix(enter = "awrs.generic.tell_us_about", edit = "awrs.generic.edit", isNewRecord = isNewRecord), ordinalIntSuffix(businessPremisesId))
+        case 1 if !isEditMode => messages("awrs.additional-premises.top-heading.first")
+        case id               => messages("awrs.additional-premises.top-heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalIntSuffix(businessPremisesId))
     }
 }
 
-    @includes.awrs_main(title = Messages("awrs.generic.tab.title", businessPremisesIdHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    @includes.awrs_main(title = messages("awrs.generic.tab.title", businessPremisesIdHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
         <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
         <div class="grid">
             <div class="grid grid-2-3">
@@ -69,20 +72,20 @@
                     @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
                 </header>
 
-                <p id="additional-premises-subtext" class="lede">@Messages("awrs.additional-premises.subtext")</p>
+                <p id="additional-premises-subtext" class="lede">@messages("awrs.additional-premises.subtext")</p>
 
                 @form(action = actionRoute) {
 
-                    @if(isEditMode() || businessPremisesId > 1) {
+                    @if(isEditMode || businessPremisesId > 1) {
                         <input type="hidden" name="additionalPremises" value="Yes">
                     } else {
                         <div id="diffAddress" class="form-group">
                         @awrsInputTypeRadioGroup(
                             InputTypeRadioGroupParams(
                                 businessPremisesForm("additionalPremises"),
-                                Seq("Yes" -> Messages("awrs.generic.yes"),
-                                    "No" -> Messages("awrs.generic.no")),
-                                legend = Messages("awrs.additional-premises.top-heading.first"),
+                                Seq("Yes" -> messages("awrs.generic.yes"),
+                                    "No" -> messages("awrs.generic.no")),
+                                legend = messages("awrs.additional-premises.top-heading.first"),
                                 legendId = "additionalPremises-legend",
                                 legendClass = "visuallyhidden",
                                 fieldSetClass = "inline",
@@ -97,17 +100,17 @@
                             AddressHelperParams()
                         )
 
-                        @if(isEditMode()) {
+                        @if(isEditMode) {
                             <input type="hidden" name="addAnother" value="No">
                         } else {
                             <div id="addAnother" class="form-group">
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     businessPremisesForm("addAnother"),
-                                    Seq("Yes" -> Messages("awrs.generic.yes"),
-                                        "No" -> Messages("awrs.generic.no")
+                                    Seq("Yes" -> messages("awrs.generic.yes"),
+                                        "No" -> messages("awrs.generic.no")
                                     ),
-                                    legend = Messages("awrs.additional-premises.do_you_have_additional_addresses"),
+                                    legend = messages("awrs.additional-premises.do_you_have_additional_addresses"),
                                     legendId = "addAnother-legend",
                                     fieldSetAttributes = "id=addAnother_field",
                                     fieldSetClass = "inline"

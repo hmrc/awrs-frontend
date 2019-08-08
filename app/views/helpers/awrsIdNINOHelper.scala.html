@@ -25,17 +25,17 @@ ariaLabelledBy: Option[String] = None,
 formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
 
 @import play.api.i18n._
-@import views.html.helper._
 @import views.html.helpers._
 @import views.helpers.InputTypeTextParams
 @import views.helpers.InputTypeRadioGroupParams
+
 
 @nationalIdPassportCore(passport : Field, nationalId : Field) = {
     @awrsInputTypeText(
         InputTypeTextParams(
             passport,
             inputId = passport.name,
-            label = Messages("awrs.generic.passport_no"),
+            label = messages("awrs.generic.passport_no"),
             wrapperClass = "panel-indent",
             maxLength = frontendDefaultLen,
             required = true
@@ -47,7 +47,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             nationalId,
             parentForm = formInstance,
             inputId = nationalId.name,
-            label = Messages("awrs.generic.national_id_no"),
+            label = messages("awrs.generic.national_id_no"),
             wrapperClass = "panel-indent",
             maxLength = frontendDefaultLen,
             required = true
@@ -74,9 +74,10 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
 
 @core(withQuestion : Boolean) = @{
     val wrapperClassSetting : Option[String] =
-        withQuestion match {
-            case true => Some("panel-indent")
-            case false => None
+        if(withQuestion) {
+            Some("panel-indent")
+        } else {
+            None
         }
 
     awrsInputTypeText(
@@ -86,10 +87,10 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             inputId = ninoField.name,
             maxLength = frontendDefaultLen,
             wrapperClass = wrapperClassSetting,
-            label = Messages("awrs.director.NINO"),
+            label = messages("awrs.director.NINO"),
             required = true,
             labelHighlight = true,
-            formHint = Messages("awrs.generic.do_you_have_NINO_information"),
+            formHint = messages("awrs.generic.do_you_have_NINO_information"),
             formHintId = "NINO-information",
             ariaLabelledBy = ariaLabelledBy,
             formHasErrors = formHasErrors
@@ -101,10 +102,10 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
     @awrsInputTypeRadioGroup(
         InputTypeRadioGroupParams(
             questionField,
-            Seq("Yes" -> Messages("awrs.generic.yes"),
-                "No" -> Messages("awrs.generic.no")),
+            Seq("Yes" -> messages("awrs.generic.yes"),
+                "No" -> messages("awrs.generic.no")),
             fieldSetAttributes = "id="+questionField.name+"_field",
-            legend = Messages(s"awrs.generic.do_${youOrThey}_have_NINO"),
+            legend = messages(s"awrs.generic.do_${youOrThey}_have_NINO"),
             legendId = questionField.name+"-legend",
             formHint = questionHintText,
             formHintId = questionHintText match {

@@ -26,7 +26,7 @@ import play.api.data.{Form, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
-object ProductsForm {
+object ProductsForm extends AwrsFieldConfig {
 
   private val mainCustomerOtherIsSelected = whenListContainsAnswer(listId = "mainCustomers", answer = "99")
 
@@ -36,7 +36,7 @@ object ProductsForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_mainCustomers"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.customer"),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.customer"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.other_mainCustomers_invalid_format")
       )
     compulsoryText(companyNameConstraintParameters)
@@ -50,7 +50,7 @@ object ProductsForm {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.type_of_product_other"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages(AwrsFieldConfig.otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.product"),
+        genericFieldMaxLengthConstraintParameterForDifferentMessages(otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.product"),
         genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.type_of_product_other_validation")
       )
     compulsoryText(companyNameConstraintParameters)

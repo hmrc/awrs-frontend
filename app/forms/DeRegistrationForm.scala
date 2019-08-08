@@ -36,14 +36,16 @@ object DeRegistrationForm {
 
   private val isTooEarlyOrTooLate = (fieldKey: String) => (date: TupleDate) => {
     val today = LocalDate.now()
-    val isTooLate = today.plusYears(100).isAfter(date.localDate) match {
-      case true => Valid
-      case false => simpleErrorMessage(fieldKey, "awrs.de_registration.error.date_valid")
+    val isTooLate = if (today.plusYears(100).isAfter(date.localDate)) {
+      Valid
+    } else {
+      simpleErrorMessage(fieldKey, "awrs.de_registration.error.date_valid")
     }
-    val isTooEarly = isDateAfterOrEqual(LocalDate.now().toString("dd/MM/yyyy"),
-      new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate) match {
-      case true => isTooLate
-      case false => simpleErrorMessage(fieldKey, "awrs.de_registration.error.proposedDate_toEarly")
+    val isTooEarly = if (isDateAfterOrEqual(LocalDate.now().toString("dd/MM/yyyy"),
+      new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate)) {
+      isTooLate
+    } else {
+      simpleErrorMessage(fieldKey, "awrs.de_registration.error.proposedDate_toEarly")
     }
     isTooEarly
   }
@@ -60,7 +62,7 @@ object DeRegistrationForm {
 
 }
 
-object DeRegistrationReasonForm {
+object DeRegistrationReasonForm extends AwrsFieldConfig {
 
   val deRegistrationReasonId = "deRegistrationReason"
   val deRegReasonOtherId = "deRegistrationReason-other"
@@ -78,20 +80,20 @@ object DeRegistrationReasonForm {
     val fieldNameInErrorMessage = "other reasons"
     val params = CompulsoryTextFieldMappingParameter(
       empty = simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.de_registration.error.other.reason_empty"),
-      maxLengthValidation = genericFieldMaxLengthConstraintParameter(AwrsFieldConfig.deRegistrationOtherReasonsLen, fieldId, fieldNameInErrorMessage),
+      maxLengthValidation = genericFieldMaxLengthConstraintParameter(deRegistrationOtherReasonsLen, fieldId, fieldNameInErrorMessage),
       formatValidations = genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
     )
     compulsoryText(params)
   }
 
-  val whenOtherReasonIsSelected = (data: FormData) => data.getOrElse(deRegistrationReasonId, "").equals(DeRegistrationReasonEnum.Other.toString)
+  val whenOtherReasonIsSelected: FormData => Boolean = (data: FormData) => data.getOrElse(deRegistrationReasonId, "").equals(DeRegistrationReasonEnum.Other.toString)
 
   val deRegistrationReasonValidationForm = Form(mapping(
     deRegistrationReasonId -> deRegistrationReason_compulsory,
     deRegReasonOtherId -> (otherReason_compulsory iff whenOtherReasonIsSelected)
   )(DeRegistrationReason.apply)(DeRegistrationReason.unapply))
 
-  val deRegistrationReasonForm = PreprocessedForm(deRegistrationReasonValidationForm)
+  val deRegistrationReasonForm: PrevalidationAPI[DeRegistrationReason] = PreprocessedForm(deRegistrationReasonValidationForm)
 
 }
 

@@ -16,54 +16,50 @@
 
 package forms
 
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-
 object AwrsFormFields extends AwrsFormFields
 
 trait AwrsFormFields {
-  lazy val wholesaler = Seq(
-    "05"-> Messages("awrs.additional_information.broker"),
-    "01"-> Messages("awrs.additional_information.cash_and_carry"),
-    "04"-> Messages("awrs.additional_information.producer"),
-    "02"-> Messages("awrs.additional_information.supply_off_trade"),
-    "03"-> Messages("awrs.additional_information.supply_on_trade"),
-    "99"-> Messages("awrs.additional_information.other")
+  lazy val wholesaler: Seq[(String, String)] = Seq(
+    "05"-> "Broker",
+    "01"-> "Cash and Carry",
+    "04"-> "Producer",
+    "02"-> "Supplying to off trade, like retailers and off-licences",
+    "03"-> "Supplying to on trade, like pubs and hotels",
+    "99"-> "Other"
   )
 
-  lazy val orders = Seq(
-    "04"-> Messages("awrs.additional_information.orders.facetoface"),
-    "02"-> Messages("awrs.additional_information.orders.internet"),
-    "03"-> Messages("awrs.additional_information.orders.telephonefax"),
-    "99"-> Messages("awrs.additional_information.other")
+  lazy val orders: Seq[(String, String)] = Seq(
+    "04"-> "Face to face",
+    "02"-> "Internet, email or social media",
+    "03"-> "Telephone or fax",
+    "99"-> "Other"
   )
 
-  lazy val mainCustomerOptions = Seq(
-    "05" -> Messages("awrs.additional_information.mainCustomers.hospitality_catering"),
-    "04" -> Messages("awrs.additional_information.mainCustomers.hotels"),
-    "07" -> Messages("awrs.additional_information.mainCustomers.independent_retailers"),
-    "08" -> Messages("awrs.additional_information.mainCustomers.national_retailers"),
-    "02" -> Messages("awrs.additional_information.mainCustomers.night_clubs"),
-    "10" -> Messages("awrs.additional_information.mainCustomers.other_wholesalers"),
-    "03" -> Messages("awrs.additional_information.mainCustomers.private_members_clubs"),
-    "09" -> Messages("awrs.additional_information.mainCustomers.public"),
-    "01" -> Messages("awrs.additional_information.mainCustomers.pubs"),
-    "06" -> Messages("awrs.additional_information.mainCustomers.restaurants"),
-    "99" -> Messages("awrs.additional_information.other")
+  lazy val mainCustomerOptions: Seq[(String, String)] = Seq(
+    "05" -> "Hospitality and catering",
+    "04" -> "Hotels",
+    "07" -> "Independent retailers",
+    "08" -> "National retailers",
+    "02" -> "Night clubs",
+    "10" -> "Other wholesalers",
+    "03" -> "Private members clubs",
+    "09" -> "Public",
+    "01" -> "Pubs",
+    "06" -> "Restaurants",
+    "99"-> "Other"
   )
 
-  lazy val products = Seq(
-    "05"-> Messages("awrs.additional_information.beer"),
-    "04"-> Messages("awrs.additional_information.cider"),
-    "06"-> Messages("awrs.additional_information.perry"),
-    "03"-> Messages("awrs.additional_information.spirits"),
-    "02"-> Messages("awrs.additional_information.wine"),
-    "99"-> Messages("awrs.additional_information.other")
+  lazy val products: Seq[(String, String)] = Seq(
+    "05"-> "Beer",
+    "04"-> "Cider",
+    "06"-> "Perry",
+    "03"-> "Spirits",
+    "02"-> "Wine",
+    "99"-> "Other"
   )
 
-  lazy val exportAlcohol = Seq(
-    "euDispatches" -> Messages("awrs.additional_information.within_eu"),
-    "outsideEU" -> Messages("awrs.additional_information.outside_eu")
+  lazy val exportAlcohol: Seq[(String, String)] = Seq(
+    "euDispatches" -> "Within the EU",
+    "outsideEU" -> "Outside the EU"
   )
 }

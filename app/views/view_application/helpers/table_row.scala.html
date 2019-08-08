@@ -14,10 +14,11 @@
  * limitations under the License.
  *@
 
-@(rowTitle: String,  content: Option[String]*)(implicit cssClass: Option[String] = None, someHref: Option[String] = None, someId: Option[Int] = None, links: Option[List[String]] = None)
+@(rowTitle: String,  content: Option[String]*)(implicit cssClass: Option[String] = None, someHref: Option[String] = None,
+        someId: Option[Int] = None, links: Option[List[String]] = None, messages: Messages)
 @import views.view_application.ViewApplicationHelper._
-@import play.api.i18n.Messages.Implicits._
-@import play.api.Play.current
+
+
 
 @cssClassAttr = {
     @cssClass match {
@@ -31,7 +32,7 @@
         case _ => {}
     }
 }
-
+    
 @countContent(content) match {
     case count if count > 0 => {
         @cssClass match {
@@ -47,7 +48,7 @@
                     <td class="row-data">
                         @for(rRow <- content) {
                             @rRow match {
-                                case Some(data) if Some(data) != Some(NoneBreakingSpace) => {<p>@Html(data)</p>}
+                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p>@Html(data)</p>}
                                 case _ => {}
                             }
                         }
@@ -60,7 +61,7 @@
                     <td class="row-data">
                         @for(rRow <- content) {
                             @rRow match {
-                                case Some(data) if Some(data) != Some(NoneBreakingSpace) => {<p>@data</p>}
+                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p>@data</p>}
                                 case _ => {}
                             }
                          }

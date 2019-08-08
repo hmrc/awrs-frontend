@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import org.mockito.Mockito.when
 import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.mvc.Result
@@ -29,11 +30,7 @@ import scala.concurrent.Future
 
 class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnector {
 
-  object TestApplicationController extends ApplicationController {
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
+  val testApplicationController = new ApplicationController(mockServicesConfig, mockMCC, mockAppConfig)
 
   "Authorised users" should {
     "be redirected to feedback-survey page" in {
@@ -45,7 +42,12 @@ class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnecto
   }
 
   def getWithAuthorisedUser(test: Future[Result] => Any) {
-    val result = TestApplicationController.logout.apply(SessionBuilder.buildRequestWithSession(userId))
+    setAuthMocks()
+
+    when(mockAppConfig.signOut)
+      .thenReturn("/feedback/AWRS")
+
+    val result = testApplicationController.logout.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 

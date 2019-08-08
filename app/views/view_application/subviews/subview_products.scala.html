@@ -21,10 +21,12 @@
 @import views.view_application.subviews.SubviewIds
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String],
+@(headingKey: String,
     someModel: Option[models.Products],
     showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{SubviewIds.productsId}
 
@@ -34,18 +36,18 @@
     @if(showTableHeader) {
         @table_row(
             "",
-            edit_link_s(href, someHeading.fold(Messages("awrs.index_page.products_text"))(x => x))
-        )(cssClass = "record-header")
+            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.products_text")}"))
+        )(cssClass = Some("record-header"), messages = messages)
     }
     @group_checkbox_helper(
-        Messages("awrs.additional_information.main_customers"),
+        messages("awrs.additional_information.main_customers"),
         AwrsFormFields.mainCustomerOptions.toMap,
         model.mainCustomers,
         model.otherMainCustomers
     )
 
     @group_checkbox_helper(
-        Messages("awrs.additional_information.products"),
+        messages("awrs.additional_information.products"),
         AwrsFormFields.products.toMap,
         model.productType,
         model.otherProductType
@@ -60,9 +62,9 @@
     </table>
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(heading, wrapperId, href, productsName)(content(model), preContent = preContent, postContent = postContent)
+@someModel match {
+    case Some(model) => {
+        @subview_core(heading, wrapperId, href, Some(productsName))(content(model), preContent = Some(preContent), postContent = Some(postContent))
     }
     case _ => {}
 }

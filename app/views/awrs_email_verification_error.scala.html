@@ -14,60 +14,56 @@
  * limitations under the License.
  *@
 
-@(email: String, resent: Boolean = false)(implicit request: Request[AnyRef])
-@import play.api.Play.current
-@import play.api.i18n.Messages.Implicits._
+@import config.ApplicationConfig
+@(email: String, resent: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+
 @import play.twirl.api.Html
 @import views.html.helpers._
-
 
 @emailAddress = {
     <strong>@email</strong>.
 }
 
 @contactsLink = {
-    <a id="return-to-contacts" href="@controllers.routes.BusinessContactsController.showBusinessContacts(false)">@Messages("awrs.email_verification_error.contacts_link")</a>
+    <a id="return-to-contacts" href="@controllers.routes.BusinessContactsController.showBusinessContacts(false)">@messages("awrs.email_verification_error.contacts_link")</a>
 }
 
 @resendLink = {
-    <a id="return-to-contacts" href="@controllers.routes.EmailVerificationController.resend">@Messages("awrs.email_verification_error.resend_link")</a>
+    <a id="return-to-contacts" href="@controllers.routes.EmailVerificationController.resend">@messages("awrs.email_verification_error.resend_link")</a>
 }
 
 @resentText = {
-    @resent match {
-        case false => {}
-        case _ => {
-            <p id="email-verification-error-resent">@Html(Messages("awrs.email_verification_error.resent", emailAddress))</p>
-        }
+    @if(resent) {
+        <p id="email-verification-error-resent">@Html(messages("awrs.email_verification_error.resent", emailAddress))</p>
+    } else {
+        {}
     }
 }
 
 @callToAction = {
-    @resent match {
-        case false => {
-            <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.return_to_app_summary")</a>
-        }
-        case _ => {
-            <a href="@routes.EmailVerificationController.checkEmailVerification" class="button" role="button" id="continue">@Messages("awrs.confirmation.button")</a>
-        }
+    @if(resent) {
+        <a href="@routes.EmailVerificationController.checkEmailVerification" class="button" role="button" id="continue">@messages("awrs.confirmation.button")</a>
+    } else {
+        <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@messages("awrs.generic.return_to_app_summary")</a>
     }
 }
 
-@includes.awrs_main(title = Messages("awrs.generic.tab.title", Messages("awrs.email_verification_error.heading"))) {
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_error.heading"))) {
 
     <div class="grid">
         <div class="grid grid-2-3">
-            @backLink(backUrl = resent match {
-                case true =>  controllers.routes.EmailVerificationController.checkEmailVerification().url
-                case _ => controllers.routes.IndexController.showIndex().url
-                }
+            @backLink(backUrl = if(resent) {
+                controllers.routes.EmailVerificationController.checkEmailVerification().url
+            } else {
+                controllers.routes.IndexController.showIndex().url
+            }
             )
             <div>
-                <h1 id="email-verification-error-header" class="heading-xlarge">@Html(Messages("awrs.email_verification_error.heading"))</h1>
-                <p id="email-verification-error-lede" class="lede">@Html(Messages("awrs.email_verification_error.lede"))</p>
-                <p id="email-verification-error-description-1">@Html(Messages("awrs.email_verification_error.info_1", emailAddress))</p>
-                <p id="email-verification-error-description-2">@Html(Messages("awrs.email_verification_error.info_2"))</p>
-                <p id="email-verification-error-description-3">@Html(Messages("awrs.email_verification_error.info_3", contactsLink, resendLink))</p>
+                <h1 id="email-verification-error-header" class="heading-xlarge">@Html(messages("awrs.email_verification_error.heading"))</h1>
+                <p id="email-verification-error-lede" class="lede">@Html(messages("awrs.email_verification_error.lede"))</p>
+                <p id="email-verification-error-description-1">@Html(messages("awrs.email_verification_error.info_1", emailAddress))</p>
+                <p id="email-verification-error-description-2">@Html(messages("awrs.email_verification_error.info_2"))</p>
+                <p id="email-verification-error-description-3">@Html(messages("awrs.email_verification_error.info_3", contactsLink, resendLink))</p>
             </div>
             <div class="form-group">
                 @resentText

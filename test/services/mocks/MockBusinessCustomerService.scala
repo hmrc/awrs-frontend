@@ -17,7 +17,7 @@
 package services.mocks
 
 import models.BusinessCustomerDetails
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import services.BusinessCustomerService
 import utils.AwrsUnitTestTraits
@@ -38,10 +38,10 @@ trait MockBusinessCustomerService extends AwrsUnitTestTraits {
   import MockBusinessCustomerService._
 
   protected final def setupMockBusinessCustomerService(getReviewBusinessDetails: Option[BusinessCustomerDetails] = defaultBusinessCustomerDetails): Unit =
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any())).thenReturn(Future.successful(getReviewBusinessDetails))
+    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getReviewBusinessDetails))
 
   protected final def verifyBusinessCustomerService(getReviewBusinessDetails: Option[Int] = None): Unit =
-    getReviewBusinessDetails ifDefinedThen (count => verify(mockBusinessCustomerService, times(count)).getReviewBusinessDetails[BusinessCustomerDetails](Matchers.any(), Matchers.any()))
+    getReviewBusinessDetails ifDefinedThen (count => verify(mockBusinessCustomerService, times(count)).getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any() ))
 
 }
 

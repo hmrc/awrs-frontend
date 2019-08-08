@@ -16,14 +16,14 @@
 
 package connectors.mock
 
-import connectors.KeyStoreConnector
+import connectors.AwrsKeyStoreConnector
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 
 
 trait MockKeyStoreConnector extends AwrsUnitTestTraits {
   // need to be lazy incase of overrides
-  lazy val mockKeyStoreConnector: KeyStoreConnector = mock[KeyStoreConnector]
+  lazy val mockKeyStoreConnector: AwrsKeyStoreConnector = mock[AwrsKeyStoreConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()

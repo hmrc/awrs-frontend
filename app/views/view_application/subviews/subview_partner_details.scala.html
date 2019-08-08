@@ -22,9 +22,12 @@
 @import contents._
 @import services.DataCacheKeys._
 
-@(someHeading: Option[String],
+@import config.ApplicationConfig
+@(headingKey: String,
   someModel: Option[models.Partners]
-)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.partnerDetailsId
@@ -35,9 +38,10 @@
 }
 
 @getHeading(heading: String, model: models.Partners) = @{
-    model.partners.isEmpty match {
-        case true => heading
-        case _ => f"$heading (${model.partners.size})"
+    if(model.partners.isEmpty) {
+        heading
+    } else {
+        f"$heading (${model.partners.size})"
     }
 }
 @addLinkHref(model: models.Partners) = @{
@@ -46,15 +50,15 @@
 
 @ledeAndTopAdd(model: models.Partners) = {
     @if(isSectionEdit) {
-        <p id="business_partners-subtext" class="lede">@Messages("awrs.business-partner.topText")</p>
+        <p id="business_partners-subtext" class="lede">@messages("awrs.business-partner.topText")</p>
         @if(model.partners.size > 1) {
-            <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), Messages("awrs.view_application.partner"))</div>
+            <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.partner"))</div>
         }
     }
 }
 
 @bottomAdd(model: models.Partners)  = {
-    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), Messages("awrs.view_application.partner"))
+    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.partner"))
 }
 
 @content(model: models.Partners) = {
@@ -63,9 +67,9 @@
     }
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(getHeading(heading, model), wrapperId, sectionName = partnersName)(content(model), preContent = ledeAndTopAdd(model), postContent = bottomAdd(model))
+@someModel match {
+    case Some(model) => {
+        @subview_core(getHeading(heading, model), wrapperId, sectionName = Some(partnersName))(content(model), preContent = Some(ledeAndTopAdd(model)), postContent = Some(bottomAdd(model)))
     }
     case _ => {}
 }

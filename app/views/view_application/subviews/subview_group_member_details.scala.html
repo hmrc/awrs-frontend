@@ -21,13 +21,18 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import contents._
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
-@import utils.AccountUtils
+@import _root_.utils.AccountUtils
+@import uk.gov.hmrc.auth.core.Enrolment
+@import config.ApplicationConfig
 
-@(someHeading: Option[String],
-    someModel: Option[models.GroupMembers],
-    businessLegalEntity: String
-)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, user :AuthContext)
+@(headingKey: String,
+        someModel: Option[models.GroupMembers],
+        businessLegalEntity: String,
+        enrolments: Set[Enrolment],
+        accountUtils: AccountUtils
+)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
+
+@heading = @{messages(headingKey)}
 
 @wrapperId = @{
     SubviewIds.groupMemberDetailsId
@@ -38,15 +43,15 @@
 }
 
 @getHeading(heading: String, model: models.GroupMembers) = @{
-    model.members.isEmpty match {
-        case true => heading
-        case _ => {
-            val size = AccountUtils.hasAwrs match {
-                case true => model.members.size - 1
-                case _ => model.members.size
-            }
-            f"$heading ($size)"
+    if(model.members.isEmpty) {
+        heading
+    } else {
+        val size = if(accountUtils.hasAwrs(enrolments)) {
+            model.members.size - 1
+        } else {
+            model.members.size
         }
+        f"$heading ($size)"
     }
 }
 
@@ -56,19 +61,19 @@
 
 @ledeAndTopAdd(model: models.GroupMembers) = {
     @if(isSectionEdit) {
-        <p id="group-member-lead-paragraph" class="lede">@Messages("awrs.group_member.lead_paragraph")</p>
+        <p id="group-member-lead-paragraph" class="lede">@messages("awrs.group_member.lead_paragraph")</p>
         @if(model.members.size > 1) {
-            <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), Messages("awrs.view_application.group"))</div>
+            <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.group"))</div>
         }
     }
 }
 
 @bottomAdd(model: models.GroupMembers)  = {
-    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), Messages("awrs.view_application.group"))
+    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.group"))
 }
 
 @content(model: models.GroupMembers) = {
-    @if(AccountUtils.hasAwrs) {
+    @if(accountUtils.hasAwrs(enrolments)) {
         @model.members.tail.zipWithIndex.map { case (member, id) =>
             @content_group_member(member, businessLegalEntity, id + 2)
         }
@@ -79,9 +84,9 @@
     }
 }
 
-@(someHeading, someModel) match {
-    case (Some(heading), Some(model)) => {
-        @subview_core(getHeading(heading, model), wrapperId, sectionName = groupMembersName)(content(model), preContent = ledeAndTopAdd(model), postContent = bottomAdd(model))
+@someModel match {
+    case Some(model) => {
+        @subview_core(getHeading(heading, model), wrapperId, sectionName = Some(groupMembersName))(content(model), preContent = Some(ledeAndTopAdd(model)), postContent = Some(bottomAdd(model)))
     }
     case _ => {}
 }

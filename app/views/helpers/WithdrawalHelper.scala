@@ -26,10 +26,10 @@ import play.api.Play.current
 
 object WithdrawalHelper {
 
-  private val frontendKey = (name: String, messageKey: String) => Messages(f"awrs.$messageKey.reason.$name")
-  private val backendKey = (name: String, messageKey: String) => Messages(f"awrs.$messageKey.reason.$name.schema_enum")
+  private val frontendKey = (name: String, messageKey: String) => f"awrs.$messageKey.reason.$name"
+  private val backendKey = (name: String, messageKey: String) => f"awrs.$messageKey.reason.$name.schema_enum"
 
-  def enumPair(enumName: String, messageKey: String) = backendKey(enumName, messageKey) -> frontendKey(enumName, messageKey)
+  def enumPair(enumName: String, messageKey: String): (String, String) = backendKey(enumName, messageKey) -> frontendKey(enumName, messageKey)
 
   private lazy val dateFormat = new SimpleDateFormat("dd MMMM yyyy")
   private lazy val responseDatePattern = "yyyy-MM-dd'T'HH:mm:ss'Z'"

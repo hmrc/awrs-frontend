@@ -16,26 +16,19 @@
 
 package forms.validation.util
 
-
-import org.scalatest.Matchers
-import org.scalatestplus.play.OneServerPerSuite
-
-
 import forms.validation.util.ErrorMessageFactory.createErrorMessage
 import forms.validation.util.ErrorMessageInterpreter.defaultSummaryId
 import forms.validation.util.ErrorMessageInterpreter.getFieldErrors
 import forms.validation.util.ErrorMessageInterpreter.getSummaryErrors
-import play.api.data.Form
+import play.api.data.{Form, Mapping}
 import play.api.data.Forms.mapping
 import play.api.data.Forms.text
 import play.api.data.validation.Constraint
 import play.api.data.validation.Valid
 import play.api.data.validation.ValidationResult
-import play.api.test.FakeApplication
-import uk.gov.hmrc.play.test.UnitSpec
+import utils.AwrsUnitTestTraits
 
-class ErrorMessageLookupTest extends UnitSpec with Matchers with OneServerPerSuite {
-  implicit override lazy val app: FakeApplication = FakeApplication()
+class ErrorMessageLookupTest extends AwrsUnitTestTraits {
 
   case class TestModel(field1: String, field2: String, field3: String)
   def getCCParams(cc: AnyRef): Map[String, String] =
@@ -44,8 +37,6 @@ class ErrorMessageLookupTest extends UnitSpec with Matchers with OneServerPerSui
       a + (f.getName -> f.get(cc).toString())
     }.-("$outer")
   val emptyMap: Map[String, String] = getCCParams(TestModel("", "", ""))
-
-  import scala.reflect.runtime.universe._
 
   def customConstraint[A, B](extractor: A => B, validation: (B) => ValidationResult): Constraint[A] =
     Constraint("t1")(model => validation(extractor(model)))
@@ -56,7 +47,7 @@ class ErrorMessageLookupTest extends UnitSpec with Matchers with OneServerPerSui
       case true  => errorMessageWhenEmpty
     }
 
-  val testModelMapping = mapping(
+  val testModelMapping: Mapping[TestModel] = mapping(
     "field1" -> text,
     "field2" -> text,
     "field3" -> text)(TestModel.apply)(TestModel.unapply)

@@ -16,11 +16,9 @@
 
 package services.apis.mocks
 
-import connectors.AWRSNotificationConnector
 import connectors.mock.MockAWRSNotificationConnector
 import models.StatusContactType._
 import models.{StatusContactType, StatusNotification, ViewedStatusResponse}
-import services.KeyStoreService
 import services.apis.AwrsAPI12Cache
 import services.mocks.MockKeyStoreService
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -30,10 +28,7 @@ trait MockAwrsAPI12Cache extends AwrsUnitTestTraits with MockKeyStoreService wit
 
   import MockAwrsAPI12Cache._
 
-  object TestAPI12Cache extends AwrsAPI12Cache {
-    override val awrsNotificationConnector: AWRSNotificationConnector = mockAWRSNotificationConnector
-    override val keyStoreService: KeyStoreService = TestKeyStoreService
-  }
+  val testAPI12Cache = new AwrsAPI12Cache(mockAWRSNotificationConnector, testKeyStoreService)
 
 
   def setupMockAwrsAPI12Cache(notificationKeyStore: Option[StatusContactType],
@@ -76,9 +71,9 @@ trait MockAwrsAPI12Cache extends AwrsUnitTestTraits with MockKeyStoreService wit
 
 object MockAwrsAPI12Cache {
 
-  val defaultMindedToReject = TestUtil.testStatusNotificationMindedToReject
-  val defaultMindedToRevoke = TestUtil.testStatusNotificationMindedToRevoke
-  val defaultNoLongerMindedToRevoke = TestUtil.testStatusNotificationNoLongerMindedToRevoke
+  val defaultMindedToReject: Option[StatusNotification] = TestUtil.testStatusNotificationMindedToReject
+  val defaultMindedToRevoke: Option[StatusNotification] = TestUtil.testStatusNotificationMindedToRevoke
+  val defaultNoLongerMindedToRevoke: Option[StatusNotification] = TestUtil.testStatusNotificationNoLongerMindedToRevoke
 
   def defaultNotification(notificationType: Option[StatusContactType]): Option[StatusNotification] =
     notificationType match {

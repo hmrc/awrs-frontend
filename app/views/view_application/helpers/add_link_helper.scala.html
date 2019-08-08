@@ -18,17 +18,16 @@
 @import views.view_application.ViewApplicationHelper._
 
 @(isSectionEdit: Boolean)(position: String, href: String, message: String)(implicit messages:Messages)
-@isSectionEdit match {
-    case true => {
-        @table_row(
-            link(
-                href,
-                Messages("awrs.view_application.add_another", message),
-                "link",
-                "add-link-" + position
-            ),
-            NoneBreakingSpace
-        )(cssClass = "record-add")
-    }
-    case false => {}
+@if(isSectionEdit) {
+    @table_row(
+        link(
+            Some(href),
+            Messages("awrs.view_application.add_another", message),
+            "link",
+            Some("add-link-" + position)
+        ),
+        Some(NoneBreakingSpace)
+    )(cssClass = Some("record-add"), messages = messages)
+} else {
+    {}
 }

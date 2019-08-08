@@ -15,20 +15,21 @@
  *@
 
 @import views.helpers.InputTypeRadioGroupParams
-@(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages )
+@import config.ApplicationConfig
+@(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@includes.awrs_main(Messages("awrs.generic.tab.title", Messages("awrs.reapplication.confirm_page.heading")), userLoggedIn = true) {
+@includes.awrs_main(messages("awrs.generic.tab.title", messages("awrs.reapplication.confirm_page.heading")), userLoggedIn = true) {
 
 <div class="grid">
     <div class="grid grid-2-3">
         @backLink()
         @errorSummaryTemplate(reapplicationForm)
-        <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@Messages("awrs.reapplication.confirm_page.heading")</h1>
+        <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@messages("awrs.reapplication.confirm_page.heading")</h1>
         <p class="lede">
-            @Messages("awrs.reapplication.confirm_page.text")
+            @messages("awrs.reapplication.confirm_page.text")
         </p>
 
         @form(action = controllers.routes.ReapplicationController.submit) {
@@ -36,17 +37,17 @@
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         reapplicationForm("answer"),
-                        Seq("Yes" -> Messages("awrs.generic.yes"),
-                            "No" -> Messages("awrs.generic.no")),
+                        Seq("Yes" -> messages("awrs.generic.yes"),
+                            "No" -> messages("awrs.generic.no")),
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=answer_field",
-                        legend = Messages("awrs.reapplication.confirm_page.heading"),
+                        legend = messages("awrs.reapplication.confirm_page.heading"),
                         legendClass = "visuallyhidden",
                         legendId = "createNewApp-legend"
                     )
                 )
             </div>
-            @awrsSubmitButton(Messages("awrs.generic.confirmation.button"))(id = "withdraw-application", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "withdraw-application", classAttr = "button")
         }
     </div>
 </div>

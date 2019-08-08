@@ -14,12 +14,13 @@
  * limitations under the License.
  *@
 
-@(loginScreenUrl: String)(implicit request: Request[AnyRef], messages: Messages)
+@import config.ApplicationConfig
+@(loginScreenUrl: String)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import play.twirl.api.Html
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@includes.awrs_main(title = Messages(Messages("awrs.generic.tab.title", "awrs.generic.signed_out.page_title")), showSignOutLink = false, userLoggedIn = false){
-    <h1 id="title">@Messages("awrs.generic.signed_out.page_title")</h1>
-    <p>@Messages("awrs.generic.signed_out.reason")</p>
-    <p><a href="@loginScreenUrl">@Html(Messages("awrs.generic.signed_out.link"))</a></p>
+@includes.awrs_main(title = messages(messages("awrs.generic.tab.title", "awrs.generic.signed_out.page_title")), showSignOutLink = false, userLoggedIn = false){
+    <h1 id="title">@messages("awrs.generic.signed_out.page_title")</h1>
+    <p>@messages("awrs.generic.signed_out.reason")</p>
+    <p><a href="@loginScreenUrl">@Html(messages("awrs.generic.signed_out.link"))</a></p>
 }

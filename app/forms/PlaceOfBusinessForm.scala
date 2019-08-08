@@ -16,6 +16,7 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.{BooleanRadioEnum, OperatingDurationEnum}
 import forms.prevalidation._
 import forms.submapping.AddressMapping._
@@ -41,14 +42,14 @@ object PlaceOfBusinessForm {
     compulsoryEnum(question)
   }
 
-  val placeOfBusinessValidationForm = Form(mapping(
+  def placeOfBusinessValidationForm(implicit applicationConfig: ApplicationConfig) = Form(mapping(
     "mainPlaceOfBusiness" -> principalAddress_compulsory,
-    "mainAddress" -> (ukAddress_compulsory(prefix = "mainAddress", prefixRefNameInErrorMessage = "principal place of business").toOptionalAddressMapping iff whenPrincipalAddressNo),
+    "mainAddress" -> (ukAddress_compulsory(prefix = "mainAddress", prefixRefNameInErrorMessage = "principal place of business", applicationConfig.countryCodes).toOptionalAddressMapping iff whenPrincipalAddressNo),
     "placeOfBusinessLast3Years" -> previousAddress_compulsory,
-    "placeOfBusinessAddressLast3Years" -> (ukAddress_compulsory(prefix = "placeOfBusinessAddressLast3Years", prefixRefNameInErrorMessage = "previous principal place of business").toOptionalAddressMapping iff whenPreviousAddressNo),
+    "placeOfBusinessAddressLast3Years" -> (ukAddress_compulsory(prefix = "placeOfBusinessAddressLast3Years", prefixRefNameInErrorMessage = "previous principal place of business", applicationConfig.countryCodes).toOptionalAddressMapping iff whenPreviousAddressNo),
     "operatingDuration" -> operatingDuration_compulsory,
     "modelVersion" -> ignored[String](PlaceOfBusiness.latestModelVersion)
   )(PlaceOfBusiness.apply)(PlaceOfBusiness.unapply))
 
-  val placeOfBusinessForm = PreprocessedForm(placeOfBusinessValidationForm)
+  def placeOfBusinessForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[PlaceOfBusiness] = PreprocessedForm(placeOfBusinessValidationForm)
 }

@@ -16,40 +16,31 @@
 
 package services
 
+import audit.Auditable
 import connectors.BusinessMatchingConnector
+import controllers.auth.StandardAuthRetrievals
+import javax.inject.Inject
 import models._
-import play.api.libs.json.{JsError, JsSuccess, JsValue}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.{LoggingUtils, SessionUtil}
-import services.KeyStoreService
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.{LoggingUtils, SessionUtil}
 
-object BusinessMatchingService extends BusinessMatchingService {
-  val businessMatchingConnector: BusinessMatchingConnector = BusinessMatchingConnector
-  override val keyStoreService = KeyStoreService
-}
+import scala.concurrent.{ExecutionContext, Future}
 
-trait BusinessMatchingService extends LoggingUtils {
+class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService, businessMatchingConnector: BusinessMatchingConnector, val auditable: Auditable) extends LoggingUtils {
 
-  val keyStoreService: KeyStoreService
-
-  def businessMatchingConnector: BusinessMatchingConnector
-
-  def matchBusinessWithUTR(utr: String, organisation: Option[Organisation])
-                          (implicit user: AuthContext, hc: HeaderCarrier): Future[Boolean] = {
+  def matchBusinessWithUTR(utr: String, organisation: Option[Organisation], authRetrievals: StandardAuthRetrievals)
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val searchData = MatchBusinessData(acknowledgementReference = SessionUtil.getUniqueAckNo,
-      utr = utr, requiresNameMatch = true, isAnAgent = false, individual = None, organisation = organisation)
+      utr = utr, requiresNameMatch = true, individual = None, organisation = organisation)
     // set the user type to ORG as long as this is only ever used for groups as individuals cannot be group members
-    businessMatchingConnector.lookup(searchData, "org") flatMap { dataReturned =>
+    businessMatchingConnector.lookup(searchData, "org", authRetrievals) flatMap { dataReturned =>
       storeBCAddressApi3(dataReturned)
       isSuccessfulMatch(dataReturned = dataReturned)
     }
   }
 
-  private def storeBCAddressApi3(dataReturned: JsValue)(implicit user: AuthContext, hc: HeaderCarrier): Unit = {
+  private def storeBCAddressApi3(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val address = (dataReturned \ "address").validate[BCAddressApi3]
     address match {
       case s: JsSuccess[BCAddressApi3] => keyStoreService.saveBusinessCustomerAddress(s.get)
@@ -57,7 +48,7 @@ trait BusinessMatchingService extends LoggingUtils {
     }
   }
 
-  private def isSuccessfulMatch(dataReturned: JsValue)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  private def isSuccessfulMatch(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val isSuccessResponse = dataReturned.validate[MatchSuccessResponse].isSuccess
     debug(s"[BusinessMatchingService][matchBusinessWithUTR]dataReturned = $dataReturned, isSuccessResponse = $isSuccessResponse")
     Future.successful(isSuccessResponse)

@@ -16,14 +16,16 @@
 
 package forms
 
+import config.ApplicationConfig
 import forms.AWRSEnums.{BooleanRadioEnum, OperatingDurationEnum}
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 
 class PlaceOfBusinessFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+  implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val forms = PlaceOfBusinessForm.placeOfBusinessForm.form
 
   "Business contacts form" should {

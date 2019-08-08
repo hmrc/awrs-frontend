@@ -25,7 +25,7 @@ import scala.annotation.tailrec
 object TestConstants {
 
   // We only want one test nino and utr throughout, therefore assign a value in the object declaration
-  lazy val testNino = new Generator().nextNino.nino
+  lazy val testNino: String = new Generator().nextNino.nino
   lazy val testUtr = new SaUtrGenerator().nextSaUtr.utr
   val prefixedLowerCaseUTR = SaUtr("abc123451235")
   val prefixedCapsUTR = SaUtr("ABC123451235")

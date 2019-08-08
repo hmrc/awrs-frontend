@@ -18,7 +18,7 @@ package connectors.mock
 
 import connectors.AWRSConnector
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
 import utils.AwrsUnitTestTraits
@@ -31,7 +31,7 @@ import scala.concurrent.Future
 trait MockAWRSConnector extends AwrsUnitTestTraits {
 
   // need to be lazy incase of overrides
-  lazy val mockAWRSConnector = mock[AWRSConnector]
+  lazy val mockAWRSConnector: AWRSConnector = mock[AWRSConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -45,7 +45,7 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
                              getStatusInfo: StatusInfoType = defaultStatusTypeInfo,
                              submitAWRSData: SuccessfulSubscriptionResponse = defaultSuccessfulSubscriptionResponse,
                              updateAWRSData: SuccessfulUpdateSubscriptionResponse = defaultSuccessfulUpdateSubscriptionResponse
-                            ) =
+                            ): Unit =
     setupMockAWRSConnectorWithOnly(
       lookupAWRSData = lookupAWRSData,
       checkStatus = checkStatus,
@@ -61,22 +61,22 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
                                       submitAWRSData: MockConfiguration[SuccessfulSubscriptionResponse] = DoNotConfigure,
                                       updateAWRSData: MockConfiguration[SuccessfulUpdateSubscriptionResponse] = DoNotConfigure,
                                       updateGroupBusinessPartner: MockConfiguration[SuccessfulUpdateGroupBusinessPartnerResponse] = DoNotConfigure
-                                    ) = {
-    lookupAWRSData ifConfiguredThen (jsValue => when(mockAWRSConnector.lookupAWRSData(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(jsValue)))
-    checkStatus ifConfiguredThen (status => when(mockAWRSConnector.checkStatus(Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(status)))
-    getStatusInfo ifConfiguredThen (info => when(mockAWRSConnector.getStatusInfo(Matchers.any(), Matchers.any(),Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(info)))
-    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data)))
-    updateAWRSData ifConfiguredThen (data => when(mockAWRSConnector.updateAWRSData(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data)))
-    updateGroupBusinessPartner ifConfiguredThen (data => when(mockAWRSConnector.updateGroupBusinessPartner(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(data)))
+                                    ): Unit = {
+    lookupAWRSData ifConfiguredThen (jsValue => when(mockAWRSConnector.lookupAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(jsValue)))
+    checkStatus ifConfiguredThen (status => when(mockAWRSConnector.checkStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(status)))
+    getStatusInfo ifConfiguredThen (info => when(mockAWRSConnector.getStatusInfo(ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(info)))
+    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
+    updateAWRSData ifConfiguredThen (data => when(mockAWRSConnector.updateAWRSData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
+    updateGroupBusinessPartner ifConfiguredThen (data => when(mockAWRSConnector.updateGroupBusinessPartner(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
   }
 
   def verifyAWRSConnector(lookupAWRSData: Option[Int] = None,
                           checkStatus: Option[Int] = None,
                           getStatusInfo: Option[Int] = None
-                         ) = {
-    lookupAWRSData ifDefinedThen (count => verify(mockAWRSConnector, times(count)).lookupAWRSData(Matchers.any())(Matchers.any(), Matchers.any()))
-    checkStatus ifDefinedThen (count => verify(mockAWRSConnector, times(count)).checkStatus(Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any()))
-    getStatusInfo ifDefinedThen (count => verify(mockAWRSConnector, times(count)).getStatusInfo(Matchers.any(), Matchers.any(),Matchers.any(),Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+                         ): Unit = {
+    lookupAWRSData ifDefinedThen (count => verify(mockAWRSConnector, times(count)).lookupAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    checkStatus ifDefinedThen (count => verify(mockAWRSConnector, times(count)).checkStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    getStatusInfo ifDefinedThen (count => verify(mockAWRSConnector, times(count)).getStatusInfo(ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
   }
 
 
@@ -85,10 +85,10 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
 object MockAWRSConnector {
   // default test data
   // for mockAWRSConnector
-  val defaultAPI5 = api5LTDJson
-  val defaultSubscriptionStatusType = testSubscriptionStatusTypeApprovedWithConditions
-  val defaultStatusTypeInfo = testStatusInfoTypeApprovedWithConditions
-  val defaultSuccessfulSubscriptionResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
-  val defaultSuccessfulUpdateSubscriptionResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
+  val defaultAPI5: JsValue = api5LTDJson
+  val defaultSubscriptionStatusType: SubscriptionStatusType = testSubscriptionStatusTypeApprovedWithConditions
+  val defaultStatusTypeInfo: StatusInfoType = testStatusInfoTypeApprovedWithConditions
+  val defaultSuccessfulSubscriptionResponse: SuccessfulSubscriptionResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
+  val defaultSuccessfulUpdateSubscriptionResponse: SuccessfulUpdateSubscriptionResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
 
 }

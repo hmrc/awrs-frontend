@@ -14,18 +14,20 @@
  * limitations under the License.
  *@
 
+@import config.ApplicationConfig
+@import views.view_application.helpers.ViewApplicationType
+@import uk.gov.hmrc.auth.core.Enrolment
+@import _root_.utils.AccountUtils
+
+@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
+
 @import views.view_application.helpers.OneViewMode
 @import views.view_application.ViewApplicationHelper._
 @import views.html.view_application.helpers._
 @import services.DataCacheKeys._
 @import views.html.view_application.subviews._
-@import views.view_application.helpers.ViewApplicationType
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.html.helpers._
-@import utils.AccountUtils
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
-
-@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, user :AuthContext)
 
 @businessLegalEntity = @{
     cache.getBusinessType.get.legalEntity.get
@@ -38,27 +40,27 @@
     }
 }
 
-@getHeading = @{ (sectionName: String) => getSectionDisplayName(sectionName, businessLegalEntity) }
+@getHeading = @{ sectionName: String => messages(getSectionDisplayName(sectionName, businessLegalEntity)) }
 <div id="back-link">
     @backLink(alwaysShow = true)
 </div>
 <div class="alert alert--info alert--info__light" role="alert">
-    <p class="alert__message">@Messages("awrs.view_application.status_colon") @status</p>
+    <p class="alert__message">@messages("awrs.view_application.status_colon") @status</p>
 </div>
-<h1 class="heading-xlarge">@Messages("awrs.view_application.heading", businessName.fold("")(x => x))</h1>
+<h1 class="heading-xlarge">@messages("awrs.view_application.heading", businessName.fold("")(x => x))</h1>
 
 @awrsPrintLink()
 
-@subview_business_details(getHeading(businessDetailsName), cache.getBusinessDetails, businessName, false)
-@subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity), false)
-@subview_place_of_business(getHeading(placeOfBusinessName), cache.getPlaceOfBusiness, false)
-@subview_business_contacts(getHeading(businessContactsName), cache.getBusinessContacts, cache.getBusinessCustomerDetails, false)
-@subview_group_member_details(getHeading(groupMembersName), cache.getGroupMembers, businessLegalEntity)
+@subview_business_details(getHeading(businessDetailsName), cache.getBusinessDetails, businessName, showTableHeader = false)
+@subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity), showTableHeader = false)
+@subview_place_of_business(getHeading(placeOfBusinessName), cache.getPlaceOfBusiness, showTableHeader = false)
+@subview_business_contacts(getHeading(businessContactsName), cache.getBusinessContacts, cache.getBusinessCustomerDetails, showTableHeader = false)
+@subview_group_member_details(getHeading(groupMembersName), cache.getGroupMembers, businessLegalEntity, enrolments, accountUtils)
 @subview_partner_details(getHeading(partnersName), cache.getPartners)
 @subview_additional_premises(getHeading(additionalBusinessPremisesName), cache.getAdditionalBusinessPremises)
 @subview_business_directors(getHeading(businessDirectorsName), cache.getBusinessDirectors, businessLegalEntity)
-@subview_trading_activity(getHeading(tradingActivityName), cache.getTradingActivity, false)
-@subview_products(getHeading(productsName), cache.getProducts, false)
+@subview_trading_activity(getHeading(tradingActivityName), cache.getTradingActivity, showTableHeader = false)
+@subview_products(getHeading(productsName), cache.getProducts, showTableHeader = false)
 @subview_suppliers(getHeading(suppliersName), cache.getSuppliers)
 @subview_application_declaration(getHeading(applicationDeclarationName), cache.getApplicationDeclaration)
 
