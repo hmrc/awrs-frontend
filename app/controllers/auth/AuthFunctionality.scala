@@ -49,7 +49,7 @@ trait AuthFunctionality extends AuthorisedFunctions {
   private def recoverAuthorisedCalls(implicit request: Request[AnyContent], messages: Messages): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession         => Redirect(signInUrl, loginParams)
     case er: AuthorisationException =>
-      Logger.error(s"[recoverAuthorisedCalls] Auth exception: $er")
+      Logger.warn(s"[recoverAuthorisedCalls] Auth exception: $er")
       Unauthorized(views.html.unauthorised())
     case er                         =>
       Logger.error(s"[recoverAuthorisedCalls] Unhandled error occurred - $er - ${er.getMessage} - ${er.getStackTrace.mkString("\n")}")
