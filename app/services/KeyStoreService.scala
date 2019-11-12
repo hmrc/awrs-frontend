@@ -125,7 +125,8 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
   @inline def saveSave4LaterBackup(save4LaterConnector: Save4LaterConnector, authRetrievals: StandardAuthRetrievals, accountUtils: AccountUtils)
                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = {
-    save4LaterConnector.fetchAll(accountUtils.getUtr(authRetrievals)).flatMap {
+    save4LaterConnector
+      .fetchAll(accountUtils.getUtr(authRetrievals)).flatMap {
       case Some(cacheMap) => keyStoreConnector.saveDataToKeystore(save4LaterBackupName, cacheMap.copyOfSave4Later)
       case None => throw new RuntimeException("Backup save4Later to keystore failed, not data found in save4later")
     }

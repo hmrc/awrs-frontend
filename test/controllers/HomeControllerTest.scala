@@ -17,6 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
+import connectors.Save4LaterConnector
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums
 import models.{ApplicationStatus, BusinessCustomerDetails}
@@ -28,7 +29,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.JsResultException
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import services.BusinessCustomerService
+import services.{BusinessCustomerService, CheckEtmpService, MainStore, Save4LaterService}
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
@@ -43,8 +44,9 @@ class HomeControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService {
 
   val mockBusinessCustomerService: BusinessCustomerService = mock[BusinessCustomerService]
+  val mockCheckEtmpService: CheckEtmpService = mock[CheckEtmpService]
 
-  val testHomeController: HomeController = new HomeController(mockMCC, mockBusinessCustomerService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig) {
+  val testHomeController: HomeController = new HomeController(mockMCC, mockBusinessCustomerService, mockCheckEtmpService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -64,6 +66,8 @@ class HomeControllerTest extends AwrsUnitTestTraits
   "HomeController" should {
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
+      when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(false))
       showWithSave4Later() { result =>
         status(result) shouldBe 303
         redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-type")
@@ -167,6 +171,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
       }
     }
 
+    "redirect to the Business Type page if validate business details returns true" in {
+      when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(true))
+      showWithSave4Later() { result =>
+        status(result) shouldBe 303
+        redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-type")
+      }
+    }
   }
 
   private def showWithSave4Later(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {

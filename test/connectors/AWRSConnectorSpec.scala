@@ -31,12 +31,13 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.AwrsTestJson._
 import utils.TestConstants._
-import utils.{AwrsUnitTestTraits, TestUtil}
+import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch, TestUtil}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{BadRequestException, ForbiddenException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import utils.TestUtil.testBusinessRegistrationDetails
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -263,15 +264,15 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   "AWRSConnector updating an AWRS application" should {
 
     "return status as OK, for successful subscription" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeApi6SuccessResponseJson))))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
       await(result) shouldBe api6SuccessResponse
-      verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
     "return status as BAD_REQUEST, for unsuccessful subscription" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
@@ -280,7 +281,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "return status as NOT_FOUND, for unsuccessful subscription" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
@@ -289,7 +290,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful subscription" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
@@ -298,7 +299,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
@@ -497,15 +498,15 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     val updatedDataRequest = new UpdateRegistrationDetailsRequest(false, Some(OrganisationName("testName")), address, ContactDetails(), false, false)
 
     "return status as OK, for successful update" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(updateGrpPartnerSuccessReponseJson))))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
       await(result) shouldBe api3SucecssResponse
-      verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
     "return status as BAD_REQUEST, for unsuccessful update" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
@@ -514,7 +515,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "return status as NOT_FOUND, for unsuccessful update" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
@@ -523,7 +524,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful update" in {
-     when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+     when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
      val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
@@ -532,7 +533,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
    }
 
    "return status as INTERNAL_SERVER_ERROR, for unsuccessful update" in {
-     when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+     when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
      val result = testAWRSConnector.updateGroupBusinessPartner(testTradingName,"","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
@@ -541,7 +542,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
    }
 
     "return status as FORBIDDEN, for unsuccessful update" in {
-      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(FORBIDDEN, Some(forbiddenResponse))))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
@@ -550,4 +551,64 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
   }
 
+  "Check ETMP call to backend" should {
+    val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option("Ne4 9hs"), Option("country"))
+    val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
+    val testBusinessRegistrationDetails = BusinessRegistrationDetails(
+      doYouHaveNino = Some("Yes"),
+      nino = testNino,
+      doYouHaveVRN = Some("Yes"),
+      vrn = testVrn,
+      doYouHaveUTR = Some("No"),legalEntity = None, utr = Some("1234"))
+
+    def mockResponse(responseStatus: Int, responseData: JsValue): Unit =
+      when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(responseStatus)))
+    def testCall(implicit  hc: HeaderCarrier): Future[Boolean] = testAWRSConnector.checkEtmp(testBusinessCustomer, testBusinessRegistrationDetails)
+
+    val checkRegimeModelResponseSuccess = CheckRegimeModel(testBusinessCustomer, testBusinessRegistrationDetails)
+    val checkRegimeModelResponseSuccessJson = CheckRegimeModel.format.writes(checkRegimeModelResponseSuccess)
+
+    "Return true after receiving an OK response" in {
+      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      mockResponse(OK, checkRegimeModelResponseSuccessJson)
+      val result: Boolean = await(testCall)
+
+      result shouldBe true
+    }
+
+    "Return false after receiving a NO CONTENT response" in {
+      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      mockResponse(NO_CONTENT, checkRegimeModelResponseSuccessJson)
+      val result: Boolean = await(testCall)
+
+      result shouldBe false
+    }
+
+    "Return false after receiving a BAD REQUEST response" in {
+      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      mockResponse(BAD_REQUEST, checkRegimeModelResponseSuccessJson)
+      val result: Boolean = await(testCall)
+
+      result shouldBe false
+    }
+
+    "Return false after an exception has been thrown" in {
+      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      def mockInvalidResponse(responseStatus: Int, responseData: JsValue): Unit =
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.failed(new RuntimeException()))
+      mockInvalidResponse(BAD_REQUEST, checkRegimeModelResponseSuccessJson)
+      val result: Boolean = await(testCall)
+
+      result shouldBe false
+    }
+    "Return false when feature flag is false" in {
+      FeatureSwitch.disable(AWRSFeatureSwitches.regimeCheck())
+      mockResponse(OK, checkRegimeModelResponseSuccessJson)
+      val result: Boolean = await(testCall)
+
+      result shouldBe false
+    }
+  }
 }

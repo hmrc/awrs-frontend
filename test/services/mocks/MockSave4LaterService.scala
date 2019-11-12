@@ -21,11 +21,12 @@ import connectors.mock.MockSave4LaterConnector
 import models.BusinessDetailsEntityTypes._
 import models._
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{MainStore, Save4LaterService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
@@ -54,8 +55,8 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
       }
     }
 
-    when(testSave4LaterService.mainStore.save4LaterConnector.saveData4Later(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenAnswer(defaultSaveMock)
-    when(testSave4LaterService.api.save4LaterConnector.saveData4Later(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenAnswer(defaultSaveMock)
+    when(mockMainStoreSave4LaterConnector.saveData4Later(any(), any(), any())(any(), any(), any())).thenAnswer(defaultSaveMock)
+    when(mockApiSave4LaterConnector.saveData4Later(any(), any(), any())(any(), any(), any())).thenAnswer(defaultSaveMock)
   }
 
   // internal function for this trait only, should not be made visable to children
@@ -174,11 +175,11 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                              fetchBusinessDetailsSupport: MockConfiguration[Future[Option[BusinessDetailsSupport]]] = DoNotConfigure,
                                                              removeAll: MockConfiguration[Future[HttpResponse]] = DoNotConfigure
                                                            ): Unit = {
-    implicit val connector: Save4LaterConnector = testSave4LaterService.api.save4LaterConnector
+    implicit val connector: Save4LaterConnector = mockApiSave4LaterConnector
 
     mockFetchFromSave4Later(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     mockFetchFromSave4Later(businessDetailsSupportName, fetchBusinessDetailsSupport)
-    removeAll ifConfiguredThen (response => when(connector.removeAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(response))
+    removeAll ifConfiguredThen (response => when(connector.removeAll(any())(any(), any())).thenReturn(response))
 
     setupMockSave4LaterServiceOnlySaveFunctions()
   }
@@ -221,7 +222,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                removeAll: Option[Int] = None
                                              ): Unit = {
 
-    implicit val connector: Save4LaterConnector = testSave4LaterService.mainStore.save4LaterConnector
+    implicit val connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
 
     verifySave4LaterFetch(businessTypeName, fetchBusinessType)
     verifySave4LaterSave(businessTypeName, saveBusinessType)
@@ -269,7 +270,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                   removeAll: Option[Int] = None
                                                 ): Unit = {
 
-    implicit val connector: Save4LaterConnector = testSave4LaterService.api.save4LaterConnector
+    implicit val connector: Save4LaterConnector = mockApiSave4LaterConnector
 
     verifySave4LaterFetch(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     verifySave4LaterSave(subscriptionTypeFrontEndName, saveSubscriptionTypeFrontEnd)

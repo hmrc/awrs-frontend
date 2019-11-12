@@ -90,7 +90,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(responseStatus, Some(responseData))))
 
     def mockDeleteResponse(responseStatus: Int): Unit =
-      when(mockWSHttp.DELETE[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.DELETE[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus)))
 
     def testFetchCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = testAWRSNotificationConnector.fetchNotificationCache(TestUtil.defaultAuthRetrieval)
@@ -211,7 +211,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   "markNotificationViewedStatusAsViewed" should {
 
     def mockMarkViewedStatusResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.PUT[Unit, HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[Unit, HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse(OK | NO_CONTENT))
           case false => Future.successful(HttpResponse(NOT_FOUND))
