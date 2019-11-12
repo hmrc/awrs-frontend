@@ -763,9 +763,6 @@ object TestUtil extends UnitSpec {
   @inline def errorSummaryValidation(document: Document, id: String, expectedErrorKey: String, expectedhref: String, errorArgs: Any*) = {
     val expectedSummaryErrorKey: String = expectedErrorKey
     val associatedSummaryErrMsg = document.getElementById(id + "_errorLink")
-    if (associatedSummaryErrMsg == null) {
-      println(f"id=${id + "_errorLink"}, associatedSummaryErrMsg=$associatedSummaryErrMsg")
-    }
     val errorKey = associatedSummaryErrMsg.text
 
     assert(associatedSummaryErrMsg != null, ", No error summary associated to the field #%s can be found in the given document".format(id))

@@ -41,7 +41,6 @@ class BusinessCustomerDataCacheConnector @Inject()(businessCustomerSessionCache:
   override val sessionCache: SessionCache = businessCustomerSessionCache
 }
 
-
 trait KeyStoreConnector {
 
   val sessionCache: SessionCache
@@ -54,7 +53,6 @@ trait KeyStoreConnector {
 
   @inline def removeAll()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
     sessionCache.remove()
-
 }
 
 trait Save4LaterConnector {
@@ -65,8 +63,8 @@ trait Save4LaterConnector {
     shortLivedCache.fetchAndGetEntry[T](utr, formId)
 
   @inline def saveData4Later[T](utr: String, formId: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
-    shortLivedCache.cache(utr, formId, data) flatMap {
-      data => Future.successful(data.getEntry[T](formId))
+    shortLivedCache.cache(utr, formId, data) flatMap { data =>
+      Future.successful(data.getEntry[T](formId))
     }
 
   @inline def fetchAll(utr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
@@ -74,5 +72,4 @@ trait Save4LaterConnector {
 
   @inline def removeAll(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
     shortLivedCache.remove(cacheId)
-
 }

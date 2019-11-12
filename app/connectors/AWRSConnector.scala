@@ -24,11 +24,13 @@ import javax.inject.Inject
 import models.FormBundleStatus.Approved
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
+import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, Request}
+import play.api.http.Status._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import utils.{AccountUtils, LoggingUtils}
+import utils.{AWRSFeatureSwitches, AccountUtils, LoggingUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.Regex
@@ -430,4 +432,26 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     }
   }
 
+  def checkEtmp(businessCustomerDetails: BusinessCustomerDetails, businessRegistrationDetails: BusinessRegistrationDetails)
+               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    if (!AWRSFeatureSwitches.regimeCheck().enabled) {
+      Future.successful(false)
+    } else {
+      val regimeModel = CheckRegimeModel(businessCustomerDetails, businessRegistrationDetails)
+      val json = Json.toJson(regimeModel)
+      val postURL = s"""$serviceURL/awrs/regime-etmp-check"""
+
+      http.POST[JsValue, HttpResponse](postURL, json).map { resp =>
+        resp.status match {
+          case OK => true
+          case _ => false
+        }
+      }.recover {
+        case e: Exception =>
+          Logger.warn(s"[AWRSConnector][checkEtmp] Etmp has returned an exception: ${e.getMessage}")
+          false
+      }
+
+    }
+  }
 }

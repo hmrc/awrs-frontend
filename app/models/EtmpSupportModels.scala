@@ -23,6 +23,15 @@ import play.api.libs.json.Json
 // e.g. if data is missing when api 5 is called
 
 
+case class CheckRegimeModel(businessCustomerDetails: BusinessCustomerDetails,
+                            businessRegistrationDetails: BusinessRegistrationDetails)
+
+object CheckRegimeModel {
+
+  implicit val format = Json.format[CheckRegimeModel]
+
+}
+
 case class BusinessDetailsSupport(missingProposedStartDate: Boolean)
 
 object BusinessDetailsSupport {

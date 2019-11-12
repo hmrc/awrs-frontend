@@ -27,7 +27,8 @@ import utils.{LoggingUtils, SessionUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService, businessMatchingConnector: BusinessMatchingConnector, val auditable: Auditable) extends LoggingUtils {
+class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService, businessMatchingConnector: BusinessMatchingConnector, val auditable: Auditable)
+  extends LoggingUtils {
 
   def matchBusinessWithUTR(utr: String, organisation: Option[Organisation], authRetrievals: StandardAuthRetrievals)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {

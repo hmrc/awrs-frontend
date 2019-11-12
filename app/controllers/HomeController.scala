@@ -22,6 +22,7 @@ import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import javax.inject.Inject
 import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
+import play.api.Logger
 import play.api.libs.json.JsResultException
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services._
@@ -34,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HomeController @Inject()(mcc: MessagesControllerComponents,
                                businessCustomerService: BusinessCustomerService,
+                               checkEtmpService: CheckEtmpService,
                                val authConnector: DefaultAuthConnector,
                                val auditable: Auditable,
                                val accountUtils: AccountUtils,
@@ -54,32 +56,44 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     awrsIdentifier.toString
   }
 
-  def api5Journey(callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
+  def api5Journey(callerId: Option[String])(implicit request: Request[AnyContent], authRetrievals: StandardAuthRetrievals): Future[Result] = {
     debug("API5 journey triggered")
     gotoBusinessTypePage(callerId)
   }
 
-  private def gotoBusinessTypePage(callerId: Option[String])(implicit request: Request[AnyContent]) = callerId match {
-    case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
-    case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
+  def checkBusinessDetailsETMP(callerId: Option[String], busCusDetails: BusinessCustomerDetails)
+                              (implicit request: Request[AnyContent], authRetrievals: StandardAuthRetrievals): Future[Result] = {
+    checkEtmpService.validateBusinessDetails(authRetrievals, busCusDetails) flatMap { result =>
+      if (result) {
+        Logger.info("[HomeController][checkBusinessDetailsETMP] Upserted details and enrolments to EACD")
+      }
+      gotoBusinessTypePage(callerId)
+    }
+  }
+
+  private def gotoBusinessTypePage(callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
+      callerId match {
+        case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
+        case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
+      }
   }
 
   def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
-
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
       case Some(data) =>
         if (data.safeId.isEmpty) {
           Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
         } else {
-          gotoBusinessTypePage(callerId)
+          checkBusinessDetailsETMP(callerId, data)(request, authRetrievals)
         }
       case _ =>
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails] flatMap {
           case Some(data) =>
             save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data) flatMap {
-              _ => gotoBusinessTypePage(callerId)
+              _ => checkBusinessDetailsETMP(callerId, data)(request,authRetrievals)
             }
-          case _ => Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
+          case _ =>
+            Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
         }
     }
   }
@@ -97,7 +111,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
             chooseScenario(callerId, authRetrievals)
           }
         case error =>
-          warn("Exception encountered in Home Controller: " + awrsIdentifier(authRetrievals) + " \nERROR: " + error)
+          warn("Exception encountered in Home Controller: " + awrsIdentifier(authRetrievals) + " \nERROR: " + error.getMessage)
           showErrorPage
       }
     }
@@ -123,7 +137,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
 
   def startJourney(callerId: Option[String], authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
-      api5Journey(callerId)
+      api5Journey(callerId)(request, authRetrievals)
     } else {
       api4Journey(authRetrievals, callerId)
     }

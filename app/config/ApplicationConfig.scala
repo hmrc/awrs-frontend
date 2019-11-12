@@ -44,7 +44,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val emailVerificationEnabled: Boolean = servicesConfig.getBoolean("email-verification.enabled")
   lazy val emailVerificationBaseUrl: String = servicesConfig.getString("email-verification.continue.baseUrl")
 
-
   //From ExternalUrls
   lazy val companyAuthHost: String = loadConfig("auth.company-auth.host")
   lazy val loginCallback: String = loadConfig("auth.login-callback.url")

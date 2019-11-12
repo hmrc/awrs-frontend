@@ -110,5 +110,4 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
       }
     }
   }
-
 }
