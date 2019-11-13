@@ -43,6 +43,7 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val timeoutCountdown: Int = servicesConfig.getInt("timeoutCountdown")
   lazy val emailVerificationEnabled: Boolean = servicesConfig.getBoolean("email-verification.enabled")
   lazy val emailVerificationBaseUrl: String = servicesConfig.getString("email-verification.continue.baseUrl")
+  lazy val googleTagManagerId: String = servicesConfig.getString("google-tag-manager.id")
 
   //From ExternalUrls
   lazy val companyAuthHost: String = loadConfig("auth.company-auth.host")
