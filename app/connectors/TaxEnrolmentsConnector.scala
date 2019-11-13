@@ -74,7 +74,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
       case e =>
         if (tries < retryLimit) {
           Future {
-            warn(s"Retrying EMAC Enrol - call number: $tries.")
+            warn(s"Retrying EMAC Enrol - call number: $tries. - ${e.getMessage}")
             Thread.sleep(retryWait)
           }.flatMap(_ => trySend(tries + 1, postUrl, requestPayload, auditMap))
         }
