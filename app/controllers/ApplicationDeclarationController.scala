@@ -101,7 +101,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
             } yield {
               successResponse match {
                 case Left(_)         =>
-                  Redirect(controllers.routes.ApplicationStatusController.showStatus(mustShow = false))
+                  Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
                 case Right(response) =>
                   Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
                     .addAwrsRefToSession(response.etmpFormBundleNumber)

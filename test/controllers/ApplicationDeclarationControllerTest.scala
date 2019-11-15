@@ -189,7 +189,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     "redirect to application status page when valid data is provided" in {
       continueWithAuthorisedUserSelfHeal(testRequest(testApplicationDeclarationTrue)) {
         result =>
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/status-page?mustShow=false")
+          redirectLocation(result).get should include("/alcohol-wholesale-scheme/confirmation")
       }
     }
   }
