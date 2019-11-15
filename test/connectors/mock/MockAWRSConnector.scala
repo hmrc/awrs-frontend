@@ -43,7 +43,7 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
   def setupMockAWRSConnector(lookupAWRSData: JsValue = defaultAPI5,
                              checkStatus: SubscriptionStatusType = defaultSubscriptionStatusType,
                              getStatusInfo: StatusInfoType = defaultStatusTypeInfo,
-                             submitAWRSData: SuccessfulSubscriptionResponse = defaultSuccessfulSubscriptionResponse,
+                             submitAWRSData: Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse] = Right(defaultSuccessfulSubscriptionResponse),
                              updateAWRSData: SuccessfulUpdateSubscriptionResponse = defaultSuccessfulUpdateSubscriptionResponse
                             ): Unit =
     setupMockAWRSConnectorWithOnly(
@@ -58,7 +58,7 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
                                       lookupAWRSData: MockConfiguration[JsValue] = DoNotConfigure,
                                       checkStatus: MockConfiguration[SubscriptionStatusType] = DoNotConfigure,
                                       getStatusInfo: MockConfiguration[StatusInfoType] = DoNotConfigure,
-                                      submitAWRSData: MockConfiguration[SuccessfulSubscriptionResponse] = DoNotConfigure,
+                                      submitAWRSData: MockConfiguration[Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]] = DoNotConfigure,
                                       updateAWRSData: MockConfiguration[SuccessfulUpdateSubscriptionResponse] = DoNotConfigure,
                                       updateGroupBusinessPartner: MockConfiguration[SuccessfulUpdateGroupBusinessPartnerResponse] = DoNotConfigure
                                     ): Unit = {

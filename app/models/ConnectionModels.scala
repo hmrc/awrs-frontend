@@ -23,6 +23,11 @@ case class SuccessfulSubscriptionResponse(processingDate: String, awrsRegistrati
 object SuccessfulSubscriptionResponse {
   implicit val formats = Json.format[SuccessfulSubscriptionResponse]
 }
+case class SelfHealSubscriptionResponse(regimeRefNumber: String)
+
+object SelfHealSubscriptionResponse {
+  implicit val formats = Json.format[SelfHealSubscriptionResponse]
+}
 
 case class EnrolRequest(portalId: String, serviceName: String, friendlyName: String, knownFacts: Seq[String])
 

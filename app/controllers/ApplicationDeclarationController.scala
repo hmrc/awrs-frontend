@@ -94,13 +94,18 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
               businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
               businessRegDetails <- save4LaterService.mainStore.fetchBusinessRegistrationDetails(ar)
               successResponse <- applicationService.sendApplication(ar)
-              _ <- enrolService.enrolAWRS(successResponse,
+              _ <- enrolService.enrolAWRS(applicationService.getRegistrationReferenceNumber(successResponse),
                 businessPartnerDetails.get,
                 businessType,
                 businessRegDetails.get.utr) // Calls ES8
             } yield {
-              Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
-                .addAwrsRefToSession(successResponse.etmpFormBundleNumber)
+              successResponse match {
+                case Left(_)         =>
+                  Redirect(controllers.routes.ApplicationStatusController.showStatus(mustShow = false))
+                case Right(response) =>
+                  Redirect(controllers.routes.ConfirmationController.showApplicationConfirmation(false))
+                    .addAwrsRefToSession(response.etmpFormBundleNumber)
+              }
             }
 
           }.recover {

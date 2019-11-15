@@ -50,7 +50,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
   val deregFailurePattern: Regex = "(^.*whilst previous one is Under Appeal/Review or being Deregistered.*$)".r
 
   def submitAWRSData(fileData: JsValue, authRetrievals: StandardAuthRetrievals)
-                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
+                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]] = {
 
     val legalEntityType = (fileData \ subscriptionTypeJSPath \ "legalEntity" \ "legalEntity").as[String]
     val businessName = (fileData \ subscriptionTypeJSPath \ "businessCustomerDetails" \ "businessName").as[String]
@@ -63,7 +63,9 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
         response.status match {
           case 200 =>
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - API4 Response in Frontend ## " + response.status)
-            response.json.as[SuccessfulSubscriptionResponse]
+            Right(response.json.as[SuccessfulSubscriptionResponse])
+          case 202 =>
+            Left(response.json.as[SelfHealSubscriptionResponse])
           case 404 =>
             audit(auditAPI4TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeNotFound)
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - The remote endpoint has indicated that no data can be found ## ")
