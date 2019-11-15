@@ -139,7 +139,36 @@ class ApplicationService @Inject()(enrolService: EnrolService,
     }
   }
 
-  def sendApplication(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulSubscriptionResponse] = {
+  type AwrsData = Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]
+
+  def getRegistrationReferenceNumber(either: AwrsData): String = {
+    either match {
+      case Left(selfHealSubscriptionResponse)    => selfHealSubscriptionResponse.regimeRefNumber
+      case Right(successfulSubscriptionResponse) => successfulSubscriptionResponse.awrsRegistrationNumber
+    }
+  }
+
+  def handleAWRSData(either: AwrsData, authRetrievals: StandardAuthRetrievals, cached: Option[CacheMap])
+                    (implicit ec: ExecutionContext, request: Request[AnyContent], hc: HeaderCarrier): Future[AwrsData] = {
+    either match {
+      case Left(_)              => Future.successful(either)
+      case Right(successfulSub) =>
+        for {
+          isNewBusiness <- isNewBusiness(cached)
+          _ <- emailService.sendConfirmationEmail(
+            email = cached.get.getBusinessContacts.get.email.get,
+            reference = successfulSub.etmpFormBundleNumber,
+            isNewBusiness = isNewBusiness,
+            authRetrievals = authRetrievals
+          )
+        } yield {
+          either
+        }
+    }
+  }
+
+  def sendApplication(authRetrievals: StandardAuthRetrievals)
+                     (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[AwrsData] = {
     for {
       cached <- save4LaterService.mainStore.fetchAll(authRetrievals)
       businessCustomerDetails = cached.get.getBusinessCustomerDetails
@@ -148,14 +177,8 @@ class ApplicationService @Inject()(enrolService: EnrolService,
         val schema = assembleAWRSFEModel(cached, businessCustomerDetails, sections)
         awrsConnector.submitAWRSData(Json.toJson(schema), authRetrievals)
       }
-      isNewBusiness <- isNewBusiness(cached)
-      _ <- emailService.sendConfirmationEmail(
-        email = cached.get.getBusinessContacts.get.email.get,
-        reference = awrsData.etmpFormBundleNumber,
-        isNewBusiness = isNewBusiness,
-        authRetrievals = authRetrievals
-      )
-    } yield awrsData
+      processedData <- handleAWRSData(awrsData, authRetrievals, cached)
+    } yield processedData
   }
 
   def hasAPI5ApplicationChanged(cacheID: String, authRetrievals: StandardAuthRetrievals)

@@ -85,22 +85,22 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
       mockAuthorise(EmptyPredicate, credentials and groupIdentifier)(new ~(Credentials(testCredId, enrolService.GGProviderId), Some(testGroupId)))
       when(mockTaxEnrolmentsConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(successfulEnrolResponse))
-      val result = enrolService.enrolAWRS(successfulSubscriptionResponse,
+      val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber,
         testBusinessCustomerDetails, businessType, Some(testUtr))
       await(result) shouldBe successfulEnrolResponse
     }
 
     "create correct EnrolRequest when business type is SOP and UTR present " in {
-      val result = enrolService.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, businessTypeSOP, saUtr)
+      val result = enrolService.createEnrolment(successfulSubscriptionResponse.awrsRegistrationNumber, testBusinessCustomerDetails, businessTypeSOP, saUtr)
       result shouldBe enrolRequestSAUTR
     }
 
     "create correct EnrolRequest when business type is other than SOP and UTR present " in {
-      val result = enrolService.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails, "LTD", ctUtr)
+      val result = enrolService.createEnrolment(successfulSubscriptionResponse.awrsRegistrationNumber, testBusinessCustomerDetails, "LTD", ctUtr)
       result shouldBe enrolRequestCTUTR
     }
     "create correct EnrolRequest when business type and UTR NOT present " in {
-      val result = enrolService.createEnrolment(successfulSubscriptionResponse, testBusinessCustomerDetails,"" , None)
+      val result = enrolService.createEnrolment(successfulSubscriptionResponse.awrsRegistrationNumber, testBusinessCustomerDetails,"" , None)
       result shouldBe enrolRequestNoSACT
     }
   }

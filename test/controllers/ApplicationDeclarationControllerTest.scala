@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import builders.SessionBuilder
@@ -48,6 +64,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   val mockEnrolService: EnrolService = mock[EnrolService]
   val mockApplicationService: ApplicationService = mock[ApplicationService]
   val mockAudit: Audit = mock[Audit]
+  val selfHealSuccessResponse = SelfHealSubscriptionResponse("12345")
 
   val formId = "applicationDeclaration"
 
@@ -168,6 +185,15 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     }
   }
 
+  "Self heal redirect" should {
+    "redirect to application status page when valid data is provided" in {
+      continueWithAuthorisedUserSelfHeal(testRequest(testApplicationDeclarationTrue)) {
+        result =>
+          redirectLocation(result).get should include("/alcohol-wholesale-scheme/status-page?mustShow=false")
+      }
+    }
+  }
+
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testReviewDetails,
@@ -177,7 +203,24 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
-    when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+    when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
+    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
+    val result = testApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
+    test(result)
+  }
+
+  private def continueWithAuthorisedUserSelfHeal(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    setUser()
+    reset(mockAccountUtils)
+    setupMockSave4LaterServiceWithOnly(
+      fetchBusinessCustomerDetails = testReviewDetails,
+      fetchAll = MockSave4LaterService.defaultFetchAll,
+      fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP")
+    )
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setupMockKeyStoreServiceOnlySaveFunctions()
+    when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
+    when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Left(selfHealSuccessResponse)))
     when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
     val result = testApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)

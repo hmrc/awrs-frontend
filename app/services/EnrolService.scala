@@ -41,18 +41,18 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
   private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
 
 
-  def enrolAWRS(success: SuccessfulSubscriptionResponse,
+  def enrolAWRS(awrsRef: String,
                 businessPartnerDetails: BusinessCustomerDetails,
                 businessType: String,
                 utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
-    val enrolment = createEnrolment(success, businessPartnerDetails, businessType, utr)
+    val enrolment = createEnrolment(awrsRef, businessPartnerDetails, businessType, utr)
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
       val verifiers = createVerifiers(businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
         case Credentials(ggCred, _) ~ Some(groupId) =>
           val grpId = groupId
           val requestPayload = RequestPayload(ggCred, enrolment.friendlyName, enrolmentType, verifiers)
-          taxEnrolmentsConnector.enrol(requestPayload, grpId, success.awrsRegistrationNumber, businessPartnerDetails, businessType)
+          taxEnrolmentsConnector.enrol(requestPayload, grpId, awrsRef, businessPartnerDetails, businessType)
         case _ ~ None =>
           Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
         case Credentials(_, _) ~ _ =>
@@ -72,12 +72,11 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
   }
 
 
-  def createEnrolment(success: SuccessfulSubscriptionResponse,
+  def createEnrolment(awrsRef: String,
                       businessPartnerDetails: BusinessCustomerDetails,
                       businessType: String,
                       utr: Option[String])(implicit ec: ExecutionContext): EnrolRequest = {
 
-    val awrsRef = success.awrsRegistrationNumber
     val postcode: String = businessPartnerDetails.businessAddress.postcode
       .fold("")(x => x).replaceAll("\\s+", "")
 

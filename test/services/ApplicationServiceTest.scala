@@ -39,6 +39,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   val mockEnrolService: EnrolService = mock[EnrolService]
   val mockEmailService: EmailService = mock[EmailService]
 
+  val selfHealSuccessResponse = SelfHealSubscriptionResponse(regimeRefNumber = "12345")
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
   val subscribeUpdateSuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
   val updateGroupBusinessPartnerResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
@@ -124,35 +125,52 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   val testApplicationService: ApplicationService = new ApplicationService(mockEnrolService, mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
 
   "Application Service" should {
-    "send data to right hand service and handle success" in {
+    "getRegistrationReferenceNumber should return left when given self heal case " in {
+
+      testApplicationService.getRegistrationReferenceNumber(Left(selfHealSuccessResponse)) shouldBe "12345"
+    }
+
+    "getRegistrationReferenceNumber should return right when given subscription case " in {
+
+      testApplicationService.getRegistrationReferenceNumber(Right(subscribeSuccessResponse)) shouldBe "ABCDEabcde12345"
+    }
+
+    "send application and handle a 200 success" in {
       sendWithAuthorisedUser {
         result =>
-          await(result) shouldBe subscribeSuccessResponse
+          await(result) shouldBe Right(subscribeSuccessResponse)
       }
     }
 
-    "send updated data to right hand service and handle success" in {
-      sendUpdateSubscriptionTypeWithAuthorisedUser {
-        result =>
-          await(result) shouldBe subscribeUpdateSuccessResponse
+      "send application to self heal and handle 202 response" in {
+        sendWithAuthorisedUserSelfHeal {
+          result =>
+            await(result) shouldBe Left(selfHealSuccessResponse)
+        }
       }
-    }
 
-    "send updated registration details to right hand service with a valid address and handle success" in {
-      setupMockKeyStoreServiceForBusinessCustomerAddress()
-      sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
-        result =>
-          await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
+      "send updated subscription and handle a 200 success" in {
+        sendUpdateSubscriptionTypeWithAuthorisedUser {
+          result =>
+            await(result) shouldBe subscribeUpdateSuccessResponse
+        }
       }
-    }
 
-    "have no address and handle success" in {
-      setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress = true)
-      sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
-        result =>
-          await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
+      "send updated registration details to service with a valid address and handle success" in {
+        setupMockKeyStoreServiceForBusinessCustomerAddress()
+        sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
+          result =>
+            await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
+        }
       }
-    }
+
+      "have no address and handle success" in {
+        setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress = true)
+        sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
+          result =>
+            await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
+        }
+      }
 
     "have updated change Indicators in the subscription Type with the correct values" should {
 
@@ -1128,9 +1146,19 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     (cached, testApplicationService.replaceGroupRepInGroupMembers(Some(changed)))
   }
 
-  def sendWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any): Unit = {
+  def sendWithAuthorisedUser(test: Future[Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]] => Any): Unit = {
     setupMockSave4LaterService(fetchAll = cachedData())
-    setupMockAWRSConnectorWithOnly(submitAWRSData = subscribeSuccessResponse)
+    setupMockAWRSConnectorWithOnly(submitAWRSData = Right(subscribeSuccessResponse))
+    implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
+    when(mockEmailService.sendConfirmationEmail(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+    val result = testApplicationService.sendApplication(TestUtil.defaultAuthRetrieval)
+    test(result)
+  }
+
+
+  def sendWithAuthorisedUserSelfHeal(test: Future[Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]] => Any): Unit = {
+    setupMockSave4LaterService(fetchAll = cachedData())
+    setupMockAWRSConnectorWithOnly(submitAWRSData = Left(selfHealSuccessResponse))
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     when(mockEmailService.sendConfirmationEmail(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     val result = testApplicationService.sendApplication(TestUtil.defaultAuthRetrieval)

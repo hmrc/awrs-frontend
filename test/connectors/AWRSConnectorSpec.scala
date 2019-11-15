@@ -64,6 +64,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   val testAWRSConnector = new AWRSConnector(mockWSHttp, mockAuditable, mockAccountUtils, mockAppConfig)
 
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
+  val subscribeAcceptedResponse = SelfHealSubscriptionResponse("123456")
   val api6SuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
   val api3SucecssResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
   lazy val updateGrpPartnerSuccessReponseJson: JsValue = Json.toJson(api3SucecssResponse)
@@ -79,6 +80,8 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   lazy val subscribeFailureDupSubsResponse: JsValue = Json.parse( """{"reason": "Business Partner already has an active AWRS subscription"}""")
   lazy val subscribeFailurePendingDeregResponse: JsValue = Json.parse( """{"reason": "You cannot submit new application whilst previous one is Under Appeal/Review or being Deregistered"}""")
   lazy val subscribeSuccessResponseJson: JsValue = Json.toJson(subscribeSuccessResponse)
+  lazy val acceptedResponseJson: JsValue = Json.toJson(subscribeAcceptedResponse)
+
 
   "AWRSConnector subscribing to AWRS" should {
 
@@ -86,7 +89,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe subscribeSuccessResponse
+      await(result) shouldBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -94,14 +97,22 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4PartnerJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe subscribeSuccessResponse
+      await(result) shouldBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
     "return status as OK, for LTD legal entity" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe subscribeSuccessResponse
+      await(result) shouldBe Right(subscribeSuccessResponse)
+      verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+    }
+
+    "return status ACCEPTED, for a organisation self heal case" in {
+      when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(HttpResponse(ACCEPTED, Some(acceptedResponseJson))))
+      val result = testAWRSConnector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
+      await(result) shouldBe Left(subscribeAcceptedResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
