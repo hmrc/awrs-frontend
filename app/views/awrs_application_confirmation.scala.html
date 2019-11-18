@@ -20,7 +20,7 @@
 @import views.html.helpers._
 @import views.helpers._
 
-@(submissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false)(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
+@(submissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false, selfHeal: Boolean = false)(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 
 @awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
@@ -55,10 +55,14 @@
 
 @paragraphs1 = {
     <p id="confirmation0Text">
-        @if(isNewBusiness) {
-            @messages("awrs.confirmation.newBusiness.information_0", awrsRef)
+        @if(selfHeal) {
+
         } else {
-            @messages("awrs.confirmation.information_0", awrsRef)
+            @if(isNewBusiness) {
+                @messages("awrs.confirmation.newBusiness.information_0", awrsRef)
+            } else {
+                @messages("awrs.confirmation.information_0", awrsRef)
+            }
         }
     </p>
 }

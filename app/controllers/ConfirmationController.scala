@@ -67,7 +67,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def showApplicationConfirmation(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request =>
+  def showApplicationConfirmation(printFriendly: Boolean, selfHeal: Boolean): Action[AnyContent] = Action.async { implicit request =>
     restrictedAccessCheck {
       authorisedAction { ar =>
         isNewBusiness(ar) flatMap {
@@ -75,7 +75,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
             save4LaterService.mainStore.removeAll(ar)
             val format = new SimpleDateFormat("d MMMM y")
             val submissionDate = format.format(Calendar.getInstance().getTime)
-            Future.successful(Ok(views.html.awrs_application_confirmation(submissionDate, isNewBusiness, printFriendly)) addLocation)
+            Future.successful(Ok(views.html.awrs_application_confirmation(submissionDate, isNewBusiness, printFriendly, selfHeal)) addLocation)
         }
       }
     }

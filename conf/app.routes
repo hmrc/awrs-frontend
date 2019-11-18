@@ -44,7 +44,7 @@ GET         /products/edit                                  controllers.Products
 POST        /products/saveAndContinue                       controllers.ProductsController.saveAndContinue
 POST        /products/saveAndReturn                         controllers.ProductsController.saveAndReturn
 
-GET         /confirmation                                   controllers.ConfirmationController.showApplicationConfirmation(printFriendly: Boolean ?= false)
+GET         /confirmation                                   controllers.ConfirmationController.showApplicationConfirmation(printFriendly: Boolean ?= false, selfHeal: Boolean ?= false)
 GET         /update-confirmation                            controllers.ConfirmationController.showApplicationUpdateConfirmation(printFriendly: Boolean ?= false)
 
 GET         /reset                                          controllers.ResetController.resetApplication
