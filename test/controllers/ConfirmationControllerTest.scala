@@ -145,7 +145,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     val newSession: Map[String, String] = request.session.data.+(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber)
     val requestAmended = request.withSession(newSession.toSeq: _*)
     setAuthMocks()
-    val result = testConfirmationController.showApplicationConfirmation(false).apply(requestAmended)
+    val result = testConfirmationController.showApplicationConfirmation(false, false).apply(requestAmended)
     test(result)
   }
 
