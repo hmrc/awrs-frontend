@@ -149,7 +149,7 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
       FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
 
       stubShowAndRedirectExternalCalls(None)
-      stubbedPost("""/awrs/regime-etmp-check""", NO_CONTENT , "")
+      stubbedPost("""/regime-etmp-check""", NO_CONTENT , "")
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
@@ -157,13 +157,13 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
 
-      verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/awrs/regime-etmp-check")))
+      verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/regime-etmp-check")))
     }
 
     "for API4 journey where Business Customer and Registration data is found and AWRS feature flag is true" in {
     FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
       stubShowAndRedirectExternalCalls(Some(businessCustomerDetailsStringS4L))
-      stubbedPost("""/awrs/regime-etmp-check""", NO_CONTENT , "")
+      stubbedPost("""/regime-etmp-check""", NO_CONTENT , "")
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
@@ -171,13 +171,13 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
 
-      verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/awrs/regime-etmp-check")))
+      verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/regime-etmp-check")))
     }
 
     "for API4 journey where Business Customer and Registration data is found and AWRS feature flag is true and upserts enrolment" in {
       FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
       stubShowAndRedirectExternalCalls(Some(businessCustomerDetailsStringS4L))
-      stubbedPost("""/awrs/regime-etmp-check""", OK, "")
+      stubbedPost("""/regime-etmp-check""", OK, "")
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
       withCaptureOfLoggingFrom(Logger) { logs =>
@@ -187,7 +187,7 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
 
         logs.exists(event => event.getMessage == "[HomeController][checkBusinessDetailsETMP] Upserted details and enrolments to EACD") mustBe true
 
-        verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/awrs/regime-etmp-check")))
+        verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/regime-etmp-check")))
       }
     }
 

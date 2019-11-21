@@ -441,7 +441,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     } else {
       val regimeModel = CheckRegimeModel(businessCustomerDetails, businessRegistrationDetails)
       val json = Json.toJson(regimeModel)
-      val postURL = s"""$serviceURL/awrs/regime-etmp-check"""
+      val postURL = s"""$serviceURL/regime-etmp-check"""
 
       http.POST[JsValue, HttpResponse](postURL, json).map { resp =>
         resp.status match {
