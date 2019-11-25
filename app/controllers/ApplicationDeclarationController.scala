@@ -24,10 +24,11 @@ import controllers.auth.AwrsController
 import exceptions._
 import forms.ApplicationDeclarationForm._
 import javax.inject.Inject
-import models.FormBundleStatus
+import models.{BusinessCustomerDetails, BusinessRegistrationDetails, EnrolResponse, FormBundleStatus, SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -64,6 +65,25 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
     }
   }
 
+  type AwrsData = Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]
+
+  def selectEnrol(either: AwrsData,
+                   businessPartnerDetails: BusinessCustomerDetails,
+                   businessType: String,
+                   utr: Option[String])(implicit hc: HeaderCarrier): Future[Option[EnrolResponse]] = {
+
+    either match {
+      case Left(_)    => Future.successful(None)
+      case Right(successfulSubscriptionResponse) =>
+        enrolService.enrolAWRS(
+          successfulSubscriptionResponse.awrsRegistrationNumber,
+          businessPartnerDetails,
+          businessType,
+          utr)
+    }
+  }
+
+
   def sendApplication(): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       if (accountUtils.hasAwrs(ar.enrolments)) {
@@ -94,7 +114,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
               businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
               businessRegDetails <- save4LaterService.mainStore.fetchBusinessRegistrationDetails(ar)
               successResponse <- applicationService.sendApplication(ar)
-              _ <- enrolService.enrolAWRS(applicationService.getRegistrationReferenceNumber(successResponse),
+              _ <- selectEnrol(successResponse,
                 businessPartnerDetails.get,
                 businessType,
                 businessRegDetails.get.utr) // Calls ES8

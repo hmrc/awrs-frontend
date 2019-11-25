@@ -54,6 +54,8 @@ import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Success
 
 class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
@@ -85,6 +87,21 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     new BusinessDirectorsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "ApplicationDeclarationController" must {
+
+    "selectEnroll should return left when given self heal case " in {
+      val result = testApplicationDeclarationController.selectEnrol(Left(selfHealSuccessResponse), testReviewDetails, "SOP", "12345")
+
+      await(result) shouldBe None
+    }
+
+    "selectEnroll should return right and Enrol when given an successResponse" in {
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
+
+      val result = testApplicationDeclarationController.selectEnrol(Right(subscribeSuccessResponse), testReviewDetails, "SOP", "12345")
+      await(result) shouldBe Some(enrolSuccessResponse)
+    }
+
+
     "show error page if a DES Validation Exception is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), DESValidationException("Validation against schema failed")) { result =>
         await(result)

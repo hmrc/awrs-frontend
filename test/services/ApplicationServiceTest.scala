@@ -125,15 +125,6 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   val testApplicationService: ApplicationService = new ApplicationService(mockEnrolService, mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
 
   "Application Service" should {
-    "getRegistrationReferenceNumber should return left when given self heal case " in {
-
-      testApplicationService.getRegistrationReferenceNumber(Left(selfHealSuccessResponse)) shouldBe "12345"
-    }
-
-    "getRegistrationReferenceNumber should return right when given subscription case " in {
-
-      testApplicationService.getRegistrationReferenceNumber(Right(subscribeSuccessResponse)) shouldBe "ABCDEabcde12345"
-    }
 
     "send application and handle a 200 success" in {
       sendWithAuthorisedUser {

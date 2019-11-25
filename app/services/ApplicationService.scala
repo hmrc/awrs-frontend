@@ -141,13 +141,6 @@ class ApplicationService @Inject()(enrolService: EnrolService,
 
   type AwrsData = Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]
 
-  def getRegistrationReferenceNumber(either: AwrsData): String = {
-    either match {
-      case Left(selfHealSubscriptionResponse)    => selfHealSubscriptionResponse.regimeRefNumber
-      case Right(successfulSubscriptionResponse) => successfulSubscriptionResponse.awrsRegistrationNumber
-    }
-  }
-
   def handleAWRSData(either: AwrsData, authRetrievals: StandardAuthRetrievals, cached: Option[CacheMap])
                     (implicit ec: ExecutionContext, request: Request[AnyContent], hc: HeaderCarrier): Future[AwrsData] = {
     either match {
