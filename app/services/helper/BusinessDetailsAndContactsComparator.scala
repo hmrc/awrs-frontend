@@ -28,7 +28,8 @@ object BusinessDetailsAndContactsComparator {
   def compare(data: SubscriptionTypeFrontEnd, cached: Option[CacheMap]): (Boolean, Boolean, Boolean, Boolean) = {
 
     val businessCustomerDetails = cached.get.getBusinessCustomerDetails
-    val businessDetails = cached.get.getBusinessDetails
+    val businessNameDetails = cached.get.getBusinessNameDetails
+    val tradingNameDetails = cached.get.getTradingStartDetails
     val businessRegistrationDetails = cached.get.getBusinessRegistrationDetails
     val businessContacts = cached.get.getBusinessContacts
     val placeOfBusiness = cached.get.getPlaceOfBusiness
@@ -39,7 +40,11 @@ object BusinessDetailsAndContactsComparator {
 
     val corporateSessionCacheBusinessDetChangeData = data.businessDetails.map(corBusDetails => (corBusDetails.tradingName, corBusDetails.newAWBusiness))
 
-    val corporateTempCacheBusinessDetChangeData = businessDetails.map(corBusDetails => (corBusDetails.tradingName, corBusDetails.newAWBusiness))
+    val corporateTempCacheBusinessDetChangeData = businessNameDetails.flatMap { businessNameDet =>
+      tradingNameDetails.map {
+        tradingNameDet => (businessNameDet.tradingName, Some(tradingNameDet))
+      }
+    }
 
     val corporateSessionCacheBusinessRegDetChangeData = data.businessRegistrationDetails.map(corBusRegDetails =>
       (corBusRegDetails.legalEntity, corBusRegDetails.nino, corBusRegDetails.utr, corBusRegDetails.vrn, corBusRegDetails.companyRegDetails))
@@ -68,7 +73,7 @@ object BusinessDetailsAndContactsComparator {
       case (false, false) => true
       case _ => true
     }
-
+    
     (businessType) match {
       case ((Some("LLP_GRP") | Some("LTD_GRP"))) =>
       {

@@ -122,11 +122,11 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
         val cache = cacheMap.get
 
         val businessDetailsStatus = cacheMap match {
-          case Some(cache) => cache.getBusinessDetails match {
-            case Some(businessDetails) => if (changeIndicators.businessDetailsChanged) {
+          case Some(cache) => (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
+            case (Some(bnd), Some(gtsd)) => if (changeIndicators.businessDetailsChanged) {
               SectionEdited
             } else {
-              if (isNewAWBusinessAnswered(businessDetails)) {
+              if (bnd.doYouHaveTradingName.isDefined && isNewAWBusinessAnswered(gtsd.invertedBeforeMarch2016Question)) {
                 SectionComplete
               } else {
                 SectionIncomplete
@@ -154,11 +154,12 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
         }
 
         val businessDetailsHref = cacheMap match {
-          case Some(cache) => cache.getBusinessDetails match {
-            case Some(_) => controllers.routes.ViewApplicationController.viewSection(businessDetailsName).url
-            case _ => controllers.routes.BusinessDetailsController.showBusinessDetails(true).url
+          case Some(cache) => (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
+            case (Some(bnd), Some(td)) =>
+              controllers.routes.ViewApplicationController.viewSection(businessDetailsName).url
+            case _ => controllers.routes.TradingNameController.showTradingName(true).url
           }
-          case _ => controllers.routes.BusinessDetailsController.showBusinessDetails(true).url
+          case _ => controllers.routes.TradingNameController.showTradingName(true).url
         }
 
         val businessRegistrationDetailsHref = cacheMap match {
@@ -433,20 +434,16 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
     case _ => false
   }
 
-  // Can remove this when we are confident that no old applications have an empty newAWBusiness (should be after 28 days)
-  def isNewAWBusinessAnswered(businessDetails: BusinessDetails): Boolean = businessDetails.newAWBusiness match {
-    case Some(newBusiness) =>
-      newBusiness.newAWBusiness match {
+  def isNewAWBusinessAnswered(businessDetails: NewAWBusiness): Boolean =
+      businessDetails.newAWBusiness match {
         case AWRSEnums.BooleanRadioEnum.NoString => true
         // This is amended to also check the proposed date is present due to a bug by etmp as specified by AWRS-1413
         case AWRSEnums.BooleanRadioEnum.YesString =>
-          newBusiness.proposedStartDate match {
-            case Some(date) => true
+          businessDetails.proposedStartDate match {
+            case Some(_) => true
             case _ => false
           }
       }
-    case _ => false
-  }
 
   // SOP and Partnership have their own combination of Identities required, all the rest are the same
   def isSameEntityIdCategory(previousLegalEntity: String, newLegalEntity: String): Boolean = previousLegalEntity match {

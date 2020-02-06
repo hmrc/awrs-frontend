@@ -125,9 +125,9 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     }
 
     "show error page if a Run time exception is encountered" in {
-      saveWithException(testRequest(testApplicationDeclarationTrue), new Exception("Runtime Exception")) { result =>
+      intercept[Exception](saveWithException(testRequest(testApplicationDeclarationTrue), new Exception("Runtime Exception")) { result =>
         status(result) shouldBe 500
-      }
+      })
     }
 
     "return true if AWRS user is enrolled and has status of Pending" in {

@@ -375,7 +375,7 @@ object TestUtil extends UnitSpec {
       case `additionalBusinessPremisesName` => SectionModel(s"additionalPremises", s"/alcohol-wholesale-scheme/view-section/$additionalBusinessPremisesName", "awrs.index_page.additional_premises_text", additionalBusinessPremises, additionalPremSize)
       case `partnersName` => SectionModel("businessPartners", s"/alcohol-wholesale-scheme/view-section/$partnersName", "awrs.index_page.business_partners_text", partnerDetails, partnerSize)
       case `groupMembersName` => SectionModel("groupMembers", s"/alcohol-wholesale-scheme/view-section/$groupMembersName", "awrs.index_page.group_member_details_text", groupMemberDetails, groupSize)
-      case `businessDirectorsName` => SectionModel("directorsAndCompanySecretaries", s"/alcohol-wholesale-scheme/view-section/$businessDirectorsName", "awrs.index_page.business_directors.index_text", businessDirectors, directorSize)
+      case `businessDirectorsName` => SectionModel("directorsAndCompanySecretaries", s"/alcohol-wholesale-scheme/view-section/$businessDirectorsName", "awrs.index_page.business_directors.index_text", businessDirectors, if (directorSize > 0) directorSize else None)
       case `tradingActivityName` => SectionModel(tradingActivityName, s"/alcohol-wholesale-scheme/view-section/$tradingActivityName", "awrs.index_page.trading_activity_text", tradingActivity)
       case `productsName` => SectionModel(productsName, s"/alcohol-wholesale-scheme/view-section/$productsName", "awrs.index_page.products_text", products)
       case `suppliersName` => SectionModel("aboutYourSuppliers", s"/alcohol-wholesale-scheme/view-section/$suppliersName", "awrs.index_page.suppliers_text", suppliers, supplierSize)
@@ -406,7 +406,8 @@ object TestUtil extends UnitSpec {
 
 
   def createCacheMap(legalEntity: String,
-                     businessDetails: Option[String => BusinessDetails] = (entity: String) => testBusinessDetails(Some(entity)),
+                     businessNameDetails: Option[String => BusinessNameDetails] = (entity: String) => testBusinessNameDetails(Some(entity)),
+                     tradingStartDetails: Option[NewAWBusiness] = newAWBusiness(proposedStartDate = Some(TupleDate("20", "1", "2019"))),
                      businessRegistrationDetails: Option[String => BusinessRegistrationDetails] = (entity: String) => testBusinessRegistrationDetails(Some(entity)),
                      placeOfBusiness: Option[PlaceOfBusiness] = testPlaceOfBusinessDefault(),
                      businessContacts: Option[BusinessContacts] = testBusinessContactsDefault(),
@@ -420,7 +421,9 @@ object TestUtil extends UnitSpec {
                      suppliers: Option[Suppliers] = testSupplierAddressList,
                      businessType: BusinessDetailsEntityTypes.Value = SoleTrader) = {
     def addTestData(legalEntity: String, section: String): Option[JsValue] = section match {
-      case `businessDetailsName` => businessDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
+      case `businessDetailsName` => None
+      case `businessNameDetailsName` => businessNameDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
+      case `tradingStartDetailsName` => tradingStartDetails.fold(EmptyJsVal)(f => Json.toJson(f))
       case `businessRegistrationDetailsName` => businessRegistrationDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
       case `placeOfBusinessName` => placeOfBusiness.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
       case `businessContactsName` => businessContacts.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
@@ -431,12 +434,23 @@ object TestUtil extends UnitSpec {
       case `tradingActivityName` => tradingActivity.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
       case `productsName` => products.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
       case `suppliersName` => suppliers.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
-      case _ => throw new Exception("Unknown section")
+      case sect => throw new Exception(s"Unknown section - $sect")
     }
     @tailrec
     def addSectionToMap(journey: Seq[String], cacheMap: Map[String, JsValue]): Map[String, JsValue] = journey match {
       case head :: tail => addTestData(legalEntity, head) match {
         case Some(data) => addSectionToMap(tail, cacheMap + (head -> data))
+        case _ if head == `businessDetailsName` =>
+          val businessDetailsOpt = businessNameDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
+          val tradingStartOpt = tradingStartDetails.fold(EmptyJsVal)(f => Json.toJson(f))
+          val newCacheMap: Map[String, JsValue] = (businessDetailsOpt, tradingStartOpt) match {
+            case (Some(bdo), Some(tso)) => cacheMap + (`businessNameDetailsName` -> bdo) + (`tradingStartDetailsName` -> tso)
+            case (Some(bdo), _) => cacheMap + (`businessNameDetailsName` -> bdo)
+            case (_, Some(tso)) => cacheMap + (`tradingStartDetailsName` -> tso)
+            case _ => cacheMap
+          }
+
+          addSectionToMap(tail, newCacheMap)
         case _ => addSectionToMap(tail, cacheMap)
       }
       case _ => cacheMap
@@ -452,12 +466,22 @@ object TestUtil extends UnitSpec {
   // sometimes the proposed start date is not returned from API 5
   // if the date is missing the data is still valid if isNewBusiness is false
   // however the data is incomplete if isNewBusiness is true
-  def testBusinessDetailsWithMissingStartDate(legalEntity: String = "SOP", isNewBusiness: Boolean) = createCacheMap(legalEntity = legalEntity, businessDetails = (x: String) => testBusinessDetails(newBusiness =
-    Some(NewAWBusiness(newAWBusiness =
-      isNewBusiness match {
-        case true => BooleanRadioEnum.YesString
-        case false => BooleanRadioEnum.NoString
-      }, None))))
+  def testBusinessDetailsWithMissingStartDate(legalEntity: String = "SOP", isNewBusiness: Boolean, propDate: Option[TupleDate] = None) =
+    createCacheMap(
+      legalEntity = legalEntity,
+      businessNameDetails = (_F: String) => testBusinessNameDetails(),
+      tradingStartDetails = newAWBusiness( if (isNewBusiness) {
+        BooleanRadioEnum.YesString
+      } else {
+        BooleanRadioEnum.NoString
+      }, propDate))
+
+  def testBusinessDetailsWithMissingTradingStartDetails(legalEntity: String = "SOP"): CacheMap =
+    createCacheMap(
+      legalEntity = legalEntity,
+      businessNameDetails = (_F: String) => testBusinessNameDetails(),
+      tradingStartDetails = None
+    )
 
   def testApplicationStatus(status: AWRSEnums.ApplicationStatusEnum.Value = AWRSEnums.ApplicationStatusEnum.Withdrawn, updatedDate: LocalDateTime = LocalDateTime.now()) = ApplicationStatus(status = status, updatedDate = updatedDate)
 
@@ -477,6 +501,15 @@ object TestUtil extends UnitSpec {
       doYouHaveTradingName = doYouHaveTradingName,
       tradingName = tradingName,
       newAWBusiness = newBusiness
+    )
+
+  def testBusinessNameDetails(businessName: Option[String] = Some("Business Name"),
+                              doYouHaveTradingName: Option[String] = Some("Yes"),
+                              tradingName: Option[String] = Some("Simple Wines")) =
+    BusinessNameDetails(
+      doYouHaveTradingName = doYouHaveTradingName,
+      tradingName = tradingName,
+      businessName = businessName
     )
 
   def testExtendedBusinessDetails(businessName: Option[String] = Some("ACME"),
@@ -649,7 +682,8 @@ object TestUtil extends UnitSpec {
   val differentSoleTraderSubscriptionTypeFrontEnd = testSubscriptionTypeFrontEnd(businessDetails = Some(testBusinessDetails(tradingName = Some("Complex Wines"))), groupDeclaration = None, businessPartnerDetails = None, groupMemberDetails = None, businessDirectors = None)
 
   val matchingSoleTraderCacheMap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(testBusinessCustomerDetailsOrig),
-    "businessDetails" -> Json.toJson(testSoleTraderBusinessDetails),
+    businessNameDetailsName -> Json.toJson(testBusinessNameDetails()),
+    tradingStartDetailsName -> Json.toJson(newAWBusiness()),
     "businessRegistrationDetails" -> Json.toJson(testSoleTraderBusinessRegistrationDetails),
     placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
     "businessContacts" -> Json.toJson(testBusinessContactsDefault()),

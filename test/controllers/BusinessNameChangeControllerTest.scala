@@ -19,6 +19,8 @@ package controllers
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import models._
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -64,9 +66,12 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
   }
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    setupMockKeyStoreServiceWithOnly(fetchExtendedBusinessDetails = testExtendedBusinessDetails(businessName = newBusinessName))
+    setupMockKeyStoreServiceWithOnly(fetchBusinessNameChange = testBusinessNameDetails(businessName = newBusinessName))
     setupMockSave4LaterService()
     setAuthMocks()
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
+
     val result = testBusinessNameChangeController.callToAction().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

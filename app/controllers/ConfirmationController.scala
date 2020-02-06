@@ -24,7 +24,7 @@ import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import javax.inject.Inject
-import models.BusinessDetails
+import models.{BusinessDetails, NewAWBusiness}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -52,8 +52,8 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
 
     val err = () => throw new InternalServerException("Unexpected error when evaluating if the application is a new business")
 
-    lazy val evalIsNewBusiness = save4LaterService.mainStore.fetchBusinessDetails(authRetrievals) flatMap {
-      case Some(data: BusinessDetails) => data.newAWBusiness.get.newAWBusiness match {
+    lazy val evalIsNewBusiness = save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap {
+      case Some(data: NewAWBusiness) => data.invertedBeforeMarch2016Question.newAWBusiness match {
         case BooleanRadioEnum.YesString => Future.successful(true)
         case BooleanRadioEnum.NoString => Future.successful(false)
         case data@_ => err()

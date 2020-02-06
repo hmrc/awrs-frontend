@@ -36,7 +36,7 @@ class CacheUtilTest extends UnitSpec with OneAppPerSuite {
           val cache = createCacheMap(legalEntity = legalEntity, businessType = toBusinessType(legalEntity)).copyOfSave4Later
           val shouldAllBeTrue =
           JourneyConstants.getJourney(legalEntity) map {
-            case `businessDetailsName` => cache.getBusinessDetails.isDefined
+            case `businessDetailsName` => cache.getTradingStartDetails.isDefined
             case `businessRegistrationDetailsName` => cache.getBusinessRegistrationDetails.isDefined
             case `businessContactsName` => cache.getBusinessContacts.isDefined
             case `placeOfBusinessName` => cache.getPlaceOfBusiness.isDefined

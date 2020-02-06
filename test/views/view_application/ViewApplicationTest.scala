@@ -108,7 +108,9 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                        tradingActivity: Option[TradingActivity] = None,
                        products: Option[Products] = None,
                        suppliers: Option[Suppliers] = None,
-                       applicationDeclaration: Option[ApplicationDeclaration] = None
+                       applicationDeclaration: Option[ApplicationDeclaration] = None,
+                       businessNameDetails: Option[BusinessNameDetails] = None,
+                       tradingStartDetails: Option[NewAWBusiness] = None
                       ) = {
     val id = testUtr
     val cacheMap = Map[String, JsValue]() ++
@@ -125,7 +127,9 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       prepMap[Products](productsName, products) ++
       prepMap[Suppliers](suppliersName, suppliers) ++
       prepMap[ApplicationDeclaration](applicationDeclarationName, applicationDeclaration) ++
-      prepMap[GroupMembers](groupMembersName, groupMembers)
+      prepMap[GroupMembers](groupMembersName, groupMembers) ++
+      prepMap[BusinessNameDetails](businessNameDetailsName, businessNameDetails) ++
+      prepMap[NewAWBusiness](tradingStartDetailsName, tradingStartDetails)
 
     CacheMap(id, cacheMap)
   }
@@ -267,9 +271,14 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
   "view-application page" should {
 
     "display business details correctly" in {
-      def testDataOne(legalEntity: Option[String]) = testBusinessDetails()
+      def testDataOne(legalEntity: Option[String]) = testBusinessNameDetails()
 
-      def testDataTwo(legalEntity: Option[String]) = testBusinessDetails()
+      def testDataTwo(legalEntity: Option[String]) = testBusinessNameDetails()
+
+      val testAWBusiness = NewAWBusiness(
+        "Yes",
+        Some(TupleDate("20", "1", "2015"))
+      )
 
       val testDataSeqPartnership = Seq(testDataOne(Some("Partnership")), testDataTwo(Some("Partnership")))
       val testDataSeqGroup = Seq(testDataOne(Some("LLP_GRP")), testDataTwo(Some("LLP_GRP")))
@@ -288,7 +297,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       entitiesGroup.foreach(entity => testDataSeqGroup.foreach(testData => test(entity, testData)))
       entitiesBusDetails.foreach(entity => testDataSeqBusDetails.foreach(testData => test(entity, testData)))
 
-      def toExpectation(testData: BusinessDetails)(entityType: String): List[Row] = {
+      def toExpectation(testData: BusinessNameDetails)(entityType: String): List[Row] = {
         def expectedBusinessType =
           entityType match {
             case "Partnership" => Messages("awrs.business_details.business_partnership")
@@ -303,15 +312,17 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           Row(Messages("awrs.business_details.name"), bcd.businessName) ++
           Row(Messages("awrs.business_details.type_of_business"), expectedBusinessType) ++
           prepRow(Messages("awrs.generic.trading_name"), testData.tradingName) ++
-          Row(Messages("awrs.business_details.new_AWBusiness"), testData.newAWBusiness.fold("")(x => x.newAWBusiness))
+          Row(Messages("awrs.business_details.new_AWBusiness"), testAWBusiness.newAWBusiness) ++
+          Row(Messages("awrs.business_details.start_date"), testAWBusiness.proposedStartDate.get.toString("dd MMMM yyyy"))
       }
 
-      def test(entity: BusinessType, testData: BusinessDetails) = {
+      def test(entity: BusinessType, testData: BusinessNameDetails) = {
         implicit val divId = businessDetailsId
 
         implicit val cache =
-          getCustomizedMap(businessDetails = testData,
+          getCustomizedMap(businessNameDetails = testData,
             businessCustomerDetails = bcd,
+            tradingStartDetails = testAWBusiness,
             businessType = entity)
         implicit val doc = getDoc(entity.legalEntity.get)
         val subview = getSubview

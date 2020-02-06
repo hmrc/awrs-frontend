@@ -18,7 +18,7 @@ package models
 
 import java.text.SimpleDateFormat
 
-import forms.AWRSEnums.ApplicationStatusEnum
+import forms.AWRSEnums.{ApplicationStatusEnum, BooleanRadioEnum}
 import forms.AwrsFormFields
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{LocalDate, LocalDateTime}
@@ -107,7 +107,12 @@ case class Partners(partners: List[Partner],
 
 case class Suppliers(suppliers: List[Supplier])
 
-case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleDate])
+case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleDate]) {
+  lazy val invertedBeforeMarch2016Question: NewAWBusiness = newAWBusiness match {
+    case BooleanRadioEnum.YesString => NewAWBusiness(BooleanRadioEnum.NoString, proposedStartDate)
+    case _                          => NewAWBusiness(BooleanRadioEnum.YesString, proposedStartDate)
+  }
+}
 
 case class TupleDate(day: String, month: String, year: String) {
   lazy val localDate = new LocalDate(year.toInt, month.toInt, day.toInt)

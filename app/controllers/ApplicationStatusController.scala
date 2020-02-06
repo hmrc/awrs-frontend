@@ -53,8 +53,8 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
       Logger.warn("[isNewBusiness] Unexpected error when evaluating if the application is a new business")
       throw new InternalServerException("Unexpected error when evaluating if the application is a new business")
     }
-    save4LaterService.mainStore.fetchBusinessDetails(authRetrievals) flatMap {
-      case Some(data: BusinessDetails) => data.newAWBusiness.get.newAWBusiness match {
+    save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap {
+      case Some(data: NewAWBusiness) => data.invertedBeforeMarch2016Question.newAWBusiness match {
         case BooleanRadioEnum.YesString => Future.successful(Some(true))
         case BooleanRadioEnum.NoString => Future.successful(Some(false))
         case _ => err()

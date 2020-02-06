@@ -22,7 +22,7 @@
 @import services.DataCacheKeys._
 
 @(headingKey: String,
-  someModel: Option[models.BusinessDetails],
+  someModel: BusinessDetailSummaryModel,
   someBusinessName: Option[String],
   showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
@@ -34,7 +34,7 @@
 }
 
 @href = @{
-    controllers.routes.BusinessDetailsController.showBusinessDetails(false).url
+    controllers.routes.TradingNameController.showTradingName(false).url
 }
 
 @businessTypeValue = @{
@@ -48,7 +48,15 @@
     }
 }
 
-@content(model: models.BusinessDetails, businessName: String) = {
+@headerTitleName(pastStart: Boolean) = @{
+    if(pastStart){
+        "awrs.generic.what_date_did_you"
+    } else {
+        "awrs.generic.what_date_will_you"
+    }
+}
+
+@content(model: models.BusinessNameDetails, tradingStart: models.NewAWBusiness, businessName: String) = {
 
     @if(showTableHeader) {
         @table_row(
@@ -71,11 +79,11 @@
     )
     @table_row(
         messages("awrs.business_details.new_AWBusiness"),
-        Some(model.newAWBusiness.fold("")(x => x.newAWBusiness))
+        Some(tradingStart.newAWBusiness)
     )
     @table_row(
-        messages("awrs.business_details.begin_trading"),
-        Some(model.newAWBusiness.fold("")(x => x.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy"))))
+        messages("awrs.business_details.start_date"),
+        Some(tradingStart.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy")))
     )
 }
 
@@ -88,8 +96,8 @@
 }
 
 @(someModel, someBusinessName) match {
-    case (Some(model), Some(businessName)) => {
-        @subview_core(heading, wrapperId, sectionName = Some(businessDetailsName))(content(model, businessName), preContent = Some(preContent), postContent = Some(postContent))
+    case (BusinessDetailSummaryModel(Some(businessNameDetails), Some(newAWBusiness)), Some(businessName)) => {
+        @subview_core(heading, wrapperId, sectionName = Some(businessDetailsName))(content(businessNameDetails, newAWBusiness, businessName), preContent = Some(preContent), postContent = Some(postContent))
     }
     case _ => {}
 }

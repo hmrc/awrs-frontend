@@ -58,16 +58,16 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
           val businessType = request.getBusinessType
           Future.successful(BadRequest(views.html.awrs_group_representative_change_confirm(formWithErrors, businessType)))
         },
-        businessNameChangeDetails =>
+        success = businessNameChangeDetails =>
           businessNameChangeDetails.businessNameChangeConfirmation match {
             case Some("Yes") =>
-              keyStoreService.fetchExtendedBusinessDetails flatMap {
-                extendedBusinessDetailsData =>
+              keyStoreService.fetchBusinessNameChange flatMap {
+                case Some(businessNameDetails) =>
                   save4LaterService.mainStore.fetchBusinessCustomerDetails(ar) flatMap {
-                    case Some(businessCustomerDetails) => {
-                      save4LaterService.mainStore.saveBusinessCustomerDetails(ar, businessCustomerDetails.copy(businessName = extendedBusinessDetailsData.get.businessName.get)) flatMap {
+                    case Some(businessCustomerDetails) =>
+                      save4LaterService.mainStore.saveBusinessCustomerDetails(ar, businessCustomerDetails.copy(businessName = businessNameDetails.businessName.get)) flatMap {
                         _ =>
-                          save4LaterService.mainStore.saveBusinessDetails(ar, extendedBusinessDetailsData.get.getBusinessDetails) flatMap {
+                          save4LaterService.mainStore.saveBusinessNameDetails(ar, businessNameDetails) flatMap {
                             _ =>
                               save4LaterService.mainStore.saveBusinessRegistrationDetails(ar, BusinessRegistrationDetails()) flatMap {
                                 _ =>
@@ -75,18 +75,17 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
                                     _ =>
                                       save4LaterService.mainStore.saveBusinessContacts(ar, BusinessContacts()) flatMap {
                                         _ =>
-                                          Future.successful(Redirect(controllers.routes.ViewApplicationController.viewSection(businessDetailsName)).addBusinessNameToSession(extendedBusinessDetailsData.get.businessName.get))
+                                          Future.successful(Redirect(controllers.routes.ViewApplicationController.viewSection(businessDetailsName)).addBusinessNameToSession(businessNameDetails.businessName.get))
                                       }
                                   }
                               }
                           }
                       }
-                    }
                     case _ => throw new InternalServerException("Business name change, businessCustomerDetails not found")
                   }
               }
             case _ =>
-              Future.successful(Redirect(routes.BusinessDetailsController.showBusinessDetails(false)))
+              Future.successful(Redirect(routes.TradingNameController.showTradingName(false)))
           }
       )
     }

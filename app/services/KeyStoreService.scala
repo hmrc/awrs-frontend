@@ -110,6 +110,18 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
   @inline def fetchViewedStatus(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
     keyStoreConnector.fetchDataFromKeystore[Boolean](viewedStatusName)
 
+  @inline def saveBusinessNameChange(newName: BusinessNameDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[BusinessNameDetails](businessNameChangeName, newName)
+
+  @inline def fetchBusinessNameChange(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessNameDetails]] =
+    keyStoreConnector.fetchDataFromKeystore[BusinessNameDetails](businessNameChangeName)
+
+  @inline def saveAlreadyTrading(already: Boolean)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[Boolean](alreadyTradingName, already)
+
+  @inline def fetchAlreadyTrading(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
+    keyStoreConnector.fetchDataFromKeystore[Boolean](alreadyTradingName)
+
   @inline def saveExtendedBusinessDetails(extendedBusinessDetails: ExtendedBusinessDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[ExtendedBusinessDetails](extendedBusinessDetailsName, extendedBusinessDetails)
 

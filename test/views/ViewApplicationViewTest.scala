@@ -62,7 +62,9 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
                        tradingActivity: Option[TradingActivity] = None,
                        products: Option[Products] = None,
                        suppliers: Option[Suppliers] = None,
-                       applicationDeclaration: Option[ApplicationDeclaration] = None
+                       applicationDeclaration: Option[ApplicationDeclaration] = None,
+                       businessNameDetails: Option[BusinessNameDetails] = None,
+                       tradingStartDetails: Option[NewAWBusiness] = None
                       ) = {
     val id = testUtr
     val cacheMap = Map[String, JsValue]() ++
@@ -79,7 +81,9 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
       prepMap[Products](productsName, products) ++
       prepMap[Suppliers](suppliersName, suppliers) ++
       prepMap[ApplicationDeclaration](applicationDeclarationName, applicationDeclaration) ++
-      prepMap[GroupMembers](groupMembersName, groupMembers)
+      prepMap[GroupMembers](groupMembersName, groupMembers) ++
+      prepMap[BusinessNameDetails](businessNameDetailsName, businessNameDetails) ++
+      prepMap[NewAWBusiness](tradingStartDetailsName, tradingStartDetails)
 
     CacheMap(id, cacheMap)
   }
@@ -94,7 +98,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     "should return the edit view for the respective section when the relevant section string is passed in" in {
 
       val sectionTupleList = List(
-        (businessDetailsName, getCustomizedMap(businessDetails = testBusinessDetails()), SubviewIds.businessDetailsId, Messages("awrs.view_application.business_details_text")),
+        (businessDetailsName, getCustomizedMap(businessNameDetails = testBusinessNameDetails(), tradingStartDetails = newAWBusiness()), SubviewIds.businessDetailsId, Messages("awrs.view_application.business_details_text")),
         (businessRegistrationDetailsName, getCustomizedMap(businessRegistrationDetails = testBusinessRegistrationDetails()), SubviewIds.businessRegistrationDetailsId, Messages("awrs.view_application.business_registration_details_text")),
         (placeOfBusinessName, getCustomizedMap(placeOfBusiness = testPlaceOfBusinessDefault()), SubviewIds.placeOfBusinessId, Messages("awrs.view_application.place_of_business_text")),
         (businessContactsName, getCustomizedMap(businessContacts = testBusinessContactsDefault()), SubviewIds.businessContactsId, Messages("awrs.view_application.business_contacts_text")),
