@@ -51,9 +51,6 @@ trait AuthFunctionality extends AuthorisedFunctions {
     case er: AuthorisationException =>
       Logger.warn(s"[recoverAuthorisedCalls] Auth exception: $er")
       Unauthorized(views.html.unauthorised())
-    case er                         =>
-      Logger.error(s"[recoverAuthorisedCalls] Unhandled error occurred - $er - ${er.getMessage} - ${er.getStackTrace.mkString("\n")}")
-      AwrsController.showErrorPageRaw
   }
 
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])

@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import exceptions.DeEnrollException
 import forms.AWRSEnums.WithdrawalReasonEnum
 import forms.{WithdrawalConfirmationForm, WithdrawalReasonForm}
 import models._
@@ -138,13 +139,8 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
       }
 
       "display error when enrol is not successful" in {
-        continueWithApplicationSubmit(
-          testConfirmationRequest(WithdrawalConfirmation("Yes")), deEnrol = false) {
-          result =>
-            val document = Jsoup.parse(contentAsString(result))
-            document.getElementsByClass("heading-xlarge").text() should be(Messages("awrs.generic.error.title"))
-            status(result) shouldBe INTERNAL_SERVER_ERROR
-        }
+        intercept[DeEnrollException](continueWithApplicationSubmit(
+          testConfirmationRequest(WithdrawalConfirmation("Yes")), deEnrol = false)(result => status(result)))
       }
     }
 

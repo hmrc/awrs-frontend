@@ -77,11 +77,11 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
 
       val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe feModel.subscriptionTypeFrontEnd
+      await(result) shouldBe testAPI5.convertEtmpFormatSTFE(feModel.subscriptionTypeFrontEnd)
       await(result).legalEntity.get.legalEntity shouldBe Some("LTD")
 
       verifySave4LaterService(
-        saveBusinessDetails = 1,
+        saveBusinessDetails = 0,
         savePlaceOfBusiness = 1,
         saveBusinessContacts = 1,
         saveBusinessDirectors = 1,
@@ -105,11 +105,11 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
 
       val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe feModel.subscriptionTypeFrontEnd
+      await(result) shouldBe testAPI5.convertEtmpFormatSTFE(feModel.subscriptionTypeFrontEnd)
       await(result).legalEntity.get.legalEntity shouldBe Some("SOP")
 
       verifySave4LaterService(
-        saveBusinessDetails = 1,
+        saveBusinessDetails = 0,
         savePlaceOfBusiness = 1,
         saveBusinessContacts = 1,
         saveBusinessDirectors = 0,
@@ -133,11 +133,11 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
 
       val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe feModel.subscriptionTypeFrontEnd
+      await(result) shouldBe testAPI5.convertEtmpFormatSTFE(feModel.subscriptionTypeFrontEnd)
       await(result).legalEntity.get.legalEntity shouldBe Some("Partnership")
 
       verifySave4LaterService(
-        saveBusinessDetails = 1,
+        saveBusinessDetails = 0,
         savePlaceOfBusiness = 1,
         saveBusinessContacts = 1,
         saveBusinessDirectors = 0,
@@ -161,11 +161,11 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
 
       val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe feModel.subscriptionTypeFrontEnd
+      await(result) shouldBe testAPI5.convertEtmpFormatSTFE(feModel.subscriptionTypeFrontEnd)
       await(result).legalEntity.get.legalEntity shouldBe Some("LLP")
 
       verifySave4LaterService(
-        saveBusinessDetails = 1,
+        saveBusinessDetails = 0,
         savePlaceOfBusiness = 1,
         saveBusinessContacts = 1,
         saveBusinessDirectors = 0,
@@ -189,11 +189,11 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
 
       val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe feModel.subscriptionTypeFrontEnd
+      await(result) shouldBe testAPI5.convertEtmpFormatSTFE(feModel.subscriptionTypeFrontEnd)
       await(result).legalEntity.get.legalEntity shouldBe Some("LLP_GRP")
 
       verifySave4LaterService(
-        saveBusinessDetails = 1,
+        saveBusinessDetails = 0,
         savePlaceOfBusiness = 1,
         saveBusinessContacts = 1,
         saveBusinessDirectors = 0,
@@ -217,11 +217,11 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
 
       val result = testAPI5.saveReturnedApplication(feModel, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe feModel.subscriptionTypeFrontEnd
+      await(result) shouldBe testAPI5.convertEtmpFormatSTFE(feModel.subscriptionTypeFrontEnd)
       await(result).legalEntity.get.legalEntity shouldBe Some("LTD_GRP")
 
       verifySave4LaterService(
-        saveBusinessDetails = 1,
+        saveBusinessDetails = 0,
         savePlaceOfBusiness = 1,
         saveBusinessContacts = 1,
         saveBusinessDirectors = 1,

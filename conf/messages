@@ -95,6 +95,10 @@ awrs.generic.do_you_have_partnership_UTR=Do you have a Partnership Self Assessme
 awrs.generic.do_they_have_partnership_UTR=Do they have a Partnership Self Assessment Unique Taxpayer Reference (UTR)?
 awrs.generic.do_you_have_trading_name=Do you have a trading name?
 awrs.generic.do_they_have_trading_name=Do they have a trading name?
+awrs.generic.have_you_already=Have you already started trading wholesale alcohol?
+awrs.generic.legislation_before=Did your trading of wholesale alcohol start before 31 March 2016?
+awrs.generic.what_date_will_you=What date will you start trading wholesale alcohol?
+awrs.generic.what_date_did_you=What date did you start trading wholesale alcohol?
 awrs.generic.warning_icon_text=Warning.
 
 # Generic Error Messages
@@ -184,6 +188,8 @@ awrs.generic.error.telephone_empty.summary=The telephone number is empty
 awrs.generic.error.telephone_empty=Enter a telephone number
 awrs.generic.error.telephone_numeric.summary=The telephone number is not in the correct format
 awrs.generic.error.telephone_numeric= Enter a valid telephone number
+awrs.generic.error.already_started_trading=Tell us if you have already started trading wholesale alcohol
+awrs.generic.error.legislation=Tell us if your trading of wholesale alcohol started before the 31 March 2016
 
 # Misc
 #============================================================
@@ -204,6 +210,7 @@ awrs.generic.surname=Last name
 awrs.generic.full_name=Full name
 awrs.generic.business_name=Business name
 awrs.generic.trading_name= What is your trading name?
+awrs.generic.enter_trading= Enter trading name
 awrs.generic.registered_address=Contact address
 awrs.generic.company_reg_details=Company registration details
 awrs.generic.postcode=Postcode
@@ -407,9 +414,12 @@ awrs.business_details.unknown_body=Unknown
 awrs.business_details.type_of_business=Type of business
 awrs.business_details.awrs_add_your_previous_address=What was your previous principal place of business address?
 awrs.business_details.begin_trading= When did you start, or plan to start, trading wholesale alcohol?
+awrs.business_details.what_date_start_p = You must give a date that is more than 45 days from today''s date, to allow enough time for the approval process. If you get approval at an earlier date you can start trading from that date. You cannot start trading until you receive HMRC approval.
+awrs.business_details.what_date_did_p_warn = You may be asked why you failed to register before, unless you are registering now because you have been required to register by HMRC.
 awrs.business_details.business_partnership=Business Partnership
 awrs.business_details.newBusiness=New business
-awrs.business_details.new_AWBusiness= Did you start, or plan to start, trading wholesale alcohol after 31 March 2016?
+awrs.business_details.new_AWBusiness= Did your trading of wholesale alcohol start before 31 March 2016?
+awrs.business_details.start_date= Start date
 awrs.business_details.newAWBusiness_information.para_1= A wholesale alcohol business must have an Alcohol Wholesaler Registration Scheme reference. You must have a business plan and letters of intent from suppliers and customers before you register. We can take up to 45 days to make a decision and provide your reference.
 awrs.business_details.new_AWBusiness_Yes=You previously indicated that you are a new business and you have proposed to start trading on {0} {1} {2}.
 awrs.business_details.new_AWBusiness_No=You previously indicated that you are not a new business.
@@ -422,9 +432,13 @@ awrs.business_details.error.newAWBusiness_invalid.summary=The trading start ques
 awrs.business_details.error.newAWBusiness_invalid= Select yes if you started, or planned to start, trading wholesale after 31&nbsp;March&nbsp;2016
 awrs.business_details.error.proposedDate_empty.summary=The approximate start date is empty
 awrs.business_details.error.proposedDate_empty= Enter the date you started, or plan to start, trading wholesale alcohol
+awrs.business_details.error.proposedDate_emptyP= Enter the date you will start trading wholesale alcohol
+awrs.business_details.error.proposedDate_pastP= Enter the date you started trading wholesale alcohol
 awrs.business_details.error.proposedDate_invalid.summary=The approximate start date is not the correct format
 awrs.business_details.error.proposedDate_toEarly.summary=The approximate start date must be after 31&nbsp;March&nbsp;2016
 awrs.business_details.error.proposedDate_toEarly= The date you started, or plan to start, trading wholesale alcohol must be after 31&nbsp;March&nbsp;2016
+awrs.business_details.error.proposedDate_tooEarly= Give a date that is more than 45 days from today’s date
+awrs.business_details.error.proposedDate_inTheFuture= Give a date that is in the past
 awrs.business_details.error.identification_provided.summary=No form of identification has been provided
 awrs.business_details.error.identification_provided=You must provide at least 1 form of identification
 awrs.business_details.error.year_toSmall.summary=The year is not the correct format
@@ -440,6 +454,8 @@ awrs.business_name_change.warning.bullet.3=add the old group representative as a
 awrs.business_name_change.cta=Confirm
 awrs.business_name_change.error.empty=Confirm if you want to change your group representative
 awrs.business_name_change.error.empty.summary=There is a problem with your request to change your group representative
+
+awrs.already_starting.previously_indicated=You previously indicated that you are a new business and you planned to start trading on 16 November 2016.
 
 
 # Business registration details

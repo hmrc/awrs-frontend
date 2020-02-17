@@ -22,8 +22,7 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import config.ApplicationConfig
 import models.FormBundleStatus
 import models.FormBundleStatus.{Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal}
-import play.api.Play
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import play.twirl.api.Content
 import uk.gov.hmrc.auth.core.AuthConnector

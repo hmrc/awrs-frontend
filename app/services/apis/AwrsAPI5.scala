@@ -49,27 +49,35 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
     }
   }
 
+  private[apis] def convertEtmpFormatSTFE(stfe: SubscriptionTypeFrontEnd): SubscriptionTypeFrontEnd = {
+    stfe.copy(businessDetails = stfe.businessDetails.map{
+      bd => bd.copy(newAWBusiness = bd.newAWBusiness.map(_.invertedBeforeMarch2016Question))
+    })
+  }
+
   def saveReturnedApplication(feModel: AWRSFEModel, authRetrievals: StandardAuthRetrievals)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionTypeFrontEnd] = {
     val subscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd
-    lazy val updatedPremises = AdditionalBusinessPremisesList(subscriptionTypeFrontEnd.additionalPremises.get.premises.drop(1))
-
+    val amendedSTFE = convertEtmpFormatSTFE(subscriptionTypeFrontEnd)
+    val newFeModel = feModel.copy(subscriptionTypeFrontEnd = amendedSTFE)
+    lazy val updatedPremises = AdditionalBusinessPremisesList(amendedSTFE.additionalPremises.get.premises.drop(1))
+    
     for {
-      dataCache <- save4LaterService.api.saveSubscriptionTypeFrontEnd(subscriptionTypeFrontEnd, authRetrievals)
-      businessCustomerDetails <- save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, convertToBusinessCustomerDetails(subscriptionTypeFrontEnd))
-      x <- getEntitySpecificData(feModel, businessCustomerDetails, authRetrievals)
-      businessType <- save4LaterService.mainStore.saveBusinessType(subscriptionTypeFrontEnd.legalEntity.get, authRetrievals)
+      dataCache <- save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
+      businessCustomerDetails <- save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, convertToBusinessCustomerDetails(amendedSTFE))
+      x <- getEntitySpecificData(newFeModel, businessCustomerDetails, authRetrievals)
+      businessType <- save4LaterService.mainStore.saveBusinessType(amendedSTFE.legalEntity.get, authRetrievals)
       additionalPremises <- save4LaterService.mainStore.saveAdditionalBusinessPremisesList(authRetrievals, updatedPremises)
-      tradingActivity <- save4LaterService.mainStore.saveTradingActivity(authRetrievals, subscriptionTypeFrontEnd.tradingActivity.get)
-      products <- save4LaterService.mainStore.saveProducts(authRetrievals, subscriptionTypeFrontEnd.products.get)
-      suppliers <- save4LaterService.mainStore.saveSuppliers(authRetrievals, subscriptionTypeFrontEnd.suppliers.get)
-      applicationDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(authRetrievals, subscriptionTypeFrontEnd.applicationDeclaration.get)
-    } yield feModel.subscriptionTypeFrontEnd
+      tradingActivity <- save4LaterService.mainStore.saveTradingActivity(authRetrievals, amendedSTFE.tradingActivity.get)
+      products <- save4LaterService.mainStore.saveProducts(authRetrievals, amendedSTFE.products.get)
+      suppliers <- save4LaterService.mainStore.saveSuppliers(authRetrievals, amendedSTFE.suppliers.get)
+      applicationDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(authRetrievals, amendedSTFE.applicationDeclaration.get)
+    } yield newFeModel.subscriptionTypeFrontEnd
   }
 
 
   def getEntitySpecificData(feModelOld: AWRSFEModel, businessCustomerDetails: BusinessCustomerDetails, authRetrievals: StandardAuthRetrievals)
-                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[(BusinessDetails, BusinessRegistrationDetails, PlaceOfBusiness, BusinessContacts)] = {
+                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[(BusinessNameDetails, NewAWBusiness, BusinessRegistrationDetails, PlaceOfBusiness, BusinessContacts)] = {
 
     val subscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = feModelOld.subscriptionTypeFrontEnd
 
@@ -113,12 +121,13 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
     }
 
     for {
-      businessDetails <- save4LaterService.mainStore.saveBusinessDetails(authRetrievals, businessDetails)
+      businessNameDetails <- save4LaterService.mainStore.saveBusinessNameDetails(authRetrievals, BusinessNameDetails(Some(businessCustomerDetails.businessName), businessDetails.doYouHaveTradingName, businessDetails.tradingName))
+      tradingStartDetails <- save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails.newAWBusiness.get)
       businessRegistrationDetails <- save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, businessRegistrationDetails)
       placeOfBusiness <- save4LaterService.mainStore.savePlaceOfBusiness(authRetrievals, api5CopyPlaceOfBusiness(placeOfBusiness))
       businessContacts <- save4LaterService.mainStore.saveBusinessContacts(authRetrievals, businessContacts)
       _ <- saveOtherFields
-    } yield (businessDetails, businessRegistrationDetails, placeOfBusiness, businessContacts)
+    } yield (businessNameDetails, tradingStartDetails, businessRegistrationDetails, placeOfBusiness, businessContacts)
   }
 
   // This is for api5 after we bypass business customer frontend, since we want the user to be able to update their place of business the answer to this

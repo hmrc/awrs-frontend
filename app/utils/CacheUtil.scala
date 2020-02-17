@@ -47,6 +47,10 @@ object CacheUtil {
 
     def getBusinessDetails: Option[BusinessDetails] = cache.getEntry[BusinessDetails](businessDetailsName)
 
+    def getBusinessNameDetails: Option[BusinessNameDetails] = cache.getEntry[BusinessNameDetails](businessNameDetailsName)
+
+    def getTradingStartDetails: Option[NewAWBusiness] = cache.getEntry[NewAWBusiness](tradingStartDetailsName)
+
     def getBusinessRegistrationDetails: Option[BusinessRegistrationDetails] = cache.getEntry[BusinessRegistrationDetails](businessRegistrationDetailsName)
 
     def getBusinessContacts: Option[BusinessContacts] = cache.getEntry[BusinessContacts](businessContactsName)
@@ -72,7 +76,10 @@ object CacheUtil {
     def copyOfSave4Later: CacheMap = {
       val jsonMap: Map[String, JsValue] = {
         JourneyConstants.getJourney(cache.getBusinessRegistrationDetails.get.legalEntity.get) map {
-          case `businessDetailsName` => Map(businessDetailsName -> Json.toJson(cache.getBusinessDetails))
+          case `businessDetailsName` => Map(
+            businessNameDetailsName -> Json.toJson(cache.getBusinessNameDetails),
+            tradingStartDetailsName -> Json.toJson(cache.getTradingStartDetails)
+          )
           case `businessRegistrationDetailsName` => Map(businessRegistrationDetailsName -> Json.toJson(cache.getBusinessRegistrationDetails))
           case `businessContactsName` => Map(businessContactsName -> Json.toJson(cache.getBusinessContacts))
           case `placeOfBusinessName` => Map(placeOfBusinessName -> Json.toJson(cache.getPlaceOfBusiness))

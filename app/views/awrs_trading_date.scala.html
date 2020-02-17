@@ -1,0 +1,104 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.helpers.InputTypeRadioGroupParams
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import utils.AccountUtils
+@import views.Configuration._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+
+@import config.ApplicationConfig
+@import java.text.DateFormatSymbols
+@(confirmationForm: Form[TupleDate], businessType: Option[String], pastStart: Boolean)(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
+
+@actionRoute = @{
+    if(isEditMode) {
+        controllers.routes.TradingDateController.saveAndReturn(1, false)
+    } else {
+        controllers.routes.TradingDateController.saveAndContinue
+    }
+}
+
+@headerTitleName = @{
+    if(pastStart){
+        "awrs.generic.what_date_did_you"
+    } else {
+        "awrs.generic.what_date_will_you"
+    }
+}
+
+@ariaDayMonthYear = {
+    <span id="newAWBusiness.proposedStartDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+    <span id="newAWBusiness.proposedStartDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+    <span id="newAWBusiness.proposedStartDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+}
+
+@preDatePast = {
+    <div class="text-disclaimer">
+        <i class="icon icon-important">
+            <span class="visuallyhidden">Warning</span>
+        </i>
+        <strong class="bold-small">@messages("awrs.business_details.what_date_did_p_warn")</strong>
+    </div>
+}
+
+@preDateNow = {
+    <p>@messages("awrs.business_details.what_date_start_p")</p>
+}
+
+@preDateInfo = @{
+    if(pastStart) {
+        preDatePast
+    } else {
+        preDateNow
+    }
+}
+
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages(headerTitleName)), userLoggedIn = true) {
+
+@backLink()
+
+@errorSummaryTemplate(confirmationForm)
+<div class="grid">
+    <div class="grid grid-2-3">
+        <header class="page-header">
+            @awrsProgressHelper(businessType, businessDetailsName)
+            <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages(headerTitleName)</h1>
+        </header>
+        @preDateInfo
+        @form(action = actionRoute) {
+        <div class="form-group">
+            @awrsDateField(
+                DateHelperParams(
+                    formItem = confirmationForm,
+                    fieldName = "tradingDate",
+                    ariaDayMonthYear = ariaDayMonthYear,
+                    ariaLabelledBy = "newAWBusiness.proposedStartDate-legend",
+                    hintText = Some(Html(messages("awrs.generic.date_hint")))
+                )
+            )
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+        }
+    </div>
+</div>
+}

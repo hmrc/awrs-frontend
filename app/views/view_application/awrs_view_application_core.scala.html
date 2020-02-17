@@ -51,7 +51,7 @@
 
 @awrsPrintLink()
 
-@subview_business_details(getHeading(businessDetailsName), cache.getBusinessDetails, businessName, showTableHeader = false)
+@subview_business_details(getHeading(businessDetailsName), BusinessDetailSummaryModel(cache.getBusinessNameDetails, cache.getTradingStartDetails), businessName, showTableHeader = false)
 @subview_business_registration_details(getHeading(businessRegistrationDetailsName), cache.getBusinessRegistrationDetails, Some(businessLegalEntity), showTableHeader = false)
 @subview_place_of_business(getHeading(placeOfBusinessName), cache.getPlaceOfBusiness, showTableHeader = false)
 @subview_business_contacts(getHeading(businessContactsName), cache.getBusinessContacts, cache.getBusinessCustomerDetails, showTableHeader = false)

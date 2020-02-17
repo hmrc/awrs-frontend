@@ -39,7 +39,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
 
   lazy val urlMap: Map[String, Option[Int] => String] = Map[String, (Option[Int]) => String](
-    (businessDetailsName, (id: Option[Int]) => controllers.routes.BusinessDetailsController.showBusinessDetails(isLinearMode = true).url),
+    (businessDetailsName, (id: Option[Int]) => controllers.routes.TradingNameController.showTradingName(isLinearMode = true).url),
     (businessRegistrationDetailsName, (id: Option[Int]) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).url),
     (placeOfBusinessName, (id: Option[Int]) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).url),
     (businessContactsName, (id: Option[Int]) => controllers.routes.BusinessContactsController.showBusinessContacts(isLinearMode = true).url),
@@ -51,7 +51,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     (productsName, (id: Option[Int]) => controllers.routes.ProductsController.showProducts(isLinearMode = true).url),
     (suppliersName, (id: Option[Int]) => controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url)
   )
-
+  
   lazy val urlIndex: String = controllers.routes.IndexController.showIndex().url
 
   lazy val defaultEntriesForMultiEntryPages = 3

@@ -1,0 +1,72 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.helpers.InputTypeRadioGroupParams
+
+
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import views.helpers._
+@import utils.AccountUtils
+@import views.Configuration._
+@import views.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import services.DataCacheKeys._
+@import utils.AwrsFieldConfig
+
+@import config.ApplicationConfig
+@import java.text.DateFormatSymbols
+@(confirmationForm: Form[String], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
+
+@actionRoute = @{
+    if(isEditMode) {
+        controllers.routes.AlreadyStartingTradingController.saveAndReturn(1, isNewRecord = false)
+    } else {
+        controllers.routes.AlreadyStartingTradingController.saveAndContinue
+    }
+}
+
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.generic.have_you_already")), userLoggedIn = true) {
+
+@backLink()
+
+@errorSummaryTemplate(confirmationForm)
+<div class="grid">
+    <div class="grid grid-2-3">
+        <header class="page-header">
+            @awrsProgressHelper(businessType, businessDetailsName)
+            <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages("awrs.generic.have_you_already")</h1>
+        </header>
+        @form(action = actionRoute) {
+        <div class="form-group">
+            <div class="form-group">
+                @awrsInputTypeRadioGroup(
+                    InputTypeRadioGroupParams(
+                        confirmationForm("alreadyStartedTrading"),
+                        Seq("Yes" -> messages("awrs.generic.yes"),
+                            "No" -> messages("awrs.generic.no")),
+                        fieldSetClass = "inline",
+                        fieldSetAttributes = "id=alreadyStartedTrading_field"
+                    )
+                )
+            </div>
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+        }
+    </div>
+</div>
+}

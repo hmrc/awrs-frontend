@@ -17,11 +17,15 @@
 package services
 
 import _root_.models._
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import services.mocks.MockSave4LaterService
 import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestUtil._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class Save4LaterServiceTest extends AwrsUnitTestTraits
   with MockSave4LaterService {
@@ -172,6 +176,34 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       await(saveResult) shouldBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchBusinessDetails(TestUtil.defaultAuthRetrieval)
+      await(fetchResult) shouldBe Some(data)
+    }
+
+    "business name details" in {
+      val data = testBusinessNameDetails()
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](any(), ArgumentMatchers.eq("businessNameDetails"))(any(), any(), any()))
+        .thenReturn(Future.successful(Option(data)))
+      when(mockMainStoreSave4LaterConnector.saveData4Later[BusinessNameDetails](any(), ArgumentMatchers.eq("businessNameDetails"), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Option(data)))
+
+      val saveResult = testSave4LaterService.mainStore.saveBusinessNameDetails(TestUtil.defaultAuthRetrieval, data)
+      await(saveResult) shouldBe data
+
+      val fetchResult = testSave4LaterService.mainStore.fetchBusinessNameDetails(TestUtil.defaultAuthRetrieval)
+      await(fetchResult) shouldBe Some(data)
+    }
+
+    "trading date details" in {
+      val data = newAWBusiness()
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](any(), ArgumentMatchers.eq("tradingStartDetails"))(any(), any(), any()))
+        .thenReturn(Future.successful(Option(data)))
+      when(mockMainStoreSave4LaterConnector.saveData4Later[NewAWBusiness](any(), ArgumentMatchers.eq("tradingStartDetails"), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Option(data)))
+
+      val saveResult = testSave4LaterService.mainStore.saveTradingStartDetails(TestUtil.defaultAuthRetrieval, data)
+      await(saveResult) shouldBe data
+
+      val fetchResult = testSave4LaterService.mainStore.fetchTradingStartDetails(TestUtil.defaultAuthRetrieval)
       await(fetchResult) shouldBe Some(data)
     }
 

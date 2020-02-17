@@ -203,6 +203,22 @@ class MainStore @Inject()(val accountUtils: AccountUtils,
                                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ApplicationDeclaration]] =
     fetchData4Later[ApplicationDeclaration](applicationDeclarationName, authRetrievals)
 
+  @inline def saveBusinessNameDetails(authRetrievals: StandardAuthRetrievals, businessDetails: BusinessNameDetails)
+                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessNameDetails] =
+    saveData4Later(businessNameDetailsName, businessDetails, authRetrievals)
+
+  @inline def fetchBusinessNameDetails(authRetrievals: StandardAuthRetrievals)
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessNameDetails]] =
+    fetchData4Later[BusinessNameDetails](businessNameDetailsName, authRetrievals)
+
+  @inline def saveTradingStartDetails(authRetrievals: StandardAuthRetrievals, tradingStartDetails: NewAWBusiness)
+                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[NewAWBusiness] =
+    saveData4Later(tradingStartDetailsName, tradingStartDetails, authRetrievals)
+
+  @inline def fetchTradingStartDetails(authRetrievals: StandardAuthRetrievals)
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[NewAWBusiness]] =
+    fetchData4Later[NewAWBusiness](tradingStartDetailsName, authRetrievals)
+
   @inline def saveBusinessDetails(authRetrievals: StandardAuthRetrievals, businessDetails: BusinessDetails)
                                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessDetails] =
     saveData4Later(businessDetailsName, businessDetails, authRetrievals)

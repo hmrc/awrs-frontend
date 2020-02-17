@@ -63,7 +63,8 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   def cachedData(legalEntity: BusinessType = testLegalEntity) =
     CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
       "businessCustomerDetails" -> Json.toJson(testReviewDetails),
-      businessDetailsName -> Json.toJson(testBusinessDetails()),
+      businessNameDetailsName -> Json.toJson(testBusinessNameDetails()),
+      tradingStartDetailsName -> Json.toJson(newAWBusiness(proposedStartDate = None)),
       businessRegistrationDetailsName -> Json.toJson(testBusinessRegistrationDetails(legalEntity = legalEntity.legalEntity.get)),
       placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
       businessContactsName -> Json.toJson(testBusinessContactsDefault()),
@@ -1094,7 +1095,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
       "have the first group member as the group rep" in {
         val result = testAddGroupRepToGroupMembers
-        result._2.get.members(0).companyNames.tradingName shouldBe result._1.getEntry[BusinessDetails](businessDetailsName).get.tradingName
+        result._2.get.members(0).companyNames.tradingName shouldBe result._1.getEntry[BusinessNameDetails](businessNameDetailsName).get.tradingName
         result._2.get.members(0).companyNames.businessName.get shouldBe result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
       }
     }
@@ -1138,7 +1139,8 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     val legalEntity = testLegalEntity.legalEntity.get
     val changed = CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
       businessCustomerDetailsName -> Json.toJson(testBusinessNameChanged),
-      businessDetailsName -> Json.toJson(testBusinessDetails()),
+      businessNameDetailsName -> Json.toJson(testBusinessNameDetails()),
+      tradingStartDetailsName -> Json.toJson(newAWBusiness()),
       businessRegistrationDetailsName -> Json.toJson(testBusinessRegistrationDetails(legalEntity)),
       placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
       groupMembersName -> Json.toJson(testGroupMemberDetails)))

@@ -22,6 +22,8 @@ import models.FormBundleStatus.Pending
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
@@ -421,6 +423,8 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails,
       fetchBusinessDetails = testBusinessDetails(isNewBusiness)
     )
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
     setupMockTestStatusManagementService(
       status = status.formBundleStatus,
       statusInfo = statusInfo,
@@ -456,9 +460,10 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessType = testBusinessType,
-      fetchBusinessCustomerDetails = testBusinessCustomerDetails,
-      fetchBusinessDetails = testBusinessDetails(false)
+      fetchBusinessCustomerDetails = testBusinessCustomerDetails
     )
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
     setupMockTestStatusManagementService(
       status = Pending,
       statusInfo = None,

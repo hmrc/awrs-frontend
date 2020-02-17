@@ -59,7 +59,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
   lazy val testIndexViewModel = (sectionStatus: IndexStatus, count: Int) =>
     IndexViewModel(
       List(
-        SectionModel(businessDetailsName, routes.BusinessDetailsController.showBusinessDetails(isLinearMode = true).url, "awrs.index_page.business_details_text", sectionStatus),
+        SectionModel(businessDetailsName, routes.TradingNameController.showTradingName(isLinearMode = true).url, "awrs.index_page.business_details_text", sectionStatus),
         SectionModel(additionalBusinessPremisesName, routes.AdditionalPremisesController.showPremisePage(id = 1, isLinearMode = true, isNewRecord = true).url, "awrs.index_page.additional_premises_text", sectionStatus, count)
       )
     )

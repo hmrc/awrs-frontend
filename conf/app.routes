@@ -58,10 +58,22 @@ POST        /supplier-addresses/saveAndContinue             controllers.Supplier
 POST        /supplier-addresses/saveAndReturn               controllers.SupplierAddressesController.saveAndReturn(id: Int, isNewRecord: Boolean)
 POST        /supplier-addresses/delete                      controllers.SupplierAddressesController.actionDelete(id: Int)
 
-GET         /business-details                               controllers.BusinessDetailsController.showBusinessDetails(isLinearMode: Boolean = true)
-GET         /business-details/edit                          controllers.BusinessDetailsController.showBusinessDetails(isLinearMode: Boolean = false)
-POST        /business-details/saveAndContinue               controllers.BusinessDetailsController.saveAndContinue
-POST        /business-details/saveAndReturn                 controllers.BusinessDetailsController.saveAndReturn
+GET         /trading-name                                   controllers.TradingNameController.showTradingName(isLinearMode: Boolean = true)
+GET         /trading-name/edit                              controllers.TradingNameController.showTradingName(isLinearMode: Boolean = false)
+POST        /trading-name/saveAndContinue                   controllers.TradingNameController.saveAndContinue
+POST        /trading-name/saveAndReturn                     controllers.TradingNameController.saveAndReturn(id: Int, isNewRecord: Boolean)
+
+GET         /before-2016                                    controllers.TradingLegislationDateController.showBusinessDetails(isLinearMode: Boolean = true)
+POST        /before-2016/saveAndContinue                    controllers.TradingLegislationDateController.saveAndContinue
+POST        /before-2016/saveAndReturn                      controllers.TradingLegislationDateController.saveAndReturn(id: Int, isNewRecord: Boolean)
+
+GET         /already-trading                                controllers.AlreadyStartingTradingController.showBusinessDetails(isLinearMode: Boolean = true)
+POST        /already-trading/saveAndContinue                controllers.AlreadyStartingTradingController.saveAndContinue
+POST        /already-trading/saveAndReturn                  controllers.AlreadyStartingTradingController.saveAndReturn(id: Int, isNewRecord: Boolean)
+
+GET         /start-date-trading                             controllers.TradingDateController.showBusinessDetails(isLinearMode: Boolean = true)
+POST        /start-date-trading/saveAndContinue             controllers.TradingDateController.saveAndContinue
+POST        /start-date-trading/saveAndReturn               controllers.TradingDateController.saveAndReturn(id: Int, isNewRecord: Boolean)
 
 GET         /business-details/group-representative/confirm  controllers.BusinessNameChangeController.showConfirm
 POST        /business-details/group-representative/submit   controllers.BusinessNameChangeController.callToAction

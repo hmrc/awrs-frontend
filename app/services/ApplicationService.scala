@@ -82,7 +82,14 @@ class ApplicationService @Inject()(enrolService: EnrolService,
       businessPartnerName = Some(businessCustomerDetails.get.businessName),
       groupDeclaration = cached.get.getGroupDeclaration,
       businessCustomerDetails = businessCustomerDetails,
-      businessDetails = cached.get.getBusinessDetails,
+      businessDetails =
+        cached.get.getBusinessNameDetails map { businessNameDetails =>
+          BusinessDetails(
+            businessNameDetails.doYouHaveTradingName,
+            businessNameDetails.tradingName,
+            cached.get.getTradingStartDetails map {_.invertedBeforeMarch2016Question}
+          )
+        },
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
@@ -111,11 +118,11 @@ class ApplicationService @Inject()(enrolService: EnrolService,
 
   def createGroupRep(cached: Option[CacheMap]): GroupMember = {
     val businessName = cached.get.getBusinessCustomerDetails.get.businessName
-    val businessDetails = cached.get.getBusinessDetails.get
+    val businessNameDetails = cached.get.getBusinessNameDetails.get
     val businessRegistrationDetails = cached.get.getBusinessRegistrationDetails.get
     val placeOfBusiness = cached.get.getPlaceOfBusiness.get
 
-    GroupMember(CompanyNames(Some(businessName),businessDetails.doYouHaveTradingName,businessDetails.tradingName),
+    GroupMember(CompanyNames(Some(businessName),businessNameDetails.doYouHaveTradingName,businessNameDetails.tradingName),
       placeOfBusiness.mainAddress,
       Some(LocalDate.now().toString),
       businessRegistrationDetails.doYouHaveUTR,businessRegistrationDetails.utr,
@@ -279,7 +286,14 @@ class ApplicationService @Inject()(enrolService: EnrolService,
       businessPartnerName = Some(businessPartnerName),
       groupDeclaration = cached.get.getGroupDeclaration,
       businessCustomerDetails = cached.get.getBusinessCustomerDetails,
-      businessDetails = cached.get.getBusinessDetails,
+      businessDetails =
+        cached.get.getBusinessNameDetails map { businessNameDetails =>
+          BusinessDetails(
+            businessNameDetails.doYouHaveTradingName,
+            businessNameDetails.tradingName,
+            cached.get.getTradingStartDetails map {_.invertedBeforeMarch2016Question}
+          )
+        },
       businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,

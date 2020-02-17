@@ -22,6 +22,7 @@ import connectors.AwrsDataCacheConnector
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util.UnSubmittedBannerUtil
 import javax.inject.Inject
+import models.BusinessDetailSummaryModel
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc._
 import play.twirl.api.{Html, HtmlFormat}
@@ -120,7 +121,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
             val displayNameKey = getSectionDisplayName(sectionName, legalEntity)
             sectionName match {
               case `businessDetailsName` => showPage(views.html.view_application.subviews.subview_business_details(
-                displayNameKey, cacheMap.getBusinessDetails, Some(businessCustomerDetails.fold("")(x => x.businessName)))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
+                displayNameKey, BusinessDetailSummaryModel(cacheMap.getBusinessNameDetails, cacheMap.getTradingStartDetails), Some(businessCustomerDetails.fold("")(x => x.businessName)))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
               case `businessRegistrationDetailsName` => showPage(views.html.view_application.subviews.subview_business_registration_details(
                 displayNameKey, cacheMap.getBusinessRegistrationDetails, Some(legalEntity))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
               case `placeOfBusinessName` => showPage(views.html.view_application.subviews.subview_place_of_business(
@@ -188,7 +189,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
         case _ => findLastId(authRetrievals, sectionName) map (id => Redirect(show(id)))
       }
     sectionName match {
-      case `businessDetailsName` => Future.successful(Redirect(controllers.routes.BusinessDetailsController.showBusinessDetails(isLinearMode = true)))
+      case `businessDetailsName` => Future.successful(Redirect(controllers.routes.TradingNameController.showTradingName(isLinearMode = true)))
       case `businessRegistrationDetailsName` => Future.successful(Redirect(controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true)))
       case `placeOfBusinessName` => Future.successful(Redirect(controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true)))
       case `businessContactsName` => Future.successful(Redirect(controllers.routes.BusinessContactsController.showBusinessContacts(isLinearMode = true)))

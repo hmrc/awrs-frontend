@@ -152,7 +152,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
             assert(result)
           }
           s"return false for $legalEntity when all sections are NOT completed" in {
-            val result = testIndexService.showContinueButton(testIndexService.getStatus(createCacheMap(legalEntity = legalEntity, businessDetails = None), legalEntity, TestUtil.defaultAuthRetrieval))
+            val result = testIndexService.showContinueButton(testIndexService.getStatus(createCacheMap(legalEntity = legalEntity, businessNameDetails = None), legalEntity, TestUtil.defaultAuthRetrieval))
             assert(!result)
           }
       }
@@ -164,7 +164,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       allEntities.foreach {
         legalEntity =>
           s"return NOT STARTED when $legalEntity businesses details are not completed" in {
-            val result = testIndexService.getStatus(createCacheMap(legalEntity = legalEntity, businessDetails = None), legalEntity, TestUtil.defaultAuthRetrieval)
+            val result = testIndexService.getStatus(createCacheMap(legalEntity = legalEntity, businessNameDetails = None), legalEntity, TestUtil.defaultAuthRetrieval)
             result.getSection(businessDetailsName, legalEntity).status shouldBe SectionNotStarted
           }
           s"return EDITED when $legalEntity details have been changed" in {
@@ -172,13 +172,9 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
             val result = testIndexService.getStatus(createCacheMap(legalEntity), legalEntity, TestUtil.defaultAuthRetrieval)
             result.getSection(businessDetailsName, legalEntity).status shouldBe SectionEdited
           }
-          s"return INCOMPLETE when $legalEntity New Business is true and proposed start date is missing" in {
-            val result = testIndexService.getStatus(testBusinessDetailsWithMissingStartDate(legalEntity = legalEntity, isNewBusiness = true), legalEntity, TestUtil.defaultAuthRetrieval)
-            result.getSection(businessDetailsName, legalEntity).status shouldBe SectionIncomplete
-          }
           s"return COMPLETE when $legalEntity New Business is false and proposed start date is missing" in {
             val temp = testBusinessDetailsWithMissingStartDate(legalEntity = legalEntity, isNewBusiness = false)
-            val result = testIndexService.getStatus(testBusinessDetailsWithMissingStartDate(legalEntity = legalEntity, isNewBusiness = false), legalEntity, TestUtil.defaultAuthRetrieval)
+            val result = testIndexService.getStatus(testBusinessDetailsWithMissingStartDate(legalEntity = legalEntity, isNewBusiness = false, propDate = Some(TupleDate("20", "1", "2019"))), legalEntity, TestUtil.defaultAuthRetrieval)
             result.getSection(businessDetailsName, legalEntity).status shouldBe SectionComplete
           }
       }
@@ -391,17 +387,19 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
     result.sectionModels.getSection(placeOfBusinessName, legalEntity).status shouldBe SectionIncomplete
   }
 
+  val startDate = Some(TupleDate("20", "1", "2019"))
+
   "IndexService should get status of all sections" should {
     allEntities.foreach {
       legalEntity =>
         s"return an IndexStatus model for business type $legalEntity" in {
-          val result = testIndexService.getStatus(createCacheMap(legalEntity), legalEntity, TestUtil.defaultAuthRetrieval)
+          val result = testIndexService.getStatus(createCacheMap(legalEntity, tradingStartDetails = newAWBusiness().copy(proposedStartDate = startDate)), legalEntity, TestUtil.defaultAuthRetrieval)
           await(result) shouldBe createIndexViewModel(legalEntity = legalEntity)
         }
         s"return an IndexStatus model for business type $legalEntity that is no longer complete" in {
-          val completedCachemapApartFromNewBus = createCacheMap(legalEntity = legalEntity, businessDetails = (x: String) => testBusinessDetailsNoNewAWFlag)
+          val completedCachemapApartFromNewBus = createCacheMap(legalEntity = legalEntity, businessNameDetails = (x: String) => testBusinessNameDetails(), businessDirectors = testBusinessDirectors.copy(directors = Nil))
           val result = testIndexService.getStatus(completedCachemapApartFromNewBus, legalEntity, TestUtil.defaultAuthRetrieval)
-          await(result) shouldBe createIndexViewModel(legalEntity = legalEntity, businessDetails = SectionIncomplete)
+          await(result) shouldBe createIndexViewModel(legalEntity = legalEntity, businessDirectors = SectionIncomplete, directorSize = 0)
         }
         s"return INCOMPLETE status for business type $legalEntity (Operating duration is blank)" in {
           val noOpDurationCachemap = createCacheMap(legalEntity = legalEntity, placeOfBusiness = testPlaceOfBusinessNoOpDuration)
@@ -424,7 +422,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           result shouldBe true
         }
         s"not show continue button if some sections have status NOT STARTED for $legalEntity" in {
-          val incompleteDetails = createCacheMap(legalEntity = legalEntity, businessDetails = None)
+          val incompleteDetails = createCacheMap(legalEntity = legalEntity, businessNameDetails = None)
           val result = testIndexService.showContinueButton(testIndexService.getStatus(incompleteDetails, legalEntity, TestUtil.defaultAuthRetrieval))
           result shouldBe false
         }

@@ -27,6 +27,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContent, DefaultActionBuilder, DefaultMessagesActionBuilderImpl, DefaultMessagesControllerComponents, MessagesActionBuilder, MessagesControllerComponents}
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi}
+import services.BusinessDetailsService
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,6 +52,7 @@ trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterE
   )
 
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
+  val mockBusinessDetailsService: BusinessDetailsService = mock[BusinessDetailsService]
   val mockAuditable: Auditable = mock[Auditable]
   val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   val mockCountryCodes: CountryCodes = mock[CountryCodes]
