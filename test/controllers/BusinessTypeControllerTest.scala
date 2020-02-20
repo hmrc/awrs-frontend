@@ -19,6 +19,8 @@ package controllers
 import builders.SessionBuilder
 import connectors.mock._
 import models._
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -188,6 +190,8 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
     setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Some(testSubscriptionTypeFrontEnd))
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }

@@ -16,15 +16,18 @@
 
 package services.apis
 
-import models.{AWRSFEModel, BusinessType}
+import models.{AWRSFEModel, BusinessType, NewAWBusiness}
+import org.mockito.ArgumentMatchers
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.apis.mocks.MockAwrsAPI5
 import utils.AwrsTestJson._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestUtil._
+import org.mockito.Mockito._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AwrsAPI5Test extends AwrsUnitTestTraits
   with MockAwrsAPI5 {
@@ -44,6 +47,9 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
 
       setupMockSave4LaterServiceWithOnly(fetchBusinessType = businessType)
       setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd)
+
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
       await(testAPI5.retrieveApplication(TestUtil.defaultAuthRetrieval))
 

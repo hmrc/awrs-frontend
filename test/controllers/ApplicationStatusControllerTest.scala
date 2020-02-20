@@ -18,26 +18,27 @@ package controllers
 
 
 import builders.SessionBuilder
+import controllers.auth.StandardAuthRetrievals
 import models.FormBundleStatus.Pending
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
+import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
+import utils.AwrsTestJson.api5LTDJson
 import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 import scala.util.Try
 
-
-
 class ApplicationStatusControllerTest extends AwrsUnitTestTraits
-  with ServicesUnitTestFixture {
+  with ServicesUnitTestFixture with BeforeAndAfterEach {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -69,6 +70,11 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   }
 
   val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService, mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockAppConfig)
+
+  override def beforeEach(): Unit = {
+    reset(mockApiSave4LaterConnector, mockMainStoreSave4LaterConnector)
+    super.beforeEach()
+  }
 
   "ApplicationStatusController" should {
     def testPageIsDisplayed(result: Future[Result]) = status(result) shouldBe OK
@@ -302,6 +308,47 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           checkLedeIsCorrect(document, lede)
           checkStatusProgressBarIsNotOnPage(document)
           statusInfoMessageIsDisplayed(document, testRevokedStatusInfoType.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
+      }
+    }
+  }
+
+  "isNewBusiness" should {
+    val authRetrievals = StandardAuthRetrievals(Set(), None, "")
+
+    "report a new business" when {
+      "the answer is available in trading start details" in {
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
+
+        val isNew = testApplicationStatusController.isNewBusiness(authRetrievals)
+
+        await(isNew) shouldBe Some(true)
+      }
+
+      "the answer is not available in trading start details, instead in fe model" in {
+        val feModel = api5LTDJson.as[AWRSFEModel]
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+        setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd)
+
+        val isNew = testApplicationStatusController.isNewBusiness(authRetrievals)
+
+        await(isNew) shouldBe Some(true)
+      }
+    }
+
+    "fail to report new business" when {
+      "the answer is not available anywhere" in {
+        val feModel = api5LTDJson.as[AWRSFEModel]
+        val subType = feModel.subscriptionTypeFrontEnd.copy(businessDetails = None)
+
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(None))
+        setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = subType)
+
+        val isNew = testApplicationStatusController.isNewBusiness(authRetrievals)
+
+        await(isNew) shouldBe None
       }
     }
   }

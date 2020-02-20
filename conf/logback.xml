@@ -50,9 +50,9 @@
     <logger name="org.asynchttpclient.netty" level="WARN"/>
     <logger name="play.core.netty.utils.ServerCookieDecoder" level="WARN"/>
 
-    <logger name="application" level="DEBUG"/>
+    <logger name="application" level="INFO"/>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>
@@ -68,7 +68,4 @@
 
     <logger name="play.shaded.ahc.org.asynchttpclient.netty.channel.DefaultChannelPool" level="WARN"/>
 
-    <logger name="connector" level="TRACE">
-        <appender-ref ref="STDOUT"/>
-    </logger>
 </configuration>
