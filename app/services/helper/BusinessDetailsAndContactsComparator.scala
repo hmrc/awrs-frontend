@@ -73,7 +73,7 @@ object BusinessDetailsAndContactsComparator {
       case (false, false) => true
       case _ => true
     }
-    
+
     (businessType) match {
       case ((Some("LLP_GRP") | Some("LTD_GRP"))) =>
       {

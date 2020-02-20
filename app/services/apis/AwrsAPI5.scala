@@ -21,9 +21,10 @@ import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums.BooleanRadioEnum
 import javax.inject.Inject
 import models.{BusinessContacts, BusinessDetails, _}
+import play.api.Logger
 import play.api.mvc.{AnyContent, Request}
 import services.Save4LaterService
-import services.helper.AwrsAPI5Helper._
+import services.helper.AwrsAPI5Helper.{convertToBusinessCustomerDetails, _}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,10 +43,32 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
     save4LaterService.mainStore.fetchBusinessType(authRetrievals) flatMap {
       case Some(_) =>
         save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals) flatMap {
-          case Some(subscriptionTypeFrontEnd) => Future.successful(subscriptionTypeFrontEnd)
+          case Some(subscriptionTypeFrontEnd) =>
+            checkSavedSubscriptionTypeFrontend(authRetrievals, subscriptionTypeFrontEnd) map {_ => subscriptionTypeFrontEnd}
           case _ => callETMP
         }
       case None => callETMP
+    }
+  }
+
+  def checkSavedSubscriptionTypeFrontend(authRetrievals: StandardAuthRetrievals,
+                                         subTypeFrontend: SubscriptionTypeFrontEnd)
+                                        (implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[Boolean] = {
+    save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap {
+      case Some(_) => Future.successful(true)
+      case _       =>
+        val amendedSTFE = convertEtmpFormatSTFE(subTypeFrontend)
+        val busCusDetails = convertToBusinessCustomerDetails(amendedSTFE)
+        val businessDetails = amendedSTFE.businessDetails.get
+
+        for {
+          _ <- save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
+          _ <- save4LaterService.mainStore.saveBusinessNameDetails(authRetrievals, BusinessNameDetails(Some(busCusDetails.businessName), businessDetails.doYouHaveTradingName, businessDetails.tradingName))
+          _ <- save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails.newAWBusiness.get)
+        } yield {
+          Logger.info("[checkSavedSubscriptionTypeFrontend] Added missing save4later details to cache")
+          false
+        }
     }
   }
 
