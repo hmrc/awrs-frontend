@@ -96,7 +96,8 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
                |   }],
                |  "affinityGroup": "Individual",
                |  "credentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
-               |  "authProviderId": { "ggCredId": "123" }
+               |  "authProviderId": { "ggCredId": "123" },
+               |  "groupIdentifier" : "GroupId"
                |}""".stripMargin
           )
       )
@@ -177,7 +178,12 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
     "for API4 journey where Business Customer and Registration data is found and AWRS feature flag is true and upserts enrolment" in {
       FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
       stubShowAndRedirectExternalCalls(Some(businessCustomerDetailsStringS4L))
-      stubbedPost("""/regime-etmp-check""", OK, "")
+      stubbedPost("""/regime-etmp-check""", OK,
+        """{
+          | "regimeRefNumber" : "123456"
+          |}""".stripMargin)
+      stubbedPost("""/tax-enrolments/groups/GroupId/enrolments/HMRC-AWRS-ORG~AWRSRefNumber~123456""".stripMargin, OK,
+        """{}""".stripMargin)
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
       withCaptureOfLoggingFrom(Logger) { logs =>

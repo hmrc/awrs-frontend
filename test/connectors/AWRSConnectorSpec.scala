@@ -572,54 +572,55 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       vrn = testVrn,
       doYouHaveUTR = Some("No"),legalEntity = None, utr = Some("1234"))
 
-    def mockResponse(responseStatus: Int, responseData: JsValue): Unit =
+    def mockResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(responseStatus)))
-    def testCall(implicit  hc: HeaderCarrier): Future[Boolean] = testAWRSConnector.checkEtmp(testBusinessCustomer, testBusinessRegistrationDetails)
+        .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
+    def testCall(implicit  hc: HeaderCarrier): Future[Option[SelfHealSubscriptionResponse]] = testAWRSConnector.checkEtmp(testBusinessCustomer, testBusinessRegistrationDetails)
 
-    val checkRegimeModelResponseSuccess = CheckRegimeModel(testBusinessCustomer, testBusinessRegistrationDetails)
-    val checkRegimeModelResponseSuccessJson = CheckRegimeModel.format.writes(checkRegimeModelResponseSuccess)
+    val checkRegimeModelResponseSuccess = SelfHealSubscriptionResponse("123456")
+    val checkRegimeModelResponseSuccessJson = Json.toJson(checkRegimeModelResponseSuccess)
 
-    "Return true after receiving an OK response" in {
+    "Return a SelfHealSubscriptionResponse after receiving an OK response" in {
       FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
       mockResponse(OK, checkRegimeModelResponseSuccessJson)
-      val result: Boolean = await(testCall)
+      val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe true
+      result shouldBe Some(subscribeAcceptedResponse)
     }
 
-    "Return false after receiving a NO CONTENT response" in {
+    "Return None after receiving a NO CONTENT response" in {
       FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
-      mockResponse(NO_CONTENT, checkRegimeModelResponseSuccessJson)
-      val result: Boolean = await(testCall)
+      mockResponse(NO_CONTENT)
+      val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe false
+      result shouldBe None
     }
 
-    "Return false after receiving a BAD REQUEST response" in {
+    "Return None after receiving a BAD REQUEST response" in {
       FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
-      mockResponse(BAD_REQUEST, checkRegimeModelResponseSuccessJson)
-      val result: Boolean = await(testCall)
+      mockResponse(BAD_REQUEST)
+      val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe false
+      result shouldBe None
     }
 
-    "Return false after an exception has been thrown" in {
+    "Return None after an exception has been thrown" in {
       FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
-      def mockInvalidResponse(responseStatus: Int, responseData: JsValue): Unit =
+      def mockInvalidResponse(responseStatus: Int): Unit =
         when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.failed(new RuntimeException()))
-      mockInvalidResponse(BAD_REQUEST, checkRegimeModelResponseSuccessJson)
-      val result: Boolean = await(testCall)
+      mockInvalidResponse(BAD_REQUEST)
+      val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe false
+      result shouldBe None
     }
-    "Return false when feature flag is false" in {
-      FeatureSwitch.disable(AWRSFeatureSwitches.regimeCheck())
-      mockResponse(OK, checkRegimeModelResponseSuccessJson)
-      val result: Boolean = await(testCall)
 
-      result shouldBe false
+    "Return None when feature flag is false" in {
+      FeatureSwitch.disable(AWRSFeatureSwitches.regimeCheck())
+      mockResponse(OK)
+      val result: Option[SelfHealSubscriptionResponse] = await(testCall)
+
+      result shouldBe None
     }
   }
 }
