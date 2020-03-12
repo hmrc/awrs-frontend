@@ -17,13 +17,15 @@
 package services
 
 import connectors.{AWRSConnector, BusinessCustomerDataCacheConnector, Save4LaterConnector}
-import models.{BCAddress, BusinessCustomerDetails, BusinessRegistrationDetails}
+import models.{BCAddress, BusinessCustomerDetails, BusinessRegistrationDetails, EnrolResponse, Identifier, SelfHealSubscriptionResponse}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.mvc.{AnyContent, Request}
+import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.{AccountUtils, TestUtil}
@@ -34,14 +36,16 @@ import scala.concurrent.Future
 class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit val req: Request[AnyContent] = FakeRequest()
 
   val mockAwrsConnector: AWRSConnector = mock[AWRSConnector]
   val mockSave4LaterService: Save4LaterService = mock[Save4LaterService]
+  val mockEnrolService: EnrolService = mock[EnrolService]
   val mockSave4LaterConnector: Save4LaterConnector = mock[Save4LaterConnector]
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
   val testBusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
   val testBusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
-  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockSave4LaterService)
+  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockEnrolService, mockSave4LaterService)
 
   override def beforeEach(): Unit = {
     reset(mockAwrsConnector,
@@ -68,13 +72,16 @@ class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfte
 
   "validateBusinessDetails" should {
     val mockMainStore: MainStore = new MainStore(mockAccountUtils, mockSave4LaterConnector)
+    val enrolSuccessResponse = EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))
 
     "return true if all details are provided" in {
 
       when(mockSave4LaterConnector.fetchData4Later[BusinessRegistrationDetails](any(), ArgumentMatchers.eq("businessRegistrationDetails"))(any(), any(), any()))
         .thenReturn(Future.successful(Some(testBusinessRegistrationDetails)))
       when(mockAwrsConnector.checkEtmp(any(), any())(any(), any()))
-        .thenReturn(Future.successful(true))
+        .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("123456"))))
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(enrolSuccessResponse)))
       when(mockSave4LaterService.mainStore).thenReturn(mockMainStore)
       val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails)
 
@@ -95,7 +102,7 @@ class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfte
         .thenReturn(Future.successful(Some(testBusinessRegistrationDetails)))
       when(mockSave4LaterService.mainStore).thenReturn(mockMainStore)
       when(mockAwrsConnector.checkEtmp(any(), any())(any(), any()))
-        .thenReturn(Future.successful(false))
+        .thenReturn(Future.successful(None))
       val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails)
 
       await(result) shouldBe false

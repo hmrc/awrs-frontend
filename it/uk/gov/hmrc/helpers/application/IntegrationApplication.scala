@@ -28,6 +28,8 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
     "microservice.services.cachable.short-lived-cache.port" -> wireMockPort,
     "microservice.services.cachable.session-cache.host" -> wireMockHost,
     "microservice.services.cachable.session-cache.port" -> wireMockPort,
+    "microservice.services.tax-enrolments.host" -> wireMockHost,
+    "microservice.services.tax-enrolments.port" -> wireMockPort,
     "microservice.services.awrs.host" -> wireMockHost,
     "microservice.services.awrs.port" -> wireMockPort
 

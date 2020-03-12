@@ -435,9 +435,9 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
   }
 
   def checkEtmp(businessCustomerDetails: BusinessCustomerDetails, businessRegistrationDetails: BusinessRegistrationDetails)
-               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
     if (!AWRSFeatureSwitches.regimeCheck().enabled) {
-      Future.successful(false)
+      Future.successful(None)
     } else {
       val regimeModel = CheckRegimeModel(businessCustomerDetails, businessRegistrationDetails)
       val json = Json.toJson(regimeModel)
@@ -445,13 +445,13 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
       http.POST[JsValue, HttpResponse](postURL, json).map { resp =>
         resp.status match {
-          case OK => true
-          case _ => false
+          case OK => Some(resp.json.as[SelfHealSubscriptionResponse])
+          case _ => None
         }
       }.recover {
         case e: Exception =>
           Logger.warn(s"[AWRSConnector][checkEtmp] Etmp has returned an exception: ${e.getMessage}")
-          false
+          None
       }
 
     }

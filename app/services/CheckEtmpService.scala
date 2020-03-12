@@ -16,16 +16,19 @@
 
 package services
 
-import connectors.{AWRSConnector, BusinessCustomerDataCacheConnector}
+import connectors.AWRSConnector
 import controllers.auth.StandardAuthRetrievals
 import javax.inject.Inject
 import models.{BusinessCustomerDetails, BusinessRegistrationDetails}
 import play.api.Logger
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.AwrsSessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
+                                 enrolService: EnrolService,
                                  save4LaterService: Save4LaterService) {
 
   def getRegistrationDetails(authRetrievals: StandardAuthRetrievals)
@@ -33,11 +36,33 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
     save4LaterService.mainStore.fetchBusinessRegistrationDetails(authRetrievals)
   }
 
-  def validateBusinessDetails(authRetrievals: StandardAuthRetrievals, busCusDetails: BusinessCustomerDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  def validateBusinessDetails(authRetrievals: StandardAuthRetrievals, busCusDetails: BusinessCustomerDetails)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Future[Boolean] = {
     Logger.info("[CheckEtmpService][validateBusinessDetails] Retrieving business customer and registration details")
 
     getRegistrationDetails(authRetrievals).flatMap {
-      case Some(businessRegistrationDetails) => awrsConnector.checkEtmp(busCusDetails, businessRegistrationDetails)
+      case Some(businessRegistrationDetails) =>
+        awrsConnector.checkEtmp(busCusDetails, businessRegistrationDetails) flatMap {
+          case Some(successResponse) =>
+            val businessType = request.session.get(AwrsSessionKeys.sessionBusinessType).getOrElse("")
+
+            enrolService.enrolAWRS(
+              successResponse.regimeRefNumber,
+              busCusDetails,
+              businessType,
+              businessRegistrationDetails.utr
+            ) map {
+              case Some(_) =>
+                Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
+                true
+              case _       =>
+                Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 failure")
+                false
+            }
+          case None =>
+            Logger.info("[CheckEtmpService][validateBusinessDetails] Could not perform ES6")
+            Future.successful(false)
+        }
       case _ =>
         Logger.info("[CheckEtmpService][validateBusinessDetails] No business registration details")
         Future.successful(false)
