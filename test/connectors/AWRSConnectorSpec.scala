@@ -565,17 +565,11 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   "Check ETMP call to backend" should {
     val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option("Ne4 9hs"), Option("country"))
     val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
-    val testBusinessRegistrationDetails = BusinessRegistrationDetails(
-      doYouHaveNino = Some("Yes"),
-      nino = testNino,
-      doYouHaveVRN = Some("Yes"),
-      vrn = testVrn,
-      doYouHaveUTR = Some("No"),legalEntity = None, utr = Some("1234"))
 
     def mockResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
-    def testCall(implicit  hc: HeaderCarrier): Future[Option[SelfHealSubscriptionResponse]] = testAWRSConnector.checkEtmp(testBusinessCustomer, testBusinessRegistrationDetails)
+    def testCall(implicit  hc: HeaderCarrier): Future[Option[SelfHealSubscriptionResponse]] = testAWRSConnector.checkEtmp(testBusinessCustomer, "SOP")
 
     val checkRegimeModelResponseSuccess = SelfHealSubscriptionResponse("123456")
     val checkRegimeModelResponseSuccessJson = Json.toJson(checkRegimeModelResponseSuccess)

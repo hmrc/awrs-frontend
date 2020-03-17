@@ -22,9 +22,10 @@ import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.BusinessTypeForm._
 import javax.inject.Inject
 import models.{BusinessType, NewApplicationType}
+import play.api.Logger
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
-import services.Save4LaterService
+import services.{CheckEtmpService, Save4LaterService}
 import services.apis.AwrsAPI5
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -39,6 +40,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                                        val authConnector: DefaultAuthConnector,
                                        val auditable: Auditable,
                                        val accountUtils: AccountUtils,
+                                       val checkEtmpService: CheckEtmpService,
                                        implicit val applicationConfig: ApplicationConfig
                                       ) extends FrontendController(mcc) with AwrsController {
 
@@ -97,14 +99,26 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
           businessTypeForm.bindFromRequest.fold(
             formWithErrors => Future.successful(BadRequest(views.html.awrs_business_type(formWithErrors, businessDetails.businessType.fold("")(x => x), businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
             businessTypeData =>
-              save4LaterService.mainStore.saveBusinessType(businessTypeData, ar) map { _ =>
+              save4LaterService.mainStore.saveBusinessType(businessTypeData, ar) flatMap { _ =>
                 val legalEntity = businessTypeData.legalEntity.getOrElse("SOP")
-                val nextPage = if (businessDetails.isAGroup) {
-                  Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration())
-                } else {
-                  Redirect(controllers.routes.IndexController.showIndex())
+                checkEtmpService.validateBusinessDetails(ar, businessDetails, legalEntity) flatMap { result =>
+                  val nextPage = if (result) {
+                    Logger.info("[BusinessTypeController][saveAndContinue] Upserted details and enrolments to EACD")
+                    authorisedAction { updatedRetrievals =>
+                      standardApi5Journey(updatedRetrievals)
+                    }
+                  } else {
+                    {if (businessDetails.isAGroup) {
+                      Future.successful(Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration()))
+                    } else {
+                      Future.successful(Redirect(controllers.routes.IndexController.showIndex()))
+                    }} map { result =>
+                      result addBusinessTypeToSession legalEntity addBusinessNameToSession businessDetails.businessName
+                    }
+                  }
+
+                  nextPage
                 }
-                nextPage addBusinessTypeToSession legalEntity addBusinessNameToSession businessDetails.businessName
               }
           )
       }

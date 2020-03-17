@@ -19,7 +19,7 @@ import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.play.test.LogCapturing
 import utils.{AWRSFeatureSwitches, FeatureSwitch}
 
-class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub with LogCapturing {
+class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub with LogCapturing {
 
   val baseURI = "/alcohol-wholesaler-register"
   val subscriptionURI = "/subscription/"
@@ -82,7 +82,7 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
   )
 
 
-  def stubShowAndRedirectExternalCalls(data : Option[JsObject]): StubMapping = {
+  def stubShowAndRedirectExternalCalls(data : Option[JsObject], keystoreStatus: Int): StubMapping = {
     stubFor(post(urlMatching("/auth/authorise"))
       .willReturn(
         aResponse()
@@ -102,7 +102,7 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
           )
       )
     )
-    stubbedGet(s"""/keystore/business-customer-frontend/$SessionId""", OK, businessCustomerDetailsString)
+    stubbedGet(s"""/keystore/business-customer-frontend/$SessionId""", keystoreStatus, businessCustomerDetailsString)
     stubS4LPut("5810451", "businessCustomerDetails", businessCustomerDetailsStringS4L)
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"""$baseURI$subscriptionURI$safeId""", OK, successResponse.toString)
@@ -121,80 +121,24 @@ class HomeControllerSpec extends IntegrationSpec with AuthHelpers with MustMatch
 
   "redirect to business type page" when {
 
-    "for API4 journey where no Business Customer data is found and AWRS feature flag is false" in {
-      stubShowAndRedirectExternalCalls(None)
+    "for API4 journey where no Business Customer data is found and redirect to business customer" in {
+      stubShowAndRedirectExternalCalls(None, NOT_FOUND)
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
       val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
-      resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
+      resp.header("Location") mustBe Some("http://localhost:9923/business-customer/awrs")
       resp.status mustBe 303
-
-      verify(exactlyTimes(0), postRequestedFor(urlEqualTo("/awrs/regime-etmp-check")))
     }
 
     "for API4 journey where Business Customer and Registration data is found and AWRS feature flag is false" in {
-      stubShowAndRedirectExternalCalls(Some(businessCustomerDetailsStringS4L))
+      stubShowAndRedirectExternalCalls(Some(businessCustomerDetailsStringS4L), OK)
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
       val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
-
-      verify(exactlyTimes(0), postRequestedFor(urlEqualTo("/awrs/regime-etmp-check")))
-    }
-
-
-    "for API4 journey where no Business Customer data is found and AWRS feature flag is true" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
-
-      stubShowAndRedirectExternalCalls(None)
-      stubbedPost("""/regime-etmp-check""", NO_CONTENT , "")
-
-      val controllerUrl = routes.HomeController.showOrRedirect(None).url
-
-      val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
-      resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
-      resp.status mustBe 303
-
-      verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/regime-etmp-check")))
-    }
-
-    "for API4 journey where Business Customer and Registration data is found and AWRS feature flag is true" in {
-    FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
-      stubShowAndRedirectExternalCalls(Some(businessCustomerDetailsStringS4L))
-      stubbedPost("""/regime-etmp-check""", NO_CONTENT , "")
-
-      val controllerUrl = routes.HomeController.showOrRedirect(None).url
-
-      val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
-      resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
-      resp.status mustBe 303
-
-      verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/regime-etmp-check")))
-    }
-
-    "for API4 journey where Business Customer and Registration data is found and AWRS feature flag is true and upserts enrolment" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
-      stubShowAndRedirectExternalCalls(Some(businessCustomerDetailsStringS4L))
-      stubbedPost("""/regime-etmp-check""", OK,
-        """{
-          | "regimeRefNumber" : "123456"
-          |}""".stripMargin)
-      stubbedPost("""/tax-enrolments/groups/GroupId/enrolments/HMRC-AWRS-ORG~AWRSRefNumber~123456""".stripMargin, OK,
-        """{}""".stripMargin)
-
-      val controllerUrl = routes.HomeController.showOrRedirect(None).url
-      withCaptureOfLoggingFrom(Logger) { logs =>
-        val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
-        resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
-        resp.status mustBe 303
-
-        logs.exists(event => event.getMessage == "[HomeController][checkBusinessDetailsETMP] Upserted details and enrolments to EACD") mustBe true
-
-        verify(exactlyTimes(1), postRequestedFor(urlEqualTo("/regime-etmp-check")))
-      }
     }
 
   }

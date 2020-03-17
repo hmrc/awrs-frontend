@@ -24,7 +24,7 @@ import org.mockito.Mockito.when
 import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.ServicesUnitTestFixture
+import services.{CheckEtmpService, ServicesUnitTestFixture}
 import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
@@ -49,7 +49,9 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
 
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd()
 
-  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
+
+  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -58,6 +60,8 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     "redirect to index page when User with Organisation and Sa GGW account selects 'Business Type' as Corporate Body" in {
       continueWithAuthorisedSaOrgUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD", "isSaAccount" -> "true", "isOrgAccount" -> "true"), isGroup = false) {
         result =>
+          when(testEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+              .thenReturn(Future.successful(false))
           status(result) should be(SEE_OTHER)
           redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
       }
