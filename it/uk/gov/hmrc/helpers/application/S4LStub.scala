@@ -51,7 +51,7 @@ trait S4LStub {
     }
   }
 
-  def stubS4LPut(id: String, key: String, data: JsObject)(implicit jsonCrypto: CryptoWithKeysFromConfig,
+  def stubS4LPut(id: String, key: String, data: JsObject, api: Boolean = false)(implicit jsonCrypto: CryptoWithKeysFromConfig,
                                                           encryptionFormat: JsonEncryptor[JsObject]
                                                           ): StubMapping = {
 
@@ -62,7 +62,9 @@ trait S4LStub {
       "data" -> Json.obj(key -> encData)
     )
 
-    stubFor(put(urlMatching(s"/save4later/awrs-frontend/$id/data/$key"))
+    val apiString = if (api) "awrs-frontend-api" else "awrs-frontend"
+
+    stubFor(put(urlMatching(s"/save4later/$apiString/$id/data/$key"))
       .willReturn(
         aResponse().
           withStatus(200).

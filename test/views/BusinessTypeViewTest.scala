@@ -25,7 +25,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.ServicesUnitTestFixture
+import services.{CheckEtmpService, ServicesUnitTestFixture}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -47,9 +47,11 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
   lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
   lazy val testNewApplicationType = NewApplicationType(Some(true))
 
+  val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
+
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd(legalEntity = Some(testBusinessDetailsEntityTypes(Llp)))
 
-  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

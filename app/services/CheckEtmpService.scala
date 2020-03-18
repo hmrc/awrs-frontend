@@ -31,40 +31,27 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
                                  enrolService: EnrolService,
                                  save4LaterService: Save4LaterService) {
 
-  def getRegistrationDetails(authRetrievals: StandardAuthRetrievals)
-                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessRegistrationDetails]] = {
-    save4LaterService.mainStore.fetchBusinessRegistrationDetails(authRetrievals)
-  }
-
-  def validateBusinessDetails(authRetrievals: StandardAuthRetrievals, busCusDetails: BusinessCustomerDetails)
+  def validateBusinessDetails(authRetrievals: StandardAuthRetrievals, busCusDetails: BusinessCustomerDetails, legalEntity: String)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Future[Boolean] = {
-    Logger.info("[CheckEtmpService][validateBusinessDetails] Retrieving business customer and registration details")
+    Logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
 
-    getRegistrationDetails(authRetrievals).flatMap {
-      case Some(businessRegistrationDetails) =>
-        awrsConnector.checkEtmp(busCusDetails, businessRegistrationDetails) flatMap {
-          case Some(successResponse) =>
-            val businessType = request.session.get(AwrsSessionKeys.sessionBusinessType).getOrElse("")
-
-            enrolService.enrolAWRS(
-              successResponse.regimeRefNumber,
-              busCusDetails,
-              businessType,
-              businessRegistrationDetails.utr
-            ) map {
-              case Some(_) =>
-                Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
-                true
-              case _       =>
-                Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 failure")
-                false
-            }
-          case None =>
-            Logger.info("[CheckEtmpService][validateBusinessDetails] Could not perform ES6")
-            Future.successful(false)
+    awrsConnector.checkEtmp(busCusDetails, legalEntity) flatMap {
+      case Some(successResponse) =>
+        enrolService.enrolAWRS(
+          successResponse.regimeRefNumber,
+          busCusDetails,
+          legalEntity,
+          busCusDetails.utr
+        ) map {
+          case Some(_) =>
+            Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
+            true
+          case _       =>
+            Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 failure")
+            false
         }
-      case _ =>
-        Logger.info("[CheckEtmpService][validateBusinessDetails] No business registration details")
+      case None =>
+        Logger.info("[CheckEtmpService][validateBusinessDetails] Could not perform ES6")
         Future.successful(false)
     }
   }

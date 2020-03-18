@@ -66,7 +66,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
   "HomeController" should {
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
-      when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(false))
       showWithSave4Later() { result =>
         status(result) shouldBe 303
@@ -172,7 +172,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     }
 
     "redirect to the Business Type page if validate business details returns true" in {
-      when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       showWithSave4Later() { result =>
         status(result) shouldBe 303

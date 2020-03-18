@@ -17,19 +17,17 @@
 package models
 
 import forms.AWRSEnums.BooleanRadioEnum
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 // models in this file are used to indicate if certain actions are required due to issues from etmp post submission
 // e.g. if data is missing when api 5 is called
 
 
 case class CheckRegimeModel(businessCustomerDetails: BusinessCustomerDetails,
-                            businessRegistrationDetails: BusinessRegistrationDetails)
+                            legalEntity: String)
 
 object CheckRegimeModel {
-
-  implicit val format = Json.format[CheckRegimeModel]
-
+  implicit val format: OFormat[CheckRegimeModel] = Json.format[CheckRegimeModel]
 }
 
 case class BusinessDetailsSupport(missingProposedStartDate: Boolean)

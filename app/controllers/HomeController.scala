@@ -61,16 +61,6 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     gotoBusinessTypePage(callerId)
   }
 
-  def checkBusinessDetailsETMP(callerId: Option[String], busCusDetails: BusinessCustomerDetails)
-                              (implicit request: Request[AnyContent], authRetrievals: StandardAuthRetrievals): Future[Result] = {
-    checkEtmpService.validateBusinessDetails(authRetrievals, busCusDetails) flatMap { result =>
-      if (result) {
-        Logger.info("[HomeController][checkBusinessDetailsETMP] Upserted details and enrolments to EACD")
-      }
-      gotoBusinessTypePage(callerId)
-    }
-  }
-
   private def gotoBusinessTypePage(callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
       callerId match {
         case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
@@ -84,13 +74,13 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
         if (data.safeId.isEmpty) {
           Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
         } else {
-          checkBusinessDetailsETMP(callerId, data)(request, authRetrievals)
+          gotoBusinessTypePage(callerId)
         }
       case _ =>
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails] flatMap {
           case Some(data) =>
             save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data) flatMap {
-              _ => checkBusinessDetailsETMP(callerId, data)(request,authRetrievals)
+              _ => gotoBusinessTypePage(callerId)
             }
           case _ =>
             Future.successful(Redirect(applicationConfig.businessCustomerStartPage))

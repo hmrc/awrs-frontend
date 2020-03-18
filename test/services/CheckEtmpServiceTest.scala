@@ -16,8 +16,8 @@
 
 package services
 
-import connectors.{AWRSConnector, BusinessCustomerDataCacheConnector, Save4LaterConnector}
-import models.{BCAddress, BusinessCustomerDetails, BusinessRegistrationDetails, EnrolResponse, Identifier, SelfHealSubscriptionResponse}
+import connectors.{AWRSConnector, Save4LaterConnector}
+import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -56,54 +56,35 @@ class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfte
     super.beforeEach()
   }
 
-  "getRegistrationDetails" should {
-
-    "fetch registration details, if found from Business Registration Keystore" in {
-      when(mockSave4LaterConnector.fetchData4Later[BusinessRegistrationDetails](any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(testBusinessRegistrationDetails)))
-      val mockMainStore: MainStore = new MainStore(mockAccountUtils, mockSave4LaterConnector)
-      when(mockSave4LaterService.mainStore)
-        .thenReturn(mockMainStore)
-      val result = checkEtmpTest.getRegistrationDetails(TestUtil.defaultAuthRetrieval)(hc, implicitly)
-
-      await(result).get shouldBe testBusinessRegistrationDetails
-    }
-  }
-
   "validateBusinessDetails" should {
-    val mockMainStore: MainStore = new MainStore(mockAccountUtils, mockSave4LaterConnector)
     val enrolSuccessResponse = EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))
 
     "return true if all details are provided" in {
-
-      when(mockSave4LaterConnector.fetchData4Later[BusinessRegistrationDetails](any(), ArgumentMatchers.eq("businessRegistrationDetails"))(any(), any(), any()))
-        .thenReturn(Future.successful(Some(testBusinessRegistrationDetails)))
       when(mockAwrsConnector.checkEtmp(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("123456"))))
       when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(enrolSuccessResponse)))
-      when(mockSave4LaterService.mainStore).thenReturn(mockMainStore)
-      val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails)
+
+      val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails, "SOP")
 
       await(result) shouldBe true
     }
 
-    "return false if business customer details only are provided" in {
-      when(mockSave4LaterConnector.fetchData4Later[BusinessRegistrationDetails](any(), ArgumentMatchers.eq("businessRegistrationDetails"))(any(), any(), any()))
+    "return false if enrol AWRS ES8 fails" in {
+      when(mockAwrsConnector.checkEtmp(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("123456"))))
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockSave4LaterService.mainStore).thenReturn(mockMainStore)
-      val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails)
+
+      val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails, "SOP")
 
       await(result) shouldBe false
     }
 
     "return false if all details are provided but checkEtmp returns false" in {
-      when(mockSave4LaterConnector.fetchData4Later[BusinessRegistrationDetails](any(), ArgumentMatchers.eq("businessRegistrationDetails"))(any(), any(), any()))
-        .thenReturn(Future.successful(Some(testBusinessRegistrationDetails)))
-      when(mockSave4LaterService.mainStore).thenReturn(mockMainStore)
       when(mockAwrsConnector.checkEtmp(any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
-      val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails)
+      val result = checkEtmpTest.validateBusinessDetails(TestUtil.defaultAuthRetrieval, testBusinessCustomerDetails, "SOP")
 
       await(result) shouldBe false
     }

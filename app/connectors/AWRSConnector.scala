@@ -434,12 +434,12 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     }
   }
 
-  def checkEtmp(businessCustomerDetails: BusinessCustomerDetails, businessRegistrationDetails: BusinessRegistrationDetails)
+  def checkEtmp(businessCustomerDetails: BusinessCustomerDetails, legalEntity: String)
                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
     if (!AWRSFeatureSwitches.regimeCheck().enabled) {
       Future.successful(None)
     } else {
-      val regimeModel = CheckRegimeModel(businessCustomerDetails, businessRegistrationDetails)
+      val regimeModel = CheckRegimeModel(businessCustomerDetails, legalEntity)
       val json = Json.toJson(regimeModel)
       val postURL = s"""$serviceURL/regime-etmp-check"""
 
