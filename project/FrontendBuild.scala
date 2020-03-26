@@ -7,7 +7,6 @@ object FrontendBuild extends Build with MicroService {
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 }
 
-
 private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
@@ -16,15 +15,12 @@ private object AppDependencies {
   private val pegdownVersion = "1.6.0"
   private val scalaTestplusPlayVersion = "3.1.3"
 
-
-
-
   val compile = Seq(
     ws,
     "com.typesafe.play" %% "anorm" % "2.5.3",
     "uk.gov.hmrc" %% "url-builder" % "3.3.0-play-26",
     "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.5.0", // includes the global object and error handling, as well as the FrontendController classes and some common configuration
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.6.0", // includes the global object and error handling, as well as the FrontendController classes and some common configuration
     "uk.gov.hmrc" %% "play-partials" % "6.9.0-play-26", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
     "uk.gov.hmrc" %% "json-encryption" % "4.5.0-play-26",
@@ -46,8 +42,8 @@ private object AppDependencies {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
-        "org.jsoup" % "jsoup" % "1.12.1" % scope,
-        "org.mockito" % "mockito-core" % "3.2.4" % scope,
+        "org.jsoup" % "jsoup" % "1.13.1" % scope,
+        "org.mockito" % "mockito-core" % "3.3.3" % scope,
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestplusPlayVersion % scope
       )
@@ -64,7 +60,7 @@ private object AppDependencies {
         "org.pegdown" % "pegdown" % pegdownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestplusPlayVersion % scope,
-        "com.github.tomakehurst" % "wiremock-jre8" % "2.26.0" % scope
+        "com.github.tomakehurst" % "wiremock-jre8" % "2.26.3" % scope
       )
     }.test
   }
