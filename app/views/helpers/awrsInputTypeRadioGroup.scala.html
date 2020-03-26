@@ -150,7 +150,6 @@
                     <label id="@inputId-label" for="@inputId" class="block-label @labelClass @params.field.value.filter(_ == value).map { _ => selected }">
                         @if(!labelAfter)@{addLabelIfSpecified(label, params)}
                         <input type="radio"
-                               autocomplete="off"
                                id="@inputId"
                                @if(params.ariaDescribedBy){
                                     @if(params.ariaDescribedByForYesOptionOnly && (value == "Yes")) {
