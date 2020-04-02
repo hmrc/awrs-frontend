@@ -53,8 +53,6 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       .thenReturn(mockServicesConfig)
     when(mockServicesConfig.baseUrl(ArgumentMatchers.eq("awrs")))
       .thenReturn("testURL")
-    when(mockAccountUtils.getAuthType(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn("org/UNUSED")
     when(mockAccountUtils.authLink(ArgumentMatchers.any()))
       .thenReturn("org/UNUSED")
     when(mockAccountUtils.getAwrsRefNo(ArgumentMatchers.any()))

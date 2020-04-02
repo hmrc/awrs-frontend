@@ -36,25 +36,6 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
     }
   }
 
-  def getAuthType(legalEntityType: String, authRetrievals: StandardAuthRetrievals): String = {
-
-    legalEntityType match {
-      case "SOP" => authRetrievals.enrolments.find(_.key == "IR-SA") match {
-        case Some(enrolment) => s"sa/${enrolment.identifiers.find(_.key == "UTR").get.value}"
-        case _ =>
-          warn("[getAuthType] No SA enrolment")
-          throw new RuntimeException("[getAuthType] No SA enrolment")
-      }
-      case _ =>
-        if (authRetrievals.affinityGroup.get == AffinityGroup.Organisation) {
-          "org/UNUSED"
-        } else {
-          warn("[getAuthType] Not an organisation account")
-          throw new RuntimeException("[getAuthType] Not an organisation account")
-        }
-    }
-  }
-
   def authLink(authRetrievals: StandardAuthRetrievals): String = {
     (authRetrievals.affinityGroup, authRetrievals.enrolments.find(_.key == "IR-SA")) match {
       case (Some(AffinityGroup.Organisation), _) => "org/UNUSED"
