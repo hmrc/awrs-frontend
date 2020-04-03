@@ -24,13 +24,13 @@ private object AppDependencies {
     "com.typesafe.play" %% "anorm" % "2.5.3",
     "uk.gov.hmrc" %% "url-builder" % "3.3.0-play-26",
     "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.5.0", // includes the global object and error handling, as well as the FrontendController classes and some common configuration
-    "uk.gov.hmrc" %% "play-partials" % "6.9.0-play-26", // includes code for retrieving partials, e.g. the Help with this page form
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.7.0", // includes the global object and error handling, as well as the FrontendController classes and some common configuration
+    "uk.gov.hmrc" %% "play-partials" % "6.10.0-play-26", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
     "uk.gov.hmrc" %% "json-encryption" % "4.5.0-play-26",
     "com.mohiva" %% "play-html-compressor" % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
     "uk.gov.hmrc" %% "auth-client" % "2.35.0-play-26",
-    "uk.gov.hmrc" %% "govuk-template" % "5.52.0-play-26",
+    "uk.gov.hmrc" %% "govuk-template" % "5.54.0-play-26",
     "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-26",
     "com.typesafe.play" %% "play-json-joda" % "2.6.14"
   )
@@ -46,8 +46,8 @@ private object AppDependencies {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
-        "org.jsoup" % "jsoup" % "1.12.1" % scope,
-        "org.mockito" % "mockito-core" % "3.2.4" % scope,
+        "org.jsoup" % "jsoup" % "1.12.2" % scope,
+        "org.mockito" % "mockito-core" % "3.3.3" % scope,
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestplusPlayVersion % scope
       )

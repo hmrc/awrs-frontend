@@ -204,7 +204,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
         )
         .willSetStateTo("eacd-auth-done")
       )
-      stubFor(get(urlMatching(s"/sa/$saUtr/awrs/lookup/0123456"))
+      stubFor(get(urlMatching(s"/awrs/lookup/0123456"))
         .willReturn(
           aResponse()
             .withStatus(OK)

@@ -42,23 +42,4 @@ class AccountUtilsTest extends UnitSpec with MockitoSugar{
       thrown.getMessage should include("[getUtr] No UTR found")
     }
   }
-
-  "getAuthType " should {
-    "return the correct auth link based on a sole trader legal entity type" in {
-      val result = accountUtils.getAuthType("SOP", TestUtil.defaultAuthRetrieval)
-      result shouldBe s"sa/0123456"
-    }
-    "return the correct auth link based on a partnership legal entity type" in {
-      val result = accountUtils.getAuthType("Partnership", TestUtil.defaultAuthRetrieval)
-      result shouldBe "org/UNUSED"
-    }
-    "return the correct auth link based on a limited company legal entity type" in {
-      val result = accountUtils.getAuthType("LTD", TestUtil.defaultAuthRetrieval)
-      result shouldBe "org/UNUSED"
-    }
-    "throw an exception if Partnership legal entity enrolment and not an organisation" in {
-      val thrown = the[RuntimeException] thrownBy  accountUtils.getAuthType("Partnership", StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Individual), "fakeCredId"))
-      thrown.getMessage shouldBe "[getAuthType] Not an organisation account"
-    }
-  }
 }
