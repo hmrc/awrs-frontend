@@ -35,15 +35,6 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
   val authConnector: AuthConnector
   val accountUtils: AccountUtils
 
-  implicit class StackTraceUtil(e: Throwable) {
-    def getStacktraceString: String = {
-      val stringWriter: StringWriter = new StringWriter()
-      val printWriter: PrintWriter = new PrintWriter(stringWriter)
-      e.printStackTrace(printWriter)
-      stringWriter.toString
-    }
-  }
-
   def restrictedAccessCheck(body: => Future[Result])(implicit request: Request[AnyContent]): Future[Result] =
     getSessionStatus match {
       case Some(Rejected) | Some(RejectedUnderReviewOrAppeal) | Some(Revoked) | Some(RevokedUnderReviewOrAppeal) =>
@@ -56,15 +47,6 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
 
   def showErrorPage(implicit request: Request[AnyContent]): Future[Result] =
     AwrsController.showErrorPage
-
-  def showBadRequestRaw(implicit request: Request[AnyContent]): Result =
-    AwrsController.showBadRequestRaw
-
-  def showBadRequest(implicit request: Request[AnyContent]): Future[Result] =
-    AwrsController.showBadRequest
-
-  def showNotFoundPageRaw(implicit request: Request[AnyContent]): Result =
-    AwrsController.showNotFoundPageRaw
 
   def showNotFoundPage(implicit request: Request[AnyContent]): Future[Result] =
     AwrsController.showNotFoundPage

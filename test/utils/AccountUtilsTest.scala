@@ -37,9 +37,51 @@ class AccountUtilsTest extends UnitSpec with MockitoSugar{
       utr shouldBe "6543210"
     }
 
+    "Return the fake cred id for org account" in {
+      val utr = accountUtils.getUtr(TestUtil.authRetrievalEmptySetEnrolments)
+      utr shouldBe "fakeCredID"
+    }
+
     "throw exception if no details are found" in {
       val thrown = the[RuntimeException] thrownBy accountUtils.getUtr(TestUtil.emptyAuthRetrieval)
       thrown.getMessage should include("[getUtr] No UTR found")
+    }
+  }
+
+  "authLink" should {
+    "Return the user SA link " in {
+      val utr = accountUtils.authLink(TestUtil.authRetrievalSAUTR)
+      utr shouldBe "sa/0123456"
+    }
+
+    "Return the user CT link" in {
+      val utr = accountUtils.authLink(TestUtil.defaultAuthRetrieval)
+      utr shouldBe "org/UNUSED"
+    }
+
+    "throw exception if no details are found for authlink" in {
+      val thrown = the[RuntimeException] thrownBy accountUtils.authLink(TestUtil.emptyAuthRetrieval)
+      thrown.getMessage should include("User does not have the correct authorisation")
+    }
+  }
+
+  "isSaAccount" should {
+    "return true if it is an SA account" in {
+      accountUtils.isSaAccount(TestUtil.authRetrievalSAUTR.enrolments) shouldBe Some(true)
+    }
+
+    "return None if it is not SA" in {
+      accountUtils.isSaAccount(TestUtil.defaultAuthRetrieval.enrolments) shouldBe None
+    }
+  }
+
+  "isOrgAccount" should {
+    "return true if it is a CT account" in {
+      accountUtils.isOrgAccount(TestUtil.defaultAuthRetrieval) shouldBe Some(true)
+    }
+
+    "return true if it is also an organisation account" in {
+      accountUtils.isOrgAccount(TestUtil.authRetrievalSAUTR) shouldBe Some(true)
     }
   }
 }

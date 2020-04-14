@@ -854,13 +854,14 @@ object TestUtil extends UnitSpec {
   val deleteConfirmation_None = testDeleteRequest(DeleteConfirmation(None))
 
   val defaultEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
-    Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "6543210")), "activated"), Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
+    Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "6543210")), "activated"))
 
   val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
     Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
 
   val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID")
   val authRetrievalSAUTR = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID")
+  val authRetrievalEmptySetEnrolments = StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation), "fakeCredID")
 
   val emptyAuthRetrieval = StandardAuthRetrievals(Set(), None, "emptyFakeCredID")
 

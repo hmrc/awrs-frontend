@@ -26,22 +26,22 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{JourneyConstants, ServicesUnitTestFixture}
+import services.{BusinessMatchingService, JourneyConstants, ServicesUnitTestFixture}
 import utils.TestUtil._
-import utils.{AwrsUnitTestTraits, MatchingUtil, TestUtil}
+import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 
 class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val mockMatchingUtil: MatchingUtil = mock[MatchingUtil]
+  val mockBusinessMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
 
   def testRequest(businessRegDetails: BusinessRegistrationDetails, entityType: String) =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegDetails)
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
-    new BusinessRegistrationDetailsController(mockMCC, mockMatchingUtil, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
       override val signInUrl: String = applicationConfig.signIn
     }
 

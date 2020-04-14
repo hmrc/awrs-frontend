@@ -122,8 +122,30 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
       }
     }
 
+    "show not found when a section is not valid" in {
+      viewSection("invalidName", getCustomizedMap(businessNameDetails = testBusinessNameDetails(), tradingStartDetails = newAWBusiness())) {
+        result =>
+          status(result) shouldBe NOT_FOUND
+      }
+    }
+
+    "show not found when a cache map is empty" in {
+      viewSectionEmptyCache("invalidName") {
+        result =>
+          status(result) shouldBe NOT_FOUND
+      }
+    }
+
     def viewSection(sectionName: String, cacheMap: CacheMap, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
       setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = cacheMap)
+      setAuthMocks()
+      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
+      val result = testViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))
+      test(result)
+    }
+
+    def viewSectionEmptyCache(sectionName: String, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
+      setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = None)
       setAuthMocks()
       when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
       val result = testViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))

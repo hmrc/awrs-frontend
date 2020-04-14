@@ -20,9 +20,5 @@ import controllers.auth.AwrsController
 import play.api.mvc.{AnyContent, Request}
 
 trait JourneyPage extends AwrsController {
-
   val section: String
-
-  def getJourneyStartLocation(implicit request: Request[AnyContent]): Option[String] =
-    request getJourneyStartLocation
 }

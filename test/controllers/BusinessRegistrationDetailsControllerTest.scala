@@ -24,9 +24,9 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.ServicesUnitTestFixture
+import services.{BusinessMatchingService, ServicesUnitTestFixture}
 import utils.TestUtil._
-import utils.{AwrsUnitTestTraits, MatchingUtil, TestUtil}
+import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -37,13 +37,13 @@ import scala.concurrent.Future
 class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val mockMatchingUtil: MatchingUtil = mock[MatchingUtil]
+  val mockBusinessMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
 
   def testRequest(businessRegistrationDetails: BusinessRegistrationDetails, entityType: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegistrationDetails)
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
-    new BusinessRegistrationDetailsController(mockMCC, mockMatchingUtil, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -96,8 +96,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
         fetchBusinessRegistrationDetails = businessRegistrationDetails
       )
       setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
-      when(mockMatchingUtil.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(false)
-      when(mockMatchingUtil.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(false)
+      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
       val result = testBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
       test(result)
     }

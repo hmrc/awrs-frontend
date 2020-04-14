@@ -18,25 +18,23 @@ package controllers
 
 import audit.Auditable
 import config.ApplicationConfig
-import controllers.auth.{AwrsController, StandardAuthRetrievals}
+import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessRegistrationDetailsForm._
 import javax.inject.Inject
 import models._
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import services.DataCacheKeys._
-import services.Save4LaterService
-import uk.gov.hmrc.http.HeaderCarrier
+import services.{BusinessMatchingService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{AccountUtils, MatchingUtil}
+import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControllerComponents,
-                                                      val matchingUtil: MatchingUtil,
+                                                      val businessMatchingService: BusinessMatchingService,
                                                       val save4LaterService: Save4LaterService,
                                                       val authConnector: DefaultAuthConnector,
                                                       val auditable: Auditable,
@@ -84,7 +82,7 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
         businessType match {
           case Some("LTD_GRP" | "LLP_GRP") => businessRegistrationDetails.utr match {
             case Some(utr) => {
-              matchingUtil.isValidMatchedGroupUtr(utr, authRetrievals) map {
+              businessMatchingService.isValidMatchedGroupUtr(utr, authRetrievals) map {
                 case true =>
                   save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, businessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
                 case false =>

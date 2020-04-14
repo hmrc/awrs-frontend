@@ -64,7 +64,6 @@ object BusinessDetailsAndContactsComparator {
     val corporateTempCacheContactDetChangeData = businessContacts.map(corBusDetails => (corBusDetails.contactFirstName,
       corBusDetails.contactLastName, corBusDetails.telephone, corBusDetails.email, corBusDetails.contactAddress))
 
-
     val businessName = cached.get.getBusinessCustomerDetails.get.businessName
     val businessType = cached.get.getBusinessType.get.legalEntity
     val businessNameChanged: Boolean = if (data.businessPartnerName.isDefined) !data.businessPartnerName.get.equals(businessName) else false

@@ -47,6 +47,14 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
     override val signInUrl: String = applicationConfig.signIn
   }
 
+  "show confirm" should {
+    "show the confirm page" in {
+      setAuthMocks()
+      val result = testBusinessNameChangeController.showConfirm().apply(SessionBuilder.buildRequestWithSession(userId))
+      status(result) should be(OK)
+    }
+  }
+
   "Submitting the business name change confirmation form with " should {
     "Authenticated and authorised users" should {
       "redirect to view section for Business Details page when valid data is provided" in {

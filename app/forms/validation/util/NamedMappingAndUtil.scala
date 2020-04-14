@@ -61,16 +61,6 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
     compulsoryText(lastNameConstraintParameters)
   }
 
-  def companyName_optional(fieldNameInErrorMessage: String = "business name"): Mapping[Option[String]] = {
-    val fieldId = "companyName"
-    val companyNameConstraintParameters =
-      OptionalTextFieldMappingParameter(
-        genericFieldMaxLengthConstraintParameter(companyNameLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
-      )
-    optionalText(companyNameConstraintParameters)
-  }
-
   def companyName_compulsory(fieldNameInErrorMessage: String = "business name"): Mapping[Option[String]] = {
     val fieldId = "companyName"
     val companyNameConstraintParameters =
@@ -82,7 +72,7 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
     compulsoryText(companyNameConstraintParameters)
   }
 
-  def doYouHaveTradingName_compulsory: Mapping[Option[String]] =
+  def doYouHaveTradingName_compulsory(): Mapping[Option[String]] =
     yesNoQuestion_compulsory("doYouHaveTradingName", "awrs.generic.error.do_you_have_trading_name_empty")
 
   val whenDoYouHaveTradingNameIsAnsweredYes: FormData => Boolean = answerGivenInFieldIs("doYouHaveTradingName", "Yes")
@@ -97,17 +87,6 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
         genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
       )
     compulsoryText(companyNameConstraintParameters)
-  }
-
-  def tradingName_optional: Mapping[Option[String]] = {
-    val fieldId = "tradingName"
-    val fieldNameInErrorMessage = "trading name"
-    val companyNameConstraintParameters =
-      OptionalTextFieldMappingParameter(
-        genericFieldMaxLengthConstraintParameter(tradingNameLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
-      )
-    optionalText(companyNameConstraintParameters)
   }
 
   val companyNameIsEmpty: FormData => Boolean = noAnswerGivenInField("companyName")
@@ -175,7 +154,6 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
 
   @inline def doYouHaveVRN_compulsory(fieldId: String = "doYouHaveVRN") = yesNoQuestion_compulsory(fieldId, "awrs.generic.error.do_you_have_vat_reg_empty")
 
-  // TODO refactor
   @inline def doYouHaveCRN_compulsory(fieldId: String = "doYouHaveCRN") = yesNoQuestion_compulsory(fieldId, "awrs.generic.error.do_you_have_company_reg_empty")
 
   @inline def doYouHaveUTR_compulsory(fieldId: String = "doYouHaveUTR") = yesNoQuestion_compulsory(fieldId, "awrs.generic.error.do_you_have_utr_empty")
@@ -246,18 +224,6 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
       )
     compulsoryText(firstNameConstraintParameters)
   }
-
-  def confirmEmail_compulsory(fieldId: String = "confirmEmail"): Mapping[Option[String]] = {
-    val fieldNameInErrorMessage = "confirm email"
-    val firstNameConstraintParameters =
-      CompulsoryTextFieldMappingParameter(
-        simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.confirm_email_empty"),
-        genericFieldMaxLengthConstraintParameter(emailLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(x => x.matches(emailRegex), fieldId, fieldNameInErrorMessage, "awrs.generic.error.confirm_email_invalid")
-      )
-    compulsoryText(firstNameConstraintParameters)
-  }
-
 
   def telephone_compulsory(fieldId: String = "telephone"): Mapping[Option[String]] =
     compulsoryText(

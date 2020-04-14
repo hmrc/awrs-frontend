@@ -55,9 +55,6 @@ object ViewApplicationHelper {
     }
   }
 
-  def hasContent(rows: Traversable[Option[String]]): Boolean =
-    rows.foldLeft(false)((bool, r) => bool || r.isDefined)
-
   def countContent(rows: Traversable[Option[String]]): Int =
     rows.foldLeft(0)(
       (count, r) =>
@@ -65,16 +62,6 @@ object ViewApplicationHelper {
           case Some(str) if !str.equals("") => 1
           case _ => 0
         }))
-
-  implicit def intConversionToString(int: Int): Option[String] = Some(int.toString)
-
-  implicit def htmlToString(html: Html): String = html.toString()
-
-  implicit def appendableToOptionString(html: HtmlFormat.Appendable): Option[String] = Some(HtmlFormat.raw(html))
-
-  implicit def stringToHtml(str: String): Html = Html(str)
-
-  implicit def elemToHtml(elem: Elem): Option[Html] = Some(Html(elem.toString()))
 
   def link(href: Option[String], message: String, classAttr: String, idAttr: Option[String] = None, visuallyHidden: String = ""): String = {
     "<a " + {
@@ -134,10 +121,6 @@ object ViewApplicationHelper {
     } else {
       NoneBreakingSpace
     }
-  }
-
-  implicit class CaseInsensitiveRegex(sc: StringContext) {
-    def ci: Regex = ( "(?i)" + sc.parts.mkString ).r
   }
 
   def getSectionDisplayName(sectionName: String, legalEntity: String): String = {

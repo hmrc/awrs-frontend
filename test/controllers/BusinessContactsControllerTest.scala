@@ -68,6 +68,20 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
 
       "AWRS Contact Details entered " should {
 
+        "save invalid form data and show the form error" in {
+          continueWithAuthorisedUserCustomerDetailsMock()(FakeRequest().withFormUrlEncodedBody()) {
+            result =>
+              status(result) should be(BAD_REQUEST)
+          }
+        }
+
+        "save invalid form data with no customer details and show internal server error" in {
+          continueWithAuthorisedUserCustomerDetailsMock("SOP", false)(FakeRequest().withFormUrlEncodedBody()) {
+            result =>
+              status(result) should be(INTERNAL_SERVER_ERROR)
+          }
+        }
+
         "save form data in Save4Later and when contact details entered are valid" in {
           continueWithAuthorisedUser()(testRequest(testBusinessContactsDefault())) {
             result =>
@@ -120,6 +134,15 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchGroupMemberDetails = None,
       fetchPartnerDetails = None,
       fetchAdditionalBusinessPremisesList = None
+    )
+    setAuthMocks()
+    val result = testBusinessContactsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+    test(result)
+  }
+
+  private def continueWithAuthorisedUserCustomerDetailsMock(businessType: String = "SOP", customerDetails: Boolean = true)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(
+      fetchBusinessCustomerDetails = if (customerDetails) testBusinessCustomerDetails(businessType) else None
     )
     setAuthMocks()
     val result = testBusinessContactsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
