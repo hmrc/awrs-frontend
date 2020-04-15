@@ -29,7 +29,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
     "uk.gov.hmrc" %% "json-encryption" % "4.5.0-play-26",
     "com.mohiva" %% "play-html-compressor" % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc" %% "auth-client" % "2.35.0-play-26",
+    "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-26",
     "uk.gov.hmrc" %% "govuk-template" % "5.54.0-play-26",
     "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-26",
     "com.typesafe.play" %% "play-json-joda" % "2.6.14"
