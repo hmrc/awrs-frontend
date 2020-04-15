@@ -43,15 +43,6 @@ object ConstraintUtil {
             case f: Invalid => f
           }
       })
-
-    def compose(c2: Constraint[A]): Constraint[A] =
-      Constraint[A]({
-        (a: A) =>
-          c2.apply(a) match {
-            case Valid => c(a)
-            case f: Invalid => f
-          }
-      })
   }
 
   implicit class PreConstraintsUtil[A](cond: A => Boolean) {
@@ -82,37 +73,6 @@ object ConstraintUtil {
   def alwaysValidConstraint[A]: Constraint[A] = Constraint[A]((a: A) => Valid)
 
   def andThenSeqChain[A](seq: Seq[Constraint[A]]) = seq.foldLeft(alwaysValidConstraint[A])(_ andThen _)
-
-  def preConditionToConstraint[A](cond: A => Boolean, c: Constraint[A]): Constraint[A] =
-    Constraint[A]({
-      (a: A) =>
-        cond(a) match {
-          case true => c(a)
-          case false => Valid
-        }
-    })
-
-  implicit class MappingUtil[A](m: Mapping[A]) {
-    def verifying(constraints: List[Constraint[A]]): Mapping[A] =
-      constraints.foldLeft(m)(_.verifying(_))
-
-    def verifying(constraints: Seq[Constraint[A]]): Mapping[A] =
-      m.verifying(andThenSeqChain(constraints))
-
-    def verifying(preCondition: Constraint[A], constraints: List[Constraint[A]]): Mapping[A] = {
-      val newConsts = constraints.map(c => Constraint[A]("") {
-        f =>
-          preCondition.apply(f) match {
-            case Valid => c(f)
-            case f: Invalid => Valid
-          }
-      })
-      m.verifying(preCondition).verifying(newConsts)
-    }
-
-    def verifying(preCondition: Constraint[A], constraints: Constraint[A]): Mapping[A] =
-      verifying(preCondition, List(constraints))
-  }
 
   // generic validation functions
   private val fieldIsNotEmptyValidationFunction = (field: String, invalid: ValidationResult) =>

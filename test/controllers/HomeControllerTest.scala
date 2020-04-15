@@ -33,7 +33,7 @@ import services.{BusinessCustomerService, CheckEtmpService, MainStore, Save4Late
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
-import utils.AwrsUnitTestTraits
+import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestUtil._
 
 import scala.concurrent.Future
@@ -52,7 +52,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockBusinessCustomerService, mockAppConfig)
+    reset(mockBusinessCustomerService, mockAppConfig, mockAccountUtils)
 
     when(mockAppConfig.countryCodes)
       .thenReturn(mockCountryCodes)
@@ -206,7 +206,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
   private def showWithSave4LaterAndAwrs(callerId: Option[String] = None)(test: Future[Result] => Any) {
     setUser(hasAwrs = true)
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = None)
-    setAuthMocks()
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

@@ -18,11 +18,13 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import models.GroupDeclaration
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
+import utils.TestUtil.testBusinessRegistrationDetails
 
 import scala.concurrent.Future
 
@@ -36,6 +38,13 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
 
   "Submitting the application declaration form with " should {
     "Authenticated and authorised users" should {
+      "show an ok when the group declaration is available" in {
+        showWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("groupRepConfirmation" -> "true")) {
+          result =>
+            status(result) shouldBe OK
+        }
+      }
+
       "redirect to Index page when valid data is provided" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("groupRepConfirmation" -> "true")) {
           result =>
@@ -56,6 +65,15 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
     val result = testGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    test(result)
+  }
+
+  private def showWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(
+      fetchGroupDeclaration = Some(GroupDeclaration(true))
+    )
+    setAuthMocks()
+    val result = testGroupDeclarationController.showGroupDeclaration.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 

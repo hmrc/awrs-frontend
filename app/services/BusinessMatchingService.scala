@@ -19,6 +19,7 @@ package services
 import audit.Auditable
 import connectors.BusinessMatchingConnector
 import controllers.auth.StandardAuthRetrievals
+import forms.AWRSEnums
 import javax.inject.Inject
 import models._
 import play.api.libs.json.{JsSuccess, JsValue}
@@ -27,8 +28,35 @@ import utils.{LoggingUtils, SessionUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService, businessMatchingConnector: BusinessMatchingConnector, val auditable: Auditable)
-  extends LoggingUtils {
+class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
+                                        businessMatchingConnector: BusinessMatchingConnector,
+                                        save4LaterService: Save4LaterService,
+                                        val auditable: Auditable) extends LoggingUtils {
+
+  def isValidMatchedGroupUtr(utr: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    for {
+      bcd <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
+      businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
+      isMatchFound <- matchBusinessWithUTR(utr, getOrganisation(bcd, businessType), authRetrievals)
+    } yield {
+      isMatchFound
+    }
+  }
+
+  private def getOrganisation(businessCustomerDetails: Option[BusinessCustomerDetails], businessType: Option[BusinessType]) = {
+    (businessCustomerDetails, businessType) match {
+      case (Some(bcd), Some(bt)) if bcd.isAGroup => Some(Organisation(bcd.businessName, getGroupOrgType(bt)))
+      case _ => throw new Exception("Missing organisation details for match.")
+    }
+  }
+
+  private def getGroupOrgType(bt: BusinessType) = {
+    bt.legalEntity match {
+      case Some("LTD_GRP") => AWRSEnums.CorporateBodyString
+      case Some("LLP_GRP") => AWRSEnums.LlpString
+      case orgType@_ => throw new Exception("Invalid group organisation type: " + orgType)
+    }
+  }
 
   def matchBusinessWithUTR(utr: String, organisation: Option[Organisation], authRetrievals: StandardAuthRetrievals)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {

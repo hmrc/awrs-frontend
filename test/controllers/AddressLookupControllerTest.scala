@@ -18,12 +18,14 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import models.{Address, AddressAudit, AddressAudits}
 import uk.gov.hmrc.address.client.v1.RecordSet
 import org.mockito.ArgumentMatchers.{any, eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{AddressLookupErrorResponse, AddressLookupService, AddressLookupSuccessResponse}
@@ -62,6 +64,48 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
           status(result) should be(INTERNAL_SERVER_ERROR)
       }
     }
+
+    "return ok on an address audit POST route" in {
+      val address1One = Address("address Line 1", "address Line 2", None, None, Some("ZZ1 1ZZ"))
+      val addressAudit = AddressAudit(Some("id"), Some("postcodeAddressSubmitted"), Some("uprn"), Some(address1One), Some(address1One))
+      val addressAudits = AddressAudits(List(addressAudit))
+
+      addressAuditCall(addressAudits) {
+        result =>
+          status(result) should be(OK)
+      }
+    }
+
+    "return ok on an address audit POST route for manualAddressSubmitted" in {
+      val address1One = Address("address Line 1", "address Line 2", None, None, Some("ZZ1 1ZZ"))
+      val addressAudit = AddressAudit(Some("id"), Some("manualAddressSubmitted"), Some("uprn"), Some(address1One), Some(address1One))
+      val addressAudits = AddressAudits(List(addressAudit))
+
+      addressAuditCall(addressAudits) {
+        result =>
+          status(result) should be(OK)
+      }
+    }
+
+    "return ok on an address audit POST route with country code and no duplicate address " in {
+      val address1One = Address("address Line 1", "address Line 2", None, None, None, Some("Country"))
+      val addressAudit = AddressAudit(Some("id"), Some("postcodeAddressSubmitted"), Some("uprn"), Some(address1One), None)
+      val addressAudits = AddressAudits(List(addressAudit))
+
+      addressAuditCall(addressAudits) {
+        result =>
+          status(result) should be(OK)
+      }
+    }
+
+    "return ok on an address audit POST route with an empty list" in {
+      val addressAudits = AddressAudits(List())
+
+      addressAuditCall(addressAudits) {
+        result =>
+          status(result) should be(OK)
+      }
+    }
   }
 
   def addressLookupValidPostcode(test: Future[Result] => Any) {
@@ -88,6 +132,22 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
     when(testAddressLookupController.addressLookupService.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new Exception("")))
     setAuthMocks()
     val result = testAddressLookupController.addressLookup(postCode).apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def addressAuditCall(addressAudits: AddressAudits)(test: Future[Result] => Any): Unit = {
+    implicit val hc = mock[HeaderCarrier]
+
+    when(testAddressLookupController.addressLookupService.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
+    setAuthMocks()
+
+    val fakeRequest: FakeRequest[AnyContent] = if (addressAudits.addressAudits.isEmpty) {
+      SessionBuilder.buildRequestWithSession(userId)
+    } else {
+      SessionBuilder.buildRequestWithSession(userId).withJsonBody(Json.toJson(addressAudits))
+    }
+
+    val result = testAddressLookupController.auditAddress().apply(fakeRequest)
     test(result)
   }
 }

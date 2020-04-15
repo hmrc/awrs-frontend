@@ -157,6 +157,13 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         }
       }
 
+      "send updated subscription and handle a 200 success for a new business" in {
+        sendUpdateSubscriptionTypeWithAuthorisedUser (
+          result =>
+            await(result) shouldBe subscribeUpdateSuccessResponse
+        , newAW = true)
+      }
+
       "send updated registration details to service with a valid address and handle success" in {
         setupMockKeyStoreServiceForBusinessCustomerAddress()
         sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
@@ -1081,6 +1088,14 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         await(result) shouldBe SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)
       }
 
+      "return all false indicators there is no AWRS enrolment" in {
+        when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
+          .thenReturn(false)
+        setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = None)
+        val result = testApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap, TestUtil.defaultAuthRetrieval)
+        await(result) shouldBe SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)
+      }
+
       "return at least one true indicator if any section has changed" in {
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = differentSoleTraderSubscriptionTypeFrontEnd)
         val result = testApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap, TestUtil.defaultAuthRetrieval)
@@ -1127,6 +1142,51 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           }
       }
     }
+
+    "getChangeIndicators" should {
+      "manage legalEntity changes" when {
+        val typesOfLegalEntityChanges = Map(
+          ("SOP", "LLP") -> SectionChangeIndicators(partnersChanged = true),
+          ("SOP", "LTD") -> SectionChangeIndicators(coOfficialsChanged = true),
+          ("SOP", "LTD_GRP") -> SectionChangeIndicators(groupMembersChanged = true, coOfficialsChanged = true),
+          ("SOP", "LLP_GRP") -> SectionChangeIndicators(groupMembersChanged = true, partnersChanged = true),
+          ("LTD", "LLP") -> SectionChangeIndicators(partnersChanged = true, coOfficialsChanged = true),
+          ("LTD", "SOP") -> SectionChangeIndicators(coOfficialsChanged = true),
+          ("LTD", "LTD_GRP") -> SectionChangeIndicators(groupMembersChanged = true),
+          ("LTD", "LLP_GRP") -> SectionChangeIndicators(groupMembersChanged = true, partnersChanged = true, coOfficialsChanged = true),
+          ("LLP", "LTD") -> SectionChangeIndicators(partnersChanged = true, coOfficialsChanged = true),
+          ("LLP", "SOP") -> SectionChangeIndicators(partnersChanged = true),
+          ("LLP", "LTD_GRP") -> SectionChangeIndicators(groupMembersChanged = true, partnersChanged = true, coOfficialsChanged = true),
+          ("LLP", "LLP_GRP") -> SectionChangeIndicators(groupMembersChanged = true, coOfficialsChanged = true),
+          ("LTD_GRP", "LTD") -> SectionChangeIndicators(groupMembersChanged = true),
+          ("LTD_GRP", "SOP") -> SectionChangeIndicators(groupMembersChanged = true, coOfficialsChanged = true),
+          ("LTD_GRP", "LLP") -> SectionChangeIndicators(groupMembersChanged = true, partnersChanged = true, coOfficialsChanged = true),
+          ("LTD_GRP", "LLP_GRP") -> SectionChangeIndicators(partnersChanged = true, coOfficialsChanged = true),
+          ("LLP_GRP", "LTD") -> SectionChangeIndicators(groupMembersChanged = true, partnersChanged = true, coOfficialsChanged = true),
+          ("LLP_GRP", "SOP") -> SectionChangeIndicators(groupMembersChanged = true, partnersChanged = true),
+          ("LLP_GRP", "LLP") -> SectionChangeIndicators(groupMembersChanged = true, coOfficialsChanged = true),
+          ("LLP_GRP", "LTD_GRP") -> SectionChangeIndicators(partnersChanged = true, coOfficialsChanged = true)
+        )
+
+        typesOfLegalEntityChanges foreach {
+          case ((data, otherData), expectedChangeIndicators) =>
+            s"${data} becomes ${otherData}" in {
+              val businessTypeData = BusinessType(Some(data), None, Some(true))
+              val businessTypeOther = BusinessType(Some(otherData), None, Some(true))
+
+              val changeInds = testApplicationService.getChangeIndicators(
+                Some(cachedData(businessTypeOther)),
+                testSubscriptionTypeFrontEnd(legalEntity = Some(businessTypeData), businessRegistrationDetails = testBusinessRegistrationDetails(legalEntity = data))
+              )
+
+              changeInds.get shouldBe expectedChangeIndicators.copy(
+                businessDetailsChanged = otherData.contains("GRP"),
+                businessRegistrationDetailsChanged = true
+              )
+            }
+        }
+      }
+    }
   }
 
   def testAddGroupRepToGroupMembers: (CacheMap,Option[GroupMembers]) = {
@@ -1167,9 +1227,17 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def sendUpdateSubscriptionTypeWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any): Unit = {
+  def sendUpdateSubscriptionTypeWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any, newAW: Boolean = false): Unit = {
     setupMockSave4LaterService(fetchAll = cachedData())
-    setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSubscription)
+
+    val cachedSub = if (newAW) {
+      val alteredBusinessDetails = cachedSubscription.businessDetails.map(bd => bd.copy(newAWBusiness = Some(NewAWBusiness("Yes", None))))
+      cachedSubscription.copy(businessDetails = alteredBusinessDetails)
+    } else {
+      cachedSubscription
+    }
+
+    setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSub)
     setupMockAWRSConnectorWithOnly(updateAWRSData = subscribeUpdateSuccessResponse)
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)

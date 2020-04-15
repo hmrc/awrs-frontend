@@ -21,7 +21,7 @@ import metrics.AwrsMetrics
 import models.{EnrolResponse, RequestPayload}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
+import play.api.http.Status.{CREATED, BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
 import services.GGConstants._
@@ -31,6 +31,7 @@ import utils.{AwrsUnitTestTraits, TestUtil}
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
@@ -43,7 +44,9 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     reset(mockWSHttp)
   }
 
-  val testTaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockServicesConfig, mockWSHttp, mockAwrsMetrics, mockAuditable)
+  val testTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockServicesConfig, mockWSHttp, mockAwrsMetrics, mockAuditable) {
+    override val retryWait: Int = 50
+  }
 
   "Tax enrolments connector de-enrolling AWRS" should {
     // used in the mock to check the destination of the connector calls
@@ -107,8 +110,6 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
   "Tax enrolments connector enrolling AWRS" should {
 
-    lazy val enrolURI = testTaxEnrolmentsConnector.deEnrolURI + "/" + service
-
     def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),
@@ -117,7 +118,6 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
           responseString = responseString)))
 
     def testCall(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
-      mockResponse(OK)
       val requestPayload = RequestPayload.apply("", "", "", List.empty)
       val groupId = ""
       val awrsRef = ""
@@ -128,11 +128,39 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "return enrol response for successful enrolment" in {
+      mockResponse(OK)
       testCall.isDefined shouldBe true
     }
 
     "return enrol response for unsuccessful enrolment" in {
       mockResponse(BAD_REQUEST)
+      testCall.isDefined shouldBe true
+    }
+
+    "return enrol response for created response" in {
+      mockResponse(CREATED)
+      testCall.isDefined shouldBe true
+    }
+
+    "return enrol response for not found response" in {
+      mockResponse(NOT_FOUND)
+      testCall.isDefined shouldBe true
+    }
+
+    "return enrol response for service unavailable response" in {
+      mockResponse(SERVICE_UNAVAILABLE)
+      testCall.isDefined shouldBe true
+    }
+
+    "return enrol response for bad gateway response" in {
+      mockResponse(BAD_GATEWAY)
+      testCall.isDefined shouldBe true
+    }
+
+    "return enrol response for any other status" in {
+      val otherStatus = 421
+
+      mockResponse(otherStatus)
       testCall.isDefined shouldBe true
     }
   }

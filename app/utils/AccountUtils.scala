@@ -38,8 +38,8 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
 
   def authLink(authRetrievals: StandardAuthRetrievals): String = {
     (authRetrievals.affinityGroup, authRetrievals.enrolments.find(_.key == "IR-SA")) match {
-      case (Some(AffinityGroup.Organisation), _) => "org/UNUSED"
       case (_,            Some(enrolment)) => s"sa/${enrolment.identifiers.find(_.key == "UTR").get.value}"
+      case (Some(AffinityGroup.Organisation), _) => "org/UNUSED"
       case _ => throw new RuntimeException("User does not have the correct authorisation")
     }
   }

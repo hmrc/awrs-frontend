@@ -16,6 +16,7 @@
 
 package utils
 
+import models.{Address, Supplier}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
@@ -52,6 +53,68 @@ class CountryCodeTest extends UnitSpec with MockitoSugar with OneServerPerSuite 
       countryCodes.getCountryCode("France") should be(Some("FR"))
 
       countryCodes.getCountryCode("ZZ") should be(None)
+    }
+  }
+
+  "CountryCode getSupplierAddressWithCountryCode" should {
+    "get an address with a country code" in new Setup {
+      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, Some("Andorra"))
+      val supplier = Supplier(None, None, None, Some(supplierAddress), None, None, None)
+
+      countryCodes.getSupplierAddressWithCountryCode(supplier).get.addressCountryCode should be(Some("AD"))
+
+      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+      val supplierNone = Supplier(None, None, None, Some(supplierAddressNone), None, None, None)
+
+      countryCodes.getSupplierAddressWithCountryCode(supplierNone).get.addressCountryCode should be(Some("GB"))
+
+      val supplierEmpty = Supplier(None, None, None, None, None, None, None)
+
+      countryCodes.getSupplierAddressWithCountryCode(supplierEmpty).isEmpty shouldBe true
+    }
+  }
+
+  "CountryCode getAddressWithCountryCode" should {
+    "get an address with a country code" in new Setup {
+      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, Some("Andorra"))
+
+      countryCodes.getAddressWithCountryCode(Some(supplierAddress)).get.addressCountryCode should be(Some("AD"))
+
+      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+
+      countryCodes.getAddressWithCountryCode(Some(supplierAddressNone)).get.addressCountryCode should be(Some("GB"))
+      countryCodes.getAddressWithCountryCode(None).isEmpty shouldBe true
+    }
+  }
+
+  "CountryCode getSupplierAddressWithCountry" should {
+    "get an address with a country" in new Setup {
+      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None, Some("AD"))
+      val supplier = Supplier(None, None, None, Some(supplierAddress), None, None, None)
+
+      countryCodes.getSupplierAddressWithCountry(supplier).get.addressCountry should be(Some("Andorra"))
+
+      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+      val supplierNone = Supplier(None, None, None, Some(supplierAddressNone), None, None, None)
+
+      countryCodes.getSupplierAddressWithCountry(supplierNone).get.addressCountry should be(Some("United Kingdom"))
+
+      val supplierEmpty = Supplier(None, None, None, None, None, None, None)
+
+      countryCodes.getSupplierAddressWithCountry(supplierEmpty).isEmpty shouldBe true
+    }
+  }
+
+  "CountryCode getAddressWithCountry" should {
+    "get an address with a country" in new Setup {
+      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None, Some("AD"))
+
+      countryCodes.getAddressWithCountry(Some(supplierAddress)).get.addressCountry should be(Some("Andorra"))
+
+      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+
+      countryCodes.getAddressWithCountry(Some(supplierAddressNone)).get.addressCountry should be(Some("United Kingdom"))
+      countryCodes.getAddressWithCountry(None).isEmpty shouldBe true
     }
   }
 }

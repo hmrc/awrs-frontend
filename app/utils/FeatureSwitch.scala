@@ -27,42 +27,15 @@ sealed trait FeatureSwitch {
   def enabled: Boolean
 }
 
-trait TimedFeatureSwitch extends FeatureSwitch {
-
-  def start: Option[DateTime]
-  def end: Option[DateTime]
-  def target: DateTime
-
-  override def enabled: Boolean = (start, end) match {
-    case (Some(s), Some(e)) => !target.isBefore(s) && !target.isAfter(e)
-    case (None, Some(e)) => !target.isAfter(e)
-    case (Some(s), None) => !target.isBefore(s)
-    case (None, None) => false
-  }
-}
-
 case class BooleanFeatureSwitch(name: String, enabled: Boolean) extends FeatureSwitch
 
-case class EnabledTimedFeatureSwitch(name: String, start: Option[DateTime], end: Option[DateTime], target: DateTime) extends TimedFeatureSwitch
-case class DisabledTimedFeatureSwitch(name: String, start: Option[DateTime], end: Option[DateTime], target: DateTime) extends TimedFeatureSwitch {
-  override def enabled = !super.enabled
-}
-
-
 object FeatureSwitch {
-
-  val DisabledIntervalExtractor = """!(\S+)_(\S+)""".r
-  val EnabledIntervalExtractor = """(\S+)_(\S+)""".r
-  val UNSPECIFIED = "X"
-  val dateFormat = ISODateTimeFormat.dateTimeNoMillis()
 
   private[utils] def getProperty(name: String): FeatureSwitch = {
     val value = sys.props.get(systemPropertyName(name))
 
     value match {
       case Some("true") => BooleanFeatureSwitch(name, enabled = true)
-      case Some(DisabledIntervalExtractor(start, end)) => DisabledTimedFeatureSwitch(name, toDate(start), toDate(end), DateTime.now(DateTimeZone.UTC))
-      case Some(EnabledIntervalExtractor(start, end)) => EnabledTimedFeatureSwitch(name, toDate(start), toDate(end), DateTime.now(DateTimeZone.UTC))
       case _ => BooleanFeatureSwitch(name, enabled = false)
     }
   }
@@ -72,34 +45,14 @@ object FeatureSwitch {
     getProperty(name)
   }
 
-  private[utils] def toDate(text: String) : Option[DateTime] = {
-    text match {
-      case UNSPECIFIED => None
-      case _ => Some(dateFormat.parseDateTime(text))
-    }
-  }
-
   private[utils] def systemPropertyName(name: String) = s"feature.$name"
 
   def enable(fs: FeatureSwitch): FeatureSwitch = setProperty(fs.name, "true")
   def disable(fs: FeatureSwitch): FeatureSwitch = setProperty(fs.name, "false")
-
-  def apply(name: String, enabled: Boolean = false): FeatureSwitch = getProperty(name)
-  def unapply(fs: FeatureSwitch): Option[(String, Boolean)] = Some(fs.name -> fs.enabled)
 }
 
 object AWRSFeatureSwitches extends AWRSFeatureSwitches
 
 trait AWRSFeatureSwitches {
-
   def regimeCheck(): FeatureSwitch = FeatureSwitch.getProperty("regimeCheck")
-
-  def apply(name: String): Option[FeatureSwitch] = name match {
-    case "regimeCheck" => Some(regimeCheck())
-    case _ => None
-  }
-
-  def all: Seq[FeatureSwitch] = {
-    Seq.empty
-  }
 }

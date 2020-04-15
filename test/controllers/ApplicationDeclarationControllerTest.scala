@@ -85,6 +85,20 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     new BusinessDirectorsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "ApplicationDeclarationController" must {
+    "show application declaration page without preloaded data" in {
+      showWithAuthorsiedUser(testRequest(testApplicationDeclarationTrue), None) { result =>
+        await(result)
+        status(result) shouldBe 200
+      }
+    }
+
+    "show application declaration page with preloaded data" in {
+      showWithAuthorsiedUser(testRequest(testApplicationDeclarationTrue), Some(ApplicationDeclaration(Some("name"), Some("role"), Some(true)))) { result =>
+        await(result)
+        status(result) shouldBe 200
+      }
+    }
+
     "show error page if a DES Validation Exception is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), DESValidationException("Validation against schema failed")) { result =>
         await(result)
@@ -192,6 +206,22 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
           redirectLocation(result).get should include("/alcohol-wholesale-scheme/confirmation")
       }
     }
+  }
+
+  private def showWithAuthorsiedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], data: Option[ApplicationDeclaration])(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(
+      fetchBusinessCustomerDetails = testReviewDetails,
+      fetchAll = MockSave4LaterService.defaultFetchAll,
+      fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"),
+      fetchApplicationDeclaration = data
+    )
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setupMockKeyStoreServiceOnlySaveFunctions()
+    when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
+    when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
+    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
+    val result = testApplicationDeclarationController.showApplicationDeclaration().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
+    test(result)
   }
 
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {

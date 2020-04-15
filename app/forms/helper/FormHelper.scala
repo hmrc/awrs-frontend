@@ -30,13 +30,6 @@ import scala.util.{Failure, Success, Try}
 
 object FormHelper {
 
-  def maxLengthValidation(fieldLen: Int, maxLen: Int, inputField: String, fieldLabel: String): play.api.data.validation.ValidationResult =
-    fieldLen <= maxLen match {
-      case true => Valid
-      case false =>
-        createErrorMessage(TargetFieldIds(inputField), FieldErrorConfig("awrs.generic.error.maximum_length", MessageArguments(fieldLabel, maxLen)), SummaryErrorConfig(MessageArguments(fieldLabel)))
-    }
-
   def isInvalidDate(date: TupleDate) =
     Try(new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate) match {
       case Failure(_) => true

@@ -18,23 +18,23 @@ package services
 
 import connectors._
 import forms.AWRSEnums
-import models.Organisation
+import models._
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import services.mocks.MockKeyStoreService
+import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import utils.AwrsTestJson._
 import utils.{AwrsUnitTestTraits, TestUtil}
-import utils.TestConstants.testUtr
+import utils.TestConstants.{testPostcode, testUtr}
 
 import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
-class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreService {
+class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreService with MockSave4LaterService {
 
   val mockBusinessMatchingConnector: BusinessMatchingConnector = mock[BusinessMatchingConnector]
-  val businessMatchingServiceTest: BusinessMatchingService = new BusinessMatchingService(testKeyStoreService, mockBusinessMatchingConnector, mockAuditable)
+  val businessMatchingServiceTest: BusinessMatchingService = new BusinessMatchingService(testKeyStoreService, mockBusinessMatchingConnector, testSave4LaterService, mockAuditable)
 
   "Business Matching Services" should {
 
@@ -48,6 +48,55 @@ class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreSe
       when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchFailureResponseJson))
       val result = businessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)), TestUtil.defaultAuthRetrieval)
       await(result) shouldBe false
+    }
+  }
+
+  "isValidMatchedGroupUtr" should {
+    Seq("LTD_GRP", "LLP_GRP") foreach { groupType =>
+      s"validate a $groupType utr" in {
+        lazy val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option(testPostcode), Option("country"))
+        lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("LTD_GRP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
+
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessCustomerDetails](any(), ArgumentMatchers.eq("businessCustomerDetails"))(any(), any(), any()))
+          .thenReturn(Future.successful(Option(testBusinessCustomer)))
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessType](any(), ArgumentMatchers.eq("legalEntity"))(any(), any(), any()))
+          .thenReturn(Future.successful(Option(BusinessType(Some(groupType), None, None))))
+        when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(matchSuccessResponseJson))
+
+        val result = businessMatchingServiceTest.isValidMatchedGroupUtr(testUtr, TestUtil.defaultAuthRetrieval)
+        await(result) shouldBe true
+      }
+    }
+
+    "fail to validate an invalid group type utr" in {
+      lazy val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option(testPostcode), Option("country"))
+      lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("LTD_GRP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
+
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessCustomerDetails](any(), ArgumentMatchers.eq("businessCustomerDetails"))(any(), any(), any()))
+        .thenReturn(Future.successful(Option(testBusinessCustomer)))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessType](any(), ArgumentMatchers.eq("legalEntity"))(any(), any(), any()))
+        .thenReturn(Future.successful(Option(BusinessType(Some("INVALID"), None, None))))
+      when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(matchSuccessResponseJson))
+
+      val result = businessMatchingServiceTest.isValidMatchedGroupUtr(testUtr, TestUtil.defaultAuthRetrieval)
+      intercept[Exception](await(result) shouldBe true)
+    }
+
+    "fail to validate not a group" in {
+      lazy val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option(testPostcode), Option("country"))
+      lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("LTD_GRP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
+
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessCustomerDetails](any(), ArgumentMatchers.eq("businessCustomerDetails"))(any(), any(), any()))
+        .thenReturn(Future.successful(Option(testBusinessCustomer)))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessType](any(), ArgumentMatchers.eq("legalEntity"))(any(), any(), any()))
+        .thenReturn(Future.successful(Option(BusinessType(Some("INVALID"), None, None))))
+      when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(matchSuccessResponseJson))
+
+      val result = businessMatchingServiceTest.isValidMatchedGroupUtr(testUtr, TestUtil.defaultAuthRetrieval)
+      intercept[Exception](await(result) shouldBe true)
     }
   }
 }

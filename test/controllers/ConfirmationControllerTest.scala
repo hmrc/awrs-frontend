@@ -22,12 +22,15 @@ import java.util.Calendar
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
-import models.{FormBundleStatus, SuccessfulSubscriptionResponse}
+import models.{FormBundleStatus, NewAWBusiness, SuccessfulSubscriptionResponse}
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.{when, reset}
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
+import utils.TestUtil.{testBusinessContactsDefault, testBusinessCustomerDetails}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 
 import scala.concurrent.Future
@@ -53,10 +56,63 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     }
   }
 
+  def validateForBothNewAndOldBusinessTradingDetails(test: (Boolean) => Unit): Unit = {
+    Seq(true, false).foreach {
+      bool =>
+        beforeEach()
+        setupMockKeyStoreServiceWithOnly(fetchIsNewBusiness = None)
+
+        reset(mockMainStoreSave4LaterConnector)
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Option(NewAWBusiness(if (bool) "No" else "Yes", None))))
+        test(bool)
+    }
+  }
+
   "Page load for Authorised users" should {
 
     "return a Confirmation Successful view" in {
       validateForBothNewAndOldBusiness(
+        isNewBusiness =>
+          getWithAuthorisedUserCt {
+            result =>
+              val today = Calendar.getInstance().getTime
+              val dateFormat = new SimpleDateFormat("d MMMM y")
+              val submissionDate = dateFormat.format(today)
+              val companyName = "North East Wines"
+              val uniqueRef = subscribeSuccessResponse.etmpFormBundleNumber
+
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.getElementById("confirmation").text() should include(s"$companyName")
+              document.getElementById("confirmation").text() should include(submissionDate)
+              document.getElementById("print-confirmation").text() should be(Messages("awrs.generic.print_confirmation"))
+              document.getElementById("print-application").text() should be(Messages("awrs.generic.application"))
+
+              verifySave4LaterService(removeAll = 1)
+              verifyApiSave4LaterService(removeAll = 0)
+
+              isNewBusiness match {
+                case true =>
+                  document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.confirmation.newBusiness.information_what_next_0"))
+                  document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.confirmation.newBusiness.information_what_next_1"))
+                case false =>
+                  document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.confirmation.information_what_next_0"))
+                  document.getElementById(s"confirmationNoteLine2Text").text() should include (Messages(s"awrs.confirmation.information_what_next_1").replaceAll("&nbsp;"," "))
+                  document.getElementById(s"confirmationNoteLine3Text").text() should include(Messages(s"awrs.confirmation.information_what_next_2"))
+                  document.getElementById(s"confirmationNoteLine4Text").text() should include(Messages(s"awrs.confirmation.information_what_next_3"))
+                  document.getElementById(s"confirmationNoteLine5Text").text() should include(Messages(s"awrs.confirmation.information_what_next_4"))
+
+
+                  document.getElementById(s"confirmation1Text") shouldBe null
+              }
+              document.getElementById(s"awrsChangesQuestion") shouldBe null
+          }
+      )
+    }
+
+    "return a Confirmation Successful view, determining if it is a new business dynamically " in {
+      validateForBothNewAndOldBusinessTradingDetails(
         isNewBusiness =>
           getWithAuthorisedUserCt {
             result =>
