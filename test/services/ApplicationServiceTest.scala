@@ -54,6 +54,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     ukSupplier = "No")
 
   override def beforeEach() = {
+    reset(mockAccountUtils, mockKeyStoreConnector)
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
       .thenReturn(true)
 
