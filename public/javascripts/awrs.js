@@ -53,7 +53,13 @@
             if ($('#' + radio + '-yes-content') !== undefined) {
                 $('#' + radio + '-yes-content').hide().find('input:text').val('');
                 $('#' + radio + '-yes-content').find('input:radio, input:checkbox').attr('checked', false).each(function() {
-                    showHide(this.name);
+                    if (
+                        !this.name.includes("[]") &&
+                        $('#' + this.name + '-yes') !== undefined &&
+                        $('#' + this.name + '-no') !== undefined
+                    ) {
+                        showHide(this.name);
+                    }
                 });
             }
         }
@@ -434,24 +440,6 @@
             }
         }
 	);
-
-    // Resolve application.js issue with Yes/No radio showing Checkbox Group (Trading Activity)
-    if ($('#doYouExportAlcohol-yes').not(':checked') && $('#doYouExportAlcohol-no').not(':checked')) {
-        $("#exportLocation-content").hide();
-    }
-    if ($('#doYouExportAlcohol-no').is(':checked')) {
-        $("#exportLocation-content").hide();
-    }
-    if ($('#doYouExportAlcohol-yes').is(':checked')) {
-        $("#exportLocation-content").show();
-    }
-    $("#doYouExportAlcohol-no").click(function(e) {
-        $("#exportLocation-content").hide();
-    });
-    $("#doYouExportAlcohol-yes").click(function(e) {
-        $("#exportLocation-content").show();
-    });
-
 
 });
 
