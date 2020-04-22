@@ -77,17 +77,7 @@ class JourneyPageTest extends AwrsUnitTestTraits with MockAuthConnector {
 
   val testAdditionalPremisesController: AdditionalPremisesController =
     new AdditionalPremisesController(mockMCC, mockDataCacheService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
-      val noVariableFound = "Not Found"
       override val signInUrl = "/sign-in"
-
-      def getJouneyStartLocation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-        restrictedAccessCheck {
-          setAuthMocks()
-          authorisedAction { ar =>
-            Future.successful(Ok(request.getJourneyStartLocation.getOrElse(noVariableFound)))
-          }(request, implicitly, implicitly, messages)
-        }
-      }
     }
 
   "JourneyPage trait" should {

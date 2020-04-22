@@ -1,13 +1,5 @@
 import sbt._
 
-object FrontendBuild extends Build with MicroService {
-
-  val appName = "awrs-frontend"
-
-  override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-}
-
-
 private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
@@ -15,9 +7,6 @@ private object AppDependencies {
   private val hmrcTestVersion = "3.9.0-play-26"
   private val pegdownVersion = "1.6.0"
   private val scalaTestplusPlayVersion = "3.1.3"
-
-
-
 
   val compile = Seq(
     ws,
