@@ -1,13 +1,5 @@
 import sbt._
 
-object FrontendBuild extends Build with MicroService {
-
-  val appName = "awrs-frontend"
-
-  override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-}
-
-
 private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
@@ -15,9 +7,6 @@ private object AppDependencies {
   private val hmrcTestVersion = "3.9.0-play-26"
   private val pegdownVersion = "1.6.0"
   private val scalaTestplusPlayVersion = "3.1.3"
-
-
-
 
   val compile = Seq(
     ws,
@@ -31,7 +20,7 @@ private object AppDependencies {
     "com.mohiva" %% "play-html-compressor" % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
     "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-26",
     "uk.gov.hmrc" %% "govuk-template" % "5.54.0-play-26",
-    "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-26",
+    "uk.gov.hmrc" %% "play-ui" % "8.9.0-play-26",
     "com.typesafe.play" %% "play-json-joda" % "2.6.14"
   )
 
