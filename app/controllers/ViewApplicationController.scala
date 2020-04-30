@@ -189,7 +189,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
         case _ => findLastId(authRetrievals, sectionName) map (id => Redirect(show(id)))
       }
     sectionName match {
-      case `businessDetailsName` => Future.successful(Redirect(controllers.routes.TradingNameController.showTradingName(isLinearMode = true)))
+      case `businessDetailsName` => Future.successful(Redirect(controllers.routes.TradingNameController.showTradingName(true)))
       case `businessRegistrationDetailsName` => Future.successful(Redirect(controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true)))
       case `placeOfBusinessName` => Future.successful(Redirect(controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true)))
       case `businessContactsName` => Future.successful(Redirect(controllers.routes.BusinessContactsController.showBusinessContacts(isLinearMode = true)))

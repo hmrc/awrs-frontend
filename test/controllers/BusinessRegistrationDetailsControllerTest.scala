@@ -31,6 +31,7 @@ import utils.TestConstants._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
+import views.Configuration.NewApplicationMode
 
 import scala.concurrent.Future
 
@@ -43,7 +44,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegistrationDetails)
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
-    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -95,6 +96,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessRegistrationDetails = businessRegistrationDetails
       )
+      when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(NewApplicationMode))
       setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
       when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(false)
       when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)

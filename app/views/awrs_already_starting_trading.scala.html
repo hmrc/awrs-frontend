@@ -43,7 +43,7 @@
 
 @includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.generic.have_you_already")), userLoggedIn = true) {
 
-@backLink()
+@backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails().url)
 
 @errorSummaryTemplate(confirmationForm)
 <div class="grid">

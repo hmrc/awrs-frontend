@@ -21,6 +21,8 @@ import controllers.BusinessRegistrationDetailsController
 import forms.BusinessRegistrationDetailsForm
 import models._
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -29,6 +31,7 @@ import services.DataCacheKeys._
 import services.{BusinessMatchingService, JourneyConstants, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.Configuration.NewApplicationMode
 
 import scala.concurrent.Future
 
@@ -41,7 +44,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegDetails)
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
-    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
       override val signInUrl: String = applicationConfig.signIn
     }
 
@@ -152,6 +155,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)
     )
     setAuthMocks()
+    when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(NewApplicationMode))
     val result = testBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = false).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
   }
@@ -162,6 +167,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       fetchBusinessRegistrationDetails = None
 
     )
+    when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(NewApplicationMode))
     setAuthMocks()
     val result = testBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)
@@ -172,6 +179,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)
     )
+    when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(NewApplicationMode))
     setAuthMocks()
     val result = testBusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = isLinearJourney).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
     test(result)

@@ -42,7 +42,7 @@
 }
 
 @includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before")), userLoggedIn = true) {
-    @backLink()
+    @backLink(controllers.routes.TradingNameController.showTradingName(true).url)
 
     @errorSummaryTemplate(confirmationForm)
     <div class="grid">

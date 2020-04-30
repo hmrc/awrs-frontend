@@ -25,7 +25,7 @@ import javax.inject.Inject
 import models._
 import play.api.mvc._
 import services.DataCacheKeys._
-import services.{BusinessMatchingService, Save4LaterService}
+import services.{BusinessDetailsService, BusinessMatchingService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -35,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControllerComponents,
                                                       val businessMatchingService: BusinessMatchingService,
+                                                      val businessDetailsService: BusinessDetailsService,
                                                       val save4LaterService: Save4LaterService,
                                                       val authConnector: DefaultAuthConnector,
                                                       val auditable: Auditable,

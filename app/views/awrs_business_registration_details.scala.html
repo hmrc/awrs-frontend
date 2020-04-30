@@ -29,7 +29,7 @@
 
 @import config.ApplicationConfig
 @(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails]
-)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
+)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
 

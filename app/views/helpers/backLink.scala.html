@@ -19,12 +19,18 @@
 
 @(backUrl: String = controllers.routes.IndexController.showLastLocation().toString, alwaysShow: Boolean = false)(implicit viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
     @{
-        (isOneViewMode, alwaysShow) match {
-            case (true, false) =>
-            case _ =>
+        val lastLocationString = controllers.routes.IndexController.showLastLocation().toString
+        (isOneViewMode, alwaysShow, backUrl) match {
+            case (true, false, _) =>
+            case (_, _, `lastLocationString`) =>
                 <p>
                     <a id="back" class="back-link print-hidden"
                     href="javascript:history.back()">{messages("awrs.generic.back")}</a>
+                </p>
+            case _ =>
+                <p>
+                    <a id="back" class="back-link print-hidden"
+                    href={backUrl}>{messages("awrs.generic.back")}</a>
                 </p>
         }
     }
