@@ -39,7 +39,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
 
   lazy val urlMap: Map[String, Option[Int] => String] = Map[String, (Option[Int]) => String](
-    (businessDetailsName, (id: Option[Int]) => controllers.routes.TradingNameController.showTradingName(isLinearMode = true).url),
+    (businessDetailsName, (id: Option[Int]) => controllers.routes.TradingNameController.showTradingName(true).url),
     (businessRegistrationDetailsName, (id: Option[Int]) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).url),
     (placeOfBusinessName, (id: Option[Int]) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).url),
     (businessContactsName, (id: Option[Int]) => controllers.routes.BusinessContactsController.showBusinessContacts(isLinearMode = true).url),
