@@ -75,7 +75,7 @@
             <h1 id="index-top-heading" class="heading-xlarge">@pageHeading</h1>
                 @someStatus match {
                     case Some(status) => {
-                        <h3 class="heading-medium" id="application-status">@messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h3>
+                        <h2 class="heading-medium" id="application-status">@messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h2>
                         <p class="font-xsmall">
                             <a id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">
                                 @messages("awrs.index_page.view_application_status_link_text")
@@ -90,7 +90,7 @@
                     }
                     case None => {
 
-                        <h3 class="heading-medium" id="application-status">@messages("awrs.index_page.draft") @messages("awrs.index_page.application_status_text").toLowerCase</h3>
+                        <h2 class="heading-medium" id="application-status">@messages("awrs.index_page.draft") @messages("awrs.index_page.application_status_text").toLowerCase</h2>
                     }
                 }
 

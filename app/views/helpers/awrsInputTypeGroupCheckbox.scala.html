@@ -86,27 +86,24 @@
         case _ => params.field.id + "_" + append
     }
 }
-<fieldset @fieldSetClass @fieldSetAttributes role="group" aria-required="true" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.field.name-error-0"}>
-    <div>
-        @legend
-        @commonHelper(params.field, fieldErrors)
-        @formHint
-        @defining(params.field.indexes.flatMap( i => params.field("[%s]".format(i)).value ).toSet) { values =>
-            @params.checkboxOptions.map { checkboxOptions =>
-                <label for="@(inputId(checkboxOptions._1))" class="block-label" id="@(inputId(checkboxOptions._1))_label">
-                    <input type="checkbox"
-                           autocomplete="off"
-                           id="@(inputId(checkboxOptions._1))"
-                           @if(params.ariaDescribedBy){
-                                aria-describedby="@{params.ariaDescribedBy}"
-                           } else {
-                                aria-describedby="@(params.field.id)-legend"
-                           }
-                           @inputName
-                           value="@checkboxOptions._1" @if(values.contains(checkboxOptions._1)){checked="checked"}>
-                    @checkboxOptions._2
-                </label>
-            }
+<fieldset @fieldSetClass @fieldSetAttributes @if(fieldErrors.nonEmpty) {aria-labelledby="@params.field.name-error-0"}>
+    @legend
+    @commonHelper(params.field, fieldErrors)
+    @formHint
+    @defining(params.field.indexes.flatMap( i => params.field("[%s]".format(i)).value ).toSet) { values =>
+        @params.checkboxOptions.map { checkboxOptions =>
+            <label for="@(inputId(checkboxOptions._1))" class="block-label" id="@(inputId(checkboxOptions._1))_label">
+                <input type="checkbox"
+                        id="@(inputId(checkboxOptions._1))"
+                        @if(params.ariaDescribedBy){
+                            aria-describedby="@{params.ariaDescribedBy}"
+                        } else {
+                            aria-describedby="@(params.field.id)-legend"
+                        }
+                        @inputName
+                        value="@checkboxOptions._1" @if(values.contains(checkboxOptions._1)){checked="checked"}>
+                @checkboxOptions._2
+            </label>
         }
-    </div>
+    }
 </fieldset>

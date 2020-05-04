@@ -40,8 +40,8 @@
 }
 
 @pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -193,7 +193,7 @@
                             partnerForm("doYouHaveNino"),
                             partnerForm("nino"),
                             youOrThey = "they",
-                            ariaDescribedBy = "doTheyHaveNationalInsurance-legend Nino-question-hint",
+                            ariaDescribedBy = "doYouHaveNino-legend",
                             formHasErrors = partnerForm.hasErrors
                         )
                     </div>
