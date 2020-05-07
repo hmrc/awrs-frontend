@@ -49,8 +49,8 @@
 <div class="grid">
     <div class="grid grid-2-3">
         <header class="page-header">
-            @awrsProgressHelper(businessType, businessDetailsName)
             <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages("awrs.generic.have_you_already")</h1>
+            @awrsProgressHelper(businessType, businessDetailsName)
         </header>
         @form(action = actionRoute) {
         <div class="form-group">
@@ -61,7 +61,10 @@
                         Seq("Yes" -> messages("awrs.generic.yes"),
                             "No" -> messages("awrs.generic.no")),
                         fieldSetClass = "inline",
-                        fieldSetAttributes = "id=alreadyStartedTrading_field"
+                        fieldSetAttributes = "id=alreadyStartedTrading_field",
+                        legend = messages("awrs.generic.have_you_already"),
+                        legendId = "alreadyStartedTrading-legend",
+                        legendClass = "visuallyhidden",
                     )
                 )
             </div>

@@ -100,6 +100,7 @@ awrs.generic.legislation_before=Did your trading of wholesale alcohol start befo
 awrs.generic.what_date_will_you=What date will you start trading wholesale alcohol?
 awrs.generic.what_date_did_you=What date did you start trading wholesale alcohol?
 awrs.generic.warning_icon_text=Warning.
+awrs.generic.name.screen-reader-tip = You have logged in as:
 
 # Generic Error Messages
 #============================================================

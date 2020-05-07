@@ -96,8 +96,8 @@
         ))
         @errorSummaryTemplate(businessDetailsForm)
         <header class="page-header">
-            @awrsProgressHelper(businessType, businessDetailsName)
             <h1 id="additional-information-heading" class="heading-large">@Messages("awrs.generic.do_you_have_trading_name")</h1>
+            @awrsProgressHelper(businessType, businessDetailsName)
         </header>
 
         @uk.gov.hmrc.play.views.html.helpers.form(action = actionRoute){
@@ -113,7 +113,10 @@
                         Seq("Yes" -> messages("awrs.generic.yes"),
                         "No" -> messages("awrs.generic.no")),
                         fieldSetClass = "inline",
-                        fieldSetAttributes = "id=doYouHaveTradingName_field"
+                        fieldSetAttributes = "id=doYouHaveTradingName_field",
+                        legend = messages("awrs.generic.do_you_have_trading_name"),
+                        legendId = "doYouHaveTradingName-legend",
+                        legendClass = "visuallyhidden",
                     )
                 )
                 <div id="doYouHaveTradingName-yes-content">
