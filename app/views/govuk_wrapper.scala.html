@@ -67,7 +67,7 @@
     }
 }
 
-@buildBusinessName(text: String) = {<div class="div-right" id="loggedInUserName">@text</div>}
+@buildBusinessName(text: String) = {<div class="div-right" id="loggedInUserName"><span class="visuallyhidden">@messages("awrs.generic.name.screen-reader-tip")</span>@text</div>}
 
 @buildServiceInfo = {
     <div class="div-new-line">

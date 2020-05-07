@@ -48,8 +48,8 @@
     <div class="grid">
         <div class="grid grid-2-3">
             <header class="page-header">
-                @awrsProgressHelper(businessType, businessDetailsName)
                 <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages("awrs.generic.legislation_before")</h1>
+                @awrsProgressHelper(businessType, businessDetailsName)
             </header>
             @form(action = actionRoute) {
             <div class="form-group">
@@ -60,7 +60,10 @@
                             Seq("Yes" -> messages("awrs.generic.yes"),
                                 "No" -> messages("awrs.generic.no")),
                             fieldSetClass = "inline",
-                            fieldSetAttributes = "id=tradingLegislationDate_field"
+                            fieldSetAttributes = "id=tradingLegislationDate_field",
+                            legend = messages("awrs.generic.legislation_before"),
+                            legendId = "tradingLegislationDate-legend",
+                            legendClass = "visuallyhidden",
                         )
                     )
                 </div>

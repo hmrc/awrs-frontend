@@ -48,9 +48,9 @@
 }
 
 @ariaDayMonthYear = {
-    <span id="newAWBusiness.proposedStartDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
-    <span id="newAWBusiness.proposedStartDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
-    <span id="newAWBusiness.proposedStartDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+    <span id="tradingDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+    <span id="tradingDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+    <span id="tradingDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
 }
 
 @preDatePast = {
@@ -82,8 +82,8 @@
 <div class="grid">
     <div class="grid grid-2-3">
         <header class="page-header">
-            @awrsProgressHelper(businessType, businessDetailsName)
             <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages(headerTitleName)</h1>
+            @awrsProgressHelper(businessType, businessDetailsName)
         </header>
         @preDateInfo
         @form(action = actionRoute) {
@@ -93,7 +93,8 @@
                     formItem = confirmationForm,
                     fieldName = "tradingDate",
                     ariaDayMonthYear = ariaDayMonthYear,
-                    ariaLabelledBy = "newAWBusiness.proposedStartDate-legend",
+                    ariaLabelledBy = "tradingDate-legend",
+                    label = Some(Html(messages(headerTitleName))),
                     hintText = Some(Html(messages("awrs.generic.date_hint")))
                 )
             )

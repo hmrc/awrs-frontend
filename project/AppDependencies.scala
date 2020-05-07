@@ -14,8 +14,8 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "url-builder" % "3.3.0-play-26",
     "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
     "uk.gov.hmrc" %% "bootstrap-play-26" % "1.7.0", // includes the global object and error handling, as well as the FrontendController classes and some common configuration
-    "uk.gov.hmrc" %% "play-partials" % "6.10.0-play-26", // includes code for retrieving partials, e.g. the Help with this page form
-    "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
+    "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-26", // includes code for retrieving partials, e.g. the Help with this page form
+    "uk.gov.hmrc" %% "domain" % "5.9.0-play-26",
     "uk.gov.hmrc" %% "json-encryption" % "4.5.0-play-26",
     "com.mohiva" %% "play-html-compressor" % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
     "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-26",
