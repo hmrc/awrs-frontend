@@ -116,10 +116,10 @@
         case true => {
             <a id="postcode-lookup-button-@number" class="button postcode-lookup" role="button" tabindex="0">@Messages("awrs.generic.find_address")</a>
             <div class="loading" id="spinner-@number">@Messages("awrs.generic.search_address")</div>
-            <fieldset class="postcode-results-fieldset" aria-required="true" role="radiogroup">
+            <fieldset class="postcode-results-fieldset" >
                 <legend id="postcode-lookup-ledgend-@number" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.address.lookup_dropdown_label")</legend>
                 <div class="btn-group postcode-lookup-results">
-                        <div class="dropdown-menu" id="result-@number">
+                        <div class="dropdown-menu" id="result-container-@number">
                             <div class="btn-group postcode-lookup-results show" id="result-@{number}">
                             </div>
                         </div>
@@ -145,19 +145,18 @@
            name="@params.field.name"
            id="@inputId"
            value="@value"
-           autocomplete="off"
            @maxLength
            @dataAttributes
            @required
-           @if(params.formHasErrors){
-               aria-labelledby="@{params.fieldName}-error-0 @if(params.isDate){@{inputId}_field @{inputId}_reader}"
+           @if(fieldErrors.nonEmpty) {
+               aria-labelledby="@{params.field.name}-error-0@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
            } else {
-                @if(params.ariaLabelledBy.nonEmpty) {
+               @if(params.ariaLabelledBy.nonEmpty) {
                     aria-labelledby="@{params.ariaLabelledBy}@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
                 } else {
                     aria-labelledby="@{inputId}_field@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
                 }
-           }
+           } 
     >
     @isPostCodeInput
 </div>

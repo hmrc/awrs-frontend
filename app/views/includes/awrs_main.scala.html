@@ -49,14 +49,14 @@
 @scriptElement = {
     @scriptElem
     @pageScripts
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.min.js")'></script>
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery-ui.min.js")'></script>
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/countryCode.js")'></script>
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/details.polyfill.js")'></script>
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/awrs.js")'></script>
-    <script type="text/javascript">var countries = @Html(applicationConfig.countryCodes.countries);</script>
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/timeout-dialog.js")'></script>
-    <script type="text/javascript" charset="utf-8">
+    <script src='@routes.Assets.at("javascripts/jquery.min.js")'></script>
+    <script src='@routes.Assets.at("javascripts/jquery-ui.min.js")'></script>
+    <script src='@routes.Assets.at("javascripts/countryCode.js")'></script>
+    <script src='@routes.Assets.at("javascripts/details.polyfill.js")'></script>
+    <script src='@routes.Assets.at("javascripts/awrs.js")'></script>
+    <script>var countries = @Html(applicationConfig.countryCodes.countries);</script>
+    <script src='@routes.Assets.at("javascripts/timeout-dialog.js")'></script>
+    <script>
     @if(userLoggedIn) {
         $.timeoutDialog({timeout: @applicationConfig.defaultTimeoutSeconds, countdown: @applicationConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.timedOut', logout_redirect_url: '@controllers.routes.ApplicationController.timedOut', restart_on_yes: true, background_no_scroll: true});
     }

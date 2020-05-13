@@ -1,446 +1,482 @@
- $(document).ready(function() {
-    var $radio = $('input:radio'), // cache all radio buttons
-        $checkOther = $('input:checkbox[value=99]'), // cache all 'other' checkboxes, these will always have a value of 99
+$(document).ready(function () {
+    var $radio = $("input:radio"), // cache all radio buttons
+        $checkOther = $("input:checkbox[value=99]"), // cache all 'other' checkboxes, these will always have a value of 99
         $checkAll = $('label:contains("All") input:checkbox'), // cache all checkboxes with label all
-        $checks = $('label input:checkbox:not(label input:checkbox[value=99]):not(label:contains("All") input:checkbox)'), // cache all the checkboxes that are not the previous two
-        $exportCheckboxes = $('#doYouExportAlcohol_no, #doYouExportAlcohol_euDispatches, #doYouExportAlcohol_outsideEU'),
+        $checks = $(
+            'label input:checkbox:not(label input:checkbox[value=99]):not(label:contains("All") input:checkbox)'
+        ), // cache all the checkboxes that are not the previous two
+        $exportCheckboxes = $(
+            "#doYouExportAlcohol_no, #doYouExportAlcohol_euDispatches, #doYouExportAlcohol_outsideEU"
+        ),
         $personOrCompany = $('input:radio[name="personOrCompany"]'),
         $partnerDetails = $('input:radio[name="entityType"]'),
         $suppliers = $('input:radio[name="ukSupplier"]'),
         $deRegistrationReason = $('input:radio[name="deRegistrationReason"]'),
         $withdrawalReason = $('input:radio[name="reason"]'),
-        $feedbackLedeLink = $('#feedbackLedeLink');
+        $feedbackLedeLink = $("#feedbackLedeLink");
 
     function showHide(radio) {
         if (radio.indexOf(".") >= 0) {
             radio = radio.replace(".", "\\.");
         }
         // if all radios are unchecked, hide all content/headings shown based on checked radios
-        if ($('#' + radio + '-yes').not(':checked') && $('#' + radio + '-no').not(':checked')) {
-            if ($('#' + radio + '-all-content') !== undefined) {
-                $('#' + radio + '-all-content').hide();
+        if (
+            $("#" + radio + "-yes").not(":checked") &&
+            $("#" + radio + "-no").not(":checked")
+        ) {
+            if ($("#" + radio + "-all-content") !== undefined) {
+                $("#" + radio + "-all-content").hide();
             }
-            if ($('#' + radio + '-yes-content') !== undefined) {
-                $('#' + radio + '-yes-content').hide();
+            if ($("#" + radio + "-yes-content") !== undefined) {
+                $("#" + radio + "-yes-content").hide();
             }
-            if ($('#' + radio + '-no-content') !== undefined) {
-                $('#' + radio + '-no-content').hide();
+            if ($("#" + radio + "-no-content") !== undefined) {
+                $("#" + radio + "-no-content").hide();
             }
         }
         // show content for yes radios, hide content for no
-        if ($('#' + radio + '-yes').is(':checked')) {
-            if ($('#' + radio + '-all-content') !== undefined) {
-                $('#' + radio + '-all-content').show();
+        if ($("#" + radio + "-yes").is(":checked")) {
+            if ($("#" + radio + "-all-content") !== undefined) {
+                $("#" + radio + "-all-content").show();
             }
-            if ($('#' + radio + '-yes-content') !== undefined) {
-                $('#' + radio + '-yes-content').show();
+            if ($("#" + radio + "-yes-content") !== undefined) {
+                $("#" + radio + "-yes-content").show();
             }
-            if ($('#' + radio + '-no-content') !== undefined) {
-                $('#' + radio + '-no-content').hide().find('input:text').val('');
-                $('#' + radio + '-no-content').find('input:radio, input:checkbox').attr('checked', false).each(function() {
-                    showHide(this.name);
-                });
+            if ($("#" + radio + "-no-content") !== undefined) {
+                $("#" + radio + "-no-content")
+                    .hide()
+                    .find("input:text")
+                    .val("");
+                $("#" + radio + "-no-content")
+                    .find("input:radio, input:checkbox")
+                    .attr("checked", false)
+                    .each(function () {
+                        showHide(this.name);
+                    });
             }
         }
         // show content for no radios, hide content for yes
-        if ($('#' + radio + '-no').is(':checked')) {
-            if ($('#' + radio + '-all-content') !== undefined) {
-                $('#' + radio + '-all-content').show();
-           }
-            if ($('#' + radio + '-no-content') !== undefined) {
-                $('#' + radio + '-no-content').show();
+        if ($("#" + radio + "-no").is(":checked")) {
+            if ($("#" + radio + "-all-content") !== undefined) {
+                $("#" + radio + "-all-content").show();
             }
-            if ($('#' + radio + '-yes-content') !== undefined) {
-                $('#' + radio + '-yes-content').hide().find('input:text').val('');
-                $('#' + radio + '-yes-content').find('input:radio, input:checkbox').attr('checked', false).each(function() {
-                    if (
-                        !this.name.includes("[]") &&
-                        $('#' + this.name + '-yes') !== undefined &&
-                        $('#' + this.name + '-no') !== undefined
-                    ) {
-                        showHide(this.name);
-                    }
-                });
+            if ($("#" + radio + "-no-content") !== undefined) {
+                $("#" + radio + "-no-content").show();
+            }
+            if ($("#" + radio + "-yes-content") !== undefined) {
+                $("#" + radio + "-yes-content")
+                    .hide()
+                    .find("input:text")
+                    .val("");
+                $("#" + radio + "-yes-content")
+                    .find("input:radio, input:checkbox")
+                    .attr("checked", false)
+                    .each(function () {
+                        if (
+                            !this.name.includes("[]") &&
+                            $("#" + this.name + "-yes") !== undefined &&
+                            $("#" + this.name + "-no") !== undefined
+                        ) {
+                            showHide(this.name);
+                        }
+                    });
             }
         }
     }
 
     function showHideOther(checkbox) {
-        if ($('#' + checkbox).is(':checked')) {
-            $('#other-' + checkbox.replace('_99', '')).show();
+        if ($("#" + checkbox).is(":checked")) {
+            $("#other-" + checkbox.replace("_99", "")).show();
         } else {
-            $('#other-' + checkbox.replace('_99', '')).hide();
-            $('#other-' + checkbox.replace('_99', '') + ' input').val('');
+            $("#other-" + checkbox.replace("_99", "")).hide();
+            $("#other-" + checkbox.replace("_99", "") + " input").val("");
         }
     }
 
-
-
     function checkAll(checkbox, name) {
-        $(checkbox).is(':checked') ?
-            $checks.filter('[name="' + name + '"]').prop('checked', true) :
-            $checks.filter('[name="' + name + '"]').prop('checked', false);
+        $(checkbox).is(":checked")
+            ? $checks.filter('[name="' + name + '"]').prop("checked", true)
+            : $checks.filter('[name="' + name + '"]').prop("checked", false);
     }
 
     // check/uncheck 'all' checkbox if all other checkboxes are checked/unchecked
     function checks(name) {
-        $checks.filter('[name="' + name + '"]').length === $checks.filter('[name="' + name + '"]').filter(':checked').length ?
-            $checkAll.filter('[name="' + name + '"]').prop('checked', true) :
-            $checkAll.filter('[name="' + name + '"]').prop('checked', false);
+        $checks.filter('[name="' + name + '"]').length ===
+        $checks.filter('[name="' + name + '"]').filter(":checked").length
+            ? $checkAll.filter('[name="' + name + '"]').prop("checked", true)
+            : $checkAll.filter('[name="' + name + '"]').prop("checked", false);
     }
 
     // mutex export alcohol fields, if no is selected, the others should not be, and vice versa
     function exportAlcohol(id) {
-        if (id === 'doYouExportAlcohol_no') {
-            $('#doYouExportAlcohol_euDispatches').prop('checked', false);
-            $('#doYouExportAlcohol_outsideEU').prop('checked', false);
+        if (id === "doYouExportAlcohol_no") {
+            $("#doYouExportAlcohol_euDispatches").prop("checked", false);
+            $("#doYouExportAlcohol_outsideEU").prop("checked", false);
         }
-        if (id === 'doYouExportAlcohol_euDispatches' || id === 'doYouExportAlcohol_outsideEU') {
-            $('#doYouExportAlcohol_no').prop('checked', false);
+        if (
+            id === "doYouExportAlcohol_euDispatches" ||
+            id === "doYouExportAlcohol_outsideEU"
+        ) {
+            $("#doYouExportAlcohol_no").prop("checked", false);
         }
     }
 
     // show and hide content according to director, company secretary & individual and company status
     function personOrCompany() {
-
-        if ($('#personOrCompany-person').is(':checked')) {
-            $('#individual').show();
-            hideAndClear('#company');
+        if ($("#personOrCompany-person").is(":checked")) {
+            $("#individual").show();
+            hideAndClear("#company");
         }
 
-        if ($('#personOrCompany-company').is(':checked')) {
-            $('#company').show();
-            hideAndClear('#individual');
+        if ($("#personOrCompany-company").is(":checked")) {
+            $("#company").show();
+            hideAndClear("#individual");
         }
 
-        if (!$personOrCompany.is(':checked')) {
-            $('#company, #individual').hide();
+        if (!$personOrCompany.is(":checked")) {
+            $("#company, #individual").hide();
         }
     }
 
     function supplierRadioLoad() {
-        if ($('#ukSupplier-yes').is(':checked')) {
-            if ($('#manual-address-span-0').text() === 'Enter address manually') {
-                $('.address-lines').hide();
+        if ($("#ukSupplier-yes").is(":checked")) {
+            if (
+                $("#manual-address-span-0").text() === "Enter address manually"
+            ) {
+                $(".address-lines").hide();
             }
-            if ($('#manual-address-span-0').text() === 'Look up address') {
-                $('.address-lines').show();
+            if ($("#manual-address-span-0").text() === "Look up address") {
+                $(".address-lines").show();
             }
-            $('#manual-address-0').show();
-            $('.uk-address').show();
-            $('.non-uk-address').hide();
+            $("#manual-address-0").show();
+            $(".uk-address").show();
+            $(".non-uk-address").hide();
         }
-        if ($('#ukSupplier-no').is(':checked')) {
-            $('#manual-address-0, .uk-address').hide();
-            $('.address-lines, .non-uk-address').show();
+        if ($("#ukSupplier-no").is(":checked")) {
+            $("#manual-address-0, .uk-address").hide();
+            $(".address-lines, .non-uk-address").show();
         }
     }
 
     function supplierRadioChange() {
-        $('.address-lines').find('input:text').val('');
-        $('.non-uk-address').find('input:text').val('');
-        $('.uk-address').find('input:text').val('');
+        $(".address-lines").find("input:text").val("");
+        $(".non-uk-address").find("input:text").val("");
+        $(".uk-address").find("input:text").val("");
     }
 
     function partnerDetails() {
-
-        if ($('#entityType-individual').is(':checked')) {
-            hideAndClear('.corporate_body:not(.individual)');
-            hideAndClear('.sole_trader:not(.individual)');
-            $('.individual').show();
+        if ($("#entityType-individual").is(":checked")) {
+            hideAndClear(".corporate_body:not(.individual)");
+            hideAndClear(".sole_trader:not(.individual)");
+            $(".individual").show();
         }
 
-        if ($('#entityType-corporate_body').is(':checked')) {
-            hideAndClear('.individual:not(.corporate_body)');
-            hideAndClear('.sole_trader:not(.corporate_body)');
-            $('.corporate_body').show();
+        if ($("#entityType-corporate_body").is(":checked")) {
+            hideAndClear(".individual:not(.corporate_body)");
+            hideAndClear(".sole_trader:not(.corporate_body)");
+            $(".corporate_body").show();
         }
 
-        if ($('#entityType-sole_trader').is(':checked')) {
-            hideAndClear('.corporate_body:not(.sole_trader)');
-            hideAndClear('.individual:not(.sole_trader)');
-            $('.sole_trader').show();
+        if ($("#entityType-sole_trader").is(":checked")) {
+            hideAndClear(".corporate_body:not(.sole_trader)");
+            hideAndClear(".individual:not(.sole_trader)");
+            $(".sole_trader").show();
         }
 
-        if (!$partnerDetails.is(':checked')) {
-            $('.corporate_body, .individual, .sole_trader').hide();
+        if (!$partnerDetails.is(":checked")) {
+            $(".corporate_body, .individual, .sole_trader").hide();
         }
     }
 
     function hideAndClear(id) {
         $(id).hide();
-        $(id).find('input:text').val('');
-        $(id).find('input:radio').attr('checked', false).each(function() {
-            showHide(this.name);
-        });
-        $(id).find('input:radio').parent().removeClass('selected');
+        $(id).find("input:text").val("");
+        $(id)
+            .find("input:radio")
+            .attr("checked", false)
+            .each(function () {
+                showHide(this.name);
+            });
+        $(id).find("input:radio").parent().removeClass("selected");
     }
 
     function clearById(id) {
-        $(id).find('input:text').val('');
-        $(id).find('input:radio').attr('checked', false);
-        $(id).find('input:radio').parent().removeClass('selected');
+        $(id).find("input:text").val("");
+        $(id).find("input:radio").attr("checked", false);
+        $(id).find("input:radio").parent().removeClass("selected");
     }
 
     function clearErrors() {
-        $('#errors').remove();
-        $('.error-notification').remove();
-        $('.form-field--error').removeClass('form-field--error');
+        $("#errors").remove();
+        $(".error-notification").remove();
+        $(".form-field--error").removeClass("form-field--error");
     }
 
     function deRegistrationReason() {
-        $('#deRegistrationReason-others').is(':checked') ?
-            $('#others').show() : $('#others').hide().find('input:text').val('');
+        $("#deRegistrationReason-others").is(":checked")
+            ? $("#others").show()
+            : $("#others").hide().find("input:text").val("");
     }
 
     function withdrawalReason() {
-        $('#reason-others').is(':checked') ?
-            $('#other-withdrawalReason').show() : $('#other-withdrawalReason').hide().find('input:text').val('');
+        $("#reason-others").is(":checked")
+            ? $("#other-withdrawalReason").show()
+            : $("#other-withdrawalReason").hide().find("input:text").val("");
     }
 
     // each function to read radio buttons and checkboxes on load, change function to track changes
-    $radio.each(function() {
+    $radio.each(function () {
         showHide(this.name);
     });
-    $radio.on('change', function() {
+    $radio.on("change", function () {
         showHide(this.name);
     });
 
-    $checkOther.each(function() {
+    $checkOther.each(function () {
         showHideOther(this.id);
     });
-    $checkOther.on('change', function() {
+    $checkOther.on("change", function () {
         showHideOther(this.id);
     });
 
-    $checkAll.on('change', function() {
+    $checkAll.on("change", function () {
         checkAll(this, this.name);
     });
 
-    $checks.each(function() {
+    $checks.each(function () {
         checks();
     });
-    $checks.on('change', function() {
+    $checks.on("change", function () {
         checks(this.name);
     });
 
-    $exportCheckboxes.on('change', function() {
+    $exportCheckboxes.on("change", function () {
         exportAlcohol(this.id);
     });
 
-    $personOrCompany.each(function() {
+    $personOrCompany.each(function () {
         personOrCompany();
     });
-    $personOrCompany.on('change', function() {
-        clearById('#directorsAndCompanySecretaries_field');
+    $personOrCompany.on("change", function () {
+        clearById("#directorsAndCompanySecretaries_field");
         personOrCompany();
     });
 
-    $partnerDetails.each(function() {
+    $partnerDetails.each(function () {
         partnerDetails();
     });
-    $partnerDetails.on('change', function() {
-        hideAndClear('.individual');
-        hideAndClear('.corporate_body');
-        hideAndClear('.sole_trader');
+    $partnerDetails.on("change", function () {
+        hideAndClear(".individual");
+        hideAndClear(".corporate_body");
+        hideAndClear(".sole_trader");
         clearErrors();
         partnerDetails();
     });
 
-    $suppliers.each(function() {
+    $suppliers.each(function () {
         supplierRadioLoad();
     });
-    $suppliers.on('change', function() {
+    $suppliers.on("change", function () {
         supplierRadioLoad();
         supplierRadioChange();
     });
 
-    $deRegistrationReason.each(function() {
+    $deRegistrationReason.each(function () {
         deRegistrationReason();
     });
-    $deRegistrationReason.on('change', function() {
+    $deRegistrationReason.on("change", function () {
         deRegistrationReason();
     });
 
-    $withdrawalReason.each(function() {
+    $withdrawalReason.each(function () {
         withdrawalReason();
     });
-    $withdrawalReason.on('change', function() {
+    $withdrawalReason.on("change", function () {
         withdrawalReason();
     });
 
-    $('a[rel="external"]').attr('target', '_blank');
+    $('a[rel="external"]').attr("target", "_blank");
 
-     $feedbackLedeLink.on('click', function() {
-        $('#get-help-action').trigger('click');
-     });
-     // ga tagging
-     $('#save_and_logout').click(function(){
-         ga('send', 'event', this.id, 'click');
-     });
-     $('input:radio').click(function(){
-         ga('send', 'event', this.id, 'click');
-     });
-     $('input:checkbox').click(function() {
-         ga('send', 'event', this.id, 'click');
-     });
-/*ga data for all the save/print and external links*/
-
-     $(".external_link").click(function(){
-     if($("h1.heading-xlarge")){
-         if($("h1.heading-xlarge").text() != "")
-          var sEventAction = $("h1.heading-xlarge").text()
-         else
-          var sEventAction = $("h1").text()
-
-           if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
-                                        sEventAction =  $(document).find("title").text();
-
-       }
-
-      else{
-         var sEventAction =  $(document).find("title").text();
-         }
-
-        ga('send', 'event','link - click', sEventAction, this.text);
-     });
-
-
-     $('#submit_changes').click(function() {
-              if($("h1.heading-xlarge"))
-              var sEventAction = $("h1.heading-xlarge").text()
-              else
-              var sEventAction =  $(document).find("title").text();
-
-               if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
-                                            sEventAction =  $(document).find("title").text();
-
-                     ga('send', 'event','save - click', sEventAction, this.innerText);
-               });
-
-    $('#print').click(function() {
-        if($("h1.heading-xlarge")){
-          var sEventAction = $("h1.heading-xlarge").text()
-          if(sEventAction.indexOf("Application for") != -1  || sEventAction.indexOf("Your amendment for") != -1)
-            sEventAction = sEventAction.split(" for")[0]
-             else
-                var sEventAction =  $(document).find("title").text();
-
-          }
-
-        else
-          var sEventAction =  $(document).find("title").text();
-
-           ga('send', 'event','print - click', sEventAction, this.text);
-     });
-
-      $('#print-confirmation').click(function() {
-         if($("h1.heading-xlarge")){
-              if($("h1.heading-xlarge").text() != "")
-                  var sEventAction = $("h1.heading-xlarge").text()
-                 else
-                  var sEventAction = $("h1").text()
-
-                 if(sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("Your amendment for") != -1)
-                      sEventAction = sEventAction.split(" for")[0];
-                  else{
-                       sEventAction =  $(document).find("title").text();
-                      }
-               }
-
-              else{
-                 var sEventAction =  $(document).find("title").text();
-                 }
-
-                ga('send', 'event','print - click', sEventAction, this.text);
-          });
-
-
-     $('button:submit').click(function() {
-         if($("h1.heading-xlarge"))
-         var sEventAction = $("h1.heading-xlarge").text()
-         else
-         var sEventAction =  $(document).find("title").text();
-
-         if(sEventAction.indexOf("application for") != -1 || sEventAction.indexOf("Application for") != -1 || sEventAction.indexOf("application summary") != -1 || sEventAction.indexOf("Your amendment for") != -1)
-                              sEventAction =  $(document).find("title").text();
-
-         if(this.innerText == "Continue")
-              ga('send', 'event','button - click', sEventAction, this.innerText);
-          else
-              ga('send', 'event','save - click', sEventAction, this.innerText);
-
-          });
-
-    $('.validation-summary-message a').on('click', function(e){
-        e.preventDefault();
-            var focusId = $(this).attr('data-focuses');
-            thingToFocus = $("#"+focusId.replace(/\./g, '\\\.'));
-        $('html, body').animate({
-            scrollTop: thingToFocus.parent().offset().top
-        }, 500);
-        thingToFocus.parent().find('.block-label').first().focus();
-        thingToFocus.parent().find('.form-control').first().focus();
+    $feedbackLedeLink.on("click", function () {
+        $("#get-help-action").trigger("click");
     });
+    // ga tagging
+    $("#save_and_logout").click(function () {
+        ga("send", "event", this.id, "click");
+    });
+    $("input:radio").click(function () {
+        ga("send", "event", this.id, "click");
+    });
+    $("input:checkbox").click(function () {
+        ga("send", "event", this.id, "click");
+    });
+    /*ga data for all the save/print and external links*/
 
-    $('#errors').focus();
+    $(".external_link").click(function () {
+        if ($("h1.heading-xlarge")) {
+            if ($("h1.heading-xlarge").text() != "")
+                var sEventAction = $("h1.heading-xlarge").text();
+            else var sEventAction = $("h1").text();
 
-	$(".skiplink").click(function(event){
-		// strip the leading hash and declare
-		// the content we're skipping to
-		var skipTo="#"+this.href.split('#')[1];
-		// Setting 'tabindex' to -1 takes an element out of normal
-		// tab flow but allows it to be focused via javascript
-		$(skipTo).attr('tabindex', -1).on('blur focusout', function () {
-			// when focus leaves this element,
-			// remove the tabindex attribute
-			$(this).removeAttr('tabindex');
-		}).focus(); // focus on the content container
-	});
-
-	// ----------------------------------------------------------
-	// If you're not in IE (or IE version is less than 5) then:
-	// ie === undefined
-	// If you're in IE (>=5) then you can determine which version:
-	// ie === 7; // IE7
-	// Thus, to detect IE:
-	// if (ie) {}
-	// And to detect the version:
-	// ie === 6 // IE6
-	// ie > 7 // IE8, IE9, IE10 ...
-	// ie < 9 // Anything less than IE9
-	// ----------------------------------------------------------
-	var ie = (function(){
-	    var undef,rv = -1; // Return value assumes failure.
-	    var ua = window.navigator.userAgent;
-	    var msie = ua.indexOf('MSIE ');
-	    var trident = ua.indexOf('Trident/');
-	    var edge = ua.indexOf('Edge/');
-	    if (msie > 0) {
-	        // IE 10 or older => return version number
-	        rv = parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-	    } else if (trident > 0) {
-	        // IE 11 (or newer) => return version number
-	        var rvNum = ua.indexOf('rv:');
-	        rv = parseInt(ua.substring(rvNum + 3, ua.indexOf('.', rvNum)), 10);
-	    } else if (edge > 0) {
-			// Edge
-			rv = 13
+            if (
+                sEventAction.indexOf("application for") != -1 ||
+                sEventAction.indexOf("Application for") != -1 ||
+                sEventAction.indexOf("application summary") != -1 ||
+                sEventAction.indexOf("Your amendment for") != -1
+            )
+                sEventAction = $(document).find("title").text();
+        } else {
+            var sEventAction = $(document).find("title").text();
         }
-	    return ((rv > -1) ? rv : undef);
-	}());
 
-    $("summary").keypress(
-        function(event) {
-            event = event || window.event
-            if (event.preventDefault && ( event.which != 13 && ie) ) {
-                event.preventDefault();
-            } else { // IE<9 variant:
-                event.returnValue = false;
+        ga("send", "event", "link - click", sEventAction, this.text);
+    });
+
+    $("#submit_changes").click(function () {
+        if ($("h1.heading-xlarge"))
+            var sEventAction = $("h1.heading-xlarge").text();
+        else var sEventAction = $(document).find("title").text();
+
+        if (
+            sEventAction.indexOf("application for") != -1 ||
+            sEventAction.indexOf("Application for") != -1 ||
+            sEventAction.indexOf("application summary") != -1 ||
+            sEventAction.indexOf("Your amendment for") != -1
+        )
+            sEventAction = $(document).find("title").text();
+
+        ga("send", "event", "save - click", sEventAction, this.innerText);
+    });
+
+    $("#print").click(function () {
+        if ($("h1.heading-xlarge")) {
+            var sEventAction = $("h1.heading-xlarge").text();
+            if (
+                sEventAction.indexOf("Application for") != -1 ||
+                sEventAction.indexOf("Your amendment for") != -1
+            )
+                sEventAction = sEventAction.split(" for")[0];
+            else var sEventAction = $(document).find("title").text();
+        } else var sEventAction = $(document).find("title").text();
+
+        ga("send", "event", "print - click", sEventAction, this.text);
+    });
+
+    $("#print-confirmation").click(function () {
+        if ($("h1.heading-xlarge")) {
+            if ($("h1.heading-xlarge").text() != "")
+                var sEventAction = $("h1.heading-xlarge").text();
+            else var sEventAction = $("h1").text();
+
+            if (
+                sEventAction.indexOf("Application for") != -1 ||
+                sEventAction.indexOf("Your amendment for") != -1
+            )
+                sEventAction = sEventAction.split(" for")[0];
+            else {
+                sEventAction = $(document).find("title").text();
             }
+        } else {
+            var sEventAction = $(document).find("title").text();
         }
-	);
 
+        ga("send", "event", "print - click", sEventAction, this.text);
+    });
+
+    $("button:submit").click(function () {
+        if ($("h1.heading-xlarge"))
+            var sEventAction = $("h1.heading-xlarge").text();
+        else var sEventAction = $(document).find("title").text();
+
+        if (
+            sEventAction.indexOf("application for") != -1 ||
+            sEventAction.indexOf("Application for") != -1 ||
+            sEventAction.indexOf("application summary") != -1 ||
+            sEventAction.indexOf("Your amendment for") != -1
+        )
+            sEventAction = $(document).find("title").text();
+
+        if (this.innerText == "Continue")
+            ga("send", "event", "button - click", sEventAction, this.innerText);
+        else ga("send", "event", "save - click", sEventAction, this.innerText);
+    });
+
+    $(".validation-summary-message a").on("click", function (e) {
+        e.preventDefault();
+        var focusId = $(this).attr("data-focuses");
+        thingToFocus = $("#" + focusId.replace(/\./g, "\\."));
+        $("html, body").animate(
+            {
+                scrollTop: thingToFocus.parent().offset().top,
+            },
+            500
+        );
+        thingToFocus.parent().find(".block-label").first().focus();
+        thingToFocus.parent().find(".form-control").first().focus();
+    });
+
+    $("#errors").focus();
+
+    $(".skiplink").click(function (event) {
+        // strip the leading hash and declare
+        // the content we're skipping to
+        var skipTo = "#" + this.href.split("#")[1];
+        // Setting 'tabindex' to -1 takes an element out of normal
+        // tab flow but allows it to be focused via javascript
+        $(skipTo)
+            .attr("tabindex", -1)
+            .on("blur focusout", function () {
+                // when focus leaves this element,
+                // remove the tabindex attribute
+                $(this).removeAttr("tabindex");
+            })
+            .focus(); // focus on the content container
+    });
+
+    // ----------------------------------------------------------
+    // If you're not in IE (or IE version is less than 5) then:
+    // ie === undefined
+    // If you're in IE (>=5) then you can determine which version:
+    // ie === 7; // IE7
+    // Thus, to detect IE:
+    // if (ie) {}
+    // And to detect the version:
+    // ie === 6 // IE6
+    // ie > 7 // IE8, IE9, IE10 ...
+    // ie < 9 // Anything less than IE9
+    // ----------------------------------------------------------
+    var ie = (function () {
+        var undef,
+            rv = -1; // Return value assumes failure.
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf("MSIE ");
+        var trident = ua.indexOf("Trident/");
+        var edge = ua.indexOf("Edge/");
+        if (msie > 0) {
+            // IE 10 or older => return version number
+            rv = parseInt(ua.substring(msie + 5, ua.indexOf(".", msie)), 10);
+        } else if (trident > 0) {
+            // IE 11 (or newer) => return version number
+            var rvNum = ua.indexOf("rv:");
+            rv = parseInt(ua.substring(rvNum + 3, ua.indexOf(".", rvNum)), 10);
+        } else if (edge > 0) {
+            // Edge
+            rv = 13;
+        }
+        return rv > -1 ? rv : undef;
+    })();
+
+    $("summary").keypress(function (event) {
+        event = event || window.event;
+        if (event.preventDefault && event.which != 13 && ie) {
+            event.preventDefault();
+        } else {
+            // IE<9 variant:
+            event.returnValue = false;
+        }
+    });
+
+    $('label[id="supplierAddress.addressCountry_field"]').removeAttr("autocomplete");
+
+    $('summary[class="summary"]').removeAttr('role')
 });
-
-
