@@ -59,16 +59,15 @@
 @divId = @{
     params.fieldName.replaceAll(" [.]", "_")
 }
-<div>
-    <div id="@{divId}_field" class="form-field touch @groupClass @wrapperClass @if(fieldErrors.nonEmpty) { form-field--error}">
-        @legend
-        <div class="form-date">
-            @formHint
-            @ariaDayMonthYear
-            @commonHelper(params.formItem(params.fieldName), fieldErrors)
-            <div class="no-touch native-date-picker form-date" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0"}>
-                @dateFieldsContent(params.formItem, params.fieldName, params.ariaLabelledBy, fieldErrors.nonEmpty)
-            </div>
+
+<fieldset id="@{divId}_field" class="form-field touch @groupClass @wrapperClass @if(fieldErrors.nonEmpty) { form-field--error}">
+    @legend
+    <div class="form-date">
+        @formHint
+        @ariaDayMonthYear
+        @commonHelper(params.formItem(params.fieldName), fieldErrors)
+        <div class="no-touch native-date-picker form-date" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0"}>
+            @dateFieldsContent(params.formItem, params.fieldName, params.ariaLabelledBy, fieldErrors.nonEmpty)
         </div>
     </div>
-</div>
+</fieldset>
