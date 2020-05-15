@@ -52,7 +52,7 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback&accountType=$accountType"
   lazy val loginURL = s"$companyAuthHost/gg/$loginPath"
   lazy val logoutCallbackUrl: String = loadConfig("auth.logout-callback.url")
-  lazy val signOut = s"$companyAuthHost/gg/sign-out/?continue=$logoutCallbackUrl"
+  lazy val signOut: String = servicesConfig.getString("service-signout.url")
   lazy val businessCustomerStartPage: String = loadConfig("business-customer.serviceRedirectUrl")
   lazy val businessTaxAccountPage: String = loadConfig("business-tax-account.serviceRedirectUrl")
 }
