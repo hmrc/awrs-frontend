@@ -262,7 +262,6 @@ class ApplicationService @Inject()(enrolService: EnrolService,
   def getModifiedSubscriptionType(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): SubscriptionTypeFrontEnd = {
 
     val suppliers = cached.get.getSuppliers
-
     val additionalPremises = cached.get.getAdditionalBusinessPremises
     val partnership = cached.get.getPartners
     val tradingActivity = cached.get.getTradingActivity
@@ -376,7 +375,12 @@ class ApplicationService @Inject()(enrolService: EnrolService,
       } else false
 
       val suppliersChanged: Boolean = if (data.suppliers.isDefined) {
-        val suppliersLst = suppliers.get.suppliers
+
+        val suppliersLst = if(suppliers.isDefined) {
+          suppliers.get.suppliers
+        } else {
+          List()
+        }
 
         val formAddressSupplier = suppliersLst match {
           case supplierList :: supplierLst => suppliersLst.zipWithIndex.map {
@@ -386,6 +390,7 @@ class ApplicationService @Inject()(enrolService: EnrolService,
           }
           case _ => List()
         }
+
         !data.suppliers.get.suppliers.equals(formAddressSupplier)
       } else false
 
