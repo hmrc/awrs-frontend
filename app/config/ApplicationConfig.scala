@@ -27,7 +27,7 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   private def loadConfig(key: String) = servicesConfig.getConfString(key, throw new Exception(s"Missing configuration key: $key"))
 
-  private lazy val contactHost = loadConfig("contact-frontend.host")
+  private lazy val contactHost = servicesConfig.getString("contact-frontend.host")
   private lazy val awrsHost = loadConfig("awrs.host")
 
   lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
