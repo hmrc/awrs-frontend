@@ -32,7 +32,7 @@ class ApplicationController @Inject()(servicesConfig: ServicesConfig,
   }
 
   def logout: Action[AnyContent] = Action { implicit request =>
-    Redirect(applicationConfig.signOut)
+    Redirect(applicationConfig.signOut).withNewSession
   }
 
   def timedOut(): Action[AnyContent] = Action {
