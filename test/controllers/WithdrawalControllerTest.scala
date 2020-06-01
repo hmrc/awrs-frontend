@@ -89,6 +89,17 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
         }
       }
 
+      "return to error page where Internal Error thrown" in {
+        getWithAuthorisedUserStatusApprovedErrorResponse {
+          result =>
+            status(result) shouldBe INTERNAL_SERVER_ERROR
+
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementsByClass("heading-xlarge").text() should be(Messages("awrs.generic.error.title"))
+            document.getElementsByClass("heading-medium").text() should be(Messages("awrs.generic.error.status"))
+        }
+      }
+
       "display the withdrawal reasons page if user has status of Pending" in {
         getWithAuthorisedUserStatusPendingReasonsNoKeyStore {
           result => status(result) shouldBe OK
@@ -185,7 +196,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     when(mockAwrsAPI8.withdrawApplication(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(api8Repsonse))
     when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(deEnrol))
     setupMockSave4LaterServiceWithOnly(removeAll = MockSave4LaterService.defaultRemoveAll)
-    when(mockEmailService.sendWithdrawnEmail(ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+    when(mockEmailService.sendWithdrawnEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     setupMockSave4LaterService(fetchAll = cachedData())
     setAuthMocks()
     val result = testWithdrawalController.submitConfirmWithdrawal.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
@@ -198,4 +209,5 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
 
   private def getWithAuthorisedUserStatusPendingReasonsNoKeyStore = continueWithAuthorisedUserReasons(testSubscriptionStatusTypePending)(_)
 
+  private def getWithAuthorisedUserStatusApprovedErrorResponse = continueWithAuthorisedUserReasons(testSubscriptionStatusTypeApproved)(_)
 }
