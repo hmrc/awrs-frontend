@@ -107,6 +107,17 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       }
     }
 
+    "return to error page if Internal Error thrown" in {
+      resendEmail(isVerified = false) {
+        result =>
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+
+          val document = Jsoup.parse(contentAsString(result))
+          document.getElementById("application-error-header").text shouldBe realMessages("awrs.generic.error.title")
+          document.getElementById("application-error-description").text shouldBe realMessages("awrs.generic.error.status")
+      }
+    }
+
     "show success message" in {
       showSuccess {
         result =>

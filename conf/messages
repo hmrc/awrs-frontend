@@ -104,9 +104,9 @@ awrs.generic.name.screen-reader-tip = You have logged in as:
 
 # Generic Error Messages
 #============================================================
-awrs.generic.error.title=Sorry, we are experiencing technical difficulties
-awrs.generic.error.status=There has been a problem with your application
-awrs.generic.errors_heading=There is a problem
+awrs.generic.error.title=Sorry, there is a problem with the service
+awrs.generic.error.status= Try again later. Your AWRS registration is not affected by this problem.
+awrs.generic.errors_heading= Sorry, there is a problem with the service
 awrs.generic.error.postcode_empty.summary=The {0} postcode is empty
 awrs.generic.error.postcode_empty= Enter a {0} postcode
 awrs.generic.error.postcode_invalid.summary=The {0} postcode is not in the correct format
