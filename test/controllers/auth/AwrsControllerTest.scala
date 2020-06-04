@@ -47,7 +47,8 @@ class AwrsControllerTest extends AwrsUnitTestTraits
   }
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9,
+    mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = "/sign-in"
   }
 

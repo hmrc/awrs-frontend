@@ -16,29 +16,41 @@
 
 package controllers.auth
 
-import java.io.{PrintWriter, StringWriter}
-
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import config.ApplicationConfig
 import models.FormBundleStatus
-import models.FormBundleStatus.{Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal}
+import models.FormBundleStatus.{DeRegistered, Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal, Withdrawal}
+import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import play.twirl.api.Content
+import services.DeEnrolService
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AccountUtils, LoggingUtils, SessionUtil}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSupport with Results {
 
   val authConnector: AuthConnector
   val accountUtils: AccountUtils
+  val deEnrolService: DeEnrolService
 
-  def restrictedAccessCheck(body: => Future[Result])(implicit request: Request[AnyContent]): Future[Result] =
+  def restrictedAccessCheck(body: => Future[Result])(implicit request: Request[AnyContent],
+                                                     authRetrievals: StandardAuthRetrievals, hc: HeaderCarrier, ec: ExecutionContext): Future[Result] =
     getSessionStatus match {
       case Some(Rejected) | Some(RejectedUnderReviewOrAppeal) | Some(Revoked) | Some(RevokedUnderReviewOrAppeal) =>
         Future.successful(Redirect(controllers.routes.ApplicationStatusController.showStatus()))
+      case e@(Some(Withdrawal) | Some(DeRegistered)) =>
+        Logger.info(s"[AwrsController][restrictedAccessCheck] De-enrolled and redirecting to business-customer for status ${e.get.name}")
+        val enrolments = authRetrievals.enrolments
+        if(accountUtils.hasAwrs(enrolments)){
+          deEnrolService.deEnrolAWRS(accountUtils.getAwrsRefNo(enrolments), getBusinessName.getOrElse(""), getBusinessType.getOrElse(""))
+          Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
+        }else{
+          body
+        }
       case _ => body
     }
 

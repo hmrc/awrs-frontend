@@ -39,7 +39,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
   lazy val groupMember: GroupMember = TestUtil.testGroupMember
   lazy val testGroupMembers = GroupMembers(List(groupMember, groupMember, groupMember))
 
-  val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
 
   "Group member page" should {

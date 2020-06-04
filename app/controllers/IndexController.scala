@@ -23,7 +23,7 @@ import javax.inject.Inject
 import models.FormBundleStatus._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.apis.AwrsAPI9
-import services.{ApplicationService, IndexService, Save4LaterService}
+import services.{ApplicationService, DeEnrolService, IndexService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
@@ -35,6 +35,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                                 api9: AwrsAPI9,
                                 applicationService: ApplicationService,
                                 val save4LaterService: Save4LaterService,
+                                val deEnrolService: DeEnrolService,
                                 val authConnector: DefaultAuthConnector,
                                 val auditable: Auditable,
                                 val accountUtils: AccountUtils,
@@ -44,8 +45,8 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showIndex(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         request.session.get("businessType").fold("")(x => x) match {
           case "" =>
             debug("No business Type found")
@@ -85,8 +86,8 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showLastLocation(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/index")(x => x)))
       }
     }

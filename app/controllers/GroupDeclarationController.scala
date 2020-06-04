@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                            val save4LaterService: Save4LaterService,
+                                           val deEnrolService: DeEnrolService,
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
@@ -40,8 +41,8 @@ class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showGroupDeclaration: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         save4LaterService.mainStore.fetchGroupDeclaration(ar) map {
           case Some(data) => Ok(views.html.awrs_group_declaration(groupDeclarationForm.fill(data)))
           case _ => Ok(views.html.awrs_group_declaration(groupDeclarationForm))

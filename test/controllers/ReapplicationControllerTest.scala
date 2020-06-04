@@ -42,11 +42,13 @@ import scala.concurrent.Future
 class ReapplicationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector with MockKeyStoreService with MockSave4LaterService{
 
-  val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
+  override val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockKeyStoreService: KeyStoreService = mock[KeyStoreService]
   val mockAWRSNotificationConnector: AWRSNotificationConnector = mock[AWRSNotificationConnector]
 
-  lazy val testReapplicationController: ReapplicationController = new ReapplicationController(mockMCC, mockDeEnrolService, mockAWRSNotificationConnector, mockKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  lazy val testReapplicationController: ReapplicationController = new ReapplicationController(
+    mockMCC, mockAWRSNotificationConnector, mockDeEnrolService, mockKeyStoreService, testSave4LaterService,
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Reapplication Controller" should {
     "submit confirmation and redirect to root home page when yes selected" in {

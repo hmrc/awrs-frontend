@@ -24,20 +24,20 @@ import forms.AWRSEnums.BooleanRadioEnum
 import forms.PartnershipDetailsForm._
 import javax.inject.Inject
 import models._
-import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{AccountUtils, CountryCodes}
+import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
                                            val save4LaterService: Save4LaterService,
+                                           val deEnrolService: DeEnrolService,
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
@@ -61,7 +61,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
   override val amendHaveAnotherAnswer: (Partner, String) => Partner = (data: Partner, newAnswer: String) => data.copy(otherPartners = Some(newAnswer))
 
   def showPartnerMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar =>
+    authorisedAction { implicit ar =>
       restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode

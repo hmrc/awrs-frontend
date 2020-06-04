@@ -46,7 +46,8 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
 
   lazy val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = testRequest(testGroupMember)
 
-  val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testGroupMemberController: GroupMemberController = new GroupMemberController(
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Submitting the application declaration form with " should {
 

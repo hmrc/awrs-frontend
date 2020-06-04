@@ -23,7 +23,7 @@ import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util.UnSubmittedBannerUtil
 import javax.inject.Inject
 import models.BusinessDetailSummaryModel
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.mvc._
 import play.twirl.api.{Html, HtmlFormat}
 import services.DataCacheKeys._
@@ -45,6 +45,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
                                           val indexService: IndexService,
                                           val keyStoreService: KeyStoreService,
                                           val save4LaterService: Save4LaterService,
+                                          val deEnrolService: DeEnrolService,
                                           val authConnector: DefaultAuthConnector,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,

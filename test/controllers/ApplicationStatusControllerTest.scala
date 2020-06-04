@@ -69,7 +69,8 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     case false => TestUtil.testBusinessDetails()
   }
 
-  val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService, mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockAppConfig)
+  val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService,
+    mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockApiSave4LaterConnector, mockMainStoreSave4LaterConnector)

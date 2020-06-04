@@ -25,7 +25,7 @@ import javax.inject.Inject
 import models._
 import play.api.mvc._
 import services.DataCacheKeys._
-import services.{BusinessDetailsService, BusinessMatchingService, Save4LaterService}
+import services.{BusinessDetailsService, BusinessMatchingService, DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -37,6 +37,7 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
                                                       val businessMatchingService: BusinessMatchingService,
                                                       val businessDetailsService: BusinessDetailsService,
                                                       val save4LaterService: Save4LaterService,
+                                                      val deEnrolService: DeEnrolService,
                                                       val authConnector: DefaultAuthConnector,
                                                       val auditable: Auditable,
                                                       val accountUtils: AccountUtils,
@@ -47,7 +48,7 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
   val signInUrl: String = applicationConfig.signIn
 
   def showBusinessRegistrationDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar =>
+    authorisedAction { implicit ar =>
       restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode

@@ -21,7 +21,7 @@ import java.util.UUID
 import connectors.TaxEnrolmentsConnector
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums.BooleanRadioEnum
-import models.FormBundleStatus.{Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal}
+import models.FormBundleStatus.{DeRegistered, Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal, Withdrawal}
 import models._
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers
@@ -47,10 +47,10 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
   val mockEmailService: EmailService = mock[EmailService]
 
-  val mockDeEnrolService: DeEnrolService = new DeEnrolService(mockTaxEnrolmentsConnector)
+  override val mockDeEnrolService: DeEnrolService = new DeEnrolService(mockTaxEnrolmentsConnector)
 
   val testDeRegistrationController: DeRegistrationController =
-    new DeRegistrationController(mockMCC, mockApi10, mockDeEnrolService, mockEmailService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, mockDeEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
@@ -131,7 +131,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
           (result: Future[Result]) =>
             fStatusType match {
               // rejected is currently auto redirected
-              case Rejected | RejectedUnderReviewOrAppeal | Revoked | RevokedUnderReviewOrAppeal =>
+              case Rejected | RejectedUnderReviewOrAppeal | Revoked | RevokedUnderReviewOrAppeal | Withdrawal | DeRegistered =>
                 status(result) shouldBe SEE_OTHER
               case _ => status(result) shouldBe NOT_FOUND
             }

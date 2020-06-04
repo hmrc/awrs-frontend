@@ -26,8 +26,8 @@ import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedT
 import models._
 import play.api.Logger
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
-import services.{Save4LaterService, StatusManagementService, StatusReturnType}
+import play.api.mvc._
+import services.{DeEnrolService, Save4LaterService, StatusManagementService, StatusReturnType}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -42,6 +42,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                                             val accountUtils: AccountUtils,
                                             val authConnector: DefaultAuthConnector,
                                             implicit val save4LaterService: Save4LaterService,
+                                            val deEnrolService: DeEnrolService,
                                             implicit val applicationConfig: ApplicationConfig
                                            ) extends FrontendController(mcc) with AwrsController with I18nSupport {
 

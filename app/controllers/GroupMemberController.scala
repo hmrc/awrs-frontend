@@ -26,7 +26,7 @@ import javax.inject.Inject
 import models.{GroupMember, GroupMembers}
 import play.api.mvc._
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
                                       val save4LaterService: Save4LaterService,
+                                      val deEnrolService: DeEnrolService,
                                       val authConnector: DefaultAuthConnector,
                                       val auditable: Auditable,
                                       val accountUtils: AccountUtils,
@@ -61,8 +62,8 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
   override val amendHaveAnotherAnswer: (GroupMember, String) => GroupMember = (data: GroupMember, newAnswer: String) => data.copy(addAnotherGrpMember = Some(newAnswer))
 
   def showMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {

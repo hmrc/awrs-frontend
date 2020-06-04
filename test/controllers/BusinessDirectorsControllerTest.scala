@@ -35,7 +35,7 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

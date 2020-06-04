@@ -37,48 +37,95 @@ class IndexControllerTest extends ServicesUnitTestFixture {
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockApplicationService)
+    reset(mockAccountUtils)
   }
 
-  lazy val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  lazy val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9,
+    mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
-  "IndexController" must {
-    "The showIndex method should function correctly" should {
-      "if businessType exists in session then display the index page" in {
-        val result = callShowIndex(businessType = "SOP")
+  "showIndex" must {
+
+    "de-enrol the user and redirect to business customer frontend" when {
+      "the user has an enrolment and the AWRS application status is Withdrawn" in {
+        setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+        when(mockAppConfig.businessCustomerStartPage).thenReturn("/business-customer/business-verification/awrs")
+        val request = SessionBuilder.buildRequestWithSession(userId, "LTD")
+          .withSession("status" -> "Withdrawal")
+        val result = testIndexController.showIndex().apply(request)
+
+        redirectLocation(result).get shouldBe "/business-customer/business-verification/awrs"
+      }
+
+      "the user has an enrolment and the AWRS application status is De-Registered" in {
+        setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+        when(mockAppConfig.businessCustomerStartPage).thenReturn("/business-customer/business-verification/awrs")
+        val request = SessionBuilder.buildRequestWithSession(userId, "LTD")
+          .withSession("status" -> "De-Registered")
+        val result = testIndexController.showIndex().apply(request)
+
+        redirectLocation(result).get shouldBe "/business-customer/business-verification/awrs"
+      }
+    }
+
+    "display the index page" when {
+      "businessType exists in session" in {
+        val result = callShowIndex()
         status(result) shouldBe OK
       }
-      "if the business type is missing from session then redirect back to the home controller" in {
+
+      "the AWRS status in session is Withdrawal, businessType exists in session, but there is no enrolment" in {
+        setupMockSave4LaterService(
+          fetchBusinessCustomerDetails = testReviewDetails,
+          fetchAll = None
+        )
+        setupMockKeyStoreService(None)
+        setupMockApplicationService(hasAPI5ApplicationChanged = false)
+        setupMockIndexService()
+        mockAuthNoEnrolment
+
+        val request = SessionBuilder.buildRequestWithSession(userId, "LTD")
+          .withSession("status" -> "Withdrawal")
+        val result = testIndexController.showIndex().apply(request)
+
+        status(result) shouldBe OK
+      }
+    }
+
+    "redirect back to the home controller" when {
+      "business type is missing from session" in {
         val result = callShowIndex(businessType = None)
         status(result) shouldBe SEE_OTHER
+
         redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme"
       }
-      "the sessionJouneyStartLocation is cleared when index is shown" in {
-        val result = callShowIndex(startSection = testInitSessionJouneyStartLocation)
-        val responseSessionMap = await(result).session(FakeRequest()).data
-        val doc = Jsoup.parse(contentAsString(result))
-        // the session variable for sessionJouneyStartLocation in the response should have been removed
-        responseSessionMap.get(AwrsSessionKeys.sessionJouneyStartLocation) shouldBe None
-      }
     }
 
-    "The showLastLocation method should function correctly" should {
-      "If the previous page exists in session history then route to that page" in {
-        val previousLoc = "/alcohol-wholesale-scheme/supplier-addresses/edit"
-        callShowLastLocationWith(previousLocation = previousLoc) {
-          result =>
-            redirectLocation(result).get shouldBe previousLoc
-        }
-      }
-      "If the previous page does not exists in session history then route back to index " in {
-        callShowLastLocationWith(previousLocation = None) {
-          result =>
-            redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
-        }
-      }
+    "clear sessionJourneyStartLocation from session when index is shown" in {
+      val result = callShowIndex(startSection = testInitSessionJouneyStartLocation)
+      val responseSessionMap = await(result).session(FakeRequest()).data
+      val doc = Jsoup.parse(contentAsString(result))
+      // the session variable for sessionJourneyStartLocation in the response should have been removed
+      responseSessionMap.get(AwrsSessionKeys.sessionJouneyStartLocation) shouldBe None
     }
 
+  }
+
+  "showLastLocation" should {
+    "route to the previous page if it exists in session" in {
+      val previousLoc = "/alcohol-wholesale-scheme/supplier-addresses/edit"
+      callShowLastLocationWith(previousLocation = previousLoc) {
+        result =>
+          redirectLocation(result).get shouldBe previousLoc
+      }
+    }
+    "route to index page if it exists in session" in {
+      callShowLastLocationWith(previousLocation = None) {
+        result =>
+          redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
+      }
+    }
   }
 
   private def callShowLastLocationWith(previousLocation: Option[String], cacheMap: CacheMap = cachemap)(test: Future[Result] => Any) {

@@ -44,7 +44,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
   def testRequest(premises: PlaceOfBusiness) =
     TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm, premises)
 
-  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "BusinessContactsController" must {
 

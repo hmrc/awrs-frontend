@@ -51,7 +51,8 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
 
   val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
 
-  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig) {
+  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(
+    mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

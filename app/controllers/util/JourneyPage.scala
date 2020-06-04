@@ -17,7 +17,6 @@
 package controllers.util
 
 import controllers.auth.AwrsController
-import play.api.mvc.{AnyContent, Request}
 
 trait JourneyPage extends AwrsController {
   val section: String

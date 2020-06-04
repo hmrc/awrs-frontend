@@ -42,13 +42,13 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
   val realMessages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
 
   val testEmailVerificationControllerEmailEnabled: EmailVerificationController =
-    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, testSave4LaterService, mockAuthConnector, mockAppConfig) {
+    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig) {
       override lazy val signInUrl: String = applicationConfig.signIn
       override lazy val isEmailVerificationEnabled = true
   }
 
   val testEmailVerificationControllerEmailNotEnabled: EmailVerificationController =
-    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, testSave4LaterService, mockAuthConnector, mockAppConfig) {
+    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig) {
       override lazy val isEmailVerificationEnabled = false
       override lazy val signInUrl: String = applicationConfig.signIn
   }

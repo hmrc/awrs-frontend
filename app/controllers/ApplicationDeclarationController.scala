@@ -39,6 +39,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
                                                  mcc: MessagesControllerComponents,
                                                  val save4LaterService: Save4LaterService,
                                                  val keyStoreService: KeyStoreService,
+                                                 val deEnrolService: DeEnrolService,
                                                  val authConnector: DefaultAuthConnector,
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
@@ -54,13 +55,13 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
   }
 
   def showApplicationDeclaration: Action[AnyContent] = Action.async { implicit request =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
-        save4LaterService.mainStore.fetchApplicationDeclaration(ar) map {
-          case Some(data) => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form.fill(data), isEnrolledApplicant))
-          case _ => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form, isEnrolledApplicant))
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
+          save4LaterService.mainStore.fetchApplicationDeclaration(ar) map {
+            case Some(data) => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form.fill(data), isEnrolledApplicant))
+            case _ => Ok(views.html.awrs_application_declaration(applicationDeclarationForm.form, isEnrolledApplicant))
+          }
         }
-      }
     }
   }
 

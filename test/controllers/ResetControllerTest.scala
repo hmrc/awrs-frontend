@@ -31,7 +31,8 @@ class ResetControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val testResetController: ResetController = new ResetController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testResetController: ResetController = new ResetController(
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Reset application page " should {
     "return a Signed out view for SA utr" in {

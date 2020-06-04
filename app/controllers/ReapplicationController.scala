@@ -35,8 +35,8 @@ import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
-                                        deEnrolService: DeEnrolService,
                                         awrsNotificationConnector: AWRSNotificationConnector,
+                                        val deEnrolService: DeEnrolService,
                                         val keyStoreService: KeyStoreService,
                                         val save4LaterService: Save4LaterService,
                                         val authConnector: DefaultAuthConnector,

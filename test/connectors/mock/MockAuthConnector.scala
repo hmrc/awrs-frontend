@@ -52,6 +52,11 @@ trait MockAuthConnector extends AwrsUnitTestTraits {
       GGCredId("CredID")
     )
 
+  def mockAuthNoEnrolment: OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ GGCredId]] = {
+    when(mockAuthConnector.authorise[Enrolments ~ Option[AffinityGroup] ~ GGCredId](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(new ~(new ~(Enrolments(Set()), Some(AffinityGroup.Organisation)), GGCredId("CredID"))))
+  }
+
   def setAuthMocks(
                     authResult: Future[Enrolments ~ Option[AffinityGroup] ~ GGCredId] = Future.successful(authResultDefault),
                     mockAccountUtils: Option[AccountUtils] = None

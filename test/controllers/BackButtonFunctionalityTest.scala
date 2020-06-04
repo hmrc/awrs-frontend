@@ -36,7 +36,9 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with ServicesUnitTestFixture {
 
-  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
+  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
+    mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
 
   lazy val urlMap: Map[String, Option[Int] => String] = Map[String, (Option[Int]) => String](
     (businessDetailsName, (id: Option[Int]) => controllers.routes.TradingNameController.showTradingName(true).url),

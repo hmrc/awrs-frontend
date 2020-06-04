@@ -36,7 +36,7 @@ class FeedbackViewTest extends AwrsUnitTestTraits
   with MockAuthConnector {
 
   val mockAudit: Audit = mock[Audit]
-  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockDeEnrolService, mockAccountUtils, mockAppConfig)
 
 
   def testRequest(feedback: Feedback) =

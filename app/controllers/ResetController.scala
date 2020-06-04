@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.Save4LaterService
+import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -30,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ResetController @Inject()(mcc: MessagesControllerComponents,
                                 val save4LaterService: Save4LaterService,
+                                val deEnrolService: DeEnrolService,
                                 val authConnector: DefaultAuthConnector,
                                 val auditable: Auditable,
                                 val accountUtils: AccountUtils,
