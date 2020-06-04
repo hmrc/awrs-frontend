@@ -53,7 +53,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[AdditionalBusinessPremises](FakeRequest(), BusinessPremisesForm.businessPremisesValidationForm, premises)
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
+    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

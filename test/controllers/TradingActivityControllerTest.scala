@@ -31,7 +31,8 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  val testTradingActivityController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testTradingActivityController: TradingActivityController = new TradingActivityController(
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

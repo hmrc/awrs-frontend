@@ -17,11 +17,11 @@
 package services
 
 import connectors.TaxEnrolmentsConnector
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
-
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class DeEnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector) {
 
   def deEnrolAWRS(awrs: String, businessName: String, businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =

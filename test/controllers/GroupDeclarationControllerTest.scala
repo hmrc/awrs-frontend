@@ -34,7 +34,8 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val formId = "groupDeclaration"
-  val testGroupDeclarationController: GroupDeclarationController = new GroupDeclarationController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testGroupDeclarationController: GroupDeclarationController = new GroupDeclarationController(
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   "Submitting the application declaration form with " should {
     "Authenticated and authorised users" should {

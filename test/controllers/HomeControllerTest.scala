@@ -46,7 +46,8 @@ class HomeControllerTest extends AwrsUnitTestTraits
   val mockBusinessCustomerService: BusinessCustomerService = mock[BusinessCustomerService]
   val mockCheckEtmpService: CheckEtmpService = mock[CheckEtmpService]
 
-  val testHomeController: HomeController = new HomeController(mockMCC, mockBusinessCustomerService, mockCheckEtmpService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig) {
+  val testHomeController: HomeController = new HomeController(mockMCC, mockBusinessCustomerService,
+    mockCheckEtmpService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

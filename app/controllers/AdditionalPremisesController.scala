@@ -19,25 +19,26 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
+import controllers.util._
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.BusinessPremisesForm._
-import models.{AdditionalBusinessPremises, AdditionalBusinessPremisesList, Address}
-import services.DataCacheKeys._
-import services.Save4LaterService
-import controllers.util._
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import models.{AdditionalBusinessPremises, AdditionalBusinessPremisesList, Address}
+import play.api.mvc._
+import services.DataCacheKeys._
+import services.{DeEnrolService, Save4LaterService}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import utils.AccountUtils
 
 
 class AdditionalPremisesController @Inject()(val mcc: MessagesControllerComponents,
                                              val save4LaterService: Save4LaterService,
+                                             val deEnrolService: DeEnrolService,
                                              val accountUtils: AccountUtils,
                                              val authConnector: DefaultAuthConnector,
                                              val auditable: Auditable,
@@ -64,8 +65,8 @@ class AdditionalPremisesController @Inject()(val mcc: MessagesControllerComponen
   override val amendHaveAnotherAnswer: (AdditionalBusinessPremises, String) => AdditionalBusinessPremises = (data: AdditionalBusinessPremises, newAnswer: String) => data.copy(addAnother = Some(newAnswer))
 
   def showPremisePage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    restrictedAccessCheck {
-      authorisedAction { authRetrievals =>
+    authorisedAction { implicit authRetrievals =>
+      restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {

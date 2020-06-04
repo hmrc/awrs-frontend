@@ -57,18 +57,18 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override implicit val applicationConfig: ApplicationConfig) extends BusinessDirectorsController(mcc, save4LaterService, authConnector, auditable, accountUtils, applicationConfig) {
+                                 override implicit val applicationConfig: ApplicationConfig) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig) {
 
     def show(rowTitle: String, content: Option[String]*): Action[AnyContent] = Action.async {
       request =>
         val messages = mcc.messagesApi.preferred(request)
         setAuthMocks()
-        restrictedAccessCheck {
-          authorisedAction { ar =>
+        authorisedAction { implicit ar =>
+          restrictedAccessCheck {
             // Run sbt test in terminal to compile tests and generate TableRowTestPage, otherwise it will show up red here
             Future.successful(Ok(views.html.view_application.TableRowTestPage(rowTitle, content: _*)(messages)))
-          }(request, ec, hc, messages)
-        }(request)
+          }(request, ar, implicitly, implicitly)
+        }(request, ec, hc, messages)
     }
   }
 

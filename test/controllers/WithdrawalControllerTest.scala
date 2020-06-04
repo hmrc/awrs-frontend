@@ -48,10 +48,12 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockAwrsAPI8: AwrsAPI8 = mock[AwrsAPI8]
-  val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
+  override val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockEmailService: EmailService = mock[EmailService]
 
-  val testWithdrawalController: WithdrawalController = new WithdrawalController(mockMCC, testAPI9, mockAwrsAPI8, mockDeEnrolService, mockEmailService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testWithdrawalController: WithdrawalController = new WithdrawalController(
+    mockMCC, testAPI9, mockAwrsAPI8, mockEmailService, testKeyStoreService, mockDeEnrolService, testSave4LaterService,
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
   private def testConfirmationRequest(confirmation: WithdrawalConfirmation) =
     TestUtil.populateFakeRequest[WithdrawalConfirmation](FakeRequest(), WithdrawalConfirmationForm.withdrawalConfirmation, confirmation)

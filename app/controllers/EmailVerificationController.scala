@@ -33,6 +33,7 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
                                             emailVerificationService: EmailVerificationService,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
+                                            val deEnrolService: DeEnrolService,
                                             val save4LaterService: Save4LaterService,
                                             val authConnector: DefaultAuthConnector,
                                             implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {

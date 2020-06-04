@@ -204,7 +204,8 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   }
 
 
-  val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = "/sign-in"
   }
 

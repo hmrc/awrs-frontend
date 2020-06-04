@@ -24,9 +24,9 @@ import javax.inject.Inject
 import models.{BusinessType, NewApplicationType}
 import play.api.Logger
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
-import services.{CheckEtmpService, Save4LaterService}
+import play.api.mvc._
 import services.apis.AwrsAPI5
+import services.{CheckEtmpService, DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                                        api5: AwrsAPI5,
                                        val save4LaterService: Save4LaterService,
+                                       val deEnrolService: DeEnrolService,
                                        val authConnector: DefaultAuthConnector,
                                        val auditable: Auditable,
                                        val accountUtils: AccountUtils,
@@ -80,8 +81,8 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
   // showBusinessType is added to enable users who had submitted the wrong legal entities to correct them post submission.
   // they will have to manually enter the amendment url in order to access this feature
   def showBusinessType(showBusinessType: Boolean = false): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         if (accountUtils.hasAwrs(ar.enrolments)) {
           standardApi5Journey(ar)
         } else {

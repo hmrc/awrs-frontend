@@ -23,6 +23,7 @@ import forms.FeedbackForm._
 import javax.inject.Inject
 import models.Feedback
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -32,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FeedbackController @Inject()(mcc: MessagesControllerComponents,
                                    val authConnector: DefaultAuthConnector,
                                    val auditable: Auditable,
+                                   val deEnrolService: DeEnrolService,
                                    val accountUtils: AccountUtils,
                                    implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 

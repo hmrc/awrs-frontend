@@ -159,7 +159,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
       response =>
         timer.stop()
         response.status match {
-          case OK => warn(s"[TaxEnrolmentsConnector][de-enrol] - Ok")
+          case OK => warn(s"[TaxEnrolmentsConnector][deEnrol] - Ok")
             metrics.incrementSuccessCounter(ApiType.API10DeEnrolment)
             audit(transactionName = auditSubscribeTxName, detail = auditMap, eventType = eventTypeSuccess)
             true

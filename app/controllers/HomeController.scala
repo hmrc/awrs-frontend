@@ -22,7 +22,6 @@ import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import javax.inject.Inject
 import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
-import play.api.Logger
 import play.api.libs.json.JsResultException
 import play.api.mvc._
 import services._
@@ -36,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HomeController @Inject()(mcc: MessagesControllerComponents,
                                businessCustomerService: BusinessCustomerService,
                                checkEtmpService: CheckEtmpService,
+                               val deEnrolService: DeEnrolService,
                                val authConnector: DefaultAuthConnector,
                                val auditable: Auditable,
                                val accountUtils: AccountUtils,

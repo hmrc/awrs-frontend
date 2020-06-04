@@ -36,7 +36,7 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
   val directorPage2URL: String = directorPageURL(2)
 
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig){
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig){
     override val signInUrl = "/sign-in"
   }
 

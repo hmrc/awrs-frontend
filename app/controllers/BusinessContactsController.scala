@@ -22,10 +22,9 @@ import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessContactsForm._
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import services.DataCacheKeys._
-import services.{EmailVerificationService, Save4LaterService}
-import uk.gov.hmrc.http.HeaderCarrier
+import services.{DeEnrolService, EmailVerificationService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -36,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents,
                                            emailVerificationService: EmailVerificationService,
                                            val save4LaterService: Save4LaterService,
+                                           val deEnrolService: DeEnrolService,
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
@@ -47,8 +47,8 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
   val signInUrl: String = applicationConfig.signIn
 
   def showBusinessContacts(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {

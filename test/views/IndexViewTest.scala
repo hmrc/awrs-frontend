@@ -45,7 +45,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
     reset(mockApplicationService)
   }
 
-  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

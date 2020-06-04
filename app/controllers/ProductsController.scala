@@ -22,9 +22,9 @@ import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.ProductsForm._
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -34,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ProductsController @Inject()(val mcc: MessagesControllerComponents,
                                    val save4LaterService: Save4LaterService,
+                                   val deEnrolService: DeEnrolService,
                                    val authConnector: DefaultAuthConnector,
                                    val auditable: Auditable,
                                    val accountUtils: AccountUtils,
@@ -44,8 +45,8 @@ class ProductsController @Inject()(val mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showProducts(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {

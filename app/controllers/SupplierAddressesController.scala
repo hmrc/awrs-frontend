@@ -26,17 +26,18 @@ import javax.inject.Inject
 import models.{Supplier, Suppliers}
 import play.api.mvc._
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{AccountUtils, CountryCodes}
+import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponents,
                                             val save4LaterService: Save4LaterService,
+                                            val deEnrolService: DeEnrolService,
                                             val authConnector: DefaultAuthConnector,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
@@ -63,8 +64,8 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
   override val amendHaveAnotherAnswer: (Supplier, String) => Supplier = (data: Supplier, newAnswer: String) => data.copy(additionalSupplier = Some(newAnswer))
 
   def showSupplierAddressesPage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {

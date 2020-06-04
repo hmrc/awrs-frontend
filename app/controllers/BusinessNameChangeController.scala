@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DataCacheKeys._
-import services.{IndexService, KeyStoreService, Save4LaterService}
+import services.{DeEnrolService, IndexService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -35,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
                                              val keyStoreService: KeyStoreService,
                                              val save4LaterService: Save4LaterService,
+                                             val deEnrolService: DeEnrolService,
                                              val indexService: IndexService,
                                              val authConnector: DefaultAuthConnector,
                                              val auditable: Auditable,

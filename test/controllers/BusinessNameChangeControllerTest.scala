@@ -43,7 +43,8 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
   val testBusinessNameChange = BusinessNameChangeConfirmation("Yes")
 
   val testBusinessNameChangeController: BusinessNameChangeController =
-    new BusinessNameChangeController(mockMCC, testKeyStoreService, testSave4LaterService, mockIndexService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessNameChangeController(mockMCC, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
+      mockIndexService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

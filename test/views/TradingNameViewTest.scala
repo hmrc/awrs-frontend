@@ -35,7 +35,7 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
 
   trait Setup {
     val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-    val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
       override val signInUrl: String = applicationConfig.signIn
     }
   }

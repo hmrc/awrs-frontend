@@ -41,7 +41,7 @@ import controllers.AdditionalPremisesController
 import org.jsoup.Jsoup
 import play.api.mvc._
 import play.api.test.Helpers._
-import services.Save4LaterService
+import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits}
 
@@ -55,17 +55,18 @@ class JourneyPageTest extends AwrsUnitTestTraits with MockAuthConnector {
   object TestPage extends BaseController with JourneyPage {
     override val section: String = "testPageSection"
     override val authConnector: DefaultAuthConnector = mockAuthConnector
+    override val deEnrolService: DeEnrolService = mockDeEnrolService
     val noVariableFound = "Not Found"
     val signInUrl = "/sign-in"
 
 
     def getJouneyStartLocation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-      restrictedAccessCheck {
-        setAuthMocks()
-        authorisedAction { ar =>
+      setAuthMocks()
+      authorisedAction { implicit ar =>
+        restrictedAccessCheck {
           Future.successful(Ok(request.getJourneyStartLocation.getOrElse(noVariableFound)))
-        }(request, implicitly, implicitly, messages)
-      }
+        }(request, ar, implicitly, implicitly)
+      }(request, implicitly, implicitly, messages)
     }
 
     override protected def controllerComponents: ControllerComponents = mockMCC
@@ -76,7 +77,7 @@ class JourneyPageTest extends AwrsUnitTestTraits with MockAuthConnector {
   }
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, mockDataCacheService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
+    new AdditionalPremisesController(mockMCC, mockDataCacheService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
       override val signInUrl = "/sign-in"
     }
 

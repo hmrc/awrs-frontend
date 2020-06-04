@@ -43,7 +43,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
   val businessPartnerDetails = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), testNino, None, None, Some("Yes"), None, None, None, None)
 
   val testBusinessPartnersController: BusinessPartnersController =
-    new BusinessPartnersController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
       override val signInUrl = "/sign-in"
     }
 

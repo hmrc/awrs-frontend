@@ -40,7 +40,8 @@ class TradingNameControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
 
   val testTradingNameController: TradingNameController =
-    new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService,
+      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

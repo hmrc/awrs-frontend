@@ -41,7 +41,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[String](FakeRequest(), AlreadyStartingTradingForm.alreadyStartedTradingForm, answer)
 
   val alreadyStartingTradingController: AlreadyStartingTradingController =
-    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

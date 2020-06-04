@@ -46,7 +46,7 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[Partner](FakeRequest(), PartnershipDetailsForm.partnershipDetailsValidationForm, partner)
 
   val testBusinessPartnersController: BusinessPartnersController =
-    new BusinessPartnersController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

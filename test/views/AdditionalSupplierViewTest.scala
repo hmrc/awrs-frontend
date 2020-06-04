@@ -41,7 +41,7 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
   lazy val testList = List(testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("No")))
 
   val testSupplierAddressesController: SupplierAddressesController =
-    new SupplierAddressesController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new SupplierAddressesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = "/sign-in"
   }
   "Additional Supplier Template" should {

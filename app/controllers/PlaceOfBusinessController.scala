@@ -23,9 +23,9 @@ import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable, convertBCA
 import forms.PlaceOfBusinessForm._
 import javax.inject.Inject
 import models.PlaceOfBusiness
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import services.DataCacheKeys._
-import services.Save4LaterService
+import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
@@ -36,6 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
                                           val save4LaterService: Save4LaterService,
                                           val authConnector: DefaultAuthConnector,
+                                          val deEnrolService: DeEnrolService,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
                                           implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
@@ -45,8 +46,8 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showPlaceOfBusiness(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {

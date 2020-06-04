@@ -41,7 +41,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService
   with MockKeyStoreService {
 
-  val testConfirmationController: ConfirmationController = new ConfirmationController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testConfirmationController: ConfirmationController = new ConfirmationController(
+    mockMCC, testSave4LaterService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

@@ -24,9 +24,9 @@ import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import javax.inject.Inject
-import models.{BusinessDetails, NewAWBusiness}
+import models.NewAWBusiness
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{KeyStoreService, Save4LaterService}
+import services.{DeEnrolService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                        save4LaterService: Save4LaterService,
                                        val keystoreService: KeyStoreService,
+                                       val deEnrolService: DeEnrolService,
                                        val authConnector: DefaultAuthConnector,
                                        val auditable: Auditable,
                                        val accountUtils: AccountUtils,
@@ -68,8 +69,8 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showApplicationConfirmation(printFriendly: Boolean, selfHeal: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         isNewBusiness(ar) flatMap {
           isNewBusiness =>
             save4LaterService.mainStore.removeAll(ar)
@@ -82,8 +83,8 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showApplicationUpdateConfirmation(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         isNewBusiness(ar) flatMap {
           isNewBusiness =>
             save4LaterService.mainStore.removeAll(ar)

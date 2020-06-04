@@ -24,15 +24,14 @@ import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.AlreadyStartingTradingForm._
 import javax.inject.Inject
-import models._
 import play.api.mvc._
 import services.DataCacheKeys._
-import services.{BusinessDetailsService, DataCacheService, KeyStoreService, Save4LaterService}
+import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
-import views.Configuration.{NewApplicationMode, NewBusinessStartDateConfiguration, ReturnedApplicationEditMode, ReturnedApplicationMode}
+import views.Configuration.NewApplicationMode
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,6 +40,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                                                  val save4LaterService: Save4LaterService,
                                                  val businessDetailsService: BusinessDetailsService,
                                                  val keyStoreService: KeyStoreService,
+                                                 val deEnrolService: DeEnrolService,
                                                  val authConnector: DefaultAuthConnector,
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
@@ -52,8 +52,8 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
   val signInUrl: String = applicationConfig.signIn
 
   def showBusinessDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
           case NewApplicationMode =>
             implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {

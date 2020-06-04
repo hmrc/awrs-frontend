@@ -40,7 +40,9 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[String](FakeRequest(), TradingLegislationDateForm.tradingLegislationForm, answer)
 
   val tradingLegislationDateController: TradingLegislationDateController =
-    new TradingLegislationDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    new TradingLegislationDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService,
+      testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils,
+      mockMainStoreSave4LaterConnector, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

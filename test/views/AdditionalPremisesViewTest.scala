@@ -42,7 +42,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
   lazy val testList = List(testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("No")))
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
+    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
       override val signInUrl = "/sign-in"
     }
 

@@ -41,7 +41,8 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[TupleDate](FakeRequest(), TradingDateForm.tradingDateForm(past), answer)
 
   val tradingDateController: TradingDateController =
-    new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService,
+      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

@@ -29,7 +29,7 @@ import javax.inject.Inject
 import models.FormBundleStatus._
 import models._
 import org.joda.time.LocalDateTime
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import services.apis.AwrsAPI10
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -42,8 +42,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
                                          api10: AwrsAPI10,
-                                         deEnrolService: DeEnrolService,
                                          emailService: EmailService,
+                                         val deEnrolService: DeEnrolService,
                                          val keyStoreService: KeyStoreService,
                                          val save4LaterService: Save4LaterService,
                                          val authConnector: DefaultAuthConnector,
@@ -71,8 +71,8 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
 
   def showReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         statusPermission(
           // if reason exists then fill the form with the data
           keyStoreService.fetchDeRegistrationReason flatMap {
@@ -99,8 +99,8 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         statusPermission(
           keyStoreService.fetchDeRegistrationReason flatMap {
             case Some(reason) =>
@@ -144,8 +144,8 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
       })
 
   def showConfirm(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
           Future.successful(Ok(views.html.awrs_de_registration_confirm(deRegistrationConfirmationForm, proposedEndDate))))
       }
@@ -210,8 +210,8 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showConfirmation(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    restrictedAccessCheck {
-      authorisedAction { ar =>
+    authorisedAction { implicit ar =>
+      restrictedAccessCheck {
         confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) => Future.successful
         (Ok(views.html.awrs_de_registration_confirmation_evidence(proposedEndDate, printFriendly))))
       }
