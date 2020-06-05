@@ -27,7 +27,7 @@ import play.twirl.api.Content
 import services.DeEnrolService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{AccountUtils, LoggingUtils, SessionUtil}
+import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils, SessionUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,12 +43,12 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
       case Some(Rejected) | Some(RejectedUnderReviewOrAppeal) | Some(Revoked) | Some(RevokedUnderReviewOrAppeal) =>
         Future.successful(Redirect(controllers.routes.ApplicationStatusController.showStatus()))
       case e@(Some(Withdrawal) | Some(DeRegistered)) =>
-        Logger.info(s"[AwrsController][restrictedAccessCheck] De-enrolled and redirecting to business-customer for status ${e.get.name}")
         val enrolments = authRetrievals.enrolments
         if(accountUtils.hasAwrs(enrolments)){
+          Logger.info(s"[AwrsController][restrictedAccessCheck] De-enrolled and redirecting to business-customer for status ${e.get.name}")
           deEnrolService.deEnrolAWRS(accountUtils.getAwrsRefNo(enrolments), getBusinessName.getOrElse(""), getBusinessType.getOrElse(""))
-          Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
-        }else{
+          Future.successful(Redirect(applicationConfig.businessCustomerStartPage).removingFromSession(AwrsSessionKeys.sessionStatusType))
+        } else {
           body
         }
       case _ => body
