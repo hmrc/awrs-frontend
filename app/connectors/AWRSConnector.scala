@@ -68,18 +68,18 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
           case 404 =>
             audit(auditAPI4TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeNotFound)
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - The remote endpoint has indicated that no data can be found ## ")
-            info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
+            debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
             throw new NotFoundException("URL not found")
           case 503 /*SERVICE_UNAVAILABLE*/ =>
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - WSO2 is currently experiencing problems that require live service intervention")
-            info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
+            debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
             throw new ServiceUnavailableException("Service unavailable")
           case 400 =>
             response.body.toString.replace("\n", "") match {
               case validationPattern(contents) =>
                 audit(auditAPI4TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeBadRequest)
                 warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Bad Request \n API4 Request Json From Frontend ## ")
-                info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
+                debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
                 throw new DESValidationException("Validation against schema failed")
               case ggFailurePattern(contents) => throw new GovernmentGatewayException("There was a problem with the admin service")
               case duplicateFailurePattern(contents) => throw new DuplicateSubscriptionException("This subscription already exists")
@@ -89,7 +89,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
           case 500 /*INTERNAL_SERVER_ERROR*/ =>
             audit(auditAPI4TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeInternalServerError)
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Unsuccessful return of data ## ")
-            info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
+            debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
             response.body.toString.replace("\n", "") match {
               case ggFailurePattern(contents) => throw new GovernmentGatewayException("There was a problem with the admin service")
               case _ => throw new InternalServerException("Internal server error")
@@ -97,7 +97,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
           case status@_ =>
             audit(auditAPI4TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "status" -> status.toString, "requestJson" -> fileData.toString()), eventTypeGeneric)
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - $status Exception \n API4 Request Json From Frontend ## ")
-            info(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
+            debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
             response.body.toString.replace("\n", "") match {
               case ggFailurePattern(contents) => throw new GovernmentGatewayException("There was a problem with the admin service")
               case _ => throw new RuntimeException("Unknown response")
