@@ -1,0 +1,133 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.ApplicationConfig
+@(refererUri: String)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+@import play.twirl.api.Html
+@import uk.gov.hmrc.play.views.html.helpers._
+
+@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.accessibilityStatement.title")), userLoggedIn = true){
+
+ <div class="grid grid-2-3">
+
+  <div id="introduction" class="form-group">
+   <h1 class="heading-xlarge" id="heading"> @Html(messages("awrs.accessibilityStatement.heading")) </h1>
+   <p id="statement_description">@messages("awrs.accessibilityStatement.description")</p>
+
+   <p>
+    @messages("awrs.accessibilityStatement.separateStatement.1")
+    <a href="https://www.gov.uk/help/accessibility" target="_blank">
+     @messages("awrs.accessibilityStatement.separateStatement.2")</a>
+     @messages("awrs.accessibilityStatement.separateStatement.3")
+   </p>
+
+   <p>
+    @messages("awrs.accessibilityStatement.onlyAWRS.1")
+    <a href="https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs" target="_blank">
+     @messages("awrs.accessibilityStatement.onlyAWRS.2")</a>.
+   </p>
+  </div>
+
+  <div id="using-this-service" class="form-group">
+   <h2 class="heading-large" id="heading-using-this-service">@messages("awrs.accessibilityStatement.usingThisService")</h2>
+   <p>@messages("awrs.accessibilityStatement.AWRSDescription")</p>
+   <ul class="list list-bullet">
+    <li>@messages("awrs.accessibilityStatement.AWRSFeatureList.1")</li>
+    <li>@messages("awrs.accessibilityStatement.AWRSFeatureList.2")</li>
+    <li>@messages("awrs.accessibilityStatement.AWRSFeatureList.3")</li>
+    <li>@messages("awrs.accessibilityStatement.AWRSFeatureList.4")</li>
+    <li>@messages("awrs.accessibilityStatement.AWRSFeatureList.5")</li>
+    <li>@messages("awrs.accessibilityStatement.AWRSFeatureList.6")</li>
+   </ul>
+   <p>@messages("awrs.accessibilityStatement.runByHMRC")</p>
+   <ul class="list list-bullet">
+    <li>@messages("awrs.accessibilityStatement.a11yFeatureList.1")</li>
+    <li>@messages("awrs.accessibilityStatement.a11yFeatureList.2")</li>
+    <li>@messages("awrs.accessibilityStatement.a11yFeatureList.3")</li>
+    <li>@messages("awrs.accessibilityStatement.a11yFeatureList.4")</li>
+    <li>@messages("awrs.accessibilityStatement.a11yFeatureList.5")</li>
+   </ul>
+   <p>@messages("awrs.accessibilityStatement.simpleAsPossible")</p>
+   <p>
+    @messages("awrs.accessibilityStatement.abilityNet.1")
+    <a href="https://mcmw.abilitynet.org.uk/" target="_blank">@messages("awrs.accessibilityStatement.abilityNet.2")</a>
+    @messages("awrs.accessibilityStatement.abilityNet.3")
+   </p>
+  </div>
+
+  <div id="how-accessible" class="form-group">
+   <h2 class="heading-large" id="heading-how-accessible">@messages("awrs.accessibilityStatement.howAccessible")</h2>
+      <p>
+       @messages("awrs.accessibilityStatement.WCAGCompliant.1")
+       <a href="https://www.w3.org/TR/WCAG21/" target="_blank">@messages("awrs.accessibilityStatement.WCAGCompliant.2")</a>.
+      </p>
+      <p>@messages("awrs.accessibilityStatement.noKnownIssues")</p>
+  </div>
+
+  <div id="reporting-problems" class="form-group">
+   <h2 class="heading-large" id="heading-reporting-problems">@messages("awrs.accessibilityStatement.reportingProblems")</h2>
+   <p>
+    @messages("awrs.accessibilityStatement.lookingToImprove.1")
+    <a href='mailto:@messages("awrs.accessibilityStatement.lookingToImprove.2")'>
+     @messages("awrs.accessibilityStatement.lookingToImprove.2")</a>.
+   </p>
+  </div>
+
+  <div id="complaints" class="form-group">
+   <h2 class="heading-large" id="heading-complaints">@messages("awrs.accessibilityStatement.notHappy")</h2>
+   <p>
+    @messages("awrs.accessibilityStatement.EHRC.1")
+    <a href="https://www.equalityadvisoryservice.com/" target="_blank">@messages("awrs.accessibilityStatement.EHRC.2")</a>
+    @messages("awrs.accessibilityStatement.EHRC.3")
+    <a href="https://www.equalityni.org/Home" target="_blank">@messages("awrs.accessibilityStatement.EHRC.4")</a>
+    @messages("awrs.accessibilityStatement.EHRC.5")
+   </p>
+  </div>
+
+  <div id="contact-us" class="form-group">
+   <h2 class="heading-large" id="heading-contact-us">@messages("awrs.accessibilityStatement.contactingUs")</h2>
+   <p>@messages("awrs.accessibilityStatement.textRelayService")</p>
+   <p>@messages("awrs.accessibilityStatement.BSL")</p>
+   <p>
+    @messages("awrs.accessibilityStatement.howToContactUs.1")
+    <a href="https://www.gov.uk/dealing-hmrc-additional-needs/deaf-hearing-impaired" target="_blank">
+     @messages("awrs.accessibilityStatement.howToContactUs.2")</a>.
+   </p>
+  </div>
+
+  <div id="technical-information" class="form-group">
+   <h2 class="heading-large" id="heading-technical-info">@messages("awrs.accessibilityStatement.technicalInformation")</h2>
+   <p>@messages("awrs.accessibilityStatement.HMRCCommitted")</p>
+   <p>
+     @messages("awrs.accessibilityStatement.WCAGCompliant.1")
+     <a href="https://www.w3.org/TR/WCAG21/" target="_blank">@messages("awrs.accessibilityStatement.WCAGCompliant.2")</a>.
+   </p>
+  </div>
+
+  <div id="how-we-tested" class="form-group">
+   <h2 class="heading-large" id="heading-how-we-tested">@messages("awrs.accessibilityStatement.howWeTested")</h2>
+   <p>@messages("awrs.accessibilityStatement.lastTested")</p>
+   <p>
+    @messages("awrs.accessibilityStatement.testCarriedOut.1")
+    <a href="http://www.digitalaccessibilitycentre.org/" target="_blank">
+     @messages("awrs.accessibilityStatement.testCarriedOut.2")</a>.
+     @messages("awrs.accessibilityStatement.testCarriedOut.3")
+   </p>
+   <p>@messages("awrs.accessibilityStatement.pagePrepared")</p>
+  </div>
+
+ </div>
+}

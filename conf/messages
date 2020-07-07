@@ -934,3 +934,62 @@ awrs.application_resubmission_error.message=Your resubmission has been rejected 
 awrs.application_pending_deregistration.title=Your submission has failed
 awrs.application_pending_deregistration.heading=Your submission has failed
 awrs.application_pending_deregistration.message=You cannot submit a new application while your cancelled application is still pending.
+
+# Accessibility Messages
+#===========================
+
+awrs.accessibilityStatement.title=Accessibility statement for Alcohol Wholesaler Registration Scheme
+awrs.accessibilityStatement.heading=Accessibility statement for Alcohol Wholesaler Registration Scheme
+awrs.accessibilityStatement.description=This accessibility statement explains how accessible this service is, what to do if you have difficulty using it, and how to report accessibility problems with the service.
+awrs.accessibilityStatement.separateStatement.1=This service is part of the wider GOV.UK website. There is a separate
+awrs.accessibilityStatement.separateStatement.2=accessibility statement
+awrs.accessibilityStatement.separateStatement.3=for the main GOV.UK website.
+awrs.accessibilityStatement.onlyAWRS.1=This page only contains information about the Alcohol Wholesale Registration Service, available at
+awrs.accessibilityStatement.onlyAWRS.2=https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs
+awrs.accessibilityStatement.usingThisService=Using this service
+awrs.accessibilityStatement.AWRSDescription=All businesses that sell, or arranges the sale of alcohol, can sign up to use compatible software to submit an application for approval. Placeholder for content:
+awrs.accessibilityStatement.AWRSFeatureList.1=Placeholder Bullet 1
+awrs.accessibilityStatement.AWRSFeatureList.2=Placeholder Bullet 2
+awrs.accessibilityStatement.AWRSFeatureList.3=Placeholder Bullet 3
+awrs.accessibilityStatement.AWRSFeatureList.4=Placeholder Bullet 4
+awrs.accessibilityStatement.AWRSFeatureList.5=Placeholder Bullet 5
+awrs.accessibilityStatement.AWRSFeatureList.6=Placeholder Bullet 6
+awrs.accessibilityStatement.runByHMRC=This service is run by HM Revenue and Customs (HMRC). We want as many people as possible to be able to use this service. This means you should be able to:
+awrs.accessibilityStatement.a11yFeatureList.1=change colours, contrast levels and fonts
+awrs.accessibilityStatement.a11yFeatureList.2=zoom in up to 300% without the text spilling off the screen
+awrs.accessibilityStatement.a11yFeatureList.3=get from the start of the service to the end using just a keyboard
+awrs.accessibilityStatement.a11yFeatureList.4=get from the start of the service to the end using speech recognition software
+awrs.accessibilityStatement.a11yFeatureList.5=listen to the service using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)
+awrs.accessibilityStatement.simpleAsPossible=We have also made the text in this service as simple as possible to understand.
+
+# Accessibility message to enable for Welsh translation if this comes in at some point for this service
+awrs.accessibilityStatement.abilityNet.1=
+
+awrs.accessibilityStatement.abilityNet.2=AbilityNet
+awrs.accessibilityStatement.abilityNet.3=has advice on making your device easier to use if you have a disability.
+awrs.accessibilityStatement.howAccessible=How accessible this service is
+awrs.accessibilityStatement.WCAGCompliant.1=This service is fully compliant with the
+awrs.accessibilityStatement.noKnownIssues=There are no known accessibility issues within this service.
+awrs.accessibilityStatement.WCAGCompliant.2=Web Content Accessibility Guidelines version 2.1 AA standard
+awrs.accessibilityStatement.reportingProblems=Reporting accessibility problems with this service
+awrs.accessibilityStatement.lookingToImprove.1=We are always looking to improve the accessibility of this service. If you find any problems that are not listed on this page or think we are not meeting accessibility requirements, contact
+awrs.accessibilityStatement.lookingToImprove.2=hmrc-accessibility-problems@digital.hmrc.gov.uk
+awrs.accessibilityStatement.notHappy=What to do if you are not happy with how we respond to your complaint
+awrs.accessibilityStatement.EHRC.1=The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No.2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you are happy with how we respond to your complaint,
+awrs.accessibilityStatement.EHRC.2=contact the Equality Advisory and Support Service
+awrs.accessibilityStatement.EHRC.3=(EASS), or the
+awrs.accessibilityStatement.EHRC.4=Equality Commission for Northern Ireland
+awrs.accessibilityStatement.EHRC.5=(ECNI) if you live in Northern Ireland.
+awrs.accessibilityStatement.contactingUs=Contacting us by phone or getting a visit from us in person
+awrs.accessibilityStatement.textRelayService=We provide a text relay service if you are deaf, hearing impaired or have a speech impediment.
+awrs.accessibilityStatement.BSL=We can provide a British Sign Language (BSL) interpreter, or you can arrange a visit from a HMRC advisor to help you complete the service.
+awrs.accessibilityStatement.howToContactUs.1=Find out how to
+awrs.accessibilityStatement.howToContactUs.2=contact us
+awrs.accessibilityStatement.technicalInformation=Technical information about this service’s accessibility
+awrs.accessibilityStatement.HMRCCommitted=HMRC is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.
+awrs.accessibilityStatement.howWeTested=How we tested this service
+awrs.accessibilityStatement.lastTested=The service was last tested on 6 July 2020 and was checked for compliance with WCAG 2.1 AA.
+awrs.accessibilityStatement.testCarriedOut.1=The service was built using parts that were tested by the
+awrs.accessibilityStatement.testCarriedOut.2=Digital Accessibility Centre
+awrs.accessibilityStatement.testCarriedOut.3=The full service was tested by HMRC and included disabled users.
+awrs.accessibilityStatement.pagePrepared=This page was prepared on 6 July 2020. It was last updated on 6 July 2020.

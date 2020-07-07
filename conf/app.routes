@@ -154,4 +154,5 @@ GET         /signed-out                                     controllers.Applicat
 GET         /re-apply                                       controllers.ReapplicationController.show
 POST        /re-apply                                       controllers.ReapplicationController.submit
 
+GET         /accessibility-statement                        controllers.AccessibilityStatementController.show
 
