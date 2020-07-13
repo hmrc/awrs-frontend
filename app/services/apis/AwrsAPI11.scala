@@ -37,10 +37,7 @@ class AwrsAPI11 @Inject()(val awrsConnector: AWRSConnector,
                           val auditable: Auditable
                          ) extends LoggingUtils {
 
-  lazy val noStatusInfo = StatusInfoType(None)
-
-  private def saveEmpty(implicit hc: HeaderCarrier, ec: ExecutionContext) = keyStoreService.saveStatusInfo(noStatusInfo)
-    .flatMap { _ => Future.successful(Some(noStatusInfo)) }
+  lazy val noStatusInfo: StatusInfoType = StatusInfoType(None)
 
   def getStatusInfo(statusType: FormBundleStatus,
                     someContactNumber: Option[String],
@@ -73,7 +70,7 @@ class AwrsAPI11 @Inject()(val awrsConnector: AWRSConnector,
     }
   }
 
-  @inline def getStatusInfoFromCache(implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[Option[StatusInfoType]] =
+  @inline def getStatusInfoFromCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusInfoType]] =
     keyStoreService.fetchStatusInfo
 
   private def getStatusInfoFromEtmp(contactNumber: String,

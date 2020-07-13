@@ -49,7 +49,11 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
                                          val authConnector: DefaultAuthConnector,
                                          val auditable: Auditable,
                                          val accountUtils: AccountUtils,
-                                         implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                                         implicit val applicationConfig: ApplicationConfig,
+                                         template: views.html.awrs_de_registration,
+                                         templateConfirm: views.html.awrs_de_registration_confirm,
+                                         templateReason: views.html.awrs_de_registration_reason,
+                                         templateEvidence: views.html.awrs_de_registration_confirmation_evidence) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val permittedStatusTypes: Set[FormBundleStatus] = Set[FormBundleStatus](Approved, ApprovedWithConditions)
@@ -76,8 +80,8 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
         statusPermission(
           // if reason exists then fill the form with the data
           keyStoreService.fetchDeRegistrationReason flatMap {
-            case Some(data) => Future.successful(Ok(views.html.awrs_de_registration_reason(deRegistrationReasonForm.form.fill(data))))
-            case _ => Future.successful(Ok(views.html.awrs_de_registration_reason(deRegistrationReasonForm.form)))
+            case Some(data) => Future.successful(Ok(templateReason(deRegistrationReasonForm.form.fill(data))))
+            case _ => Future.successful(Ok(templateReason(deRegistrationReasonForm.form)))
           }
         )
       }
@@ -85,10 +89,10 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def submitReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar =>
+    authorisedAction { _ =>
       deRegistrationReasonForm.bindFromRequest.fold(
         formWithErrors => {
-          Future.successful(BadRequest(views.html.awrs_de_registration_reason(formWithErrors)))
+          Future.successful(BadRequest(templateReason(formWithErrors)))
         },
         deRegistrationReasonForm =>
           keyStoreService.saveDeRegistrationReason(deRegistrationReasonForm) flatMap {
@@ -103,10 +107,10 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
       restrictedAccessCheck {
         statusPermission(
           keyStoreService.fetchDeRegistrationReason flatMap {
-            case Some(reason) =>
+            case Some(_) =>
               keyStoreService.fetchDeRegistrationDate flatMap {
-                case Some(data) => Future.successful(Ok(views.html.awrs_de_registration(deRegistrationForm.fill(data))))
-                case _ => Future.successful(Ok(views.html.awrs_de_registration(deRegistrationForm)))
+                case Some(data) => Future.successful(Ok(template(deRegistrationForm.fill(data))))
+                case _ => Future.successful(Ok(template(deRegistrationForm)))
               }
             case _ => Future.successful(Redirect(routes.DeRegistrationController.showReason()))
           }
@@ -116,10 +120,10 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def submitDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar =>
+    authorisedAction { _ =>
       deRegistrationForm.bindFromRequest.fold(
         formWithErrors =>
-          Future.successful(BadRequest(views.html.awrs_de_registration(formWithErrors)))
+          Future.successful(BadRequest(template(formWithErrors)))
         ,
         deRegistrationFormData =>
           keyStoreService.saveDeRegistrationDate(deRegistrationFormData) flatMap {
@@ -135,7 +139,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
       keyStoreService.fetchDeRegistrationReason flatMap {
         // if de-registration date has not been given then redirect back to the date page
         case None => Future.successful(Redirect(routes.DeRegistrationController.showReason()))
-        case Some(reason) =>
+        case Some(_) =>
           keyStoreService.fetchDeRegistrationDate flatMap {
             case None => Future.successful(Redirect(routes.DeRegistrationController.showDate()))
             // otherwise continue
@@ -147,7 +151,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
-          Future.successful(Ok(views.html.awrs_de_registration_confirm(deRegistrationConfirmationForm, proposedEndDate))))
+          Future.successful(Ok(templateConfirm(deRegistrationConfirmationForm, proposedEndDate))))
       }
     }
   }
@@ -158,7 +162,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
 
         deRegistrationConfirmationForm.bindFromRequest.fold(
           formWithErrors =>
-            Future.successful(BadRequest(views.html.awrs_de_registration_confirm(formWithErrors, proposedEndDate)))
+            Future.successful(BadRequest(templateConfirm(formWithErrors, proposedEndDate)))
           ,
           confirmationData => {
             val awrsRef = accountUtils.getAwrsRefNo(ar.enrolments)
@@ -195,7 +199,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
                       Future.failed(DeEnrollException("call to government gateway de-enrol failed"))
                   }
                 }.recover {
-                  case error: NoSuchElementException => showErrorPageRaw
+                  case _: NoSuchElementException => showErrorPageRaw
                   case error => throw error
                 }
 
@@ -213,13 +217,13 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) => Future.successful
-        (Ok(views.html.awrs_de_registration_confirmation_evidence(proposedEndDate, printFriendly))))
+        (Ok(templateEvidence(proposedEndDate, printFriendly))))
       }
     }
   }
 
   def returnToIndex: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar =>
+    authorisedAction { _ =>
       returnToIndexSubroutine
     }
   }

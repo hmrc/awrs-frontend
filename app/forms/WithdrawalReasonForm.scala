@@ -17,15 +17,15 @@
 package forms
 
 import forms.AWRSEnums.WithdrawalReasonEnum
+import forms.prevalidation._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import models.WithdrawalReason
-import play.api.data.{FieldMapping, Form}
 import play.api.data.Forms._
+import play.api.data.{FieldMapping, Form}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
-import forms.prevalidation._
 
 object WithdrawalReasonForm extends AwrsFieldConfig {
 

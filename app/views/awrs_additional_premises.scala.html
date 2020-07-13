@@ -15,14 +15,15 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html._
-@import views.view_application.helpers._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
 @import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
 
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(businessPremisesForm: Form[models.AdditionalBusinessPremises], businessPremisesId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent] , viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 
@@ -58,7 +59,7 @@
     }
 }
 
-    @includes.awrs_main(title = messages("awrs.generic.tab.title", businessPremisesIdHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    @awrsMain(title = messages("awrs.generic.tab.title", businessPremisesIdHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
         <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
         <div class="grid">
             <div class="grid grid-2-3">
@@ -74,7 +75,7 @@
 
                 <p id="additional-premises-subtext" class="lede">@messages("awrs.additional-premises.subtext")</p>
 
-                @form(action = actionRoute) {
+                @formWithCSRF(action = actionRoute) {
 
                     @if(isEditMode || businessPremisesId > 1) {
                         <input type="hidden" name="additionalPremises" value="Yes">

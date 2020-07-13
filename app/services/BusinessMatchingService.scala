@@ -43,14 +43,14 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     }
   }
 
-  private def getOrganisation(businessCustomerDetails: Option[BusinessCustomerDetails], businessType: Option[BusinessType]) = {
+  private def getOrganisation(businessCustomerDetails: Option[BusinessCustomerDetails], businessType: Option[BusinessType]): Option[Organisation] = {
     (businessCustomerDetails, businessType) match {
       case (Some(bcd), Some(bt)) if bcd.isAGroup => Some(Organisation(bcd.businessName, getGroupOrgType(bt)))
       case _ => throw new Exception("Missing organisation details for match.")
     }
   }
 
-  private def getGroupOrgType(bt: BusinessType) = {
+  private def getGroupOrgType(bt: BusinessType): String = {
     bt.legalEntity match {
       case Some("LTD_GRP") => AWRSEnums.CorporateBodyString
       case Some("LLP_GRP") => AWRSEnums.LlpString
@@ -77,7 +77,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     }
   }
 
-  private def isSuccessfulMatch(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  private def isSuccessfulMatch(dataReturned: JsValue): Future[Boolean] = {
     val isSuccessResponse = dataReturned.validate[MatchSuccessResponse].isSuccess
     debug(s"[BusinessMatchingService][matchBusinessWithUTR]dataReturned = $dataReturned, isSuccessResponse = $isSuccessResponse")
     Future.successful(isSuccessResponse)

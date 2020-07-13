@@ -31,6 +31,7 @@ import services.DataCacheKeys._
 import services.mocks.MockSave4LaterService
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_additional_premises
 
 import scala.concurrent.Future
 
@@ -38,6 +39,8 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
   implicit val mockConfig: ApplicationConfig = mockAppConfig
+
+  val mockTemplate: awrs_additional_premises = app.injector.instanceOf[views.html.awrs_additional_premises]
 
   lazy val testOneBusinessDetails = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("Yes"))
   lazy val testTwoBusinessDetails = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("Yes"))
@@ -53,7 +56,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[AdditionalBusinessPremises](FakeRequest(), BusinessPremisesForm.businessPremisesValidationForm, premises)
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
+    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig, mockTemplate) {
     override val signInUrl = "/sign-in"
   }
 

@@ -29,7 +29,7 @@ import utils.{AwrsUnitTestTraits, TestUtil}
 
 trait MockAwrsAPI9 extends AwrsUnitTestTraits with MockKeyStoreService with MockSave4LaterService with MockAWRSConnector {
 
-  val testAPI9 = new AwrsAPI9(mockAccountUtils, mockAWRSConnector, testKeyStoreService, testSave4LaterService)
+  lazy val testAPI9 = new AwrsAPI9(mockAccountUtils, mockAWRSConnector, testKeyStoreService, testSave4LaterService)
 
   def setupMockAwrsAPI9(keyStore: Option[SubscriptionStatusType],
                         connector: MockConfiguration[SubscriptionStatusType] = DoNotConfigure): Unit = {
@@ -46,17 +46,17 @@ trait MockAwrsAPI9 extends AwrsUnitTestTraits with MockKeyStoreService with Mock
 
 }
 
-object MockAwrsAPI9 extends MockAwrsAPI9 {
+object MockAwrsAPI9 {
 
   def defaultSubscriptionStatusType(status: Option[FormBundleStatus]): Option[SubscriptionStatusType] =
     status match {
-      case Some(Pending) => TestUtil.testSubscriptionStatusTypePending
-      case Some(Approved) => TestUtil.testSubscriptionStatusTypeApproved
-      case Some(ApprovedWithConditions) => TestUtil.testSubscriptionStatusTypeApprovedWithConditions
-      case Some(Rejected) => TestUtil.testSubscriptionStatusTypeRejected
-      case Some(RejectedUnderReviewOrAppeal) => TestUtil.testSubscriptionStatusTypeRejectedUnderReviewOrAppeal
-      case Some(Revoked) => TestUtil.testSubscriptionStatusTypeRevoked
-      case Some(RevokedUnderReviewOrAppeal) => TestUtil.testSubscriptionStatusTypeRevokedUnderReviewOrAppeal
+      case Some(Pending) => Some(TestUtil.testSubscriptionStatusTypePending)
+      case Some(Approved) => Some(TestUtil.testSubscriptionStatusTypeApproved)
+      case Some(ApprovedWithConditions) => Some(TestUtil.testSubscriptionStatusTypeApprovedWithConditions)
+      case Some(Rejected) => Some(TestUtil.testSubscriptionStatusTypeRejected)
+      case Some(RejectedUnderReviewOrAppeal) => Some(TestUtil.testSubscriptionStatusTypeRejectedUnderReviewOrAppeal)
+      case Some(Revoked) => Some(TestUtil.testSubscriptionStatusTypeRevoked)
+      case Some(RevokedUnderReviewOrAppeal) => Some(TestUtil.testSubscriptionStatusTypeRevokedUnderReviewOrAppeal)
       case None => None
       case _ => throw new NoSuchElementException("unimplemented default notification type in MockAwrsAPI9.defaultSubscriptionStatusType")
     }

@@ -17,7 +17,7 @@
 package views.view_application
 
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import views.view_application.ViewApplicationHelper._

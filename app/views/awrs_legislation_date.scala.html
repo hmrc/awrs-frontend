@@ -14,23 +14,16 @@
  * limitations under the License.
  *@
 
-@import views.helpers.InputTypeRadioGroupParams
-
-
-@import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.helpers._
-@import utils.AccountUtils
-@import views.Configuration._
-@import views.view_application.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
-
 @import config.ApplicationConfig
-@import java.text.DateFormatSymbols
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import views.helpers.InputTypeRadioGroupParams
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(confirmationForm: Form[String], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
@@ -41,7 +34,7 @@
     }
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before")), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before")), userLoggedIn = true) {
     @backLink(controllers.routes.TradingNameController.showTradingName(true).url)
 
     @errorSummaryTemplate(confirmationForm)
@@ -51,7 +44,7 @@
                 <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages("awrs.generic.legislation_before")</h1>
                 @awrsProgressHelper(businessType, businessDetailsName)
             </header>
-            @form(action = actionRoute) {
+            @formWithCSRF(action = actionRoute) {
             <div class="form-group">
                 <div class="form-group">
                     @awrsInputTypeRadioGroup(

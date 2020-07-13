@@ -25,18 +25,18 @@ import controllers.BusinessDirectorsController
 import javax.inject.Inject
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.Save4LaterService
 import services.mocks.MockSave4LaterService
-import uk.gov.hmrc.play.test._
-
-import scala.concurrent.Future
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.test._
 import utils.AccountUtils
+
+import scala.concurrent.Future
 
 class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector with MockSave4LaterService {
 
@@ -57,7 +57,8 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override implicit val applicationConfig: ApplicationConfig) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig) {
+                                 override implicit val applicationConfig: ApplicationConfig,
+                                 val template: views.html.awrs_business_directors) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig, template) {
 
     def show(rowTitle: String, content: Option[String]*): Action[AnyContent] = Action.async {
       request =>
@@ -72,12 +73,14 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
     }
   }
 
+  val mockTemplateDirectors = app.injector.instanceOf[views.html.awrs_business_directors]
+
   val testController: TestController =
-    new TestController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig){
+    new TestController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplateDirectors){
       override val signInUrl = "/sign-in"
     }
 
-  implicit def conv(str: String): Option[String] = Some(str)
+    implicit def conv(str: String): Option[String] = Some(str)
 
   import scala.collection.JavaConversions._
 

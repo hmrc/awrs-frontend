@@ -18,6 +18,7 @@ package forms
 
 import forms.AWRSEnums.DeRegistrationReasonEnum
 import forms.helper.FormHelper._
+import forms.prevalidation._
 import forms.submapping.TupleDateMapping._
 import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, CompulsoryTextFieldMappingParameter, FormData}
 import forms.validation.util.ErrorMessagesUtilAPI._
@@ -30,7 +31,6 @@ import play.api.data.validation.Valid
 import play.api.data.{FieldMapping, Form, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
-import forms.prevalidation._
 
 object DeRegistrationForm {
 

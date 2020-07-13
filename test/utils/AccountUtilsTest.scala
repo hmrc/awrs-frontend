@@ -18,7 +18,7 @@ package utils
 
 import audit.Auditable
 import controllers.auth.StandardAuthRetrievals
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.play.test.UnitSpec
 

@@ -16,17 +16,17 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.helpers._
+@import views.html.includes.awrs_main
 
+@this(awrsMain: awrs_main)
 @(submissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false, selfHeal: Boolean = false)(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 
 @awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
 
 @govWrapper = {
-    @includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.confirmation.title")), userLoggedIn = true){
+    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.confirmation.title")), userLoggedIn = true){
         <div class="grid">
             <div class="grid grid-2-3">
                 @confirmationHelper(

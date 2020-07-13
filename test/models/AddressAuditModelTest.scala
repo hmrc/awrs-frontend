@@ -16,7 +16,7 @@
 
 package models
 
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import services.helper.AddressComparator
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsTestJson._

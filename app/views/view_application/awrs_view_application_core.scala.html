@@ -14,20 +14,17 @@
  * limitations under the License.
  *@
 
-@import config.ApplicationConfig
-@import views.view_application.helpers.ViewApplicationType
-@import uk.gov.hmrc.auth.core.Enrolment
 @import _root_.utils.AccountUtils
+@import config.ApplicationConfig
+@import uk.gov.hmrc.auth.core.Enrolment
+@import views.view_application.helpers.ViewApplicationType
 
 @(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
 
-@import views.view_application.helpers.OneViewMode
-@import views.view_application.ViewApplicationHelper._
-@import views.html.view_application.helpers._
 @import services.DataCacheKeys._
-@import views.html.view_application.subviews._
-@import views.view_application.helpers.SubViewTemplateHelper._
 @import views.html.helpers._
+@import views.html.view_application.subviews._
+@import views.view_application.ViewApplicationHelper._
 
 @businessLegalEntity = @{
     cache.getBusinessType.get.legalEntity.get

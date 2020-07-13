@@ -15,10 +15,13 @@
  *@
 
 @import config.ApplicationConfig
-@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import play.twirl.api.Html
+@import views.html.includes.awrs_main
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.generic.error.title"))){
+@this(awrsMain: awrs_main)
+@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.error.title"))){
 
 
 <div>

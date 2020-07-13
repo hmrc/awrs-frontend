@@ -30,8 +30,8 @@ import play.api.mvc.{AnyContent, Request}
 import services.helper._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import utils.{AccountUtils, LoggingUtils}
 import utils.CacheUtil.cacheUtil
+import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -225,7 +225,7 @@ class ApplicationService @Inject()(enrolService: EnrolService,
                                      cachedSubscription: Option[SubscriptionTypeFrontEnd],
                                      subscriptionStatus: Option[SubscriptionStatusType],
                                      authRetrievals: StandardAuthRetrievals)
-                                    (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext)
+                                    (implicit hc: HeaderCarrier, ec: ExecutionContext)
                                     : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
     def createUpdateRegistrationDetailsRequest(businessCustomerAddress: BCAddressApi3): UpdateRegistrationDetailsRequest = {
       val businessContacts = cached.get.getBusinessContacts.get
@@ -248,6 +248,7 @@ class ApplicationService @Inject()(enrolService: EnrolService,
           createUpdateRegistrationDetailsRequest(businessCustomerAddress),
           authRetrievals
         )
+      case _ => throw new RuntimeException("[callUpdateGroupBusinessPartner] Could not fetch business customer address")
     }
 
   }
@@ -271,7 +272,6 @@ class ApplicationService @Inject()(enrolService: EnrolService,
     val legalEntity = cached.get.getBusinessType
     val businessPartnerName: String = cached.get.getBusinessCustomerDetails.get.businessName
     val businessDirectors = cached.get.getBusinessDirectors
-    val groupMemberDetails = cached.get.getGroupMembers
 
     val newChangeInds = toChangeIndicators(getChangeIndicators(cached, cachedSubscription))
     newChangeInds match {

@@ -97,7 +97,7 @@ object AWRSEnums {
       case DirectorAndSecretary => "awrs.generic.status.both"
     }
 
-    def getMessageKey(enumStr: Option[String]) : String =  enumStr match {case Some(x) => getText(withName(x))}
+    def getMessageKey(enumStr: Option[String]) : String = enumStr.map(x => getText(withName(x))).getOrElse("")
   }
 
   object PersonOrCompanyEnum extends AWRSEnumeration {
@@ -109,7 +109,7 @@ object AWRSEnums {
       case Company => "awrs.generic.status.company"
     }
 
-    def getMessageKey(enumStr: Option[String]) : String =  enumStr match {case Some(x) => getText(withName(x))}
+    def getMessageKey(enumStr: Option[String]) : String =  enumStr.map(x => getText(withName(x))).getOrElse("")
   }
 
   object EntityTypeEnum extends AWRSEnumeration {
@@ -123,7 +123,7 @@ object AWRSEnums {
       case SoleTrader => "awrs.business-partner.entityType_sole_trader"
     }
 
-    def getMessageKey(enumStr: Option[String]) : String =  enumStr match {case Some(x) => getText(withName(x))}
+    def getMessageKey(enumStr: Option[String]) : String =  enumStr.map(x => getText(withName(x))).getOrElse("")
   }
 
   object OperatingDurationEnum extends AWRSEnumeration {

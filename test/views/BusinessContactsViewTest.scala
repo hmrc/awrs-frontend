@@ -24,7 +24,6 @@ import models.BusinessContacts
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -38,6 +37,8 @@ import scala.concurrent.Future
 class BusinessContactsViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
+  val template = app.injector.instanceOf[views.html.awrs_business_contacts]
+
   val businessCustomerDetailsFormId = "businessCustomerDetails"
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
@@ -47,11 +48,11 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[BusinessContacts](FakeRequest(), BusinessContactsForm.businessContactsValidationForm, premises)
 
   val testBusinessContactsController: BusinessContactsController =
-    new BusinessContactsController(mockMCC, mockEmailVerificationService,testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessContactsController(mockMCC, mockEmailVerificationService,testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
       override val signInUrl = "/sign-in"
     }
 
-  def reviewDetailMatch(reviewDetail: Element) = {
+  def reviewDetailMatch(reviewDetail: Element): Any = {
 
     def testIfExists(someString: Option[String]) =
       someString match {

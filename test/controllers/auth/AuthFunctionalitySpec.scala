@@ -21,14 +21,14 @@ import connectors.mock.MockAuthConnector
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{AnyContent, Result, Results}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.{MissingBearerToken, PlayAuthConnector}
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector{
 

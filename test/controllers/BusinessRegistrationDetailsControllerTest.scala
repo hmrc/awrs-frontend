@@ -20,17 +20,17 @@ import builders.SessionBuilder
 import forms.BusinessRegistrationDetailsForm
 import models._
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito._
+import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.{BusinessMatchingService, ServicesUnitTestFixture}
+import utils.TestConstants._
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
-import utils.TestConstants._
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
-import play.api.i18n.Messages
 import views.Configuration.NewApplicationMode
 
 import scala.concurrent.Future
@@ -43,9 +43,11 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
   def testRequest(businessRegistrationDetails: BusinessRegistrationDetails, entityType: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegistrationDetails)
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_registration_details]
+
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
     new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService,
-      testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+      testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

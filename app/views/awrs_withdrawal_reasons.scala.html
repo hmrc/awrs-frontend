@@ -14,13 +14,14 @@
  * limitations under the License.
  *@
 
-@import views.helpers.InputTypeRadioGroupParams
-@import views.helpers.InputTypeTextParams
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.helpers.WithdrawalHelper._
-@import utils.AwrsFieldConfig
 @import config.ApplicationConfig
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers.{InputTypeRadioGroupParams, InputTypeTextParams}
+@import views.helpers.WithdrawalHelper._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(withdrawalReasonForm: Form[models.WithdrawalReason])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @enumPairToMessage(enumName: String, msgKey: String) = @{
@@ -28,13 +29,13 @@
     messages(key) -> messages(value)
 }
 
-    @includes.awrs_main(messages("awrs.generic.tab.title", messages("awrs.withdrawal.reasons_page.heading")), userLoggedIn = true) {
+    @awrsMain(messages("awrs.generic.tab.title", messages("awrs.withdrawal.reasons_page.heading")), userLoggedIn = true) {
         @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
         <div class="grid">
             <div class="grid grid-2-3">
                 @errorSummaryTemplate(withdrawalReasonForm)
                 <h1 id="withdrawal-reasons-heading" class="heading-xlarge">@messages("awrs.withdrawal.reasons_page.heading")</h1>
-                @form(action = controllers.routes.WithdrawalController.submitWithdrawalReasons) {
+                @formWithCSRF(action = controllers.routes.WithdrawalController.submitWithdrawalReasons) {
                     <div id="withdrawal-reason" class="form-group">
                         @awrsInputTypeRadioGroup(
                             InputTypeRadioGroupParams(

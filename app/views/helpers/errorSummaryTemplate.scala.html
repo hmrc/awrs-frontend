@@ -16,7 +16,6 @@
 
 @(form: Form[_], summaryErrorIdOrder : Seq[String] = Seq())(implicit messages: Messages)
 @import _root_.forms.validation.util.ErrorMessageInterpreter._
-@import _root_.forms.validation.util._
 @import _root_.forms.validation.util.ErrorMessageLookup._
 @if(form.hasGlobalErrors || form.hasErrors) {
 

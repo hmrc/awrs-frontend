@@ -35,7 +35,8 @@ class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
-                                           implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                                           implicit val applicationConfig: ApplicationConfig,
+                                           template: views.html.awrs_group_declaration) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -44,8 +45,8 @@ class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         save4LaterService.mainStore.fetchGroupDeclaration(ar) map {
-          case Some(data) => Ok(views.html.awrs_group_declaration(groupDeclarationForm.fill(data)))
-          case _ => Ok(views.html.awrs_group_declaration(groupDeclarationForm))
+          case Some(data) => Ok(template(groupDeclarationForm.fill(data)))
+          case _ => Ok(template(groupDeclarationForm))
         }
       }
     }
@@ -54,7 +55,7 @@ class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
   def sendConfirmation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>
       groupDeclarationForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.awrs_group_declaration(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
         groupDeclarationData =>
           save4LaterService.mainStore.saveGroupDeclaration(ar, groupDeclarationData) flatMap (_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex())))
       )

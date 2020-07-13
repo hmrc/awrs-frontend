@@ -82,14 +82,14 @@ private[controllers] trait ControllerUtil {
         // if the id is for an existing entry (when the id is within the range of the list)
         case _ if id >= min && id <= total => existingEntryAction(data, id)
         // if id is out of range
-        case _ => AwrsController.showNotFoundPage
+        case _ => AwrsController.showNotFoundPage(applicationConfig.templateNotFound)
       }
     case None =>
       // if nothing is returned then this is either for the very first entry or there was an error
       id match {
         // this needs to be after the fetch call because it could be an amendment to the first entry
         case 1 => newEntryAction(1)
-        case _ => AwrsController.showNotFoundPage
+        case _ => AwrsController.showNotFoundPage(applicationConfig.templateNotFound)
       }
   }
 
@@ -197,11 +197,11 @@ private[controllers] trait ControllerUtil {
       case Some(listObj) =>
         updateList(listObjToList(listObj), id, data, viewMode)(haveAnotherAnswer, amendHaveAnotherAnswer, hasSingleNoAnswer(listObj).equals(no), yes, no) match {
           case Some(updated) => saveData(authRetrievals, listToListObj(updated)) flatMap (_ => redirectTo)
-          case _ => AwrsController.showErrorPage
+          case _ => AwrsController.showErrorPage(applicationConfig.templateAppError)
         }
       case None if id == 1 =>
         saveData(authRetrievals, listToListObj(List(data))) flatMap (_ => redirectTo)
-      case None => AwrsController.showBadRequest
+      case None => AwrsController.showBadRequest(applicationConfig.templateAppError)
     }
   }
 

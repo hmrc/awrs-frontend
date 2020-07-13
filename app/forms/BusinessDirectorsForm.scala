@@ -19,6 +19,7 @@ package forms
 import forms.AWRSEnums.PersonOrCompanyEnum._
 import forms.AWRSEnums.{BooleanRadioEnum, DirectorAndSecretaryEnum, PersonOrCompanyEnum}
 import forms.prevalidation._
+import forms.submapping.CompanyNamesMapping._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
@@ -29,7 +30,6 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Valid
 import utils.AwrsValidator._
-import submapping.CompanyNamesMapping._
 
 object BusinessDirectorsForm {
 

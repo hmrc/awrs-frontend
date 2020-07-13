@@ -35,7 +35,6 @@ import utils.AwrsTestJson.api5LTDJson
 import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
-import scala.util.Try
 
 class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with BeforeAndAfterEach {
@@ -69,8 +68,9 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     case false => TestUtil.testBusinessDetails()
   }
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_application_status]
   val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService,
-    mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig)
+    mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig, mockTemplate)
 
   override def beforeEach(): Unit = {
     reset(mockApiSave4LaterConnector, mockMainStoreSave4LaterConnector)
@@ -465,7 +465,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
                      notification: Option[StatusNotification] = None,
                      isNewBusiness: Boolean = false
                     )(test: Future[Result] => Any) = {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessType = testBusinessType,
       fetchBusinessCustomerDetails = testBusinessCustomerDetails,
@@ -505,7 +505,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   */
   def returningTestUser(initialVisit: Boolean,
                         visitFrom: StatusPageVisitRule)(test: Future[Result] => Any): Unit = {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessType = testBusinessType,
       fetchBusinessCustomerDetails = testBusinessCustomerDetails

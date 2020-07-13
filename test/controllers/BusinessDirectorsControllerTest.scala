@@ -24,8 +24,8 @@ import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
 import utils.TestConstants._
+import utils.TestUtil._
 
 import scala.concurrent.Future
 
@@ -34,8 +34,10 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_directors]
+
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
     override val signInUrl = "/sign-in"
   }
 

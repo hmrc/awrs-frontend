@@ -16,12 +16,10 @@
 
 @(formItem:Form[_], fieldName: String, ariaLabelledBy: Option[String] = None, formHasErrors: Boolean = false)(implicit messages: Messages)
 
-@import uk.gov.hmrc.play.mappers.DateFields._
 @import play.api.i18n._
-@import views.html.helper._
-@import views.html.helpers._
+@import uk.gov.hmrc.play.mappers.DateFields._
 @import views.helpers._
-@import uk.gov.hmrc.play.mappers.DateFormatSymbols
+@import views.html.helpers._
 
 @dayElem = @{ fieldName + "." + day }
 @dayInputId = @{ fieldName + "-day"  }

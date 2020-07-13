@@ -16,10 +16,10 @@
 
 package forms.prevalidation
 
-import forms.prevalidation.TrimOption.TrimOption
 import forms.prevalidation.CaseOption.CaseOption
-import play.api.data.Forms._
+import forms.prevalidation.TrimOption.TrimOption
 import play.api.data.Form
+import play.api.data.Forms._
 import utils.AwrsUnitTestTraits
 
 class PrevalidationTest extends AwrsUnitTestTraits {

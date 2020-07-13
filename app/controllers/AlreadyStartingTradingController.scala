@@ -45,7 +45,8 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
                                                  val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                                 implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
+                                                 implicit val applicationConfig: ApplicationConfig,
+                                                 template: views.html.awrs_already_starting_trading) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 
   override val section: String = businessDetailsName
   override implicit val ec: ExecutionContext = mcc.executionContext
@@ -68,42 +69,39 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
               alreadyTrading match {
                 case Some(data) =>
                   val yesNo = if (data) BooleanRadioEnum.YesString else BooleanRadioEnum.NoString
-                  Ok(views.html.awrs_already_starting_trading(alreadyStartedTradingForm.fill(yesNo), businessType))
-                case _ => Ok(views.html.awrs_already_starting_trading(alreadyStartedTradingForm, businessType))
+                  Ok(template(alreadyStartedTradingForm.fill(yesNo), businessType))
+                case _ => Ok(template(alreadyStartedTradingForm, businessType))
               }
             }
+          case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))
         }
       }
     }
   }
 
-  def saveBusinessDetails(id: Int,
-                          redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
-                          isNewRecord: Boolean,
-                          alreadyTrading: Boolean,
-                          authRetrievals: StandardAuthRetrievals)
-                         (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] = {
+  def saveBusinessDetails(alreadyTrading: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
     keyStoreService.saveAlreadyTrading(alreadyTrading) map {
       _ => Redirect(routes.TradingDateController.showBusinessDetails())
     }
   }
 
   override def save(id: Int,
-           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
-           viewApplicationType: ViewApplicationType,
-           isNewRecord: Boolean,
-           authRetrievals: StandardAuthRetrievals)
-          (implicit request: Request[AnyContent]): Future[Result] = {
+                    redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+                    viewApplicationType: ViewApplicationType,
+                    isNewRecord: Boolean,
+                    authRetrievals: StandardAuthRetrievals)
+                   (implicit request: Request[AnyContent]): Future[Result] = {
     businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
       case NewApplicationMode =>
         implicit val viewMode: ViewApplicationType = viewApplicationType
         val businessType = request.getBusinessType
         alreadyStartedTradingForm.bindFromRequest.fold(
           formWithErrors =>
-            Future.successful(BadRequest(views.html.awrs_already_starting_trading(formWithErrors, businessType))),
+            Future.successful(BadRequest(template(formWithErrors, businessType))),
           newAWBusiness =>
-            saveBusinessDetails(id, redirectRoute, isNewRecord, newAWBusiness == "Yes", authRetrievals)
+            saveBusinessDetails(newAWBusiness == "Yes")
         )
+      case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
     }
   }
 }

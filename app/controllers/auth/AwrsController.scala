@@ -28,6 +28,8 @@ import services.DeEnrolService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils, SessionUtil}
+import views.html._
+import views.html.helpers.awrsErrorNotFoundTemplate
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -55,13 +57,13 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
     }
 
   def showErrorPageRaw(implicit request: Request[AnyContent]): Result =
-    AwrsController.showErrorPageRaw
+    AwrsController.showErrorPageRaw(applicationConfig.templateAppError)
 
   def showErrorPage(implicit request: Request[AnyContent]): Future[Result] =
-    AwrsController.showErrorPage
+    AwrsController.showErrorPage(applicationConfig.templateAppError)
 
   def showNotFoundPage(implicit request: Request[AnyContent]): Future[Result] =
-    AwrsController.showNotFoundPage
+    AwrsController.showNotFoundPage(applicationConfig.templateNotFound)
 
   implicit val sessionUtil: Request[AnyContent] => SessionUtil.SessionUtilForRequest = SessionUtil.sessionUtilForRequest
   implicit val sessionUtilForResult: Result => SessionUtil.SessionUtilForResult = SessionUtil.sessionUtilForResult
@@ -81,30 +83,35 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
   def Ok(content: Content)(implicit request: Request[AnyContent]): Result = OkNoLocation(content) addLocation
 
   // OKNoLocation helper is used to avoid storing the location history to the session
-  def OkNoLocation(content: Content)(implicit request: Request[AnyContent]): Result = play.api.mvc.Results.Ok(AwrsController.prettify(content)).as("text/html; charset=utf-8")
+  def OkNoLocation(content: Content): Result = Results.Ok(AwrsController.prettify(content)).as("text/html; charset=utf-8")
 
 }
 
 
 object AwrsController extends Results {
 
-  def showErrorPageRaw(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
-    InternalServerError(views.html.awrs_application_error())
+  def showErrorPageRaw(errorPage: awrs_application_error)
+                      (implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
+    InternalServerError(errorPage())
 
-  def showErrorPage(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
-    Future.successful(showErrorPageRaw)
+  def showErrorPage(errorPage: awrs_application_error)
+                   (implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
+    Future.successful(showErrorPageRaw(errorPage))
 
-  def showBadRequestRaw(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
-    BadRequest(views.html.awrs_application_error())
+  def showBadRequestRaw(errorPage: awrs_application_error)(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
+    BadRequest(errorPage())
 
-  def showBadRequest(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
-    Future.successful(showBadRequestRaw)
+  def showBadRequest(errorPage: awrs_application_error)
+                    (implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
+    Future.successful(showBadRequestRaw(errorPage))
 
-  def showNotFoundPageRaw(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
-    NotFound(views.html.helpers.awrsErrorNotFoundTemplate())
+  def showNotFoundPageRaw(notFound: awrsErrorNotFoundTemplate)
+                         (implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Result =
+    NotFound(notFound())
 
-  def showNotFoundPage(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
-    Future.successful(showNotFoundPageRaw)
+  def showNotFoundPage(notFound: awrsErrorNotFoundTemplate)
+                      (implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig): Future[Result] =
+    Future.successful(showNotFoundPageRaw(notFound))
 
   private val compressor: HtmlCompressor = new HtmlCompressor()
 

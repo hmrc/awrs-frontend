@@ -22,7 +22,6 @@ import controllers.AdditionalPremisesController
 import models._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -36,13 +35,15 @@ import scala.concurrent.Future
 class AdditionalPremisesViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
+  val template = app.injector.instanceOf[views.html.awrs_additional_premises]
+
   def testPremises(addAnother: Option[String]): AdditionalBusinessPremises = testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"),
     additionalAddress = Some(testAddress), addAnother = addAnother)
 
   lazy val testList = List(testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("No")))
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
+    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig, template) {
       override val signInUrl = "/sign-in"
     }
 
@@ -52,9 +53,9 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
     "linear journey" should {
 
       "display h1 with correct premises number for existing records" in {
-        for ((premises, index) <- testList.zipWithIndex) {
+        for ((_, index) <- testList.zipWithIndex) {
           val id = index + 1
-          showPremises(id, isLinearMode = true) {
+          showPremises(id) {
             result =>
               status(result) shouldBe OK
               val document = Jsoup.parse(contentAsString(result))
@@ -70,7 +71,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
       "display h1 with correct premises number for linear mode when adding a new record" in {
         val testList2 = List(testPremises(addAnother = Some("Yes")))
         val nextId = testList2.size + 1
-        showPremises(id = nextId, isLinearMode = true, premises = testList2) {
+        showPremises(id = nextId, premises = testList2) {
           result =>
             status(result) shouldBe OK
             val document = Jsoup.parse(contentAsString(result))

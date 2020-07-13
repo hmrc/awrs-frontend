@@ -29,10 +29,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.mocks.MockSave4LaterService
-import utils.AwrsUnitTestTraits
-import utils.TestUtil
-import utils.TestUtil._
 import utils.TestConstants._
+import utils.{AwrsUnitTestTraits, TestUtil}
+import utils.TestUtil._
 
 import scala.concurrent.Future
 
@@ -45,8 +44,10 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
   private def testRequest(partner: Partner) =
     TestUtil.populateFakeRequest[Partner](FakeRequest(), PartnershipDetailsForm.partnershipDetailsValidationForm, partner)
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_partner_member_details]
+
   val testBusinessPartnersController: BusinessPartnersController =
-    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
     override val signInUrl = "/sign-in"
   }
 

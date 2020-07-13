@@ -31,6 +31,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AccountUtils
+import views.html.awrs_application_update_confirmation
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,7 +42,9 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                        val authConnector: DefaultAuthConnector,
                                        val auditable: Auditable,
                                        val accountUtils: AccountUtils,
-                                       implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                                       implicit val applicationConfig: ApplicationConfig,
+                                       templateConfirmation: views.html.awrs_application_confirmation,
+                                       templateUpdate: awrs_application_update_confirmation) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -57,7 +60,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
       case Some(data: NewAWBusiness) => data.invertedBeforeMarch2016Question.newAWBusiness match {
         case BooleanRadioEnum.YesString => Future.successful(true)
         case BooleanRadioEnum.NoString => Future.successful(false)
-        case data@_ => err()
+        case _ => err()
       }
       case _ => err()
     }
@@ -76,7 +79,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
             save4LaterService.mainStore.removeAll(ar)
             val format = new SimpleDateFormat("d MMMM y")
             val submissionDate = format.format(Calendar.getInstance().getTime)
-            Future.successful(Ok(views.html.awrs_application_confirmation(submissionDate, isNewBusiness, printFriendly, selfHeal)) addLocation)
+            Future.successful(Ok(templateConfirmation(submissionDate, isNewBusiness, printFriendly, selfHeal)) addLocation)
         }
       }
     }
@@ -91,7 +94,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
             save4LaterService.api.removeAll(ar)
             val format = new SimpleDateFormat("d MMMM y")
             val resubmissionDate = format.format(Calendar.getInstance().getTime)
-            Future.successful(Ok(views.html.awrs_application_update_confirmation(resubmissionDate, isNewBusiness, printFriendly)) addLocation)
+            Future.successful(Ok(templateUpdate(resubmissionDate, isNewBusiness, printFriendly)) addLocation)
         }
       }
     }

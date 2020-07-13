@@ -22,7 +22,6 @@ import controllers.SupplierAddressesController
 import models._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -37,17 +36,19 @@ import scala.concurrent.Future
 class AdditionalSupplierViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  lazy val testSupplier: Option[String] => Supplier = (addAnother: Option[String]) => testSupplierDefault(alcoholSuppliers = Some("Yes"), supplierName = Some("Supplier Name"), ukSupplier = Some("Yes"), vatRegistered = Some("Yes"), vatNumber = testUtr, supplierAddress = Some(testAddress), additionalSupplier = Some("Yes"))
+  val template = app.injector.instanceOf[views.html.awrs_supplier_addresses]
+
+  lazy val testSupplier: Option[String] => Supplier = (_: Option[String]) => testSupplierDefault(alcoholSuppliers = Some("Yes"), supplierName = Some("Supplier Name"), ukSupplier = Some("Yes"), vatRegistered = Some("Yes"), vatNumber = testUtr, supplierAddress = Some(testAddress), additionalSupplier = Some("Yes"))
   lazy val testList = List(testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("No")))
 
   val testSupplierAddressesController: SupplierAddressesController =
-    new SupplierAddressesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new SupplierAddressesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = "/sign-in"
   }
   "Additional Supplier Template" should {
 
     "display h1 with correct supplier number for linear mode" in {
-      for ((supplier, index) <- testList.getOrElse(List()).zipWithIndex) {
+      for ((_, index) <- testList.getOrElse(List()).zipWithIndex) {
         val id = index + 1
         showSupplier(id) {
           result =>
@@ -63,7 +64,7 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
     }
 
     "display h1 with correct supplier number for edit mode" in {
-      for ((supplier, index) <- testList.getOrElse(List()).zipWithIndex) {
+      for ((_, index) <- testList.getOrElse(List()).zipWithIndex) {
         val id = index + 1
         showSupplier(id, isLinearMode = false, isNewRecord = false) {
           result =>

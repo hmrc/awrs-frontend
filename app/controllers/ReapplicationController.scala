@@ -30,7 +30,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils}
+import utils.AwrsSessionKeys._
+import utils.{AccountUtils, LoggingUtils}
+import views.html.{awrs_application_too_soon_error, awrs_reapplication_confirmation}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,7 +44,9 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
-                                        implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController with LoggingUtils {
+                                        implicit val applicationConfig: ApplicationConfig,
+                                        templateTooSoon: awrs_application_too_soon_error,
+                                        templateReappConfirm: awrs_reapplication_confirmation) extends FrontendController(mcc) with AwrsController with LoggingUtils {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   private final lazy val MinReturnHours = 24
@@ -58,17 +62,17 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
         case Some(notification) =>
           val storedDateString: String = notification.storageDatetime.getOrElse("")
           if (storedDateString.isEmpty) {
-            Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+            Future.successful(Ok(templateReappConfirm(reapplicationForm)))
           }
           else {
             val storedDate: LocalDateTime = fmt.parseLocalDateTime(storedDateString)
             if (storedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours))) {
-              Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+              Future.successful(Ok(templateReappConfirm(reapplicationForm)))
             } else {
-              Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
+              Future.successful(InternalServerError(templateTooSoon(applicationStatus)))
             }
           }
-        case _ => Future.successful(Ok(views.html.awrs_reapplication_confirmation(reapplicationForm)))
+        case _ => Future.successful(Ok(templateReappConfirm(reapplicationForm)))
       }
     }
   }
@@ -77,7 +81,7 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       reapplicationForm.bindFromRequest.fold(
         formWithErrors =>
-          Future.successful(BadRequest(views.html.awrs_reapplication_confirmation(formWithErrors)))
+          Future.successful(BadRequest(templateReappConfirm(formWithErrors)))
         ,
         success => {
           success.answer.get match {
@@ -87,18 +91,18 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
                 _ <- save4LaterService.mainStore.removeAll(ar)
                 _ <- save4LaterService.api.removeAll(ar)
                 _ <- keyStoreService.removeAll
-              } yield Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))).removingFromSession(
-                AwrsSessionKeys.sessionBusinessType,
-                AwrsSessionKeys.sessionBusinessName,
-                AwrsSessionKeys.sessionPreviousLocation,
-                AwrsSessionKeys.sessionCurrentLocation,
-                AwrsSessionKeys.sessionStatusType,
-                AwrsSessionKeys.sessionAwrsRefNo,
-                AwrsSessionKeys.sessionJouneyStartLocation,
-                AwrsSessionKeys.sessionSectionStatus
+              } yield Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(sessionCallerId))).removingFromSession(
+                sessionBusinessType,
+                sessionBusinessName,
+                sessionPreviousLocation,
+                sessionCurrentLocation,
+                sessionStatusType,
+                sessionAwrsRefNo,
+                sessionJouneyStartLocation,
+                sessionSectionStatus
               )
             case _ =>
-              Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))))
+              Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(sessionCallerId))))
           }
         }
       )

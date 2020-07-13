@@ -25,9 +25,9 @@ import models.FormBundleStatus.Approved
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
 import play.api.Logger
+import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, Request}
-import play.api.http.Status._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AWRSFeatureSwitches, AccountUtils, LoggingUtils}

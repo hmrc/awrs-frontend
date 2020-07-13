@@ -14,17 +14,16 @@
  * limitations under the License.
  *@
 
-@import views.view_application.helpers.ViewApplicationType
-@import views.view_application.ViewApplicationHelper._
-@import views.html.view_application.helpers._
-@import views.view_application.subviews.SubviewIds
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import contents._
-@import services.DataCacheKeys._
 @import _root_.utils.AccountUtils
-@import uk.gov.hmrc.auth.core.Enrolment
 @import config.ApplicationConfig
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.auth.core.Enrolment
+@import views.html.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.subviews.SubviewIds
 
+@import views.html.view_application.subviews.contents.content_group_member
 @(headingKey: String,
         someModel: Option[models.GroupMembers],
         businessLegalEntity: String,

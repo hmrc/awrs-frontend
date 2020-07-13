@@ -22,12 +22,12 @@ import controllers.TradingActivityController
 import controllers.auth.StandardAuthRetrievals
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request, Result}
 import play.api.test.FakeRequest
+import services.DataCacheKeys._
 import services.mocks.MockSave4LaterService
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import views.view_application.helpers.ViewApplicationType
 
 import scala.concurrent.Future
-import services.DataCacheKeys._
 
 /*
 *  this test is created to test the section hash decoding, the rest of the functionality are tested by the controllers
@@ -37,13 +37,15 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  val testController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val template = app.injector.instanceOf[views.html.awrs_trading_activity]
+
+  val testController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
     override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result]
     = Future.successful(Ok)
   }
 
-  setUser(hasAwrs = true)
+  resetAuthConnector()
   lazy val baseRequest: FakeRequest[AnyContentAsEmpty.type] = SessionBuilder.buildRequestWithSession(userId, "SOP") // use sole trader journey as the foundation for these tests
 
   "redirectToIndex" should {

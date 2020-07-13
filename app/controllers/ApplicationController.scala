@@ -20,29 +20,25 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-class ApplicationController @Inject()(servicesConfig: ServicesConfig,
-                                      mcc: MessagesControllerComponents,
+class ApplicationController @Inject()(mcc: MessagesControllerComponents,
                                       implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) {
 
   def unauthorised(implicit messages: Messages): Action[AnyContent] = Action { implicit request =>
-    Unauthorized(views.html.unauthorised())
+    Unauthorized(applicationConfig.templateUnauthorised())
   }
 
-  def logout: Action[AnyContent] = Action { implicit request =>
+  def logout: Action[AnyContent] = Action { _ =>
     Redirect(applicationConfig.signOut).withNewSession
   }
 
-  def timedOut(): Action[AnyContent] = Action {
-    implicit request =>
-      Redirect(applicationConfig.signOut)
+  def timedOut(): Action[AnyContent] = Action { _ =>
+    Redirect(applicationConfig.signOut)
   }
 
-  def keepAlive: Action[AnyContent] = Action {
-    implicit request =>
-      Ok("OK")
+  def keepAlive: Action[AnyContent] = Action { _ =>
+    Ok("OK")
   }
 
 }

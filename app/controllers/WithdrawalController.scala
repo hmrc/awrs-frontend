@@ -47,7 +47,10 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
                                      val authConnector: DefaultAuthConnector,
                                      val auditable: Auditable,
                                      val accountUtils: AccountUtils,
-                                     implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController with LoggingUtils {
+                                     implicit val applicationConfig: ApplicationConfig,
+                                     templateWithdrawalReasons: views.html.awrs_withdrawal_reasons,
+                                     templateWithdrawalConfirmation: views.html.awrs_withdrawal_confirmation,
+                                     templateWithdrawalStatus: views.html.awrs_withdrawal_confirmation_status) extends FrontendController(mcc) with AwrsController with LoggingUtils {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -60,9 +63,9 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
       } yield {
         (successResponse.exists(_.formBundleStatus == Pending), keyStoreResponse) match {
           case (true, Some(data)) =>
-            Ok(views.html.awrs_withdrawal_reasons(withdrawalReasonForm.form.fill(data)))
+            Ok(templateWithdrawalReasons(withdrawalReasonForm.form.fill(data)))
           case (true, _) =>
-            Ok(views.html.awrs_withdrawal_reasons(withdrawalReasonForm.form))
+            Ok(templateWithdrawalReasons(withdrawalReasonForm.form))
           case _ =>
             showErrorPageRaw
         }
@@ -74,7 +77,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { _ =>
       withdrawalReasonForm.bindFromRequest.fold(
         formWithErrors => {
-          Future.successful(BadRequest(views.html.awrs_withdrawal_reasons(formWithErrors)))
+          Future.successful(BadRequest(templateWithdrawalReasons(formWithErrors)))
         },
         surveyDetails => {
           keyStoreService.saveWithdrawalReason(surveyDetails) map {
@@ -87,7 +90,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
 
   def showConfirmWithdrawal: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
-      Future.successful(Ok(views.html.awrs_withdrawal_confirmation(withdrawalConfirmation)))
+      Future.successful(Ok(templateWithdrawalConfirmation(withdrawalConfirmation)))
     }
   }
 
@@ -95,7 +98,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       withdrawalConfirmation.bindFromRequest.fold(
         formWithErrors =>
-          Future.successful(BadRequest(views.html.awrs_withdrawal_confirmation(formWithErrors)))
+          Future.successful(BadRequest(templateWithdrawalConfirmation(formWithErrors)))
         ,
         withdrawalDetails =>
           withdrawalDetails.confirmation match {
@@ -109,10 +112,10 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
               val denrolResult = (for {
                 reason <- keyStoreService.fetchWithdrawalReason
                 api8Response <- api8.withdrawApplication(reason, ar)
-                deleteReason <- keyStoreService.deleteWithdrawalReason
+                _ <- keyStoreService.deleteWithdrawalReason
                 deEnrolSuccess <- deEnrol()
               } yield (deEnrolSuccess, api8Response)).recover {
-                case error: NoSuchElementException => showErrorPageRaw
+                case _: NoSuchElementException => showErrorPageRaw
                 case error => throw error
               }
               denrolResult flatMap {
@@ -129,7 +132,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
               }
             case _ =>
               keyStoreService.deleteWithdrawalReason map {
-                _ => Redirect(controllers.routes.IndexController.showIndex)
+                _ => Redirect(controllers.routes.IndexController.showIndex())
               }
           }
       )
@@ -138,7 +141,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
 
   def showWithdrawalConfirmation(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
-      Future.successful(Ok(views.html.awrs_withdrawal_confirmation_status(request.getProcessingDate.fold("")(x => x), printFriendly)))
+      Future.successful(Ok(templateWithdrawalStatus(request.getProcessingDate.fold("")(x => x), printFriendly)))
     }
   }
 }

@@ -16,12 +16,8 @@
 
 package controllers.auth
 
-import java.util.UUID
-
 import builders.SessionBuilder
 import controllers.IndexController
-import controllers.auth.Utr._
-import models.FormBundleStatus._
 import models._
 import org.mockito.Mockito._
 import play.api.libs.json.Json
@@ -31,8 +27,8 @@ import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import uk.gov.hmrc.http.cache.client.CacheMap
-import utils.TestUtil._
 import utils.TestConstants._
+import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
 
@@ -46,30 +42,32 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     reset(mockIndexService)
   }
 
+  val template = app.injector.instanceOf[views.html.awrs_index]
+
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9,
-    mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = "/sign-in"
   }
 
   "The index page which implements AwrsController" should {
     import scala.language.implicitConversions
-    def noRedirection(expected: String)(implicit result: Future[Result]): Unit = {
+    def noRedirection()(implicit result: Future[Result]): Unit = {
       status(result) shouldBe OK
     }
-    def redirected(expected: String)(implicit result: Future[Result]): Unit = {
+    def redirected()(implicit result: Future[Result]): Unit = {
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some("/alcohol-wholesale-scheme/status-page")
     }
 
     "not perform any redirection if the status is not rejected" in {
-      getWithAuthorisedUserCtWithStatusPending(implicit result => noRedirection(Pending.name))
-      getWithAuthorisedUserCtWithStatusApproved(implicit result => noRedirection(Approved.name))
-      getWithAuthorisedUserCtWithStatusApprovedWithConditions(implicit result => noRedirection(ApprovedWithConditions.name))
+      getWithAuthorisedUserCtWithStatusPending(implicit result => noRedirection())
+      getWithAuthorisedUserCtWithStatusApproved(implicit result => noRedirection())
+      getWithAuthorisedUserCtWithStatusApprovedWithConditions(implicit result => noRedirection())
     }
 
     "redirect back to the status page if the status is rejected" in {
-      getWithAuthorisedUserCtWithStatusRejected(implicit result => redirected(Rejected.name))
+      getWithAuthorisedUserCtWithStatusRejected(implicit result => redirected())
     }
   }
 

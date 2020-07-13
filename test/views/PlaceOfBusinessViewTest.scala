@@ -23,7 +23,6 @@ import forms.PlaceOfBusinessForm
 import models.PlaceOfBusiness
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -44,7 +43,9 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
   def testRequest(premises: PlaceOfBusiness) =
     TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm, premises)
 
-  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig)
+  val template = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
+
+  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
   "BusinessContactsController" must {
 

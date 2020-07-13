@@ -17,18 +17,18 @@
 package controllers
 
 import builders.SessionBuilder
-import forms.{AlreadyStartingTradingForm, BusinessDetailsForm}
+import forms.AlreadyStartingTradingForm
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
+import views.html.awrs_already_starting_trading
 
 import scala.concurrent.Future
 
@@ -37,11 +37,13 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
 
   val newBusinessName = "Changed"
 
-  def testRequest(answer: String, entityType: String, hasAwrs: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] =
+  def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[String](FakeRequest(), AlreadyStartingTradingForm.alreadyStartedTradingForm, answer)
 
+  val mockTemplate: awrs_already_starting_trading = app.injector.instanceOf[views.html.awrs_already_starting_trading]
+
   val alreadyStartingTradingController: AlreadyStartingTradingController =
-    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, mockTemplate) {
     override val signInUrl = "/sign-in"
   }
 
@@ -92,7 +94,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
         val businessType = "test"
         val hasAwrs = true
 
-        val fakeRequest = testRequest("Yes", businessType, hasAwrs)
+        val fakeRequest = testRequest("Yes")
 
         setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
         setupMockSave4LaterServiceWithOnly(

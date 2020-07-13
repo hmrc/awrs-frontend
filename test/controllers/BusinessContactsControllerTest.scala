@@ -40,7 +40,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{EmailVerificationService, Save4LaterService, ServicesUnitTestFixture}
+import services.{EmailVerificationService, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
@@ -54,13 +54,15 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
   val businessCustomerDetailsFormId = "businessCustomerDetails"
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_contacts]
+
 
   def testRequest(premises: BusinessContacts): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessContacts](FakeRequest(), BusinessContactsForm.businessContactsValidationForm, premises)
 
   val testBusinessContactsController: BusinessContactsController =
     new BusinessContactsController(mockMCC, mockEmailVerificationService, testSave4LaterService, mockDeEnrolService,
-      mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+      mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
     override val signInUrl = "/sign-in"
   }
 

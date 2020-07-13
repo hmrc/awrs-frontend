@@ -27,15 +27,14 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import play.api.mvc.MessagesControllerComponents
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
-import play.api.mvc.MessagesControllerComponents
-
-import scala.concurrent.Future
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 
 case class DummyData(doYouHaveAnyEntries: String, data: Option[String], doYouHaveAnotherEntry: Option[String])

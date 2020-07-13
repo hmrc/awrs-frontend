@@ -24,7 +24,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
-import utils.TestUtil.testBusinessRegistrationDetails
 
 import scala.concurrent.Future
 
@@ -32,10 +31,12 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
+  val template = app.injector.instanceOf[views.html.awrs_group_declaration]
+
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val formId = "groupDeclaration"
   val testGroupDeclarationController: GroupDeclarationController = new GroupDeclarationController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
   "Submitting the application declaration form with " should {
     "Authenticated and authorised users" should {

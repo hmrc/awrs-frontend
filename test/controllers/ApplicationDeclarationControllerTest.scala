@@ -47,8 +47,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
-import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
 import uk.gov.hmrc.play.audit.model.Audit
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
@@ -68,6 +68,10 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
 
   val formId = "applicationDeclaration"
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_application_declaration]
+
+  val mockBusinessDirectorsTemplate = app.injector.instanceOf[views.html.awrs_business_directors]
+
   val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
   val subscribeUpdateSuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
   val enrolSuccessResponse = EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))
@@ -77,12 +81,12 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[ApplicationDeclaration](FakeRequest(), ApplicationDeclarationForm.applicationDeclarationValidationForm, declaration)
 
   val testApplicationDeclarationController: ApplicationDeclarationController =
-    new ApplicationDeclarationController(mockEnrolService, mockApplicationService, mockMCC, testSave4LaterService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig){
+    new ApplicationDeclarationController(mockEnrolService, mockApplicationService, mockMCC, testSave4LaterService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, mockTemplate){
 
   }
 
   val testApplicationBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockBusinessDirectorsTemplate)
 
   "ApplicationDeclarationController" must {
     "show application declaration page without preloaded data" in {
@@ -215,7 +219,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"),
       fetchApplicationDeclaration = data
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
@@ -230,7 +234,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       fetchAll = MockSave4LaterService.defaultFetchAll,
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP")
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
@@ -240,14 +244,14 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   }
 
   private def continueWithAuthorisedUserSelfHeal(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    setUser()
+    resetAuthConnector()
     reset(mockAccountUtils)
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testReviewDetails,
       fetchAll = MockSave4LaterService.defaultFetchAll,
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP")
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Left(selfHealSuccessResponse)))
@@ -257,7 +261,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   }
 
   private def continueUpdateWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchAll = MockSave4LaterService.defaultFetchAll)
     setupMockKeyStoreServiceOnlySaveFunctions()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
@@ -272,7 +276,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     exception match {
       case _:DESValidationException => setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
       case _ => setAuthMocks(
-        authResult = Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))),
+        authResult = Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))),
         mockAccountUtils = Some(mockAccountUtils)
       )
     }
@@ -285,7 +289,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   }
 
   private def updateWithException(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], exception: Exception)(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchAll = createCacheMap("SOP"), fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"))
     setupMockKeyStoreServiceOnlySaveFunctions()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))

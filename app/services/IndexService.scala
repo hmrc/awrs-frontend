@@ -73,12 +73,12 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
     }
   }
 
-  def showContinueButton(indexViewModel: IndexViewModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
+  def showContinueButton(indexViewModel: IndexViewModel): Boolean = {
     val listWithoutEdited = indexViewModel.sectionModels.filterNot(_.status.equals(SectionEdited))
     listWithoutEdited.forall(_.status.equals(SectionComplete))
   }
 
-  def showOneViewLink(indexViewModel: IndexViewModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean =
+  def showOneViewLink(indexViewModel: IndexViewModel): Boolean =
     !indexViewModel.sectionModels.forall(_.status.equals(SectionNotStarted))
 
 
@@ -87,7 +87,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
       cache.get.legalEntity.isEmpty
     }
     catch {
-      case e: Throwable =>
+      case _: Throwable =>
         false
     }
   }
@@ -97,7 +97,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
       cache.get.mainPlaceOfBusiness.isEmpty
     }
     catch {
-      case e: Throwable =>
+      case _: Throwable =>
         false
     }
   }
@@ -107,7 +107,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
       cache.get.contactFirstName.isEmpty
     }
     catch {
-      case e: Throwable =>
+      case _: Throwable =>
         false
     }
   }

@@ -39,7 +39,8 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
                                           val deEnrolService: DeEnrolService,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
-                                          implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                          implicit val applicationConfig: ApplicationConfig,
+                                          template: views.html.awrs_principal_place_of_business) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
   override implicit val ec: ExecutionContext = mcc.executionContext
   override val section: String = placeOfBusinessName
@@ -58,12 +59,12 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
 
         // if this is the first time the user enters this form, then populate the main principal place of business with the address from business customers frontend
         save4LaterService.mainStore.fetchPlaceOfBusiness(ar).flatMap {
-          case Some(data) => Future.successful(Ok(views.html.awrs_principal_place_of_business(accountUtils.hasAwrs(ar.enrolments), businessType, placeOfBusinessForm.form.fill(data))))
+          case Some(data) => Future.successful(Ok(template(accountUtils.hasAwrs(ar.enrolments), businessType, placeOfBusinessForm.form.fill(data))))
           case _ =>
             save4LaterService.mainStore.fetchBusinessCustomerDetails(ar).flatMap {
               case Some(businessCustomerDetails) =>
                 val firstTimeForm = placeOfBusinessForm.form.fill(PlaceOfBusiness(mainAddress = convertBCAddressToAddress(businessCustomerDetails.businessAddress)))
-                Future.successful(Ok(views.html.awrs_principal_place_of_business(accountUtils.hasAwrs(ar.enrolments), businessType, firstTimeForm)))
+                Future.successful(Ok(template(accountUtils.hasAwrs(ar.enrolments), businessType, firstTimeForm)))
               case None => showErrorPage // given the user started the journey correctly from the home controller, this should never happen
             }
         }
@@ -76,7 +77,7 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
     implicit val viewMode = viewApplicationType
     placeOfBusinessForm.bindFromRequest.fold(
       formWithErrors =>
-        Future.successful(BadRequest(views.html.awrs_principal_place_of_business(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, formWithErrors)))
+        Future.successful(BadRequest(template(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, formWithErrors)))
       ,
       placeOfBusinessData =>
         save4LaterService.mainStore.savePlaceOfBusiness(authRetrievals, placeOfBusinessData) flatMap {

@@ -19,18 +19,15 @@ package forms.helper
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import forms.validation.util.ErrorMessageFactory._
-import forms.validation.util.{FieldErrorConfig, MessageArguments, SummaryErrorConfig, TargetFieldIds}
 import models.TupleDate
 import org.joda.time.LocalDate
-import play.api.data.validation.Valid
 
 import scala.util.{Failure, Success, Try}
 
 
 object FormHelper {
 
-  def isInvalidDate(date: TupleDate) =
+  def isInvalidDate(date: TupleDate): Boolean =
     Try(new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate) match {
       case Failure(_) => true
       case Success(_) => false

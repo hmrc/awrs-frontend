@@ -41,7 +41,8 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
-                                           implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with Deletable[Partners, Partner] with SaveAndRoutable {
+                                           implicit val applicationConfig: ApplicationConfig,
+                                           template: views.html.awrs_partner_member_details) extends FrontendController(mcc) with JourneyPage with Deletable[Partners, Partner] with SaveAndRoutable {
 
   override implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -70,15 +71,15 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
         }
 
         lazy val newEntryAction = (id: Int) =>
-          Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form, id, isNewRecord)))
+          Future.successful(Ok(template(partnershipDetailsForm.form, id, isNewRecord)))
 
         lazy val existingEntryAction = (data: Partners, id: Int) =>
           if (data.partners.isEmpty) {
-            Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form, 1, isNewRecord)))
+            Future.successful(Ok(template(partnershipDetailsForm.form, 1, isNewRecord)))
           } else {
             val partner = data.partners(id - 1)
             val updatedSupplier = partner.copy(partnerAddress = applicationConfig.countryCodes.getAddressWithCountry(partner.partnerAddress))
-            Future.successful(Ok(views.html.awrs_partner_member_details(partnershipDetailsForm.form.fill(updatedSupplier), id, isNewRecord)))
+            Future.successful(Ok(template(partnershipDetailsForm.form.fill(updatedSupplier), id, isNewRecord)))
           }
 
         lazy val haveAnother = (data: Partners) =>
@@ -105,7 +106,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
     partnershipDetailsForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.awrs_partner_member_details(formWithErrors, id, isNewRecord))),
+      formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),
       partnerData => {
         val countryCodePartnerData = partnerData.copy(partnerAddress = applicationConfig.countryCodes.getAddressWithCountryCode(partnerData.partnerAddress))
 
@@ -118,7 +119,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
         )(
           haveAnotherAnswer = (data: Partner) => data.otherPartners.fold("")(x => x),
           amendHaveAnotherAnswer = amendHaveAnotherAnswer,
-          hasSingleNoAnswer = (fetchData: Partners) => "This is not required for partners"
+          hasSingleNoAnswer = (_: Partners) => "This is not required for partners"
         )(
           listObjToList = (listObj: Partners) => listObj.partners,
           listToListObj = (list: List[Partner]) => Partners(list)

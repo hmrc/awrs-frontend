@@ -30,7 +30,7 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
     }).headOption
 
     (firstUtr, authRetrievals.affinityGroup) match {
-      case (Some(utr), _) => utr.value.toString
+      case (Some(utr), _) => utr.value
       case (_, Some(org)) if org equals AffinityGroup.Organisation => authRetrievals.credId
       case (_, affinityGroup) => throw new RuntimeException(s"[getUtr] No UTR found and affinity group was ${affinityGroup.getOrElse("None")}")
     }

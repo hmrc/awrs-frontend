@@ -39,7 +39,8 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
-                                           implicit val applicationConfig: ApplicationConfig
+                                           implicit val applicationConfig: ApplicationConfig,
+                                           template: views.html.awrs_business_contacts
                                           ) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
   override implicit val ec: ExecutionContext = mcc.executionContext
@@ -59,13 +60,13 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
         save4LaterService.mainStore.fetchBusinessCustomerDetails(ar).flatMap {
           case Some(businessCustomerDetails) =>
             save4LaterService.mainStore.fetchBusinessContacts(ar).flatMap {
-              case Some(data) => Future.successful(Ok(views.html.awrs_business_contacts(accountUtils.hasAwrs(ar.enrolments),
+              case Some(data) => Future.successful(Ok(template(accountUtils.hasAwrs(ar.enrolments),
                 businessType,
                 businessCustomerDetails.businessAddress,
                 businessContactsForm.form.fill(data))))
               case _ =>
                 val firstTimeForm = businessContactsForm.form
-                Future.successful(Ok(views.html.awrs_business_contacts(accountUtils.hasAwrs(ar.enrolments),
+                Future.successful(Ok(template(accountUtils.hasAwrs(ar.enrolments),
                   businessType,
                   businessCustomerDetails.businessAddress,
                   firstTimeForm)))
@@ -83,7 +84,7 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
       formWithErrors =>
         save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals).flatMap {
           case Some(businessCustomerDetails) =>
-            Future.successful(BadRequest(views.html.awrs_business_contacts(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, businessCustomerDetails.businessAddress, formWithErrors)))
+            Future.successful(BadRequest(template(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, businessCustomerDetails.businessAddress, formWithErrors)))
           case _ => showErrorPage
         }
       ,

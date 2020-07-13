@@ -14,23 +14,21 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import contents._
-@import views.helpers._
-@import utils.AwrsFieldConfig
-@import views.view_application.subviews._
-@import views.view_application.helpers._
-@import utils.SessionUtil
-@import services.DataCacheKeys._
-
 @import config.ApplicationConfig
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.html.view_application.subviews.contents._
+@import views.view_application.helpers._
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(confirmationForm: Form[models.DeleteConfirmation], section: String, headingParameter: String, formAction: Int => Call, id: Int, data : Any)(implicit request: Request[AnyContent], viewMode : ViewApplicationType= OneViewMode, messages : Messages, applicationConfig: ApplicationConfig)
 
 @modelRender = {
     @(data) match {
-        case s : Supplier => {@contents.content_supplier(s, id)}
+        case s : Supplier => {@content_supplier(s, id)}
         case p : AdditionalBusinessPremises => {@content_additional_premises(p, id)}
         case d : BusinessDirector => {@content_director(d, request.session.get("businessType").getOrElse(""), id)}
         case g : GroupMember => {@content_group_member(g, request.session.get("businessType").getOrElse(""), id)}
@@ -38,7 +36,7 @@
     }
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.delete.confirmation_heading", messages(headingParameter))), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.delete.confirmation_heading", messages(headingParameter))), userLoggedIn = true) {
 @backLink(backUrl = controllers.routes.ViewApplicationController.viewSection(data match {
         case s : Supplier => suppliersName
         case p : AdditionalBusinessPremises => additionalBusinessPremisesName
@@ -58,7 +56,7 @@
             @awrsProgressHelper(request.getBusinessType, section)(EditMode, messages)
         </header>
         @modelRender
-        @form(action = formAction(id)) {
+        @formWithCSRF(action = formAction(id)) {
         <div class="form-group">
             @awrsInputTypeRadioGroup(
                 InputTypeRadioGroupParams(

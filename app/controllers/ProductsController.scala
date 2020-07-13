@@ -38,7 +38,8 @@ class ProductsController @Inject()(val mcc: MessagesControllerComponents,
                                    val authConnector: DefaultAuthConnector,
                                    val auditable: Auditable,
                                    val accountUtils: AccountUtils,
-                                   implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                   implicit val applicationConfig: ApplicationConfig,
+                                   template: views.html.awrs_products) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
   override implicit val ec: ExecutionContext = mcc.executionContext
   override val section: String = productsName
@@ -54,8 +55,8 @@ class ProductsController @Inject()(val mcc: MessagesControllerComponents,
         }
 
         save4LaterService.mainStore.fetchProducts(ar) flatMap {
-          case Some(data) => Future.successful(Ok(views.html.awrs_products(productsForm.fill(data))))
-          case _ => Future.successful(Ok(views.html.awrs_products(productsForm)))
+          case Some(data) => Future.successful(Ok(template(productsForm.fill(data))))
+          case _ => Future.successful(Ok(template(productsForm)))
         }
       }
     }
@@ -65,7 +66,7 @@ class ProductsController @Inject()(val mcc: MessagesControllerComponents,
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
     productsForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.awrs_products(formWithErrors)))
+      formWithErrors => Future.successful(BadRequest(template(formWithErrors)))
       ,
       productsData =>
         save4LaterService.mainStore.saveProducts(authRetrievals, productsData) flatMap {

@@ -34,13 +34,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HomeController @Inject()(mcc: MessagesControllerComponents,
                                businessCustomerService: BusinessCustomerService,
-                               checkEtmpService: CheckEtmpService,
                                val deEnrolService: DeEnrolService,
                                val authConnector: DefaultAuthConnector,
                                val auditable: Auditable,
                                val accountUtils: AccountUtils,
                                implicit val save4LaterService: Save4LaterService,
-                               implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                               implicit val applicationConfig: ApplicationConfig,
+                               templateTooSoon: views.html.awrs_application_too_soon_error) extends FrontendController(mcc) with AwrsController {
 
   private final lazy val MinReturnHours = 24
 
@@ -56,7 +56,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     awrsIdentifier.toString
   }
 
-  def api5Journey(callerId: Option[String])(implicit request: Request[AnyContent], authRetrievals: StandardAuthRetrievals): Future[Result] = {
+  def api5Journey(callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
     debug("API5 journey triggered")
     gotoBusinessTypePage(callerId)
   }
@@ -107,7 +107,8 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def chooseScenario(callerId: Option[String] = None, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]) = {
+  private def chooseScenario(callerId: Option[String], authRetrievals: StandardAuthRetrievals)
+                            (implicit request: Request[AnyContent]): Future[Result] = {
     save4LaterService.mainStore.fetchApplicationStatus(authRetrievals) flatMap {
       case Some(data) =>
         checkValidApplicationStatus(data, callerId, authRetrievals)
@@ -122,12 +123,13 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     if (applicationStatus.updatedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours))) {
       startJourney(callerId, authRetrievals)
     } else {
-      Future.successful(InternalServerError(views.html.awrs_application_too_soon_error(applicationStatus)))
+      Future.successful(InternalServerError(templateTooSoon(applicationStatus)))
     }
 
-  def startJourney(callerId: Option[String], authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
+  def startJourney(callerId: Option[String], authRetrievals: StandardAuthRetrievals)
+                  (implicit request: Request[AnyContent]): Future[Result] =
     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
-      api5Journey(callerId)(request, authRetrievals)
+      api5Journey(callerId)(request)
     } else {
       api4Journey(authRetrievals, callerId)
     }

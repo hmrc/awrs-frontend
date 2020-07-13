@@ -15,20 +15,17 @@
  *@
 
 @import _root_.utils.AccountUtils
-@import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.helpers._
-@import java.text.DateFormatSymbols
-@import views.Configuration._
-@import views.view_application.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
-@import uk.gov.hmrc.auth.core.Enrolment
-
 @import config.ApplicationConfig
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.auth.core.Enrolment
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(businessType: Option[String], businessName: String, businessDetailsForm: Form[models.BusinessNameDetails], enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessDetailsForm) }
@@ -88,7 +85,7 @@
     }
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", Messages("awrs.generic.do_you_have_trading_name")), userLoggedIn = true){
+@awrsMain(title = messages("awrs.generic.tab.title", Messages("awrs.generic.do_you_have_trading_name")), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(

@@ -15,11 +15,14 @@
  *@
 
 @import config.ApplicationConfig
+@import views.html.includes.awrs_main
+
+@this(awrsMain: awrs_main)
 @()(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 @backUrl = @{controllers.routes.IndexController.showLastLocation()}
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.feedback.thanks.heading")), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.feedback.thanks.heading")), userLoggedIn = true) {
     <div class="grid">
         <div class="grid-2-3">
             <header class="page-header">

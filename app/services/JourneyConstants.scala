@@ -16,10 +16,7 @@
 
 package services
 
-import DataCacheKeys._
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
+import services.DataCacheKeys._
 
 object JourneyConstants {
 
@@ -56,6 +53,7 @@ object JourneyConstants {
       case (_, `tradingActivityName`) => (sectionIndex, totalSections,"awrs.index_page.trading_activity_text")
       case (_, `productsName`) => (sectionIndex, totalSections,"awrs.index_page.products_text")
       case (_, `suppliersName`) => (sectionIndex, totalSections,"awrs.index_page.suppliers_text")
+      case _ => throw new RuntimeException(s"[getJourneyProgress] Could not get journey progress for $businessType, $sectionName")
     }
   }
 }

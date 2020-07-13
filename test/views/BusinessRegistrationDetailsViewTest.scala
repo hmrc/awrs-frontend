@@ -40,11 +40,13 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
 
   val mockBusinessMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
 
+  val template = app.injector.instanceOf[views.html.awrs_business_registration_details]
+
   def testRequest(businessRegDetails: BusinessRegistrationDetails, entityType: String) =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegDetails)
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
-    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
       override val signInUrl: String = applicationConfig.signIn
     }
 

@@ -14,14 +14,11 @@
  * limitations under the License.
  *@
 
-@import views.view_application.helpers.ViewApplicationType
-@import views.view_application.ViewApplicationHelper._
-@import views.html.view_application.helpers._
-@import views.view_application.subviews.SubviewIds
-@import forms.AWRSEnums._
-@import forms.AWRSEnums.EntityTypeEnum._
-
 @import config.ApplicationConfig
+@import forms.AWRSEnums._
+@import views.html.view_application.helpers._
+@import views.view_application.ViewApplicationHelper._
+@import views.view_application.helpers.ViewApplicationType
 @(partner: models.Partner, showSubHeadings: Boolean, id: Int)(implicit viewApplicationType: ViewApplicationType, messages : Messages, applicationConfig: ApplicationConfig)
 
 @editUrl(id: Int) = @{controllers.routes.BusinessPartnersController.showPartnerMemberDetails(id, isLinearMode = false, isNewRecord = false).url}

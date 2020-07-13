@@ -15,12 +15,14 @@
  *@
 
 @import config.ApplicationConfig
-@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html.helpers._
 @import play.twirl.api.Html
+@import views.html.includes.awrs_main
+
+@this(awrsMain: awrs_main)
+@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 <link rel="stylesheet" href=@routes.Assets.at("stylesheets/custom.css")>
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.application_notification.heading")), userLoggedIn = true){
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_notification.heading")), userLoggedIn = true){
 
 
 <div>

@@ -17,7 +17,6 @@
 package forms
 
 import forms.prevalidation._
-import forms.submapping.NewAWBusinessMapping._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models._

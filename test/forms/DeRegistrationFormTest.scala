@@ -19,11 +19,11 @@ package forms
 import forms.test.util._
 import forms.validation.util.FieldError
 import models.TupleDate
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
 import models.TupleDate._
 import org.joda.time.LocalDate
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.OneServerPerSuite
+import uk.gov.hmrc.play.test.UnitSpec
 
 class DeRegistrationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
 

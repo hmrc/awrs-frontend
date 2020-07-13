@@ -15,11 +15,14 @@
  *@
 
 @import config.ApplicationConfig
+@import views.html.includes.awrs_main
+
+@this(awrsMain: awrs_main)
 @(resent: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @import play.twirl.api.Html
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_success.title"))) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_success.title"))) {
 
     <div class="grid">
         <div class="grid grid-2-3">

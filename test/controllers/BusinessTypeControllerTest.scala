@@ -17,18 +17,17 @@
 package controllers
 
 import builders.SessionBuilder
-import connectors.mock._
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{CheckEtmpService, ServicesUnitTestFixture}
-import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants._
+import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
 
@@ -50,9 +49,10 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd()
 
   val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_type]
 
   val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(
-    mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig) {
+    mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig, mockTemplate) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -61,8 +61,8 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     "redirect to index page when User with Organisation and Sa GGW account selects 'Business Type' as Corporate Body" in {
       continueWithAuthorisedSaOrgUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD", "isSaAccount" -> "true", "isOrgAccount" -> "true"), isGroup = false) {
         result =>
-          when(testEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-              .thenReturn(Future.successful(false))
+          when(testEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(Future.successful(false))
           status(result) should be(SEE_OTHER)
           redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
       }
@@ -172,7 +172,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
   }
 
   private def continueWithAuthorisedSaOrgUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any) {
-    setUser(SoleTrader)
+    resetAuthConnector()
     val testBusCustomer = isGroup match {
       case true => testBusinessCustomerGroup
       case false => testBusinessCustomer
@@ -185,13 +185,13 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
 
   private def api4User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def api5User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
     setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Some(testSubscriptionTypeFrontEnd))
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))

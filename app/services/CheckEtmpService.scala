@@ -17,22 +17,18 @@
 package services
 
 import connectors.AWRSConnector
-import controllers.auth.StandardAuthRetrievals
 import javax.inject.Inject
-import models.{BusinessCustomerDetails, BusinessRegistrationDetails}
+import models.BusinessCustomerDetails
 import play.api.Logger
-import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.AwrsSessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
-                                 enrolService: EnrolService,
-                                 save4LaterService: Save4LaterService) {
+                                 enrolService: EnrolService) {
 
-  def validateBusinessDetails(authRetrievals: StandardAuthRetrievals, busCusDetails: BusinessCustomerDetails, legalEntity: String)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Future[Boolean] = {
+  def validateBusinessDetails(busCusDetails: BusinessCustomerDetails, legalEntity: String)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     Logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
 
     awrsConnector.checkEtmp(busCusDetails, legalEntity) flatMap {

@@ -40,9 +40,12 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with ServicesUnitTestFixture {
 
+  val templateError = app.injector.instanceOf[views.html.awrs_application_error]
+  val templateViewApp = app.injector.instanceOf[views.html.view_application.awrs_view_application]
+
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
     mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, templateError, templateViewApp)
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
                        businessCustomerDetails: Option[BusinessCustomerDetails] = None,

@@ -25,8 +25,8 @@ import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.EventTypes
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,7 +62,7 @@ trait BusinessMatchingConnector extends RawResponseReads with LoggingUtils {
           try {
             Json.parse(response.body)
           } catch {
-            case jse: JsonParseException => truncateContactDetails(response.body)
+            case _: JsonParseException => truncateContactDetails(response.body)
           }
         ///////////////////// try catch end
         case SERVICE_UNAVAILABLE =>
@@ -90,7 +90,7 @@ trait BusinessMatchingConnector extends RawResponseReads with LoggingUtils {
   }
 
   private def auditMatchCall(input: MatchBusinessData, userType: String, response: HttpResponse)
-                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+                            (implicit hc: HeaderCarrier): Unit = {
     val eventType = response.status match {
       case OK | NOT_FOUND => EventTypes.Succeeded
       case _ => EventTypes.Failed

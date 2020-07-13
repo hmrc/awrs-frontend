@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package services
+package connectors
 
 import audit.Auditable
 import javax.inject.Inject
@@ -23,7 +23,6 @@ import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import utils.LoggingUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,19 +30,17 @@ import scala.concurrent.{ExecutionContext, Future}
 sealed trait AddressLookupResponse
 
 case class AddressLookupSuccessResponse(addressList: RecordSet) extends AddressLookupResponse
-
 case class AddressLookupErrorResponse(cause: Exception) extends AddressLookupResponse
 
-class AddressLookupService @Inject()(servicesConfig: ServicesConfig,
-                                     val http: DefaultHttpClient,
-                                     val auditable: Auditable) extends LoggingUtils {
+class AddressLookupConnector @Inject()(servicesConfig: ServicesConfig,
+                                       val http: DefaultHttpClient,
+                                       val auditable: Auditable) extends LoggingUtils {
 
   val addressLookupUrl: String = servicesConfig.baseUrl("address-lookup")
 
   def lookup(postcode: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AddressLookupResponse] = {
     val awrsHc = hc.withExtraHeaders("X-Hmrc-Origin" -> "AWRS")
-    http.GET[JsValue](s"$addressLookupUrl/uk/addresses?postcode=$postcode")(implicitly[HttpReads[JsValue]], awrsHc, MdcLoggingExecutionContext.fromLoggingDetails(hc)
-    ) map {
+    http.GET[JsValue](s"$addressLookupUrl/uk/addresses?postcode=$postcode")(implicitly[HttpReads[JsValue]], awrsHc, ec) map {
       addressListJson =>
         AddressLookupSuccessResponse(RecordSet.fromJsonAddressLookupService(addressListJson))
     } recover {
@@ -54,6 +51,6 @@ class AddressLookupService @Inject()(servicesConfig: ServicesConfig,
   }
 }
 
-trait HasAddressLookupService {
-  val addressLookupService: AddressLookupService
+trait HasAddressLookupConnector {
+  val addressLookupConnector: AddressLookupConnector
 }

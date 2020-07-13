@@ -20,9 +20,9 @@ import config.{AwrsAPIShortLivedCache, AwrsSessionCache, AwrsShortLivedCache, Bu
 import javax.inject.Inject
 import play.api.libs.json
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 
 class AwrsDataCacheConnector @Inject()(awrsShortLivedCache: AwrsShortLivedCache) extends Save4LaterConnector {

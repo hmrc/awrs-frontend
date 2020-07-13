@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@import views.view_application.helpers._
 @import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
 
 @(backUrl: String = controllers.routes.IndexController.showLastLocation().toString, alwaysShow: Boolean = false)(implicit viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
     @{

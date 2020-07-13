@@ -20,17 +20,16 @@ import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.prevalidation._
 import forms.submapping.AddressMapping._
+import forms.submapping.CompanyNamesMapping._
 import forms.submapping.CompanyRegMapping._
 import forms.submapping._
-import forms.submapping.CompanyNamesMapping._
 import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import forms.validation.util.TargetFieldIds
 import models.GroupMember
-import play.api.data.Forms._
 import play.api.data.Form
+import play.api.data.Forms._
 
 object GroupMemberDetailsForm {
   @inline def answeredYesToDoYouHaveCRN: FormData => Boolean = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
@@ -40,9 +39,6 @@ object GroupMemberDetailsForm {
   private val otherMembers_compulsory = yesNoQuestion_compulsory("addAnotherGrpMember", "awrs.group_member.addAnother.empty")
   private val mustHaveVRNorCRNorUTR = mustHaveAtLeastOneId(TargetFieldIds("doYouHaveVRN", "isBusinessIncorporated", "doYouHaveUTR"), "awrs.generic.error.identification_provided")
 
-  private val companyNameIsEmpty = noAnswerGivenInField("names.companyName")
-  private val tradingNameIsEmpty = noAnswerGivenInField("names.tradingName")
-
   val doYouHaveVrn = "doYouHaveVRN"
   val doYouHaveCrn = "isBusinessIncorporated"
   val doYouHaveUtr = "doYouHaveUTR"
@@ -50,12 +46,6 @@ object GroupMemberDetailsForm {
   val vrn = "vrn"
   val crnMapping = "companyRegDetails"
   val names = "companyNames"
-
-  private val companyNameAndTradingNameCannotBothBeEmpty =
-    CrossFieldConstraint(
-      companyNameIsEmpty &&& tradingNameIsEmpty,
-      simpleCrossFieldErrorMessage(TargetFieldIds("names.companyName", "names.tradingName"),
-        "awrs.generic.error.company_trading_name"))
 
   private val inferBasedOn = (dependentField: Option[String]) => dependentField.map(x => x.trim) match {
     case None | Some("") => BooleanRadioEnum.NoString

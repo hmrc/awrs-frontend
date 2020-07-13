@@ -14,27 +14,23 @@
  * limitations under the License.
  *@
 
-@import utils.AwrsFieldConfig
 @import config.ApplicationConfig
-
-@(applicationDeclarationForm: Form[models.ApplicationDeclaration], isEnrolledApplicant: Boolean)(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
-
+@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.InputTypeTextParams
 @import views.html.helpers._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import forms.AwrsFormFields._
+@import views.html.includes.awrs_main
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@(applicationDeclarationForm: Form[models.ApplicationDeclaration], isEnrolledApplicant: Boolean)(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @declarationTxt = @{
     if(isEnrolledApplicant) {
-        messages("awrs.application_declaration.declaration_statement.amend", request.session.get("businessName").getOrElse("")).toString
+        messages("awrs.application_declaration.declaration_statement.amend", request.session.get("businessName").getOrElse(""))
     } else {
-        messages("awrs.application_declaration.declaration_statement", request.session.get("businessName").getOrElse("")).toString
+        messages("awrs.application_declaration.declaration_statement", request.session.get("businessName").getOrElse(""))
     }
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading")), userLoggedIn = true){
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading")), userLoggedIn = true){
 
 @errorSummaryTemplate(applicationDeclarationForm)
 <div class="grid">
@@ -42,7 +38,7 @@
         @backLink(backUrl = controllers.routes.IndexController.showIndex().url)
         <h1 id="application-declaration-heading" class="heading-xlarge">@Html(messages("awrs.application_declaration.heading"))</h1>
         <p class="lede">@messages("awrs.application_declaration.lede")</p>
-        @form(action = controllers.routes.ApplicationDeclarationController.sendApplication){
+        @formWithCSRF(action = controllers.routes.ApplicationDeclarationController.sendApplication){
             @awrsInputTypeText(
                 InputTypeTextParams(
                     applicationDeclarationForm("declarationName"),

@@ -17,12 +17,9 @@
 package forms.test
 
 import forms.validation.util.ErrorMessageInterpreter._
-import forms.validation.util.{FieldError, MessageArguments, MessageLookup, SummaryError}
+import forms.validation.util.{FieldError, MessageLookup, SummaryError}
 import play.api.data.Form
 import utils.AwrsUnitTestTraits
-
-import scala.collection.mutable
-import scala.util.{Failure, Success, Try}
 
 
 package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnitTestTraits {

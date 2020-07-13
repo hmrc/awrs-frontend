@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.TestConstants._

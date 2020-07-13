@@ -17,9 +17,7 @@
 package services.helper
 
 import models._
-import services.KeyStoreService
 import uk.gov.hmrc.http.cache.client.CacheMap
-import utils.AccountUtils
 import utils.CacheUtil._
 
 // change flag categories based on JIRA story AWRS-385
@@ -27,16 +25,11 @@ object BusinessDetailsAndContactsComparator {
 
   def compare(data: SubscriptionTypeFrontEnd, cached: Option[CacheMap]): (Boolean, Boolean, Boolean, Boolean) = {
 
-    val businessCustomerDetails = cached.get.getBusinessCustomerDetails
     val businessNameDetails = cached.get.getBusinessNameDetails
     val tradingNameDetails = cached.get.getTradingStartDetails
     val businessRegistrationDetails = cached.get.getBusinessRegistrationDetails
     val businessContacts = cached.get.getBusinessContacts
     val placeOfBusiness = cached.get.getPlaceOfBusiness
-
-    val corporateSessionCacheBusinessCustomerDetChangeData = data.businessCustomerDetails.map(corBusCusDetails => (corBusCusDetails.businessName))
-
-    val corporateTempCacheBusinessCustomerDetChangeData = businessCustomerDetails.map(corBusCusDetails => (corBusCusDetails.businessName))
 
     val corporateSessionCacheBusinessDetChangeData = data.businessDetails.map(corBusDetails => (corBusDetails.tradingName, corBusDetails.newAWBusiness))
 
@@ -73,22 +66,18 @@ object BusinessDetailsAndContactsComparator {
       case _ => true
     }
 
-    (businessType) match {
-      case ((Some("LLP_GRP") | Some("LTD_GRP"))) =>
-      {
-          (BusinessDetChangeData,
-            !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
-            !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
-            !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData)
-          )
-      }
+    businessType match {
+      case Some("LLP_GRP") | Some("LTD_GRP") =>
+      (BusinessDetChangeData,
+        !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
+        !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
+        !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData)
+      )
       case _ =>
-      {
-        (!corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData),
-          !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
-          !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
-          !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData))
-      }
+      (!corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData),
+        !corporateSessionCacheBusinessRegDetChangeData.equals(corporateTempCacheBusinessRegDetChangeData),
+        !corporateSessionCacheBusinessAddChangeData.equals(corporateTempCacheBusinessAddChangeData),
+        !corporateSessionCacheContactDetChangeData.equals(corporateTempCacheContactDetChangeData))
     }
 
   }

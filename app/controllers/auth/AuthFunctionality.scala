@@ -25,7 +25,7 @@ import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
-import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,7 +41,7 @@ trait AuthFunctionality extends AuthorisedFunctions {
   val signInUrl: String
   implicit val applicationConfig: ApplicationConfig
 
-  def loginParams(implicit request: Request[AnyContent]): Map[String, Seq[String]] = Map(
+  def loginParams: Map[String, Seq[String]] = Map(
     "continue" -> Seq(signInUrl),
     "origin" -> Seq(origin)
   )
@@ -50,14 +50,17 @@ trait AuthFunctionality extends AuthorisedFunctions {
     case _: NoActiveSession         => Redirect(signInUrl, loginParams)
     case er: AuthorisationException =>
       Logger.warn(s"[recoverAuthorisedCalls] Auth exception: $er")
-      Unauthorized(views.html.unauthorised())
+      Unauthorized(applicationConfig.templateUnauthorised())
   }
 
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])
                       (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
     authorised(Enrolment("IR-CT") or Enrolment("IR-SA") or Enrolment("HMRC-AWRS-ORG") or AffinityGroup.Organisation)
-      .retrieve(authorisedEnrolments and affinityGroup and authProviderId) {
-        case Enrolments(enrolments) ~ affGroup ~ (credentials: GGCredId) => body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(credentials.credId)))
+      .retrieve(authorisedEnrolments and affinityGroup and credentials) {
+        case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) =>
+          body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(providerId)))
+        case _ =>
+          throw new RuntimeException("[authorisedAction] Unknown retrieval model")
       } recover recoverAuthorisedCalls
   }
 }

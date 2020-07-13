@@ -22,24 +22,18 @@ import models._
 import services.GGConstants._
 import uk.gov.hmrc.auth.core.AuthorisedFunctions
 import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
-                             servicesConfig: ServicesConfig,
                              val authConnector: DefaultAuthConnector) extends AuthorisedFunctions {
 
   val enrolmentType = "principal"
-
   val GGProviderId = "GovernmentGateway"
-
-  private def formatGroupId(str: String) = str.substring(str.indexOf("-") + 1, str.length)
-
 
   def enrolAWRS(awrsRef: String,
                 businessPartnerDetails: BusinessCustomerDetails,
@@ -49,14 +43,16 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
       val verifiers = createVerifiers(businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
-        case Credentials(ggCred, _) ~ Some(groupId) =>
+        case Some(Credentials(ggCred, _)) ~ Some(groupId) =>
           val grpId = groupId
           val requestPayload = RequestPayload(ggCred, enrolment.friendlyName, enrolmentType, verifiers)
           taxEnrolmentsConnector.enrol(requestPayload, grpId, awrsRef, businessPartnerDetails, businessType)
         case _ ~ None =>
           Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
-        case Credentials(_, _) ~ _ =>
+        case Some(Credentials(_, _)) ~ _ =>
           Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
+        case _ =>
+          Future.failed(new InternalServerException("Failed to enrol - user had unknown credentials"))
       }
     }
 
@@ -75,7 +71,7 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
   def createEnrolment(awrsRef: String,
                       businessPartnerDetails: BusinessCustomerDetails,
                       businessType: String,
-                      utr: Option[String])(implicit ec: ExecutionContext): EnrolRequest = {
+                      utr: Option[String]): EnrolRequest = {
 
     val postcode: String = businessPartnerDetails.businessAddress.postcode
       .fold("")(x => x).replaceAll("\\s+", "")

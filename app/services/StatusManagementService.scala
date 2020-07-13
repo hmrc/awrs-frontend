@@ -37,7 +37,6 @@ case class StatusReturnType(wasViewed: Boolean,
 class StatusManagementService @Inject()(api9: AwrsAPI9,
                                         api11: AwrsAPI11,
                                         api12: AwrsAPI12Cache,
-                                        save4LaterService: Save4LaterService,
                                         keyStoreService: KeyStoreService,
                                         val auditable: Auditable) extends LoggingUtils {
 
@@ -95,7 +94,7 @@ class StatusManagementService @Inject()(api9: AwrsAPI9,
     }
   }
 
-  private def localFetch(implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] =
+  private def localFetch(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[StatusReturnType] =
     for {
       subscriptionStatus <- api9.getSubscriptionStatusFromCache
       alertStatus <- api12.getAlertFromCache

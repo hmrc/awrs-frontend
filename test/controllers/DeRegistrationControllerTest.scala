@@ -26,8 +26,7 @@ import models._
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import play.api.i18n.{Lang, Messages}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.apis.AwrsAPI10
@@ -49,8 +48,14 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
   override val mockDeEnrolService: DeEnrolService = new DeEnrolService(mockTaxEnrolmentsConnector)
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_de_registration]
+  val mockTemplateConfirm = app.injector.instanceOf[views.html.awrs_de_registration_confirm]
+  val mockTemplateReason = app.injector.instanceOf[views.html.awrs_de_registration_reason]
+  val mockTemplateEvidence = app.injector.instanceOf[views.html.awrs_de_registration_confirmation_evidence]
+
   val testDeRegistrationController: DeRegistrationController =
-    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, mockDeEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, mockDeEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig,
+      mockTemplate, mockTemplateConfirm, mockTemplateReason, mockTemplateEvidence) {
     override val signInUrl = "/sign-in"
   }
 
@@ -58,11 +63,11 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val forbiddenStatusTypes = FormBundleStatus.allStatus.diff(permittedStatusTypes)
 
   override def beforeEach(): Unit = {
-    super.beforeEach()
     reset(mockAuthConnector)
     reset(mockApi10)
     reset(mockTaxEnrolmentsConnector)
     reset(mockAccountUtils)
+    super.beforeEach()
   }
 
   def mockAPI10AndDeEnroll(deRegSuccess: Boolean = true): Unit = {
@@ -350,14 +355,14 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   def testShowConfirmation(status: FormBundleStatus)(test: Future[Result] => Any) = getWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirmation(false))(test)
 
   def getWithAuthorisedAgentUser(status: FormBundleStatus, call: Action[AnyContent])(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = call.apply(buildRequestWithSession(userId, status.name))
     test(result)
   }
 
   def submits(status: FormBundleStatus, call: Action[AnyContent], data: (String, String)*)(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = call.apply(buildRequestWithSession(userId, status.name).withFormUrlEncodedBody(data: _*))
     test(result)

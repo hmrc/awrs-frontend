@@ -15,19 +15,18 @@
  *@
 
 @import config.ApplicationConfig
-@(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
-
-@import views.html.helpers._
-@import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import forms.AwrsFormFields._
+@import views.html.includes.awrs_main
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
     Some(groupDeclarationForm)
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.group_declaration.heading")), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.group_declaration.heading")), userLoggedIn = true) {
 
     @errorSummaryTemplate(groupDeclarationForm)
     <div class="grid">
@@ -49,7 +48,7 @@
                 </ul>
             </div>
 
-            @form(action = controllers.routes.GroupDeclarationController.sendConfirmation) {
+            @formWithCSRF(action = controllers.routes.GroupDeclarationController.sendConfirmation) {
 
                 <input type="hidden" name="groupRepConfirmation" value="true">
 

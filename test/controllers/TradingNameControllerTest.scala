@@ -39,9 +39,11 @@ class TradingNameControllerTest extends AwrsUnitTestTraits
   def testRequest(extendedBusinessDetails: ExtendedBusinessDetails, entityType: String, hasAwrs: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[ExtendedBusinessDetails](FakeRequest(), BusinessDetailsForm.businessDetailsValidationForm(entityType, hasAwrs), extendedBusinessDetails)
 
+  val template = app.injector.instanceOf[views.html.awrs_trading_name]
+
   val testTradingNameController: TradingNameController =
     new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService,
-      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
   }
 

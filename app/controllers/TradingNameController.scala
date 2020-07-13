@@ -45,7 +45,8 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
                                       val auditable: Auditable,
                                       val accountUtils: AccountUtils,
                                       val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                      implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
+                                      implicit val applicationConfig: ApplicationConfig,
+                                      template: views.html.awrs_trading_name) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 
   override val section: String = businessDetailsName
   override implicit val ec: ExecutionContext = mcc.executionContext
@@ -68,8 +69,8 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
           businessDetails match {
             case Some(data) =>
               val businessNameDetails = BusinessNameDetails(Some(businessName), data.doYouHaveTradingName, data.tradingName)
-              Ok(views.html.awrs_trading_name(businessType, businessName, tradingNameForm(businessType.get, accountUtils.hasAwrs(ar.enrolments)).form.fill(businessNameDetails), ar.enrolments, accountUtils))
-            case _ => Ok(views.html.awrs_trading_name(businessType, businessName, tradingNameForm(businessType.get, accountUtils.hasAwrs(ar.enrolments)).form, ar.enrolments, accountUtils))
+              Ok(template(businessType, businessName, tradingNameForm(businessType.get, accountUtils.hasAwrs(ar.enrolments)).form.fill(businessNameDetails), ar.enrolments, accountUtils))
+            case _ => Ok(template(businessType, businessName, tradingNameForm(businessType.get, accountUtils.hasAwrs(ar.enrolments)).form, ar.enrolments, accountUtils))
           }
         }
       }
@@ -81,7 +82,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
                           isNewRecord: Boolean,
                           businessDetails: BusinessNameDetails,
                           authRetrievals: StandardAuthRetrievals)
-                         (implicit request: Request[AnyContent], hc: HeaderCarrier, viewApplicationType: ViewApplicationType): Future[Result] = {
+                         (implicit hc: HeaderCarrier): Future[Result] = {
     save4LaterService.mainStore.saveBusinessNameDetails(authRetrievals, businessDetails) flatMap { _ =>
       businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
         case NewApplicationMode => Future.successful(Redirect(routes.TradingLegislationDateController.showBusinessDetails()))
@@ -103,7 +104,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
         for {
           businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
         } yield {
-          BadRequest(views.html.awrs_trading_name(businessType, businessCustomerDetails.fold("")(x => x.businessName), formWithErrors, authRetrievals.enrolments, accountUtils))
+          BadRequest(template(businessType, businessCustomerDetails.fold("")(x => x.businessName), formWithErrors, authRetrievals.enrolments, accountUtils))
         }
       ,
       businessNameDetails => {

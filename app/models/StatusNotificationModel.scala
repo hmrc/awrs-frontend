@@ -16,9 +16,7 @@
 
 package models
 
-import com.fasterxml.jackson.databind.JsonMappingException
 import play.api.libs.json._
-
 
 sealed trait StatusContactType {
   def code: String
@@ -40,18 +38,13 @@ object StatusContactType {
       NoLongerMindedToRevoke,
       Other)
 
-  implicit val reader = new Reads[StatusContactType] {
-    def reads(json: JsValue): JsResult[StatusContactType] =
-      JsSuccess(json match {
-        case JsString(code) => apply(code)
-        case _ => throw new JsonMappingException(s"Unexpected StatusContactType: $json")
-      })
-  }
+  implicit val reader: Reads[StatusContactType] = (json: JsValue) => JsSuccess(json match {
+    case JsString(code) => apply(code)
+    case _ => throw new RuntimeException(s"Unexpected StatusContactType: $json")
+  })
 
-  implicit val writer: Writes[StatusContactType] = new Writes[StatusContactType] {
-    def writes(v: StatusContactType): JsValue = v match {
-      case value => JsString(v.code)
-    }
+  implicit val writer: Writes[StatusContactType] = {
+    case v@_ => JsString(v.code)
   }
 
   def apply(code: String): StatusContactType = code match {
@@ -126,7 +119,7 @@ object StatusNotification {
       (JsPath \ "storageDatetime").readNullable[String]
     ) (StatusNotification.apply _)
 
-  implicit val writer = Json.writes[StatusNotification]
+  implicit val writer: OWrites[StatusNotification] = Json.writes[StatusNotification]
 
 }
 
@@ -134,5 +127,5 @@ object StatusNotification {
 case class ViewedStatusResponse(viewed: Boolean)
 
 object ViewedStatusResponse {
-  implicit val format = Json.format[ViewedStatusResponse]
+  implicit val format: OFormat[ViewedStatusResponse] = Json.format[ViewedStatusResponse]
 }

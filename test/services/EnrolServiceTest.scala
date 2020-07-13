@@ -18,10 +18,10 @@ package services
 
 import _root_.models._
 import connectors.TaxEnrolmentsConnector
-import org.mockito.{ArgumentMatchers, Matchers}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -54,9 +54,9 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   val mockAuthConnector: DefaultAuthConnector = mock[DefaultAuthConnector]
   val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
 
-  val enrolServiceTest: EnrolService = new EnrolService(mockTaxEnrolmentsConnector, mockServicesConfig, mockAuthConnector)
+  val enrolServiceTest: EnrolService = new EnrolService(mockTaxEnrolmentsConnector, mockAuthConnector)
 
-  val enrolServiceEMACTest: EnrolService = new EnrolService(mockTaxEnrolmentsConnector, mockServicesConfig, mockAuthConnector)
+  val enrolServiceEMACTest: EnrolService = new EnrolService(mockTaxEnrolmentsConnector, mockAuthConnector)
 
   override def beforeEach(): Unit = {
     reset(mockTaxEnrolmentsConnector)
@@ -82,7 +82,7 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
 
   def enrolService(enrolService: EnrolService): Unit = {
     "fetch data if found in save4later" in {
-      mockAuthorise(EmptyPredicate, credentials and groupIdentifier)(new ~(Credentials(testCredId, enrolService.GGProviderId), Some(testGroupId)))
+      mockAuthorise(EmptyPredicate, Retrievals.credentials and Retrievals.groupIdentifier)(new ~(Some(Credentials(testCredId, enrolService.GGProviderId)), Some(testGroupId)))
       when(mockTaxEnrolmentsConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(successfulEnrolResponse))
       val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber,

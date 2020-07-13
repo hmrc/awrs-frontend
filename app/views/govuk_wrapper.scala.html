@@ -14,11 +14,15 @@
  * limitations under the License.
  *@
 
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
 @import config._
+@import layouts.{govuk_template => hmrcGovUkTemplate}
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
+@import uk.gov.hmrc.play.views.html.layouts._
+
+@this(uiHead: Head, uiHeaderNav: HeaderNav, footer: Footer, uiServiceInfo: ServiceInfo, uiMainContentHeader: MainContentHeader,
+        reportAProblemLink: ReportAProblemLink, uiMainContent: MainContent, footerLinks: FooterLinks)
+
 @(
     appConfig: ApplicationConfig,
     title: String,
@@ -37,6 +41,7 @@
     showSignOutLink: Boolean = true
 )(implicit request: Request[_], messages: Messages)
 
+
 @btaLink = {<div class="div-left" id="btaLink"><a id="btaNavHref" href=@appConfig.businessTaxAccountPage>@Messages("awrs.generic.bta_link")</a></div>}
 
 @* Currently we only BTA are using the callerId, if this changes we can match on the IDs being passed *@
@@ -48,7 +53,7 @@
 }
 
 @head = {
-    @uiLayouts.head(
+    @uiHead(
         linkElem = linkElement,
         headScripts = None
     )
@@ -88,7 +93,7 @@
 }
 
 @insideHeader = {
-    @uiLayouts.header_nav(
+    @uiHeaderNav(
         navTitle = Some(Messages("awrs.generic.application_title")),
         navTitleLink = None,
         showBetaLink = false,
@@ -99,7 +104,7 @@
 @afterHeader = {}
 
 @bodyEnd = {
-    @uiLayouts.footer(
+    @footer(
         analyticsToken = appConfig.analyticsToken,
         analyticsHost = appConfig.analyticsHost,
         ssoUrl = None,
@@ -113,7 +118,7 @@
 @footerLinks = {}
 
 @serviceInfo = {
-    @uiLayouts.serviceInfo(
+    @uiServiceInfo(
         betaBanner = HtmlFormat.empty,
         includeGridWrapper = false,
         serviceInfoContent = Some(buildServiceInfo),
@@ -123,16 +128,16 @@
 
 @mainContentHeader = {
     @if(contentHeader.isDefined) {
-        @uiLayouts.main_content_header(contentHeader = contentHeader.get)
+        @uiMainContentHeader(contentHeader = contentHeader.get)
     }
 }
 
 @getHelpForm = {
-     @uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)
+     @reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)
     }
 
 @content = {
-    @uiLayouts.main_content(
+    @uiMainContent(
         article = mainContent,
         mainClass = mainClass,
         mainDataAttributes = mainDataAttributes,
@@ -143,4 +148,4 @@
     )
 }
 
-@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)
+@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(footerLinks), true)(content)

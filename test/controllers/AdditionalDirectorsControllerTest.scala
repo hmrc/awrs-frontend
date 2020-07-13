@@ -23,9 +23,10 @@ import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
+import utils.TestConstants._
 import utils.TestUtil
 import utils.TestUtil._
-import utils.TestConstants._
+import views.html.awrs_business_directors
 
 import scala.concurrent.Future
 
@@ -35,8 +36,10 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
   val directorPageURL: Int => String = (id: Int) => s"/alcohol-wholesale-scheme/business-directors?id=$id"
   val directorPage2URL: String = directorPageURL(2)
 
+  val mockTemplate: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
+
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig){
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate){
     override val signInUrl = "/sign-in"
   }
 

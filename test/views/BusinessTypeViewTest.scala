@@ -26,15 +26,17 @@ import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{CheckEtmpService, ServicesUnitTestFixture}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
-import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
 
 import scala.concurrent.Future
 
 class BusinessTypeViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
+
+  val template = app.injector.instanceOf[views.html.awrs_business_type]
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val businessCustomerDetailsFormID = "businessCustomerDetails"
@@ -51,7 +53,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
 
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd(legalEntity = Some(testBusinessDetailsEntityTypes(Llp)))
 
-  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig) {
+  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig, template) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -124,7 +126,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
       fetchBusinessType = testBusinessType,
       fetchBusinessCustomerDetails = testBusinessCustomerGroup
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
     val result = testBusinessTypeController.showBusinessType().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

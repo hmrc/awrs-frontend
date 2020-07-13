@@ -17,7 +17,6 @@
 package controllers
 
 import builders.SessionBuilder
-import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
@@ -25,8 +24,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import utils.TestUtil._
 import utils.AwrsSessionKeys
+import utils.TestUtil._
 
 import scala.concurrent.Future
 
@@ -40,8 +39,10 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     reset(mockAccountUtils)
   }
 
+  val template = app.injector.instanceOf[views.html.awrs_index]
+
   lazy val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9,
-    mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
   }
 
@@ -105,7 +106,6 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     "clear sessionJourneyStartLocation from session when index is shown" in {
       val result = callShowIndex(startSection = testInitSessionJouneyStartLocation)
       val responseSessionMap = await(result).session(FakeRequest()).data
-      val doc = Jsoup.parse(contentAsString(result))
       // the session variable for sessionJourneyStartLocation in the response should have been removed
       responseSessionMap.get(AwrsSessionKeys.sessionJouneyStartLocation) shouldBe None
     }
@@ -128,7 +128,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     }
   }
 
-  private def callShowLastLocationWith(previousLocation: Option[String], cacheMap: CacheMap = cachemap)(test: Future[Result] => Any) {
+  private def callShowLastLocationWith(previousLocation: Option[String])(test: Future[Result] => Any) {
     setAuthMocks()
     val result = testIndexController.showLastLocation.apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
     test(result)

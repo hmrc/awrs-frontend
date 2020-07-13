@@ -40,7 +40,8 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
                                              val authConnector: DefaultAuthConnector,
                                              val auditable: Auditable,
                                              val accountUtils: AccountUtils,
-                                             implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                                             implicit val applicationConfig: ApplicationConfig,
+                                             template: views.html.awrs_group_representative_change_confirm) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -48,7 +49,7 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
   def showConfirm(): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { _ =>
       val businessType = request.getBusinessType
-      Future.successful(Ok(views.html.awrs_group_representative_change_confirm(businessNameChangeConfirmationForm, businessType)))
+      Future.successful(Ok(template(businessNameChangeConfirmationForm, businessType)))
     }
   }
 
@@ -57,7 +58,7 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
       businessNameChangeConfirmationForm.bindFromRequest.fold(
         formWithErrors => {
           val businessType = request.getBusinessType
-          Future.successful(BadRequest(views.html.awrs_group_representative_change_confirm(formWithErrors, businessType)))
+          Future.successful(BadRequest(template(formWithErrors, businessType)))
         },
         success = businessNameChangeDetails =>
           businessNameChangeDetails.businessNameChangeConfirmation match {
@@ -84,6 +85,7 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
                       }
                     case _ => throw new InternalServerException("Business name change, businessCustomerDetails not found")
                   }
+                case _ => throw new InternalServerException("businessNameDetails not found")
               }
             case _ =>
               Future.successful(Redirect(routes.TradingNameController.showTradingName(false)))

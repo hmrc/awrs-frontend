@@ -25,12 +25,11 @@ import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
 import models.{FormBundleStatus, NewAWBusiness, SuccessfulSubscriptionResponse}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{when, reset}
+import org.mockito.Mockito.{reset, when}
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
-import utils.TestUtil.{testBusinessContactsDefault, testBusinessCustomerDetails}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 
 import scala.concurrent.Future
@@ -41,8 +40,12 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService
   with MockKeyStoreService {
 
+  val template = app.injector.instanceOf[views.html.awrs_application_confirmation]
+  val templateUpdate = app.injector.instanceOf[views.html.awrs_application_update_confirmation]
+
   val testConfirmationController: ConfirmationController = new ConfirmationController(
-    mockMCC, testSave4LaterService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    mockMCC, testSave4LaterService, testKeyStoreService, mockDeEnrolService, mockAuthConnector,
+    mockAuditable, mockAccountUtils, mockAppConfig, template, templateUpdate) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

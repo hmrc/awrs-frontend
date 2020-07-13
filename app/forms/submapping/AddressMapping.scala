@@ -24,8 +24,8 @@ import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
 import forms.validation.util.NamedMappingAndUtil._
 import forms.validation.util.{FieldErrorConfig, MessageArguments, SummaryErrorConfig, TargetFieldIds}
 import play.api.data.Forms._
-import play.api.data.{FieldMapping, Mapping}
 import play.api.data.validation.Valid
+import play.api.data.{FieldMapping, Mapping}
 import utils.AwrsValidator._
 import utils.{AwrsFieldConfig, CountryCodes}
 
@@ -102,14 +102,14 @@ object AddressMapping extends AwrsFieldConfig {
     }
   }
 
-  private def addressCountry_compulsory(prefix: String, prefixRefNameInErrorMessage: String, canBeForeignAddress: Boolean, countryCodes: CountryCodes): Mapping[Option[String]] = {
+  private def addressCountry_compulsory(prefix: String, canBeForeignAddress: Boolean, countryCodes: CountryCodes): Mapping[Option[String]] = {
     if (canBeForeignAddress) {
       val fieldId = prefix attach "addressCountry"
 
       val invalidCountryCodeErrorMessage = Seq[FieldFormatConstraintParameter](
         FieldFormatConstraintParameter(
           (addressCountry: String) => countryCodes.getCountryCode(addressCountry) match {
-            case Some(code) => Valid
+            case Some(_) => Valid
             case _ =>
               simpleErrorMessage(fieldId, "awrs.supplier-addresses.error.supplier_address_country_invalid")
           }
@@ -131,7 +131,7 @@ object AddressMapping extends AwrsFieldConfig {
     }
   }
 
-  private def addressCountryCode_compulsory(prefix: String, prefixRefNameInErrorMessage: String, canBeForeignAddress: Boolean): Mapping[Option[String]] = {
+  private def addressCountryCode_compulsory(canBeForeignAddress: Boolean): Mapping[Option[String]] = {
     if (canBeForeignAddress) {
       optional(text) iff whenThisIsForeignAddress
     } else {
@@ -153,18 +153,18 @@ object AddressMapping extends AwrsFieldConfig {
 
 
   // Reusable address mapping
-  private def addressMapping(prefix: String, prefixRefNameInErrorMessage: String, canBeForeignAddress: Boolean = false, countryCodes: CountryCodes): Mapping[Address] = mapping(
+  private def addressMapping(prefix: String, prefixRefNameInErrorMessage: String, canBeForeignAddress: Boolean, countryCodes: CountryCodes): Mapping[Address] = mapping(
     "addressLine1" -> addressLinex_compulsory(1, prefix, prefixRefNameInErrorMessage).toStringFormatter,
     "addressLine2" -> addressLinex_compulsory(2, prefix, prefixRefNameInErrorMessage).toStringFormatter,
     "addressLine3" -> addressLinex_optional(3, prefix, prefixRefNameInErrorMessage),
     "addressLine4" -> addressLinex_optional(4, prefix, prefixRefNameInErrorMessage),
     "postcode" -> postcode_compulsory(prefix, prefixRefNameInErrorMessage, canBeForeignAddress),
-    "addressCountry" -> addressCountry_compulsory(prefix, prefixRefNameInErrorMessage, canBeForeignAddress, countryCodes),
-    "addressCountryCode" -> addressCountryCode_compulsory(prefix, prefixRefNameInErrorMessage, canBeForeignAddress)
+    "addressCountry" -> addressCountry_compulsory(prefix, canBeForeignAddress, countryCodes),
+    "addressCountryCode" -> addressCountryCode_compulsory(canBeForeignAddress)
   )(Address.apply)(Address.unapply)
 
   def ukAddress_compulsory(prefix: String = "", prefixRefNameInErrorMessage: String = " ", countryCodes: CountryCodes): Mapping[Address] =
-    addressMapping(prefix, prefixRefNameInErrorMessage, false, countryCodes)
+    addressMapping(prefix, prefixRefNameInErrorMessage, canBeForeignAddress = false, countryCodes)
 
   def ukOrForeignAddressMapping(prefix: String = "", prefixRefNameInErrorMessage: String = " ", countryCodes: CountryCodes): Mapping[Address] =
     addressMapping(prefix, prefixRefNameInErrorMessage, canBeForeignAddress = true, countryCodes)

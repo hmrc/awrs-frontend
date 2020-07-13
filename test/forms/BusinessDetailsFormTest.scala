@@ -17,13 +17,12 @@
 package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.GroupMemberDetailsForm.names
 import forms.submapping.FieldNameUtil
 import forms.test.util._
 import forms.validation.util.ConstraintUtil.FormData
 import forms.validation.util.FieldError
 import models.TupleDate
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.AwrsFieldConfig

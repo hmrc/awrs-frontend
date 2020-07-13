@@ -67,7 +67,7 @@ class EmailService @Inject()(
                         deRegistrationDate : Option[DeRegistrationDate] = None,
                         reference: Option[String] = None,
                         isNewBusiness: Option[Boolean] = None)
-                       (implicit request: Request[AnyContent], hc: HeaderCarrier) = {
+                       (implicit request: Request[AnyContent]): Future[Boolean] = {
         val deRegistrationDateStr = deRegistrationDate match {
           case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))
           case _ => None

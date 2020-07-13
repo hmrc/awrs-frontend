@@ -18,30 +18,30 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import connectors.{AddressLookupConnector, AddressLookupErrorResponse, AddressLookupSuccessResponse}
 import models.{Address, AddressAudit, AddressAudits}
-import uk.gov.hmrc.address.client.v1.RecordSet
-import org.mockito.ArgumentMatchers.{any, eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{any, eq => mockEq}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.{JsValue, Json}
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{AddressLookupErrorResponse, AddressLookupService, AddressLookupSuccessResponse}
+import uk.gov.hmrc.address.client.v1.RecordSet
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.TestConstants._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 
 class AddressLookupControllerTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val postCode: String = testPostcode
   val invalidPostcode: String = "/*/*/"
-  val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
-  val testAddressLookupController: AddressLookupController = new AddressLookupController(mockMCC, mockAuthConnector, mockAddressLookupService, mockAuditable, mockAppConfig)
+  val mockAddressLookupConnector: AddressLookupConnector = mock[AddressLookupConnector]
+  val testAddressLookupController: AddressLookupController = new AddressLookupController(mockMCC, mockAuthConnector, mockAddressLookupConnector, mockAuditable, mockAppConfig)
 
   "Postcode lookup controller" should {
     "return Ok response for a valid postcode" in {
@@ -111,7 +111,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
   def addressLookupValidPostcode(test: Future[Result] => Any) {
     implicit val hc = mock[HeaderCarrier]
 
-    when(testAddressLookupController.addressLookupService.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
+    when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
     setAuthMocks()
     val result = testAddressLookupController.addressLookup(postCode).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -120,7 +120,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
   def addressLookupInvalidPostcode(test: Future[Result] => Any) {
     implicit val hc = mock[HeaderCarrier]
 
-    when(testAddressLookupController.addressLookupService.lookup(mockEq(invalidPostcode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new BadRequestException("")))
+    when(testAddressLookupController.addressLookupConnector.lookup(mockEq(invalidPostcode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new BadRequestException("")))
     setAuthMocks()
     val result = testAddressLookupController.addressLookup(invalidPostcode).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -129,7 +129,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
   def addressLookupInternalServerError(test: Future[Result] => Any) {
     implicit val hc = mock[HeaderCarrier]
 
-    when(testAddressLookupController.addressLookupService.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new Exception("")))
+    when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new Exception("")))
     setAuthMocks()
     val result = testAddressLookupController.addressLookup(postCode).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -138,7 +138,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
   def addressAuditCall(addressAudits: AddressAudits)(test: Future[Result] => Any): Unit = {
     implicit val hc = mock[HeaderCarrier]
 
-    when(testAddressLookupController.addressLookupService.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
+    when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
     setAuthMocks()
 
     val fakeRequest: FakeRequest[AnyContent] = if (addressAudits.addressAudits.isEmpty) {

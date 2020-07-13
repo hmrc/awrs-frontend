@@ -17,15 +17,10 @@
 package forms.validation.util
 
 import forms.validation.util.ErrorMessageFactory.createErrorMessage
-import forms.validation.util.ErrorMessageInterpreter.defaultSummaryId
-import forms.validation.util.ErrorMessageInterpreter.getFieldErrors
-import forms.validation.util.ErrorMessageInterpreter.getSummaryErrors
+import forms.validation.util.ErrorMessageInterpreter.{defaultSummaryId, getFieldErrors, getSummaryErrors}
+import play.api.data.Forms.{mapping, text}
+import play.api.data.validation.{Constraint, Valid, ValidationResult}
 import play.api.data.{Form, Mapping}
-import play.api.data.Forms.mapping
-import play.api.data.Forms.text
-import play.api.data.validation.Constraint
-import play.api.data.validation.Valid
-import play.api.data.validation.ValidationResult
 import utils.AwrsUnitTestTraits
 
 class ErrorMessageLookupTest extends AwrsUnitTestTraits {

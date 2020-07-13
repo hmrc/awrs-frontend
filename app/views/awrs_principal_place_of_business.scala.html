@@ -14,16 +14,17 @@
  * limitations under the License.
  *@
 
+@import config.ApplicationConfig
 @import play.twirl.api.Html
 @import services.DataCacheKeys._
 @import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 @import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 
-@import config.ApplicationConfig
-@import utils.AwrsFieldConfig
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -66,7 +67,7 @@
     }
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
@@ -79,7 +80,7 @@
                 @awrsProgressHelper(businessType, placeOfBusinessName)
             </header>
 
-            @form(action = actionRoute) {
+            @formWithCSRF(action = actionRoute) {
 
                 <p class="lede">@messages("awrs.business_contacts.place_of_business_help_text")</p>
 

@@ -21,12 +21,12 @@ import connectors.mock.MockAuthConnector
 import models._
 import org.scalatest.Assertion
 import play.api.mvc.Result
-import services.mocks.{MockKeyStoreService, MockSave4LaterService}
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
-import utils.TestUtil._
-import services.DataCacheKeys._
 import play.api.test.Helpers._
+import services.DataCacheKeys._
+import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{JourneyConstants, ServicesUnitTestFixture}
+import utils.TestUtil._
+import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 
 import scala.concurrent.Future
 
@@ -36,9 +36,12 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with ServicesUnitTestFixture {
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_application_error]
+  val mockTemplateApp = app.injector.instanceOf[views.html.view_application.awrs_view_application]
+
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
     mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, mockTemplate, mockTemplateApp)
 
   lazy val urlMap: Map[String, Option[Int] => String] = Map[String, (Option[Int]) => String](
     (businessDetailsName, (id: Option[Int]) => controllers.routes.TradingNameController.showTradingName(true).url),

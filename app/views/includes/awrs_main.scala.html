@@ -14,9 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html.layouts
+@import _root_.utils.AwrsSessionKeys
 @import config.ApplicationConfig
 @import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.play.views.html.layouts
+
+@this(govUkWrapper: govuk_wrapper)
 @(
     title: String,
     pageScripts: Option[Html] = None,
@@ -31,8 +34,6 @@
     signOutToSurvey: Boolean = true,
     showSignOutLink: Boolean = true
 )(mainContent: Html)(implicit request : Request[_], messages: Messages, applicationConfig: ApplicationConfig)
-
-@import utils.{CountryCodes, AwrsSessionKeys}
 
 @linkElement = {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/custom.css")'/>
@@ -63,7 +64,7 @@
   </script>
 }
 
-@govuk_wrapper(
+@govUkWrapper(
     appConfig = applicationConfig,
     title = title,
     mainClass = mainClass,

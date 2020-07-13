@@ -14,14 +14,18 @@
  * limitations under the License.
  *@
 
-@import views.helpers.InputTypeRadioGroupParams
 @import config.ApplicationConfig
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers.InputTypeRadioGroupParams
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
 
-@includes.awrs_main(messages("awrs.generic.tab.title", messages("awrs.reapplication.confirm_page.heading")), userLoggedIn = true) {
+
+@awrsMain(messages("awrs.generic.tab.title", messages("awrs.reapplication.confirm_page.heading")), userLoggedIn = true) {
 
 <div class="grid">
     <div class="grid grid-2-3">
@@ -32,7 +36,7 @@
             @messages("awrs.reapplication.confirm_page.text")
         </p>
 
-        @form(action = controllers.routes.ReapplicationController.submit) {
+        @formWithCSRF(action = controllers.routes.ReapplicationController.submit) {
             <div id="withdrawal-confirmation" class="form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(

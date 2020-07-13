@@ -22,11 +22,8 @@ ariaLabelledBy: Option[String] = None,
 formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
 
 @import play.api.i18n._
-@import views.html.helper._
+@import views.helpers.{InputTypeRadioGroupParams, InputTypeTextParams, QuestionAnswerParameters}
 @import views.html.helpers._
-@import views.helpers.InputTypeTextParams
-@import views.helpers.InputTypeRadioGroupParams
-@import views.helpers.QuestionAnswerParameters
 
 @iDoNotKnowUTRHintQuestion = @{
     youOrThey match {

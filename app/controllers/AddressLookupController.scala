@@ -18,12 +18,12 @@ package controllers
 
 import audit.Auditable
 import config.ApplicationConfig
+import connectors.{AddressLookupConnector, AddressLookupErrorResponse, AddressLookupSuccessResponse, HasAddressLookupConnector}
 import controllers.auth.AuthFunctionality
 import javax.inject.Inject
 import models.{Address, AddressAudit, AddressAudits}
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services._
 import services.helper.AddressComparator
 import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.http.BadRequestException
@@ -35,9 +35,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
-                                        val addressLookupService: AddressLookupService,
+                                        val addressLookupConnector: AddressLookupConnector,
                                         val auditable: Auditable,
-                                        implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with HasAddressLookupService with LoggingUtils with AuthFunctionality {
+                                        implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with HasAddressLookupConnector with LoggingUtils with AuthFunctionality {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -48,9 +48,9 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
         implicit val writes: OFormat[RecordSet] = Json.format[RecordSet]
         val validPostcodeCharacters = "^[A-z0-9 ]*$"
         if (postcode.matches(validPostcodeCharacters)) {
-          addressLookupService.lookup(postcode) map {
+          addressLookupConnector.lookup(postcode) map {
             case AddressLookupErrorResponse(e: BadRequestException) => BadRequest(e.message)
-            case AddressLookupErrorResponse(e) => InternalServerError
+            case AddressLookupErrorResponse(_) => InternalServerError
             case AddressLookupSuccessResponse(recordSet) => Ok(writes.writes(recordSet))
           }
         } else {
@@ -76,7 +76,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
         } ++ {
           // if the address is not foreign don't include these
           address.addressCountry match {
-            case Some(addressCountry) => Map(
+            case Some(_) => Map(
               (key + ".addressCountry", address.addressCountry.fold("")(x => x))
             )
             case _ => Map()

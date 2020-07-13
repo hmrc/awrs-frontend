@@ -16,7 +16,6 @@
 
 package views
 
-import models.FormBundleStatus
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Revoked, RevokedUnderReviewOrAppeal}
 import play.api.mvc.{AnyContent, Request}
 import utils.SessionUtil._
@@ -37,7 +36,7 @@ object Configuration {
     request getSessionStatus match {
       case None => throw new RuntimeException("Missing status in session data")
       case Some(Approved) | Some(ApprovedWithConditions) | Some(Revoked) | Some(RevokedUnderReviewOrAppeal) => false
-      case a@_ => true
+      case _ => true
     }
 
 }

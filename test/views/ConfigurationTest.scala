@@ -18,13 +18,8 @@ package views
 
 import java.util.UUID
 
-import builders.SessionBuilder
-import models.FormBundleStatus.{Approved, ApprovedWithConditions, Revoked, RevokedUnderReviewOrAppeal}
-import models.{Address, BCAddress, BusinessCustomerDetails}
 import play.api.test.FakeRequest
-import services.helper.AwrsAPI5Helper
-import uk.gov.hmrc.http.SessionKeys
-import utils.{AwrsUnitTestTraits, TestUtil}
+import utils.AwrsUnitTestTraits
 
 
 class ConfigurationTest extends AwrsUnitTestTraits {
@@ -40,7 +35,7 @@ class ConfigurationTest extends AwrsUnitTestTraits {
       val types = List("Approved", "Approved with Conditions", "Revoked", "Revoked under Review/Appeal")
       types map { sessionType =>
         val fakeRequestWithSession = FakeRequest().withSession(
-          "status" -> s"${sessionType}"
+          "status" -> s"$sessionType"
         )
 
         Configuration.showHint1(fakeRequestWithSession) shouldBe false
@@ -51,7 +46,7 @@ class ConfigurationTest extends AwrsUnitTestTraits {
       val sessionType = "Pending"
 
       val fakeRequestWithSession = FakeRequest().withSession(
-        "status" -> s"${sessionType}"
+        "status" -> s"$sessionType"
       )
 
       Configuration.showHint1(fakeRequestWithSession) shouldBe true

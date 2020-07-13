@@ -26,8 +26,8 @@ import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util._
 import models.{CompanyNames, Partner}
-import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
+import play.api.data.{Form, Mapping}
 
 import scala.util.{Failure, Success, Try}
 

@@ -35,8 +35,11 @@ import scala.concurrent.Future
 class FeedbackViewTest extends AwrsUnitTestTraits
   with MockAuthConnector {
 
+  val temThanks = app.injector.instanceOf[views.html.awrs_feedback_thanks]
+  val temFeed = app.injector.instanceOf[views.html.awrs_feedback]
+
   val mockAudit: Audit = mock[Audit]
-  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockDeEnrolService, mockAccountUtils, mockAppConfig)
+  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockDeEnrolService, mockAccountUtils, mockAppConfig, temFeed, temThanks)
 
 
   def testRequest(feedback: Feedback) =

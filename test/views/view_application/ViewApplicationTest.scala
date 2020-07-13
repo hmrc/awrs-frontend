@@ -28,7 +28,7 @@ import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{when, _}
 import play.api.i18n.Messages
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, _}
@@ -37,12 +37,11 @@ import play.api.test.Helpers._
 import play.twirl.api.HtmlFormat
 import services.DataCacheKeys._
 import services.Save4LaterService
-import org.mockito.Mockito._
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.http.cache.client._
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import utils.TestUtil._
 import utils.TestConstants._
+import utils.TestUtil._
 import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import views.view_application.helpers.{OneViewMode, PrintFriendlyMode}
 import views.view_application.subviews.SubviewIds._
@@ -66,7 +65,9 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override implicit val applicationConfig: ApplicationConfig) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig) {
+                                 override implicit val applicationConfig: ApplicationConfig,
+                                 val template: views.html.awrs_business_directors,
+                                 viewApp: views.html.view_application.awrs_view_application) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig, template) {
     val status = "does not matter"
 
     def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent]): Boolean => HtmlFormat.Appendable =
@@ -83,12 +84,15 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
     def show(dataCache: CacheMap): Action[AnyContent] = Action.async {
       implicit request =>
-        Future.successful(Ok(views.html.view_application.awrs_view_application(viewApplicationContent(dataCache, status), printFriendly = true, None, None)(implicitly, messages= messages, applicationConfig = mockAppConfig)))
+        Future.successful(Ok(viewApp(viewApplicationContent(dataCache, status), printFriendly = true, None, None)(implicitly, messages= messages, applicationConfig = mockAppConfig)))
     }
   }
 
+  val mockTemplateDirectors = app.injector.instanceOf[views.html.awrs_business_directors]
+  val mockTemplateViewApplication = app.injector.instanceOf[views.html.view_application.awrs_view_application]
+
   val testController: TestController =
-    new TestController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig){
+    new TestController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplateDirectors, mockTemplateViewApplication){
       override val signInUrl = "/sign-in"
     }
 

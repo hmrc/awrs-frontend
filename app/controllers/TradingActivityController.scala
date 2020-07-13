@@ -38,7 +38,8 @@ class TradingActivityController @Inject()(val mcc: MessagesControllerComponents,
                                           val authConnector: DefaultAuthConnector,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
-                                          implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                          implicit val applicationConfig: ApplicationConfig,
+                                          template: views.html.awrs_trading_activity) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
   override implicit val ec: ExecutionContext = mcc.executionContext
   override val section: String = tradingActivityName
@@ -54,8 +55,8 @@ class TradingActivityController @Inject()(val mcc: MessagesControllerComponents,
         }
 
         save4LaterService.mainStore.fetchTradingActivity(ar) map {
-          case Some(data) => Ok(views.html.awrs_trading_activity(tradingActivityForm.fill(data)))
-          case _ => Ok(views.html.awrs_trading_activity(tradingActivityForm))
+          case Some(data) => Ok(template(tradingActivityForm.fill(data)))
+          case _ => Ok(template(tradingActivityForm))
         }
       }
     }
@@ -66,7 +67,7 @@ class TradingActivityController @Inject()(val mcc: MessagesControllerComponents,
     implicit val viewMode: ViewApplicationType = viewApplicationType
 
     tradingActivityForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.awrs_trading_activity(formWithErrors))),
+      formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
       tradingActivityData => {
 
         save4LaterService.mainStore.saveTradingActivity(authRetrievals, tradingActivityData) flatMap
