@@ -38,17 +38,21 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
 
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
-  implicit val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val realMessages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
+  val realMessages: Messages = app.injector.instanceOf[MessagesControllerComponents].messagesApi.preferred(Seq(Lang.defaultLang))
+
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_email_verification_success]
+  val mockTemplateError = app.injector.instanceOf[views.html.awrs_email_verification_error]
 
   val testEmailVerificationControllerEmailEnabled: EmailVerificationController =
-    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig) {
+    new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig,
+      mockTemplateError, mockTemplate) {
       override lazy val signInUrl: String = applicationConfig.signIn
       override lazy val isEmailVerificationEnabled = true
   }
 
   val testEmailVerificationControllerEmailNotEnabled: EmailVerificationController =
-    new EmailVerificationController(mcc, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig) {
+    new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig,
+      mockTemplateError, mockTemplate) {
       override lazy val isEmailVerificationEnabled = false
       override lazy val signInUrl: String = applicationConfig.signIn
   }
@@ -63,7 +67,7 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     }
 
     "redirect to the declaration page if the email has been verified" in {
-      checkEmailVerification(testController = testEmailVerificationControllerEmailEnabled, isVerified = true) {
+      checkEmailVerification(testController = testEmailVerificationControllerEmailEnabled) {
         result =>
           redirectLocation(result).get shouldBe controllers.routes.ApplicationDeclarationController.showApplicationDeclaration.url
       }
@@ -73,28 +77,26 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       checkEmailVerification(testController = testEmailVerificationControllerEmailEnabled, isVerified = false) {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("email-verification-error-header").text shouldBe realMessages("awrs.email_verification_error.heading")
-          document.getElementById("email-verification-error-lede").text shouldBe realMessages("awrs.email_verification_error.lede")
-          document.getElementById("email-verification-error-description-1").text shouldBe realMessages("awrs.email_verification_error.info_1", testEmail + ".")
-          document.getElementById("email-verification-error-description-2").text shouldBe realMessages("awrs.email_verification_error.info_2")
-          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.contacts_link"))
-          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.resend_link"))
-          document.getElementById("return-to-summary").text shouldBe realMessages("awrs.generic.return_to_app_summary")
+          document.getElementById("email-verification-error-header").text shouldBe "awrs.email_verification_error.heading"
+          document.getElementById("email-verification-error-lede").text shouldBe "awrs.email_verification_error.lede"
+          document.getElementById("email-verification-error-description-1").text shouldBe "awrs.email_verification_error.info_1"
+          document.getElementById("email-verification-error-description-2").text shouldBe "awrs.email_verification_error.info_2"
+          document.getElementById("email-verification-error-description-3").text shouldBe "awrs.email_verification_error.info_3"
+          document.getElementById("return-to-summary").text shouldBe "awrs.generic.return_to_app_summary"
       }
     }
 
     "resend email and reload the reminder screen with resent text" in {
-      resendEmail(isVerified = true) {
+      resendEmail() {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("email-verification-error-header").text shouldBe realMessages("awrs.email_verification_error.heading")
-          document.getElementById("email-verification-error-lede").text shouldBe realMessages("awrs.email_verification_error.lede")
-          document.getElementById("email-verification-error-description-1").text shouldBe realMessages("awrs.email_verification_error.info_1", testEmail + ".")
-          document.getElementById("email-verification-error-description-2").text shouldBe realMessages("awrs.email_verification_error.info_2")
-          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.contacts_link"))
-          document.getElementById("email-verification-error-description-3").text should include(realMessages("awrs.email_verification_error.resend_link"))
-          document.getElementById("email-verification-error-resent").text should include(realMessages("awrs.email_verification_error.resent", testEmail + "."))
-          document.getElementById("continue").text shouldBe realMessages("awrs.confirmation.button")
+          document.getElementById("email-verification-error-header").text shouldBe "awrs.email_verification_error.heading"
+          document.getElementById("email-verification-error-lede").text shouldBe "awrs.email_verification_error.lede"
+          document.getElementById("email-verification-error-description-1").text shouldBe "awrs.email_verification_error.info_1"
+          document.getElementById("email-verification-error-description-2").text shouldBe "awrs.email_verification_error.info_2"
+          document.getElementById("email-verification-error-description-3").text shouldBe "awrs.email_verification_error.info_3"
+          document.getElementById("email-verification-error-resent").text shouldBe "awrs.email_verification_error.resent"
+          document.getElementById("continue").text shouldBe "awrs.confirmation.button"
       }
     }
 
@@ -102,8 +104,8 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       resendEmail(isVerified = false) {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("application-error-header").text shouldBe realMessages("awrs.generic.error.title")
-          document.getElementById("application-error-description").text shouldBe realMessages("awrs.generic.error.status")
+          document.getElementById("application-error-header").text shouldBe "awrs.generic.error.title"
+          document.getElementById("application-error-description").text shouldBe "awrs.generic.error.status"
       }
     }
 
@@ -113,8 +115,8 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
           status(result) shouldBe INTERNAL_SERVER_ERROR
 
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("application-error-header").text shouldBe realMessages("awrs.generic.error.title")
-          document.getElementById("application-error-description").text shouldBe realMessages("awrs.generic.error.status")
+          document.getElementById("application-error-header").text shouldBe "awrs.generic.error.title"
+          document.getElementById("application-error-description").text shouldBe "awrs.generic.error.status"
       }
     }
 
@@ -122,9 +124,9 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
       showSuccess {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("email-verification-success-header").text shouldBe realMessages("awrs.email_verification_success.heading")
-          document.getElementById("email-verification-success-lede").text shouldBe realMessages("awrs.email_verification_success.lede", ".")
-          document.getElementById("return-to-summary").text shouldBe realMessages("awrs.generic.return_to_app_summary")
+          document.getElementById("email-verification-success-header").text shouldBe "awrs.email_verification_success.heading"
+          document.getElementById("email-verification-success-lede").text shouldBe "awrs.email_verification_success.lede"
+          document.getElementById("return-to-summary").text shouldBe "awrs.generic.return_to_app_summary"
       }
     }
   }

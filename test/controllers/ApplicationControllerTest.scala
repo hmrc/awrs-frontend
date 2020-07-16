@@ -19,8 +19,6 @@ package controllers
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import org.mockito.Mockito.when
-import play.api.{Configuration, Play}
-import play.api.Mode.Mode
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import utils.AwrsUnitTestTraits
@@ -30,7 +28,7 @@ import scala.concurrent.Future
 
 class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnector {
 
-  val testApplicationController = new ApplicationController(mockServicesConfig, mockMCC, mockAppConfig)
+  val testApplicationController = new ApplicationController(mockMCC, mockAppConfig)
 
   "Authorised users" should {
     "be redirected to feedback-survey page" in {

@@ -36,7 +36,9 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
                                             val deEnrolService: DeEnrolService,
                                             val save4LaterService: Save4LaterService,
                                             val authConnector: DefaultAuthConnector,
-                                            implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                                            implicit val applicationConfig: ApplicationConfig,
+                                            templateError: awrs_email_verification_error,
+                                            templateSuccess: awrs_email_verification_success) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   lazy val isEmailVerificationEnabled: Boolean = applicationConfig.emailVerificationEnabled
@@ -52,7 +54,7 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
           if (isEmailVerified) {
             Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration())
           } else {
-            Ok(awrs_email_verification_error(businessContacts.fold("")(x => x.email.fold("")(x => x))))
+            Ok(templateError(businessContacts.fold("")(x => x.email.fold("")(x => x))))
           }
         }
       } else {
@@ -70,7 +72,7 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
             case Some(businessEmail) =>
               emailVerificationService.sendVerificationEmail(businessEmail) map {
                 case true =>
-                  Ok(awrs_email_verification_error(businessEmail, resent = true))
+                  Ok(templateError(businessEmail, resent = true))
                 case _ => showErrorPageRaw
               }
             case _ =>
@@ -83,7 +85,7 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
 
   def showSuccess: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(awrs_email_verification_success()))
+      Future.successful(Ok(templateSuccess()))
   }
 
 }

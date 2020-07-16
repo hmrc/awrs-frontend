@@ -35,26 +35,28 @@ class FeedbackController @Inject()(mcc: MessagesControllerComponents,
                                    val auditable: Auditable,
                                    val deEnrolService: DeEnrolService,
                                    val accountUtils: AccountUtils,
-                                   implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                                   implicit val applicationConfig: ApplicationConfig,
+                                   template: views.html.awrs_feedback,
+                                   templateThanks: views.html.awrs_feedback_thanks) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def showFeedback: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar => Future.successful(Ok(views.html.awrs_feedback(feedbackForm.form))) }
+    authorisedAction { _ => Future.successful(Ok(template(feedbackForm.form))) }
   }
 
   def showFeedbackThanks: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar =>
+    authorisedAction { _ =>
       // Don't use AWRSController OK helper as we don't want to add the thank you view to the session location history
-      Future.successful(OkNoLocation(views.html.awrs_feedback_thanks()))
+      Future.successful(OkNoLocation(templateThanks()))
     }
   }
 
   def submitFeedback: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { ar =>
+    authorisedAction { _ =>
       feedbackForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.awrs_feedback(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
         feedbackDetails => {
           audit(transactionName = "AWRS Feedback", detail = feedbackFormDataToMap(feedbackDetails), eventType = eventTypeSuccess)
           Future.successful(Redirect(routes.FeedbackController.showFeedbackThanks()))

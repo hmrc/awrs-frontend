@@ -21,18 +21,17 @@ import forms.AWRSEnums.BooleanRadioEnum
 import forms.GroupMemberDetailsForm._
 import forms.test.util._
 import forms.validation.util.FieldError
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
 
-class GroupMemberDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class GroupMemberDetailsFormTest extends UnitSpec with MockitoSugar {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form = GroupMemberDetailsForm.groupMemberForm.form
 
   "Form validation" should {
 
     "check validations for BusinessName and TradingName" in {
-      NamedUnitTests.companyNamesAreValid(idPrefix = names, isBusinessNameRequired = true)
+      NamedUnitTests.companyNamesAreValid(idPrefix = names)
     }
 
     "display correct validation for group member address" in {

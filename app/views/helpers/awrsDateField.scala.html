@@ -16,12 +16,8 @@
 
 @(params: views.helpers.DateHelperParams)(implicit messages: Messages)
 
-@import views.html.helper.FieldElements
-@import views.html.helpers._
-@import views.helpers._
 @import _root_.forms.validation.util._
-@import _root_.forms.validation.util.ErrorMessageInterpreter._
-@import _root_.forms.validation.util.ErrorMessageLookup._
+@import views.html.helpers._
 
 @fieldErrors = @{ ErrorMessageInterpreter.getFieldErrorsByName(params.fieldName)(Some(params.formItem), messages)}
 @legend = {

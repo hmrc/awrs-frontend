@@ -14,12 +14,10 @@
  * limitations under the License.
  *@
 
-@import views.view_application.helpers.ViewApplicationType
-@import views.view_application.ViewApplicationHelper._
-@import views.html.view_application.helpers._
-@import views.view_application.subviews.SubviewIds
-
 @import config.ApplicationConfig
+@import views.html.view_application.helpers._
+@import views.view_application.ViewApplicationHelper._
+@import views.view_application.helpers.ViewApplicationType
 @(supplier: models.Supplier, id: Int)(implicit viewApplicationType: ViewApplicationType, messages: Messages, applicationConfig: ApplicationConfig)
 
 @editUrl(id: Int) = @{controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id, isLinearMode = false, isNewRecord = false).url}

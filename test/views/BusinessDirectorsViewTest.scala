@@ -22,7 +22,6 @@ import controllers.BusinessDirectorsController
 import models._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -36,19 +35,21 @@ import scala.concurrent.Future
 class BusinessDirectorsViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
+  val template = app.injector.instanceOf[views.html.awrs_business_directors]
+
   implicit def businessDirectorWrapper(listOfDirectors: List[BusinessDirector]): Option[BusinessDirectors] = Some(BusinessDirectors(listOfDirectors))
 
   lazy val testList = BusinessDirectors(List(testBusinessDirectorPerson, testBusinessDirectorPerson, testBusinessDirectorCompany, testBusinessDirectorCompany))
 
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
       override val signInUrl = "/sign-in"
     }
 
   "Business Director Template" should {
 
     "display h1 with correct director number for linear mode" in {
-      for ((director, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
+      for ((_, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
         val id = index + 1
         showDirector(id) {
           result =>
@@ -74,7 +75,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
     // this is a post linear journey  scenario in which the user went and deleted all of their saved directors, then try to
     // add a new director.
     "display the page correctly in edit mode when adding the first record and no directors found in save4later" in {
-      showDirector(id = 1, isLinearMode = false, directors = None, isNewRecord = true) {
+      showDirector(id = 1, isLinearMode = false, directors = None) {
         result =>
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))

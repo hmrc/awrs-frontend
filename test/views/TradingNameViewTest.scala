@@ -17,8 +17,8 @@
 package views
 
 import builders.SessionBuilder
-import controllers.{TradingDateController, TradingNameController}
-import models.{BusinessNameDetails, NewAWBusiness}
+import controllers.TradingNameController
+import models.BusinessNameDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, Result}
@@ -35,7 +35,8 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
 
   trait Setup {
     val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-    val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+    val template = app.injector.instanceOf[views.html.awrs_trading_name]
+    val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
       override val signInUrl: String = applicationConfig.signIn
     }
   }

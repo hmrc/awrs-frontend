@@ -15,11 +15,14 @@
  *@
 
 @import config.ApplicationConfig
-@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.includes.awrs_main
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.generic.unauthorised.heading")), userLoggedIn = false){
+@this(awrsMain: awrs_main)
+@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+
+
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.unauthorised.heading"))){
 <h1 class="heading-xlarge" id="heading"> @Html(messages("awrs.generic.unauthorised.heading")) </h1>
 <p id="reason_start">@messages("awrs.generic.unauthorised.reason_start")</p>
 <ul id="reasons" class="list list-bullet">

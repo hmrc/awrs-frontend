@@ -22,7 +22,6 @@ import javax.inject.Inject
 import models.FormBundleStatus.{Pending, Revoked}
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models.{FormBundleStatus, StatusContactType, StatusNotification, ViewedStatusResponse}
-import play.api.mvc.{AnyContent, Request}
 import services.KeyStoreService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -61,11 +60,11 @@ class AwrsAPI12Cache @Inject()(val awrsNotificationConnector: AWRSNotificationCo
           }
         case None => Future.successful(None)
       }
-      case keystoreCache@Some(notification) => Future.successful(keystoreCache)
+      case keystoreCache@Some(_) => Future.successful(keystoreCache)
     }
 
 
-  @inline def getAlertFromCache(implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[Option[StatusNotification]] =
+  @inline def getAlertFromCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusNotification]] =
     keyStoreService.fetchStatusNotification
 
   @inline def deleteNotificationFromCache(authRetrievals: StandardAuthRetrievals)

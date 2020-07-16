@@ -43,7 +43,8 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                                             val authConnector: DefaultAuthConnector,
                                             implicit val save4LaterService: Save4LaterService,
                                             val deEnrolService: DeEnrolService,
-                                            implicit val applicationConfig: ApplicationConfig
+                                            implicit val applicationConfig: ApplicationConfig,
+                                            template: views.html.awrs_application_status
                                            ) extends FrontendController(mcc) with AwrsController with I18nSupport {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -77,7 +78,6 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def displayStatus(printFriendly: Boolean,
-                            businessType: Option[BusinessType],
                             businessCustomerDetails: Option[BusinessCustomerDetails],
                             statusReturnType: StatusReturnType,
                             isNewBusiness: Boolean,
@@ -87,7 +87,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
     val alertStatus = statusReturnType.notification
     val statusInfo = statusReturnType.info
 
-    lazy val displayOk = (params: ApplicationStatusParameter) => Ok(views.html.awrs_application_status(params, printFriendly)) addSessionStatus subscriptionStatus addLocation
+    lazy val displayOk = (params: ApplicationStatusParameter) => Ok(template(params, printFriendly)) addSessionStatus subscriptionStatus addLocation
 
     lazy val logStatus = (status: FormBundleStatus) => {
       info(f"Application status : $status")
@@ -123,7 +123,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                 case Some(MindedToRevoke) =>
                   safeUseStatusInfo { info =>
                     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
-                      val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments).toString
+                      val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
                       val params = ApplicationMindedToRevokeParameter(status, info, organisationName, awrs)
                       displayOk(params)
                     } else {
@@ -133,7 +133,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                 case Some(NoLongerMindedToRevoke) =>
                   safeUseStatusInfo { info =>
                     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
-                      val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments).toString
+                      val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
                       val params = ApplicationNoLongerMindedToRevokeParameter(status, info, organisationName, awrs)
                       displayOk(params)
                     } else {
@@ -166,7 +166,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
           case Approved =>
             ifNotMindedToRevoke(
               if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
-                val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments).toString
+                val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
                 val params = ApplicationApprovedParameter(status, organisationName, awrs)
                 displayOk(params)
               } else {
@@ -177,7 +177,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
             ifNotMindedToRevoke(
               safeUseStatusInfo { info =>
                 if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
-                  val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments).toString
+                  val awrs: String = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
                   val params = ApplicationApprovedWithConditionsParameter(status, info, organisationName, awrs)
                   displayOk(params)
                 } else {
@@ -227,7 +227,6 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
               if (showStatusPage) {
                 displayStatus(
                   printFriendly,
-                  businessType,
                   businessCustomerDetails,
                   statusReturnType,
                   newBusiness,

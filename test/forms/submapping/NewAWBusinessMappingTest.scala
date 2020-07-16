@@ -20,8 +20,8 @@ import forms.AWRSEnums.BooleanRadioEnum
 import forms.test.util._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.FieldError
-import models.{TupleDate, NewAWBusiness}
-import org.scalatest.mockito.MockitoSugar
+import models.{NewAWBusiness, TupleDate}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Form
 import play.api.data.Forms._

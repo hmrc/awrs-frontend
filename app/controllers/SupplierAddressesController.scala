@@ -41,7 +41,8 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
                                             val authConnector: DefaultAuthConnector,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
-                                            implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController
+                                            implicit val applicationConfig: ApplicationConfig,
+                                            template: views.html.awrs_supplier_addresses) extends FrontendController(mcc) with AwrsController
   with JourneyPage
   with Deletable[Suppliers, Supplier] with SaveAndRoutable {
 
@@ -60,7 +61,7 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
   override val section: String = suppliersName
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.SupplierAddressesController.actionDelete(id)
   override lazy val deleteHeadingParameter: String = "awrs.view_application.supplier"
-  override val addNoAnswerRecord: List[Supplier] => List[Supplier] = (emptyList: List[models.Supplier]) => List(Supplier(Some("No"), None, None, None, None, None, None))
+  override val addNoAnswerRecord: List[Supplier] => List[Supplier] = (_: List[models.Supplier]) => List(Supplier(Some("No"), None, None, None, None, None, None))
   override val amendHaveAnotherAnswer: (Supplier, String) => Supplier = (data: Supplier, newAnswer: String) => data.copy(additionalSupplier = Some(newAnswer))
 
   def showSupplierAddressesPage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
@@ -73,12 +74,12 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
         }
 
         lazy val newEntryAction = (id: Int) =>
-          Future.successful(Ok(views.html.awrs_supplier_addresses(supplierAddressesForm.form, id, isNewRecord)))
+          Future.successful(Ok(template(supplierAddressesForm.form, id, isNewRecord)))
 
         lazy val existingEntryAction = (data: Suppliers, id: Int) => {
           val supplier = data.suppliers(id - 1)
           val updatedSupplier = supplier.copy(supplierAddress = applicationConfig.countryCodes.getSupplierAddressWithCountry(supplier))
-          Future.successful(Ok(views.html.awrs_supplier_addresses(supplierAddressesForm.form.fill(updatedSupplier), id, isNewRecord)))
+          Future.successful(Ok(template(supplierAddressesForm.form.fill(updatedSupplier), id, isNewRecord)))
         }
 
         lazy val haveAnother = (data: Suppliers) =>
@@ -104,8 +105,8 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
     supplierAddressesForm.bindFromRequest.fold(
       formWithErrors =>
         fetch(authRetrievals) flatMap {
-          case Some(data) => Future.successful(BadRequest(views.html.awrs_supplier_addresses(formWithErrors, id, isNewRecord)))
-          case _ => Future.successful(BadRequest(views.html.awrs_supplier_addresses(formWithErrors, 1, isNewRecord)))
+          case Some(_) => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord)))
+          case _ => Future.successful(BadRequest(template(formWithErrors, 1, isNewRecord)))
         },
       supplierAddressesData => {
         val countryCodeSupplierAddressData = supplierAddressesData.copy(supplierAddress = applicationConfig.countryCodes.getSupplierAddressWithCountryCode(supplierAddressesData))

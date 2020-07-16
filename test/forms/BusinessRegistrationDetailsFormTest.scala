@@ -21,12 +21,12 @@ import forms.BusinessRegistrationDetailsForm._
 import forms.test.util.{ExpectedFieldIsEmpty, _}
 import forms.validation.util.FieldError
 import models.BusinessRegistrationDetails
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.TestUtil
 import utils.TestConstants._
+import utils.TestUtil
 
 class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
   lazy val forms = (entity: String) => businessRegistrationDetailsForm(entity).form

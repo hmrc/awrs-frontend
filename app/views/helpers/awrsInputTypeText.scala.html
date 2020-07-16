@@ -16,10 +16,8 @@
 
 @(params: views.helpers.InputTypeTextParams)(implicit messages : Messages)
 
-@import views.html.helper._
-@import views.html.helpers._
-@import views.helpers._
 @import forms.validation.util._
+@import views.html.helpers._
 
 @fieldErrors = @{
     params.parentForm match {

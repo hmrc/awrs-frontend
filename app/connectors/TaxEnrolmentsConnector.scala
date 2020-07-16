@@ -20,9 +20,9 @@ import audit.Auditable
 import javax.inject.Inject
 import metrics.AwrsMetrics
 import models.{RequestPayload, _}
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import play.api.Logger
 import services.GGConstants._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -91,8 +91,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     }
   }
 
-  def processResponse(response: HttpResponse, postUrl: String, requestPayload: RequestPayload)
-                     (implicit hc: HeaderCarrier, ec: ExecutionContext): HttpResponse = {
+  def processResponse(response: HttpResponse, postUrl: String, requestPayload: RequestPayload): HttpResponse = {
     response.status match {
       case OK =>
         metrics.incrementSuccessCounter(ApiType.API4Enrolment)

@@ -20,7 +20,6 @@ import builders.SessionBuilder
 import controllers.TradingActivityController
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
@@ -34,7 +33,8 @@ import scala.concurrent.Future
 class TradingActivityViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture with AwrsFieldConfig {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val testTradingActivityController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val template = app.injector.instanceOf[views.html.awrs_trading_activity]
+  val testTradingActivityController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

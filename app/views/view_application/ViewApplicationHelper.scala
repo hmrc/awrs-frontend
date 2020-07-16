@@ -16,18 +16,12 @@
 
 package views.view_application
 
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.twirl.api.{Html, HtmlFormat}
 import services.DataCacheKeys._
 import utils.CacheUtil
 import views.view_application.helpers.SubViewTemplateHelper._
 import views.view_application.helpers.ViewApplicationType
 
 import scala.language.implicitConversions
-import scala.util.matching.Regex
-import scala.xml.Elem
 
 object ViewApplicationHelper {
 

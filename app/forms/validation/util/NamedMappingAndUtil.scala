@@ -21,11 +21,10 @@ import forms.validation.util.ConstraintUtil.FieldFormatConstraintParameter._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
-import play.api.data.{Forms, Mapping}
 import play.api.data.validation.Valid
-import utils.AwrsValidator._
-import play.api.data.Mapping
+import play.api.data.{Forms, Mapping}
 import utils.AwrsFieldConfig
+import utils.AwrsValidator._
 
 object NamedMappingAndUtil extends AwrsFieldConfig {
 

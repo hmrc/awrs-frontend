@@ -22,7 +22,6 @@ import controllers.GroupMemberController
 import models._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -36,10 +35,12 @@ import scala.concurrent.Future
 class GroupMembersViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
+  val template = app.injector.instanceOf[views.html.awrs_group_member]
+
   lazy val groupMember: GroupMember = TestUtil.testGroupMember
   lazy val testGroupMembers = GroupMembers(List(groupMember, groupMember, groupMember))
 
-  val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+  val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
 
   "Group member page" should {

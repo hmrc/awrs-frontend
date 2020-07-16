@@ -14,22 +14,16 @@
  * limitations under the License.
  *@
 
-@import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.helpers._
-@import java.text.DateFormatSymbols
-@import utils.AccountUtils
-@import views.Configuration._
-@import views.view_application.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
-
 @import config.ApplicationConfig
-@(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails]
-)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
 
@@ -59,7 +53,7 @@
 }
 
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", businessTypeHeading), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), userLoggedIn = true) {
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(
@@ -71,7 +65,7 @@
                 @awrsProgressHelper(businessType, businessRegistrationDetailsName)
             </header>
 
-            @form(action = actionRoute){
+            @formWithCSRF(action = actionRoute){
                 @awrsIdUTRHelper(
                     businessType,
                     None,

@@ -41,13 +41,15 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
 
   implicit val mockConfig: ApplicationConfig = mockAppConfig
 
+  val template = app.injector.instanceOf[views.html.awrs_group_member]
+
   private def testRequest(group: GroupMember) =
     TestUtil.populateFakeRequest[GroupMember](FakeRequest(), GroupMemberDetailsForm.groupMemberValidationForm, group)
 
   lazy val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = testRequest(testGroupMember)
 
   val testGroupMemberController: GroupMemberController = new GroupMemberController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
   "Submitting the application declaration form with " should {
 

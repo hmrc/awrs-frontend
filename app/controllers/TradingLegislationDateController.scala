@@ -45,7 +45,8 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
                                                  val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                                 implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
+                                                 implicit val applicationConfig: ApplicationConfig,
+                                                 template: views.html.awrs_legislation_date) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 
   override val section: String = businessDetailsName
   override implicit val ec: ExecutionContext = mcc.executionContext
@@ -67,21 +68,18 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
             } yield {
               maybeAWBusiness match {
                 case Some(data) =>
-                  Ok(views.html.awrs_legislation_date(tradingLegislationForm.fill(data.newAWBusiness), businessType))
-                case _ => Ok(views.html.awrs_legislation_date(tradingLegislationForm, businessType))
+                  Ok(template(tradingLegislationForm.fill(data.newAWBusiness), businessType))
+                case _ => Ok(template(tradingLegislationForm, businessType))
               }
             }
+          case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))
         }
       }
     }
   }
 
-  def saveBusinessDetails(id: Int,
-                          redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
-                          isNewRecord: Boolean,
-                          businessDetails: NewAWBusiness,
-                          authRetrievals: StandardAuthRetrievals)
-                         (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] = {
+  def saveBusinessDetails(businessDetails: NewAWBusiness, authRetrievals: StandardAuthRetrievals)
+                         (implicit hc: HeaderCarrier): Future[Result] = {
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap {
       case NewAWBusiness("Yes", _) =>
         keyStoreService.saveAlreadyTrading(already = true) map { _ =>
@@ -103,7 +101,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
         implicit val viewMode: ViewApplicationType = viewApplicationType
         val businessType = request.getBusinessType
         tradingLegislationForm.bindFromRequest.fold(
-          formWithErrors => Future.successful(BadRequest(views.html.awrs_legislation_date(formWithErrors, businessType))),
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessType))),
           newAWBusiness =>
             save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
               val awToSave = fetchedAW match {
@@ -111,9 +109,10 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                 case _ => NewAWBusiness(newAWBusiness, None)
               }
 
-              saveBusinessDetails(id, redirectRoute, isNewRecord, awToSave, authRetrievals)
+              saveBusinessDetails(awToSave, authRetrievals)
             }
         )
+      case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
     }
   }
 

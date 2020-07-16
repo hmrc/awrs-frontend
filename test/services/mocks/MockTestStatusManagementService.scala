@@ -25,10 +25,9 @@ trait MockTestStatusManagementService extends AwrsUnitTestTraits
   with MockAwrsAPI9
   with MockAwrsAPI11
   with MockAwrsAPI12Cache
-  with MockSave4LaterService
   with MockKeyStoreService {
 
-  val testStatusManagementService = new StatusManagementService(testAPI9, testAPI11, testAPI12Cache, testSave4LaterService, testKeyStoreService, mockAuditable)
+  val testStatusManagementService = new StatusManagementService(testAPI9, testAPI11, testAPI12Cache, testKeyStoreService, mockAuditable)
 
   case class MockStatusManagementServiceConfiguration(api9: CacheConfigurationLocation = NotCachedLocally,
                                                       api11: CacheConfigurationLocation = NotCachedLocally,
@@ -82,7 +81,7 @@ trait MockTestStatusManagementService extends AwrsUnitTestTraits
 
 }
 
-object MockTestStatusManagementService extends MockTestStatusManagementService {
+object MockTestStatusManagementService {
 
   val defaultViewedStatusConnector = false
 
@@ -91,8 +90,8 @@ object MockTestStatusManagementService extends MockTestStatusManagementService {
   val expectedRetrieveStatusOutput: (FormBundleStatus, Option[StatusContactType]) => StatusReturnType = (status: FormBundleStatus, notification: Option[StatusContactType]) =>
     StatusReturnType(
       wasViewed = defaultViewedStatusConnector,
-      MockAwrsAPI9.defaultSubscriptionStatusType(status),
+      MockAwrsAPI9.defaultSubscriptionStatusType(Some(status)),
       MockAwrsAPI12Cache.defaultNotification(notification),
-      MockAwrsAPI11.defaultStatusInfoType(status, notification))
+      MockAwrsAPI11.defaultStatusInfoType(Some(status), notification))
 
 }

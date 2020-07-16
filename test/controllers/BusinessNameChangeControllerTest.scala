@@ -42,9 +42,11 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
 
   val testBusinessNameChange = BusinessNameChangeConfirmation("Yes")
 
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_group_representative_change_confirm]
+
   val testBusinessNameChangeController: BusinessNameChangeController =
     new BusinessNameChangeController(mockMCC, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
-      mockIndexService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+      mockIndexService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

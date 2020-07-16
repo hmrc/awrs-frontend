@@ -14,17 +14,17 @@
  * limitations under the License.
  *@
 
-@import views.html.helpers._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import forms.AwrsFormFields._
-@import views.helpers._
-@import views.view_application.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import services.DataCacheKeys._
-
 @import config.ApplicationConfig
+@import forms.AwrsFormFields._
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -48,7 +48,7 @@
     messages("awrs.additional_information.trading_activity.heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about")))
 }
 
-@includes.awrs_main(
+@awrsMain(
     title = messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
@@ -63,7 +63,7 @@
             @awrsProgressHelper(request.getBusinessType, tradingActivityName)
         </header>
 
-        @form(action = actionRoute){
+        @formWithCSRF(action = actionRoute){
             <div class="form-group">
                 @awrsInputTypeGroupCheckbox(
                     InputTypeGroupCheckboxParams(

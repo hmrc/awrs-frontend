@@ -41,7 +41,8 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
                                             val authConnector: DefaultAuthConnector,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
-                                            implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController
+                                            implicit val applicationConfig: ApplicationConfig,
+                                            template: views.html.awrs_business_directors) extends FrontendController(mcc) with AwrsController
   with JourneyPage
   with Deletable[BusinessDirectors, BusinessDirector]
   with SaveAndRoutable
@@ -72,10 +73,10 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
         }
 
         lazy val newEntryAction = (id: Int) =>
-          Future.successful(Ok(views.html.awrs_business_directors(businessDirectorsForm.form, id, isNewRecord)))
+          Future.successful(Ok(template(businessDirectorsForm.form, id, isNewRecord)))
 
         lazy val existingEntryAction = (data: BusinessDirectors, id: Int) =>
-          Future.successful(Ok(views.html.awrs_business_directors(businessDirectorsForm.form.fill(data.directors(id - 1)), id, isNewRecord)))
+          Future.successful(Ok(template(businessDirectorsForm.form.fill(data.directors(id - 1)), id, isNewRecord)))
 
         lazy val haveAnother = (data: BusinessDirectors) =>
           data.directors match {
@@ -106,7 +107,7 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
 
     implicit val viewMode: ViewApplicationType = viewApplicationType
     businessDirectorsForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.awrs_business_directors(formWithErrors, id, isNewRecord))),
+      formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),
       businessDirectorsData =>
         saveThenRedirect[BusinessDirectors, BusinessDirector](
           fetchData = fetch(authRetrievals),
@@ -117,7 +118,7 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
         )(
           haveAnotherAnswer = (data: BusinessDirector) => data.otherDirectors.get,
           amendHaveAnotherAnswer = amendHaveAnotherAnswer,
-          hasSingleNoAnswer = (fetchData: BusinessDirectors) => "This is not required for directors"
+          hasSingleNoAnswer = (_: BusinessDirectors) => "This is not required for directors"
         )(
           listObjToList = (list: BusinessDirectors) => list.directors, // these two functions will be the same since it is already a list
           listToListObj = (list: List[BusinessDirector]) => BusinessDirectors(list)

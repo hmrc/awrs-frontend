@@ -50,7 +50,9 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
                                           val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                          implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController with UnSubmittedBannerUtil with DataCacheService {
+                                          implicit val applicationConfig: ApplicationConfig,
+                                          templateError: views.html.awrs_application_error,
+                                          templateViewApp: views.html.view_application.awrs_view_application) extends FrontendController(mcc) with AwrsController with UnSubmittedBannerUtil with DataCacheService {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
@@ -72,7 +74,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
         lazy val status = getSessionStatusStr.fold(Messages("awrs.index_page.draft"))(x => x)
         (subscriptionData, printFriendly) match {
           case (Some(dataCache), false) => Ok(
-            views.html.view_application.awrs_view_application(
+            templateViewApp(
               viewApplicationContent(dataCache, status.toLowerCase.capitalize.replace("/", " / "), ar.enrolments),
               printFriendly = false,
               sectionText = None,
@@ -83,7 +85,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
           case (Some(dataCache), true) =>
             // Don't use AWRSController OK helper as we don't want to add the thank you view to the session location history
             OkNoLocation(
-              views.html.view_application.awrs_view_application(
+              templateViewApp(
                 viewApplicationContent(dataCache, status.toLowerCase.capitalize.replace("/", " / "), ar.enrolments),
                 printFriendly = true,
                 sectionText = None,
@@ -91,7 +93,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
               )
             ) addLocation
           case _ =>
-            BadRequest(views.html.awrs_application_error())
+            BadRequest(templateError())
         }
       }
     }
@@ -105,8 +107,8 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
         unSubmittedChangesParam <- unSubmittedChangesBanner(subscriptionData, ar)
       } yield {
         def showPage(content: Html, legalEntity: String) = Ok(
-          views.html.view_application.awrs_view_application(
-            printFriendly => content,
+          templateViewApp(_ =>
+            content,
             printFriendly,
             Some(getSectionDisplayName(sectionName, legalEntity)),
             unSubmittedChangesParam = unSubmittedChangesParam
@@ -143,9 +145,9 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
                 displayNameKey, cacheMap.getProducts)(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
               case `suppliersName` => showPage(views.html.view_application.subviews.subview_suppliers(
                 displayNameKey, cacheMap.getSuppliers)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly, implicitly), legalEntity)
-              case _ => NotFound(views.html.helpers.awrsErrorNotFoundTemplate())
+              case _ => NotFound(applicationConfig.templateNotFound())
             }
-          case _ => NotFound(views.html.helpers.awrsErrorNotFoundTemplate())
+          case _ => NotFound(applicationConfig.templateNotFound())
         }
       }
     }
@@ -201,7 +203,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
       case `tradingActivityName` => Future.successful(Redirect(controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true)))
       case `productsName` => Future.successful(Redirect(controllers.routes.ProductsController.showProducts(isLinearMode = true)))
       case `suppliersName` => pageWithSubsection(controllers.routes.SupplierAddressesController.showSupplierAddressesPage(_, isLinearMode = true, isNewRecord = true))
-      case _ => Future.successful(NotFound(views.html.helpers.awrsErrorNotFoundTemplate()))
+      case _ => Future.successful(NotFound(applicationConfig.templateNotFound()))
     }
   }
 

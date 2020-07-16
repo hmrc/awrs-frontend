@@ -40,22 +40,22 @@ trait MockAwrsAPI11 extends AwrsUnitTestTraits with MockKeyStoreService with Moc
 
 }
 
-object MockAwrsAPI11 extends MockAwrsAPI9 {
+object MockAwrsAPI11 {
 
   def defaultStatusInfoType(status: Option[FormBundleStatus],
                             notification: Option[StatusContactType]): Option[StatusInfoType] =
     (status, notification) match {
       case (Some(Pending), None) => None
-      case (Some(Pending), Some(MindedToReject)) => TestUtil.testStatusInfoTypeMindedToReject
+      case (Some(Pending), Some(MindedToReject)) => Some(TestUtil.testStatusInfoTypeMindedToReject)
       case (Some(Approved), None) => None
-      case (Some(Approved | ApprovedWithConditions), Some(MindedToRevoke)) => TestUtil.testStatusInfoTypeMindedToRevoke
-      case (Some(ApprovedWithConditions), None) => TestUtil.testStatusInfoTypeApprovedWithConditions
+      case (Some(Approved | ApprovedWithConditions), Some(MindedToRevoke)) => Some(TestUtil.testStatusInfoTypeMindedToRevoke)
+      case (Some(ApprovedWithConditions), None) => Some(TestUtil.testStatusInfoTypeApprovedWithConditions)
       case (Some(Approved | ApprovedWithConditions | Rejected), Some(MindedToReject)) => None // TODO check this
-      case (Some(Approved | ApprovedWithConditions), Some(NoLongerMindedToRevoke)) => TestUtil.testStatusInfoTypeNoLongerMindedToRevoke
-      case (Some(Rejected), _) => TestUtil.testStatusInfoTypeRejected
-      case (Some(RejectedUnderReviewOrAppeal), _) => TestUtil.testStatusInfoTypeRejectedUnderReviewOrAppeal
-      case (Some(Revoked), _) => TestUtil.testStatusInfoTypeRevoked
-      case (Some(RevokedUnderReviewOrAppeal), _) => TestUtil.testStatusInfoTypeRevokedUnderReviewOrAppeal
+      case (Some(Approved | ApprovedWithConditions), Some(NoLongerMindedToRevoke)) => Some(TestUtil.testStatusInfoTypeNoLongerMindedToRevoke)
+      case (Some(Rejected), _) => Some(TestUtil.testStatusInfoTypeRejected)
+      case (Some(RejectedUnderReviewOrAppeal), _) => Some(TestUtil.testStatusInfoTypeRejectedUnderReviewOrAppeal)
+      case (Some(Revoked), _) => Some(TestUtil.testStatusInfoTypeRevoked)
+      case (Some(RevokedUnderReviewOrAppeal), _) => Some(TestUtil.testStatusInfoTypeRevokedUnderReviewOrAppeal)
       case (None, _) => None
       case _ => throw new NoSuchElementException(s"unimplemented default notification type in MockAwrsAPI11.defaultStatusInfoType:\n($status, $notification)")
     }

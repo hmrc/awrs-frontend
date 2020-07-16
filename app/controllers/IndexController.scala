@@ -39,7 +39,8 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                                 val authConnector: DefaultAuthConnector,
                                 val auditable: Auditable,
                                 val accountUtils: AccountUtils,
-                                implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
+                                implicit val applicationConfig: ApplicationConfig,
+                                template: views.html.awrs_index) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -63,7 +64,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
               val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
               val showOneViewLink = indexService.showOneViewLink(sectionStatus)
               val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
-              Ok(views.html.awrs_index(
+              Ok(template(
                 awrsRef = {
                   if (accountUtils.hasAwrs(ar.enrolments)) {
                     Some(accountUtils.getAwrsRefNo(ar.enrolments))
@@ -95,7 +96,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
 
   def unauthorised(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction {
-      _ => Future.successful(Unauthorized(views.html.unauthorised()))
+      _ => Future.successful(Unauthorized(applicationConfig.templateUnauthorised()))
     }
   }
 }

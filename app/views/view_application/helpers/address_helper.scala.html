@@ -14,11 +14,8 @@
  * limitations under the License.
  *@
 
-@import views.view_application.ViewApplicationHelper._
-@import views.view_application.helpers.ViewApplicationType
-@import views.view_application.helpers.EditSectionOnlyMode
-
 @import config.ApplicationConfig
+@import views.view_application.helpers.{EditSectionOnlyMode, ViewApplicationType}
 @(legend: String, someAddress: Option[Address], links: Option[List[String]] = None)(implicit cssClass: Option[String] = None, someId: Option[Int] = None, viewApplicationType: ViewApplicationType = EditSectionOnlyMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @postcodeHelper(postcode: String) = @{

@@ -16,6 +16,7 @@
 
 package forms
 
+import forms.prevalidation._
 import forms.validation.util.ConstraintUtil.OptionalTextFieldMappingParameter
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
@@ -23,7 +24,6 @@ import models.Feedback
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
 import utils.AwrsValidator._
-import forms.prevalidation._
 
 object FeedbackForm {
 

@@ -17,12 +17,11 @@
 package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.validation.util.ConstraintUtil.CompulsoryTextFieldMappingParameter
-import models.TradingActivity
-import forms.validation.util.ConstraintUtil._
+import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, _}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
+import models.TradingActivity
 import play.api.data.Forms._
 import play.api.data.{Form, Forms, Mapping}
 import utils.AwrsFieldConfig

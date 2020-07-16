@@ -18,8 +18,8 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.submapping.AddressMapping._
 import forms.prevalidation._
+import forms.submapping.AddressMapping._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._

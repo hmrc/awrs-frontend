@@ -16,9 +16,9 @@
 
 @(field: Field, args: (Symbol,Any)*)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
 
+@import forms.validation.util._
 @import play.api.i18n._
 @import views.html.helper._
-@import forms.validation.util._
 
 @elements = @{ new FieldElements(field.id, field, null, args.toMap, messages) }
 @parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}

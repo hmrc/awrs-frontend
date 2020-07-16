@@ -253,7 +253,7 @@ case class FieldError(msgKey: String, msgArgs: MessageArguments = MessageArgumen
 
 // These constaints are used by the factory and extractor to construct and extract the error messages from their configs.
 // These constans only used for the string manipulation version of the implementation.
-private object ErrorDelimiterConstants {
+object ErrorDelimiterConstants {
   val summaryIdMarker = "#"
   val paramDelimiter = ";"
   val fieldDelimiter = ":"

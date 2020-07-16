@@ -20,10 +20,19 @@ import audit.Auditable
 import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{AwrsFieldConfig, CountryCodes}
+import views.html.{awrs_application_error, unauthorised}
+import views.html.view_application.subviews.subview_delete_confirmation
+import views.html.helpers.awrsErrorNotFoundTemplate
+import views.html.error_template
 
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
                                   val countryCodes: CountryCodes,
-                                  val auditable: Auditable) extends AwrsFieldConfig {
+                                  val auditable: Auditable,
+                                  val templateAppError: awrs_application_error,
+                                  val templateUnauthorised: unauthorised,
+                                  val templateDeleteConfirm: subview_delete_confirmation,
+                                  val templateNotFound: awrsErrorNotFoundTemplate,
+                                  val templateError: error_template) extends AwrsFieldConfig {
 
   private def loadConfig(key: String) = servicesConfig.getConfString(key, throw new Exception(s"Missing configuration key: $key"))
 

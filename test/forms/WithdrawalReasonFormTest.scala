@@ -21,7 +21,7 @@ import forms.AWRSEnums.WithdrawalReasonEnum._
 import forms.test.util._
 import forms.validation.util.FieldError
 import models.WithdrawalReason
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Form
 import uk.gov.hmrc.play.test.UnitSpec

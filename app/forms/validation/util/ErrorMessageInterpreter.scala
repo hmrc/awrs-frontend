@@ -18,8 +18,6 @@ package forms.validation.util
 
 import play.api.data.{Field, Form, FormError}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 
 /**
@@ -148,10 +146,10 @@ object ErrorMessageInterpreter extends ErrorMessageInterpreter {
   }
 
 
-  private def getAnchorId(args: Seq[Any])(implicit messages: Messages): String = args.filter { arg =>
+  private def getAnchorId(args: Seq[Any]): String = args.filter { arg =>
     arg match {
-      case TargetFieldIds(anchor, _*) => true
-      case a: String => true
+      case TargetFieldIds(_, _*) => true
+      case _: String => true
       case _ => false
     }
   }.head match {

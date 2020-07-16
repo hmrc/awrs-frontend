@@ -14,14 +14,13 @@
  * limitations under the License.
  *@
 
-@import views.view_application.helpers.ViewApplicationType
-@import views.view_application.ViewApplicationHelper._
-@import views.html.view_application.helpers._
-@import views.view_application.subviews.SubviewIds
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import contents._
 @import services.DataCacheKeys._
+@import views.html.view_application.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers.ViewApplicationType
+@import views.view_application.subviews.SubviewIds
 
+@import views.html.view_application.subviews.contents.content_director
 @(headingKey: String,
   someModel: Option[models.BusinessDirectors],
   businessLegalEntity: String

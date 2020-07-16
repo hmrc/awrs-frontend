@@ -14,9 +14,12 @@
  * limitations under the License.
  *@
 
-@import views.html.helpers._
-@import controllers.util.UnSubmittedChangesBannerParam
 @import config.ApplicationConfig
+@import controllers.util.UnSubmittedChangesBannerParam
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+
+@this(awrsMain: awrs_main)
 @(
     coreContent: Boolean => play.twirl.api.Html,
     printFriendly: Boolean,
@@ -37,7 +40,7 @@
 }
 
 @govWrapper(content: Html) = {
-    @includes.awrs_main(title = messages("awrs.generic.tab.title", titleString), userLoggedIn = true) {
+    @awrsMain(title = messages("awrs.generic.tab.title", titleString), userLoggedIn = true) {
         <div class="grid">
             @awrsUnSubmittedBanner(unSubmittedChangesParam, messages("awrs.index_page.modified_application_incomplete.edit"), messages("awrs.index_page.not_submitted_changes.return"))
             <div class="grid grid-2-3">

@@ -17,8 +17,8 @@
 package controllers
 
 import builders.SessionBuilder
+import connectors.AWRSNotificationConnector
 import connectors.mock.MockAuthConnector
-import connectors.{AWRSNotificationConnector, TaxEnrolmentsConnector}
 import forms.{AWRSEnums, ReapplicationForm}
 import models.{ReapplicationConfirmation, StatusContactType, StatusNotification}
 import org.joda.time.LocalDateTime
@@ -33,7 +33,6 @@ import play.api.test.Helpers._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.play.audit.model.Audit
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,10 +44,12 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
   override val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockKeyStoreService: KeyStoreService = mock[KeyStoreService]
   val mockAWRSNotificationConnector: AWRSNotificationConnector = mock[AWRSNotificationConnector]
+  val template = app.injector.instanceOf[views.html.awrs_application_too_soon_error]
+  val templateConfirm = app.injector.instanceOf[views.html.awrs_reapplication_confirmation]
 
   lazy val testReapplicationController: ReapplicationController = new ReapplicationController(
     mockMCC, mockAWRSNotificationConnector, mockDeEnrolService, mockKeyStoreService, testSave4LaterService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template, templateConfirm)
 
   "Reapplication Controller" should {
     "submit confirmation and redirect to root home page when yes selected" in {
@@ -130,7 +131,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
   }
 
   def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setupMockSave4LaterService()
     setupMockApiSave4LaterService()
     setAuthMocks()

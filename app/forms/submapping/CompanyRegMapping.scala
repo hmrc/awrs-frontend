@@ -17,9 +17,8 @@
 package forms.submapping
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.validation.util.ConstraintUtil._
 import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
+import forms.validation.util.MappingUtilAPI.MappingUtil
 import forms.validation.util.NamedMappingAndUtil._
 import models.{CompanyRegDetails, TupleDate}
 import play.api.data.Forms._

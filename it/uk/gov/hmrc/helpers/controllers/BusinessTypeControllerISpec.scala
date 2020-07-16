@@ -106,7 +106,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
                |    "state": "Activated"
                |   }],
                |  "affinityGroup": "Individual",
-               |  "credentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
+               |  "optionalCredentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
                |  "authProviderId": { "ggCredId": "123" },
                |  "groupIdentifier" : "GroupId"
                |}""".stripMargin
@@ -177,7 +177,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
            |   }
            |   ],
            |  "affinityGroup": "Individual",
-           |  "credentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
+           |  "optionalCredentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
            |  "authProviderId": { "ggCredId": "123" },
            |  "groupIdentifier" : "GroupId"
            |}""".stripMargin

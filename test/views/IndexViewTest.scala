@@ -23,17 +23,16 @@ import models.SubscriptionStatusType
 import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services._
-import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.TestUtil._
-import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
+import utils.{AwrsUnitTestTraits, TestUtil}
 import view_models._
 
 import scala.concurrent.Future
@@ -44,8 +43,9 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
     super.beforeEach()
     reset(mockApplicationService)
   }
+  val template = app.injector.instanceOf[views.html.awrs_index]
 
-  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
   }
 
@@ -60,7 +60,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
     IndexViewModel(
       List(
         SectionModel(businessDetailsName, routes.TradingNameController.showTradingName(isLinearMode = true).url, "awrs.index_page.business_details_text", sectionStatus),
-        SectionModel(additionalBusinessPremisesName, routes.AdditionalPremisesController.showPremisePage(id = 1, isLinearMode = true, isNewRecord = true).url, "awrs.index_page.additional_premises_text", sectionStatus, count)
+        SectionModel(additionalBusinessPremisesName, routes.AdditionalPremisesController.showPremisePage(isLinearMode = true, isNewRecord = true).url, "awrs.index_page.additional_premises_text", sectionStatus, count)
       )
     )
 
@@ -265,7 +265,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
                             businessName: String,
                             indexStatusModel: view_models.IndexViewModel,
                             someStatus: Option[SubscriptionStatusType]): Future[Result] = {
-    setUser(hasAwrs = hasAwrs)
+    resetAuthConnector()
     setupMockSave4LaterService(
       fetchBusinessCustomerDetails = testReviewDetails,
       fetchAll = cachemap
@@ -277,7 +277,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       showContinueButton = allSectionComplete,
       getStatus = indexStatusModel
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet), Some(AffinityGroup.Organisation)), GGCredId("fakeCredID"))))
+    setAuthMocks(Future.successful(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
     testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
   }
 

@@ -7,6 +7,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import uk.gov.hmrc.SbtArtifactory
 import TestPhases._
+import sbt.Keys.scalacOptions
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "awrs-frontend"
@@ -26,6 +27,8 @@ lazy val scoverageSettings = {
     parallelExecution in Test := false
   )
 }
+
+val silencerVersion = "1.7.0"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory) ++ plugins : _*)
@@ -53,6 +56,12 @@ lazy val microservice = Project(appName, file("."))
     parallelExecution in IntegrationTest := false)
   .settings(
     resolvers += Resolver.bintrayRepo("hmrc", "releases"),
-    resolvers += Resolver.jcenterRepo
+    resolvers += Resolver.jcenterRepo,
+    scalacOptions += "-P:silencer:pathFilters=views;routes",
+    libraryDependencies ++= Seq(
+      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+    )
   )
+
   .disablePlugins(JUnitXmlReportPlugin)

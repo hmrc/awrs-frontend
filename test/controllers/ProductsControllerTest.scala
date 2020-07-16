@@ -30,8 +30,11 @@ class ProductsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
+  val template = app.injector.instanceOf[views.html.awrs_products]
+
   val testProductsController: ProductsController = new ProductsController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

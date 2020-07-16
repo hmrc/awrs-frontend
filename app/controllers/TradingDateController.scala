@@ -45,7 +45,8 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
                                       val auditable: Auditable,
                                       val accountUtils: AccountUtils,
                                       val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                      implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
+                                      implicit val applicationConfig: ApplicationConfig,
+                                      template: views.html.awrs_trading_date) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 
   override val section: String = businessDetailsName
   override implicit val ec: ExecutionContext = mcc.executionContext
@@ -73,10 +74,11 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
                     case None => tradingDateForm(savedQ)
                   }
 
-                  Ok(views.html.awrs_trading_date(form, businessType, savedQ))
+                  Ok(template(form, businessType, savedQ))
                 case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails())
               }
             }
+          case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))
         }
       }
     }
@@ -87,7 +89,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
                           isNewRecord: Boolean,
                           businessDetails: NewAWBusiness,
                           authRetrievals: StandardAuthRetrievals)
-                         (implicit request: Request[AnyContent], hc: HeaderCarrier): Future[Result] = {
+                         (implicit hc: HeaderCarrier): Future[Result] = {
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
   }
 
@@ -105,7 +107,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
           case Some(alreadyTrading) =>
             tradingDateForm(alreadyTrading).bindFromRequest.fold(
               formWithErrors =>
-                Future.successful(BadRequest(views.html.awrs_trading_date(formWithErrors, businessType, alreadyTrading)))
+                Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading)))
               ,
               formData =>
                 save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
@@ -119,6 +121,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
             )
           case _ => Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails()))
         }
+      case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
     }
   }
 }

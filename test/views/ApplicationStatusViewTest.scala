@@ -17,20 +17,18 @@
 package views
 
 import builders.SessionBuilder
-import controllers.{ApplicationStatusController, BusinessTypeController}
+import controllers.ApplicationStatusController
 import models.BusinessDetailsEntityTypes.Llp
-import models.FormBundleStatus.{Pending, Rejected}
+import models.FormBundleStatus.Rejected
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{CheckEtmpService, ServicesUnitTestFixture, StatusManagementService}
-import uk.gov.hmrc.auth.core.retrieve.{GGCredId, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import services.{CheckEtmpService, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
@@ -38,6 +36,8 @@ import scala.concurrent.Future
 
 class ApplicationStatusViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
+
+  val template = app.injector.instanceOf[views.html.awrs_application_status]
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val businessCustomerDetailsFormID = "businessCustomerDetails"
@@ -54,7 +54,7 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
 
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd(legalEntity = Some(testBusinessDetailsEntityTypes(Llp)))
 
-  val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService, mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig)
+  val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService, mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig, template)
 
   "viewing the status page" should {
     "display the application status decision text" in {
@@ -68,7 +68,7 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
   }
 
   private def viewStatusPage(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessType = testBusinessType,

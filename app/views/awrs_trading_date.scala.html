@@ -14,26 +14,22 @@
  * limitations under the License.
  *@
 
-@import views.helpers.InputTypeRadioGroupParams
-@import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.helpers._
-@import utils.AccountUtils
-@import views.Configuration._
-@import views.view_application.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
-
 @import config.ApplicationConfig
-@import java.text.DateFormatSymbols
+@import play.twirl.api.Html
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(confirmationForm: Form[TupleDate], businessType: Option[String], pastStart: Boolean)(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
     if(isEditMode) {
-        controllers.routes.TradingDateController.saveAndReturn(1, false)
+        controllers.routes.TradingDateController.saveAndReturn(1, isNewRecord = false)
     } else {
         controllers.routes.TradingDateController.saveAndContinue
     }
@@ -74,7 +70,7 @@
     }
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages(headerTitleName)), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages(headerTitleName)), userLoggedIn = true) {
 
 @backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails().url)
 
@@ -86,7 +82,7 @@
             @awrsProgressHelper(businessType, businessDetailsName)
         </header>
         @preDateInfo
-        @form(action = actionRoute) {
+        @formWithCSRF(action = actionRoute) {
         <div class="form-group">
             @awrsDateField(
                 DateHelperParams(

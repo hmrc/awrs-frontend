@@ -20,8 +20,8 @@ import forms.test.util._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, _}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.WordSpecLike
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.Forms._
 import play.api.data.validation.Invalid

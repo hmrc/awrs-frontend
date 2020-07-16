@@ -19,14 +19,11 @@ package forms
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.test.util._
-import forms.validation.util.{FieldError, MessageArguments, SummaryError, TargetFieldIds}
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.data.FormError
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.play.views.html.helpers.form
 import utils.TestConstants._
 
 class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with BeforeAndAfterEach {

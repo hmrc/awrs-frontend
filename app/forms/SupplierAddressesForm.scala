@@ -18,15 +18,15 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.submapping.AddressMapping._
 import forms.prevalidation._
+import forms.submapping.AddressMapping._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.Supplier
-import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
+import play.api.data.{Form, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 

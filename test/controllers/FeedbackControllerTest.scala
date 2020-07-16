@@ -32,7 +32,9 @@ class FeedbackControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector {
 
   val mockAudit: Audit = mock[Audit]
-  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockDeEnrolService, mockAccountUtils, mockAppConfig)
+  val mockTemplate = app.injector.instanceOf[views.html.awrs_feedback]
+  val mockTemplateThanks = app.injector.instanceOf[views.html.awrs_feedback_thanks]
+  val testFeedbackController: FeedbackController = new FeedbackController(mockMCC, mockAuthConnector, mockAuditable, mockDeEnrolService, mockAccountUtils, mockAppConfig, mockTemplate, mockTemplateThanks)
 
   def testRequest(feedback: Feedback): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[Feedback](FakeRequest(), FeedbackForm.feedbackForm.form, feedback)

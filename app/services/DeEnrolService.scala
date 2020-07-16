@@ -19,6 +19,7 @@ package services
 import connectors.TaxEnrolmentsConnector
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

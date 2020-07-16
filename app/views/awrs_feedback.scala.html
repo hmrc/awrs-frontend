@@ -14,15 +14,16 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers._
-
-
-@import views.helpers.InputTypeRadioGroupParams
 @import config.ApplicationConfig
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+@import views.helpers.InputTypeRadioGroupParams
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(feedbackForm: Form[models.Feedback])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.feedback.heading")), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.feedback.heading")), userLoggedIn = true) {
     @backLink()
     @errorSummaryTemplate(feedbackForm)
     <div class="grid">
@@ -36,7 +37,7 @@
             <div class="feedback-questionnaire">
                 <h2 class="heading-medium">@messages("awrs.feedback.subheading")</h2>
 
-                @form(action = controllers.routes.FeedbackController.submitFeedback) {
+                @formWithCSRF(action = controllers.routes.FeedbackController.submitFeedback) {
 
                     @awrsTextBox(feedbackForm("visitReason"),
                         '_label -> Html(messages("awrs.feedback.questions.visit_reason")),

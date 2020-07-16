@@ -17,7 +17,6 @@
 package config
 
 import javax.inject.Inject
-import play.api.Play
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -58,12 +57,14 @@ class AwrsAPIDataShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
   override lazy val domain: String = servicesConfig.getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
 }
 
-class AwrsShortLivedCache @Inject()(awrsShortLivedCaching: AwrsShortLivedCaching) extends ShortLivedCache {
-  override implicit lazy val crypto: CryptoWithKeysFromConfig = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
+class AwrsShortLivedCache @Inject()(awrsShortLivedCaching: AwrsShortLivedCaching,
+                                    applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
+  override implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
   override lazy val shortLiveCache: ShortLivedHttpCaching = awrsShortLivedCaching
 }
 
-class AwrsAPIShortLivedCache @Inject()(awrsAPIDataShortLivedCaching: AwrsAPIDataShortLivedCaching) extends ShortLivedCache {
-  override implicit lazy val crypto: CryptoWithKeysFromConfig = new ApplicationCrypto(Play.current.configuration.underlying).JsonCrypto
+class AwrsAPIShortLivedCache @Inject()(awrsAPIDataShortLivedCaching: AwrsAPIDataShortLivedCaching,
+                                       applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
+  override implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
   override lazy val shortLiveCache: ShortLivedHttpCaching = awrsAPIDataShortLivedCaching
 }

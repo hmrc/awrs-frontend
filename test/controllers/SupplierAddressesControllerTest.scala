@@ -37,6 +37,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   implicit val mockConfig: ApplicationConfig = mockAppConfig
+  val template = app.injector.instanceOf[views.html.awrs_supplier_addresses]
 
   def testRequest(supplier: Supplier): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[Supplier](FakeRequest(), SupplierAddressesForm.supplierAddressesValidationForm, supplier)
@@ -205,7 +206,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
 
 
   val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = "/sign-in"
   }
 

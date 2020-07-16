@@ -95,8 +95,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatc
                |    "state": "Activated"
                |   }],
                |  "affinityGroup": "Individual",
-               |  "credentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
-               |  "authProviderId": { "ggCredId": "123" },
+               |  "optionalCredentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
                |  "groupIdentifier" : "GroupId"
                |}""".stripMargin
           )

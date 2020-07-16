@@ -30,15 +30,16 @@
  * limitations under the License.
  *@
 
-@import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html.helpers._
-@import models._
-@import models.FormBundleStatus._
-@import views.html.helpers._
-@import views.helpers._
-@import controllers.util.UnSubmittedChangesBannerParam
-@import utils.AwrsNumberFormatter
 @import config.ApplicationConfig
+@import controllers.util.UnSubmittedChangesBannerParam
+@import models.FormBundleStatus._
+@import models._
+@import play.twirl.api.Html
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import _root_.utils.AwrsNumberFormatter
+
+@this(awrsMain: awrs_main)
 @(
     awrsRef: Option[String],
     hasApplicationChanged: Boolean,
@@ -67,7 +68,7 @@
 }
 
     
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.index_page.application")), nameBusiness = Some(businessName), userLoggedIn = true){
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.index_page.application")), nameBusiness = Some(businessName), userLoggedIn = true){
 
     <div class="grid">
        @changesBanner

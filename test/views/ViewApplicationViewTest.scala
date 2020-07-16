@@ -19,14 +19,12 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.ViewApplicationController
-import controllers.util.{UnSubmittedBannerUtil, UnSubmittedChangesBannerParam}
 import models.BusinessDetailsEntityTypes._
 import models.{ApplicationDeclaration, Suppliers, _}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -47,7 +45,11 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with ServicesUnitTestFixture {
 
-  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig)
+  val mockTemplateAppError = app.injector.instanceOf[views.html.awrs_application_error]
+  val mockTemplateViewApp = app.injector.instanceOf[views.html.view_application.awrs_view_application]
+
+  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig,
+    mockTemplateAppError, mockTemplateViewApp)
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
                        businessCustomerDetails: Option[BusinessCustomerDetails] = None,

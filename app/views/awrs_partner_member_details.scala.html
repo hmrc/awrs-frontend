@@ -14,18 +14,18 @@
  * limitations under the License.
  *@
 
+@import config.ApplicationConfig
+@import forms.AWRSEnums._
 @import play.twirl.api.Html
-@import uk.gov.hmrc.play.views.html._
+@import services.DataCacheKeys._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.view_application.helpers._
+@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
-@import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
-@import forms.AWRSEnums._
+@import views.view_application.helpers._
 
-@import config.ApplicationConfig
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -76,7 +76,7 @@
     }
 }
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
@@ -89,7 +89,7 @@
                 @awrsProgressHelper(businessType, partnersName)
             </header>
             <p id="business_partners-subtext" class="lede">@messages("awrs.business-partner.topText")</p>
-            @form(action = actionRoute) {
+            @formWithCSRF(action = actionRoute) {
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         partnerForm("entityType"),

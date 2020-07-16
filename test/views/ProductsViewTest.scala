@@ -33,7 +33,8 @@ import scala.concurrent.Future
 class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture with AwrsFieldConfig {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val testProductsController: ProductsController = new ProductsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+  val template = app.injector.instanceOf[views.html.awrs_products]
+  val testProductsController: ProductsController = new ProductsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

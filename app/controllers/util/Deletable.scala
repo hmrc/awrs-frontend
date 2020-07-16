@@ -60,7 +60,9 @@ trait Deletable[C, T] extends FrontendController with AwrsController {
     }
 
   def showDeletePage(status: Deletable.this.Status)(form: Form[DeleteConfirmation], id: Int, model: T)(implicit request: Request[AnyContent], messages: Messages): Future[Result] =
-    Future.successful(status(views.html.view_application.subviews.subview_delete_confirmation(form, section, deleteHeadingParameter, deleteFormAction, id, model)(request, messages = messages, applicationConfig = applicationConfig)) addLocation)
+    Future.successful(status(applicationConfig.templateDeleteConfirm(
+      form, section, deleteHeadingParameter, deleteFormAction, id, model
+    )(request, messages = messages, applicationConfig = applicationConfig)) addLocation)
 
   def showDelete(id: Int): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { implicit ar =>

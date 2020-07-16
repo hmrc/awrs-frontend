@@ -42,7 +42,8 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                                        val auditable: Auditable,
                                        val accountUtils: AccountUtils,
                                        val checkEtmpService: CheckEtmpService,
-                                       implicit val applicationConfig: ApplicationConfig
+                                       implicit val applicationConfig: ApplicationConfig,
+                                       template: views.html.awrs_business_type
                                       ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -70,7 +71,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
         _ <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(Some(true)), authRetrievals)
         businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       } yield {
-        val display = (form: Form[BusinessType]) => Ok(views.html.awrs_business_type(form, bcd.businessName, bcd.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(authRetrievals))) addBusinessNameToSession bcd.businessName
+        val display = (form: Form[BusinessType]) => Ok(template(form, bcd.businessName, bcd.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(authRetrievals))) addBusinessNameToSession bcd.businessName
         businessType match {
           case Some(data) => display(businessTypeForm.fill(data)) addBusinessTypeToSession data
           case _ => display(businessTypeForm)
@@ -98,11 +99,11 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
       save4LaterService.mainStore.fetchBusinessCustomerDetails(ar) flatMap {
         case Some(businessDetails) =>
           businessTypeForm.bindFromRequest.fold(
-            formWithErrors => Future.successful(BadRequest(views.html.awrs_business_type(formWithErrors, businessDetails.businessType.fold("")(x => x), businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
+            formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessDetails.businessType.fold("")(x => x), businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
             businessTypeData =>
               save4LaterService.mainStore.saveBusinessType(businessTypeData, ar) flatMap { _ =>
                 val legalEntity = businessTypeData.legalEntity.getOrElse("SOP")
-                checkEtmpService.validateBusinessDetails(ar, businessDetails, legalEntity) flatMap { result =>
+                checkEtmpService.validateBusinessDetails(businessDetails, legalEntity) flatMap { result =>
                   val nextPage = if (result) {
                     Logger.info("[BusinessTypeController][saveAndContinue] Upserted details and enrolments to EACD")
                     authorisedAction { updatedRetrievals =>
@@ -122,6 +123,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                 }
               }
           )
+        case _ => throw new InternalServerException("no businessCustomerDetails found")
       }
     }
   }

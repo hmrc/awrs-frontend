@@ -14,9 +14,8 @@
  * limitations under the License.
  *@
 
+@import views.html.view_application.helpers.table_row
 @(partner : Partner)(implicit messages : Messages)
-@import views.view_application.ViewApplicationHelper._
-@import forms.AWRSEnums._
 
 @* UTR *@
 @partner.doYouHaveUTR match {

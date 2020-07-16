@@ -18,8 +18,8 @@ package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.prevalidation._
-import forms.submapping.FieldNameUtil
 import forms.submapping.CompanyRegMapping._
+import forms.submapping.FieldNameUtil
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil.{doYouHaveCRN_compulsory => _, _}

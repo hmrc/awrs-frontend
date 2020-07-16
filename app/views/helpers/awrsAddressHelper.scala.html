@@ -14,11 +14,10 @@
  * limitations under the License.
  *@
 
-@import play.api.i18n._
-@import views.html.helper._
-@import views.html.helpers._
-@import views.helpers._
 @import config.ApplicationConfig
+@import play.api.i18n._
+@import views.helpers._
+@import views.html.helpers._
 
 @(field: Field, params: views.helpers.AddressHelperParams, isPrincipalPlace : Option[Boolean] =  false, PrincipalPrevious: String =  "")(implicit messages: Messages, formInstance: Option[Form[_]] = None, applicationConfig: ApplicationConfig)
 

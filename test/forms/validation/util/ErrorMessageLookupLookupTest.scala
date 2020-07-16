@@ -16,13 +16,12 @@
 
 package forms.validation.util
 
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import forms.validation.util.ErrorMessageLookup._
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.OneServerPerSuite
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.test.UnitSpec
-import play.api.test.Helpers.stubMessages
 
 class ErrorMessageLookupLookupTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
 

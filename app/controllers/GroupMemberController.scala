@@ -41,7 +41,8 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
                                       val authConnector: DefaultAuthConnector,
                                       val auditable: Auditable,
                                       val accountUtils: AccountUtils,
-                                      implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with Deletable[GroupMembers, GroupMember] with SaveAndRoutable {
+                                      implicit val applicationConfig: ApplicationConfig,
+                                      template: views.html.awrs_group_member) extends FrontendController(mcc) with JourneyPage with Deletable[GroupMembers, GroupMember] with SaveAndRoutable {
 
   override implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -71,10 +72,10 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
         }
 
         lazy val newEntryAction = (id: Int) =>
-          Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form, id, isNewRecord, ar.enrolments, accountUtils)))
+          Future.successful(Ok(template(groupMemberForm.form, id, isNewRecord, ar.enrolments, accountUtils)))
 
         lazy val existingEntryAction = (data: GroupMembers, id: Int) =>
-          Future.successful(Ok(views.html.awrs_group_member(groupMemberForm.form.fill(data.members(id - 1)), id, isNewRecord, ar.enrolments, accountUtils)))
+          Future.successful(Ok(template(groupMemberForm.form.fill(data.members(id - 1)), id, isNewRecord, ar.enrolments, accountUtils)))
 
         lazy val haveAnother = (data: GroupMembers) => {
           val list = data.members
@@ -98,7 +99,7 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
     groupMemberForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.awrs_group_member(formWithErrors, id, isNewRecord, ar.enrolments, accountUtils))),
+      formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord, ar.enrolments, accountUtils))),
       groupMemberData =>
         saveThenRedirect[GroupMembers, GroupMember](
           fetchData = fetch(ar),

@@ -14,15 +14,16 @@
  * limitations under the License.
  *@
 
-@import views.helpers.InputTypeRadioGroupParams
-@import views.helpers.InputTypeTextParams
+@import _root_.utils.AwrsFieldConfig
+@import config.ApplicationConfig
 @import forms.DeRegistrationReasonForm._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.DeRegistrationHelper._
+@import views.helpers.{InputTypeRadioGroupParams, InputTypeTextParams}
 @import views.html.helpers._
-@import utils.AwrsFieldConfig
+@import views.html.includes.awrs_main
 
-@import config.ApplicationConfig
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(deRegistrationReason: Form[models.DeRegistrationReason])(implicit request: Request[AnyRef], messages: Messages, awrsFieldConfig: AwrsFieldConfig, applicationConfig: ApplicationConfig)
 
 @enumPairToMessage(msgKey: String) = @{
@@ -31,13 +32,13 @@
 }
 
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.de_registration_reason.page_heading")), userLoggedIn = true) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.de_registration_reason.page_heading")), userLoggedIn = true) {
 <div class="grid">
     <div class="grid grid-2-3">
         @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
         @errorSummaryTemplate(deRegistrationReason)
         <h1 id="de_registration-heading" class="heading-xlarge">@messages("awrs.de_registration_reason.page_heading")</h1>
-        @form(action = controllers.routes.DeRegistrationController.submitReason) {
+        @formWithCSRF(action = controllers.routes.DeRegistrationController.submitReason) {
             <div class="form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(

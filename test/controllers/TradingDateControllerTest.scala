@@ -17,7 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
-import forms.{AlreadyStartingTradingForm, TradingDateForm}
+import forms.TradingDateForm
 import models._
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers
@@ -40,9 +40,11 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: TupleDate, past: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[TupleDate](FakeRequest(), TradingDateForm.tradingDateForm(past), answer)
 
+  val template = app.injector.instanceOf[views.html.awrs_trading_date]
+
   val tradingDateController: TradingDateController =
     new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService,
-      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig) {
+      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
   }
 

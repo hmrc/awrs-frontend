@@ -20,11 +20,10 @@ import connectors.AWRSConnector
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums.BooleanRadioEnum
 import javax.inject.Inject
-import models.{BusinessContacts, BusinessDetails, _}
+import models.{BusinessContacts, _}
 import play.api.Logger
-import play.api.mvc.{AnyContent, Request}
 import services.Save4LaterService
-import services.helper.AwrsAPI5Helper.{convertToBusinessCustomerDetails, _}
+import services.helper.AwrsAPI5Helper.convertToBusinessCustomerDetails
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +33,7 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
                         ){
 
   def retrieveApplication(authRetrievals: StandardAuthRetrievals)
-                         (implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[SubscriptionTypeFrontEnd] = {
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionTypeFrontEnd] = {
     lazy val callETMP: Future[SubscriptionTypeFrontEnd] =
       awrsConnector.lookupAWRSData(authRetrievals) flatMap {
         api5Data => saveReturnedApplication(api5Data.as[AWRSFEModel], authRetrievals)
@@ -53,7 +52,7 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
 
   def checkSavedSubscriptionTypeFrontend(authRetrievals: StandardAuthRetrievals,
                                          subTypeFrontend: SubscriptionTypeFrontEnd)
-                                        (implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[Boolean] = {
+                                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap {
       case Some(_) => Future.successful(true)
       case _       =>

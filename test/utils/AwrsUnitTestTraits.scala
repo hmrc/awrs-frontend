@@ -19,22 +19,21 @@ package utils
 import audit.Auditable
 import config.ApplicationConfig
 import org.jsoup.nodes.Document
-import org.mockito.ArgumentMatchers
-import org.scalatest.BeforeAndAfterEach
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContent, DefaultActionBuilder, DefaultMessagesActionBuilderImpl, DefaultMessagesControllerComponents, MessagesActionBuilder, MessagesControllerComponents}
+import play.api.i18n.Messages
+import play.api.mvc._
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi}
 import services.{BusinessDetailsService, DeEnrolService}
-import uk.gov.hmrc.play.test.UnitSpec
-
-import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
 
@@ -68,11 +67,31 @@ trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterE
       """[
         |"United Kingdom"
         |]""".stripMargin)
-  when(mockCountryCodes.getCountryCode(ArgumentMatchers.any()))
+  when(mockCountryCodes.getCountryCode(any()))
     .thenReturn(Some("ES"))
-  when(mockCountryCodes.getSupplierAddressWithCountry(ArgumentMatchers.any()))
+  when(mockCountryCodes.getSupplierAddressWithCountry(any()))
     .thenReturn(Some(TestUtil.testAddressInternational))
 
+  lazy val mockUnauthorised = app.injector.instanceOf[views.html.unauthorised]
+  lazy val mockDeleteConfirm = app.injector.instanceOf[views.html.view_application.subviews.subview_delete_confirmation]
+  lazy val mockAppError = app.injector.instanceOf[views.html.awrs_application_error]
+  lazy val mockNotFound = app.injector.instanceOf[views.html.helpers.awrsErrorNotFoundTemplate]
+  lazy val mockError = app.injector.instanceOf[views.html.error_template]
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    when(mockAppConfig.templateUnauthorised)
+      .thenReturn(mockUnauthorised)
+    when(mockAppConfig.templateAppError)
+      .thenReturn(mockAppError)
+    when(mockAppConfig.templateDeleteConfirm)
+      .thenReturn(mockDeleteConfirm)
+    when(mockAppConfig.templateNotFound)
+      .thenReturn(mockNotFound)
+    when(mockAppConfig.templateError)
+      .thenReturn(mockError)
+  }
 
   lazy val allEntities = List("SOP", "LTD", "Partnership", "LLP", "LTD_GRP", "LLP_GRP")
   lazy val directorEntities = List("LTD", "LTD_GRP")

@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat
 
 import forms.AWRSEnums.{ApplicationStatusEnum, BooleanRadioEnum}
 import forms.AwrsFormFields
-import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import org.joda.time.{LocalDate, LocalDateTime}
 import play.api.libs.json._
 import utils.AwrsFieldConfig
@@ -376,22 +376,18 @@ object TupleDate {
 object CompanyRegDetails {
 
   private val pattern = "dd/MM/yyyy"
-  implicit val writer = new Writes[CompanyRegDetails] {
-    def writes(companyRegDetails: CompanyRegDetails): JsValue = {
-      Json.obj()
-        .++(Json.obj("companyRegistrationNumber" -> companyRegDetails.companyRegistrationNumber)
-          .++(Json.obj("dateOfIncorporation" -> companyRegDetails.dateOfIncorporation.toString(pattern))))
-    }
+  implicit val writer: Writes[CompanyRegDetails] = (companyRegDetails: CompanyRegDetails) => {
+    Json.obj()
+      .++(Json.obj("companyRegistrationNumber" -> companyRegDetails.companyRegistrationNumber)
+        .++(Json.obj("dateOfIncorporation" -> companyRegDetails.dateOfIncorporation.toString(pattern))))
   }
 
-  implicit val reader = new Reads[CompanyRegDetails] {
-    def reads(js: JsValue): JsResult[CompanyRegDetails] = {
-      for {
-        companyRegistrationNumber <- (js \ "companyRegistrationNumber").validate[String]
-        date <- (js \ "dateOfIncorporation").validate[LocalDate](Reads.jodaLocalDateReads(pattern))
-      } yield {
-        CompanyRegDetails(companyRegistrationNumber = companyRegistrationNumber, dateOfIncorporation = date)
-      }
+  implicit val reader: Reads[CompanyRegDetails] = (js: JsValue) => {
+    for {
+      companyRegistrationNumber <- (js \ "companyRegistrationNumber").validate[String]
+      date <- (js \ "dateOfIncorporation").validate[LocalDate](JodaReads.jodaLocalDateReads(pattern))
+    } yield {
+      CompanyRegDetails(companyRegistrationNumber = companyRegistrationNumber, dateOfIncorporation = date)
     }
   }
 }
@@ -399,16 +395,16 @@ object CompanyRegDetails {
 object NewAWBusiness {
 
   private val pattern = "dd/MM/yyyy"
-  val dtf = DateTimeFormat.forPattern(pattern)
+  val dtf: DateTimeFormatter = DateTimeFormat.forPattern(pattern)
 
-  implicit val writer = new Writes[NewAWBusiness] {
+  implicit val writer: Writes[NewAWBusiness] = new Writes[NewAWBusiness] {
     def writes(newAWBusiness: NewAWBusiness): JsValue =
       Json.obj()
         .++(Json.obj("newAWBusiness" -> newAWBusiness.newAWBusiness)
           .++(newAWBusiness.proposedStartDate.fold(Json.obj())(x => Json.obj("proposedStartDate" -> newAWBusiness.proposedStartDate.fold(TupleDate("", "", ""))(x => x).toString(pattern)))))
   }
 
-  implicit val reader = new Reads[NewAWBusiness] {
+  implicit val reader: Reads[NewAWBusiness] = new Reads[NewAWBusiness] {
 
     def reads(js: JsValue): JsResult[NewAWBusiness] =
       for {
@@ -427,12 +423,12 @@ object NewAWBusiness {
 }
 
 object Address {
-  implicit val formats = Json.format[Address]
+  implicit val formats: OFormat[Address] = Json.format[Address]
 }
 
 object CompanyNames {
 
-  implicit val formats = Json.format[CompanyNames]
+  implicit val formats: OFormat[CompanyNames] = Json.format[CompanyNames]
 
   implicit class CompanyNamesGetUtil(companyNames: Option[CompanyNames]) {
     def businessName: Option[String] = companyNames.fold(None: Option[String])(_.businessName)

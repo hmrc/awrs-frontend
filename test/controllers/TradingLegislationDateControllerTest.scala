@@ -17,7 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
-import forms.{AlreadyStartingTradingForm, TradingLegislationDateForm}
+import forms.TradingLegislationDateForm
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -39,10 +39,12 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[String](FakeRequest(), TradingLegislationDateForm.tradingLegislationForm, answer)
 
+  val template = app.injector.instanceOf[views.html.awrs_legislation_date]
+
   val tradingLegislationDateController: TradingLegislationDateController =
     new TradingLegislationDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService,
       testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils,
-      mockMainStoreSave4LaterConnector, mockAppConfig) {
+      mockMainStoreSave4LaterConnector, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
   }
 

@@ -14,15 +14,16 @@
  * limitations under the License.
  *@
 
-@import views.helpers._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.html.helpers._
-@import views.view_application.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import services.DataCacheKeys._
-@import utils.AwrsFieldConfig
 @import config.ApplicationConfig
+@import services.DataCacheKeys._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+
+@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
 @(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessDirectorsForm) }
@@ -199,7 +200,7 @@
 }
 
 
-@includes.awrs_main(title = messages("awrs.generic.tab.title", h1text), userLoggedIn = true){
+@awrsMain(title = messages("awrs.generic.tab.title", h1text), userLoggedIn = true){
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(
@@ -213,7 +214,7 @@
 
         <p class="lede" id="directorsAndCompanySecretariesDescription">@messages("awrs.business_directors.topText")</p>
 
-        @form(action = actionRoute) {
+        @formWithCSRF(action = actionRoute) {
 
             @(businessDirectorId, isNewRecord) match {
                 case (1, true) => {

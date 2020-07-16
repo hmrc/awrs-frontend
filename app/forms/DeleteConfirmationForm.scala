@@ -18,8 +18,8 @@ package forms
 
 import forms.validation.util.NamedMappingAndUtil._
 import models.DeleteConfirmation
-import play.api.data.Forms._
 import play.api.data.Form
+import play.api.data.Forms._
 
 object DeleteConfirmationForm {
 

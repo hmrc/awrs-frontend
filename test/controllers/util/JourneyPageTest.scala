@@ -76,8 +76,10 @@ class JourneyPageTest extends AwrsUnitTestTraits with MockAuthConnector {
     override implicit val applicationConfig: ApplicationConfig = mockAppConfig
   }
 
+  val template = app.injector.instanceOf[views.html.awrs_additional_premises]
+
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, mockDataCacheService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig) {
+    new AdditionalPremisesController(mockMCC, mockDataCacheService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig, template) {
       override val signInUrl = "/sign-in"
     }
 

@@ -22,7 +22,7 @@ import controllers.BusinessPartnersController
 import forms.AWRSEnums.BooleanRadioEnum
 import models._
 import org.jsoup.Jsoup
-import org.mockito.{ArgumentMatcher, ArgumentMatchers}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.Result
@@ -40,10 +40,12 @@ import scala.concurrent.Future
 class BusinessPartnersViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
+  val template = app.injector.instanceOf[views.html.awrs_partner_member_details]
+
   val businessPartnerDetails = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), testNino, None, None, Some("Yes"), None, None, None, None)
 
   val testBusinessPartnersController: BusinessPartnersController =
-    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
       override val signInUrl = "/sign-in"
     }
 

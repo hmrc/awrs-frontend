@@ -26,7 +26,6 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -46,6 +45,10 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with MockSave4LaterService {
 
+  val templateReasons = app.injector.instanceOf[views.html.awrs_withdrawal_reasons]
+  val templateConfirm = app.injector.instanceOf[views.html.awrs_withdrawal_confirmation]
+  val templateStatus = app.injector.instanceOf[views.html.awrs_withdrawal_confirmation_status]
+
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockAwrsAPI8: AwrsAPI8 = mock[AwrsAPI8]
   override val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
@@ -53,7 +56,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
 
   val testWithdrawalController: WithdrawalController = new WithdrawalController(
     mockMCC, testAPI9, mockAwrsAPI8, mockEmailService, testKeyStoreService, mockDeEnrolService, testSave4LaterService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, templateReasons, templateConfirm, templateStatus)
 
   private def testConfirmationRequest(confirmation: WithdrawalConfirmation) =
     TestUtil.populateFakeRequest[WithdrawalConfirmation](FakeRequest(), WithdrawalConfirmationForm.withdrawalConfirmation, confirmation)
@@ -160,7 +163,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
   }
 
   private def continueUpdateWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    setUser(hasAwrs = true)
+    resetAuthConnector()
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = true)
     setAuthMocks()
     val result = testWithdrawalController.submitConfirmWithdrawal().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))

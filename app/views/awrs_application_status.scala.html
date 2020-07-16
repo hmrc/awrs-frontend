@@ -15,12 +15,15 @@
  *@
 
 @import config.ApplicationConfig
-@(params: views.subtemplates.application_status.ApplicationStatusParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+@import models.FormBundleStatus._
+@import views.helpers._
+@import views.html.helpers._
+@import views.html.includes.awrs_main
 @import views.html.subtemplates.application_status._
 @import views.subtemplates.application_status._
-@import models.FormBundleStatus._
-@import views.html.helpers._
-@import views.helpers._
+@this(awrsMain: awrs_main)
+@(params: views.subtemplates.application_status.ApplicationStatusParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+
 @normalInfo = {
     @params.status.formBundleStatus match {
         case Pending                     => {@pending_info(params.asInstanceOf[ApplicationPendingParameter].isNewBusiness, printFriendly)}
@@ -85,7 +88,7 @@
 }
 
 @govWrapper = {
-    @includes.awrs_main(title = messages("awrs.generic.tab.title", messages("awrs.application_status.page_title")), nameBusiness = Some(params.organisationName), userLoggedIn = true) {
+    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_status.page_title")), nameBusiness = Some(params.organisationName), userLoggedIn = true) {
     <div class="grid">
         <div class="grid grid-2-3">
             @application_status_header(params)

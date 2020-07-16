@@ -15,8 +15,9 @@
  *@
 
 @import config.ApplicationConfig
+@this(errorTemplate: views.html.error_template)
 @()(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
-@views.html.error_template(messages("global.error.pageNotFound404.title"),
+@errorTemplate(messages("global.error.pageNotFound404.title"),
 messages("global.error.pageNotFound404.heading"),
 messages("global.error.pageNotFound404.message"))

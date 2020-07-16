@@ -17,7 +17,6 @@
 package views.helpers
 
 import play.api.data.Field
-import play.twirl.api.Html
 
 case class InputTypeGroupCheckboxParams(field: Field,
                                         checkboxOptions: Seq[(String, String)],

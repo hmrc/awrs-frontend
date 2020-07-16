@@ -16,8 +16,6 @@
 
 package utils
 
-import java.io.InputStream
-
 import javax.inject.Inject
 import models.{Address, Supplier}
 import play.api.Environment

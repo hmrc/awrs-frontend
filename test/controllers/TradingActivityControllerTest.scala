@@ -30,9 +30,10 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val template = app.injector.instanceOf[views.html.awrs_trading_activity]
 
   val testTradingActivityController: TradingActivityController = new TradingActivityController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
