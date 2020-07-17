@@ -18,6 +18,7 @@ package controllers
 
 import java.util.UUID
 
+import config.ApplicationConfig
 import connectors.TaxEnrolmentsConnector
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums.BooleanRadioEnum
@@ -25,6 +26,7 @@ import models.FormBundleStatus.{DeRegistered, Rejected, RejectedUnderReviewOrApp
 import models._
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
@@ -33,7 +35,7 @@ import services.apis.AwrsAPI10
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, EmailService}
 import uk.gov.hmrc.http.SessionKeys
-import utils.AwrsSessionKeys
+import utils.{AwrsSessionKeys, CountryCodes}
 import utils.TestUtil.cachedData
 
 import scala.concurrent.Future
@@ -53,8 +55,10 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val mockTemplateReason = app.injector.instanceOf[views.html.awrs_de_registration_reason]
   val mockTemplateEvidence = app.injector.instanceOf[views.html.awrs_de_registration_confirmation_evidence]
 
+  val injectedAppConfig = app.injector.instanceOf[ApplicationConfig]
+
   val testDeRegistrationController: DeRegistrationController =
-    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, mockDeEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig,
+    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, mockDeEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, injectedAppConfig,
       mockTemplate, mockTemplateConfirm, mockTemplateReason, mockTemplateEvidence) {
     override val signInUrl = "/sign-in"
   }
@@ -63,10 +67,10 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val forbiddenStatusTypes = FormBundleStatus.allStatus.diff(permittedStatusTypes)
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockApi10)
-    reset(mockTaxEnrolmentsConnector)
-    reset(mockAccountUtils)
+    reset(mockAuthConnector, mockApi10, mockTaxEnrolmentsConnector, mockAccountUtils)
+    reset(mockMainStoreSave4LaterConnector)
+    reset(mockApiSave4LaterConnector)
+
     super.beforeEach()
   }
 
