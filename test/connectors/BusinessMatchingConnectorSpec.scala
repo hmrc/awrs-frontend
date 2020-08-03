@@ -44,13 +44,13 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
   val matchBusinessData = MatchBusinessData(SessionKeys.sessionId, testUtr, false, false, None, None)
   val userType = "org"
 
-  "Business Matching connector" should {
+  "Business Matching connector" must {
 
     "return status as OK, for successful call" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(matchSuccessResponseJson))))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe matchSuccessResponseJson
+      await(result) mustBe matchSuccessResponseJson
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -58,7 +58,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(matchFailureResponseJson))))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe matchFailureResponseJson
+      await(result) mustBe matchFailureResponseJson
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -67,7 +67,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, None)))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
-      thrown.getMessage should include("Service unavailable")
+      thrown.getMessage must include("Service unavailable")
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -76,7 +76,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[BadRequestException] thrownBy await(result)
-      thrown.getMessage should include("Bad Request")
+      thrown.getMessage must include("Bad Request")
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -85,7 +85,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, None)))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage should include("Internal server error")
+      thrown.getMessage must include("Internal server error")
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -94,7 +94,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, None)))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[RuntimeException] thrownBy await(result)
-      thrown.getMessage should include("Unknown response")
+      thrown.getMessage must include("Unknown response")
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
   }

@@ -23,6 +23,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc._
@@ -30,12 +31,12 @@ import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMess
 import services.{BusinessDetailsService, DeEnrolService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.test.Helpers.{await => helperAwait, defaultAwaitTimeout}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
+trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
 
   private val messagesActionBuilder: MessagesActionBuilder = new DefaultMessagesActionBuilderImpl(stubBodyParser[AnyContent](), stubMessagesApi())
   private val stubCC = stubControllerComponents()
@@ -59,6 +60,10 @@ trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterE
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   val mockMessages: Messages = mock[Messages]
   implicit val messages: Messages = stubMessages()
+
+  def await[A](result: Future[A]): A = {
+    helperAwait(result)
+  }
 
   when(mockAppConfig.countryCodes)
     .thenReturn(mockCountryCodes)
@@ -106,7 +111,7 @@ trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterE
 
   implicit def convertToFuture[T](err: Throwable): Future[Option[T]] = Future.failed(err)
 
-  // used to help mock setup functions to clarify if certain results should be mocked.
+  // used to help mock setup functions to clarify if certain results must be mocked.
   sealed trait MockConfiguration[+A] {
     final def get = this match {
       case Configure(config) => config
@@ -127,9 +132,9 @@ trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterE
 
   implicit def convertToMockConfiguration2[T](value: T): MockConfiguration[Option[T]] = Configure(value)
 
-  implicit def convertToMockConfiguration3[T](value: T): MockConfiguration[Future[T]] = Configure(value)
+  implicit def convertToMockConfiguration3[T](value: T): MockConfiguration[Future[T]] = Configure(Future.successful(value))
 
-  implicit def convertToMockConfiguration4[T](value: T): MockConfiguration[Future[Option[T]]] = Configure(Some(value))
+  implicit def convertToMockConfiguration4[T](value: T): MockConfiguration[Future[Option[T]]] = Configure(Future.successful(Some(value)))
 
   implicit def convertToMockConfiguration5[T](err: Throwable): MockConfiguration[Future[Option[T]]] = Configure(err)
 
@@ -160,12 +165,12 @@ trait AwrsUnitTestTraits extends UnitSpec with MockitoSugar with BeforeAndAfterE
   }
 
   def testId(shouldExist: Boolean)(targetFieldId: String)(implicit doc: Document) = shouldExist match {
-    case false => doc.getElementById(targetFieldId) shouldBe null
-    case true => doc.getElementById(targetFieldId) should not be null
+    case false => doc.getElementById(targetFieldId) mustBe null
+    case true => doc.getElementById(targetFieldId) must not be null
   }
 
   def testText(expectedText: String)(targetFieldId: String)(implicit doc: Document) = {
-    doc.getElementById(targetFieldId).text shouldBe expectedText
+    doc.getElementById(targetFieldId).text mustBe expectedText
   }
 
 }

@@ -33,7 +33,7 @@ import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, CacheUtil}
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
@@ -210,7 +210,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
 
   /*
    * this method is designed only to be used by the back button of the main form entry pages during the linear journey
-   * once the user has entered something then the back button should goto the one-view version using the viewSection method
+   * once the user has entered something then the back button must goto the one-view version using the viewSection method
    *
    */
   def backFrom(sectionName: String, id: Option[Int] = None): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>

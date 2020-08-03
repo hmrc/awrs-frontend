@@ -62,7 +62,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  "showBusinessDetails" should {
+  "showBusinessDetails" must {
     "show the business details page" when {
       "a user is logged in" in {
         val businessType = "test"
@@ -73,7 +73,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           fetchBusinessDetails = testBusinessDetails(),
           fetchNewApplicationType = testNewApplicationType
         )
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(true))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
 
@@ -83,12 +83,12 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
         val res = tradingDateController.showBusinessDetails(false)
           .apply(SessionBuilder.buildRequestWithSession(userId, businessType))
 
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
     }
   }
 
-  "save" should {
+  "save" must {
     "save the trading date" when {
       "provided with a date for the past" in {
         val businessType = "test"
@@ -100,7 +100,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           fetchBusinessDetails = testBusinessDetails(),
           fetchNewApplicationType = testNewApplicationType
         )
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(true))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
 
@@ -110,8 +110,8 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
         val res = tradingDateController.saveAndReturn()
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 
-        status(res) shouldBe 303
-        redirectLocation(res).get should include("/alcohol-wholesale-scheme/view-section/businessDetails")
+        status(res) mustBe 303
+        redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")
       }
 
       "provided with a date for the future" in {
@@ -129,7 +129,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           fetchBusinessDetails = testBusinessDetails(),
           fetchNewApplicationType = testNewApplicationType
         )
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(false))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
 
@@ -139,8 +139,8 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
         val res = tradingDateController.saveAndReturn()
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 
-        status(res) shouldBe 303
-        redirectLocation(res).get should include("/alcohol-wholesale-scheme/view-section/businessDetails")
+        status(res) mustBe 303
+        redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")
       }
     }
   }

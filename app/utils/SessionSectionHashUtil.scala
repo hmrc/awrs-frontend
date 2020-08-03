@@ -18,18 +18,18 @@ package utils
 
 /**
   * This class is created to address the issue in AWRS-1594 to determine if save and continue during the linear journey
-  * should goto the next section or return to index
+  * must goto the next section or return to index
   *
   * The problem:
   * When the user begins the linear journey they can fill out the forms in any order they like. If they have filled in
-  * a section then when they visit the section again they should be brought to the edit view instead of continuing
+  * a section then when they visit the section again they must be brought to the edit view instead of continuing
   * in the linear journey. However if the next section is something they have already completed then they are expected
   * to be taken to the index page instead.
   *
   * The current solution:
   * A hash of the section status is updated by the index controller every time it is visited, this describes which of
   * the sections are completed at this point in time. When save and continue is called, the respective controller then
-  * checks this session variable to detemine whether or not they should goto the next section or return to the index
+  * checks this session variable to detemine whether or not they must goto the next section or return to the index
   * page
   */
 object SessionSectionHashUtil {

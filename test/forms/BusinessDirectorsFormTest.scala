@@ -21,10 +21,10 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 
-class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
   implicit lazy val form = BusinessDirectorsForm.businessDirectorsForm.form
 
@@ -35,7 +35,7 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
   val directorTypes = Set(Director, CompanySecretary, DirectorAndSecretary)
 
 
-  "Form validations" should {
+  "Form validations" must {
 
     "check the director and company secretary type is selected" in {
       val fieldId = "directorsAndCompanySecretaries"
@@ -55,7 +55,7 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
       fieldId assertEnumFieldIsCompulsory expectations
     }
 
-    "Directors or secretaries that are individuals," should {
+    "Directors or secretaries that are individuals," must {
 
       for (directorType <- directorTypes) {
 
@@ -75,7 +75,7 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
         "check 'otherDirectors' validations, when director is %s".format(directorType) in
           NamedUnitTests.doYouHaveOtherDirectorsIsAnswered(conditionDirectorIsIndividual)
 
-        "Valid journeys for when director is %s should pass".format(directorType) in {
+        "Valid journeys for when director is %s must pass".format(directorType) in {
           val testDataScen1: Map[String, String] =
             conditionDirectorIsIndividual +
               ("firstName" -> "firstName",
@@ -121,7 +121,7 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
       }
     }
 
-    "Directors or secretaries that are companies," should {
+    "Directors or secretaries that are companies," must {
 
       for (directorType <- directorTypes) {
 
@@ -157,7 +157,7 @@ class BusinessDirectorsFormTest extends UnitSpec with MockitoSugar with OneServe
         "check 'otherDirectors' validations, when director is %s".format(directorType) in
           NamedUnitTests.doYouHaveOtherDirectorsIsAnswered(conditionDirectorIsCompany)
 
-        "Valid journeys for when director is %s should pass".format(directorType) in {
+        "Valid journeys for when director is %s must pass".format(directorType) in {
           val testDataScen1: Map[String, String] =
             conditionDirectorIsCompany +
               ("companyNames.tradingName" -> "tradingName",

@@ -20,7 +20,6 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor
 import config.ApplicationConfig
 import models.FormBundleStatus
 import models.FormBundleStatus.{DeRegistered, Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal, Withdrawal}
-import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import play.twirl.api.Content
@@ -47,7 +46,7 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
       case e@(Some(Withdrawal) | Some(DeRegistered)) =>
         val enrolments = authRetrievals.enrolments
         if(accountUtils.hasAwrs(enrolments)){
-          Logger.info(s"[AwrsController][restrictedAccessCheck] De-enrolled and redirecting to business-customer for status ${e.get.name}")
+          logger.info(s"[AwrsController][restrictedAccessCheck] De-enrolled and redirecting to business-customer for status ${e.get.name}")
           deEnrolService.deEnrolAWRS(accountUtils.getAwrsRefNo(enrolments), getBusinessName.getOrElse(""), getBusinessType.getOrElse(""))
           Future.successful(Redirect(applicationConfig.businessCustomerStartPage).removingFromSession(AwrsSessionKeys.sessionStatusType))
         } else {

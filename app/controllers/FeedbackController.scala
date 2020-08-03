@@ -25,7 +25,7 @@ import models.Feedback
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
 import scala.concurrent.{ExecutionContext, Future}

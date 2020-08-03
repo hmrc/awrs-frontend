@@ -40,7 +40,7 @@ class BusinessCustomerServiceTest extends AwrsUnitTestTraits
       .thenReturn(Future.successful(Some(testReviewBusinessDetails)))
 
     val result = businessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]
-    await(result).get shouldBe testReviewBusinessDetails
+    await(result).get mustBe testReviewBusinessDetails
   }
 
   "return None, if no details are found in BC keystore" in {
@@ -48,6 +48,6 @@ class BusinessCustomerServiceTest extends AwrsUnitTestTraits
       .thenReturn(Future.successful(None))
 
     val result = businessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]
-    await(result) shouldBe None
+    await(result) mustBe None
   }
 }

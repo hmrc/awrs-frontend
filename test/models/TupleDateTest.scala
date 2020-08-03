@@ -17,19 +17,19 @@
 package models
 
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
 
-class TupleDateTest extends UnitSpec with MockitoSugar {
-  "TupleDate" should {
+class TupleDateTest extends PlaySpec with MockitoSugar {
+  "TupleDate" must {
     "transform the date into the correct format" in {
       val day = "31"
       val month = "03"
       val year = "2017"
       val date: TupleDate = TupleDate(day, month, year)
 
-      date.toString("YYYY-MM-dd") shouldBe f"$year-$month-$day"
-      date.toString("dd-MM-YYYY") shouldBe f"$day-$month-$year"
+      date.toString("YYYY-MM-dd") mustBe f"$year-$month-$day"
+      date.toString("dd-MM-YYYY") mustBe f"$day-$month-$year"
     }
   }
 }

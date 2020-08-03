@@ -62,7 +62,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  "showBusinessDetails" should {
+  "showBusinessDetails" must {
     "show the business details page" when {
       "a user is logged in" in {
         val businessType = "test"
@@ -73,7 +73,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
           fetchBusinessDetails = testBusinessDetails(),
           fetchNewApplicationType = testNewApplicationType
         )
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(true))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
 
@@ -83,12 +83,12 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
         val res = alreadyStartingTradingController.showBusinessDetails(false)
           .apply(SessionBuilder.buildRequestWithSession(userId, businessType))
 
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
     }
   }
 
-  "save" should {
+  "save" must {
     "save the already trading answer" when {
       "provided with an answer to the already trading question" in {
         val businessType = "test"
@@ -112,8 +112,8 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
         val res = alreadyStartingTradingController.saveAndReturn()
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 
-        status(res) shouldBe 303
-        redirectLocation(res).get should include("/alcohol-wholesale-scheme/start-date-trading")
+        status(res) mustBe 303
+        redirectLocation(res).get must include("/alcohol-wholesale-scheme/start-date-trading")
       }
     }
   }

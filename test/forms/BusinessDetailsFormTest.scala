@@ -24,11 +24,11 @@ import forms.validation.util.FieldError
 import models.TupleDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.AwrsFieldConfig
 import utils.TestConstants._
 
-class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
+class BusinessDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
   lazy val forms = (entity: String, hasAwrs: Boolean) => BusinessDetailsForm.businessDetailsForm(entity, hasAwrs).form
   val SoleTrader = "SOP"
   val Ltd = "LTD"
@@ -39,7 +39,7 @@ class BusinessDetailsFormTest extends UnitSpec with MockitoSugar with OneServerP
   val entities = Seq[String](SoleTrader, Ltd, Partnership, LimitedLiabilityGroup, LimitedGroup)
   val welshCharEntities = Seq[String](LimitedLiabilityGroup, LimitedGroup)
 
-  "Business details form" should {
+  "Business details form" must {
     for (entity <- entities; hasAwrs <- Seq(true, false)) {
       implicit lazy val form = forms(entity, hasAwrs)
 

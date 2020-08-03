@@ -56,13 +56,13 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
 
   val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService, mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig, template)
 
-  "viewing the status page" should {
+  "viewing the status page" must {
     "display the application status decision text" in {
       viewStatusPage {
         result =>
           val document = Jsoup.parse(contentAsString(result))
 
-          document.select("#details-content-awrsStatusDecision:nth-child(2)").text() should include(Messages("awrs.application_status.decision_answer.para_3"))
+          document.select("#details-content-awrsStatusDecision:nth-child(2)").text() must include(Messages("awrs.application_status.decision_answer.para_3"))
       }
     }
   }

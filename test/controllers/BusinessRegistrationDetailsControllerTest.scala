@@ -53,11 +53,11 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
 
   "BusinessRegistrationDetailsController" must {
 
-    "Users who entered from the summary edit view" should {
+    "Users who entered from the summary edit view" must {
       "return to the summary view after clicking return" in {
         returnWithAuthorisedUser(testBusinessRegistrationDetails(), "SOP") {
           result =>
-            redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessRegistrationDetailsName")
+            redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$businessRegistrationDetailsName")
             verifySave4LaterService(saveBusinessRegistrationDetails = 1)
         }
       }
@@ -68,7 +68,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
         s"successfully save the page if the group utr is valid for entity $legalEntity" in {
           returnWithAuthorisedUser(testBusinessRegistrationDetails(doYouHaveUTR = "Yes", utr = testUtr, legalEntity = legalEntity), legalEntity) {
             result =>
-              redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessRegistrationDetailsName")
+              redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$businessRegistrationDetailsName")
               verifySave4LaterService(saveBusinessRegistrationDetails = 1)
           }
         }
@@ -77,8 +77,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
           returnWithAuthorisedUser(testBusinessRegistrationDetails(doYouHaveUTR = "Yes", utr = testNonMatchingUtr, legalEntity = legalEntity), legalEntity) {
             result =>
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("utr_errorLink").text shouldBe Messages("awrs.generic.error.utr_invalid_match")
-              doc.getElementById("utr-error-0").text shouldBe Messages("awrs.generic.error.utr_invalid_match")
+              doc.getElementById("utr_errorLink").text mustBe Messages("awrs.generic.error.utr_invalid_match")
+              doc.getElementById("utr-error-0").text mustBe Messages("awrs.generic.error.utr_invalid_match")
               verifySave4LaterService(saveBusinessRegistrationDetails = 0)
           }
         }
@@ -87,8 +87,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
           returnWithAuthorisedUser(testBusinessRegistrationDetails(doYouHaveUTR = "Yes", utr = None, legalEntity = legalEntity), legalEntity) {
             result =>
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("utr_errorLink").text shouldBe Messages("awrs.generic.error.utr_empty")
-              doc.getElementById("utr-error-0").text shouldBe Messages("awrs.generic.error.utr_empty")
+              doc.getElementById("utr_errorLink").text mustBe Messages("awrs.generic.error.utr_empty")
+              doc.getElementById("utr-error-0").text mustBe Messages("awrs.generic.error.utr_empty")
               verifySave4LaterService(saveBusinessRegistrationDetails = 0)
           }
         }
@@ -102,8 +102,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
       when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(NewApplicationMode))
       setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
-      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(false)
-      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
+      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
       test(result)
     }

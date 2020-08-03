@@ -25,7 +25,7 @@ import utils.{AwrsUnitTestTraits, TestUtil}
 class AwrsAPI5HelperTest extends
   AwrsUnitTestTraits {
 
-  "AwrsAPI5Helper" should {
+  "AwrsAPI5Helper" must {
 
     "convertAddressToBCAddress" in {
       val addl1 = "address Line1"
@@ -47,15 +47,15 @@ class AwrsAPI5HelperTest extends
       val noneUK = Some("FR")
       val expectedNoneUK = Some("FR")
 
-      testData(uk) shouldBe expected(expectedUk)
-      testData(noneUK) shouldBe expected(expectedNoneUK)
+      testData(uk) mustBe expected(expectedUk)
+      testData(noneUK) mustBe expected(expectedNoneUK)
     }
 
     "isGroup" in {
       val isGroup = List("LLP_GRP", "LTD_GRP")
       val notGroup = List("SOP", "Partnership", "LTD", "LLP", "LP")
-      isGroup.foreach(x => AwrsAPI5Helper.isGroup(TestUtil.dynamicLegalEntity(x)) shouldBe true)
-      notGroup.foreach(x => AwrsAPI5Helper.isGroup(TestUtil.dynamicLegalEntity(x)) shouldBe false)
+      isGroup.foreach(x => AwrsAPI5Helper.isGroup(TestUtil.dynamicLegalEntity(x)) mustBe true)
+      notGroup.foreach(x => AwrsAPI5Helper.isGroup(TestUtil.dynamicLegalEntity(x)) mustBe false)
     }
 
     "convertToBusinessCustomerDetails" in {
@@ -74,9 +74,9 @@ class AwrsAPI5HelperTest extends
       val convertedBC = AwrsAPI5Helper.convertToBusinessCustomerDetails(subscriptionTypeFrontEnd)
 
       // n.b. we do not care about any other fields in BC for the post submission journeys
-      convertedBC.businessName shouldBe expectedBC.businessName
-      convertedBC.businessAddress shouldBe expectedBC.businessAddress
-      convertedBC.isAGroup shouldBe expectedBC.isAGroup
+      convertedBC.businessName mustBe expectedBC.businessName
+      convertedBC.businessAddress mustBe expectedBC.businessAddress
+      convertedBC.isAGroup mustBe expectedBC.isAGroup
     }
   }
 }

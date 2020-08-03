@@ -3,23 +3,20 @@ package uk.gov.hmrc.helpers.controllers
 
 import java.util.UUID
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, postRequestedFor, stubFor, urlEqualTo, urlMatching, verify, exactly => exactlyTimes}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import controllers.routes
 import org.scalatest.MustMatchers
-import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.crypto.json.JsonEncryptor
+import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec}
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.play.test.LogCapturing
-import utils.{AWRSFeatureSwitches, FeatureSwitch}
 
-class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub with LogCapturing {
+class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub {
 
   val baseURI = "/alcohol-wholesaler-register"
   val subscriptionURI = "/subscription/"

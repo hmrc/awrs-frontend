@@ -22,13 +22,13 @@ import forms.GroupMemberDetailsForm._
 import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class GroupMemberDetailsFormTest extends UnitSpec with MockitoSugar {
+class GroupMemberDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form = GroupMemberDetailsForm.groupMemberForm.form
 
-  "Form validation" should {
+  "Form validation" must {
 
     "check validations for BusinessName and TradingName" in {
       NamedUnitTests.companyNamesAreValid(idPrefix = names)
@@ -60,7 +60,7 @@ class GroupMemberDetailsFormTest extends UnitSpec with MockitoSugar {
       )
 
       val testForm = form.bindFromRequest(data)
-      testForm.errors shouldBe Seq()
+      testForm.errors mustBe Seq()
     }
 
     "display correct validation for group member UTR" in {

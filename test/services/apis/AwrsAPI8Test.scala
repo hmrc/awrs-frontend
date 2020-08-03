@@ -56,21 +56,21 @@ class AwrsAPI8Test extends MockKeyStoreService with MockAuthConnector {
     )
   }
 
-  "AwrsAPI8" should {
+  "AwrsAPI8" must {
     "withdraw an application" when {
       "there is a result reason" in {
         when(mockAWRSConnector.withdrawApplication(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(WithdrawalResponse("processingDate")))
 
         val result = testAwrsAPI8.withdrawApplication(Some(WithdrawalReason("Some reason", "Some other")), TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe WithdrawalResponse("processingDate")
+        await(result) mustBe WithdrawalResponse("processingDate")
       }
     }
 
     "throw exception" when {
       "there is no reason" in {
         val result = testAwrsAPI8.withdrawApplication(None, TestUtil.defaultAuthRetrieval)
-        intercept[NoSuchElementException](await(result) shouldBe WithdrawalResponse("processingDate"))
+        intercept[NoSuchElementException](await(result) mustBe WithdrawalResponse("processingDate"))
       }
     }
   }

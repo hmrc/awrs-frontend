@@ -21,7 +21,6 @@ import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
 import javax.inject.Inject
 import models._
-import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
@@ -82,7 +81,7 @@ class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
       case _ => false
     }.recover {
       case _: InternalServerException =>
-        Logger.info("[deleteFromNotificationCache] Internal server error occurred when deleting from notification cache")
+        logger.info("[deleteFromNotificationCache] Internal server error occurred when deleting from notification cache")
         false
     }
   }

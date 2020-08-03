@@ -22,55 +22,55 @@ import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
 
 class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
 
-  "TradingActivity" should {
+  "TradingActivity" must {
 
     "transform the broker selection into an other selection and be able to do the reverse" in {
       val tradingActivity = testTradingActivity(wholesalerType = List("05"), otherWholesaler = None)
 
       val jsonAfterBrokerSelected = Json.toJson(tradingActivity)
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() should include("99")
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() shouldNot include("05")
-      jsonAfterBrokerSelected.\\("otherWholesaler").toString() should include("Broker")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() must include("99")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() mustNot include("05")
+      jsonAfterBrokerSelected.\\("otherWholesaler").toString() must include("Broker")
 
-      jsonAfterBrokerSelected.as[TradingActivity] shouldBe tradingActivity
+      jsonAfterBrokerSelected.as[TradingActivity] mustBe tradingActivity
     }
 
     "transform the producer selection into an other selection and be able to do the reverse" in {
       val tradingActivity = testTradingActivity(wholesalerType = List("04"), otherWholesaler = None)
 
       val jsonAfterBrokerSelected = Json.toJson(tradingActivity)
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() should include("99")
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() shouldNot include("04")
-      jsonAfterBrokerSelected.\\("otherWholesaler").toString() should include("Producer")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() must include("99")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() mustNot include("04")
+      jsonAfterBrokerSelected.\\("otherWholesaler").toString() must include("Producer")
 
-      jsonAfterBrokerSelected.as[TradingActivity] shouldBe tradingActivity
+      jsonAfterBrokerSelected.as[TradingActivity] mustBe tradingActivity
     }
 
     "transform both a broker and producer selection into an other selection and be able to do the reverse" in {
       val tradingActivity = testTradingActivity(wholesalerType = List("05", "04"), otherWholesaler = None)
 
       val jsonAfterBrokerSelected = Json.toJson(tradingActivity)
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() should include("99")
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() shouldNot include("04")
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() shouldNot include("05")
-      jsonAfterBrokerSelected.\\("otherWholesaler").toString() should include("Broker")
-      jsonAfterBrokerSelected.\\("otherWholesaler").toString() should include("Producer")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() must include("99")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() mustNot include("04")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() mustNot include("05")
+      jsonAfterBrokerSelected.\\("otherWholesaler").toString() must include("Broker")
+      jsonAfterBrokerSelected.\\("otherWholesaler").toString() must include("Producer")
 
-      jsonAfterBrokerSelected.as[TradingActivity] shouldBe tradingActivity
+      jsonAfterBrokerSelected.as[TradingActivity] mustBe tradingActivity
     }
 
     "transform both a broker and producer selection into an other selection and remain unaffected by an existing other selection and be able to do the reverse" in {
       val tradingActivity = testTradingActivity(wholesalerType = List("05", "04", "99"), otherWholesaler = Some("Something else"))
 
       val jsonAfterBrokerSelected = Json.toJson(tradingActivity)
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() should include("99")
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() shouldNot include("04")
-      jsonAfterBrokerSelected.\\("wholesalerType").toString() shouldNot include("05")
-      jsonAfterBrokerSelected.\\("otherWholesaler").toString() should include("Broker")
-      jsonAfterBrokerSelected.\\("otherWholesaler").toString() should include("Producer")
-      jsonAfterBrokerSelected.\\("otherWholesaler").toString() should include("Something else")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() must include("99")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() mustNot include("04")
+      jsonAfterBrokerSelected.\\("wholesalerType").toString() mustNot include("05")
+      jsonAfterBrokerSelected.\\("otherWholesaler").toString() must include("Broker")
+      jsonAfterBrokerSelected.\\("otherWholesaler").toString() must include("Producer")
+      jsonAfterBrokerSelected.\\("otherWholesaler").toString() must include("Something else")
 
-      jsonAfterBrokerSelected.as[TradingActivity] shouldBe tradingActivity
+      jsonAfterBrokerSelected.as[TradingActivity] mustBe tradingActivity
     }
 
     "trim the fields to the correct length when producer or broker is selected" in {
@@ -91,14 +91,14 @@ class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
 
           val otherWholesalerStr = jsonAfterBrokerSelected.\\("otherWholesaler").head.toString.replaceAll("\"","")
           withClue(s"otherWholesaler after trim: $otherWholesalerStr\nlength:${otherWholesalerStr.length}\n") {
-            otherWholesalerStr.length shouldBe expectedLength
+            otherWholesalerStr.length mustBe expectedLength
           }
         }
       }
     }
   }
 
-  "TradingActivity.reader.getOrderedWholesalers" should {
+  "TradingActivity.reader.getOrderedWholesalers" must {
 
     trait WholesalersSetup {
       def unorderedWholesalers: List[String]
@@ -116,14 +116,14 @@ class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
 
     "return correct order of wholesalers when passed complete unordered list" in new WholesalersSetup {
       override lazy val unorderedWholesalers = List("06", "05", "04", "03", "02", "01")
-      tradingActivity shouldBe List("01", "02", "03", "04", "05", "06")
-      tradingActivity.size shouldBe (6)
+      tradingActivity mustBe List("01", "02", "03", "04", "05", "06")
+      tradingActivity.size mustBe 6
     }
 
     "return correct order and number of wholesalers when passed incomplete unordered list" in new WholesalersSetup {
       override lazy val unorderedWholesalers = List("06", "04", "02")
-      tradingActivity shouldBe List("02", "04", "06")
-      tradingActivity.size shouldBe (3)
+      tradingActivity mustBe List("02", "04", "06")
+      tradingActivity.size mustBe 3
     }
   }
 }

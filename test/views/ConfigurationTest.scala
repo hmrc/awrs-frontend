@@ -26,7 +26,7 @@ class ConfigurationTest extends AwrsUnitTestTraits {
 
   lazy val userId = s"user-${UUID.randomUUID}"
 
-  "showHint1" should {
+  "showHint1" must {
     "error is there is no session status" in {
       intercept[RuntimeException](Configuration.showHint1(FakeRequest()))
     }
@@ -38,7 +38,7 @@ class ConfigurationTest extends AwrsUnitTestTraits {
           "status" -> s"$sessionType"
         )
 
-        Configuration.showHint1(fakeRequestWithSession) shouldBe false
+        Configuration.showHint1(fakeRequestWithSession) mustBe false
       }
     }
 
@@ -49,7 +49,7 @@ class ConfigurationTest extends AwrsUnitTestTraits {
         "status" -> s"$sessionType"
       )
 
-      Configuration.showHint1(fakeRequestWithSession) shouldBe true
+      Configuration.showHint1(fakeRequestWithSession) mustBe true
     }
   }
 

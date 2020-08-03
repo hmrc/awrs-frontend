@@ -19,10 +19,10 @@ package views.view_application
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import views.view_application.ViewApplicationHelper._
 
-class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite {
+class ViewApplicationHelperTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite {
 
   type TestData = Seq[Option[String]]
   val dummyString = "dummyString"
@@ -31,7 +31,7 @@ class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAn
     def apply(input: Option[String]*): TestData = Seq(input: _*)
   }
 
-  "One view helper content counter" should {
+  "One view helper content counter" must {
 
     case class Expectations(count: Int)
     case class TestCase(data: TestData, expecations: Expectations)
@@ -40,7 +40,7 @@ class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAn
 
     def runTests(testCases: TestCase*): Unit = {
       val rowTitle = "does not matter"
-      testCases.foreach(testCase => countContent(testCase.data) shouldBe testCase.expecations.count)
+      testCases.foreach(testCase => countContent(testCase.data) mustBe testCase.expecations.count)
     }
 
     "return the count of strings when the sequence has some or none values " in {
@@ -65,14 +65,14 @@ class ViewApplicationHelperTest extends UnitSpec with MockitoSugar with BeforeAn
     }
   }
 
-  "One view helper Option String Util " should {
+  "One view helper Option String Util " must {
 
     "concatenate the strings " in {
-      Some(Some(dummyString).getOrElse("") + " " + Some(dummyString).getOrElse("")) shouldBe Some("dummyString dummyString")
-      Some(Some(dummyString).getOrElse("") + "") shouldBe Some("dummyString")
-      None + Some(dummyString) shouldBe Some("dummyString")
+      Some(Some(dummyString).getOrElse("") + " " + Some(dummyString).getOrElse("")) mustBe Some("dummyString dummyString")
+      Some(Some(dummyString).getOrElse("") + "") mustBe Some("dummyString")
+      None + Some(dummyString) mustBe Some("dummyString")
       //  " " + Some(dummyString) will return " Some(dummyString)". the x symbol is required if the latter is desired
-      " " x Some(dummyString) shouldBe Some(" dummyString")
+      " " x Some(dummyString) mustBe Some(" dummyString")
     }
   }
 

@@ -16,45 +16,45 @@
 
 package utils
 
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class AwrsFieldConfigTest extends UnitSpec with AwrsFieldConfig {
-  "AWRS Field Config" should {
+class AwrsFieldConfigTest extends PlaySpec with AwrsFieldConfig {
+  "AWRS Field Config" must {
 
     "populate max length for declaration name" in {
-      applicationDeclarationNameLen shouldBe 140
+      applicationDeclarationNameLen mustBe 140
     }
 
     "populate max length for address postcode" in {
-      addressPostcodeLen shouldBe 20
+      addressPostcodeLen mustBe 20
     }
 
     "populate max length for declaration role" in {
-      applicationDeclarationRoleLen shouldBe 40
+      applicationDeclarationRoleLen mustBe 40
     }
 
     "populate max length for business details trading name" in {
-      tradingNameLen shouldBe 120
+      tradingNameLen mustBe 120
     }
 
     "populate max length for business details address line 1" in {
-      addressLineLen shouldBe 35
+      addressLineLen mustBe 35
     }
 
     "populate max length for business details contact First Name" in {
-      firstNameLen shouldBe 35
+      firstNameLen mustBe 35
     }
 
     "populate max length for business details contact Last Name" in {
-      lastNameLen shouldBe 35
+      lastNameLen mustBe 35
     }
 
     "populate max length for business details contact Email" in {
-      emailLen shouldBe 100
+      emailLen mustBe 100
     }
 
     "populate max length for business details contact Telephone" in {
-      telephoneLen shouldBe 24
+      telephoneLen mustBe 24
     }
   }
 }

@@ -27,7 +27,7 @@ import services.DataCacheKeys._
 import services.{DeEnrolService, IndexService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
 import scala.concurrent.{ExecutionContext, Future}

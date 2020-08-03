@@ -59,12 +59,12 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
         linearJourney(entity) {
           result =>
             val doc = Jsoup.parse(contentAsString(result))
-            doc.getElementById("additional-information-heading").text() shouldBe Messages("awrs.business_registration_details.heading.partnership", Messages("awrs.generic.enter"))
+            doc.getElementById("additional-information-heading").text() mustBe Messages("awrs.business_registration_details.heading.partnership", Messages("awrs.generic.enter"))
         }
         editJourney(entity) {
           result =>
             val doc = Jsoup.parse(contentAsString(result))
-            doc.getElementById("additional-information-heading").text() shouldBe Messages("awrs.business_registration_details.heading.partnership", Messages("awrs.generic.edit"))
+            doc.getElementById("additional-information-heading").text() mustBe Messages("awrs.business_registration_details.heading.partnership", Messages("awrs.generic.edit"))
         }
       }
     )
@@ -74,12 +74,12 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
         linearJourney(entity) {
           result =>
             val doc = Jsoup.parse(contentAsString(result))
-            doc.getElementById("additional-information-heading").text() shouldBe Messages("awrs.business_registration_details.heading.group", Messages("awrs.generic.enter"))
+            doc.getElementById("additional-information-heading").text() mustBe Messages("awrs.business_registration_details.heading.group", Messages("awrs.generic.enter"))
         }
         editJourney(entity) {
           result =>
             val doc = Jsoup.parse(contentAsString(result))
-            doc.getElementById("additional-information-heading").text() shouldBe Messages("awrs.business_registration_details.heading.group", Messages("awrs.generic.edit"))
+            doc.getElementById("additional-information-heading").text() mustBe Messages("awrs.business_registration_details.heading.group", Messages("awrs.generic.edit"))
         }
       }
     )
@@ -89,12 +89,12 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
         linearJourney(entity) {
           result =>
             val doc = Jsoup.parse(contentAsString(result))
-            doc.getElementById("additional-information-heading").text() shouldBe Messages("awrs.business_registration_details.heading", Messages("awrs.generic.enter"))
+            doc.getElementById("additional-information-heading").text() mustBe Messages("awrs.business_registration_details.heading", Messages("awrs.generic.enter"))
         }
         editJourney(entity) {
           result =>
             val doc = Jsoup.parse(contentAsString(result))
-            doc.getElementById("additional-information-heading").text() shouldBe Messages("awrs.business_registration_details.heading", Messages("awrs.generic.edit"))
+            doc.getElementById("additional-information-heading").text() mustBe Messages("awrs.business_registration_details.heading", Messages("awrs.generic.edit"))
         }
       }
     )
@@ -119,14 +119,14 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
         linearJourney(entity) {
           result =>
             val doc = Jsoup.parse(contentAsString(result))
-            doc.getElementById("utr").`val`() shouldBe testUtr
+            doc.getElementById("utr").`val`() mustBe testUtr
         }
       }
     )
 
     allEntities.foreach {
       legalEntity =>
-        s"$legalEntity" should {
+        s"$legalEntity" must {
           Seq(true, false).foreach {
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {

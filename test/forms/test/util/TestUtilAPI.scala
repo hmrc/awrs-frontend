@@ -26,7 +26,7 @@ trait TestUtilAPI {
     * @param character specifies the pattern to use
     * @param repeat    specifies the number of times the pattern will be repeated
     */
-  case class DataFormat(val character: Character, repeat: Int)
+  case class DataFormat(character: Character, repeat: Int)
 
   object DataFormat {
     def apply(character: String, repeat: Int): DataFormat = {

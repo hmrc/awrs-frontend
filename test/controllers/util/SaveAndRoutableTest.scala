@@ -48,18 +48,18 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
   resetAuthConnector()
   lazy val baseRequest: FakeRequest[AnyContentAsEmpty.type] = SessionBuilder.buildRequestWithSession(userId, "SOP") // use sole trader journey as the foundation for these tests
 
-  "redirectToIndex" should {
+  "redirectToIndex" must {
     "return true if the section name is index" in {
-      val sessionSectionStatusHash = "" // should not matter what this value this is set to
-      await(testWasSectionCompletedWhenCurrentJourneyStarted(indexName, sessionSectionStatusHash)) shouldBe true
+      val sessionSectionStatusHash = "" // must not matter what this value this is set to
+      await(testWasSectionCompletedWhenCurrentJourneyStarted(indexName, sessionSectionStatusHash)) mustBe true
     }
     "return true if the section is already completed" in {
       val sessionSectionStatusHash = "2" // business registration details is the second page, thus the hash is 2
-      await(testWasSectionCompletedWhenCurrentJourneyStarted(businessRegistrationDetailsName, sessionSectionStatusHash)) shouldBe true
+      await(testWasSectionCompletedWhenCurrentJourneyStarted(businessRegistrationDetailsName, sessionSectionStatusHash)) mustBe true
     }
     "return false if the section has not started" in {
       val sessionSectionStatusHash = "0" // nothing is completed
-      await(testWasSectionCompletedWhenCurrentJourneyStarted(businessRegistrationDetailsName, sessionSectionStatusHash)) shouldBe false
+      await(testWasSectionCompletedWhenCurrentJourneyStarted(businessRegistrationDetailsName, sessionSectionStatusHash)) mustBe false
     }
   }
 

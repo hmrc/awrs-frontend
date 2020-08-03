@@ -84,22 +84,22 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
       case _ => Map[String, JsValue]()
     }
 
-  "showViewApplication" should {
+  "showViewApplication" must {
 
     "redirect the user back one page using the back link" in {
 
       showViewApplication("/alcohol-wholesale-scheme/index") {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          status(result) shouldBe OK
-          document.getElementById("back").attr("href") shouldBe "javascript:history.back()"
+          status(result) mustBe OK
+          document.getElementById("back").attr("href") mustBe "javascript:history.back()"
       }
 
       showViewApplication("/alcohol-wholesale-scheme/status-page") {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          status(result) shouldBe OK
-          document.getElementById("back").attr("href") shouldBe "javascript:history.back()"
+          status(result) mustBe OK
+          document.getElementById("back").attr("href") mustBe "javascript:history.back()"
       }
 
     }

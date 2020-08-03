@@ -42,17 +42,17 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
       continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("wholesalerType[0]" -> "01", "wholesalerType[1]" -> "05", "typeOfAlcoholOrders[0]" -> "01",
         "doesBusinessImportAlcohol" -> "Yes", "otherWholesaler" -> "None", "doYouExportAlcohol" -> "No", "thirdPartyStorage" -> "Yes")) {
         result =>
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/products")
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/products")
       }
     }
   }
 
-  "Users who entered from the summary edit view" should {
+  "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
       returnWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("wholesalerType[0]" -> "01", "wholesalerType[1]" -> "05", "typeOfAlcoholOrders[0]" -> "01",
         "doesBusinessImportAlcohol" -> "Yes", "otherWholesaler" -> "None", "doYouExportAlcohol" -> "No", "thirdPartyStorage" -> "Yes")) {
         result =>
-          redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$tradingActivityName")
+          redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$tradingActivityName")
           verifySave4LaterService(saveTradingActivity = 1)
       }
     }

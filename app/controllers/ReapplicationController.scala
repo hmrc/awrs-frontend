@@ -29,7 +29,7 @@ import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AwrsSessionKeys._
 import utils.{AccountUtils, LoggingUtils}
 import views.html.{awrs_application_too_soon_error, awrs_reapplication_confirmation}

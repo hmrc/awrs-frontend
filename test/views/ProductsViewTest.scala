@@ -38,9 +38,9 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
     override val signInUrl: String = applicationConfig.signIn
   }
 
-  "Submitting the additional information form with " should {
+  "Submitting the additional information form with " must {
 
-    "Authenticated and authorised users" should {
+    "Authenticated and authorised users" must {
 
       "display validation error when 'Who are the main customers?' is not selected" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("mainCustomers[0]" -> "")) {
@@ -142,7 +142,7 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
 
       allEntities.foreach {
         legalEntity =>
-          s"$legalEntity" should {
+          s"$legalEntity" must {
             Seq(true, false).foreach {
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {

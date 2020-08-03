@@ -23,15 +23,15 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.AwrsFieldConfig
 import utils.TestConstants._
 
-class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
+class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form = SupplierAddressesForm.supplierAddressesForm.form
 
-  "Form validations" should {
+  "Form validations" must {
     "display the correct validation errors for alcoholSupplier" in {
       val fieldId = "alcoholSupplier"
 
@@ -124,7 +124,7 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
       )
 
       val testForm = form.bindFromRequest(data)
-      testForm.errors shouldBe Seq()
+      testForm.errors mustBe Seq()
     }
 
     "display the correct validation errors for additionalSupplier" in {
@@ -141,7 +141,7 @@ class SupplierAddressesFormTest extends UnitSpec with MockitoSugar with OneServe
     }
   }
 
-  "Form validations" should {
+  "Form validations" must {
 
     "Allow submission if alcoholSupplier is answered with 'No'" in {
       val data: Map[String, String] =

@@ -61,12 +61,12 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
   }
 
 
-  "Pressing Continue within Business Details Page" should {
+  "Pressing Continue within Business Details Page" must {
 
     "if No Additional Premise is selected, save an object to Save4later and redirect to Index" in {
       continueWithAuthorisedUser(testRequest(testAdditionalBusinessPremisesDefault(additionalPremises = Some("No")))) {
         result =>
-          status(result) shouldBe 303
+          status(result) mustBe 303
       }
     }
 
@@ -77,7 +77,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
       for (busType <- busTypes) {
         continueWithAuthoriedUserEntityType(busType, testRequest(testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"), additionalAddress = Some(testAddress), addAnother = Some("No")))) {
           result =>
-            redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-directors"
+            redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-directors"
         }
       }
     }
@@ -89,7 +89,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
       for (busType <- busTypes) {
         continueWithAuthoriedUserEntityType(busType, testRequest(testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"), additionalAddress = Some(testAddress), addAnother = Some("No")))) {
           result =>
-            redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/trading-activity"
+            redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/trading-activity"
         }
       }
     }
@@ -101,7 +101,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
       for (busType <- busTypes) {
         continueWithAuthoriedUserEntityType(busType, testRequest(testAdditionalBusinessPremisesDefault(additionalPremises = Some("No")))) {
           result =>
-            redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-directors"
+            redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-directors"
         }
       }
     }
@@ -113,7 +113,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
       for (busType <- busTypes) {
         continueWithAuthoriedUserEntityType(busType, testRequest(testAdditionalBusinessPremisesDefault(additionalPremises = Some("No")))) {
           result =>
-            redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/trading-activity"
+            redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/trading-activity"
         }
       }
     }
@@ -121,61 +121,61 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     "redirect to additional premises page when valid data is provided and 'Add Another' is 'Yes'" in {
       continueWithAuthorisedUser(testRequest(testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"), additionalAddress = Some(testAddress), addAnother = Some("Yes")))) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/additional-premises?id=2"
+          status(result) mustBe 303
+          redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/additional-premises?id=2"
       }
     }
   }
 
-  "When loading the delete page we" should {
+  "When loading the delete page we" must {
     "see to the selected suppliers delete confirmation page" in {
       showDeleteWithAuthorisedUser() {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("deleteConfirmation-heading").text shouldBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.premises"))
-          status(result) shouldBe 200
+          document.getElementById("deleteConfirmation-heading").text mustBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.premises"))
+          status(result) mustBe 200
       }
     }
   }
 
-  "When submitting the delete confirmation page we" should {
+  "When submitting the delete confirmation page we" must {
     "be routed back to the summary page after confirming Yes" in {
       deleteWithAuthorisedUser()(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/additionalBusinessPremises")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/additionalBusinessPremises")
           verifySave4LaterService(saveAdditionalBusinessPremisesList = 1)
       }
     }
     "be routed back to the summary page after confirming No" in {
       deleteWithAuthorisedUser()(deleteConfirmation_No) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/additionalBusinessPremises")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/additionalBusinessPremises")
           verifySave4LaterService(saveAdditionalBusinessPremisesList = 0)
       }
     }
     "be shown an error if nothing is selected" in {
       deleteWithAuthorisedUser()(deleteConfirmation_None) {
         result =>
-          status(result) shouldBe 400
+          status(result) mustBe 400
       }
     }
     "be routed back to the summary page after confirming Yes for a record that is not the first" in {
       deleteWithAuthorisedUser(id = 2, premises = testThreeAdditionalBusinessPremisesList)(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/additionalBusinessPremises")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/additionalBusinessPremises")
           verifySave4LaterService(saveAdditionalBusinessPremisesList = 1)
       }
     }
   }
 
-  "Users who entered from the summary edit view" should {
+  "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
       returnWithAuthorisedUser(testRequest(testAdditionalBusinessPremisesDefault(additionalPremises = Some("No")))) {
         result =>
-          redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$additionalBusinessPremisesName")
+          redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$additionalBusinessPremisesName")
           verifySave4LaterService(saveAdditionalBusinessPremisesList = 1)
       }
     }

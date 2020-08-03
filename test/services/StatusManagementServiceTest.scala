@@ -47,7 +47,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
   // alias for the function which maps to the expected output using the input of setupMockTestStatusManagementService
   val expected: (FormBundleStatus, Option[StatusContactType]) => StatusReturnType = MockTestStatusManagementService.expectedRetrieveStatusOutput
 
-  "StatusManagementService" should {
+  "StatusManagementService" must {
     "not call any apis if the data is already locally cached" in {
       // currently the existence of "AwrsSessionKeys.sessionStatusType" in the session is used to determine if the data
       // is cached locally.
@@ -71,9 +71,9 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
       val alertStatus = statusReturnType.notification
       val statusInfo = statusReturnType.info
 
-      subscriptionStatus shouldBe Some(MockKeyStoreService.defaultSubscriptionStatusType)
-      alertStatus shouldBe MockKeyStoreService.defaultStatusNotification
-      statusInfo shouldBe Some(MockKeyStoreService.defaultStatusTypeInfo)
+      subscriptionStatus mustBe Some(MockKeyStoreService.defaultSubscriptionStatusType)
+      alertStatus mustBe MockKeyStoreService.defaultStatusNotification
+      statusInfo mustBe Some(MockKeyStoreService.defaultStatusTypeInfo)
 
       verifyKeyStoreService(
         fetchSubscriptionStatusType = 1,
@@ -97,7 +97,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         notification = MindedToReject
       )
       val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe expected(Pending, MindedToReject)
+      await(result) mustBe expected(Pending, MindedToReject)
 
       verifyAWRSConnector(
         checkStatus = 1,
@@ -116,7 +116,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         notification = None
       )
       val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe expected(Pending, None)
+      await(result) mustBe expected(Pending, None)
 
 
       verifyAWRSConnector(
@@ -137,7 +137,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         notification = MindedToRevoke
       )
       val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe expected(Approved, MindedToRevoke)
+      await(result) mustBe expected(Approved, MindedToRevoke)
 
       verifyAWRSConnector(
         checkStatus = 1,
@@ -156,7 +156,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         notification = None
       )
       val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe expected(Approved, None)
+      await(result) mustBe expected(Approved, None)
 
       verifyAWRSConnector(
         checkStatus = 1,
@@ -177,7 +177,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         notification = MindedToRevoke
       )
       val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe expected(ApprovedWithConditions, MindedToRevoke)
+      await(result) mustBe expected(ApprovedWithConditions, MindedToRevoke)
 
       verifyAWRSConnector(
         checkStatus = 1,
@@ -197,7 +197,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         notification = None
       )
       val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe expected(ApprovedWithConditions, None)
+      await(result) mustBe expected(ApprovedWithConditions, None)
 
       verifyAWRSConnector(
         checkStatus = 1,
@@ -219,7 +219,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
           notification = None
         )
         val result = testStatusManagementService.retrieveStatus(TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe expected(status, None)
+        await(result) mustBe expected(status, None)
 
         verifyAWRSConnector(
           checkStatus = 1,

@@ -81,13 +81,13 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   lazy val acceptedResponseJson: JsValue = Json.toJson(subscribeAcceptedResponse)
 
 
-  "AWRSConnector subscribing to AWRS" should {
+  "AWRSConnector subscribing to AWRS" must {
 
     "return status as OK, for successful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe Right(subscribeSuccessResponse)
+      await(result) mustBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -95,14 +95,14 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4PartnerJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe Right(subscribeSuccessResponse)
+      await(result) mustBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
     "return status as OK, for LTD legal entity" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe Right(subscribeSuccessResponse)
+      await(result) mustBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -110,7 +110,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(ACCEPTED, Some(acceptedResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe Left(subscribeAcceptedResponse)
+      await(result) mustBe Left(subscribeAcceptedResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -120,7 +120,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[BadRequestException] thrownBy await(result)
-      thrown.getMessage should include("Bad Request")
+      thrown.getMessage must include("Bad Request")
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -130,7 +130,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[DESValidationException] thrownBy await(result)
-      thrown.getMessage shouldBe "Validation against schema failed"
+      thrown.getMessage mustBe "Validation against schema failed"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -140,7 +140,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
-      thrown.getMessage shouldBe "There was a problem with the admin service"
+      thrown.getMessage mustBe "There was a problem with the admin service"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -150,7 +150,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[DuplicateSubscriptionException] thrownBy await(result)
-      thrown.getMessage shouldBe "This subscription already exists"
+      thrown.getMessage mustBe "This subscription already exists"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -160,7 +160,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[PendingDeregistrationException] thrownBy await(result)
-      thrown.getMessage shouldBe "You cannot submit a new application while your cancelled application is still pending"
+      thrown.getMessage mustBe "You cannot submit a new application while your cancelled application is still pending"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -169,7 +169,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(subscribeFailureResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[NotFoundException] thrownBy await(result)
-      thrown.getMessage shouldBe "URL not found"
+      thrown.getMessage mustBe "URL not found"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
     "return status as SERVICE_UNAVAILABLE, for bad data sent for subscription" in {
@@ -177,7 +177,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(subscribeFailureResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
-      thrown.getMessage shouldBe "Service unavailable"
+      thrown.getMessage mustBe "Service unavailable"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
     "return status INTERNAL SERVER ERROR" in {
@@ -185,7 +185,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage shouldBe "Internal server error"
+      thrown.getMessage mustBe "Internal server error"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -195,7 +195,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
-      thrown.getMessage shouldBe "There was a problem with the admin service"
+      thrown.getMessage mustBe "There was a problem with the admin service"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -204,7 +204,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(777, Some(subscribeFailureResponseJson))))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[RuntimeException] thrownBy await(result)
-      thrown.getMessage shouldBe "Unknown response"
+      thrown.getMessage mustBe "Unknown response"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -214,19 +214,19 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
-      thrown.getMessage shouldBe "There was a problem with the admin service"
+      thrown.getMessage mustBe "There was a problem with the admin service"
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
   }
 
-  "A user with an AWRS enrolment " should {
+  "A user with an AWRS enrolment " must {
     "try to lookup data from ETMP via API5 endpoint" in {
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(api5LTDJson))))
 
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
-      await(result) shouldBe api5LTDJson
+      await(result) mustBe api5LTDJson
     }
 
     "return status as BAD_REQUEST, for bad request made for API 5" in {
@@ -236,7 +236,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
       val thrown = the[BadRequestException] thrownBy await(result)
-      thrown.getMessage shouldBe "The Submission has not passed validation"
+      thrown.getMessage mustBe "The Submission has not passed validation"
     }
 
     "return status as NOT_FOUND for API 5" in {
@@ -246,7 +246,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
       val thrown = the[NotFoundException] thrownBy await(result)
-      thrown.getMessage shouldBe "The remote endpoint has indicated that no data can be found"
+      thrown.getMessage mustBe "The remote endpoint has indicated that no data can be found"
     }
 
     "return status as SERVICE_UNAVAILABLE for API 5" in {
@@ -256,7 +256,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
-      thrown.getMessage shouldBe "Dependant systems are currently not responding"
+      thrown.getMessage mustBe "Dependant systems are currently not responding"
     }
 
     "return status INTERNAL_SERVER_ERROR for API 5" in {
@@ -266,17 +266,17 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
       val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage shouldBe "WSO2 is currently experiencing problems that require live service intervention"
+      thrown.getMessage mustBe "WSO2 is currently experiencing problems that require live service intervention"
     }
   }
 
-  "AWRSConnector updating an AWRS application" should {
+  "AWRSConnector updating an AWRS application" must {
 
     "return status as OK, for successful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeApi6SuccessResponseJson))))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe api6SuccessResponse
+      await(result) mustBe api6SuccessResponse
       verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -286,7 +286,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[BadRequestException] thrownBy await(result)
-      thrown.getMessage shouldBe "[API6] - The Submission has not passed validation"
+      thrown.getMessage mustBe "[API6] - The Submission has not passed validation"
     }
 
     "return status as NOT_FOUND, for unsuccessful subscription" in {
@@ -295,7 +295,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[NotFoundException] thrownBy await(result)
-      thrown.getMessage shouldBe "[API6] - The remote endpoint has indicated that no data can be found"
+      thrown.getMessage mustBe "[API6] - The remote endpoint has indicated that no data can be found"
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful subscription" in {
@@ -304,7 +304,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
-      thrown.getMessage shouldBe "[API6] - Dependant systems are currently not responding"
+      thrown.getMessage mustBe "[API6] - Dependant systems are currently not responding"
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
@@ -313,11 +313,11 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage should include("[API6] - WSO2 is currently experiencing problems that require live service intervention")
+      thrown.getMessage must include("[API6] - WSO2 is currently experiencing problems that require live service intervention")
     }
   }
 
-  "AWRS withdrawal connector" should {
+  "AWRS withdrawal connector" must {
     import utils.WithdrawalTestUtils._
     implicit val request = FakeRequest()
 
@@ -325,7 +325,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(withdrawResponseJson))))
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
-      await(result) shouldBe witdrawalResponse()
+      await(result) mustBe witdrawalResponse()
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -334,7 +334,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
       val thrown = the[BadRequestException] thrownBy await(result)
-      thrown.getMessage shouldBe "The Submission has not passed validation"
+      thrown.getMessage mustBe "The Submission has not passed validation"
     }
 
     "return status as NOT_FOUND, for unsuccessful subscription" in {
@@ -343,7 +343,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
 
       val thrown = the[NotFoundException] thrownBy await(result)
-      thrown.getMessage shouldBe "The remote endpoint has indicated that no data can be found"
+      thrown.getMessage mustBe "The remote endpoint has indicated that no data can be found"
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful subscription" in {
@@ -352,7 +352,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
-      thrown.getMessage shouldBe "Dependant systems are currently not responding"
+      thrown.getMessage mustBe "Dependant systems are currently not responding"
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
@@ -361,11 +361,11 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
 
       val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage should include("WSO2 is currently experiencing problems that require live service intervention")
+      thrown.getMessage must include("WSO2 is currently experiencing problems that require live service intervention")
     }
   }
 
-  "getStatusInfo" should {
+  "getStatusInfo" must {
     lazy val getStatusInfoURI = (awrsRef: String, contactNumber: String) => f"/awrs/status-info/$awrsRef/$contactNumber"
 
     // these values doesn't really matter since the call itself is mocked
@@ -389,7 +389,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     "return status as OK, for successful de-enrolment" in {
       mockResponse(OK, statusInfoResponseSuccessJson)
       val result = testCall
-      await(result) shouldBe statusInfoResponseSuccess
+      await(result) mustBe statusInfoResponseSuccess
 
       mockResponse(OK, statusInfoResponseFailureJson)
       val resultFailure = testCall
@@ -432,7 +432,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
   }
 
-  "deRegistration" should {
+  "deRegistration" must {
     lazy val deRegisterURI = (awrsRef: String) => f"/awrs/de-registration/$awrsRef"
 
     // these values doesn't really matter since the call itself is mocked
@@ -457,11 +457,11 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     "return status as OK, for successful de-enrolment" in {
       mockResponse(OK, deRegistrationResponseSuccessJson)
       val result = testCall
-      await(result) shouldBe deRegistrationResponseSuccess
+      await(result) mustBe deRegistrationResponseSuccess
 
       mockResponse(OK, deRegistrationResponseFailureJson)
       val resultFailure = testCall
-      await(resultFailure) shouldBe deRegistrationResponseFailure
+      await(resultFailure) mustBe deRegistrationResponseFailure
 
       mockResponse(OK, deRegistrationCorruptResponseJson)
       val resultCorrupt = testCall
@@ -501,7 +501,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
   }
 
-  "AWRSConnector update group business partner" should {
+  "AWRSConnector update group business partner" must {
 
     val address = BCAddressApi3(addressLine1 = "", addressLine2 = "")
     val updatedDataRequest = new UpdateRegistrationDetailsRequest(false, Some(OrganisationName("testName")), address, ContactDetails(), false, false)
@@ -510,7 +510,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(updateGrpPartnerSuccessReponseJson))))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
-      await(result) shouldBe api3SucecssResponse
+      await(result) mustBe api3SucecssResponse
       verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
@@ -520,7 +520,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
       val thrown = the[BadRequestException] thrownBy await(result)
-      thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - The Submission has not passed validation"
+      thrown.getMessage mustBe "[API3 - Update Group Business Partner] - The Submission has not passed validation"
     }
 
     "return status as NOT_FOUND, for unsuccessful update" in {
@@ -529,7 +529,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
       val thrown = the[NotFoundException] thrownBy await(result)
-      thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - The remote endpoint has indicated that no data can be found"
+      thrown.getMessage mustBe "[API3 - Update Group Business Partner] - The remote endpoint has indicated that no data can be found"
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful update" in {
@@ -538,7 +538,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
      val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
      val thrown = the[ServiceUnavailableException] thrownBy await(result)
-     thrown.getMessage shouldBe "[API3 - Update Group Business Partner] - Dependant systems are currently not responding"
+     thrown.getMessage mustBe "[API3 - Update Group Business Partner] - Dependant systems are currently not responding"
    }
 
    "return status as INTERNAL_SERVER_ERROR, for unsuccessful update" in {
@@ -547,7 +547,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
      val result = testAWRSConnector.updateGroupBusinessPartner(testTradingName,"","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
      val thrown = the[InternalServerException] thrownBy await(result)
-     thrown.getMessage should include("[API3 - Update Group Business Partner] - WSO2 is currently experiencing problems that require live service intervention")
+     thrown.getMessage must include("[API3 - Update Group Business Partner] - WSO2 is currently experiencing problems that require live service intervention")
    }
 
     "return status as FORBIDDEN, for unsuccessful update" in {
@@ -556,11 +556,11 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
       val thrown = the[ForbiddenException] thrownBy await(result)
-      thrown.getMessage should include("[API3 - Update Group Business Partner] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable")
+      thrown.getMessage must include("[API3 - Update Group Business Partner] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable")
     }
   }
 
-  "Check ETMP call to backend" should {
+  "Check ETMP call to backend" must {
     val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option("Ne4 9hs"), Option("country"))
     val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
 
@@ -577,7 +577,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       mockResponse(OK, checkRegimeModelResponseSuccessJson)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe Some(subscribeAcceptedResponse)
+      result mustBe Some(subscribeAcceptedResponse)
     }
 
     "Return None after receiving a NO CONTENT response" in {
@@ -585,7 +585,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       mockResponse(NO_CONTENT)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe None
+      result mustBe None
     }
 
     "Return None after receiving a BAD REQUEST response" in {
@@ -593,7 +593,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       mockResponse(BAD_REQUEST)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe None
+      result mustBe None
     }
 
     "Return None after an exception has been thrown" in {
@@ -604,7 +604,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       mockInvalidResponse(BAD_REQUEST)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe None
+      result mustBe None
     }
 
     "Return None when feature flag is false" in {
@@ -612,7 +612,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       mockResponse(OK)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
 
-      result shouldBe None
+      result mustBe None
     }
   }
 }

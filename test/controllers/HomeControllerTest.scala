@@ -68,14 +68,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
           |]""".stripMargin)
   }
 
-  "HomeController" should {
+  "HomeController" must {
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
       when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(false))
       showWithSave4Later() { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-type")
+        status(result) mustBe 303
+        redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")
       }
     }
 
@@ -84,37 +84,37 @@ class HomeControllerTest extends AwrsUnitTestTraits
         .thenReturn("http://localhost:9923/business-customer/awrs")
 
       showWithSave4LaterWithoutSafeId() { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get should include("http://localhost:9923/business-customer/awrs")
+        status(result) mustBe 303
+        redirectLocation(result).get must include("http://localhost:9923/business-customer/awrs")
       }
     }
 
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment and they came from BTA" in {
       showWithSave4Later(callerId = Some("BTA")) { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-type")
+        status(result) mustBe 303
+        redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")
       }
     }
 
     "redirect to the Business Type page if the save4Later review details are not present but the keystore review details are present and the user does not have an AWRS enrolment" in {
       showWithKeystore { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-type")
+        status(result) mustBe 303
+        redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")
       }
     }
 
     "redirect to the Business Type page if the save4Later review details are present and the user has an AWRS enrolment" in {
       showWithSave4LaterAndAwrs() { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
+        status(result) mustBe 303
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
       }
     }
 
     "redirect to the Business Type page if the save4Later review details are not present but the keystore review details is present and the user has an AWRS enrolment" in {
       showWithKeystoreAndAwrs { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
+        status(result) mustBe 303
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
       }
     }
 
@@ -123,56 +123,56 @@ class HomeControllerTest extends AwrsUnitTestTraits
         .thenReturn("http://localhost:9923/business-customer/awrs")
 
       showWithoutKeystore { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get should include("/business-customer/awrs")
+        status(result) mustBe 303
+        redirectLocation(result).get must include("/business-customer/awrs")
       }
     }
 
     "redirect to the Business Type page if the save4Later review details are present and the user came from BTA" in {
       showWithSave4LaterAndAwrs(Some("BTA")) { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
+        status(result) mustBe 303
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
       }
     }
 
     "show error page if a runtime error is produced" in {
       showWithException() { result =>
-        status(result) shouldBe 500
+        status(result) mustBe 500
       }
     }
 
     "redirect to Business Type page if for AWRS Registered users JSResultException produced" in {
       showWithJsResultExceptionAndAwrs() { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
+        status(result) mustBe 303
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
       }
     }
 
     "redirect to Business Type page if for Non reistered AWRS users JSResultException produced" in {
       showWithJsResultException() { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/business-type"
+        status(result) mustBe 303
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
       }
     }
 
     "show recent withdrawal error page if the user has withdrawn within 24 hours" in {
       showWithException(testApplicationStatus()) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.select("#application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_withdraw")))
+        document.select("#application-error-header").text() must be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_withdraw")))
       }
     }
 
     "show recent re-registration error page if the user has de-registered within 24 hours" in {
       showWithException(testApplicationStatus(AWRSEnums.ApplicationStatusEnum.DeRegistered)) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.select("#application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
+        document.select("#application-error-header").text() must be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
       }
     }
 
     "redirect to the business type page if the user has withdrawn more than 24 hours ago" in {
       showWithSave4Later(testApplicationStatus(updatedDate = LocalDateTime.now().minusHours(25))) { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-type")
+        status(result) mustBe 303
+        redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")
       }
     }
 
@@ -180,8 +180,8 @@ class HomeControllerTest extends AwrsUnitTestTraits
       when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(true))
       showWithSave4Later() { result =>
-        status(result) shouldBe 303
-        redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-type")
+        status(result) mustBe 303
+        redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")
       }
     }
   }

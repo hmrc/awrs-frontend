@@ -21,15 +21,15 @@ import models.BusinessDetailsEntityTypes._
 import org.scalatestplus.play.OneAppPerSuite
 import services.DataCacheKeys._
 import services.JourneyConstants
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.CacheUtil.cacheUtil
 import utils.TestUtil._
 
-class CacheUtilTest extends UnitSpec with OneAppPerSuite {
+class CacheUtilTest extends PlaySpec with OneAppPerSuite {
 
   lazy val allEntities = List("SOP", "LTD", "Partnership", "LLP", "LTD_GRP", "LLP_GRP")
 
-  "copyOfSave4Later" should {
+  "copyOfSave4Later" must {
     allEntities.foreach {
       legalEntity =>
         s"Return the correct kind of cache map for business type $legalEntity " in {
@@ -48,7 +48,7 @@ class CacheUtilTest extends UnitSpec with OneAppPerSuite {
             case `productsName` => cache.getProducts.isDefined
             case `suppliersName` => cache.getSuppliers.isDefined
           }
-          shouldAllBeTrue.contains(false) shouldBe false
+          shouldAllBeTrue.contains(false) mustBe false
         }
     }
   }

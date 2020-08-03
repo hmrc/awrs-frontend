@@ -56,7 +56,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   lazy val sendEmailURI: String = testEmailVerificationConnector.sendEmail
   lazy val verifiyEmailURI: String = testEmailVerificationConnector.verifyEmail
 
-  "sendVerificationEmail" should {
+  "sendVerificationEmail" must {
 
     def mockPostResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
       when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(sendEmailURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -67,30 +67,30 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
     "return success equals true, for successful created email sending" in {
       mockPostResponse(responseStatus = CREATED)
       val result = testPostCall
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return success equals true, for successful ok email sending" in {
       mockPostResponse(responseStatus = OK)
       val result = testPostCall
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return success equals true, when email has already been verified" in {
       mockPostResponse(responseStatus = CONFLICT)
       val result = testPostCall
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return success equals false, when an error occurs" in {
       mockPostResponse(responseStatus = INTERNAL_SERVER_ERROR)
       val result = testPostCall
-      await(result) shouldBe false
+      await(result) mustBe false
     }
 
   }
 
-  "isEmailAddressVerified" should {
+  "isEmailAddressVerified" must {
 
     def testGetCall: Future[Boolean] = testEmailVerificationConnector.isEmailAddressVerified(testEmail)
 
@@ -98,21 +98,21 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
       val result = testGetCall
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return success equals false, if email has not been verified" in {
       when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new NotFoundException("404")))
       val result = testGetCall
-      await(result) shouldBe false
+      await(result) mustBe false
     }
 
     "return success equals true, when an error occurs as we have chosen not to block" in {
       when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(Upstream5xxResponse("503", 503, 503)))
       val result = testGetCall
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
   }

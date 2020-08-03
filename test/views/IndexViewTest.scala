@@ -66,7 +66,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
   "IndexView" must {
 
-    "Index-table" should {
+    "Index-table" must {
       def checkSectionStatus(testData: IndexViewModel)(implicit result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         testData.sectionModels.foreach {
@@ -74,13 +74,13 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
             val sectionName = document.select(s"#${spec.id}").text()
             spec.size match {
               case Some(count) =>
-                sectionName should include(Messages(spec.text, count))
-                sectionName should include(count.toString)
+                sectionName must include(Messages(spec.text, count))
+                sectionName must include(count.toString)
               case _ =>
-                sectionName should include(Messages(spec.text))
+                sectionName must include(Messages(spec.text))
 
             }
-            document.select(s"#${spec.id}_status").text() shouldBe Messages(spec.status.messagesKey)
+            document.select(s"#${spec.id}_status").text() mustBe Messages(spec.status.messagesKey)
         }
       }
 
@@ -94,75 +94,75 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       }
     }
 
-    "The call to action and unsubmitted changes banner" should {
+    "The call to action and unsubmitted changes banner" must {
 
-      "In API4 jouney" should {
-        "When the application is incomplete, the call to action button should be save_and_logout" in {
+      "In API4 jouney" must {
+        "When the application is incomplete, the call to action button must be save_and_logout" in {
           val result = showIndexPageAPI4(allSectionComplete = false)
           val document = Jsoup.parse(contentAsString(result))
-          document.select("#save_and_logout") should not be null
-          document.select("#continue").size shouldBe 0
-          document.select("#submit_changes").size shouldBe 0
+          document.select("#save_and_logout") must not be null
+          document.select("#continue").size mustBe 0
+          document.select("#submit_changes").size mustBe 0
         }
 
-        "When the application is complete, the call to action button should be continue" in {
+        "When the application is complete, the call to action button must be continue" in {
           val result = showIndexPageAPI4(allSectionComplete = true)
           val document = Jsoup.parse(contentAsString(result))
-          document.select("#save_and_logout").size() shouldBe 0
-          document.select("#continue") should not be null
-          document.select("#submit_changes").size shouldBe 0
+          document.select("#save_and_logout").size() mustBe 0
+          document.select("#continue") must not be null
+          document.select("#submit_changes").size mustBe 0
         }
       }
 
-      "In API5 jouney" should {
-        "When the application is unmodified or incomplete, the call to action button should not be displayed" in {
+      "In API5 jouney" must {
+        "When the application is unmodified or incomplete, the call to action button must not be displayed" in {
           //N.B. the application can still be incomplete in an API5 if there are missing data from Etmp or changes made to the front end which required additional input
           List((false, false), (false, true), (true, false)).foreach {
             case (allSectionComplete, hasApplicationChanged) =>
               val result = showIndexPageAPI5(allSectionComplete = allSectionComplete, hasApplicationChanged = hasApplicationChanged)
               val document = Jsoup.parse(contentAsString(result))
-              document.select("#save_and_logout").size() shouldBe 0
-              document.select("#continue").size() shouldBe 0
-              document.select("#submit_changes").size() shouldBe 0
+              document.select("#save_and_logout").size() mustBe 0
+              document.select("#continue").size() mustBe 0
+              document.select("#submit_changes").size() mustBe 0
           }
         }
 
-        "When the application is modified and complete, the call to action button should be submit_changes" in {
+        "When the application is modified and complete, the call to action button must be submit_changes" in {
           val result = showIndexPageAPI5(allSectionComplete = true, hasApplicationChanged = true)
           val document = Jsoup.parse(contentAsString(result))
-          document.select("#save_and_logout").size() shouldBe 0
-          document.select("#continue").size() shouldBe 0
-          document.select("#submit_changes") should not be null
+          document.select("#save_and_logout").size() mustBe 0
+          document.select("#continue").size() mustBe 0
+          document.select("#submit_changes") must not be null
         }
 
         "When the application is unmodified, do not display the unsubmitted changes banner" in {
           val result = showIndexPageAPI5(hasApplicationChanged = false)
           val document = Jsoup.parse(contentAsString(result))
-          document.select("#changes-banner").size() shouldBe 0
+          document.select("#changes-banner").size() mustBe 0
         }
 
         "When the application is modified, display the unsubmitted changes banner" in {
           val result = showIndexPageAPI5(hasApplicationChanged = true)
           val document = Jsoup.parse(contentAsString(result))
-          document.select("#changes-banner") should not be null
+          document.select("#changes-banner") must not be null
         }
       }
 
     }
 
-    "The status window" should {
+    "The status window" must {
       def checkElementsText(elementId: String, expected: String)(implicit result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
-        document.select(s"#$elementId").text() should include(expected)
+        document.select(s"#$elementId").text() must include(expected)
       }
 
       def checkAwrsRefNo(shouldExists: Boolean)(implicit result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         shouldExists match {
           case true =>
-            document.select("#awrsRefNo") should not be null
+            document.select("#awrsRefNo") must not be null
           case false =>
-            document.select("#awrsRefNo").size() shouldBe 0
+            document.select("#awrsRefNo").size() mustBe 0
         }
       }
 
@@ -173,11 +173,11 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         val link = document.select(s"#$linkId")
         expectations match {
           case Some(exp) =>
-            link.attr("href") should be(exp.href)
-            link.toString should include(exp.href)
-            link.text() shouldBe exp.text
+            link.attr("href") must be(exp.href)
+            link.toString must include(exp.href)
+            link.text() mustBe exp.text
           case None =>
-            link.size() shouldBe 0
+            link.size() mustBe 0
         }
       }
 
@@ -234,7 +234,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = true)
         }
-        // n.b. currently rejected users should simply be redirected, this will not be the case in these tests because
+        // n.b. currently rejected users must simply be redirected, this will not be the case in these tests because
         // the status is not stored in the session. These tests are left in in-case this behaviour changes in the future.
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeRejected)

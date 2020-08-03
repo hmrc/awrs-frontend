@@ -28,14 +28,14 @@ import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.{AccountUtils, TestUtil}
 import views.Configuration.{NewApplicationMode, ReturnedApplicationEditMode, ReturnedApplicationMode}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class BusinessDetailsServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockSave4LaterService {
+class BusinessDetailsServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockSave4LaterService {
 
   implicit val req: Request[AnyContent] = FakeRequest()
 
@@ -53,14 +53,14 @@ class BusinessDetailsServiceTest extends UnitSpec with MockitoSugar with BeforeA
     super.beforeEach()
   }
 
-  "validateBusinessDetails" should {
+  "validateBusinessDetails" must {
     "return NewApplicationMode when new app type is true" in {
       when(mockMainStoreSave4LaterConnector.fetchData4Later[NewApplicationType](any(), ArgumentMatchers.eq("newApplicationType"))(any(), any(), any()))
         .thenReturn(Future.successful(Option(NewApplicationType(Some(true)))))
 
       val result = businessDetailsService.businessDetailsPageRenderMode(TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe NewApplicationMode
+      await(result) mustBe NewApplicationMode
     }
 
     "return ReturnedApplicationEditMode if the new app type is empty but proposed start date is true" in {
@@ -71,7 +71,7 @@ class BusinessDetailsServiceTest extends UnitSpec with MockitoSugar with BeforeA
 
       val result = businessDetailsService.businessDetailsPageRenderMode(TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe ReturnedApplicationEditMode
+      await(result) mustBe ReturnedApplicationEditMode
     }
 
     "return ReturnedApplicationMode if the new app type is false and proposed start date is false" in {
@@ -82,7 +82,7 @@ class BusinessDetailsServiceTest extends UnitSpec with MockitoSugar with BeforeA
 
       val result = businessDetailsService.businessDetailsPageRenderMode(TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe ReturnedApplicationMode
+      await(result) mustBe ReturnedApplicationMode
     }
   }
 }

@@ -34,17 +34,17 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
   val testReviewBusinessDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
 
   // this section of unit test tests the named save4later methods implemented for Save4later Service's main store
-  "Save4later service functions" should {
+  "Save4later service functions" must {
 
     "business type" in {
       val data = testLegalEntity
       setupMockSave4LaterServiceWithOnly(fetchBusinessType = data)
       // the save function is also mocked by the above setup
       val saveResult = testSave4LaterService.mainStore.saveBusinessType(data, TestUtil.defaultAuthRetrieval)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchBusinessType(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "business customer details" in {
@@ -52,10 +52,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = data)
 
       val saveResult = testSave4LaterService.mainStore.saveBusinessCustomerDetails(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchBusinessCustomerDetails(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "new application type" in {
@@ -63,10 +63,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchNewApplicationType = data)
 
       val saveResult = testSave4LaterService.mainStore.saveNewApplicationType(data, TestUtil.defaultAuthRetrieval)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchNewApplicationType(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "group member details" in {
@@ -74,10 +74,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = data)
 
       val saveResult = testSave4LaterService.mainStore.saveGroupMembers(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchGroupMembers(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "group declaration" in {
@@ -85,10 +85,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchGroupDeclaration = data)
 
       val saveResult = testSave4LaterService.mainStore.saveGroupDeclaration(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchGroupDeclaration(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "business directors" in {
@@ -96,10 +96,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = data)
 
       val saveResult = testSave4LaterService.mainStore.saveBusinessDirectors(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchBusinessDirectors(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "partner details" in {
@@ -107,10 +107,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = data)
 
       val saveResult = testSave4LaterService.mainStore.savePartnerDetails(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchPartnerDetails(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "additional premises list" in {
@@ -118,10 +118,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = data)
 
       val saveResult = testSave4LaterService.mainStore.saveAdditionalBusinessPremisesList(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchAdditionalBusinessPremisesList(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "trading activity" in {
@@ -129,10 +129,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchTradingActivity = data)
 
       val saveResult = testSave4LaterService.mainStore.saveTradingActivity(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchTradingActivity(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "products" in {
@@ -140,10 +140,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchProducts = data)
 
       val saveResult = testSave4LaterService.mainStore.saveProducts(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchProducts(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "suppliers" in {
@@ -151,10 +151,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchSuppliers = data)
 
       val saveResult = testSave4LaterService.mainStore.saveSuppliers(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchSuppliers(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "application declaration" in {
@@ -162,10 +162,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchApplicationDeclaration = data)
 
       val saveResult = testSave4LaterService.mainStore.saveApplicationDeclaration(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchApplicationDeclaration(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "business details" in {
@@ -173,10 +173,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchBusinessDetails = data)
 
       val saveResult = testSave4LaterService.mainStore.saveBusinessDetails(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchBusinessDetails(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "business name details" in {
@@ -187,10 +187,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
         .thenReturn(Future.successful(Option(data)))
 
       val saveResult = testSave4LaterService.mainStore.saveBusinessNameDetails(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchBusinessNameDetails(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "trading date details" in {
@@ -201,10 +201,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
         .thenReturn(Future.successful(Option(data)))
 
       val saveResult = testSave4LaterService.mainStore.saveTradingStartDetails(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchTradingStartDetails(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "business contacts" in {
@@ -212,25 +212,25 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchBusinessContacts = data)
 
       val saveResult = testSave4LaterService.mainStore.saveBusinessContacts(TestUtil.defaultAuthRetrieval, data)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.mainStore.fetchBusinessContacts(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
   }
 
   // this section of unit test tests the named save4later methods implemented by Save4later's api5 store
-  "Save4LaterService.api" should {
+  "Save4LaterService.api" must {
 
     "subscriptionTypeFrontEnd" in {
       val data = testSubscriptionTypeFrontEnd()
       setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = data)
       // the save function is also mocked by the above setup
       val saveResult = testSave4LaterService.api.saveSubscriptionTypeFrontEnd(data, TestUtil.defaultAuthRetrieval)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.api.fetchSubscriptionTypeFrontEnd(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "businessDetailsSupport when it is already stored" in {
@@ -238,10 +238,10 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
       setupMockApiSave4LaterServiceWithOnly(fetchBusinessDetailsSupport = data)
 
       val saveResult = testSave4LaterService.api.saveBusinessDetailsSupport(data, TestUtil.defaultAuthRetrieval)
-      await(saveResult) shouldBe data
+      await(saveResult) mustBe data
 
       val fetchResult = testSave4LaterService.api.fetchBusinessDetailsSupport(TestUtil.defaultAuthRetrieval)
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
     }
 
     "businessDetailsSupport when it is not already stored but subscriptionTypeFrontEnd is" in {
@@ -256,7 +256,7 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
 
       val fetchResult = testSave4LaterService.api.fetchBusinessDetailsSupport(TestUtil.defaultAuthRetrieval)
 
-      await(fetchResult) shouldBe Some(data)
+      await(fetchResult) mustBe Some(data)
 
       verifyApiSave4LaterService(
         fetchSubscriptionTypeFrontEnd = 1,

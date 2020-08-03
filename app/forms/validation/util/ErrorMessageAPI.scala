@@ -16,7 +16,7 @@
 
 /** ********************************************************************************************************************
   * This package is designed to centralise both the process for specifying the content of the validation error messages
-  * and the process for determining how the html templates should then be populated.
+  * and the process for determining how the html templates must then be populated.
   *
   * This source file specifies the data types used throughout the package, which is in turn divided into 3 APIs
   *
@@ -132,7 +132,7 @@ object SummaryErrorConfig {
   *
   * The anchor is a required parameter as this specifies which of the fields the summary error will be hyper linked to
   *
-  * Note: Although not enforced, the arguments in the otherids should be a set, and the anchor should NOT be a member
+  * Note: Although not enforced, the arguments in the otherids must be a set, and the anchor must NOT be a member
   * of otherIds
   *
   * Example usages:
@@ -142,7 +142,7 @@ object SummaryErrorConfig {
   * TargetFieldIds("anchorId","secondFieldId","thirdFieldId")
   *
   * @param anchor   is where the link from the summary error would direct the user when it is clicked
-  * @param otherIds other fields where the field error should also be displayed for
+  * @param otherIds other fields where the field error must also be displayed for
   */
 case class TargetFieldIds(anchor: String, otherIds: String*)
 

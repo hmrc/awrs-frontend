@@ -20,29 +20,29 @@ class SessionSectionHashUtilTest extends AwrsUnitTestTraits {
 
   val encodeInt = (flags: Int) => flags.toHexString
 
-  "toHash" should {
+  "toHash" must {
     "calculate the correct hash for the session based on the sections completed" in {
-      SessionSectionHashUtil.toHash(Seq(false, false, false)) shouldBe encodeInt(0)
-      SessionSectionHashUtil.toHash(Seq(true, false, false)) shouldBe encodeInt(1)
-      SessionSectionHashUtil.toHash(Seq(true, true, false)) shouldBe encodeInt(3)
-      SessionSectionHashUtil.toHash(Seq(false, false, true)) shouldBe encodeInt(4)
-      SessionSectionHashUtil.toHash(Seq(true, false, true)) shouldBe encodeInt(5)
-      SessionSectionHashUtil.toHash(Seq(true, true, true)) shouldBe encodeInt(7)
-      SessionSectionHashUtil.toHash(Seq(false, true, true, true, true, true, true, true)) shouldBe encodeInt(0xfe)
-      SessionSectionHashUtil.toHash(Seq(true, true, true, true, true, true, true, true)) shouldBe encodeInt(0xff)
+      SessionSectionHashUtil.toHash(Seq(false, false, false)) mustBe encodeInt(0)
+      SessionSectionHashUtil.toHash(Seq(true, false, false)) mustBe encodeInt(1)
+      SessionSectionHashUtil.toHash(Seq(true, true, false)) mustBe encodeInt(3)
+      SessionSectionHashUtil.toHash(Seq(false, false, true)) mustBe encodeInt(4)
+      SessionSectionHashUtil.toHash(Seq(true, false, true)) mustBe encodeInt(5)
+      SessionSectionHashUtil.toHash(Seq(true, true, true)) mustBe encodeInt(7)
+      SessionSectionHashUtil.toHash(Seq(false, true, true, true, true, true, true, true)) mustBe encodeInt(0xfe)
+      SessionSectionHashUtil.toHash(Seq(true, true, true, true, true, true, true, true)) mustBe encodeInt(0xff)
     }
   }
 
-  "isCompleted" should {
+  "isCompleted" must {
     "correctly identify if the flag is set in the hash" in {
-      SessionSectionHashUtil.isCompleted(0, encodeInt(0)) shouldBe false // nothing is set
-      SessionSectionHashUtil.isCompleted(0, encodeInt(1)) shouldBe true // only 0 is set
-      SessionSectionHashUtil.isCompleted(1, encodeInt(2)) shouldBe true // only 1 is set
-      SessionSectionHashUtil.isCompleted(1, encodeInt(3)) shouldBe true // only 0 and 1 are set
-      SessionSectionHashUtil.isCompleted(1, encodeInt(4)) shouldBe false // only 2 is set
-      SessionSectionHashUtil.isCompleted(2, encodeInt(4)) shouldBe true // only 2 is set
-      SessionSectionHashUtil.isCompleted(8, encodeInt(0xff)) shouldBe false // 1-7 are set
-      SessionSectionHashUtil.isCompleted(8, encodeInt(0x100)) shouldBe true // only 8 is set
+      SessionSectionHashUtil.isCompleted(0, encodeInt(0)) mustBe false // nothing is set
+      SessionSectionHashUtil.isCompleted(0, encodeInt(1)) mustBe true // only 0 is set
+      SessionSectionHashUtil.isCompleted(1, encodeInt(2)) mustBe true // only 1 is set
+      SessionSectionHashUtil.isCompleted(1, encodeInt(3)) mustBe true // only 0 and 1 are set
+      SessionSectionHashUtil.isCompleted(1, encodeInt(4)) mustBe false // only 2 is set
+      SessionSectionHashUtil.isCompleted(2, encodeInt(4)) mustBe true // only 2 is set
+      SessionSectionHashUtil.isCompleted(8, encodeInt(0xff)) mustBe false // 1-7 are set
+      SessionSectionHashUtil.isCompleted(8, encodeInt(0x100)) mustBe true // only 8 is set
     }
   }
 

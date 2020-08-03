@@ -43,7 +43,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
     )
   }
 
-  "AwrsAPI12Cache.getNotificationCache" should {
+  "AwrsAPI12Cache.getNotificationCache" must {
     "do not call api12 cache if data is already in the keystore" in {
       val notification = MindedToReject
       setupMockAwrsAPI12Cache(
@@ -51,7 +51,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = None
       )
 
-      await(testAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(testAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) mustBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 0)
       verifyKeyStoreService(
@@ -67,7 +67,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(testAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(testAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) mustBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1)
       verifyKeyStoreService(
@@ -81,7 +81,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = None
       )
 
-      await(testAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) shouldBe None
+      await(testAPI12Cache.getNotificationCache(Pending, TestUtil.defaultAuthRetrieval)) mustBe None
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1)
       verifyKeyStoreService(
@@ -97,7 +97,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(testAPI12Cache.getNotificationCache(Approved, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(testAPI12Cache.getNotificationCache(Approved, TestUtil.defaultAuthRetrieval)) mustBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1, deleteNotificationFromCache = 1)
       verifyKeyStoreService(
@@ -113,7 +113,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(testAPI12Cache.getNotificationCache(Revoked, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(testAPI12Cache.getNotificationCache(Revoked, TestUtil.defaultAuthRetrieval)) mustBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1, deleteNotificationFromCache = 1)
       verifyKeyStoreService(
@@ -129,7 +129,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
         notificationConnector = notification
       )
 
-      await(testAPI12Cache.getNotificationCache(Approved, TestUtil.defaultAuthRetrieval)) shouldBe MockAwrsAPI12Cache.defaultNotification(notification)
+      await(testAPI12Cache.getNotificationCache(Approved, TestUtil.defaultAuthRetrieval)) mustBe MockAwrsAPI12Cache.defaultNotification(notification)
 
       verifyAWRSNotificationConnector(fetchNotificationCache = 1, deleteNotificationFromCache = 1)
       verifyKeyStoreService(

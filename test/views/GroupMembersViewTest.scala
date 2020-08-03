@@ -43,36 +43,36 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
   val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
 
-  "Group member page" should {
+  "Group member page" must {
 
     "display the correct headings" in {
       (1 to 3).foreach {
         id =>
           linearJourney(id) {
             result =>
-              status(result) shouldBe OK
+              status(result) mustBe OK
               val document = Jsoup.parse(contentAsString(result))
-              document.select("#group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
+              document.select("#group-member-heading").text must be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
           }
           editJourney(id) {
             result =>
-              status(result) shouldBe OK
+              status(result) mustBe OK
               val document = Jsoup.parse(contentAsString(result))
-              document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
+              document.getElementById("group-member-heading").text must be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
           }
       }
       // if the user adds a new group member from the section view
       postLinearJourneyAddition {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("group-member-heading").text should be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(1)))
+          document.getElementById("group-member-heading").text must be(Messages("awrs.group_member.top_heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(1)))
       }
     }
 
     groupEntities.foreach {
       legalEntity =>
-        s"$legalEntity" should {
+        s"$legalEntity" must {
           Seq(true, false).foreach {
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {

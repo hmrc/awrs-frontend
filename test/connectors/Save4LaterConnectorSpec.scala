@@ -44,27 +44,27 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
     reset(mockShortLivedCache)
   }
 
-  "ShortLivedCache" should {
+  "ShortLivedCache" must {
     "fetch saved BusinessDetails from save4later" in {
       val key = "Business Details"
       when(mockShortLivedCache.fetchAndGetEntry[BusinessCustomerDetails](any(), ArgumentMatchers.eq(key))(any(), any(), any())).thenReturn(Future.successful(Some(reviewDetails)))
       val result = testSave4LaterConnector.fetchData4Later[BusinessCustomerDetails](testUtr, key)
-      await(result) shouldBe Some(reviewDetails)
+      await(result) mustBe Some(reviewDetails)
     }
 
     "save business details into save4later" in {
       val key = "BC_Business_Details"
       when(mockShortLivedCache.cache(any(), ArgumentMatchers.eq(key), any())(any(), any(), any())).thenReturn(Future.successful(returnedCacheMap))
       val result = testSave4LaterConnector.saveData4Later(testUtr, key, reviewDetails)
-      await(result).get shouldBe reviewDetails
+      await(result).get mustBe reviewDetails
     }
 
     "fetch all data from save4later by utr" in {
       when(mockShortLivedCache.fetch(any())(any(), any())).thenReturn(Future.successful(Some(returnedCacheMap)))
       val result = testSave4LaterConnector.fetchAll(testUtr)
 
-      await(result).get.toString should include("BC_Business_Details")
-      await(result).get.toString should include("Supplier")
+      await(result).get.toString must include("BC_Business_Details")
+      await(result).get.toString must include("Supplier")
     }
 
     "remove everything from save4later" in {
@@ -72,7 +72,7 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
 
       val result = testSave4LaterConnector.removeAll("TEST")
 
-      await(result).status shouldBe  Status.OK
+      await(result).status mustBe  Status.OK
       verify(mockShortLivedCache, times(1)).remove(ArgumentMatchers.eq("TEST"))(any(),any())
     }
 

@@ -24,16 +24,16 @@ import models.WithdrawalReason
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Form
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.AwrsFieldConfig
 
-class WithdrawalReasonFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
+class WithdrawalReasonFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
   // lazy required when AwrsFieldConfig is used to make sure the app is started before the config is accessed
   implicit lazy val testForm: Form[WithdrawalReason] = WithdrawalReasonForm.withdrawalReasonForm.form
   val preDefinedTypes: Set[AWRSEnums.WithdrawalReasonEnum.Value] = Set(AppliedInError, NoLongerTrading, DuplicateApplication, JoinedAWRSGroup)
 
-  "Withdrawal Reason Form" should {
+  "Withdrawal Reason Form" must {
     "Correctly validate that at least one selection is made" in {
       val fieldId = "withdrawalReason"
       val fieldName = "reason"
@@ -45,7 +45,7 @@ class WithdrawalReasonFormTest extends UnitSpec with MockitoSugar with OneServer
     }
   }
 
-  "check other details entered if 'Other' selected " should {
+  "check other details entered if 'Other' selected " must {
     val conditionPreDefinedSelected_theseShouldIgnoreTheValidationOnThisField: Set[Map[String, String]] =
       preDefinedTypes.foldLeft(Set[Map[String, String]]())((map, value) => map + Map("reason" -> value.toString))
 

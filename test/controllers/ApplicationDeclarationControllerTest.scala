@@ -92,42 +92,42 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     "show application declaration page without preloaded data" in {
       showWithAuthorsiedUser(testRequest(testApplicationDeclarationTrue), None) { result =>
         await(result)
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
     }
 
     "show application declaration page with preloaded data" in {
       showWithAuthorsiedUser(testRequest(testApplicationDeclarationTrue), Some(ApplicationDeclaration(Some("name"), Some("role"), Some(true)))) { result =>
         await(result)
-        status(result) shouldBe 200
+        status(result) mustBe 200
       }
     }
 
     "show error page if a DES Validation Exception is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), DESValidationException("Validation against schema failed")) { result =>
         await(result)
-        status(result) shouldBe 500
+        status(result) mustBe 500
       }
     }
 
     "show error page if a GovernmentGatewayException is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), GovernmentGatewayException("There was a problem with the admin service")) { result =>
         await(result)
-        status(result) shouldBe 500
+        status(result) mustBe 500
       }
     }
 
     "show error page if a DuplicateSubscriptionException is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), DuplicateSubscriptionException("This subscription already exists")) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementsByClass("page-header").text() should include(Messages("awrs.application_duplicate_request.heading"))
+        document.getElementsByClass("page-header").text() must include(Messages("awrs.application_duplicate_request.heading"))
       }
     }
 
     "show error page if a PendingDeregistrationException is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), PendingDeregistrationException("You cannot submit a new application while your cancelled application is still pending")) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementsByClass("page-header").text() should include(Messages("awrs.application_pending_deregistration.heading"))
+        document.getElementsByClass("page-header").text() must include(Messages("awrs.application_pending_deregistration.heading"))
       }
     }
 
@@ -135,79 +135,79 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       updateWithException(testRequest(testApplicationDeclarationTrue),
         ResubmissionException(ResubmissionException.resubmissionMessage)) {
         result =>
-          status(result) should be(INTERNAL_SERVER_ERROR)
+          status(result) must be(INTERNAL_SERVER_ERROR)
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementsByTag("h1").text should be(Messages("awrs.application_resubmission_error.heading"))
-          document.getElementsByTag("p").text should include(Messages("awrs.application_resubmission_error.message"))
+          document.getElementsByTag("h1").text must be(Messages("awrs.application_resubmission_error.heading"))
+          document.getElementsByTag("p").text must include(Messages("awrs.application_resubmission_error.message"))
       }
     }
 
     "show error page if a Run time exception is encountered" in {
       intercept[Exception](saveWithException(testRequest(testApplicationDeclarationTrue), new Exception("Runtime Exception")) { result =>
-        status(result) shouldBe 500
+        status(result) mustBe 500
       })
     }
 
     "return true if AWRS user is enrolled and has status of Pending" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Pending.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
-      result shouldBe true
+      result mustBe true
     }
 
     "return true if AWRS user is enrolled and has status of Approved" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Approved.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
-      result shouldBe true
+      result mustBe true
     }
 
     "return true if AWRS user is enrolled and has status of ApprovedWithConditions" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> ApprovedWithConditions.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
-      result shouldBe true
+      result mustBe true
     }
 
     "return false if AWRS user is enrolled and has status of Rejected" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Rejected.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
-      result shouldBe false
+      result mustBe false
     }
   }
 
-  "Submitting the application declaration form with " should {
-    "Authenticated and authorised users" should {
+  "Submitting the application declaration form with " must {
+    "Authenticated and authorised users" must {
       "redirect to Confirmation page when valid data is provided" in {
         continueWithAuthorisedUser(testRequest(testApplicationDeclarationTrue)) {
           result =>
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/confirmation")
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/confirmation")
         }
       }
       "save form data to Save4Later and redirect to Confirmation page " in {
         continueWithAuthorisedUser(testRequest(testApplicationDeclarationTrue)) {
           result =>
-            status(result) should be(SEE_OTHER)
+            status(result) must be(SEE_OTHER)
             verifySave4LaterService(saveApplicationDeclaration = 1)
         }
       }
       "redirect to Confirmation page when valid updated data is provided" in {
         continueUpdateWithAuthorisedUser(testRequest(testApplicationDeclarationTrue)) {
           result =>
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/update-confirmation")
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/update-confirmation")
         }
       }
-      "redirect to Confirmation page should fail when confirmation is not checked" in {
+      "redirect to Confirmation page must fail when confirmation is not checked" in {
         continueUpdateWithAuthorisedUser(testRequest(testApplicationDeclaration)) {
           result =>
-            status(result) should be(BAD_REQUEST)
+            status(result) must be(BAD_REQUEST)
         }
       }
     }
   }
 
-  "Self heal redirect" should {
+  "Self heal redirect" must {
     "redirect to application status page when valid data is provided" in {
       continueWithAuthorisedUserSelfHeal(testRequest(testApplicationDeclarationTrue)) {
         result =>
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/confirmation")
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/confirmation")
       }
     }
   }

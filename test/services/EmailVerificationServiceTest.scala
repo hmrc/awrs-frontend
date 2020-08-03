@@ -27,40 +27,39 @@ import scala.concurrent.Future
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
 class EmailVerificationServiceTest extends AwrsUnitTestTraits {
 
   val mockEmailVerificationConnector: EmailVerificationConnector = mock[EmailVerificationConnector]
   val emailVerificationServiceTest: EmailVerificationService = new EmailVerificationService(mockEmailVerificationConnector)
 
-  "Email Verification Service" should {
+  "Email Verification Service" must {
     "return true if the email is sent" in {
       when(mockEmailVerificationConnector.sendVerificationEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = emailVerificationServiceTest.sendVerificationEmail(testEmail)
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return false if the email is not sent" in {
       when(mockEmailVerificationConnector.sendVerificationEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
       val result = emailVerificationServiceTest.sendVerificationEmail(testEmail)
-      await(result) shouldBe false
+      await(result) mustBe false
     }
 
     "return true if the email is verified" in {
       when(mockEmailVerificationConnector.isEmailAddressVerified(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = emailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return false if the email is not verified" in {
       when(mockEmailVerificationConnector.isEmailAddressVerified(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
       val result = emailVerificationServiceTest.isEmailVerified(testBusinessContactsDefault())
-      await(result) shouldBe false
+      await(result) mustBe false
     }
 
     "return false if the business contacts are empty" in {
       val result = emailVerificationServiceTest.isEmailVerified(None)
-      await(result) shouldBe false
+      await(result) mustBe false
     }
   }
 

@@ -77,34 +77,34 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
       .thenReturn(awrsNo)
   }
 
-  "AwrsAPI10 " should {
+  "AwrsAPI10 " must {
 
-    "deRegistration should call ETMP when both date and reason are present" in {
+    "deRegistration must call ETMP when both date and reason are present" in {
       mocks()
 
       val result = testAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe deRegistrationSuccessData
+      await(result) mustBe deRegistrationSuccessData
     }
 
-    "deRegistration should not call ETMP when there is no date" in {
+    "deRegistration must not call ETMP when there is no date" in {
       mocks(haveDeRegDate = false)
 
       val result = testAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe None
+      await(result) mustBe None
     }
 
-    "deRegistration should not call ETMP when there is no reason" in {
+    "deRegistration must not call ETMP when there is no reason" in {
       mocks(haveDeRegReason = false)
 
       val result = testAwrsAPI10.deRegistration(TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe None
+      await(result) mustBe None
     }
 
-    "deRegistration should not call ETMP when the user does not have an AWRS reg number" in {
+    "deRegistration must not call ETMP when the user does not have an AWRS reg number" in {
       mocks(awrsNo = false)
 
       val result = testAwrsAPI10.deRegistration(StandardAuthRetrievals(Set.empty[Enrolment], None, "fakeCredID"))
-      await(result) shouldBe None
+      await(result) mustBe None
     }
   }
 

@@ -56,48 +56,48 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     override val signInUrl: String = applicationConfig.signIn
   }
 
-  "Submitting the Business Type form with " should {
+  "Submitting the Business Type form with " must {
 
     "redirect to index page when User with Organisation and Sa GGW account selects 'Business Type' as Corporate Body" in {
       continueWithAuthorisedSaOrgUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD", "isSaAccount" -> "true", "isOrgAccount" -> "true"), isGroup = false) {
         result =>
           when(testEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(false))
-          status(result) should be(SEE_OTHER)
-          redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
+          status(result) must be(SEE_OTHER)
+          redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/index"
       }
     }
 
     "redirect to index page when User with Organisation GGW account selects 'Business Type' as Corporate Body" in {
       continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD", "isSaAccount" -> "false"), isGroup = false) {
         result =>
-          status(result) should be(SEE_OTHER)
-          redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
+          status(result) must be(SEE_OTHER)
+          redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/index"
       }
     }
 
     "redirect to index page when User with Individual GGW account selects 'Business Type' as Sole Trader" in {
       continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "SOP", "isSaAccount" -> "true"), isGroup = false) {
         result =>
-          status(result) should be(SEE_OTHER)
-          redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
+          status(result) must be(SEE_OTHER)
+          redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/index"
       }
     }
 
     "save form data to Save4Later and redirect to Index page " in {
       continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD_GRP"), isGroup = false) {
         result =>
-          status(result) should be(SEE_OTHER)
+          status(result) must be(SEE_OTHER)
           verifySave4LaterService(saveBusinessType = 1)
       }
     }
 
-    "isAGroup is true " should {
-      "Save and continue should redirect to the Group Declaration " in {
+    "isAGroup is true " must {
+      "Save and continue must redirect to the Group Declaration " in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD_GRP"), isGroup = true) {
           result =>
-            status(result) should be(SEE_OTHER)
-            redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/group-declaration"
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/group-declaration"
             verifySave4LaterService(saveBusinessType = 1)
         }
       }
@@ -105,12 +105,12 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
   }
 
   def assertBusinessName(expected: String)(implicit result: Future[Result]) =
-    await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessName, "") shouldBe expected
+    await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessName, "") mustBe expected
 
   def assertBusinessType(expected: String)(implicit result: Future[Result]) =
-    await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessType, "") shouldBe expected
+    await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessType, "") mustBe expected
 
-  "Session management in BusinessTypeController" should {
+  "Session management in BusinessTypeController" must {
     val testBusinessType = "LTD_GRP"
     val validSubmission = FakeRequest().withFormUrlEncodedBody("legalEntity" -> testBusinessType)
     val invalidSubmission = FakeRequest().withFormUrlEncodedBody("legalEntity" -> "")
@@ -118,21 +118,21 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     "add the correct businessType and businessName to the session for API4 user" in {
       api4User(validSubmission)(testBusinessTypeController.showBusinessType()) {
         implicit result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           assertBusinessName(testBusinessCustomer.businessName)
-          // should display whatever business type that was in the business customer details fetched
+          // must display whatever business type that was in the business customer details fetched
           // from save4later
           assertBusinessType(testBusinessCustomer.businessType.fold("")(x => x))
       }
       api4User(invalidSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
-          status(result) shouldBe BAD_REQUEST
+          status(result) mustBe BAD_REQUEST
           assertBusinessName(testBusinessCustomer.businessName)
-          assertBusinessType("") // should not have any business type added since the submission was false
+          assertBusinessType("") // must not have any business type added since the submission was false
       }
       api4User(validSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
-          status(result) shouldBe SEE_OTHER
+          status(result) mustBe SEE_OTHER
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType(testBusinessType)
       }
@@ -141,19 +141,19 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     "add the correct businessType and businessName to the session for API5 user" in {
       api5User(validSubmission)(testBusinessTypeController.showBusinessType(showBusinessType = false)) {
         implicit result =>
-          status(result) shouldBe SEE_OTHER // this page should be skipped in the api 5 journey
+          status(result) mustBe SEE_OTHER // this page must be skipped in the api 5 journey
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType(testBusinessCustomer.businessType.fold("")(x => x))
       }
       api5User(invalidSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
-          status(result) shouldBe BAD_REQUEST
+          status(result) mustBe BAD_REQUEST
           assertBusinessName(testBusinessCustomer.businessName)
-          assertBusinessType("") // should not have any business type added since the submission was false
+          assertBusinessType("") // must not have any business type added since the submission was false
       }
       api5User(validSubmission)(testBusinessTypeController.saveAndContinue) {
         implicit result =>
-          status(result) shouldBe SEE_OTHER
+          status(result) mustBe SEE_OTHER
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType(testBusinessType)
       }
@@ -165,7 +165,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
       case true => testBusinessCustomerGroup
       case false => testBusinessCustomer
     }
-    setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
+    setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusCustomer)))
     setAuthMocks()
     val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
@@ -177,14 +177,14 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
       case true => testBusinessCustomerGroup
       case false => testBusinessCustomer
     }
-    setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
+    setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusCustomer)))
     setAuthMocks()
     val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def api4User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
-    setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
+    setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusinessCustomer)))
     setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
@@ -192,8 +192,8 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
 
   private def api5User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
-    setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusinessCustomer))
-    setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Some(testSubscriptionTypeFrontEnd))
+    setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusinessCustomer)))
+    setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Future.successful(Some(testSubscriptionTypeFrontEnd)))
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))

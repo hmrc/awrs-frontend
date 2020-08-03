@@ -17,14 +17,14 @@
 package utils
 
 import audit.Auditable
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
-// This logging utility should be used to replace any manual logging or Splunk auditing
+// This logging utility must be used to replace any manual logging or Splunk auditing
 // This means that any Splunk audit calls will automatically be logged as DEBUG to aid local debugging but not appear in
-// the production logs. All trace and debug calls will only appear locally so should only be used for local debugging
+// the production logs. All trace and debug calls will only appear locally so must only be used for local debugging
 // and not for anything that you would want to see logged in production.
-trait LoggingUtils {
+trait LoggingUtils extends Logging {
 
   val auditable: Auditable
 
@@ -62,8 +62,8 @@ trait LoggingUtils {
   private def splunkToLogger(transactionName: String, detail: Map[String, String], eventType: String): String =
     s"${if (eventType.nonEmpty) eventType + "\n"}$transactionName\n$detail"
 
-  private def splunkFunction(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier) = {
-    Logger.debug(splunkString + splunkToLogger(transactionName, detail, eventType))
+  private def splunkFunction(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier): Unit = {
+    logger.debug(splunkString + splunkToLogger(transactionName, detail, eventType))
     auditable.sendDataEvent(
       transactionName = transactionName,
       detail = detail,
@@ -73,9 +73,9 @@ trait LoggingUtils {
 
   def audit(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier) = splunkFunction(transactionName, detail, eventType)
 
-  @inline def trace(msg: String): Unit = Logger.trace(msg)
-  @inline def debug(msg: String): Unit = Logger.debug(msg)
-  @inline def info(msg: String): Unit = Logger.info(msg)
-  @inline def warn(msg: String): Unit = Logger.warn(msg)
-  @inline def err(msg: String): Unit = Logger.error(msg)
+  @inline def trace(msg: String): Unit = logger.trace(msg)
+  @inline def debug(msg: String): Unit = logger.debug(msg)
+  @inline def info(msg: String): Unit = logger.info(msg)
+  @inline def warn(msg: String): Unit = logger.warn(msg)
+  @inline def err(msg: String): Unit = logger.error(msg)
 }

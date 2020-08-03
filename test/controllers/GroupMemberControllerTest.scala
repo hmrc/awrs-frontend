@@ -51,111 +51,111 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
   val testGroupMemberController: GroupMemberController = new GroupMemberController(
     mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
-  "Submitting the application declaration form with " should {
+  "Submitting the application declaration form with " must {
 
-    "Authenticated and authorised users" should {
+    "Authenticated and authorised users" must {
       "redirect to additional premises page when valid data is provided for LTD" in {
         continueWithAuthorisedUser(1, Some(testGroupMemberDetails), testGroupMemberDetails, "LTD_GRP", fakeRequest) {
           result =>
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/additional-premises")
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/additional-premises")
         }
       }
       "redirect to business partners page when valid data is provided for LLP" in {
         continueWithAuthorisedUser(1, Some(testGroupMemberDetails), testGroupMemberDetails, "LLP_GRP", fakeRequest) {
           result =>
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-partners")
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
         }
       }
       "save form data to Save4Later and redirect to business partners page for LLP" in {
         continueWithAuthorisedUser(1, Some(testGroupMemberDetails), testGroupMemberDetails, "LLP_GRP", fakeRequest) {
           result =>
-            status(result) should be(SEE_OTHER)
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-partners")
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
             verifySave4LaterService(saveGroupMemberDetails = 1)
         }
       }
       "save form data to Save4Later for second member and redirect to business partners page for LLP" in {
         continueWithAuthorisedUser(2, Some(testGroupMemberDetailsAddAnother), testGroupMemberDetails2Members, "LLP", fakeRequest) {
           result =>
-            status(result) should be(SEE_OTHER)
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-partners")
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
             verifySave4LaterService(saveGroupMemberDetails = 1)
         }
       }
       "save form data to Save4Later for first member where no data currently exists and redirect to business partners page for LLP" in {
         continueWithAuthorisedUser(1, None, testGroupMemberDetails, "LLP_GRP", fakeRequest) {
           result =>
-            status(result) should be(SEE_OTHER)
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/business-partners")
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
             verifySave4LaterService(saveGroupMemberDetails = 1)
         }
       }
       "save form data to Save4Later for first member where no data currently exists and redirect to next member page " in {
         continueWithAuthorisedUser(1, None, testGroupMemberDetailsAddAnother, "LLP", testRequest(testGroupMemberDefault(addAnotherGrpMember = "Yes"))) {
           result =>
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/group-member?id=2")
-            status(result) should be(SEE_OTHER)
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/group-member?id=2")
+            status(result) must be(SEE_OTHER)
             verifySave4LaterService(saveGroupMemberDetails = 1)
         }
       }
-      "get out of range member should return NOT FOUND error " in {
+      "get out of range member must return NOT FOUND error " in {
         getWithAuthorisedUserCt(100) {
           result =>
-            status(result) should be(NOT_FOUND)
+            status(result) must be(NOT_FOUND)
         }
       }
     }
   }
 
-  "Users who entered from the summary edit view" should {
+  "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
       returnWithAuthorisedUser(1, None, testGroupMemberDetailsAddAnother, "LLP", fakeRequest) {
         result =>
-          redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$groupMembersName")
+          redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$groupMembersName")
           verifySave4LaterService(saveGroupMemberDetails = 1)
       }
     }
   }
 
-  "When loading the delete page we" should {
+  "When loading the delete page we" must {
     "see to the selected suppliers delete confirmation page" in {
       showDeleteWithAuthorisedUser() {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("deleteConfirmation-heading").text shouldBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.group"))
-          status(result) shouldBe 200
+          document.getElementById("deleteConfirmation-heading").text mustBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.group"))
+          status(result) mustBe 200
       }
     }
   }
 
-  "When submitting the delete confirmation page we" should {
+  "When submitting the delete confirmation page we" must {
     "be routed back to the summary page after confirming Yes" in {
       deleteWithAuthorisedUser()(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/groupMember")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/groupMember")
           verifySave4LaterService(saveGroupMemberDetails = 1)
       }
     }
     "be routed back to the summary page after confirming No" in {
       deleteWithAuthorisedUser()(deleteConfirmation_No) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/groupMember")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/groupMember")
           verifySave4LaterService(saveGroupMemberDetails = 0)
       }
     }
     "be shown an error if nothing is selected" in {
       deleteWithAuthorisedUser()(deleteConfirmation_None) {
         result =>
-          status(result) shouldBe 400
+          status(result) mustBe 400
       }
     }
     "be routed back to the summary page after confirming Yes for a record that is not the first" in {
       deleteWithAuthorisedUser(id = 2, members = testGroupMemberDetails2Members)(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/groupMember")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/groupMember")
           verifySave4LaterService(saveGroupMemberDetails = 1)
       }
     }

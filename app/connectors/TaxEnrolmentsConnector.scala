@@ -20,7 +20,6 @@ import audit.Auditable
 import javax.inject.Inject
 import metrics.AwrsMetrics
 import models.{RequestPayload, _}
-import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import services.GGConstants._
@@ -28,6 +27,7 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.LoggingUtils
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -86,7 +86,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
           // Code changed to hide the Enrol failure from the user.
           // The failure will need to be sorted out manually and there is nothing the user can do at the time.
           // The manual process will take place after the Enrol failure is picked up in Splunk.
-          Future.successful(HttpResponse(OK))
+          Future.successful(HttpResponse.apply(OK, ""))
         }
     }
   }
@@ -101,20 +101,20 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
         response
       case BAD_REQUEST =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        Logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
+        logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"enrolment url:$postUrl, " +
           s"Bad Request Exception account Ref:${requestPayload.verifiers}, " +
           s"Service: $AWRS_SERVICE_NAME")
         throw new BadRequestException(response.body)
       case NOT_FOUND =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        Logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
+        logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"Not Found Exception account Ref:${requestPayload.verifiers}, " +
           s"Service: $AWRS_SERVICE_NAME}")
         throw new NotFoundException(response.body)
       case SERVICE_UNAVAILABLE =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        Logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
+        logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"enrolment url:$postUrl, " +
           s"Service Unavailable Exception account Ref:${requestPayload.verifiers}, " +
           s"Service: $AWRS_SERVICE_NAME}")
@@ -137,7 +137,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
                             responseStatus: Int,
                             optionErrorStatus: Option[String] = None): Unit = {
     val errorStatus = optionErrorStatus.fold("")(status => " - " + status)
-    Logger.warn(s"[TaxEnrolmentsConnector][enrol]$errorStatus" +
+    logger.warn(s"[TaxEnrolmentsConnector][enrol]$errorStatus" +
       s"enrolment url:$postUrl, " +
       optionStatus.map(status => s"status:$status Exception account Ref:$verifiers, ") +
       s"Service: $AWRS_SERVICE_NAME" +

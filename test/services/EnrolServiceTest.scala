@@ -62,11 +62,11 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
     reset(mockTaxEnrolmentsConnector)
   }
 
-  "Enrol Service" should {
+  "Enrol Service" must {
     behave like enrolService(enrolServiceTest)
   }
 
-  "Enrol Service with EMAC switched on" should {
+  "Enrol Service with EMAC switched on" must {
     behave like enrolService(enrolServiceEMACTest)
   }
 
@@ -87,21 +87,21 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
         .thenReturn(Future.successful(successfulEnrolResponse))
       val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber,
         testBusinessCustomerDetails, businessType, Some(testUtr))
-      await(result) shouldBe successfulEnrolResponse
+      await(result) mustBe successfulEnrolResponse
     }
 
     "create correct EnrolRequest when business type is SOP and UTR present " in {
       val result = enrolService.createEnrolment(successfulSubscriptionResponse.awrsRegistrationNumber, testBusinessCustomerDetails, businessTypeSOP, saUtr)
-      result shouldBe enrolRequestSAUTR
+      result mustBe enrolRequestSAUTR
     }
 
     "create correct EnrolRequest when business type is other than SOP and UTR present " in {
       val result = enrolService.createEnrolment(successfulSubscriptionResponse.awrsRegistrationNumber, testBusinessCustomerDetails, "LTD", ctUtr)
-      result shouldBe enrolRequestCTUTR
+      result mustBe enrolRequestCTUTR
     }
     "create correct EnrolRequest when business type and UTR NOT present " in {
       val result = enrolService.createEnrolment(successfulSubscriptionResponse.awrsRegistrationNumber, testBusinessCustomerDetails,"" , None)
-      result shouldBe enrolRequestNoSACT
+      result mustBe enrolRequestNoSACT
     }
   }
 

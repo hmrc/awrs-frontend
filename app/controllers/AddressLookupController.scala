@@ -28,7 +28,7 @@ import services.helper.AddressComparator
 import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.LoggingUtils
 
 import scala.concurrent.{ExecutionContext, Future}

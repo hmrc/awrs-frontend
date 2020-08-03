@@ -22,13 +22,13 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class PlaceOfBusinessFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class PlaceOfBusinessFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val forms = PlaceOfBusinessForm.placeOfBusinessForm.form
 
-  "Business contacts form" should {
+  "Business contacts form" must {
 
     f"check validations for mainAddress " in {
       val preCondition: Map[String, String] = Map("mainPlaceOfBusiness" -> BooleanRadioEnum.No.toString)

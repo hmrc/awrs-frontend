@@ -83,14 +83,14 @@ class JourneyPageTest extends AwrsUnitTestTraits with MockAuthConnector {
       override val signInUrl = "/sign-in"
     }
 
-  "JourneyPage trait" should {
+  "JourneyPage trait" must {
     "Retrieve the JourneyStartLocation from the session" in {
       val request = SessionBuilder.buildRequestWithSessionStartLocation(userId, "LTD_GRP", Some(TestPage.section))
       val result = TestPage.getJouneyStartLocation.apply(request)
       val responseSessionMap = await(result).session(request).data
       val doc = Jsoup.parse(contentAsString(result))
-      doc.body().text() shouldBe TestPage.section
-      responseSessionMap(AwrsSessionKeys.sessionJouneyStartLocation) shouldBe TestPage.section
+      doc.body().text() mustBe TestPage.section
+      responseSessionMap(AwrsSessionKeys.sessionJouneyStartLocation) mustBe TestPage.section
     }
   }
 }

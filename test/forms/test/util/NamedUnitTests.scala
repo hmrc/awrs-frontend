@@ -24,7 +24,7 @@ import models.TupleDate
 import play.api.data.Form
 import utils.AwrsFieldConfig
 
-object NamedUnitTests {
+object NamedUnitTests extends AwrsFormTestUtils {
 
   import AddressVerifications._
   import IdentityVerifications._
@@ -183,7 +183,7 @@ object NamedUnitTests {
   }
 }
 
-private object AddressVerifications extends AwrsFieldConfig {
+private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConfig {
   private def addressLinex(lineNumber: Int,
                            preCondition: Map[String, String],
                            ignoreCondition: Set[Map[String, String]],
@@ -293,7 +293,7 @@ private object AddressVerifications extends AwrsFieldConfig {
   }
 }
 
-private object IdentityVerifications extends AwrsFieldConfig {
+private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldConfig {
 
   def firstNameIsCompulsory(preCondition: Map[String, String],
                             ignoreCondition: Set[Map[String, String]],
@@ -467,7 +467,7 @@ private object IdentityVerifications extends AwrsFieldConfig {
 
 }
 
-object ProofOfIdentiticationVerifications {
+object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
   object DoYouHaveIdentificationQuestionTypes extends Enumeration {
     val Nino = Value("doYouHaveNino")
@@ -552,7 +552,7 @@ object ProofOfIdentiticationVerifications {
       val expectations = OptionalFieldValidationExpectations(MaxLengthIsHandledByTheRegEx(), formatError)
       fieldId assertFieldIsOptionalWhen(theyDoNotHaveNINO, expectations)
 
-      // if they answered that they have nino then we should not validate the passport field even if it is populated
+      // if they answered that they have nino then we must not validate the passport field even if it is populated
       val theyHaveNINO = generateFormTestData(preCondition, doYouHaveNinoNameString, Yes.toString)
       fieldId assertFieldIsIgnoredWhen(theyHaveNINO, expectations.toFieldToIgnore)
 
@@ -576,7 +576,7 @@ object ProofOfIdentiticationVerifications {
       val expectations = OptionalFieldValidationExpectations(MaxLengthIsHandledByTheRegEx(), formatError)
       fieldId assertFieldIsOptionalWhen(theyDoNotHaveNINO, expectations)
 
-      // if they answered that they have nino then we should not validate the national field even if it is populated
+      // if they answered that they have nino then we must not validate the national field even if it is populated
       val theyHaveNINO = generateFormTestData(preCondition, doYouHaveNinoNameString, Yes.toString)
       fieldId assertFieldIsIgnoredWhen(theyHaveNINO, expectations.toFieldToIgnore)
 
@@ -601,7 +601,7 @@ object ProofOfIdentiticationVerifications {
       val expectations = CrossFieldValidationExpectations("passportNumber", emptyError)
       fieldIds assertAtLeastOneFieldMustNotBeEmptyWhen(theyDoNotHaveNINO, expectations)
 
-      // if they answered that they have nino then we should not validate the either passport orn ational id field even if it is populated
+      // if they answered that they have nino then we must not validate the either passport orn ational id field even if it is populated
       val theyHaveNINO = generateFormTestData(preCondition, doYouHaveNinoNameString, Yes.toString)
       fieldIds assertAtLeastOneFieldMustNotBeEmptyIsIgnoredWhen(theyHaveNINO, expectations)
 
@@ -782,7 +782,7 @@ object ProofOfIdentiticationVerifications {
 
     for (id <- fieldIds)
       withClue(f"'$id' is not a supported identification type for this test\nPlease check the spelling or amended it in the enum DoYouHaveIdentificationQuestionTypes\n") {
-        validIds should contain(id)
+        validIds must contain(id)
       }
 
     val fieldIdsWithPrefix: Set[String] = idPrefix attachToAll fieldIds

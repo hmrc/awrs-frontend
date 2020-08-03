@@ -17,18 +17,18 @@
 package models
 
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
 import BusinessDetailsEntityTypes._
 
-class BusinessEntityTest extends UnitSpec with MockitoSugar {
-  "BusinessEntity" should {
+class BusinessEntityTest extends PlaySpec with MockitoSugar {
+  "BusinessEntity" must {
     "transform the enums correctly back and forth to json" in {
       values.foreach { eValue =>
         val js = writer.writes(eValue)
         val enum = reader.reads(js)
-        enum.isSuccess shouldBe true
-        enum.get shouldBe eValue
+        enum.isSuccess mustBe true
+        enum.get mustBe eValue
       }
     }
   }

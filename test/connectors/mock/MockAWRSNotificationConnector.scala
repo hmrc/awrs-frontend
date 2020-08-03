@@ -31,18 +31,18 @@ trait MockAWRSNotificationConnector extends AwrsUnitTestTraits {
   import MockAWRSNotificationConnector._
 
   // need to be lazy incase of overrides
-  lazy val mockAWRSNotificationConnector = mock[AWRSNotificationConnector]
+  lazy val mockAWRSNotificationConnector: AWRSNotificationConnector = mock[AWRSNotificationConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockAWRSNotificationConnector)
   }
 
-  def setupMockAWRSNotificationConnector(fetchNotificationCache: Future[Option[StatusNotification]] = defaultSatusNotification,
-                                         deleteNotificationFromCache: Future[Boolean] = true,
+  def setupMockAWRSNotificationConnector(fetchNotificationCache: Future[Option[StatusNotification]] = Future.successful(defaultStatusNotification),
+                                         deleteNotificationFromCache: Future[Boolean] = Future.successful(true),
                                          getNotificationViewedStatus: Future[Option[ViewedStatusResponse]] = ViewedStatusResponse(true),
                                          markNotificationViewedStatusAsViewed: Future[Option[Boolean]] = true,
-                                         sendConfirmationEmail: Future[Boolean] = true
+                                         sendConfirmationEmail: Future[Boolean] = Future.successful(true)
                                         ): Unit = {
     setupMockAWRSNotificationConnectorWithOnly(
       fetchNotificationCache = fetchNotificationCache,
@@ -82,5 +82,5 @@ trait MockAWRSNotificationConnector extends AwrsUnitTestTraits {
 }
 
 object MockAWRSNotificationConnector {
-  val defaultSatusNotification = testStatusNotificationNoAlert
+  val defaultStatusNotification: Option[StatusNotification] = testStatusNotificationNoAlert
 }

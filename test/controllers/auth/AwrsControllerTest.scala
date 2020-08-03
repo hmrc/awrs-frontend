@@ -50,14 +50,14 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     override val signInUrl: String = "/sign-in"
   }
 
-  "The index page which implements AwrsController" should {
+  "The index page which implements AwrsController" must {
     import scala.language.implicitConversions
     def noRedirection()(implicit result: Future[Result]): Unit = {
-      status(result) shouldBe OK
+      status(result) mustBe OK
     }
     def redirected()(implicit result: Future[Result]): Unit = {
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some("/alcohol-wholesale-scheme/status-page")
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/alcohol-wholesale-scheme/status-page")
     }
 
     "not perform any redirection if the status is not rejected" in {

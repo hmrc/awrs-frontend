@@ -40,7 +40,7 @@ class TradingDateViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
     }
   }
 
-  "the trading date view" should {
+  "the trading date view" must {
     "display content for dates in the future" when {
       "the view is in the future mode" in new Setup {
         setAuthMocks()
@@ -48,12 +48,12 @@ class TradingDateViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
           .thenReturn(Future.successful(NewApplicationMode))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(false))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
 
         val result: Future[Result] = tradingDateController.showBusinessDetails(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD"))
         val document: String = contentAsString(result)
 
-        document should include(messages("awrs.generic.what_date_will_you"))
+        document must include(messages("awrs.generic.what_date_will_you"))
       }
     }
 
@@ -64,13 +64,13 @@ class TradingDateViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
           .thenReturn(Future.successful(NewApplicationMode))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(true))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
 
         val result: Future[Result] = tradingDateController.showBusinessDetails(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD"))
         val document: String = contentAsString(result)
 
-        document should include(messages("awrs.generic.what_date_did_you"))
-        document should include(messages("awrs.business_details.what_date_did_p_warn"))
+        document must include(messages("awrs.generic.what_date_did_you"))
+        document must include(messages("awrs.business_details.what_date_did_p_warn"))
       }
     }
   }

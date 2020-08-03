@@ -96,7 +96,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
       case _ => Map[String, JsValue]()
     }
 
-  "viewSection" should {
+  "viewSection" must {
     "should return the edit view for the respective section when the relevant section string is passed in" in {
 
       val sectionTupleList = List(
@@ -117,9 +117,9 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
         viewSection(sectionName, cachedMap) {
           result =>
             val document = Jsoup.parse(contentAsString(result))
-            status(result) shouldBe OK
-            document.getElementById(idName).text should include(expectedTitle)
-            document.getElementsByTag("title").text shouldBe Messages("awrs.generic.tab.title", Messages("awrs.view_application.section_title", expectedTitle))
+            status(result) mustBe OK
+            document.getElementById(idName).text must include(expectedTitle)
+            document.getElementsByTag("title").text mustBe Messages("awrs.generic.tab.title", Messages("awrs.view_application.section_title", expectedTitle))
         }
       }
     }
@@ -127,14 +127,14 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     "show not found when a section is not valid" in {
       viewSection("invalidName", getCustomizedMap(businessNameDetails = testBusinessNameDetails(), tradingStartDetails = newAWBusiness())) {
         result =>
-          status(result) shouldBe NOT_FOUND
+          status(result) mustBe NOT_FOUND
       }
     }
 
     "show not found when a cache map is empty" in {
       viewSectionEmptyCache("invalidName") {
         result =>
-          status(result) shouldBe NOT_FOUND
+          status(result) mustBe NOT_FOUND
       }
     }
 
@@ -147,7 +147,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     }
 
     def viewSectionEmptyCache(sectionName: String, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
-      setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = None)
+      setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = Future.successful(None))
       setAuthMocks()
       when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
       val result = testViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))

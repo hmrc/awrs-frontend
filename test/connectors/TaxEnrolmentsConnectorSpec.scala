@@ -48,7 +48,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     override val retryWait: Int = 50
   }
 
-  "Tax enrolments connector de-enrolling AWRS" should {
+  "Tax enrolments connector de-enrolling AWRS" must {
     // used in the mock to check the destination of the connector calls
     lazy val deEnrolURI = testTaxEnrolmentsConnector.deEnrolURI + "/" + service
 
@@ -71,44 +71,44 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     "return status as OK, for successful de-enrolment" in {
       mockResponse(OK)
       val result = testCall
-      await(result) shouldBe deEnrolResponseSuccess
+      await(result) mustBe deEnrolResponseSuccess
     }
 
     "return status as BAD_REQUEST, for unsuccessful de-enrolment" in {
       mockResponse(BAD_REQUEST)
       val result = testCall
-      await(result) shouldBe deEnrolResponseFailure
+      await(result) mustBe deEnrolResponseFailure
     }
 
     "return status as NOT_FOUND, for unsuccessful de-enrolment" in {
       mockResponse(NOT_FOUND)
       val result = testCall
-      await(result) shouldBe deEnrolResponseFailure
+      await(result) mustBe deEnrolResponseFailure
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful de-enrolment" in {
       mockResponse(SERVICE_UNAVAILABLE)
       val result = testCall
-      await(result) shouldBe deEnrolResponseFailure
+      await(result) mustBe deEnrolResponseFailure
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful de-enrolment" in {
       mockResponse(INTERNAL_SERVER_ERROR, Some("error in de-enrol service end point error"))
       val result = testCall
-      await(result) shouldBe deEnrolResponseFailure
+      await(result) mustBe deEnrolResponseFailure
     }
 
     "return status as unexpected status, for unsuccessful de-enrolment" in {
       val otherStatus = 999
       mockResponse(otherStatus)
       val result = testCall
-      await(result) shouldBe deEnrolResponseFailure
+      await(result) mustBe deEnrolResponseFailure
     }
 
 
   }
 
-  "Tax enrolments connector enrolling AWRS" should {
+  "Tax enrolments connector enrolling AWRS" must {
 
     def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(),
@@ -129,39 +129,39 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
     "return enrol response for successful enrolment" in {
       mockResponse(OK)
-      testCall.isDefined shouldBe true
+      testCall.isDefined mustBe true
     }
 
     "return enrol response for unsuccessful enrolment" in {
       mockResponse(BAD_REQUEST)
-      testCall.isDefined shouldBe true
+      testCall.isDefined mustBe true
     }
 
     "return enrol response for created response" in {
       mockResponse(CREATED)
-      testCall.isDefined shouldBe true
+      testCall.isDefined mustBe true
     }
 
     "return enrol response for not found response" in {
       mockResponse(NOT_FOUND)
-      testCall.isDefined shouldBe true
+      testCall.isDefined mustBe true
     }
 
     "return enrol response for service unavailable response" in {
       mockResponse(SERVICE_UNAVAILABLE)
-      testCall.isDefined shouldBe true
+      testCall.isDefined mustBe true
     }
 
     "return enrol response for bad gateway response" in {
       mockResponse(BAD_GATEWAY)
-      testCall.isDefined shouldBe true
+      testCall.isDefined mustBe true
     }
 
     "return enrol response for any other status" in {
       val otherStatus = 421
 
       mockResponse(otherStatus)
-      testCall.isDefined shouldBe true
+      testCall.isDefined mustBe true
     }
   }
 }

@@ -126,42 +126,42 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
   val testApplicationService: ApplicationService = new ApplicationService(mockEnrolService, mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
 
-  "Application Service" should {
-    "getRegistrationReferenceNumber should return left when given self heal case " in {
+  "Application Service" must {
+    "getRegistrationReferenceNumber must return left when given self heal case " in {
 
-      testApplicationService.getRegistrationReferenceNumber(Left(selfHealSuccessResponse)) shouldBe "12345"
+      testApplicationService.getRegistrationReferenceNumber(Left(selfHealSuccessResponse)) mustBe "12345"
     }
 
-    "getRegistrationReferenceNumber should return right when given subscription case " in {
+    "getRegistrationReferenceNumber must return right when given subscription case " in {
 
-      testApplicationService.getRegistrationReferenceNumber(Right(subscribeSuccessResponse)) shouldBe "ABCDEabcde12345"
+      testApplicationService.getRegistrationReferenceNumber(Right(subscribeSuccessResponse)) mustBe "ABCDEabcde12345"
     }
 
     "send application and handle a 200 success" in {
       sendWithAuthorisedUser {
         result =>
-          await(result) shouldBe Right(subscribeSuccessResponse)
+          await(result) mustBe Right(subscribeSuccessResponse)
       }
     }
 
       "send application to self heal and handle 202 response" in {
         sendWithAuthorisedUserSelfHeal {
           result =>
-            await(result) shouldBe Left(selfHealSuccessResponse)
+            await(result) mustBe Left(selfHealSuccessResponse)
         }
       }
 
       "send updated subscription and handle a 200 success" in {
         sendUpdateSubscriptionTypeWithAuthorisedUser {
           result =>
-            await(result) shouldBe subscribeUpdateSuccessResponse
+            await(result) mustBe subscribeUpdateSuccessResponse
         }
       }
 
       "send updated subscription and handle a 200 success for a new business" in {
         sendUpdateSubscriptionTypeWithAuthorisedUser (
           result =>
-            await(result) shouldBe subscribeUpdateSuccessResponse
+            await(result) mustBe subscribeUpdateSuccessResponse
         , newAW = true)
       }
 
@@ -169,7 +169,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         setupMockKeyStoreServiceForBusinessCustomerAddress()
         sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
           result =>
-            await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
+            await(result) mustBe SuccessfulUpdateGroupBusinessPartnerResponse
         }
       }
 
@@ -177,11 +177,11 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress = true)
         sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
           result =>
-            await(result) shouldBe SuccessfulUpdateGroupBusinessPartnerResponse
+            await(result) mustBe SuccessfulUpdateGroupBusinessPartnerResponse
         }
       }
 
-    "have updated change Indicators in the subscription Type with the correct values" should {
+    "have updated change Indicators in the subscription Type with the correct values" must {
 
       "with no changes" in {
         val thrown = the[ResubmissionException] thrownBy
@@ -189,10 +189,10 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
             Some(cachedData()),
             Some(testSubscriptionTypeFrontEnd())
           )
-        thrown.getMessage shouldBe ResubmissionException.resubmissionMessage
+        thrown.getMessage mustBe ResubmissionException.resubmissionMessage
       }
 
-      "Group members Changed should update the correct flag" in {
+      "Group members Changed must update the correct flag" in {
         val testBusinessCustomerDetailsOrig = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("address Line1", " address Line2",
           Option(" address Line3"), Option(" address Line4"), Option(testPostcode)), " sap123", "safe123", false, Some("agent123"))
 
@@ -206,20 +206,20 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(groupMemberDetails =
           Some(testGroupMemberDetailsOrig), businessCustomerDetails = Some(testBusinessCustomerDetailsOrig))))
 
-        result.changeIndicators.get shouldBe getChangeIndicators(groupMembersChanged = true)
+        result.changeIndicators.get mustBe getChangeIndicators(groupMembersChanged = true)
       }
 
-      "Premises Changed should update the correct flag" in {
+      "Premises Changed must update the correct flag" in {
         val testAdditionalBusinessPremisesOrig = AdditionalBusinessPremises(additionalPremises = "No", Some(testAddress()), addAnother = "No")
         val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesOrig1, testAdditionalBusinessPremisesOrig))
 
         val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(
           additionalPremises = Some(testAdditionalPremisesListOrig))))
 
-        result.changeIndicators.get shouldBe getChangeIndicators(premisesChanged = true)
+        result.changeIndicators.get mustBe getChangeIndicators(premisesChanged = true)
       }
 
-      "Suppliers Changed should update the correct flag" in {
+      "Suppliers Changed must update the correct flag" in {
         val testSupplier = Suppliers(List(Supplier(
           alcoholSuppliers = "Yes",
           supplierName = Some("SainsBurry"),
@@ -231,39 +231,39 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
         val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplier))))
 
-        result.changeIndicators.get shouldBe getChangeIndicators(suppliersChanged = true)
+        result.changeIndicators.get mustBe getChangeIndicators(suppliersChanged = true)
       }
 
-      "Suppliers Changed should update the correct flag for Non UK Suppliers" in {
+      "Suppliers Changed must update the correct flag for Non UK Suppliers" in {
         val thrown = the[ResubmissionException] thrownBy testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
-        thrown.getMessage shouldBe ResubmissionException.resubmissionMessage
+        thrown.getMessage mustBe ResubmissionException.resubmissionMessage
       }
 
-      "Suppliers Changed should update the correct flag for UK Suppliers" in {
+      "Suppliers Changed must update the correct flag for UK Suppliers" in {
         val thrown = the[ResubmissionException] thrownBy testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
-        thrown.getMessage shouldBe ResubmissionException.resubmissionMessage
+        thrown.getMessage mustBe ResubmissionException.resubmissionMessage
       }
 
-      "Declaration Changed should update the correct flag" in {
+      "Declaration Changed must update the correct flag" in {
         val testApplicationDeclarationOrig = ApplicationDeclaration(declarationName = Some("Paul Smith"), declarationRole = Some("Owner"), Option(true))
 
         val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(applicationDeclaration =
           Some(testApplicationDeclarationOrig))))
 
-        result.changeIndicators.get shouldBe getChangeIndicators(declarationChanged = true)
+        result.changeIndicators.get mustBe getChangeIndicators(declarationChanged = true)
       }
 
-      "Coofficial Changed should update the correct flag" in {
+      "Coofficial Changed must update the correct flag" in {
         val testBusinessDirectorOrig = BusinessDirector(Some("Person"), firstName = Some("Paul"), lastName = Some("Smith"), doTheyHaveNationalInsurance = "Yes", nino = testNino, passportNumber = None, nationalID = None, companyNames = None, doYouHaveUTR = None, utr = None, doYouHaveCRN = None, companyRegNumber = None, doYouHaveVRN = None, vrn = None, directorsAndCompanySecretaries = Some("Director and Company Secretary"), otherDirectors = "No")
 
         val testBusinessDirectorsOrig = BusinessDirectors(List(testBusinessDirectorOrig))
 
         val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(businessDirectors = Some(testBusinessDirectorsOrig))))
 
-        result.changeIndicators.get shouldBe getChangeIndicators(coOfficialsChanged = true)
+        result.changeIndicators.get mustBe getChangeIndicators(coOfficialsChanged = true)
       }
 
-      "Trading Activity Changed should update the correct flag" in {
+      "Trading Activity Changed must update the correct flag" in {
         val testTradingActivity = TradingActivity(
           wholesalerType = List("05", "99", "02"),
           otherWholesaler = "Walmart",
@@ -276,10 +276,10 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
         val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(tradingActivity = Some(testTradingActivity))))
 
-        result.changeIndicators.get shouldBe getChangeIndicators(additionalBusinessInfoChanged = true)
+        result.changeIndicators.get mustBe getChangeIndicators(additionalBusinessInfoChanged = true)
       }
 
-      "Prodcuts Changed should update the correct flag" in {
+      "Prodcuts Changed must update the correct flag" in {
         val testProducts = Products(
           mainCustomers = List("02"),
           otherMainCustomers = Option("Off_License"),
@@ -287,10 +287,10 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           otherProductType = None)
         val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(products = Some(testProducts))))
 
-        result.changeIndicators.get shouldBe getChangeIndicators(additionalBusinessInfoChanged = true)
+        result.changeIndicators.get mustBe getChangeIndicators(additionalBusinessInfoChanged = true)
       }
 
-      "Business Details changes should update the correct flag" should {
+      "Business Details changes must update the correct flag" must {
 
         lazy val changeIndicators = getChangeIndicators(businessDetailsChanged = true)
 
@@ -316,7 +316,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault()),
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Sole Trader VRN Change" in {
@@ -339,7 +339,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault()),
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Sole Trader NINO Change" in {
@@ -363,7 +363,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault()),
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Sole Trader UTR Change" in {
@@ -387,7 +387,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault()),
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Corporate Body Trading Name Change" in {
@@ -407,7 +407,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessRegistrationDetails = Some(testCorporateBodyBusinessRegDetailsOrig),
                 businessContacts = Some(testBusinessContactsDefault())
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Corporate Body Company Registration Details Change" in {
@@ -427,7 +427,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessRegistrationDetails = Some(testCorporateBodyBusinessRegDetailsOrig),
                 businessContacts = Some(testBusinessContactsDefault())
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with LLP Business Details Trading Name Change" in {
@@ -448,7 +448,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault())
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with LLP Business Details VRN Change" in {
@@ -470,7 +470,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault())
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with LLP Business Details UTR Change" in {
@@ -492,7 +492,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault())
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Partnership Business Details Trading Name Change" in {
@@ -514,7 +514,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault())
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Partnership Business Details VRN Change" in {
@@ -536,7 +536,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault())
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Partnership Business Details UTR Change" in {
@@ -558,11 +558,11 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault())
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
       }
 
-      "Business Address changes should update the correct flag" should {
+      "Business Address changes must update the correct flag" must {
 
         lazy val changeIndicators = getChangeIndicators(businessAddressChanged = true)
 
@@ -580,7 +580,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 placeOfBusiness = Some(testPlaceOfBusinessDefault(mainAddress = newAddress))
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Sole Trader operation duration Change" in {
@@ -593,7 +593,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessRegistrationDetails = Some(testBusinessRegistrationDetails(legalEntity = entityType.legalEntity.get)),
                 placeOfBusiness = Some(testPlaceOfBusinessDefault(operatingDuration = "3"))
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Sole Trader Business Address Change" in {
@@ -607,7 +607,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessRegistrationDetails = Some(testBusinessRegistrationDetails(legalEntity = entityType.legalEntity.get)),
                 placeOfBusiness = Some(testPlaceOfBusinessDefault(placeOfBusinessAddressLast3Years = testBusinessAddress))
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Corporate Body Main Place Of Business Change Change" in {
@@ -629,7 +629,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Corporate Body operation duration Change" in {
@@ -644,7 +644,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 placeOfBusiness = Some(testPlaceOfBusinessDefault(operatingDuration = "7"))
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Corporate Body Business Address Change" in {
@@ -660,7 +660,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 placeOfBusiness = Some(testPlaceOfBusinessDefault(placeOfBusinessAddressLast3Years = testBusinessAddress))
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with LLP Business Address Main Place Of Business Change" in {
@@ -681,7 +681,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with LLP Business Address Place of Business Address change" in {
@@ -697,7 +697,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 placeOfBusiness = Some(testPlaceOfBusinessDefault(placeOfBusinessAddressLast3Years = testBusinessAddress))
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Partnership Business Details Main Place Of Business Change" in {
@@ -719,7 +719,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Partnership Business Details Place of Business Address change" in {
@@ -735,12 +735,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 placeOfBusiness = Some(testPlaceOfBusinessDefault(placeOfBusinessAddressLast3Years = testBusinessAddress))
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
       }
 
-      "Contact Details change should update the correct flag" should {
+      "Contact Details change must update the correct flag" must {
 
         lazy val changeIndicators = getChangeIndicators(contactDetailsChanged = true)
 
@@ -761,7 +761,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Sole Trader contact Address Change" in {
@@ -782,7 +782,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 additionalPremises = Some(testAdditionalPremisesListOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Corporate Body contact Name Change" in {
@@ -798,7 +798,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault(contactFirstName = "Mark")),
                 businessCustomerDetails = Some(testBusinessCustomerDetailsOrig)
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Corporate Body contact Address Change" in {
@@ -816,7 +816,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessCustomerDetails = Some(testBusinessCustomerDetailsOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with LLP Business Details Contact Name Change" in {
@@ -832,7 +832,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault(contactFirstName = "Mark")),
                 businessCustomerDetails = Some(testBusinessCustomerDetailsOrig)
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with LLP Business Details Contact Address Change" in {
@@ -851,7 +851,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessCustomerDetails = Some(testBusinessCustomerDetailsOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Partnership Business Details Contact Name Change" in {
@@ -868,7 +868,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessCustomerDetails = Some(testBusinessCustomerDetailsOrig)
               )))
 
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "with Partnership Business Details Contact Address Change" in {
@@ -886,87 +886,87 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 businessContacts = Some(testBusinessContactsDefault(contactAddress = testContactAddress)),
                 businessCustomerDetails = Some(testBusinessCustomerDetailsOrig)
               )))
-          result.changeIndicators.get shouldBe changeIndicators
+          result.changeIndicators.get mustBe changeIndicators
         }
 
         "if trim suppliers is supplied with a list greater than 5 it will only return the first 5" in {
           val oldSuppliers = Suppliers(List(baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier, baseSupplier))
-          oldSuppliers.suppliers.size shouldBe 7
+          oldSuppliers.suppliers.size mustBe 7
           val newSuppliers = testApplicationService.trimSuppliers(Some(oldSuppliers))
-          newSuppliers.get.suppliers.size shouldBe 5
+          newSuppliers.get.suppliers.size mustBe 5
         }
 
       }
     }
 
-    "return the valid sections based on legal entity" should {
+    "return the valid sections based on legal entity" must {
       "return valid Section object when legal entity is LTD" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData())
         val expectedSection = Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
         val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        outputSection shouldBe expectedSection
+        outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is SOP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("SOP")))
         val expectedSection = Sections(soleTraderBusinessDetails = true)
         val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        outputSection shouldBe expectedSection
+        outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is Partnership" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("Partnership")))
         val expectedSection = Sections(partnershipBusinessDetails = true, partnership = true)
         val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        outputSection shouldBe expectedSection
+        outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LP")))
         val expectedSection = Sections(llpBusinessDetails = true, partnership = true)
         val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        outputSection shouldBe expectedSection
+        outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LLP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LLP")))
         val expectedSection = Sections(llpBusinessDetails = true, partnership = true)
         val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        outputSection shouldBe expectedSection
+        outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LTD_GRP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LTD_GRP")))
         val expectedSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, businessDirectors = true)
         val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        outputSection shouldBe expectedSection
+        outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LLP_GRP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LLP_GRP")))
         val expectedSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, partnership = true)
         val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        outputSection shouldBe expectedSection
+        outputSection mustBe expectedSection
       }
 
       "return exception when legal entity is invalid" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("XYZ")))
         val thrown = the[InvalidStateException] thrownBy await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
-        thrown.getMessage shouldBe "Invalid Legal entity"
+        thrown.getMessage mustBe "Invalid Legal entity"
       }
     }
 
-    "remove the unnecessary attributes from subscription type " should {
+    "remove the unnecessary attributes from subscription type " must {
       "return valid AWRSFEModel when entity type is LTD" in {
         val ltdSection = Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData()), Some(testBusinessCustomerDetails("LTD")), ltdSection)
 
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "LTD"
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined shouldBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get mustBe "LTD"
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined mustBe true
 
       }
 
@@ -975,12 +975,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("SOP"))),
           Some(testBusinessCustomerDetails("SOP")), soleSection)
 
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "SOP"
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined shouldBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get mustBe "SOP"
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined mustBe false
 
       }
 
@@ -989,12 +989,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("Partnership"))),
           Some(testBusinessCustomerDetails("Partnership")), partnershipSection)
 
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "Partnership"
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined shouldBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get mustBe "Partnership"
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined mustBe false
 
       }
 
@@ -1003,12 +1003,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LP"))),
           Some(testBusinessCustomerDetails("LP")), lpSection)
 
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "LP"
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined shouldBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get mustBe "LP"
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined mustBe false
 
       }
 
@@ -1017,12 +1017,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LLP"))),
           Some(testBusinessCustomerDetails("LLP")), llpSection)
 
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "LLP"
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined shouldBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get mustBe "LLP"
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined mustBe false
 
       }
 
@@ -1031,12 +1031,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LTD_GRP"))),
           Some(testBusinessCustomerDetails("LTD_GRP")), ltdGrpSection)
 
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "LTD_GRP"
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined shouldBe false
-        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined shouldBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get mustBe "LTD_GRP"
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined mustBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined mustBe true
 
       }
 
@@ -1045,89 +1045,89 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData(dynamicLegalEntity("LLP_GRP"))),
           Some(testBusinessCustomerDetails("LLP_GRP")), llpGrpSection)
 
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get shouldBe "LLP_GRP"
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined shouldBe true
-        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined shouldBe false
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDetails.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.legalEntity.get mustBe "LLP_GRP"
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessContacts.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.partnership.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.groupMembers.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessDirectors.isDefined mustBe false
       }
     }
 
-    "isApplicationDifferent " should {
+    "isApplicationDifferent " must {
       "return false if no section has changed" in {
         val result = testApplicationService.isApplicationDifferent(matchingSoleTraderCacheMap, soleTraderSubscriptionTypeFrontEnd)
-        await(result) shouldBe false
+        await(result) mustBe false
       }
 
       "return true if any section has changed" in {
         val result = testApplicationService.isApplicationDifferent(matchingSoleTraderCacheMap, differentSoleTraderSubscriptionTypeFrontEnd)
-        await(result) shouldBe true
+        await(result) mustBe true
       }
     }
 
-    "hasAPI5ApplicationChanged " should {
+    "hasAPI5ApplicationChanged " must {
       "return false if no section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = soleTraderSubscriptionTypeFrontEnd)
         val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe false
+        await(result) mustBe false
       }
 
       "return true if any section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = differentSoleTraderSubscriptionTypeFrontEnd)
         val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe true
+        await(result) mustBe true
       }
     }
 
-    "getApi5ChangeIndicators " should {
+    "getApi5ChangeIndicators " must {
       "return all false indicators if no section has changed" in {
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = soleTraderSubscriptionTypeFrontEnd)
         val result = testApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap, TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)
+        await(result) mustBe SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false)
       }
 
       "return all false indicators there is no AWRS enrolment" in {
         when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
           .thenReturn(false)
-        setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = None)
+        setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Future.successful(None))
         val result = testApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap, TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)
+        await(result) mustBe SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false)
       }
 
       "return at least one true indicator if any section has changed" in {
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = differentSoleTraderSubscriptionTypeFrontEnd)
         val result = testApplicationService.getApi5ChangeIndicators(matchingSoleTraderCacheMap, TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe SectionChangeIndicators(true, false, false, false, false, false, false, false, false, false, false, false)
+        await(result) mustBe SectionChangeIndicators(true, false, false, false, false, false, false, false, false, false, false)
       }
     }
-    "addGroupRepToGroupMembers " should {
+    "addGroupRepToGroupMembers " must {
       "add the group rep as the first group member to the GroupMembers list" in {
         val result = testAddGroupRepToGroupMembers
-        result._2.get.members.size shouldBe  result._1.getEntry[GroupMembers](groupMembersName).get.members.size + 1
+        result._2.get.members.size mustBe  result._1.getEntry[GroupMembers](groupMembersName).get.members.size + 1
       }
 
       "have the first group member as the group rep" in {
         val result = testAddGroupRepToGroupMembers
-        result._2.get.members(0).companyNames.tradingName shouldBe result._1.getEntry[BusinessNameDetails](businessNameDetailsName).get.tradingName
-        result._2.get.members(0).companyNames.businessName.get shouldBe result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
+        result._2.get.members(0).companyNames.tradingName mustBe result._1.getEntry[BusinessNameDetails](businessNameDetailsName).get.tradingName
+        result._2.get.members(0).companyNames.businessName.get mustBe result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
       }
     }
 
-    "replaceGroupRepInGroupMembers " should {
+    "replaceGroupRepInGroupMembers " must {
       "not change the size of the GroupMembers collection" in {
         val result = testReplaceGroupRepInGroupMembers
-        result._2.get.members.size shouldBe  result._1.getEntry[GroupMembers](groupMembersName).get.members.size
+        result._2.get.members.size mustBe  result._1.getEntry[GroupMembers](groupMembersName).get.members.size
       }
       "contain a different business name in the group rep group member" in {
         val result = testReplaceGroupRepInGroupMembers
-        result._2.get.members(0).companyNames.businessName.get should not be result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
+        result._2.get.members(0).companyNames.businessName.get must not be result._1.getEntry[BusinessCustomerDetails]("businessCustomerDetails").get.businessName
       }
     }
 
-    "isGrpRepChanged" should {
+    "isGrpRepChanged" must {
       allEntities.foreach {
         legalEntity =>
           Seq(true, false).foreach {
@@ -1135,16 +1135,16 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
               s"return the correct value for legalEntity: $legalEntity and updatedBusinessName: $updatedBusinessName" in {
                 val businessType = BusinessType(Some(legalEntity), None, Some(true))
                 (updatedBusinessName, legalEntity) match {
-                  case (true, ("LTD_GRP" | "LLP_GRP")) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe true
-                  case (true, _) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) shouldBe false
-                  case _ => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) shouldBe false
+                  case (true, ("LTD_GRP" | "LLP_GRP")) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) mustBe true
+                  case (true, _) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) mustBe false
+                  case _ => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) mustBe false
                 }
               }
           }
       }
     }
 
-    "getChangeIndicators" should {
+    "getChangeIndicators" must {
       "manage legalEntity changes" when {
         val typesOfLegalEntityChanges = Map(
           ("SOP", "LLP") -> SectionChangeIndicators(partnersChanged = true),
@@ -1180,7 +1180,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 testSubscriptionTypeFrontEnd(legalEntity = Some(businessTypeData), businessRegistrationDetails = testBusinessRegistrationDetails(legalEntity = data))
               )
 
-              changeInds.get shouldBe expectedChangeIndicators.copy(
+              changeInds.get mustBe expectedChangeIndicators.copy(
                 businessDetailsChanged = otherData.contains("GRP"),
                 businessRegistrationDetailsChanged = true
               )

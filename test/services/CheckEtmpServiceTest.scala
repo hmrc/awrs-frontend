@@ -26,13 +26,14 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.AccountUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
+class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit val req: Request[AnyContent] = FakeRequest()
@@ -55,7 +56,7 @@ class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfte
     super.beforeEach()
   }
 
-  "validateBusinessDetails" should {
+  "validateBusinessDetails" must {
     val enrolSuccessResponse = EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))
 
     "return true if all details are provided" in {
@@ -66,7 +67,7 @@ class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfte
 
       val result = checkEtmpTest.validateBusinessDetails(testBusinessCustomerDetails, "SOP")
 
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return false if enrol AWRS ES8 fails" in {
@@ -77,7 +78,7 @@ class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfte
 
       val result = checkEtmpTest.validateBusinessDetails(testBusinessCustomerDetails, "SOP")
 
-      await(result) shouldBe false
+      await(result) mustBe false
     }
 
     "return false if all details are provided but checkEtmp returns false" in {
@@ -85,7 +86,7 @@ class CheckEtmpServiceTest extends UnitSpec with MockitoSugar with BeforeAndAfte
         .thenReturn(Future.successful(None))
       val result = checkEtmpTest.validateBusinessDetails(testBusinessCustomerDetails, "SOP")
 
-      await(result) shouldBe false
+      await(result) mustBe false
     }
   }
 }

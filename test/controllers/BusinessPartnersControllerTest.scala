@@ -64,65 +64,65 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
 
   lazy val testPartnerDetails = Partners(List(testPartner(), testPartner(), testPartner(false)))
 
-  "Users who entered from the summary page using the linear view" should {
+  "Users who entered from the summary page using the linear view" must {
     "be redirected to the additional premises view after submitting a valid form" in {
       continueWithAuthorisedUser()(testRequest(testPartner(false))) {
         result =>
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/additional-premises")
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/additional-premises")
           verifySave4LaterService(savePartnerDetails = 1)
       }
     }
   }
 
-  "Users who entered from the summary edit view" should {
+  "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
       returnWithAuthorisedUser()(testRequest(testPartner(false))) {
         result =>
-          redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$partnersName")
+          redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$partnersName")
           verifySave4LaterService(savePartnerDetails = 1)
       }
     }
   }
 
-  "When loading the delete page we" should {
+  "When loading the delete page we" must {
     "see to the selected partner's delete confirmation page" in {
       showDeleteWithAuthorisedUser() {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("deleteConfirmation-heading").text shouldBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.partner"))
-          status(result) shouldBe 200
+          document.getElementById("deleteConfirmation-heading").text mustBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.partner"))
+          status(result) mustBe 200
       }
     }
   }
 
-  "When submitting the delete confirmation page we" should {
+  "When submitting the delete confirmation page we" must {
     "be routed back to the summary page after confirming Yes" in {
       deleteWithAuthorisedUser()(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/partnerDetails")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/partnerDetails")
           verifySave4LaterService(savePartnerDetails = 1)
       }
     }
     "be routed back to the summary page after confirming No" in {
       deleteWithAuthorisedUser()(deleteConfirmation_No) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/partnerDetails")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/partnerDetails")
           verifySave4LaterService(savePartnerDetails = 0)
       }
     }
     "be shown an error if nothing is selected" in {
       deleteWithAuthorisedUser()(deleteConfirmation_None) {
         result =>
-          status(result) shouldBe 400
+          status(result) mustBe 400
       }
     }
     "be routed back to the summary page after confirming Yes for a record that is not the first" in {
       deleteWithAuthorisedUser(id = 2, partners = testPartnerDetails)(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/partnerDetails")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/partnerDetails")
           verifySave4LaterService(savePartnerDetails = 1)
       }
     }

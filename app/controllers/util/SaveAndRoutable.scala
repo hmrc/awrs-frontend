@@ -21,7 +21,7 @@ import forms.AWRSEnums.BooleanRadioEnum
 import play.api.mvc._
 import services.DataCacheKeys._
 import services.{JourneyConstants, Save4LaterService}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionSectionHashUtil
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
@@ -141,13 +141,13 @@ trait SaveAndRoutable extends FrontendController with AwrsController {
     }
 
   /*
-   *  This method is designed to determine if the save and continue call in a linear journey should continue on to the
+   *  This method is designed to determine if the save and continue call in a linear journey must continue on to the
    *  next section in the journey or return back to the index page.
    *
    *  It utilises the section hash which is updated every time the index page is visited, to determine if the section
    *  was completed when the current journey started.
    *
-   *  The method returns true if the redirection should be back to the index page and false otherwise.
+   *  The method returns true if the redirection must be back to the index page and false otherwise.
    */
   private[util] def redirectToIndex(sectionName: String)(implicit request: Request[AnyContent]): Future[Boolean] =
   Future.successful(

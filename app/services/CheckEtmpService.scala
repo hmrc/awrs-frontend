@@ -19,17 +19,17 @@ package services
 import connectors.AWRSConnector
 import javax.inject.Inject
 import models.BusinessCustomerDetails
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
-                                 enrolService: EnrolService) {
+                                 enrolService: EnrolService) extends Logging {
 
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails, legalEntity: String)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    Logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
+    logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
 
     awrsConnector.checkEtmp(busCusDetails, legalEntity) flatMap {
       case Some(successResponse) =>
@@ -40,14 +40,14 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
           busCusDetails.utr
         ) map {
           case Some(_) =>
-            Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
+            logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
             true
           case _       =>
-            Logger.info("[CheckEtmpService][validateBusinessDetails] ES8 failure")
+            logger.info("[CheckEtmpService][validateBusinessDetails] ES8 failure")
             false
         }
       case None =>
-        Logger.info("[CheckEtmpService][validateBusinessDetails] Could not perform ES6")
+        logger.info("[CheckEtmpService][validateBusinessDetails] Could not perform ES6")
         Future.successful(false)
     }
   }

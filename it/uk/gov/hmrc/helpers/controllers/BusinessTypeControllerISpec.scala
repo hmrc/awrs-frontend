@@ -4,25 +4,24 @@ package uk.gov.hmrc.helpers.controllers
 import java.util.UUID
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, postRequestedFor, put, stubFor, urlEqualTo, urlMatching, verify, exactly => exactlyTimes}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, postRequestedFor, stubFor, urlEqualTo, urlMatching, verify, exactly => exactlyTimes}
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import controllers.routes
-import models.{AWRSFEModel, AdditionalBusinessPremises, AdditionalBusinessPremisesList, ApplicationDeclaration, BusinessContacts, BusinessCustomerDetails, BusinessNameDetails, BusinessRegistrationDetails, BusinessType, NewAWBusiness, Partners, PlaceOfBusiness, Products, Suppliers, TradingActivity}
+import controllers.{BusinessTypeController, routes}
+import models._
 import org.scalatest.MustMatchers
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.crypto.json.JsonEncryptor
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.helpers.application.S4LStub
-import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, JsonUtil}
+import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, JsonUtil, LogCapturing}
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.play.test.LogCapturing
 import utils.{AWRSFeatureSwitches, FeatureSwitch}
 
-class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub with LogCapturing {
+class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub with LogCapturing with Logging {
 
   val baseURI = "/alcohol-wholesaler-register"
   val subscriptionURI = "/subscription/"
@@ -249,7 +248,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
         """{}""".stripMargin)
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
-      withCaptureOfLoggingFrom(Logger) { logs =>
+      withCaptureOfLoggingFrom(Logger(app.injector.instanceOf[BusinessTypeController].getClass)) { logs =>
         val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId")
           .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
         )

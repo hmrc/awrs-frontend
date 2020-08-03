@@ -46,27 +46,27 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
       override val signInUrl = "/sign-in"
     }
 
-  "Business Director Template" should {
+  "Business Director Template" must {
 
     "display h1 with correct director number for linear mode" in {
       for ((_, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
         val id = index + 1
         showDirector(id) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
             val document = Jsoup.parse(contentAsString(result))
             val heading = document.getElementById("business-directors-heading").text()
             val personOrCompanySection = document.getElementById("personOrCompany_field")
             val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
             id match {
               case 1 =>
-                heading should be(Messages("awrs.business_directors.heading.first"))
-                personOrCompanySection shouldBe null
-                companySecretaryOption shouldBe null
+                heading must be(Messages("awrs.business_directors.heading.first"))
+                personOrCompanySection mustBe null
+                companySecretaryOption mustBe null
               case _ =>
-                heading should be(Messages("awrs.business_directors.heading", Messages("awrs.director.what.are"), views.html.helpers.ordinalIntSuffix(id)))
-                personOrCompanySection should not be null
-                companySecretaryOption should not be null
+                heading must be(Messages("awrs.business_directors.heading", Messages("awrs.director.what.are"), views.html.helpers.ordinalIntSuffix(id)))
+                personOrCompanySection must not be null
+                companySecretaryOption must not be null
             }
         }
       }
@@ -77,63 +77,63 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
     "display the page correctly in edit mode when adding the first record and no directors found in save4later" in {
       showDirector(id = 1, isLinearMode = false, directors = None) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           val heading = document.getElementById("business-directors-heading").text()
-          heading should be(Messages("awrs.business_directors.heading.first"))
+          heading must be(Messages("awrs.business_directors.heading.first"))
 
           val personOrCompanySection = document.getElementById("personOrCompany_field")
-          personOrCompanySection shouldBe null
+          personOrCompanySection mustBe null
 
           val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
-          companySecretaryOption shouldBe null
+          companySecretaryOption mustBe null
       }
     }
 
     "display the page correctly in edit mode when adding a new record in addition to existing records" in {
       showDirector(id = 2, isLinearMode = false, directors = List(testBusinessDirectorPerson)) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           val heading = document.getElementById("business-directors-heading").text()
-          heading should be(Messages("awrs.business_directors.heading", Messages("awrs.director.what.are"), views.html.helpers.ordinalIntSuffix(2)))
+          heading must be(Messages("awrs.business_directors.heading", Messages("awrs.director.what.are"), views.html.helpers.ordinalIntSuffix(2)))
 
           val personOrCompanySection = document.getElementById("personOrCompany_field")
-          personOrCompanySection should not be null
+          personOrCompanySection must not be null
 
           val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
-          companySecretaryOption should not be null
+          companySecretaryOption must not be null
       }
     }
 
-    // when viewing the pages, the first page should be the same as all other pages
+    // when viewing the pages, the first page must be the same as all other pages
     "display the page correctly in edit mode when viewing existing records" in {
       for ((director, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
         val id = index + 1
         showDirector(id, isLinearMode = false, isNewRecord = false) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
             val document = Jsoup.parse(contentAsString(result))
             val heading = document.getElementById("business-directors-heading").text()
             id match {
               case 1 =>
-                heading should be(Messages("awrs.business_directors.heading.first.edit"))
+                heading must be(Messages("awrs.business_directors.heading.first.edit"))
               case _ =>
-                heading should be(Messages("awrs.business_directors.heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
+                heading must be(Messages("awrs.business_directors.heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
             }
 
             val personOrCompanySection = document.getElementById("personOrCompany_field")
-            personOrCompanySection should not be null
+            personOrCompanySection must not be null
 
             val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
-            companySecretaryOption should not be null
+            companySecretaryOption must not be null
         }
       }
     }
 
     directorEntities.foreach {
       legalEntity =>
-        s"$legalEntity" should {
+        s"$legalEntity" must {
           Seq(true, false).foreach {
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {

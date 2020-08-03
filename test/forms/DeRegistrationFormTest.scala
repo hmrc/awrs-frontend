@@ -23,13 +23,13 @@ import models.TupleDate._
 import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class DeRegistrationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class DeRegistrationFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
   implicit val testForm = DeRegistrationForm.deRegistrationForm
 
-  "De-Registration Form" should {
+  "De-Registration Form" must {
     "Correctly validate 'tupleDate'" in {
       val fieldId = "proposedEndDate"
       val expectations = CompulsoryDateValidationExpectations(

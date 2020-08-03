@@ -73,7 +73,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  "Page load for Authorised users" should {
+  "Page load for Authorised users" must {
 
     "return a Confirmation Successful view" in {
       validateForBothNewAndOldBusiness(
@@ -84,33 +84,31 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
               val dateFormat = new SimpleDateFormat("d MMMM y")
               val submissionDate = dateFormat.format(today)
               val companyName = "North East Wines"
-              val uniqueRef = subscribeSuccessResponse.etmpFormBundleNumber
 
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("confirmation").text() should include(s"$companyName")
-              document.getElementById("confirmation").text() should include(submissionDate)
-              document.getElementById("print-confirmation").text() should be(Messages("awrs.generic.print_confirmation"))
-              document.getElementById("print-application").text() should be(Messages("awrs.generic.application"))
+              document.getElementById("confirmation").text() must include(s"$companyName")
+              document.getElementById("confirmation").text() must include(submissionDate)
+              document.getElementById("print-confirmation").text() must be(Messages("awrs.generic.print_confirmation"))
+              document.getElementById("print-application").text() must be(Messages("awrs.generic.application"))
 
               verifySave4LaterService(removeAll = 1)
               verifyApiSave4LaterService(removeAll = 0)
 
-              isNewBusiness match {
-                case true =>
-                  document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.confirmation.newBusiness.information_what_next_0"))
-                  document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.confirmation.newBusiness.information_what_next_1"))
-                case false =>
-                  document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.confirmation.information_what_next_0"))
-                  document.getElementById(s"confirmationNoteLine2Text").text() should include (Messages(s"awrs.confirmation.information_what_next_1").replaceAll("&nbsp;"," "))
-                  document.getElementById(s"confirmationNoteLine3Text").text() should include(Messages(s"awrs.confirmation.information_what_next_2"))
-                  document.getElementById(s"confirmationNoteLine4Text").text() should include(Messages(s"awrs.confirmation.information_what_next_3"))
-                  document.getElementById(s"confirmationNoteLine5Text").text() should include(Messages(s"awrs.confirmation.information_what_next_4"))
+              if (isNewBusiness) {
+                document.getElementById(s"confirmationNoteLine1Text").text() must include(Messages(s"awrs.confirmation.newBusiness.information_what_next_0"))
+                document.getElementById(s"confirmationNoteLine2Text").text() must include(Messages(s"awrs.confirmation.newBusiness.information_what_next_1"))
+              } else {
+                document.getElementById(s"confirmationNoteLine1Text").text() must include(Messages(s"awrs.confirmation.information_what_next_0"))
+                document.getElementById(s"confirmationNoteLine2Text").text() must include(Messages(s"awrs.confirmation.information_what_next_1").replaceAll("&nbsp;", " "))
+                document.getElementById(s"confirmationNoteLine3Text").text() must include(Messages(s"awrs.confirmation.information_what_next_2"))
+                document.getElementById(s"confirmationNoteLine4Text").text() must include(Messages(s"awrs.confirmation.information_what_next_3"))
+                document.getElementById(s"confirmationNoteLine5Text").text() must include(Messages(s"awrs.confirmation.information_what_next_4"))
 
 
-                  document.getElementById(s"confirmation1Text") shouldBe null
+                document.getElementById(s"confirmation1Text") mustBe null
               }
-              document.getElementById(s"awrsChangesQuestion") shouldBe null
+              document.getElementById(s"awrsChangesQuestion") mustBe null
           }
       )
     }
@@ -128,35 +126,35 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
 
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("confirmation").text() should include(s"$companyName")
-              document.getElementById("confirmation").text() should include(submissionDate)
-              document.getElementById("print-confirmation").text() should be(Messages("awrs.generic.print_confirmation"))
-              document.getElementById("print-application").text() should be(Messages("awrs.generic.application"))
+              document.getElementById("confirmation").text() must include(s"$companyName")
+              document.getElementById("confirmation").text() must include(submissionDate)
+              document.getElementById("print-confirmation").text() must be(Messages("awrs.generic.print_confirmation"))
+              document.getElementById("print-application").text() must be(Messages("awrs.generic.application"))
 
               verifySave4LaterService(removeAll = 1)
               verifyApiSave4LaterService(removeAll = 0)
 
               isNewBusiness match {
                 case true =>
-                  document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.confirmation.newBusiness.information_what_next_0"))
-                  document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.confirmation.newBusiness.information_what_next_1"))
+                  document.getElementById(s"confirmationNoteLine1Text").text() must include(Messages(s"awrs.confirmation.newBusiness.information_what_next_0"))
+                  document.getElementById(s"confirmationNoteLine2Text").text() must include(Messages(s"awrs.confirmation.newBusiness.information_what_next_1"))
                 case false =>
-                  document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.confirmation.information_what_next_0"))
-                  document.getElementById(s"confirmationNoteLine2Text").text() should include (Messages(s"awrs.confirmation.information_what_next_1").replaceAll("&nbsp;"," "))
-                  document.getElementById(s"confirmationNoteLine3Text").text() should include(Messages(s"awrs.confirmation.information_what_next_2"))
-                  document.getElementById(s"confirmationNoteLine4Text").text() should include(Messages(s"awrs.confirmation.information_what_next_3"))
-                  document.getElementById(s"confirmationNoteLine5Text").text() should include(Messages(s"awrs.confirmation.information_what_next_4"))
+                  document.getElementById(s"confirmationNoteLine1Text").text() must include(Messages(s"awrs.confirmation.information_what_next_0"))
+                  document.getElementById(s"confirmationNoteLine2Text").text() must include (Messages(s"awrs.confirmation.information_what_next_1").replaceAll("&nbsp;"," "))
+                  document.getElementById(s"confirmationNoteLine3Text").text() must include(Messages(s"awrs.confirmation.information_what_next_2"))
+                  document.getElementById(s"confirmationNoteLine4Text").text() must include(Messages(s"awrs.confirmation.information_what_next_3"))
+                  document.getElementById(s"confirmationNoteLine5Text").text() must include(Messages(s"awrs.confirmation.information_what_next_4"))
 
 
-                  document.getElementById(s"confirmation1Text") shouldBe null
+                  document.getElementById(s"confirmation1Text") mustBe null
               }
-              document.getElementById(s"awrsChangesQuestion") shouldBe null
+              document.getElementById(s"awrsChangesQuestion") mustBe null
           }
       )
     }
   }
 
-  "Update confirmation page " should {
+  "Update confirmation page " must {
     "return a Confirmation Update Successful view" in {
       val statusSet = Set(Pending, Approved, ApprovedWithConditions)
       statusSet.foreach { status =>
@@ -169,31 +167,31 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
 
                 val document = Jsoup.parse(contentAsString(result))
 
-                document.getElementById("confirmation").text() should include(s"$companyName")
+                document.getElementById("confirmation").text() must include(s"$companyName")
                 val format = new SimpleDateFormat("d MMMM y")
                 val resubmissionDate = format.format(Calendar.getInstance().getTime)
-                document.getElementById("confirmation").text() should include(s"$resubmissionDate")
-                document.getElementById("print-confirmation").text() should be(Messages("awrs.generic.print_confirmation"))
-                document.getElementById("print-application").text() should be(Messages("awrs.generic.application"))
+                document.getElementById("confirmation").text() must include(s"$resubmissionDate")
+                document.getElementById("print-confirmation").text() must be(Messages("awrs.generic.print_confirmation"))
+                document.getElementById("print-application").text() must be(Messages("awrs.generic.application"))
 
                 verifySave4LaterService(removeAll = 1)
                 verifyApiSave4LaterService(removeAll = 1)
 
                 status match {
                   case Pending =>
-                    document.getElementById(s"confirmationNoteLine0aText").text() should include(Messages(s"awrs.update.confirmation.pending.information_what_next_0"))
-                    document.getElementById(s"confirmationNoteLine1Text").text() should include(Messages(s"awrs.update.confirmation.pending.information_what_next_1", uniqueRef))
-                    document.getElementById(s"confirmationNoteLine0Text") shouldBe null
+                    document.getElementById(s"confirmationNoteLine0aText").text() must include(Messages(s"awrs.update.confirmation.pending.information_what_next_0"))
+                    document.getElementById(s"confirmationNoteLine1Text").text() must include(Messages(s"awrs.update.confirmation.pending.information_what_next_1", uniqueRef))
+                    document.getElementById(s"confirmationNoteLine0Text") mustBe null
                   case _ =>
-                    document.getElementById(s"confirmationNoteLine0Text").text() should include(Messages(s"awrs.update.confirmation.information_what_next_0", uniqueRef))
-                    document.getElementById(s"confirmationNoteLine0aText") shouldBe null
-                    document.getElementById(s"confirmationNoteLine1Text") shouldBe null
+                    document.getElementById(s"confirmationNoteLine0Text").text() must include(Messages(s"awrs.update.confirmation.information_what_next_0", uniqueRef))
+                    document.getElementById(s"confirmationNoteLine0aText") mustBe null
+                    document.getElementById(s"confirmationNoteLine1Text") mustBe null
                 }
-                document.getElementById(s"confirmationNoteLine2Text").text() should include(Messages(s"awrs.update.confirmation.information_what_next_2"))
+                document.getElementById(s"confirmationNoteLine2Text").text() must include(Messages(s"awrs.update.confirmation.information_what_next_2"))
 
-                document.getElementById(s"further-text-1") shouldBe null
-                document.getElementById(s"further-text-2") shouldBe null
-                document.getElementById(s"awrsChangesQuestion") shouldBe null
+                document.getElementById(s"further-text-1") mustBe null
+                document.getElementById(s"further-text-2") mustBe null
+                document.getElementById(s"awrsChangesQuestion") mustBe null
             }
         }
       }

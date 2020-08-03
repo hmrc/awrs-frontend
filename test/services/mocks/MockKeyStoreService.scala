@@ -41,11 +41,11 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
   import FetchNoneType._
 
-  // children should not override this method, update here when KeyStoreService changes
+  // children must not override this method, update here when KeyStoreService changes
   protected final def mockFetchFromKeyStore[T](key: String, config: MockConfiguration[Future[Option[T]]]): Unit =
   config ifConfiguredThen (dataToReturn => when(mockKeyStoreConnector.fetchDataFromKeystore[T](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(dataToReturn))
 
-  // children should not override this method, update here when KeyStoreService changes
+  // children must not override this method, update here when KeyStoreService changes
   final def setupMockKeyStoreServiceOnlySaveFunctions(): Unit = {
     when(mockKeyStoreConnector.saveDataToKeystore(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(returnedCacheMap))
@@ -65,19 +65,22 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
         case DeletedData => Some(None)
       }
 
-    val deRegDate: Option[Option[DeRegistrationDate]] = haveDeRegDate match {
-      case true => Some(defaultDeRegistrationDate)
-      case false => setupFetchNone
+    val deRegDate: Option[Option[DeRegistrationDate]] = if (haveDeRegDate) {
+      Some(defaultDeRegistrationDate)
+    } else {
+      setupFetchNone
     }
 
-    val deRegReason: Option[Option[DeRegistrationReason]] = haveDeRegReason match {
-      case true => Some(defaultDeRegistrationReason)
-      case false => setupFetchNone
+    val deRegReason: Option[Option[DeRegistrationReason]] = if (haveDeRegReason) {
+      Some(defaultDeRegistrationReason)
+    } else {
+      setupFetchNone
     }
 
-    val withdrawalReason: Option[Option[WithdrawalReason]] = haveWithdrawalReason match {
-      case true => Some(defaultWithdrawalReason)
-      case false => setupFetchNone
+    val withdrawalReason: Option[Option[WithdrawalReason]] = if (haveWithdrawalReason) {
+      Some(defaultWithdrawalReason)
+    } else {
+      setupFetchNone
     }
 
     mockFetchFromKeyStore[Option[DeRegistrationDate]](deRegistrationDateName, deRegDate)
@@ -89,21 +92,22 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
 
   def setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress: Boolean = false): Unit =
-    noAddress match {
-      case true => setupMockKeyStoreServiceWithOnly(fetchBusinessCustomerAddress = None)
-      case _ => setupMockKeyStoreServiceWithOnly(fetchBusinessCustomerAddress = Some(defaultBCAddressApi3))
+    if (noAddress) {
+      setupMockKeyStoreServiceWithOnly(fetchBusinessCustomerAddress = None)
+    } else {
+      setupMockKeyStoreServiceWithOnly(fetchBusinessCustomerAddress = Some(defaultBCAddressApi3))
     }
 
   // children can override in order to customise their default settings
   def setupMockKeyStoreService(
-                                subscriptionStatusType: Future[Option[SubscriptionStatusType]] = Some(defaultSubscriptionStatusType),
-                                statusInfoType: Future[Option[StatusInfoType]] = Some(defaultStatusTypeInfo),
-                                statusNotification: Future[Option[StatusNotification]] = defaultStatusNotification,
+                                subscriptionStatusType: Future[Option[SubscriptionStatusType]] = Future.successful(Some(defaultSubscriptionStatusType)),
+                                statusInfoType: Future[Option[StatusInfoType]] = Future.successful(Some(defaultStatusTypeInfo)),
+                                statusNotification: Future[Option[StatusNotification]] = Future.successful(defaultStatusNotification),
                                 fetchIsNewBusiness: Future[Option[Boolean]] = defaultIsNewBusiness,
                                 fetchViewedStatus: Future[Option[Boolean]] = defaultViewedStatus,
                                 fetchBusinessNameChange: Future[Option[BusinessNameDetails]] = defaultBusinessNameChange,
-                                fetchAlreadyTrading: Future[Option[Boolean]] = None
-  ) =
+                                fetchAlreadyTrading: Future[Option[Boolean]] = Future.successful(None)
+  ): Unit =
   setupMockKeyStoreServiceWithOnly(
     subscriptionStatusType = subscriptionStatusType,
     statusInfoType = statusInfoType,
@@ -114,7 +118,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     fetchAlreadyTrading = fetchAlreadyTrading
   )
 
-  // children should not override this method, update here when KeyStoreService changes
+  // children must not override this method, update here when KeyStoreService changes
   protected final def setupMockKeyStoreServiceWithOnly(
                                                         subscriptionStatusType: MockConfiguration[Future[Option[SubscriptionStatusType]]] = DoNotConfigure,
                                                         statusInfoType: MockConfiguration[Future[Option[StatusInfoType]]] = DoNotConfigure,
@@ -124,7 +128,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                                         fetchBusinessNameChange: MockConfiguration[Future[Option[BusinessNameDetails]]] = DoNotConfigure,
                                                         fetchBusinessCustomerAddress: MockConfiguration[Future[Option[BCAddressApi3]]] = DoNotConfigure,
                                                         fetchAlreadyTrading: MockConfiguration[Future[Option[Boolean]]] = DoNotConfigure
-                                                      ) = {
+                                                      ): Unit = {
     mockFetchFromKeyStore[SubscriptionStatusType](subscriptionStatusTypeName, subscriptionStatusType)
     mockFetchFromKeyStore[StatusInfoType](statusInfoTypeName, statusInfoType)
     mockFetchFromKeyStore[StatusNotification](statusNotificationName, statusNotification)
@@ -137,7 +141,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
 
-  // children should not override this method, update here when KeyStoreService changes
+  // children must not override this method, update here when KeyStoreService changes
   protected final def verifyKeyStoreService(
                                              fetchDeRegistrationDate: Option[Int] = None,
                                              saveDeRegistrationDate: Option[Int] = None,

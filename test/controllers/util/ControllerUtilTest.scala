@@ -27,9 +27,8 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Results
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
@@ -39,8 +38,7 @@ import scala.concurrent.Future
 
 case class DummyData(doYouHaveAnyEntries: String, data: Option[String], doYouHaveAnotherEntry: Option[String])
 
-class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendController(mcc) with AwrsUnitTestTraits
-  with MockAuthConnector {
+class ControllerUtilTest extends AwrsUnitTestTraits with MockAuthConnector {
 
   val data = "data"
 
@@ -59,9 +57,9 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
 
   val allModes = List(LinearViewMode, EditSectionOnlyMode)
 
-  "lookup" should {
-    val newEntry = (id: Int) => Future.successful(Ok(test_util_template(id, None)))
-    val existingEntryAction = (list: List[DummyData], id: Int) => Future.successful(Ok(test_util_template(id, list)))
+  "lookup" must {
+    val newEntry = (id: Int) => Future.successful(Results.Ok(test_util_template(id, None)))
+    val existingEntryAction = (list: List[DummyData], id: Int) => Future.successful(Results.Ok(test_util_template(id, list)))
     val haveAnother = (list: List[DummyData]) => list.last.doYouHaveAnotherEntry.contains(BooleanRadioEnum.YesString)
     val someDummyData = Future.successful(Some(List(lastEntry)))
 
@@ -84,7 +82,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       )(
         SessionBuilder.buildRequestWithSessionNoUser(),
         viewMode,
-        mockMessages,
+        messages,
         mockAppConfig,
         implicitly
       )
@@ -92,14 +90,14 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
     "display a new page with id = 1 when no data is cached and id = 1 is requested" in {
       allModes.foreach { viewMode =>
         val showPage = testLookup(
-          fetchData = None,
+          fetchData = Future.successful(None),
           id = 1
         )(
           viewMode
         )
         val document = Jsoup.parse(contentAsString(showPage))
-        document.getElementById("idDiv").text shouldBe "1"
-        document.getElementById("dummyListHead") shouldBe null
+        document.getElementById("idDiv").text mustBe "1"
+        document.getElementById("dummyListHead") mustBe null
       }
     }
 
@@ -112,8 +110,8 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
           viewMode
         )
         val document = Jsoup.parse(contentAsString(showPage))
-        document.getElementById("idDiv").text shouldBe "1"
-        document.getElementById("dummyListHead").text shouldBe "data exists"
+        document.getElementById("idDiv").text mustBe "1"
+        document.getElementById("dummyListHead").text mustBe "data exists"
       }
     }
 
@@ -124,7 +122,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       )(
         LinearViewMode
       )
-      status(showPage) shouldBe NOT_FOUND
+      status(showPage) mustBe NOT_FOUND
     }
 
     "in edit viewMode, display a new page when id = 1 and populated and have another is answered no and id = 2 is requested" in {
@@ -134,21 +132,21 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       )(
         EditSectionOnlyMode
       )
-      status(showPage) shouldBe OK
+      status(showPage) mustBe OK
       val document = Jsoup.parse(contentAsString(showPage))
-      document.getElementById("idDiv").text shouldBe "2"
-      document.getElementById("dummyListHead") shouldBe null
+      document.getElementById("idDiv").text mustBe "2"
+      document.getElementById("dummyListHead") mustBe null
     }
 
     "display page not found when no data is cached and id = 2 is requested" in {
       allModes.foreach { viewMode =>
         val showPage = testLookup(
-          fetchData = None,
+          fetchData = Future.successful(None),
           id = 2
         )(
           viewMode
         )
-        status(showPage) shouldBe NOT_FOUND
+        status(showPage) mustBe NOT_FOUND
       }
     }
 
@@ -160,7 +158,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         )(
           viewMode
         )
-        status(showPage) shouldBe NOT_FOUND
+        status(showPage) mustBe NOT_FOUND
       }
     }
 
@@ -173,17 +171,17 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         )(
           viewMode
         )
-        status(showPage) shouldBe NOT_FOUND
+        status(showPage) mustBe NOT_FOUND
       }
     }
   }
 
 
-  "sanitise" should {
+  "sanitise" must {
     val amendHaveAnotherAnswer = (data: DummyData, newAnswer: String) => data.copy(doYouHaveAnotherEntry = newAnswer)
 
-    "all elements in the middle of the list with have another answered as no will be set to yes, in linear viewMode the answer to last element should not be amended" in {
-      val list = List(lastEntry, entry) // have anothers should be (no , yes)
+    "all elements in the middle of the list with have another answered as no will be set to yes, in linear viewMode the answer to last element must not be amended" in {
+      val list = List(lastEntry, entry) // have anothers must be (no , yes)
       val result = sanitise[DummyData](list = list)(
         amendHaveAnotherAnswer = amendHaveAnotherAnswer,
         yes = BooleanRadioEnum.YesString,
@@ -191,7 +189,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       )(
         LinearViewMode
       )
-      result shouldBe List(entry, entry) // expected have another should be (yes, yes)
+      result mustBe List(entry, entry) // expected have another must be (yes, yes)
     }
 
     "all elements in the middle of the list with have another answered as no will be set to yes, in edit viewMode the answer to the last element will always have have another set to no" in {
@@ -203,7 +201,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       )(
         EditSectionOnlyMode
       )
-      result shouldBe List(entry, lastEntry)
+      result mustBe List(entry, lastEntry)
 
       val list2 = List(lastEntry, entry)
       val result2 = sanitise[DummyData](list = list2)(
@@ -213,12 +211,12 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       )(
         EditSectionOnlyMode
       )
-      result2 shouldBe List(entry, lastEntry)
+      result2 mustBe List(entry, lastEntry)
     }
 
   }
 
-  "updateList" should {
+  "updateList" must {
 
     object TestControllerUtil extends ControllerUtil {
       def testUpdateList(list: List[DummyData],
@@ -245,11 +243,10 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         list, id, newData, viewMode
       )
 
-      updated shouldBe defined
-      updated.get shouldBe List(newData)
+      updated.get mustBe List(newData)
     }
 
-    "update the entries correctly in linear viewMode" should {
+    "update the entries correctly in linear viewMode" must {
       // in linear viewMode the answer to have another determines if the list can potentially be trimmed
 
       "when have another is set to no and id is not the last element in the list, update the elemnet and removes the rest" in {
@@ -262,8 +259,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
           list, id, newData, viewMode
         )
 
-        updated shouldBe defined
-        updated.get shouldBe list.updated(id - 1, newData).take(id)
+        updated.get mustBe list.updated(id - 1, newData).take(id)
       }
 
       "when have another is set to yes, update the elemnt and do not edit the rest" in {
@@ -276,8 +272,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
           list, id, newData, viewMode
         )
 
-        updated shouldBe defined
-        updated.get shouldBe list.updated(id - 1, newData)
+        updated.get mustBe list.updated(id - 1, newData)
       }
     }
 
@@ -291,11 +286,10 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         list, id, newData, viewMode
       )
 
-      updated shouldBe defined
       // in edit viewMode the list will be sanitised
       // in the expectation the add another for id 1 is updated to yes since there will be another after this entry
       // the final entry is also updated to indicate no additional entries are expected
-      updated.get shouldBe list.updated(id - 1, newData.copy(doYouHaveAnotherEntry = BooleanRadioEnum.YesString)).updated(list.size - 1, lastEntry)
+      updated.get mustBe list.updated(id - 1, newData.copy(doYouHaveAnotherEntry = BooleanRadioEnum.YesString)).updated(list.size - 1, lastEntry)
     }
 
     "id from 1 more than max will be appended" in {
@@ -307,10 +301,9 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
           list, id, entry, viewMode
         )
 
-        updated shouldBe defined
         viewMode match {
-          case LinearViewMode => updated.get shouldBe List(entry, entry, entry) // should not have updated the last element
-          case EditSectionOnlyMode => updated.get shouldBe List(entry, entry, lastEntry) // should have updated the last element
+          case LinearViewMode => updated.get mustBe List(entry, entry, entry) // must not have updated the last element
+          case EditSectionOnlyMode => updated.get mustBe List(entry, entry, lastEntry) // must have updated the last element
           case _ => throw new RuntimeException("unexpected viewMode in test")
         }
       }
@@ -327,14 +320,14 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
           list, id, newData, viewMode
         )
 
-        updated shouldBe None
+        updated mustBe None
       }
 
     }
   }
 
-  "saveThenRedirect" should {
-    val redirect = (haveAnotherAnswer: String, id: Int) => Future.successful(Ok(test_util_template(id, None)))
+  "saveThenRedirect" must {
+    val redirect = (_: String, id: Int) => Future.successful(Results.Ok(test_util_template(id, None)))
     val fetch = (data: Option[List[DummyData]]) => Future.successful(data)
     val save: SaveData[List[DummyData]] = (_, data) => Future.successful(data)
     val conv = (list: List[DummyData]) => list
@@ -344,17 +337,15 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
 
     def mockSaveAction(testFunction: List[DummyData] => Unit): Unit = {
       reset(mockSave)
-      val mockSaveAndTestItsInput = new Answer[Future[Option[Any]]] {
-        def answer(invocation: InvocationOnMock) = {
-          val dummyDataArg: List[DummyData] = {
-            invocation.getArguments.find {
-              case arg: List[DummyData] => true
-              case _ => false
-            }.map(_.asInstanceOf[List[DummyData]]).getOrElse(List.empty[DummyData])
-          }
-          testFunction(dummyDataArg)
-          Future.successful(Some(dummyDataArg))
+      val mockSaveAndTestItsInput: Answer[Future[Option[Any]]] = (invocation: InvocationOnMock) => {
+        val dummyDataArg: List[DummyData] = {
+          invocation.getArguments.find {
+            case _: List[DummyData] => true
+            case _ => false
+          }.map(_.asInstanceOf[List[DummyData]]).getOrElse(List.empty[DummyData])
         }
+        testFunction(dummyDataArg)
+        Future.successful(Some(dummyDataArg))
       }
       when(mockSave(ArgumentMatchers.any(), ArgumentMatchers.any())).thenAnswer(mockSaveAndTestItsInput)
     }
@@ -385,7 +376,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       )(
         SessionBuilder.buildRequestWithSessionNoUser(),
         viewMode,
-        mockMessages,
+        messages,
         mockAppConfig,
         implicitly
       )
@@ -398,7 +389,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       allModes.foreach { viewMode =>
         mockSaveAction(
           (list: List[DummyData]) => {
-            list shouldBe List(entry)
+            list mustBe List(entry)
           }
         )
         val result = testSaveThenRedirect(
@@ -409,7 +400,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         )(
           viewMode
         )
-        status(result) shouldBe OK
+        status(result) mustBe OK
       }
     }
 
@@ -425,7 +416,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         )(
           viewMode
         )
-        status(result) shouldBe BAD_REQUEST
+        status(result) mustBe BAD_REQUEST
       }
     }
 
@@ -438,14 +429,14 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       allModes.foreach { viewMode =>
         mockSaveAction(
           (list: List[DummyData]) => {
-            list.size shouldBe returnedData.size + 1
+            list.size mustBe returnedData.size + 1
             val modeDependedAppendedData = viewMode match {
               case LinearViewMode => newData
               // in edit section viewMode the final entry is always amended to set the anser to have another to no
               case EditSectionOnlyMode => newData.copy(doYouHaveAnotherEntry = BooleanRadioEnum.NoString)
               case _ => throw new RuntimeException("unexpected viewMode in test")
             }
-            list shouldBe returnedData.updated(returnedData.size - 1, returnedData.last.copy(doYouHaveAnotherEntry = BooleanRadioEnum.YesString)) :+ modeDependedAppendedData
+            list mustBe returnedData.updated(returnedData.size - 1, returnedData.last.copy(doYouHaveAnotherEntry = BooleanRadioEnum.YesString)) :+ modeDependedAppendedData
           }
         )
         val result = testSaveThenRedirect(
@@ -456,13 +447,13 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         )(
           viewMode
         )
-        status(result) shouldBe OK
+        status(result) mustBe OK
       }
     }
 
     "if fetch returned data but the requested id is out of the expected range then show error page" in {
       val returnedData = List(lastEntry)
-      // returnedData.size + 1 should trigger append instead
+      // returnedData.size + 1 must trigger append instead
       val id = returnedData.size + 2
       allModes.foreach { viewMode =>
         val result = testSaveThenRedirect(
@@ -473,7 +464,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         )(
           viewMode
         )
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
 
@@ -485,8 +476,8 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       allModes.foreach { viewMode =>
         mockSaveAction(
           (list: List[DummyData]) => {
-            list shouldBe returnedData.updated(id - 1, newData)
-            list diff returnedData shouldBe List(newData)
+            list mustBe returnedData.updated(id - 1, newData)
+            list diff returnedData mustBe List(newData)
           }
         )
         val result = testSaveThenRedirect(
@@ -497,7 +488,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
         )(
           viewMode
         )
-        status(result) shouldBe OK
+        status(result) mustBe OK
       }
 
     }
@@ -516,7 +507,7 @@ class ControllerUtilTest(mcc: MessagesControllerComponents) extends FrontendCont
       convertBCAddressToAddress(add).get
     }
     val expectedAddress = Address(addl1, addl2, Some(addl3), Some(addl4), Some(pc),None,country)
-    bcAddress shouldBe expectedAddress
+    bcAddress mustBe expectedAddress
   }
 
 }

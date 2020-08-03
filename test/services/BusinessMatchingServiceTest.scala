@@ -36,22 +36,22 @@ class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreSe
   val mockBusinessMatchingConnector: BusinessMatchingConnector = mock[BusinessMatchingConnector]
   val businessMatchingServiceTest: BusinessMatchingService = new BusinessMatchingService(testKeyStoreService, mockBusinessMatchingConnector, testSave4LaterService, mockAuditable)
 
-  "Business Matching Services" should {
+  "Business Matching Services" must {
 
     "validate a UTR is correct by business matching" in {
       when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchSuccessResponseJson))
       val result = businessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)), TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "validate a UTR is incorrect by business matching" in {
       when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchFailureResponseJson))
       val result = businessMatchingServiceTest.matchBusinessWithUTR(testUtr, Some(Organisation("Acme", AWRSEnums.CorporateBodyString)), TestUtil.defaultAuthRetrieval)
-      await(result) shouldBe false
+      await(result) mustBe false
     }
   }
 
-  "isValidMatchedGroupUtr" should {
+  "isValidMatchedGroupUtr" must {
     Seq("LTD_GRP", "LLP_GRP") foreach { groupType =>
       s"validate a $groupType utr" in {
         lazy val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option(testPostcode), Option("country"))
@@ -65,7 +65,7 @@ class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreSe
           .thenReturn(Future.successful(matchSuccessResponseJson))
 
         val result = businessMatchingServiceTest.isValidMatchedGroupUtr(testUtr, TestUtil.defaultAuthRetrieval)
-        await(result) shouldBe true
+        await(result) mustBe true
       }
     }
 
@@ -81,7 +81,7 @@ class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreSe
         .thenReturn(Future.successful(matchSuccessResponseJson))
 
       val result = businessMatchingServiceTest.isValidMatchedGroupUtr(testUtr, TestUtil.defaultAuthRetrieval)
-      intercept[Exception](await(result) shouldBe true)
+      intercept[Exception](await(result) mustBe true)
     }
 
     "fail to validate not a group" in {
@@ -96,7 +96,7 @@ class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreSe
         .thenReturn(Future.successful(matchSuccessResponseJson))
 
       val result = businessMatchingServiceTest.isValidMatchedGroupUtr(testUtr, TestUtil.defaultAuthRetrieval)
-      intercept[Exception](await(result) shouldBe true)
+      intercept[Exception](await(result) mustBe true)
     }
   }
 }

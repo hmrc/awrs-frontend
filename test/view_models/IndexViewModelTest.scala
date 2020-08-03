@@ -29,13 +29,13 @@ class IndexViewModelTest extends AwrsUnitTestTraits {
     })).toList
   )
 
-  "IndexViewModel" should {
+  "IndexViewModel" must {
     "calculate the correct hash for the session based on the sections completed" in {
-      testData(true, false, false).toSessionHash shouldBe 1.toHexString
-      testData(true, true, false).toSessionHash shouldBe 3.toHexString
-      testData(false, false, true).toSessionHash shouldBe 4.toHexString
-      testData(true, false, true).toSessionHash shouldBe 5.toHexString
-      testData(true, true, true).toSessionHash shouldBe 7.toHexString
+      testData(true, false, false).toSessionHash mustBe 1.toHexString
+      testData(true, true, false).toSessionHash mustBe 3.toHexString
+      testData(false, false, true).toSessionHash mustBe 4.toHexString
+      testData(true, false, true).toSessionHash mustBe 5.toHexString
+      testData(true, true, true).toSessionHash mustBe 7.toHexString
     }
   }
 }

@@ -16,20 +16,17 @@
 
 package forms.validation.util
 
+import forms.test.util.AwrsFormTestUtils
 import forms.validation.util.ErrorMessageLookup._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.MessagesControllerComponents
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class ErrorMessageLookupLookupTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class ErrorMessageLookupLookupTest extends AwrsFormTestUtils with MockitoSugar  {
 
   private val messagesArgumentMarkupRegex = "\\{\\d+\\}"
-
-  // used for configuring the test data
-  private def testDataToString(data: Map[String, String]): String =
-    data.toList.flatMap(e => List(f"${e._1}%s=${e._2}%s")).mkString("\n")
 
   private val messagesFileContent =
     Map("testkey1" -> " result1 ",
@@ -44,9 +41,9 @@ class ErrorMessageLookupLookupTest extends UnitSpec with MockitoSugar with OneSe
     str.trim
 
   implicit val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  implicit val messages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
+  implicit override val messages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
 
-  "The Message Handler" should {
+  "The Message Handler" must {
     // currently using messages.en as the inputs for these tests
     // better to replace these with mock data somehow
     "provide the correct message lookup functionality" when {
@@ -55,27 +52,27 @@ class ErrorMessageLookupLookupTest extends UnitSpec with MockitoSugar with OneSe
           val key: String = "testkey1"
           val testData: MessageLookup = FieldError(key)
           val message: String = messageLookup(testData)
-          message shouldBe trimString(messagesFileContent(key))
+          message mustBe trimString(messagesFileContent(key))
         }
         "it is a FieldErrorInfo instance with additional parameters" in {
           val key: String = "test.withprefix.testkey2"
           val args: Seq[Any] = Seq("hello", 2, "world")
           val testData: MessageLookup = FieldError(key, MessageArguments(args: _*))
           val message: String = messageLookup(testData)
-          message shouldBe trimString(messagesFileContent(key).replaceAll(messagesArgumentMarkupRegex, "%s").format(args.map(x => x.toString): _*))
+          message mustBe trimString(messagesFileContent(key).replaceAll(messagesArgumentMarkupRegex, "%s").format(args.map(x => x.toString): _*))
         }
         "it is a SummaryErrorInfo instance with no additional parameters" in {
           val key: String = "testkey1"
           val testData: MessageLookup = SummaryError(key, "anchor")
           val message: String = messageLookup(testData)
-          message shouldBe trimString(messagesFileContent(key))
+          message mustBe trimString(messagesFileContent(key))
         }
         "it is a SummaryErrorInfo instance with additional parameters" in {
           val key: String = "test.withprefix.testkey2"
           val args: Seq[Any] = Seq("hello", 2, "world")
           val testData: MessageLookup = SummaryError(key, MessageArguments(args: _*), "anchor")
           val message: String = messageLookup(testData)
-          message shouldBe trimString(messagesFileContent(key).replaceAll(messagesArgumentMarkupRegex, "%s").format(args.map(x => x.toString): _*))
+          message mustBe trimString(messagesFileContent(key).replaceAll(messagesArgumentMarkupRegex, "%s").format(args.map(x => x.toString): _*))
         }
       }
 
@@ -92,7 +89,7 @@ class ErrorMessageLookupLookupTest extends UnitSpec with MockitoSugar with OneSe
           val expectedEmbedded = trimString(messagesFileContent(embeddedKey).replaceAll(messagesArgumentMarkupRegex, "%s").format(embededArgs.map(x => x.toString): _*))
           // intentionally leaving the second arg as {1}
           val expectedOutter = messagesFileContent(outterkey).replaceFirst(messagesArgumentMarkupRegex, "%s").format(expectedEmbedded)
-          message shouldBe trimString(expectedOutter)
+          message mustBe trimString(expectedOutter)
         }
         "it is a SummaryErrorInfo instance" in {
           val outterkey: String = "testkey3"
@@ -106,7 +103,7 @@ class ErrorMessageLookupLookupTest extends UnitSpec with MockitoSugar with OneSe
           val expectedEmbedded = trimString(messagesFileContent(embeddedKey).replaceAll(messagesArgumentMarkupRegex, "%s").format(embededArgs.map(x => x.toString): _*))
           // intentionally leaving the second arg as {1}
           val expectedOutter = messagesFileContent(outterkey).replaceFirst(messagesArgumentMarkupRegex, "%s").format(expectedEmbedded)
-          message shouldBe trimString(expectedOutter)
+          message mustBe trimString(expectedOutter)
         }
       }
     }

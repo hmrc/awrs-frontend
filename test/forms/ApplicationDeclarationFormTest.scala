@@ -21,15 +21,15 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.AwrsFieldConfig
 import utils.TestConstants._
 
-class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with AwrsFieldConfig {
+class ApplicationDeclarationFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
   implicit lazy val form = ApplicationDeclarationForm.applicationDeclarationForm.form
 
-  "Form validation" should {
+  "Form validation" must {
     "display the correct validation errors for declarationName" in {
       val fieldId = "declarationName"
 
@@ -72,7 +72,7 @@ class ApplicationDeclarationFormTest extends UnitSpec with MockitoSugar with One
     }
   }
 
-  "Form validation" should {
+  "Form validation" must {
     "Allow submission if both name and role are filled in and the confirmation box is checked" in {
       val data: Map[String, String] =
         Map("declarationName" -> testWelshChars,

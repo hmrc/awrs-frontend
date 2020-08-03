@@ -77,10 +77,10 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     super.beforeEach()
   }
 
-  "ApplicationStatusController" should {
-    def testPageIsDisplayed(result: Future[Result]) = status(result) shouldBe OK
+  "ApplicationStatusController" must {
+    def testPageIsDisplayed(result: Future[Result]) = status(result) mustBe OK
 
-    def testPageIsSkipped(result: Future[Result]) = status(result) shouldBe SEE_OTHER
+    def testPageIsSkipped(result: Future[Result]) = status(result) mustBe SEE_OTHER
 
     "Display the status page on an inital visit when routed from home controller or the link" in {
       returningTestUser(initialVisit = true, FromHomeController)(testPageIsDisplayed)
@@ -93,10 +93,10 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  "When status page needs to be displayed the ApplicationStatusController" should {
+  "When status page needs to be displayed the ApplicationStatusController" must {
     "redirect to pending status page if API 9 Status is pending and API 12 Notification is not minded to reject" in {
       lazy val verifyHeadingAndReturnDocument = (result: Future[Result]) => {
-        status(result) shouldBe OK
+        status(result) mustBe OK
         val document = Jsoup.parse(contentAsString(result))
         checkStatusPageExitPoints(document, testPendingSubscriptionStatusType.formBundleStatus.name)
         val lede = StandardLedeParam(
@@ -125,7 +125,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to minded to reject status page if API 9 Status is pending and API 12 Notification is minded to reject" in {
       getWithMindedToRejectUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testPendingSubscriptionStatusType.formBundleStatus.name)
           val lede = AlertLedeParam(
@@ -145,7 +145,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to approved status page if API 9 Status is approved" in {
       getWithApprovedUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedSubscriptionStatusType.formBundleStatus.name)
               val lede = StandardLedeParam(
@@ -161,7 +161,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to minded to reject status page if API 9 Status is approved and API 12 Notification is minded to revoke" in {
       getWithApprovedMindedToRevokeUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testPendingSubscriptionStatusType.formBundleStatus.name)
               val lede = AlertLedeParam(
@@ -177,7 +177,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to no longer minded to reject status page if API 9 Status is approved and API 12 Notification is no longer minded to revoke" in {
       getWithApprovedNoLongerMindedToRevokeUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedSubscriptionStatusType.formBundleStatus.name)
               val lede = AlertLedeParam(
@@ -193,7 +193,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to approved with conditions status page if API 9 Status is approved with conditions" in {
       getWithApprovedWithConditionsUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
               val lede = StandardLedeParam(
@@ -210,7 +210,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to minded to reject status page if API 9 Status is approved with conditions and API 12 Notification is minded to revoke" in {
       getWithApprovedWithConditionsMindedToRevokeUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
               val lede = AlertLedeParam(
@@ -226,7 +226,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to no longer minded to reject status page if API 9 Status is approved with conditions and API 12 Notification is no longer minded to revoke" in {
       getWithApprovedWithConditionsNoLongerMindedToRevokeUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkStatusPageExitPoints(document, testApprovedWithConditionsSubscriptionStatusType.formBundleStatus.name)
               val lede = AlertLedeParam(
@@ -242,7 +242,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to rejected status page if API 9 Status is rejected" in {
       getWithRejectedUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkViewApplicationPointsToViewApplication(document)
 
@@ -260,7 +260,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to rejected under review status page if API 9 Status is rejected under review" in {
       getWithRejectedReviewUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkViewApplicationPointsToViewApplication(document)
 
@@ -278,7 +278,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to revoked under review status page if API 9 Status is revoked under review" in {
       getWithRevokedReviewUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkViewApplicationPointsToViewApplication(document)
 
@@ -297,7 +297,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     "redirect to revoked status page if API 9 Status is revoked" in {
       getWithRevokedUser {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           checkViewApplicationPointsToViewApplication(document)
 
@@ -313,7 +313,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  "isNewBusiness" should {
+  "isNewBusiness" must {
     val authRetrievals = StandardAuthRetrievals(Set(), None, "")
 
     "report a new business" when {
@@ -323,7 +323,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
 
         val isNew = testApplicationStatusController.isNewBusiness(authRetrievals)
 
-        await(isNew) shouldBe Some(true)
+        await(isNew) mustBe Some(true)
       }
 
       "the answer is not available in trading start details, instead in fe model" in {
@@ -334,7 +334,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
 
         val isNew = testApplicationStatusController.isNewBusiness(authRetrievals)
 
-        await(isNew) shouldBe Some(true)
+        await(isNew) mustBe Some(true)
       }
     }
 
@@ -349,7 +349,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
 
         val isNew = testApplicationStatusController.isNewBusiness(authRetrievals)
 
-        await(isNew) shouldBe None
+        await(isNew) mustBe None
       }
     }
   }
@@ -403,10 +403,10 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     }
 
     expected.awrsRegeNo match {
-      case None => lede.text shouldBe coreLede
+      case None => lede.text mustBe coreLede
       case Some(awrsRegN) =>
         val awrsRegText: String = Messages("awrs.application_status.awrsRegNo", AwrsNumberFormatter.format(awrsRegN))
-        lede.text shouldBe f"$coreLede $awrsRegText"
+        lede.text mustBe f"$coreLede $awrsRegText"
     }
   }
 
@@ -415,9 +415,9 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     val processed = document.getElementById("indication-processed")
     val status = document.getElementById("indication-approved")
 
-    received shouldBe null
-    processed shouldBe null
-    status shouldBe null
+    received mustBe null
+    processed mustBe null
+    status mustBe null
   }
 
   def checkStatusProgressBarIsCorrect(document: Document, expected: ProgressBarTestParam): Unit = {
@@ -427,38 +427,38 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
 
     def assertCorrectTickBox(element: Element, expected: tickBox) {
       expected match {
-        case HasTickBox | true => element.attr("class") should include(tickBoxClass)
-        case NoTickBox | false => element.attr("class") should not include tickBoxClass
+        case HasTickBox | true => element.attr("class") must include(tickBoxClass)
+        case NoTickBox | false => element.attr("class") must not include tickBoxClass
       }
     }
 
     assertCorrectTickBox(received, expected.received.tickBox)
-    received.attr("class") should include(expected.received.fillBar)
+    received.attr("class") must include(expected.received.fillBar)
 
     assertCorrectTickBox(processed, expected.processed.tickBox)
-    processed.attr("class") should include(expected.processed.fillBar)
+    processed.attr("class") must include(expected.processed.fillBar)
 
     assertCorrectTickBox(status, expected.status.tickBox)
-    status.attr("class") should include(expected.status.fillBar)
+    status.attr("class") must include(expected.status.fillBar)
   }
 
   def checkStatusPageExitPoints(document: Document, status: String): Unit =
     status match {
       case "Rejected" | "Revoked" | "RejectedUnderReviewOrAppeal" | "RevokedUnderReviewOrAppeal " =>
-        document.select("a.link").attr("href") shouldBe controllers.routes.ApplicationStatusController.showStatus(true).url
-        document.select("a.button").attr("href") shouldBe controllers.routes.IndexController.showIndex().url
+        document.select("a.link").attr("href") mustBe controllers.routes.ApplicationStatusController.showStatus(true).url
+        document.select("a.button").attr("href") mustBe controllers.routes.IndexController.showIndex().url
       case _ =>
-        document.getElementById("sign-in-to-view").attr("href") shouldBe controllers.routes.IndexController.showIndex().url
+        document.getElementById("sign-in-to-view").attr("href") mustBe controllers.routes.IndexController.showIndex().url
     }
 
   def checkViewApplicationPointsToViewApplication(document: Document): Unit =
-    document.select("a.button").attr("href") shouldBe controllers.routes.ViewApplicationController.show(false).url
+    document.select("a.button").attr("href") mustBe controllers.routes.ViewApplicationController.show(false).url
 
   def checkViewOrEditApplicationDoesNotExist(document: Document): Unit =
-    document.select("a.button").attr("href").length shouldBe 0
+    document.select("a.button").attr("href").length mustBe 0
 
   def statusInfoMessageIsDisplayed(document: Document, expected: String): Unit =
-    document.select(".form-group").first().text() should include(expected)
+    document.select(".form-group").first().text() must include(expected)
 
   def statusTestUser(status: SubscriptionStatusType,
                      statusInfo: MockConfiguration[Option[StatusInfoType]] = DoNotConfigure,

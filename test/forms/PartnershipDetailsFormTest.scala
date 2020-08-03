@@ -23,10 +23,10 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 
-class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
   implicit val mockConfig: ApplicationConfig = mockAppConfig
 
@@ -38,8 +38,8 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
   val partnerTypes = Set(Individual, CorporateBody, SoleTrader)
   lazy val crnField = s"$crnMapping.companyRegistrationNumber"
 
-  "Form validations" should {
-    "Partners," should {
+  "Form validations" must {
+    "Partners," must {
 
       "check the entity type is selected" in {
         val fieldId = "entityType"
@@ -135,7 +135,7 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
         )
 
         val testForm = form.bindFromRequest(data)
-        testForm.errors shouldBe Seq()
+        testForm.errors mustBe Seq()
       }
 
       "check validations for at least one in ('doYouHaveVRN' or 'isBusinessIncorporated' or 'doYouHaveUTR'), when partner is Corporate Body" in {
@@ -174,7 +174,7 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
       }
 
 
-      "Valid journeys for when partner is Individual should pass" in {
+      "Valid journeys for when partner is Individual must pass" in {
         val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
 
         val testDataScen1: Map[String, String] =
@@ -224,7 +224,7 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
         assertFormIsValid(form, testDataScen1)
       }
 
-        "Valid journeys for when partner is Corporate Body should pass" in {
+        "Valid journeys for when partner is Corporate Body must pass" in {
         val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
 
         val testDataScen1: Map[String, String] =
@@ -305,7 +305,7 @@ class PartnershipDetailsFormTest extends UnitSpec with MockitoSugar with OneServ
         assertFormIsValid(form, data)
       }
 
-      "Valid journeys for when partner is Sole Trader should pass" in {
+      "Valid journeys for when partner is Sole Trader must pass" in {
         val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
 
         val testDataScen1: Map[String, String] =

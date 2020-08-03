@@ -27,10 +27,10 @@ import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Forms._
 import play.api.data.validation.{Valid, ValidationResult}
 import play.api.data.{Form, Mapping}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
 
-class TupleDateMappingTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
   import TupleDateMapping._
 
@@ -57,7 +57,7 @@ class TupleDateMappingTest extends UnitSpec with MockitoSugar with OneServerPerS
   )(TestForm.apply)(TestForm.unapply))
 
 
-  "tupleDate_compulsory sub mapping" should {
+  "tupleDate_compulsory sub mapping" must {
     "Correctly validate 'tupleDate'" in {
       val fieldId = "prefix"
       val expectations = CompulsoryDateValidationExpectations(
@@ -96,7 +96,7 @@ class TupleDateMappingTest extends UnitSpec with MockitoSugar with OneServerPerS
       fieldId assertDateFieldIsCompulsory expectations
     }
 
-    "yearMustBe4Digits should enforce users to enter 4 digits in the year field" in {
+    "yearMustBe4Digits must enforce users to enter 4 digits in the year field" in {
       val fieldId = "prefix2"
       val expectations = CompulsoryDateValidationExpectations(
         ExpectedFieldIsEmpty(fieldId, FieldError("testkey.emptyDate")),

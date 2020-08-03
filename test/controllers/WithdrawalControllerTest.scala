@@ -65,67 +65,67 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[WithdrawalReason](FakeRequest(), WithdrawalReasonForm.withdrawalReasonForm.form, reason)
 
   "Withdrawal Controller" must {
-    "Withdrawal Confirmation" should {
+    "Withdrawal Confirmation" must {
 
       "display a validation error on submit if radio button is not selected" in {
         continueUpdateWithAuthorisedUser(testConfirmationRequest(WithdrawalConfirmation(None))) {
           result =>
-            status(result) should be(BAD_REQUEST)
+            status(result) must be(BAD_REQUEST)
         }
       }
 
     }
 
-    "Withdrawal Reasons" should {
+    "Withdrawal Reasons" must {
 
       "display the withdrawal reasons page if user has status of Pending with reasons in cache" in {
         getWithAuthorisedUserCtWithStatusPendingReasons {
-          result => status(result) shouldBe OK
+          result => status(result) mustBe OK
         }
       }
 
       "display error page (Reasons) if user has status of anything else than pending (Approved)" in {
         getWithAuthorisedUserCtWithStatusApprovedReasons {
           result =>
-            status(result) shouldBe INTERNAL_SERVER_ERROR
+            status(result) mustBe INTERNAL_SERVER_ERROR
 
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementsByClass("heading-xlarge").text() should be(Messages("awrs.generic.error.title"))
+            document.getElementsByClass("heading-xlarge").text() must be(Messages("awrs.generic.error.title"))
         }
       }
 
       "return to error page where Internal Error thrown" in {
         getWithAuthorisedUserStatusApprovedErrorResponse {
           result =>
-            status(result) shouldBe INTERNAL_SERVER_ERROR
+            status(result) mustBe INTERNAL_SERVER_ERROR
 
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementsByClass("heading-xlarge").text() should be(Messages("awrs.generic.error.title"))
-            document.getElementsByClass("heading-medium").text() should be(Messages("awrs.generic.error.status"))
+            document.getElementsByClass("heading-xlarge").text() must be(Messages("awrs.generic.error.title"))
+            document.getElementsByClass("heading-medium").text() must be(Messages("awrs.generic.error.status"))
         }
       }
 
       "display the withdrawal reasons page if user has status of Pending" in {
         getWithAuthorisedUserStatusPendingReasonsNoKeyStore {
-          result => status(result) shouldBe OK
+          result => status(result) mustBe OK
         }
       }
 
       "display a blank withdrawal reasons page if user has status of Pending and nothing is in the keystore" in {
         continueWithAuthorisedUserReasonsNoKeyStore(testSubscriptionStatusTypePending) {
-          result => status(result) shouldBe OK
+          result => status(result) mustBe OK
         }
       }
 
     }
 
-    "Submit Withdrawal Reasons" should {
+    "Submit Withdrawal Reasons" must {
       "redirect to confirmation page" in {
         continueWithSubmitWithdrawalReasons(
           testReasonRequest(WithdrawalReason(reason = WithdrawalReasonEnum.AppliedInError.toString, reasonOther = None))
         ) {
           result =>
-            status(result) shouldBe SEE_OTHER
+            status(result) mustBe SEE_OTHER
         }
       }
 
@@ -134,23 +134,23 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
           testReasonRequest(WithdrawalReason(reason = "", reasonOther = None))
         ) {
           result =>
-            status(result) shouldBe BAD_REQUEST
+            status(result) mustBe BAD_REQUEST
         }
       }
     }
 
-    "Submit withdrawal application" should {
+    "Submit withdrawal application" must {
       "display success message when deEnrol and withdrawal is successful" in {
         continueWithApplicationSubmit(
           testConfirmationRequest(WithdrawalConfirmation("Yes")), deEnrol = true) {
-          result => status(result) shouldBe SEE_OTHER
+          result => status(result) mustBe SEE_OTHER
         }
       }
 
       "redirect to index message when selects No" in {
         continueWithApplicationSubmit(
           testConfirmationRequest(WithdrawalConfirmation("No")), deEnrol = false) {
-          result => status(result) shouldBe SEE_OTHER
+          result => status(result) mustBe SEE_OTHER
         }
       }
 

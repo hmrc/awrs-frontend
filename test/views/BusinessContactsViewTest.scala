@@ -56,13 +56,13 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
 
     def testIfExists(someString: Option[String]) =
       someString match {
-        case Some(string) => reviewDetail.text() should include(string)
+        case Some(string) => reviewDetail.text() must include(string)
         case _ =>
       }
 
     val mockData = testBusinessCustomerDetails("SOP")
-    reviewDetail.text() should include(mockData.businessAddress.line_1)
-    reviewDetail.text() should include(mockData.businessAddress.line_2)
+    reviewDetail.text() must include(mockData.businessAddress.line_1)
+    reviewDetail.text() must include(mockData.businessAddress.line_2)
     testIfExists(mockData.businessAddress.line_3)
     testIfExists(mockData.businessAddress.line_4)
     testIfExists(mockData.businessAddress.postcode)
@@ -70,15 +70,15 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
 
   "BusinessContactsController" must {
 
-    "AWRS Contact Details entered " should {
+    "AWRS Contact Details entered " must {
 
       "must see the 'Enter' view if they are the linear journey" in {
         linearJourney {
           result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("contact-information-heading").text() shouldBe Messages("awrs.business_contacts.heading", Messages("awrs.generic.enter"))
+            document.getElementById("contact-information-heading").text() mustBe Messages("awrs.business_contacts.heading", Messages("awrs.generic.enter"))
             reviewDetailMatch(document.getElementById("review-details"))
-            document.getElementById("contactAddressSame-no-content") shouldNot be(null)
+            document.getElementById("contactAddressSame-no-content") mustNot be(null)
         }
       }
 
@@ -86,16 +86,16 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
         editJourney {
           result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("contact-information-heading").text() shouldBe Messages("awrs.business_contacts.heading", Messages("awrs.generic.edit"))
+            document.getElementById("contact-information-heading").text() mustBe Messages("awrs.business_contacts.heading", Messages("awrs.generic.edit"))
             reviewDetailMatch(document.getElementById("review-details"))
-            document.getElementById("contactAddressSame-no-content") shouldNot be(null)
+            document.getElementById("contactAddressSame-no-content") mustNot be(null)
         }
       }
     }
 
     allEntities.foreach {
       legalEntity =>
-        s"$legalEntity" should {
+        s"$legalEntity" must {
           Seq(true, false).foreach {
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {

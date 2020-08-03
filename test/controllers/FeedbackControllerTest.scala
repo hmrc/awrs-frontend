@@ -39,12 +39,12 @@ class FeedbackControllerTest extends AwrsUnitTestTraits
   def testRequest(feedback: Feedback): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[Feedback](FakeRequest(), FeedbackForm.feedbackForm.form, feedback)
 
-  "Feedback Controller" should {
+  "Feedback Controller" must {
     "submit feedback and redirect to thank you page" in {
       submitAuthorisedUser(testRequest(Feedback(visitReason = None, satisfactionRating = None, comments = "tdfyguhijoihugfvbjnkm"))) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/feedback/thanks")
+          status(result) mustBe 303
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/feedback/thanks")
       }
     }
   }

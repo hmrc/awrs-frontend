@@ -45,14 +45,14 @@ class FeedbackViewTest extends AwrsUnitTestTraits
   def testRequest(feedback: Feedback) =
     TestUtil.populateFakeRequest[Feedback](FakeRequest(), FeedbackForm.feedbackForm.form, feedback)
 
-  "Feedback Controller" should {
+  "Feedback Controller" must {
 
     "submit feedback containing special characters will show an error" in {
       submitAuthorisedUser(testRequest(Feedback(visitReason = "ß∂ƒ©None", satisfactionRating = None, comments = "∂ƒ©˙tdfyguhijoihugfvbjnkm"))) {
 
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          status(result) shouldBe BAD_REQUEST
+          status(result) mustBe BAD_REQUEST
 
           val errMsgKey = "awrs.generic.error.character_invalid"
 
