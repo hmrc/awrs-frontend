@@ -22,14 +22,14 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 
-class BusinessPremisesFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class BusinessPremisesFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form = BusinessPremisesForm.businessPremisesForm.form
 
-  "Form validation" should {
+  "Form validation" must {
     "display the correct validation errors for additionalPremises" in {
       val fieldId = "additionalPremises"
 
@@ -60,7 +60,7 @@ class BusinessPremisesFormTest extends UnitSpec with MockitoSugar with OneServer
     }
   }
 
-  "Form validation" should {
+  "Form validation" must {
     "Allow submission if additionalPremises is answered with 'No'" in {
       val data: Map[String, String] =
         Map("additionalPremises" -> BooleanRadioEnum.No.toString)

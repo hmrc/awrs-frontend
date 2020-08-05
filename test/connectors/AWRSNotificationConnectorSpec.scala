@@ -78,7 +78,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   lazy val withdranEmailURI = testAWRSNotificationConnector.withdrawnEmailURI
 
 
-  "fetchNotificationCache" should {
+  "fetchNotificationCache" must {
 
     lazy val mindedToReject: Option[StatusNotification] = TestUtil.testStatusNotificationMindedToReject
     lazy val mindedToRejectJson = StatusNotification.writer.writes(mindedToReject.get)
@@ -111,19 +111,19 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
 
     "parse old StatusNotification model correctly with new field(storageDatetime) with the new model" in {
       val statusNotification = Json.parse(revokeOldJSon).as[StatusNotification]
-      statusNotification.storageDatetime shouldBe None
+      statusNotification.storageDatetime mustBe None
     }
 
     "parse StatusNotification model correctly" in {
       val statusNotification = Json.parse(revokeJSon).as[StatusNotification]
-      statusNotification.storageDatetime shouldBe Some("2017-04-01T0013:07:11")
+      statusNotification.storageDatetime mustBe Some("2017-04-01T0013:07:11")
     }
 
 
     "return status as OK | NO_CONTENT, for successful fetch" in {
       mockFetchResponse(OK | NO_CONTENT, mindedToRejectJson)
       val result = testFetchCall
-      await(result) shouldBe mindedToReject
+      await(result) mustBe mindedToReject
     }
 
     "return status as BAD_REQUEST, for unsuccessful fetch" in {
@@ -135,7 +135,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     "return status as None, for not NOT_FOUND from fetch" in {
       mockFetchResponse(NOT_FOUND, mindedToRejectJson)
       val result = testFetchCall
-      await(result) shouldBe None
+      await(result) mustBe None
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful fetch" in {
@@ -160,13 +160,13 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     "return true for successful delete (status OK | NO_CONTENT)" in {
       mockDeleteResponse(OK | NO_CONTENT)
       val result = testDeleteCall
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return false for unsuccessful delete (status 500)" in {
       mockDeleteResponse(INTERNAL_SERVER_ERROR)
       val result = testDeleteCall
-      await(result) shouldBe false
+      await(result) mustBe false
     }
 
     "return false for unsuccessful delete (status 404)" in {
@@ -175,7 +175,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       // because mongo db will return ok on delete even if the entry id not found
       mockDeleteResponse(NOT_FOUND)
       val result = testDeleteCall
-      await(result) shouldBe false
+      await(result) mustBe false
     }
 
   }
@@ -183,7 +183,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   // The status tests are not conducted for the following tests because they share the same handler as the one
   // used by fetchNotificationCache
   // The main benefit of the following tests are to ensure the URL is correct
-  "getNotificationViewedStatus" should {
+  "getNotificationViewedStatus" must {
 
     def mockGetViewedStatusResponse(responseStatus: Int, responseData: Option[JsValue]): Unit =
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -195,18 +195,18 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       val viewed = true
       mockGetViewedStatusResponse(OK | NO_CONTENT, Json.parse(s"""{"viewed": $viewed}"""))
       val result = testGetViewedStatusCall
-      await(result).get.viewed shouldBe viewed
+      await(result).get.viewed mustBe viewed
     }
 
     "return the value None, for not found status coming from getNotificationViewedStatus" in {
       mockGetViewedStatusResponse(NOT_FOUND, None)
       val result = testGetViewedStatusCall
-      await(result) shouldBe None
+      await(result) mustBe None
     }
 
   }
 
-  "markNotificationViewedStatusAsViewed" should {
+  "markNotificationViewedStatusAsViewed" must {
 
     def mockMarkViewedStatusResponse(haveResponse: Boolean): Unit =
       when(mockWSHttp.PUT[Unit, HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -222,17 +222,17 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       val marked = true
       mockMarkViewedStatusResponse(haveResponse = true)
       val result = testMarkViewedStatusCall
-      await(result).get shouldBe marked
+      await(result).get mustBe marked
     }
 
     "return the value None, for not found status coming from markNotificationViewedStatusAsViewed" in {
       mockMarkViewedStatusResponse(haveResponse = false)
       val result = testMarkViewedStatusCall
-      await(result) shouldBe None
+      await(result) mustBe None
     }
   }
 
-  "sendConfirmationEmail" should {
+  "sendConfirmationEmail" must {
     val testEmailRequest = EmailRequest(ApiTypes.API4, "test business", testUtr, "example@example.com", isNewBusiness = true)
 
     def sendConfirmationEmailResponse(haveResponse: Boolean): Unit =
@@ -245,17 +245,17 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     "return true for a successful request" in {
       sendConfirmationEmailResponse(true)
       val result = testAWRSNotificationConnector.sendConfirmationEmail(testEmailRequest)
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return false for a successful request" in {
       sendConfirmationEmailResponse(false)
       val result = testAWRSNotificationConnector.sendConfirmationEmail(testEmailRequest)
-      await(result) shouldBe false
+      await(result) mustBe false
     }
   }
 
-  "sendCancellationEmail" should {
+  "sendCancellationEmail" must {
     val testEmailRequest = EmailRequest(ApiTypes.API10, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendCancellationEmailResponse(haveResponse: Boolean): Unit =
@@ -268,17 +268,17 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     "return true for a successful request" in {
       sendCancellationEmailResponse(true)
       val result = testAWRSNotificationConnector.sendCancellationEmail(testEmailRequest)
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return false for a successful request" in {
       sendCancellationEmailResponse(false)
       val result = testAWRSNotificationConnector.sendCancellationEmail(testEmailRequest)
-      await(result) shouldBe false
+      await(result) mustBe false
     }
   }
 
-  "sendWithdrawnEmail" should {
+  "sendWithdrawnEmail" must {
     val testEmailRequest = EmailRequest(ApiTypes.API8, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendWithdrawnEmailResponse(haveResponse: Boolean): Unit =
@@ -291,13 +291,13 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     "return true for a successful request" in {
       sendWithdrawnEmailResponse(true)
       val result = testAWRSNotificationConnector.sendWithdrawnEmail(testEmailRequest)
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "return false for a successful request" in {
       sendWithdrawnEmailResponse(false)
       val result = testAWRSNotificationConnector.sendWithdrawnEmail(testEmailRequest)
-      await(result) shouldBe false
+      await(result) mustBe false
     }
   }
 }

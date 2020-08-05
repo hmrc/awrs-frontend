@@ -24,9 +24,9 @@ class PackageTest extends AwrsUnitTestTraits {
 
   def Testdata(data: (Int, String)*) = Map[Int, String](data: _*)
 
-  def test(expectations: Testdata) = expectations.foreach { case (key: Int, value: String) => ordinalIntSuffix(key) shouldBe value }
+  def test(expectations: Testdata) = expectations.foreach { case (key: Int, value: String) => ordinalIntSuffix(key) mustBe value }
 
-  "ordinalIntSuffix" should {
+  "ordinalIntSuffix" must {
 
     "return words for 1 - 20" in {
       val testData = Testdata(

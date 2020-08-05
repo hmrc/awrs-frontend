@@ -47,7 +47,7 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
     "field2" -> text,
     "field3" -> text)(TestModel.apply)(TestModel.unapply)
 
-  "The Message Handler" should {
+  "The Message Handler" must {
 
     val simpleFieldMessage = FieldErrorConfig("empty")
     val singleId = TargetFieldIds("field1")
@@ -71,11 +71,11 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
 
         // evaluate results
         val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
-        summarys.length shouldBe 1
+        summarys.length mustBe 1
         val summary: SummaryError = summarys.head
-        summary.msgKey shouldBe defaultSummaryId(simpleFieldMessage.msgKey)
-        summary.msgArgs shouldBe MessageArguments()
-        summary.anchor shouldBe singleId.anchor
+        summary.msgKey mustBe defaultSummaryId(simpleFieldMessage.msgKey)
+        summary.msgArgs mustBe MessageArguments()
+        summary.anchor mustBe singleId.anchor
       }
 
       "there are no summary name defined but summary params are defined" in {
@@ -91,11 +91,11 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
 
-        summarys.length shouldBe 1
+        summarys.length mustBe 1
         val summary: SummaryError = summarys.head
-        summary.msgKey shouldBe defaultSummaryId(simpleFieldMessage.msgKey)
-        summary.msgArgs shouldBe summaryParam
-        summary.anchor shouldBe singleId.anchor
+        summary.msgKey mustBe defaultSummaryId(simpleFieldMessage.msgKey)
+        summary.msgArgs mustBe summaryParam
+        summary.anchor mustBe singleId.anchor
       }
 
       "there are specific summary name and params defined" in {
@@ -111,15 +111,15 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
         val summary: SummaryError = summarys.head
-        summary.msgKey shouldBe summaryMessage.msgKey.get
-        summary.msgArgs shouldBe summaryParam
-        summary.anchor shouldBe singleId.anchor
+        summary.msgKey mustBe summaryMessage.msgKey.get
+        summary.msgArgs mustBe summaryParam
+        summary.anchor mustBe singleId.anchor
       }
     }
 
     "correctly extract field error messages" when {
 
-      "only a single id is defined, the field with id should be the only one associated with the error" in {
+      "only a single id is defined, the field with id must be the only one associated with the error" in {
         //setup
         val testMessage = createErrorMessage(singleId, simpleFieldMessage)
         val testModelForm = specifyField1IsEmptyErrorMessage(testMessage)
@@ -130,14 +130,14 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val field1Errors = getFieldErrors(formWithErrors("field1"), formWithErrors)
         val errorInfo = field1Errors.head
-        errorInfo.msgKey shouldBe simpleFieldMessage.msgKey
+        errorInfo.msgKey mustBe simpleFieldMessage.msgKey
         val field2Errors = getFieldErrors(formWithErrors("field2"), formWithErrors)
-        field2Errors shouldBe empty
+        field2Errors mustBe empty
         val field3Errors = getFieldErrors(formWithErrors("field3"), formWithErrors)
-        field2Errors shouldBe empty
+        field2Errors mustBe empty
       }
 
-      "multiple ids are defined, all fields with id should be associated with the error" in {
+      "multiple ids are defined, all fields with id must be associated with the error" in {
         //setup
         val multipleId = TargetFieldIds("field1", "field2", "field3")
         val testMessage = createErrorMessage(multipleId, simpleFieldMessage)
@@ -149,13 +149,13 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val field1Errors = getFieldErrors(formWithErrors("field1"), formWithErrors)
         val field1Error = field1Errors.head
-        field1Error.msgKey shouldBe simpleFieldMessage.msgKey
+        field1Error.msgKey mustBe simpleFieldMessage.msgKey
         val field2Errors = getFieldErrors(formWithErrors("field2"), formWithErrors)
         val field2Error = field2Errors.head
-        field2Error.msgKey shouldBe simpleFieldMessage.msgKey
+        field2Error.msgKey mustBe simpleFieldMessage.msgKey
         val field3Errors = getFieldErrors(formWithErrors("field3"), formWithErrors)
         val field3Error = field3Errors.head
-        field3Error.msgKey shouldBe simpleFieldMessage.msgKey
+        field3Error.msgKey mustBe simpleFieldMessage.msgKey
       }
     }
 
@@ -175,7 +175,7 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val field1Errors = getFieldErrors(formWithErrors("field1"), formWithErrors)
         val field1Error = field1Errors.head
-        field1Error.msgArgs shouldBe testVarparam
+        field1Error.msgArgs mustBe testVarparam
       }
 
       "used in sumary error message" in {
@@ -189,7 +189,7 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
         val summary: SummaryError = summarys.head
-        summary.msgArgs shouldBe testVarparam
+        summary.msgArgs mustBe testVarparam
       }
 
       "empty strings used in field error message" in{
@@ -203,7 +203,7 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val field1Errors = getFieldErrors(formWithErrors("field1"), formWithErrors)
         val field1Error = field1Errors.head
-        field1Error.msgArgs shouldBe testEmptyVarparam
+        field1Error.msgArgs mustBe testEmptyVarparam
       }
 
       "empty strings used in summary error message" in{
@@ -217,7 +217,7 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
         val summary: SummaryError = summarys.head
-        summary.msgArgs shouldBe testEmptyVarparam
+        summary.msgArgs mustBe testEmptyVarparam
       }
     }
 
@@ -239,9 +239,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val field1Errors = getFieldErrors(formWithErrors("field1"), formWithErrors)
         val field1Error = field1Errors.head
-        field1Error.msgKey shouldBe msgKey
-        //        field1Error.params shouldBe testVarparam
-        field1Error.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage))
+        field1Error.msgKey mustBe msgKey
+        //        field1Error.params mustBe testVarparam
+        field1Error.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage))
       }
 
       "multiple usage in field error message " in {
@@ -258,9 +258,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val field1Errors = getFieldErrors(formWithErrors("field1"), formWithErrors)
         val field1Error = field1Errors.head
-        field1Error.msgKey shouldBe msgKey
-        //        field1Error.params shouldBe testVarparam
-        field1Error.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
+        field1Error.msgKey mustBe msgKey
+        //        field1Error.params mustBe testVarparam
+        field1Error.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
       }
 
       "nested usage in field error message " in {
@@ -277,9 +277,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
         // evaluate results
         val field1Errors = getFieldErrors(formWithErrors("field1"), formWithErrors)
         val field1Error = field1Errors.head
-        field1Error.msgKey shouldBe msgKey
-        //        field1Error.params shouldBe testVarparam
-        field1Error.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
+        field1Error.msgKey mustBe msgKey
+        //        field1Error.params mustBe testVarparam
+        field1Error.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
       }
 
       "simple usage in summary error message" when {
@@ -297,9 +297,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe defaultSummaryId(msgkey)
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgKey mustBe defaultSummaryId(msgkey)
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
 
         "there is a specified summary key" in {
@@ -316,9 +316,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe msgKey
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgKey mustBe msgKey
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
       }
 
@@ -337,9 +337,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe defaultSummaryId(msgKey)
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgKey mustBe defaultSummaryId(msgKey)
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
         "there is a specified summary key" in {
           val msgKey = "empty"
@@ -355,9 +355,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe msgKey
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgKey mustBe msgKey
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
       }
 
@@ -376,9 +376,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe defaultSummaryId(msgKey)
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgKey mustBe defaultSummaryId(msgKey)
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
 
         "there is a specified summary key" in {
@@ -395,9 +395,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe msgKey
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgKey mustBe msgKey
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
       }
 
@@ -418,9 +418,9 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe defaultSummaryId(msgKey)
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage), messageLookup(innerembeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgKey mustBe defaultSummaryId(msgKey)
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage), messageLookup(innerembeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
 
         "there is a specified summary key" in {
@@ -439,10 +439,10 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
           // evaluate results
           val summarys: Seq[SummaryError] = getSummaryErrors(formWithErrors)
           val summary: SummaryError = summarys.head
-          summary.msgKey shouldBe msgKey
+          summary.msgKey mustBe msgKey
           val temp = messageLookup(embeddedMessage)
-          summary.msgArgs shouldBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage), messageLookup(innerembeddedMessage))
-          summary.anchor shouldBe singleId.anchor
+          summary.msgArgs mustBe MessageArguments(messageLookup(embeddedMessage), messageLookup(embeddedMessage), messageLookup(innerembeddedMessage))
+          summary.anchor mustBe singleId.anchor
         }
       }
     }

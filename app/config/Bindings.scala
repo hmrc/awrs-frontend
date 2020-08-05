@@ -21,6 +21,7 @@ import play.api.{Configuration, Environment}
 import play.api.inject.{Binding, Module}
 import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
 import utils.{CountryCodes, CountryCodesImpl}
+import play.api.inject.{bind => playBind}
 
 class Bindings extends Module{
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -28,11 +29,11 @@ class Bindings extends Module{
   }
 
   private def bindDeps() = Seq(
-    bind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
-    bind(classOf[CountryCodes]).to(classOf[CountryCodesImpl])
+    playBind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
+    playBind(classOf[CountryCodes]).to(classOf[CountryCodesImpl])
   )
 
   private def bindConnectors() = Seq(
-    bind(classOf[BusinessMatchingConnector]).to(classOf[BusinessMatchingConnectorImpl])
+    playBind(classOf[BusinessMatchingConnector]).to(classOf[BusinessMatchingConnectorImpl])
   )
 }

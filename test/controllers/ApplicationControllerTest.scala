@@ -30,34 +30,34 @@ class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnecto
 
   val testApplicationController = new ApplicationController(mockMCC, mockAppConfig)
 
-  "Authorised users" should {
+  "Authorised users" must {
     "be redirected to feedback-survey page" in {
       getWithAuthorisedUser { result =>
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result).get should include ("/feedback/AWRS")
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get must include ("/feedback/AWRS")
       }
     }
   }
 
-  "unauthorised users" should {
+  "unauthorised users" must {
     "be directed to the unauthorised page" in {
       val result = testApplicationController.unauthorised.apply(SessionBuilder.buildRequestWithSession(userId))
-      status(result) shouldBe UNAUTHORIZED
+      status(result) mustBe UNAUTHORIZED
     }
   }
 
-  "timedout users" should {
+  "timedout users" must {
     "be redirected to signout" in {
       val result = testApplicationController.timedOut().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result).get should include ("/feedback/AWRS")
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get must include ("/feedback/AWRS")
     }
   }
 
-  "keep alive" should {
+  "keep alive" must {
     "keep alive the session" in {
       val result = testApplicationController.keepAlive.apply(SessionBuilder.buildRequestWithSession(userId))
-      status(result) shouldBe OK
+      status(result) mustBe OK
     }
   }
 

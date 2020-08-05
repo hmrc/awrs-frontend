@@ -22,14 +22,13 @@ import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.BusinessTypeForm._
 import javax.inject.Inject
 import models.{BusinessType, NewApplicationType}
-import play.api.Logger
 import play.api.data.Form
 import play.api.mvc._
 import services.apis.AwrsAPI5
 import services.{CheckEtmpService, DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,7 +55,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
       businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
     } yield {
       businessCustomerDetails match {
-        // the business customer details populated by the API 5 call should have been persisted by the HomeController by this point.
+        // the business customer details populated by the API 5 call must have been persisted by the HomeController by this point.
         case Some(details) =>
           debug("Business Details found: " + details)
           Redirect(controllers.routes.ApplicationStatusController.showStatus(mustShow = false)) addBusinessTypeToSession businessType addBusinessNameToSession details.businessName
@@ -105,7 +104,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                 val legalEntity = businessTypeData.legalEntity.getOrElse("SOP")
                 checkEtmpService.validateBusinessDetails(businessDetails, legalEntity) flatMap { result =>
                   val nextPage = if (result) {
-                    Logger.info("[BusinessTypeController][saveAndContinue] Upserted details and enrolments to EACD")
+                    logger.info("[BusinessTypeController][saveAndContinue] Upserted details and enrolments to EACD")
                     authorisedAction { updatedRetrievals =>
                       standardApi5Journey(updatedRetrievals)
                     }

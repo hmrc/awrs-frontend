@@ -61,7 +61,7 @@ class TradingNameControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  "showBusinessDetails" should {
+  "showBusinessDetails" must {
     "show the business details page" when {
       "a user is logged in" in {
         val businessType = "test"
@@ -78,12 +78,12 @@ class TradingNameControllerTest extends AwrsUnitTestTraits
         val res = testTradingNameController.showTradingName(false)
           .apply(SessionBuilder.buildRequestWithSession(userId, businessType))
 
-        status(res) shouldBe 200
+        status(res) mustBe 200
       }
     }
   }
 
-  "save" should {
+  "save" must {
     "save the trading name details" when {
       "provided with trading name and business name details for an edit journey" in {
         val businessType = "test"
@@ -105,8 +105,8 @@ class TradingNameControllerTest extends AwrsUnitTestTraits
         val res = testTradingNameController.saveAndReturn()
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 
-        status(res) shouldBe 303
-        redirectLocation(res).get should include(f"/alcohol-wholesale-scheme/view-section/businessDetails")
+        status(res) mustBe 303
+        redirectLocation(res).get must include(f"/alcohol-wholesale-scheme/view-section/businessDetails")
       }
 
       "provided with trading name and business name details" in {
@@ -129,8 +129,8 @@ class TradingNameControllerTest extends AwrsUnitTestTraits
         val res = testTradingNameController.saveAndContinue()
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 
-        status(res) shouldBe 303
-        redirectLocation(res).get should include(f"/alcohol-wholesale-scheme/before-2016")
+        status(res) mustBe 303
+        redirectLocation(res).get must include(f"/alcohol-wholesale-scheme/before-2016")
       }
 
       "provided with trading name and business name details for LLP_GRP" in {
@@ -154,8 +154,8 @@ class TradingNameControllerTest extends AwrsUnitTestTraits
         val res = testTradingNameController.saveAndContinue()
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 
-        status(res) shouldBe 303
-        redirectLocation(res).get should include(f"/alcohol-wholesale-scheme/business-details/group-representative/confirm")
+        status(res) mustBe 303
+        redirectLocation(res).get must include(f"/alcohol-wholesale-scheme/business-details/group-representative/confirm")
       }
     }
   }

@@ -27,7 +27,7 @@ import play.api.mvc._
 import services.DataCacheKeys._
 import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
@@ -65,7 +65,7 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
               case Some(businessCustomerDetails) =>
                 val firstTimeForm = placeOfBusinessForm.form.fill(PlaceOfBusiness(mainAddress = convertBCAddressToAddress(businessCustomerDetails.businessAddress)))
                 Future.successful(Ok(template(accountUtils.hasAwrs(ar.enrolments), businessType, firstTimeForm)))
-              case None => showErrorPage // given the user started the journey correctly from the home controller, this should never happen
+              case None => showErrorPage // given the user started the journey correctly from the home controller, this must never happen
             }
         }
       }

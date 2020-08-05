@@ -19,7 +19,7 @@ package controllers.auth
 import config.ApplicationConfig
 import org.apache.commons.codec.binary.Base64._
 import org.apache.commons.codec.digest.DigestUtils
-import play.api.Logger
+import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
@@ -36,7 +36,7 @@ case class StandardAuthRetrievals(
                                    credId: String
                                  )
 
-trait AuthFunctionality extends AuthorisedFunctions {
+trait AuthFunctionality extends AuthorisedFunctions with Logging {
   val origin: String = "awrs-frontend"
   val signInUrl: String
   implicit val applicationConfig: ApplicationConfig
@@ -49,7 +49,7 @@ trait AuthFunctionality extends AuthorisedFunctions {
   private def recoverAuthorisedCalls(implicit request: Request[AnyContent], messages: Messages): PartialFunction[Throwable, Result] = {
     case _: NoActiveSession         => Redirect(signInUrl, loginParams)
     case er: AuthorisationException =>
-      Logger.warn(s"[recoverAuthorisedCalls] Auth exception: $er")
+      logger.warn(s"[recoverAuthorisedCalls] Auth exception: $er")
       Unauthorized(applicationConfig.templateUnauthorised())
   }
 

@@ -20,68 +20,68 @@ import audit.Auditable
 import controllers.auth.StandardAuthRetrievals
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class AccountUtilsTest extends UnitSpec with MockitoSugar{
+class AccountUtilsTest extends PlaySpec with MockitoSugar{
 
   val accountUtils = new AccountUtils(mock[Auditable])
 
-  "getUtr" should {
+  "getUtr" must {
     "Return the user SA utr " in {
       val utr = accountUtils.getUtr(TestUtil.authRetrievalSAUTR)
-      utr shouldBe "0123456"
+      utr mustBe "0123456"
     }
 
     "Return the user CT utr for org" in {
       val utr = accountUtils.getUtr(TestUtil.defaultAuthRetrieval)
-      utr shouldBe "6543210"
+      utr mustBe "6543210"
     }
 
     "Return the fake cred id for org account" in {
       val utr = accountUtils.getUtr(TestUtil.authRetrievalEmptySetEnrolments)
-      utr shouldBe "fakeCredID"
+      utr mustBe "fakeCredID"
     }
 
     "throw exception if no details are found" in {
       val thrown = the[RuntimeException] thrownBy accountUtils.getUtr(TestUtil.emptyAuthRetrieval)
-      thrown.getMessage should include("[getUtr] No UTR found")
+      thrown.getMessage must include("[getUtr] No UTR found")
     }
   }
 
-  "authLink" should {
+  "authLink" must {
     "Return the user SA link " in {
       val utr = accountUtils.authLink(TestUtil.authRetrievalSAUTR)
-      utr shouldBe "sa/0123456"
+      utr mustBe "sa/0123456"
     }
 
     "Return the user CT link" in {
       val utr = accountUtils.authLink(TestUtil.defaultAuthRetrieval)
-      utr shouldBe "org/UNUSED"
+      utr mustBe "org/UNUSED"
     }
 
     "throw exception if no details are found for authlink" in {
       val thrown = the[RuntimeException] thrownBy accountUtils.authLink(TestUtil.emptyAuthRetrieval)
-      thrown.getMessage should include("User does not have the correct authorisation")
+      thrown.getMessage must include("User does not have the correct authorisation")
     }
   }
 
-  "isSaAccount" should {
+  "isSaAccount" must {
     "return true if it is an SA account" in {
-      accountUtils.isSaAccount(TestUtil.authRetrievalSAUTR.enrolments) shouldBe Some(true)
+      accountUtils.isSaAccount(TestUtil.authRetrievalSAUTR.enrolments) mustBe Some(true)
     }
 
     "return None if it is not SA" in {
-      accountUtils.isSaAccount(TestUtil.defaultAuthRetrieval.enrolments) shouldBe None
+      accountUtils.isSaAccount(TestUtil.defaultAuthRetrieval.enrolments) mustBe None
     }
   }
 
-  "isOrgAccount" should {
+  "isOrgAccount" must {
     "return true if it is a CT account" in {
-      accountUtils.isOrgAccount(TestUtil.defaultAuthRetrieval) shouldBe Some(true)
+      accountUtils.isOrgAccount(TestUtil.defaultAuthRetrieval) mustBe Some(true)
     }
 
     "return true if it is also an organisation account" in {
-      accountUtils.isOrgAccount(TestUtil.authRetrievalSAUTR) shouldBe Some(true)
+      accountUtils.isOrgAccount(TestUtil.authRetrievalSAUTR) mustBe Some(true)
     }
   }
 }

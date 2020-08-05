@@ -41,45 +41,45 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
     override val signInUrl = "/sign-in"
   }
 
-  "Users who entered from the summary edit view" should {
+  "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
       returnWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("directorsAndCompanySecretaries" -> "Director", "personOrCompany" -> "person", "firstName" -> "firstName",
         "lastName" -> "lastName", "doTheyHaveNationalInsurance" -> "No", "passportNumber" -> testPassportNo, "isDirectorACompany" -> "No", "otherDirectors" -> "No")) {
         result =>
-          redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessDirectorsName")
+          redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$businessDirectorsName")
           verifySave4LaterService(saveBusinessDirectors = 1)
       }
     }
   }
 
-  "When submitting the delete confirmation page we" should {
+  "When submitting the delete confirmation page we" must {
     "be routed back to the summary page after confirming Yes" in {
       deleteWithAuthorisedUser()(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/businessDirectors")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/businessDirectors")
           verifySave4LaterService(saveBusinessDirectors = 1)
       }
     }
     "be routed back to the summary page after confirming No" in {
       deleteWithAuthorisedUser()(deleteConfirmation_No) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/businessDirectors")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/businessDirectors")
           verifySave4LaterService(saveBusinessDirectors = 0)
       }
     }
     "be shown an error if nothing is selected" in {
       deleteWithAuthorisedUser()(deleteConfirmation_None) {
         result =>
-          status(result) shouldBe 400
+          status(result) mustBe 400
       }
     }
     "be routed back to the summary page after confirming Yes for a record that is not the first" in {
       deleteWithAuthorisedUser(id = 2, directors = BusinessDirectors(List(testBusinessDirector, testBusinessDirector)))(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/view-section/businessDirectors")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/view-section/businessDirectors")
           verifySave4LaterService(saveBusinessDirectors = 1)
       }
     }

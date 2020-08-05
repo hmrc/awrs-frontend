@@ -17,7 +17,7 @@
 package utils
 
 import models.{ApplicationDeclaration, Products, Suppliers, _}
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.{JsValue, Json}
 import services.DataCacheKeys._
 import services.JourneyConstants
@@ -26,14 +26,14 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
-object CacheUtil {
+object CacheUtil extends Logging {
 
   implicit class CacheHelper(cache: CacheMap){
 
     private def tryOrReturnNone[T](f: => Option[T])(implicit tag: ClassTag[T]): Option[T] = Try(f) match {
       case Success(result) => result
       case Failure(e) =>
-        Logger.debug(s"\nCacheUtil.CacheHelper failure on retrieving ${tag.runtimeClass}:\n$e")
+        logger.debug(s"\nCacheUtil.CacheHelper failure on retrieving ${tag.runtimeClass}:\n$e")
         None
     }
 

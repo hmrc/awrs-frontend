@@ -42,11 +42,11 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
 
   val testSave4LaterService = new Save4LaterService(mockMainStoreSave4LaterConnector, mockApiSave4LaterConnector, mockAccountUtils)
 
-  // children should not override this method, update here when Save4LaterService changes
+  // children must not override this method, update here when Save4LaterService changes
   protected final def mockFetchFromSave4Later[T](key: String, config: MockConfiguration[Future[Option[T]]])(implicit connector: Save4LaterConnector): Unit =
   config ifConfiguredThen (dataToReturn => when(connector.fetchData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(dataToReturn))
 
-  // children should not override this method, update here when Save4LaterService changes
+  // children must not override this method, update here when Save4LaterService changes
   protected final def setupMockSave4LaterServiceOnlySaveFunctions(): Unit = {
     val defaultSaveMock = new Answer[Future[Option[Any]]] {
       def answer(invocation: InvocationOnMock) = {
@@ -59,11 +59,11 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
     when(mockApiSave4LaterConnector.saveData4Later(any(), any(), any())(any(), any(), any())).thenAnswer(defaultSaveMock)
   }
 
-  // internal function for this trait only, should not be made visable to children
+  // internal function for this trait only, must not be made visable to children
   private final def verifySave4LaterFetch[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterConnector): Unit =
   someCount ifDefinedThen (count => verify(connector, times(count)).fetchData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
-  // internal function for this trait only, should not be made visable to children
+  // internal function for this trait only, must not be made visable to children
   private final def verifySave4LaterSave[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterConnector): Unit =
   someCount ifDefinedThen (count => verify(connector, times(count)).saveData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
@@ -109,7 +109,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
     removeAll = removeAll
   )
 
-  // children should not override this method, update here when Save4LaterService changes
+  // children must not override this method, update here when Save4LaterService changes
   protected final def setupMockSave4LaterServiceWithOnly(
                                                           fetchApplicationStatus: MockConfiguration[Future[Option[ApplicationStatus]]] = DoNotConfigure,
                                                           fetchBusinessType: MockConfiguration[Future[Option[BusinessType]]] = DoNotConfigure,
@@ -169,7 +169,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
     removeAll = removeAll
   )
 
-  // children should not override this method, update here when Save4LaterService changes
+  // children must not override this method, update here when Save4LaterService changes
   protected final def setupMockApiSave4LaterServiceWithOnly(
                                                              fetchSubscriptionTypeFrontEnd: MockConfiguration[Future[Option[SubscriptionTypeFrontEnd]]] = DoNotConfigure,
                                                              fetchBusinessDetailsSupport: MockConfiguration[Future[Option[BusinessDetailsSupport]]] = DoNotConfigure,
@@ -184,7 +184,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
     setupMockSave4LaterServiceOnlySaveFunctions()
   }
 
-  // children should not override this method, update here when Save4LaterService changes
+  // children must not override this method, update here when Save4LaterService changes
   protected final def verifySave4LaterService(
                                                fetchBusinessType: Option[Int] = None,
                                                saveBusinessType: Option[Int] = None,
@@ -260,7 +260,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
     removeAll ifDefinedThen (count => verify(connector, times(count)).removeAll(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
   }
 
-  // children should not override this method, update here when Save4LaterService changes
+  // children must not override this method, update here when Save4LaterService changes
   protected final def verifyApiSave4LaterService(
                                                   fetchSubscriptionTypeFrontEnd: Option[Int] = None,
                                                   saveSubscriptionTypeFrontEnd: Option[Int] = None,

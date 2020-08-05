@@ -17,11 +17,11 @@
 package models
 
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
 
-class DeRegistrationTest extends UnitSpec with MockitoSugar {
-  "DeRegistration.toDeRegistration" should {
+class DeRegistrationTest extends PlaySpec with MockitoSugar {
+  "DeRegistration.toDeRegistration" must {
     "transform the date into the correct format" in {
       val day = "31"
       val month = "03"
@@ -29,11 +29,11 @@ class DeRegistrationTest extends UnitSpec with MockitoSugar {
       val date: DeRegistrationDate = DeRegistrationDate(TupleDate(day, month, year))
       val reason: DeRegistrationReason = DeRegistrationReason(Some("no reason"), None)
 
-      DeRegistration.toDeRegistration(Some(date), None) shouldBe None
-      DeRegistration.toDeRegistration(None, Some(reason)) shouldBe None
+      DeRegistration.toDeRegistration(Some(date), None) mustBe None
+      DeRegistration.toDeRegistration(None, Some(reason)) mustBe None
 
       val toMiddle = DeRegistration.toDeRegistration(Some(date), Some(reason))
-      toMiddle.get.deregistrationDate shouldBe f"$year-$month-$day"
+      toMiddle.get.deregistrationDate mustBe f"$year-$month-$day"
     }
   }
 }

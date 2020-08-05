@@ -51,58 +51,58 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     mockMCC, mockAWRSNotificationConnector, mockDeEnrolService, mockKeyStoreService, testSave4LaterService,
     mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template, templateConfirm)
 
-  "Reapplication Controller" should {
+  "Reapplication Controller" must {
     "submit confirmation and redirect to root home page when yes selected" in {
       submitAuthorisedUser(testRequest(ReapplicationConfirmation(AWRSEnums.BooleanRadioEnum.YesString))) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme")
       }
     }
 
     "submit confirmation and redirect to root home page when no selected" in {
       submitAuthorisedUser(testRequest(ReapplicationConfirmation(AWRSEnums.BooleanRadioEnum.NoString))) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme")
+          status(result) mustBe 303
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme")
       }
     }
 
     "show recent withdrawal error page if the user has been Rejected within 24 hours" in {
       showWithException(testStatusNotification(StatusContactType.Rejected)) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
+        document.getElementById("application-error-header").text() must be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
       }
     }
 
     "show recent re-registration error page if the user has been Revoked within 24 hours" in {
       showWithException(testStatusNotification(StatusContactType.Revoked)) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("application-error-header").text() should be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
+        document.getElementById("application-error-header").text() must be(Messages("awrs.generic.wait_info",Messages("awrs.generic.wait_info_de-registration")))
       }
     }
 
     "redirect to re-application confirm page if more than 24 hours ago" in {
       showWithException(testStatusNotification(StatusContactType.Revoked, storageDatetime = LocalDateTime.now().minusHours(25))) { result =>
-        status(result) shouldBe 200
+        status(result) mustBe 200
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("withdrawal-confirmation-title").text() should be(Messages("awrs.reapplication.confirm_page.heading"))
+        document.getElementById("withdrawal-confirmation-title").text() must be(Messages("awrs.reapplication.confirm_page.heading"))
       }
     }
 
     "redirect to re-application confirm page if a date is not found" in {
       showWithException(testStatusNotification(StatusContactType.Revoked, storageDatetime = None)) { result =>
-        status(result) shouldBe 200
+        status(result) mustBe 200
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("withdrawal-confirmation-title").text() should be(Messages("awrs.reapplication.confirm_page.heading"))
+        document.getElementById("withdrawal-confirmation-title").text() must be(Messages("awrs.reapplication.confirm_page.heading"))
       }
     }
 
     "redirect to re-application confirm page if a notification is not found" in {
       showWithException(None) { result =>
-        status(result) shouldBe 200
+        status(result) mustBe 200
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("withdrawal-confirmation-title").text() should be(Messages("awrs.reapplication.confirm_page.heading"))
+        document.getElementById("withdrawal-confirmation-title").text() must be(Messages("awrs.reapplication.confirm_page.heading"))
       }
     }
   }

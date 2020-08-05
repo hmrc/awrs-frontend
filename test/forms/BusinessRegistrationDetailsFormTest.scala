@@ -24,11 +24,11 @@ import models.BusinessRegistrationDetails
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 import utils.TestUtil
 
-class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
   lazy val forms = (entity: String) => businessRegistrationDetailsForm(entity).form
   val SoleTrader = "SOP"
   val Ltd = "LTD"
@@ -76,7 +76,7 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
     (doYouHaveVrn, vrn)
   )
 
-  "Business registration details form" should {
+  "Business registration details form" must {
     entities.foreach { entity =>
       implicit lazy val form = forms(entity)
 
@@ -144,7 +144,7 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
           )
 
           val testForm = form.bindFromRequest(data)
-          testForm.errors shouldBe Seq()
+          testForm.errors mustBe Seq()
         } else {
 
         }
@@ -162,7 +162,7 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
 
 
           val fieldId = doYouHaveToTargetField(doYouHaveId)
-          formWithErrors.hasErrors shouldBe true
+          formWithErrors.hasErrors mustBe true
 
           if( doYouHaveId == "doYouHaveUTR" && entity == "LTD"){
             val expected = expectedEmptyForUTR(doYouHaveId)
@@ -213,7 +213,7 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Business registration details form's preprocessor" should {
+  "Business registration details form's preprocessor" must {
     val onlyVRN = (legalEntity: String) => BusinessRegistrationDetails(
       legalEntity = Some(legalEntity),
       doYouHaveUTR = None,
@@ -244,8 +244,8 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
       val request = TestUtil.populateFakeRequest(fakeRequest, preProcessedForm.form, testData)
       preProcessedForm.bindFromRequest()(request).fold(
         formWithErrors => {
-          withClue("This form should have been valid") {
-            true shouldBe false
+          withClue("This form must have been valid") {
+            true mustBe false
           }
         },
         valid => test(valid)
@@ -253,8 +253,8 @@ class BusinessRegistrationDetailsFormTest extends UnitSpec with MockitoSugar wit
     }
 
     def testId(formHasId: Boolean)(field: Option[String])(expected: String) = formHasId match {
-      case true => field shouldBe Some(expected)
-      case false => field shouldBe None // if formHasId is false then this field should not be populated
+      case true => field mustBe Some(expected)
+      case false => field mustBe None // if formHasId is false then this field must not be populated
     }
 
     entities.foreach {

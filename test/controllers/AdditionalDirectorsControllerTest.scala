@@ -46,16 +46,16 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
   def testRequest(director: BusinessDirector): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessDirector](FakeRequest(), BusinessDirectorsForm.businessDirectorsValidationForm, director)
 
-  "Business Directors Page load for Authorised users" should {
+  "Business Directors Page load for Authorised users" must {
     "do not load a blank page for Director 2 if cache is empty" in {
       getWithAuthorisedUserNoCache {
         result =>
-          status(result) should be(NOT_FOUND)
+          status(result) must be(NOT_FOUND)
       }
     }
   }
 
-  "On Business Directors page, for Directors that is a person, pressing Continue for Authorised users" should {
+  "On Business Directors page, for Directors that is a person, pressing Continue for Authorised users" must {
 
     val personTypes = List("Director", "Company Secretary", "Director and Company Secretary")
 
@@ -64,8 +64,8 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
       "redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is %s".format(directorType) in {
         continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = directorType, personOrCompany = "person", firstName = "firstName", lastName = "lastName", doTheyHaveNationalInsurance = "No", nino = "", passportNumber = testPassportNo, isDirectorACompany = "No", otherDirectors = "No"))) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should be("/alcohol-wholesale-scheme/trading-activity")
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must be("/alcohol-wholesale-scheme/trading-activity")
         }
       }
 
@@ -73,28 +73,28 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
 
         continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = directorType, personOrCompany = "person", firstName = "firstName", lastName = "lastName", doTheyHaveNationalInsurance = "No", nino = "", passportNumber = testPassportNo, isDirectorACompany = "No", otherDirectors = "Yes"))) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should be(directorPage2URL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must be(directorPage2URL)
         }
       }
 
     }
   }
 
-  "On Business Directors page, for Directors that are Companies, pressing Continue for Authorised users" should {
+  "On Business Directors page, for Directors that are Companies, pressing Continue for Authorised users" must {
     "redirect to trading activity page when valid data is provided and 'Other directors' is No" in {
       continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = "Director", personOrCompany = "company", businessName = "Simply Wines", doYouHaveTradingName = "No", doYouHaveUTR = "No", doYouHaveCRN = "No", doYouHaveVRN = "Yes", vrn = testVrn, otherDirectors = "No"))) {
         result =>
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/trading-activity")
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/trading-activity")
       }
     }
 
     "redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes" in {
       continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = "Director", personOrCompany = "company", businessName = "Simply Wines", doYouHaveTradingName = "No", doYouHaveUTR = "No", doYouHaveCRN = "No", doYouHaveVRN = "Yes", vrn = testVrn, otherDirectors = "Yes"))) {
         result =>
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result).get should be(directorPage2URL)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get must be(directorPage2URL)
       }
     }
   }

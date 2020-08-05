@@ -26,6 +26,7 @@ import javax.inject.Inject
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -33,12 +34,11 @@ import services.Save4LaterService
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.test._
 import utils.AccountUtils
 
 import scala.concurrent.Future
 
-class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector with MockSave4LaterService {
+class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector with MockSave4LaterService {
 
   // implicit parameters required by the save4later calls, the actual values are not important as these calls are mocked
   implicit lazy val fakeRequest: FakeRequest[AnyContent] = {
@@ -84,7 +84,7 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
 
   import scala.collection.JavaConversions._
 
-  "row helper" should {
+  "row helper" must {
 
     case class Expectations(lines: String*)
     case class TestCase(data: Seq[Option[String]], expecations: Expectations)
@@ -101,14 +101,14 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
           case 0 => return
           case _ => 1
         }
-      trSize shouldBe expTrSize
+      trSize mustBe expTrSize
       // each tr has exactly 2 tds
       // the first is the rowTitle which we are ignoring
       // the second is the contents specified with each element wrappined in a p tag
       val ps = trs.get(0).getElementsByTag("td").get(1).getElementsByTag("p")
-      ps.size() shouldBe expPSize
+      ps.size() mustBe expPSize
 
-      ps.map(x => x.text()) shouldBe expectations.lines
+      ps.map(x => x.text()) mustBe expectations.lines
     }
 
     def runTests(testCases: TestCase*): Unit = {
@@ -120,7 +120,7 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
     val line2 = "line 2"
     val line3 = "line 3"
 
-    "When no data is provided then the row should not be displayed" in {
+    "When no data is provided then the row must not be displayed" in {
       val testCases = Seq(
         TestCase(Seq(), Expectations()),
         TestCase(Seq(None, None), Expectations())
@@ -128,7 +128,7 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
       runTests(testCases: _*)
     }
 
-    "When all rows are presented then they should all be displayed" in {
+    "When all rows are presented then they must all be displayed" in {
       val testCases = Seq(
         TestCase(Seq(line1), Expectations(line1)),
         TestCase(Seq(line1, line2), Expectations(line1, line2))
@@ -136,7 +136,7 @@ class ComponentTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach w
       runTests(testCases: _*)
     }
 
-    "When not all rows are presented then only the defined row should all be displayed" in {
+    "When not all rows are presented then only the defined row must all be displayed" in {
       val testCases = Seq(
         TestCase(Seq(line1, None, None), Expectations(line1)),
         TestCase(Seq(line1, None, line3), Expectations(line1, line3)),

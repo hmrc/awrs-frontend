@@ -40,17 +40,17 @@ class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
     reset(mockSessionCache)
   }
 
-  "KeyStoreConnector" should {
+  "KeyStoreConnector" must {
     "fetch saved data from keystore" in {
       when(mockSessionCache.fetchAndGetEntry[SubscriptionStatusType](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testSubscriptionStatusTypePendingGroup)))
       val result = testKeyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](testUtr)
-      await(result) shouldBe Some(testSubscriptionStatusTypePendingGroup)
+      await(result) mustBe Some(testSubscriptionStatusTypePendingGroup)
     }
 
     "save data to keystore" in {
       when(mockSessionCache.cache[SubscriptionStatusType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedKeystoreCacheMap))
       val result = testKeyStoreConnector.saveDataToKeystore[SubscriptionStatusType](testUtr, testSubscriptionStatusTypePendingGroup)
-      await(result) shouldBe returnedKeystoreCacheMap
+      await(result) mustBe returnedKeystoreCacheMap
     }
 
   }

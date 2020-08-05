@@ -18,27 +18,27 @@ package models
 
 import org.scalatestplus.mockito.MockitoSugar
 import services.helper.AddressComparator
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.AwrsTestJson._
 
-class AddressAuditModelTest extends UnitSpec with MockitoSugar {
-  "AddressAudits" should {
+class AddressAuditModelTest extends PlaySpec with MockitoSugar {
+  "AddressAudits" must {
     "be built correctly from a relevant posted http body" in {
       val model = auditAddressJson.as[AddressAudits]
       withClue(s"added uprn to the json and model and\nList(\n${model.addressAudits.mkString("\n")}\n)\n") {
-        model.addressAudits.size shouldBe 4
+        model.addressAudits.size mustBe 4
       }
     }
   }
 
-  "Address comparator" should {
+  "Address comparator" must {
     "return true if two addresses are different" in {
       val model = auditAddressJson.as[AddressAudits]
       val toAddress = model.addressAudits(2).toAddress
       val fromAddress = model.addressAudits(2).fromAddress
 
       withClue(s"comparing to and from address\n$toAddress\n$fromAddress\n") {
-        AddressComparator.isDifferent(toAddress, fromAddress) shouldBe true
+        AddressComparator.isDifferent(toAddress, fromAddress) mustBe true
       }
     }
 
@@ -48,7 +48,7 @@ class AddressAuditModelTest extends UnitSpec with MockitoSugar {
       val fromAddress = model.addressAudits(1).fromAddress
 
       withClue(s"comparing to and from address\n$toAddress\n$fromAddress\n") {
-        AddressComparator.isDifferent(toAddress, fromAddress) shouldBe false
+        AddressComparator.isDifferent(toAddress, fromAddress) mustBe false
       }
     }
   }

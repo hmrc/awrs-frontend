@@ -105,29 +105,29 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val confirmationURL = "/alcohol-wholesale-scheme/de-register-confirmation"
   val indexURL = "/alcohol-wholesale-scheme/index"
 
-  "DeRegistration" should {
+  "DeRegistration" must {
     for (pStatusType <- permittedStatusTypes) {
       f"allow usage if type is $pStatusType" in {
         mocks()
 
         testShowDate(pStatusType) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
         }
 
         testShowReason(pStatusType) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
         }
 
         testShowConfirm(pStatusType) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
         }
 
         testShowConfirmation(pStatusType) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
         }
       }
     }
@@ -141,8 +141,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
             fStatusType match {
               // rejected is currently auto redirected
               case Rejected | RejectedUnderReviewOrAppeal | Revoked | RevokedUnderReviewOrAppeal | Withdrawal | DeRegistered =>
-                status(result) shouldBe SEE_OTHER
-              case _ => status(result) shouldBe NOT_FOUND
+                status(result) mustBe SEE_OTHER
+              case _ => status(result) mustBe NOT_FOUND
             }
 
         testShowDate(fStatusType) {
@@ -173,20 +173,20 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testShowDate(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(reasonURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(reasonURL)
         }
 
         testShowConfirm(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(reasonURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(reasonURL)
         }
 
         testShowConfirmation(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(reasonURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(reasonURL)
         }
       }
     }
@@ -197,14 +197,14 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testShowConfirm(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(dateURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(dateURL)
         }
 
         testShowConfirmation(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(dateURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(dateURL)
         }
       }
     }
@@ -215,8 +215,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testSubmitDate(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(confirmURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(confirmURL)
         }
       }
     }
@@ -227,8 +227,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testSubmitReason(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(dateURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(dateURL)
         }
       }
     }
@@ -241,8 +241,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testSubmitConfirm(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(confirmationURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(confirmationURL)
         }
       }
     }
@@ -253,8 +253,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testSubmitConfirm(pStatusType, BooleanRadioEnum.No) {
           result =>
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result).get should endWith(indexURL)
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).get must endWith(indexURL)
             verifyKeyStoreService(
               deleteDeRegistrationDate = 1,
               deleteDeRegistrationReason = 1)
@@ -268,19 +268,19 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testSubmitDateEmpty(pStatusType) {
           result =>
-            status(result) shouldBe BAD_REQUEST
+            status(result) mustBe BAD_REQUEST
         }
         testSubmitDateOldDate(pStatusType) {
           result =>
-            status(result) shouldBe BAD_REQUEST
+            status(result) mustBe BAD_REQUEST
         }
         testSubmitReasonEmpty(pStatusType) {
           result =>
-            status(result) shouldBe BAD_REQUEST
+            status(result) mustBe BAD_REQUEST
         }
         testSubmitConfirmEmpty(pStatusType) {
           result =>
-            status(result) shouldBe BAD_REQUEST
+            status(result) mustBe BAD_REQUEST
 
         }
       }
@@ -292,18 +292,18 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testShowConfirm(pStatusType) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
         }
       }
     }
 
     for (pStatusType <- permittedStatusTypes) {
-      s"$pStatusType users who experienced API10 failures should not have save 4 later cleared up" in {
+      s"$pStatusType users who experienced API10 failures must not have save 4 later cleared up" in {
         mocks(deRegSuccess = false)
 
         testSubmitConfirm(pStatusType) {
           result =>
-            status(result) shouldBe INTERNAL_SERVER_ERROR
+            status(result) mustBe INTERNAL_SERVER_ERROR
             verifySave4LaterService(removeAll = 0)
             verifyApiSave4LaterService(removeAll = 0)
             verifyExternCalls(
@@ -315,7 +315,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
     }
 
     for (pStatusType <- permittedStatusTypes) {
-      s"$pStatusType users who went through successesful API 10 and de-enrol should have their save 4 later cleared up" in {
+      s"$pStatusType users who went through successesful API 10 and de-enrol must have their save 4 later cleared up" in {
         mocks(deRegSuccess = true)
         when(mockEmailService.sendCancellationEmail(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(true))
@@ -323,7 +323,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
         testSubmitConfirm(pStatusType) {
           result =>
-            status(result) shouldBe SEE_OTHER
+            status(result) mustBe SEE_OTHER
             verifySave4LaterService(removeAll = 1)
             verifyApiSave4LaterService(removeAll = 1)
             verifyExternCalls(

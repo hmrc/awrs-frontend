@@ -56,7 +56,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
           .withSession("status" -> "Withdrawal")
         val result = testIndexController.showIndex().apply(request)
 
-        redirectLocation(result).get shouldBe "/business-customer/business-verification/awrs"
+        redirectLocation(result).get mustBe "/business-customer/business-verification/awrs"
       }
 
       "the user has an enrolment and the AWRS application status is De-Registered" in {
@@ -66,22 +66,22 @@ class IndexControllerTest extends ServicesUnitTestFixture {
           .withSession("status" -> "De-Registered")
         val result = testIndexController.showIndex().apply(request)
 
-        redirectLocation(result).get shouldBe "/business-customer/business-verification/awrs"
+        redirectLocation(result).get mustBe "/business-customer/business-verification/awrs"
       }
     }
 
     "display the index page" when {
       "businessType exists in session" in {
         val result = callShowIndex()
-        status(result) shouldBe OK
+        status(result) mustBe OK
       }
 
       "the AWRS status in session is Withdrawal, businessType exists in session, but there is no enrolment" in {
         setupMockSave4LaterService(
           fetchBusinessCustomerDetails = testReviewDetails,
-          fetchAll = None
+          fetchAll = Future.successful(None)
         )
-        setupMockKeyStoreService(None)
+        setupMockKeyStoreService(Future.successful(None))
         setupMockApplicationService(hasAPI5ApplicationChanged = false)
         setupMockIndexService()
         mockAuthNoEnrolment
@@ -90,47 +90,47 @@ class IndexControllerTest extends ServicesUnitTestFixture {
           .withSession("status" -> "Withdrawal")
         val result = testIndexController.showIndex().apply(request)
 
-        status(result) shouldBe OK
+        status(result) mustBe OK
       }
     }
 
     "redirect back to the home controller" when {
       "business type is missing from session" in {
         val result = callShowIndex(businessType = None)
-        status(result) shouldBe SEE_OTHER
+        status(result) mustBe SEE_OTHER
 
-        redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme"
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme"
       }
     }
 
     "clear sessionJourneyStartLocation from session when index is shown" in {
       val result = callShowIndex(startSection = testInitSessionJouneyStartLocation)
       val responseSessionMap = await(result).session(FakeRequest()).data
-      // the session variable for sessionJourneyStartLocation in the response should have been removed
-      responseSessionMap.get(AwrsSessionKeys.sessionJouneyStartLocation) shouldBe None
+      // the session variable for sessionJourneyStartLocation in the response must have been removed
+      responseSessionMap.get(AwrsSessionKeys.sessionJouneyStartLocation) mustBe None
     }
 
   }
 
-  "showLastLocation" should {
+  "showLastLocation" must {
     "route to the previous page if it exists in session" in {
       val previousLoc = "/alcohol-wholesale-scheme/supplier-addresses/edit"
       callShowLastLocationWith(previousLocation = previousLoc) {
         result =>
-          redirectLocation(result).get shouldBe previousLoc
+          redirectLocation(result).get mustBe previousLoc
       }
     }
     "route to index page if it exists in session" in {
       callShowLastLocationWith(previousLocation = None) {
         result =>
-          redirectLocation(result).get shouldBe "/alcohol-wholesale-scheme/index"
+          redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/index"
       }
     }
   }
 
   private def callShowLastLocationWith(previousLocation: Option[String])(test: Future[Result] => Any) {
     setAuthMocks()
-    val result = testIndexController.showLastLocation.apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
+    val result = testIndexController.showLastLocation().apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
     test(result)
   }
 
@@ -139,7 +139,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
   private def callShowIndex(businessType: Option[String] = "SOP", startSection: Option[String] = None): Future[Result] = {
     setupMockSave4LaterService(
       fetchBusinessCustomerDetails = testReviewDetails,
-      fetchAll = None
+      fetchAll = Future.successful(None)
     )
     setupMockAwrsAPI9(keyStore = testSubscriptionStatusTypePending, connector = DoNotConfigure)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
@@ -154,7 +154,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
       case Some(definedSection) => request.withSession(request.session.+((AwrsSessionKeys.sessionJouneyStartLocation, definedSection)).data.toSeq: _*)
       case _ => request
     }
-    testIndexController.showIndex.apply(requestWithStart)
+    testIndexController.showIndex().apply(requestWithStart)
   }
 
 }

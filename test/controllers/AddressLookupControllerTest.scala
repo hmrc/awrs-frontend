@@ -30,12 +30,12 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 
 import scala.concurrent.Future
 
-class AddressLookupControllerTest extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector {
+class AddressLookupControllerTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val postCode: String = testPostcode
@@ -43,25 +43,25 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
   val mockAddressLookupConnector: AddressLookupConnector = mock[AddressLookupConnector]
   val testAddressLookupController: AddressLookupController = new AddressLookupController(mockMCC, mockAuthConnector, mockAddressLookupConnector, mockAuditable, mockAppConfig)
 
-  "Postcode lookup controller" should {
+  "Postcode lookup controller" must {
     "return Ok response for a valid postcode" in {
       addressLookupValidPostcode {
         result =>
-          status(result) should be(OK)
+          status(result) must be(OK)
       }
     }
 
     "return bad request for invalid postcode" in {
       addressLookupInvalidPostcode {
         result =>
-          status(result) should be(BAD_REQUEST)
+          status(result) must be(BAD_REQUEST)
       }
     }
 
     "return internal server error" in {
       addressLookupInternalServerError {
         result =>
-          status(result) should be(INTERNAL_SERVER_ERROR)
+          status(result) must be(INTERNAL_SERVER_ERROR)
       }
     }
 
@@ -72,7 +72,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
 
       addressAuditCall(addressAudits) {
         result =>
-          status(result) should be(OK)
+          status(result) must be(OK)
       }
     }
 
@@ -83,7 +83,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
 
       addressAuditCall(addressAudits) {
         result =>
-          status(result) should be(OK)
+          status(result) must be(OK)
       }
     }
 
@@ -94,7 +94,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
 
       addressAuditCall(addressAudits) {
         result =>
-          status(result) should be(OK)
+          status(result) must be(OK)
       }
     }
 
@@ -103,7 +103,7 @@ class AddressLookupControllerTest extends UnitSpec with MockitoSugar with Before
 
       addressAuditCall(addressAudits) {
         result =>
-          status(result) should be(OK)
+          status(result) must be(OK)
       }
     }
   }

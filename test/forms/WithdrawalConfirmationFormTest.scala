@@ -21,13 +21,13 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class WithdrawalConfirmationFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class WithdrawalConfirmationFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
   implicit lazy val testForm = WithdrawalConfirmationForm.withdrawalConfirmation
 
-  "Withdrawal Confirmation Form" should {
+  "Withdrawal Confirmation Form" must {
     "Correctly validate that at least one selection is made" in {
       val fieldId = "confirmation"
 

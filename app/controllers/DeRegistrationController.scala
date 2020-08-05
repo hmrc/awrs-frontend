@@ -34,7 +34,7 @@ import services.apis.AwrsAPI10
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 

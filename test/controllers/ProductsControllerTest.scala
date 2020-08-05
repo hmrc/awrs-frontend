@@ -42,16 +42,16 @@ class ProductsControllerTest extends AwrsUnitTestTraits
      "redirect to supplier addresses page when valid data is provided" in {
       continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("mainCustomers[0]" -> "2", "productType[0]" -> "01")) {
         result =>
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/supplier-addresses")
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/supplier-addresses")
       }
     }
   }
 
-  "Users who entered from the summary edit view" should {
+  "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
       returnWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("mainCustomers[0]" -> "2", "productType[0]" -> "01")) {
         result =>
-          redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$productsName")
+          redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$productsName")
           verifySave4LaterService(saveProducts = 1)
       }
     }

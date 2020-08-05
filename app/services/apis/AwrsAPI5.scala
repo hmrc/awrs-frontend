@@ -21,7 +21,7 @@ import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums.BooleanRadioEnum
 import javax.inject.Inject
 import models.{BusinessContacts, _}
-import play.api.Logger
+import play.api.Logging
 import services.Save4LaterService
 import services.helper.AwrsAPI5Helper.convertToBusinessCustomerDetails
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
                          val save4LaterService: Save4LaterService
-                        ){
+                        ) extends Logging {
 
   def retrieveApplication(authRetrievals: StandardAuthRetrievals)
                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionTypeFrontEnd] = {
@@ -65,7 +65,7 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
           _ <- save4LaterService.mainStore.saveBusinessNameDetails(authRetrievals, BusinessNameDetails(Some(busCusDetails.businessName), businessDetails.doYouHaveTradingName, businessDetails.tradingName))
           _ <- save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails.newAWBusiness.get)
         } yield {
-          Logger.info("[checkSavedSubscriptionTypeFrontend] Added missing save4later details to cache")
+          logger.info("[checkSavedSubscriptionTypeFrontend] Added missing save4later details to cache")
           false
         }
     }

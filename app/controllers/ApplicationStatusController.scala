@@ -24,13 +24,12 @@ import javax.inject.Inject
 import models.FormBundleStatus._
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import models._
-import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.{DeEnrolService, Save4LaterService, StatusManagementService, StatusReturnType}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.subtemplates.application_status._
 
@@ -52,7 +51,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
 
   def isNewBusiness(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     val err: () => Nothing = () => {
-      Logger.warn("[isNewBusiness] Unexpected error when evaluating if the application is a new business")
+      logger.warn("[isNewBusiness] Unexpected error when evaluating if the application is a new business")
       throw new InternalServerException("Unexpected error when evaluating if the application is a new business")
     }
 

@@ -46,26 +46,26 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   val supplierPage2URL: String = supplierPageURL(2)
 
   val id = "alcoholSupplier"
-  "Authenticated and authorised users" should {
+  "Authenticated and authorised users" must {
 
     "validate that first addition of supplier does not throw an exception" in {
       continueWithAuthorisedUserFirstTimeSupplier(1, testRequest(testSupplier())) {
         result =>
-          status(result) shouldBe 303
+          status(result) mustBe 303
       }
     }
 
     "validate that passing in an invalid id redirects to NOT FOUND error page" in {
       getWithAuthorisedUserSa(6) {
         result =>
-          status(result) shouldBe 404
+          status(result) mustBe 404
       }
     }
 
     "redirect to index page when 'user has selected No suppliers'" in {
       continueWithAuthorisedUserNoSuppliersFirstQuestion(testRequest(testSupplierDefault())) {
         result =>
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/index")
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/index")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
@@ -73,7 +73,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     "redirect to next supplier page when valid data is provided and 'Additional Suppliers' is Yes" in {
       continueWithAuthorisedUser(testRequest(testSupplierOthersYes())) {
         result =>
-          redirectLocation(result).get should include(supplierPage2URL)
+          redirectLocation(result).get must include(supplierPage2URL)
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
@@ -81,7 +81,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     "redirect to Supplier addresses page when valid data is provided and 'Additional Suppliers' is Yes" in {
       continueWithAuthorisedUserMultipleSuppliersYesAdditionalSuppliers(testRequest(testSupplierOthersYes())) {
         result =>
-          redirectLocation(result).get should include(supplierPageURL(3))
+          redirectLocation(result).get must include(supplierPageURL(3))
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
@@ -89,7 +89,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     "save form data in Save4Later if the data is valid" in {
       continueWithAuthorisedUser(testRequest(testSupplier())) {
         result =>
-          status(result) should be(SEE_OTHER)
+          status(result) must be(SEE_OTHER)
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
@@ -97,7 +97,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     "redirect to index page when 'user has selected No additional supplier'" in {
       continueWithAuthorisedUser(testRequest(testSupplier())) {
         result =>
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/index")
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/index")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
@@ -105,100 +105,100 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     "redirect to next additional supplier page when 'user has selected Yes additional supplier'" in {
       continueWithAuthorisedUser(testRequest(testSupplierOthersYes())) {
         result =>
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/supplier-addresses?id=2")
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/supplier-addresses?id=2")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
   }
 
-  "Users who entered from the summary edit view" should {
+  "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
       returnWithAuthorisedUser(testRequest(testSupplier())) {
         result =>
-          redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$suppliersName")
+          redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$suppliersName")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
   }
 
-  "When no data has previously been cached, entering no supplier and pressing save and continue" should {
+  "When no data has previously been cached, entering no supplier and pressing save and continue" must {
     "cache the supplier and redirect to the index page" in {
       continueWithAuthorisedUserNoSupplier(testRequest(testSupplierDefault())) {
         result =>
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/index")
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/index")
       }
     }
   }
 
-  "Entering a valid supplier, selecting add additional and pressing Save and Continue" should {
+  "Entering a valid supplier, selecting add additional and pressing Save and Continue" must {
     "cache the supplier, load a blank Supplier page and increment the supplier number" in {
       continueWithAuthorisedUser(testRequest(testSupplierOthersYes())) {
         result =>
-          redirectLocation(result).get should include("/alcohol-wholesale-scheme/supplier-addresses?id=2")
+          redirectLocation(result).get must include("/alcohol-wholesale-scheme/supplier-addresses?id=2")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
   }
 
 
-  "When loading the page with 5 suppliers already entered we" should {
+  "When loading the page with 5 suppliers already entered we" must {
     "see to the 1st supplier" in {
       getWithAuthorisedUser5Suppliers {
         result =>
-          status(result) shouldBe 200
+          status(result) mustBe 200
       }
     }
   }
 
-  "Saving supplier with a country code" should {
+  "Saving supplier with a country code" must {
     "retrieve country" in {
       getWithAuthorisedUserSa() {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          status(result) shouldBe OK
+          status(result) mustBe OK
       }
     }
   }
 
-  "When loading the delete page we" should {
+  "When loading the delete page we" must {
     "see to the selected suppliers delete confirmation page" in {
       showDeleteWithAuthorisedUser() {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("deleteConfirmation-heading").text shouldBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.supplier"))
-          status(result) shouldBe 200
+          document.getElementById("deleteConfirmation-heading").text mustBe Messages("awrs.delete.confirmation_heading", Messages("awrs.view_application.supplier"))
+          status(result) mustBe 200
       }
     }
   }
 
-  "When submitting the delete confirmation page we" should {
+  "When submitting the delete confirmation page we" must {
     "be routed back to the summary page after confirming Yes" in {
       deleteWithAuthorisedUser()(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/view-section/suppliers")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/view-section/suppliers")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
     "be routed back to the summary page after confirming No" in {
       deleteWithAuthorisedUser()(deleteConfirmation_No) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/view-section/suppliers")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/view-section/suppliers")
           verifySave4LaterService(saveSuppliers = 0)
       }
     }
     "be shown an error if nothing is selected" in {
       deleteWithAuthorisedUser()(deleteConfirmation_None) {
         result =>
-          status(result) shouldBe 400
+          status(result) mustBe 400
       }
     }
     "be routed back to the summary page after confirming Yes for a record that is not the first" in {
       deleteWithAuthorisedUser(id = 2, suppliers = Suppliers(List(testSupplier(), testSupplier(), testSupplier())))(deleteConfirmation_Yes) {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should include("/view-section/suppliers")
+          status(result) mustBe 303
+          redirectLocation(result).get must include("/view-section/suppliers")
           verifySave4LaterService(saveSuppliers = 1)
       }
     }

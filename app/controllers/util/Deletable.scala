@@ -25,7 +25,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.view_application.helpers.EditSectionOnlyMode
 
 import scala.annotation.tailrec

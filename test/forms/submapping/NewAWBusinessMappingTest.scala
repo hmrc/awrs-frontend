@@ -25,9 +25,9 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 
-class NewAWBusinessMappingTest extends UnitSpec with MockitoSugar with OneServerPerSuite {
+class NewAWBusinessMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
   import NewAWBusinessMapping._
 
@@ -37,7 +37,7 @@ class NewAWBusinessMappingTest extends UnitSpec with MockitoSugar with OneServer
     "prefix" -> newAWBusinessMapping("prefix")
   )(TestForm.apply)(TestForm.unapply))
 
-  "newAWBusinessMapping sub mapping" should {
+  "newAWBusinessMapping sub mapping" must {
     "Correctly validate 'newAWBusiness'" in {
       // empty validation is correct, Yes and No are both valid entries
       val fieldId = "prefix" attach "newAWBusiness"
@@ -55,10 +55,10 @@ class NewAWBusinessMappingTest extends UnitSpec with MockitoSugar with OneServer
         val boundForm = testForm.bind(data)
         val caseClassValue = boundForm.value
         withClue(f"generated an error when it is unexpected\ntest data=$data\nerrors=${boundForm.errors}\n") {
-          caseClassValue.isDefined shouldBe true
+          caseClassValue.isDefined mustBe true
         }
         withClue(f"value did not match expected\ntest data=$data\nexpected=$expectedValue\n") {
-          caseClassValue.get.sub.newAWBusiness shouldBe expectedValue
+          caseClassValue.get.sub.newAWBusiness mustBe expectedValue
         }
       }
       testConvertedValues(testDataYes, "Yes")

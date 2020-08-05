@@ -38,9 +38,9 @@ class TradingActivityViewTest extends AwrsUnitTestTraits with ServicesUnitTestFi
     override val signInUrl: String = applicationConfig.signIn
   }
 
-  "Submitting the trading activity form with " should {
+  "Submitting the trading activity form with " must {
 
-    "Authenticated and authorised users" should {
+    "Authenticated and authorised users" must {
       "display validation error when 'What type of wholesaler are you?' is not selected" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("wholesalerType[0]" -> "")) {
           result =>
@@ -178,7 +178,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits with ServicesUnitTestFi
 
       allEntities.foreach {
         legalEntity =>
-          s"$legalEntity" should {
+          s"$legalEntity" must {
             Seq(true, false).foreach {
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {

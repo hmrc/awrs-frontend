@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package forms.test
+package forms.test.util
 
 import forms.validation.util.ErrorMessageInterpreter._
 import forms.validation.util.{FieldError, MessageLookup, SummaryError}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import utils.AwrsUnitTestTraits
 
-
-package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnitTestTraits {
+trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI with TestUtilAPI with MockitoSugar {
 
   /**
     * function to allow easy attachment of prefix to field ids regardless of whether the
@@ -46,13 +46,13 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
   def assertErrorMessageIsCorrectlyPopulated(errorMessage: MessageLookup): Unit = {
     val message = errorMessage.toString()
     withClue("The message key must be placed in conf/messages: ") {
-      message should not be errorMessage.msgKey
+      message must not be errorMessage.msgKey
     }
-    withClue("The message key should be assigned to a value: ") {
-      message should not be ""
+    withClue("The message key must be assigned to a value: ") {
+      message must not be ""
     }
     withClue("All message arguments must be assigned: ") {
-      message.matches("^(.*?)\\{\\d+\\}(.*?)") should not be true
+      message.matches("^(.*?)\\{\\d+\\}(.*?)") must not be true
     }
   }
 
@@ -60,18 +60,18 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
     val formWithNoErrorsInField = form.bind(testData)
     withClue(f"There shouldn't be any errors in this form:\ntestData=$testData\n") {
       withClue(s"Error found:\n${formWithNoErrorsInField.errors}\n") {
-        formWithNoErrorsInField.hasErrors shouldBe false
+        formWithNoErrorsInField.hasErrors mustBe false
       }
     }
     formWithNoErrorsInField.bind(testData).fold(
-      formWithErrors => {},
+      _ => {},
       formdata => {
         val refilledForm = form.fill(formdata)
-        withClue(f"refilled form should be the same as the submitted form:\n") {
+        withClue(f"refilled form must be the same as the submitted form:\n") {
           withClue(f"original data\t=\t$testData\nsubmitted form\t=\t${formWithNoErrorsInField.data}\nformdata\t=\t$formdata\n\nrefilledForm\t=\t${refilledForm.data}\n\n") {
             val dset1 = formWithNoErrorsInField.data
             val dset2 = refilledForm.data
-            dset1.keys.foreach(key => dset1.get(key) shouldBe dset2.get(key))
+            dset1.keys.foreach(key => dset1.get(key) mustBe dset2.get(key))
           }
         }
       }
@@ -84,10 +84,10 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
     withClue(f"The following test is conducted for the field: '$fieldId'\n") {
       withClue(f"The current form error is'\n${formWithErrors.errors}\n") {
         withClue("An error is expected but the field remained valid: ") {
-          fieldError.nonEmpty shouldBe true
+          fieldError.nonEmpty mustBe true
         }
-        withClue("There should be exactly 1 error message per field: ") {
-          fieldError.length shouldBe 1
+        withClue("There must be exactly 1 error message per field: ") {
+          fieldError.length mustBe 1
         }
         val actualError = fieldError.head
         withClue("The error message for the field differs from the expected:\n") {
@@ -97,7 +97,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
               "WrappedArray"
             )
 
-            trimBothAndCompressFunc(actualError.toString()) should equal(messageArgsToWrapped(trimBothAndCompressFunc(expected.toString())))
+            trimBothAndCompressFunc(actualError.toString()) must equal(messageArgsToWrapped(trimBothAndCompressFunc(expected.toString())))
           }
         }
         assertErrorMessageIsCorrectlyPopulated(actualError)
@@ -108,21 +108,21 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
   def assertNotThisFieldError(form: Form[_], fieldId: String, unacceptable: FieldError): Unit = {
     val fieldError = getFieldErrors(form(fieldId), form)
     if (fieldError.nonEmpty) {
-      fieldError.head should not equal unacceptable
+      fieldError.head must not equal unacceptable
     }
   }
 
   def assertHasNoFieldError(form: Form[_], fieldId: String): Unit = {
     val fieldError = getFieldErrors(form(fieldId), form)
-    withClue(f"This field should not generate any errors:\nerror=$fieldError\n") {
-      fieldError.isEmpty shouldBe true
+    withClue(f"This field must not generate any errors:\nerror=$fieldError\n") {
+      fieldError.isEmpty mustBe true
     }
   }
 
   def assertHasFieldError(form: Form[_], fieldId: String): Unit = {
     val fieldError = getFieldErrors(form(fieldId), form)
-    withClue("This field should generate at least one error: ") {
-      fieldError.nonEmpty shouldBe true
+    withClue("This field must generate at least one error: ") {
+      fieldError.nonEmpty mustBe true
     }
   }
 
@@ -134,28 +134,28 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
     val trimmedExpectedAnchorAndError: String = trimBothAndCompressFunc(expected.anchor + expected.toString())
 
     withClue(f"Cannot find the expected summary error message:\nexpected=$trimmedExpectedAnchorAndError\nin:\nsummaryErrors=$summaryErrorStrs") {
-      summaryErrorStrs should contain(trimmedExpectedAnchorAndError)
+      summaryErrorStrs must contain(trimmedExpectedAnchorAndError)
     }
     assertErrorMessageIsCorrectlyPopulated(expected)
   }
 
   def assertNotThisSummaryError(form: Form[_], fieldId: String, unacceptable: SummaryError): Unit = {
     val summaryErrors = getSummaryErrors(form)
-    summaryErrors should not contain unacceptable
+    summaryErrors must not contain unacceptable
   }
 
   def assertHasNoAnchorFromSummaryError(form: Form[_], fieldId: String): Unit = {
     val summaryErrors = getSummaryErrors(form)
-    withClue("This field should not generate any errors: ") {
-      summaryErrors.foreach(summaryError => summaryError.anchor should not be fieldId)
+    withClue("This field must not generate any errors: ") {
+      summaryErrors.foreach(summaryError => summaryError.anchor must not be fieldId)
     }
   }
 
   def assertFieldCannotBeEmpty(preCond: Map[String, String] = Map())(form: Form[_], fieldId: String, fieldIsEmptyExpectation: ExpectedFieldIsEmpty): Unit = {
     def coreTest(testData: Map[String, String]): Unit = {
       val formWithErrors = form.bind(testData)
-      withClue(f"$fieldId should not be empty:\n") {
-        formWithErrors.hasErrors shouldBe true
+      withClue(f"$fieldId must not be empty:\n") {
+        formWithErrors.hasErrors mustBe true
         assertFieldError(formWithErrors, fieldId, fieldIsEmptyExpectation.fieldError)
         assertSummaryError(formWithErrors, fieldId, fieldIsEmptyExpectation.summaryError)
       }
@@ -176,8 +176,8 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
     def coreTest(testData: Map[String, String]): Unit = {
       val formWithErrors = form.bind(testData)
-      withClue(f"$fieldId should not be empty:\n") {
-        formWithErrors.hasErrors shouldBe true
+      withClue(f"$fieldId must not be empty:\n") {
+        formWithErrors.hasErrors mustBe true
         assertFieldError(formWithErrors, fieldId, fieldIsEmptyExpectation.fieldError)
         assertSummaryError(formWithErrors, fieldId, fieldIsEmptyExpectation.summaryError)
       }
@@ -203,11 +203,11 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
         withClue(f"$fieldId must not exceed the max length of ${maxLengthExpectation.maxLength}%d:\ntestdata=$invalidLen\n") {
           val formWithErrors = form.bind(invalidLen)
-          formWithErrors.hasErrors shouldBe true
+          formWithErrors.hasErrors mustBe true
           assertFieldError(formWithErrors, fieldId, maxLengthExpectation.fieldError)
         }
 
-        // test with the exact length, this should not throw the max length error (though it can be a different error)
+        // test with the exact length, this must not throw the max length error (though it can be a different error)
         val validLen = generateFormTestData(preCond, fieldId,
           generateFieldTestDataInThisFormat(DataFormat("a", maxLengthExpectation.maxLength)))
 
@@ -219,14 +219,14 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
   def assertFieldConformsExpectedFormats(preCond: Map[String, String] = Map())(form: Form[_], fieldId: String, formatConfig: ExpectedFieldFormat): Unit = {
     withClue("You must provide at least one case of invalid format : ") {
-      formatConfig.invalidFormats.nonEmpty shouldBe true
+      formatConfig.invalidFormats.nonEmpty mustBe true
     }
     // test invalids
     formatConfig.invalidFormats.foreach { invalidFormat =>
       val invalidData = generateFormTestData(preCond, fieldId, invalidFormat.invalidCase)
       val formWithErrors = form.bind(invalidData)
-      withClue(f"$fieldId should not be valid when its value is:\n'$invalidData':\n") {
-        formWithErrors.hasErrors shouldBe true
+      withClue(f"$fieldId must not be valid when its value is:\n'$invalidData':\n") {
+        formWithErrors.hasErrors mustBe true
         assertFieldError(formWithErrors, fieldId, invalidFormat.fieldError)
         assertSummaryError(formWithErrors, fieldId, invalidFormat.summaryError)
       }
@@ -235,7 +235,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
     formatConfig.validFormats.foreach { validFormat =>
       val validData = generateFormTestData(preCond, fieldId, validFormat.validCase)
       val formWithNoErrorsInField = form.bind(validData)
-      withClue(f"$fieldId should be valid when its value is:\n'$validData':\n") {
+      withClue(f"$fieldId must be valid when its value is:\n'$validData':\n") {
         assertHasNoFieldError(formWithNoErrorsInField, fieldId)
         assertHasNoAnchorFromSummaryError(formWithNoErrorsInField, fieldId)
       }
@@ -244,7 +244,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
   def assertDateFieldConformsExpectedFormats(preCond: Map[String, String] = Map())(form: Form[_], fieldId: String, formatConfig: ExpectedDateFormat): Unit = {
     withClue("You must provide at least one case of invalid format : ") {
-      formatConfig.invalidFormats.nonEmpty shouldBe true
+      formatConfig.invalidFormats.nonEmpty mustBe true
     }
 
     val dayFieldId = f"$fieldId.day"
@@ -258,8 +258,8 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
           generateFormTestData(monthFieldId, invalidFormat.invalidCase.month) ++
           generateFormTestData(yearFieldId, invalidFormat.invalidCase.year)
       val formWithErrors = form.bind(invalidData)
-      withClue(f"$fieldId should not be valid when its value is:\n'$invalidData':\n") {
-        formWithErrors.hasErrors shouldBe true
+      withClue(f"$fieldId must not be valid when its value is:\n'$invalidData':\n") {
+        formWithErrors.hasErrors mustBe true
         assertFieldError(formWithErrors, fieldId, invalidFormat.fieldError)
         assertSummaryError(formWithErrors, fieldId, invalidFormat.summaryError)
       }
@@ -271,7 +271,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
           generateFormTestData(monthFieldId, validFormat.validCase.month) ++
           generateFormTestData(yearFieldId, validFormat.validCase.year)
       val formWithNoErrorsInField = form.bind(validData)
-      withClue(f"$fieldId should be valid when its value is:\n'$validData':\n") {
+      withClue(f"$fieldId must be valid when its value is:\n'$validData':\n") {
         assertHasNoFieldError(formWithNoErrorsInField, fieldId)
         assertHasNoAnchorFromSummaryError(formWithNoErrorsInField, fieldId)
       }
@@ -299,7 +299,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
   def assertFieldIgnoresEmptyConstraintWhen(preCond: Map[String, String])(form: Form[_], fieldId: String): Unit = {
     val testData = generateFormTestData(preCond, fieldId, "")
     val formWithoutFieldError = form.bind(testData)
-    withClue(f"$fieldId should be allowed to be empty when:\n'$preCond'\n") {
+    withClue(f"$fieldId must be allowed to be empty when:\n'$preCond'\n") {
       assertHasNoFieldError(formWithoutFieldError, fieldId)
       assertHasNoAnchorFromSummaryError(formWithoutFieldError, fieldId)
     }
@@ -310,7 +310,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
       generateFormTestData(preCond, fieldId,
         generateFieldTestDataInThisFormat(DataFormat("a", maxLength + 1)))
     val formWithoutFieldError = form.bind(invalidLen)
-    withClue(f"$fieldId should ignore its max length constraint when:\n'$preCond':\n") {
+    withClue(f"$fieldId must ignore its max length constraint when:\n'$preCond':\n") {
       assertHasNoFieldError(formWithoutFieldError, fieldId)
       assertHasNoAnchorFromSummaryError(formWithoutFieldError, fieldId)
     }
@@ -318,11 +318,11 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
   def assertFieldIgnoresFormatsConstraitsWhen(preCond: Map[String, String])(form: Form[_], fieldId: String, formatConfig: ExpectedFieldFormat): Unit = {
     // test invalids
-    withClue(f"$fieldId should not conform to any format constraints when:\n'$preCond':\n") {
+    withClue(f"$fieldId must not conform to any format constraints when:\n'$preCond':\n") {
       formatConfig.invalidFormats.foreach { invalidFormat =>
         val invalidData = generateFormTestData(preCond, fieldId, invalidFormat.invalidCase)
         val formWithNoErrorsInField = form.bind(invalidData)
-        withClue(f"$fieldId should not be valid when its value is '$invalidData':\n") {
+        withClue(f"$fieldId must not be valid when its value is '$invalidData':\n") {
           assertHasNoFieldError(formWithNoErrorsInField, fieldId)
           assertHasNoAnchorFromSummaryError(formWithNoErrorsInField, fieldId)
         }
@@ -331,7 +331,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
       formatConfig.validFormats.foreach { validFormat =>
         val validData = generateFormTestData(preCond, fieldId, validFormat.validCase)
         val formWithNoErrorsInField = form.bind(validData)
-        withClue(f"$fieldId should be valid when its value is '$validData':\n") {
+        withClue(f"$fieldId must be valid when its value is '$validData':\n") {
           assertHasNoFieldError(formWithNoErrorsInField, fieldId)
           assertHasNoAnchorFromSummaryError(formWithNoErrorsInField, fieldId)
         }
@@ -341,11 +341,11 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
   def assertFieldIgnoresDateFormatsConstraitsWhen(preCond: Map[String, String])(form: Form[_], fieldId: String, formatConfig: ExpectedDateFormat): Unit = {
     // test invalids
-    withClue(f"$fieldId should not conform to any format constraints when:\n'$preCond':\n") {
+    withClue(f"$fieldId must not conform to any format constraints when:\n'$preCond':\n") {
       formatConfig.invalidFormats.foreach { invalidFormat =>
         val invalidData = createFormTestDate(preCond, fieldId, invalidFormat.invalidCase)
         val formWithNoErrorsInField = form.bind(invalidData)
-        withClue(f"$fieldId should not be valid when its value is '$invalidData':\n") {
+        withClue(f"$fieldId must not be valid when its value is '$invalidData':\n") {
           assertHasNoFieldError(formWithNoErrorsInField, fieldId)
           assertHasNoAnchorFromSummaryError(formWithNoErrorsInField, fieldId)
         }
@@ -354,7 +354,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
       formatConfig.validFormats.foreach { validFormat =>
         val validData = createFormTestDate(preCond, fieldId, validFormat.validCase)
         val formWithNoErrorsInField = form.bind(validData)
-        withClue(f"$fieldId should be valid when its value is '$validData':\n") {
+        withClue(f"$fieldId must be valid when its value is '$validData':\n") {
           assertHasNoFieldError(formWithNoErrorsInField, fieldId)
           assertHasNoAnchorFromSummaryError(formWithNoErrorsInField, fieldId)
         }
@@ -377,7 +377,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
     }
   }
 
-  implicit def singleFieldTestFunctions(fieldIdString: String)(implicit form: Form[_]) = new ImplicitSingleFieldTestAPI {
+  implicit def singleFieldTestFunctions(fieldIdString: String)(implicit form: Form[_]): ImplicitSingleFieldTestAPI = new ImplicitSingleFieldTestAPI {
     override implicit val fieldId = fieldIdString
 
     def assertFieldIsCompulsory(config: CompulsoryFieldValidationExpectations): Unit =
@@ -459,7 +459,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
     private def commonTestForAnswered(testData: Map[String, String], config: CrossFieldValidationExpectations): Unit = {
       val formWithErrors = form.bind(testData)
-      formWithErrors.hasErrors shouldBe true
+      formWithErrors.hasErrors mustBe true
       assertSummaryError(formWithErrors, config.anchor, config.fieldIsEmptyExpectation.summaryError)
       fieldIds.foreach(fieldId => assertFieldError(formWithErrors, fieldId, config.fieldIsEmptyExpectation.fieldError))
     }
@@ -494,7 +494,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
       val testData = generateFormTestData(condition, fieldIds, "")
 
       val formWithoutErrorsInFields = form.bind(testData)
-      withClue(f"The following test is conducted for: at least one of: '$fieldIds' must be filled in constraint should be ignored when:\n'$condition'") {
+      withClue(f"The following test is conducted for: at least one of: '$fieldIds' must be filled in constraint must be ignored when:\n'$condition'") {
         assertHasNoAnchorFromSummaryError(formWithoutErrorsInFields, config.anchor)
         fieldIds.foreach(fieldId => assertHasNoFieldError(formWithoutErrorsInFields, fieldId))
       }
@@ -505,7 +505,7 @@ package object util extends FormValidationTestAPI with TestUtilAPI with AwrsUnit
 
     def assertAllFieldsCannotBeAnsweredWithInvalidIsIgnoredWhen(condition: Map[String, String], config: CrossFieldValidationExpectations, invalidAnswer: String): Unit = {
       val testData = generateFormTestData(condition, fieldIds, invalidAnswer)
-      withClue(f"The following test is conducted for: at least one of: '$fieldIds' must be not be answered with $invalidAnswer constraint should be ignored when:\n'$condition'") {
+      withClue(f"The following test is conducted for: at least one of: '$fieldIds' must be not be answered with $invalidAnswer constraint must be ignored when:\n'$condition'") {
         commonTestForAnsweredIsIgnored(testData, config)
       }
     }

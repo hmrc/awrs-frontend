@@ -38,25 +38,25 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   val testGroupDeclarationController: GroupDeclarationController = new GroupDeclarationController(
     mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
-  "Submitting the application declaration form with " should {
-    "Authenticated and authorised users" should {
+  "Submitting the application declaration form with " must {
+    "Authenticated and authorised users" must {
       "show an ok when the group declaration is available" in {
         showWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("groupRepConfirmation" -> "true")) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
         }
       }
 
       "redirect to Index page when valid data is provided" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("groupRepConfirmation" -> "true")) {
           result =>
-            redirectLocation(result).get should include("/alcohol-wholesale-scheme/index")
+            redirectLocation(result).get must include("/alcohol-wholesale-scheme/index")
         }
       }
       "save form data to Save4Later and redirect to Index page " in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("groupRepConfirmation" -> "true")) {
           result =>
-            status(result) should be(SEE_OTHER)
+            status(result) must be(SEE_OTHER)
             verifySave4LaterService(saveGroupDeclaration = 1)
         }
       }

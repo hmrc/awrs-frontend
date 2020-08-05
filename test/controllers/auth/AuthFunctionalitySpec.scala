@@ -25,12 +25,13 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{AnyContent, Result, Results}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.{MissingBearerToken, PlayAuthConnector}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
+import play.api.test.Helpers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector{
+class AuthFunctionalitySpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector{
 
   lazy implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest()
 
@@ -40,14 +41,14 @@ class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with BeforeAndAft
     override val signInUrl: String = "sign-url"
   }
 
-  "authorisedAction" should {
+  "authorisedAction" must {
     "call the function body and authorise" when {
       "the authorised call succeeds" in new AuthFunctionalityServer {
         setAuthMocks()
         private val result: Result = Results.Ok("Result")
         val future: StandardAuthRetrievals => Future[Result] = _ => Future.successful(result)
 
-        await(authorisedAction(future)) shouldBe result
+        await(authorisedAction(future)) mustBe result
       }
     }
 
@@ -58,8 +59,8 @@ class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with BeforeAndAft
         private val result: Result = Results.Ok("Result")
         val future: StandardAuthRetrievals => Future[Result] = _ => Future.successful(result)
 
-        val res: Result = await(authorisedAction(future))
-        status(res) shouldBe 303
+        val res: Future[Result] = authorisedAction(future)
+        status(res) mustBe 303
       }
     }
   }

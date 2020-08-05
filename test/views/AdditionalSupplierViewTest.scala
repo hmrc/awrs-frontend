@@ -45,19 +45,19 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
     new SupplierAddressesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = "/sign-in"
   }
-  "Additional Supplier Template" should {
+  "Additional Supplier Template" must {
 
     "display h1 with correct supplier number for linear mode" in {
       for ((_, index) <- testList.getOrElse(List()).zipWithIndex) {
         val id = index + 1
         showSupplier(id) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
             val document = Jsoup.parse(contentAsString(result))
             val heading = document.getElementById("supplier-addresses-title").text()
             id match {
-              case 1 => heading should be(Messages("awrs.supplier-addresses.heading.first"))
-              case _ => heading should be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
+              case 1 => heading must be(Messages("awrs.supplier-addresses.heading.first"))
+              case _ => heading must be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
             }
         }
       }
@@ -68,10 +68,10 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
         val id = index + 1
         showSupplier(id, isLinearMode = false, isNewRecord = false) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
             val document = Jsoup.parse(contentAsString(result))
             val heading = document.getElementById("supplier-addresses-title").text()
-            heading should be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
+            heading must be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
         }
       }
     }
@@ -79,36 +79,36 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
     "display h1 with correct supplier number for edit mode when adding the first record" in {
       showSupplier(id = 1, isLinearMode = false, suppliers = List(Supplier(Some("No"), None, None, None, None, None, None))) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           val heading = document.getElementById("supplier-addresses-title").text()
-          heading should be(Messages("awrs.supplier-addresses.heading.first"))
+          heading must be(Messages("awrs.supplier-addresses.heading.first"))
       }
     }
 
     "display h1 with correct supplier number for linear mode when adding the next new record" in {
       showSupplier(id = 2, isLinearMode = true, suppliers = List(testSupplier(Some("Yes")))) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           val heading = document.getElementById("supplier-addresses-title").text()
-          heading should be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(2)))
+          heading must be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(2)))
       }
     }
 
     "display h1 with correct supplier number for edit mode when adding the next new record" in {
       showSupplier(id = 2, isLinearMode = false, suppliers = List(testSupplier(Some("Yes")))) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
           val heading = document.getElementById("supplier-addresses-title").text()
-          heading should be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(2)))
+          heading must be(Messages("awrs.supplier-addresses.heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(2)))
       }
     }
 
     allEntities.foreach {
       legalEntity =>
-        s"$legalEntity" should {
+        s"$legalEntity" must {
           Seq(true, false).foreach {
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {

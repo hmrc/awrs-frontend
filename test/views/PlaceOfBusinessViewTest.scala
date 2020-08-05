@@ -49,15 +49,15 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
 
   "BusinessContactsController" must {
 
-    "AWRS Contact Details entered " should {
+    "AWRS Contact Details entered " must {
 
       "must see the 'Enter' view if they are on the linear journey" in {
         linearJourney {
           result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("contact-information-heading").text() shouldBe Messages("awrs.place_of_business.heading", Messages("awrs.generic.enter"))
-            document.getElementById("mainPlaceOfBusiness-no-content") shouldBe null
-            document.getElementById("mainPlaceOfBusiness-api5-content") shouldNot be(null)
+            document.getElementById("contact-information-heading").text() mustBe Messages("awrs.place_of_business.heading", Messages("awrs.generic.enter"))
+            document.getElementById("mainPlaceOfBusiness-no-content") mustBe null
+            document.getElementById("mainPlaceOfBusiness-api5-content") mustNot be(null)
         }
       }
 
@@ -65,16 +65,16 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
         editJourney {
           result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("contact-information-heading").text() shouldBe Messages("awrs.place_of_business.heading", Messages("awrs.generic.edit"))
-            document.getElementById("mainPlaceOfBusiness-api5-content") shouldNot be(null)
-            document.getElementById("mainPlaceOfBusiness-no-content") shouldBe null
+            document.getElementById("contact-information-heading").text() mustBe Messages("awrs.place_of_business.heading", Messages("awrs.generic.edit"))
+            document.getElementById("mainPlaceOfBusiness-api5-content") mustNot be(null)
+            document.getElementById("mainPlaceOfBusiness-no-content") mustBe null
         }
       }
     }
 
     allEntities.foreach {
       legalEntity =>
-        s"$legalEntity" should {
+        s"$legalEntity" must {
           Seq(true, false).foreach {
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {

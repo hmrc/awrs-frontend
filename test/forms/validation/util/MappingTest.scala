@@ -28,12 +28,12 @@ import play.api.data.validation.Invalid
 import play.api.data.{FieldMapping, Form, FormError}
 import utils.AwrsValidator._
 
-class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
+class MappingTest extends AwrsFormTestUtils with WordSpecLike with MockitoSugar with OneAppPerSuite {
 
   val defaultMaxLength = 10
 
   implicit class Helper(errors: Seq[FormError]) {
-    def shouldContain(expected: Invalid) = {
+    def shouldContain(expected: Invalid): Boolean = {
       val transformed: Seq[(String, Seq[Any])] = errors.map { x => (x.message, x.args) }
       transformed.contains((expected.errors.head.message, expected.errors.head.args))
     }
@@ -45,13 +45,13 @@ class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
   // the correctness of the fill method depends on the unbinding method
   def performFillFormTest[T](form: Form[T], data: FormData) {
     form.bind(data).fold(
-      errors => {},
+      _ => {},
       model => {
         val form2 = form.fill(model)
         form2.fold(
-          form2WithErrors => {},
+          _ => {},
           model_2 => {
-            model shouldBe model_2
+            model mustBe model_2
           })
       })
   }
@@ -101,8 +101,8 @@ class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
   }
 
 
-  "For single layer models" should {
-    "mapping validations" should {
+  "For single layer models" must {
+    "mapping validations" must {
       case class Test(field1: Option[String],
                       field1a: String,
                       field2: Option[String],
@@ -110,7 +110,7 @@ class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
                       ignoredField2: Option[String]
                      )
 
-      val alwaysIgnore: Option[FormQuery] = (data: FormData) => false
+      val alwaysIgnore: Option[FormQuery] = (_: FormData) => false
 
       implicit val form = Form(
         mapping(
@@ -132,22 +132,22 @@ class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
         performFillFormTest(form, data)
       }
 
-      "ignored fields should not be entered into the resulting case class" in {
+      "ignored fields must not be entered into the resulting case class" in {
         val data = FormData("field1" -> "me", "field1a" -> "me2", "ignoredField" -> "data", "ignoredField" -> "data2")
         form.bind(data).fold(
-          errors => {},
+          _ => {},
           model => {
-            model.ignoredField shouldBe None
-            model.ignoredField2 shouldBe None
-            model.field1 shouldBe Some("me")
-            model.field1a shouldBe "me2"
+            model.ignoredField mustBe None
+            model.ignoredField2 mustBe None
+            model.field1 mustBe Some("me")
+            model.field1a mustBe "me2"
           }
         )
       }
     }
 
 
-    "function correctly when there is crossField validation" should {
+    "function correctly when there is crossField validation" must {
 
       def field1IsEmpty(): Option[FormQuery] =
         (data: FormData) => data.getOrElse("field1", "").equals("")
@@ -182,8 +182,8 @@ class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
     }
   }
 
-  "For multi-layer models" should {
-    "function correctly when it is used inside a submap" should {
+  "For multi-layer models" must {
+    "function correctly when it is used inside a submap" must {
 
       def field1IsEmpty(): Option[FormQuery] =
         (data: FormData) => data.getOrElse("sub.field1", "").equals("")
@@ -202,7 +202,7 @@ class MappingTest extends WordSpecLike with MockitoSugar with OneAppPerSuite {
       }
 
       // for sub mappings the invalid messages could change depending on the prefix
-      // therefore all submappings should be configurable functions to allow customisation
+      // therefore all submappings must be configurable functions to allow customisation
       val submap = (prefix: Option[String]) => mapping(
         "field1" -> optional(text),
         "field2" -> (defaultCompulsoryMapping(attachPrefix(prefix, "field2")) iff field1IsEmpty)

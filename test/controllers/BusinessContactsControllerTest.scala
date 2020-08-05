@@ -69,26 +69,26 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
   "BusinessContactsController" must {
     "Authorised users" must {
 
-      "AWRS Contact Details entered " should {
+      "AWRS Contact Details entered " must {
 
         "save invalid form data and show the form error" in {
           continueWithAuthorisedUserCustomerDetailsMock()(FakeRequest().withFormUrlEncodedBody()) {
             result =>
-              status(result) should be(BAD_REQUEST)
+              status(result) must be(BAD_REQUEST)
           }
         }
 
         "save invalid form data with no customer details and show internal server error" in {
           continueWithAuthorisedUserCustomerDetailsMock("SOP", false)(FakeRequest().withFormUrlEncodedBody()) {
             result =>
-              status(result) should be(INTERNAL_SERVER_ERROR)
+              status(result) must be(INTERNAL_SERVER_ERROR)
           }
         }
 
         "save form data in Save4Later and when contact details entered are valid" in {
           continueWithAuthorisedUser()(testRequest(testBusinessContactsDefault())) {
             result =>
-              status(result) should be(SEE_OTHER)
+              status(result) must be(SEE_OTHER)
               verifySave4LaterService(saveBusinessContacts = 1)
           }
         }
@@ -96,7 +96,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
         "redirect to additional trading premises page when contact details entered are valid" in {
           continueWithAuthorisedUser()(testRequest(testBusinessContactsDefault())) {
             result =>
-              redirectLocation(result).get should be("/alcohol-wholesale-scheme/additional-premises")
+              redirectLocation(result).get must be("/alcohol-wholesale-scheme/additional-premises")
               verifySave4LaterService(saveBusinessContacts = 1)
           }
         }
@@ -104,7 +104,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
         "redirect to group members page when contact details entered are valid for a group business type" in {
           continueWithAuthorisedUser(businessType = "LTD_GRP")(testRequest(testBusinessContactsDefault())) {
             result =>
-              redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/group-member")
+              redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/group-member")
               verifySave4LaterService(saveBusinessContacts = 1)
           }
         }
@@ -112,18 +112,18 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
         "redirect to business partners page when contact details entered are valid for a LLP business type" in {
           continueWithAuthorisedUser(businessType = "LLP")(testRequest(testBusinessContactsDefault())) {
             result =>
-              redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/business-partners")
+              redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/business-partners")
               verifySave4LaterService(saveBusinessContacts = 1)
           }
         }
       }
     }
 
-    "Users who entered from the summary edit view" should {
+    "Users who entered from the summary edit view" must {
       "return to the summary view after clicking return" in {
         returnWithAuthorisedUser(testRequest(testBusinessContactsDefault())) {
           result =>
-            redirectLocation(result).get should include(f"/alcohol-wholesale-scheme/view-section/$businessContactsName")
+            redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$businessContactsName")
             verifySave4LaterService(saveBusinessContacts = 1)
         }
       }

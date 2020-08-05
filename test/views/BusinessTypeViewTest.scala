@@ -57,7 +57,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
     override val signInUrl: String = applicationConfig.signIn
   }
 
-    "Submitting the Business Type form with Authenticated and authorised users" should {
+    "Submitting the Business Type form with Authenticated and authorised users" must {
       "display validation error when 'Business Type' is not provided" in {
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("typeOfBusiness" -> ""), false) {
           result =>
@@ -94,16 +94,16 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
         }
       }
 
-      "isAGroup is true " should {
+      "isAGroup is true " must {
         "result in only the LTD and LLP radio buttons displayed" in {
           loadDataFromS4LWithAuthorisedUser {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.select("#legalEntity_field").text() should include(Messages("awrs.business_verification.limited_company"))
-              document.select("#legalEntity_field").text() should include(Messages("awrs.business_verification.limited_liability_partnership"))
-              document.select("#legalEntity_field").text() should not include Messages("awrs.business_verification.sole_trader")
-              document.select("#legalEntity_field").text() should not include Messages("awrs.business_verification.business_partnership")
-              document.select("#legalEntity_field").text() should not include Messages("awrs.business_verification.limited_partnership")
+              document.select("#legalEntity_field").text() must include(Messages("awrs.business_verification.limited_company"))
+              document.select("#legalEntity_field").text() must include(Messages("awrs.business_verification.limited_liability_partnership"))
+              document.select("#legalEntity_field").text() must not include Messages("awrs.business_verification.sole_trader")
+              document.select("#legalEntity_field").text() must not include Messages("awrs.business_verification.business_partnership")
+              document.select("#legalEntity_field").text() must not include Messages("awrs.business_verification.limited_partnership")
           }
         }
 
@@ -115,7 +115,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
       case true => testBusinessCustomerGroup
       case false => testBusinessCustomer
     }
-    setupMockSave4LaterService(fetchBusinessCustomerDetails = Some(testBusCustomer))
+    setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusCustomer)))
     setAuthMocks()
     val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)

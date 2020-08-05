@@ -16,42 +16,42 @@
 
 package utils
 
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.AwrsValidator._
 
-class FormatValidationsTest extends UnitSpec {
+class FormatValidationsTest extends PlaySpec {
 
   private def testRegex(regExPattern:String, validData: Seq[String], invalidData: Seq[String]): Unit = {
-    withClue("the regex should allow these valid cases\n") {
+    withClue("the regex must allow these valid cases\n") {
       for (data <- validData)
         withClue(f"$data did not pass\n") {
-          data.matches(regExPattern) shouldBe true
+          data.matches(regExPattern) mustBe true
         }
     }
-    withClue("the regex should reject these invalid cases\n") {
+    withClue("the regex must reject these invalid cases\n") {
       for (data <- invalidData)
         withClue(f"$data did not pass\n") {
-          data.matches(regExPattern) shouldBe false
+          data.matches(regExPattern) mustBe false
         }
     }
   }
 
   private def testStringValidationFunction(function: (String) => Boolean, validData: Seq[String], invalidData: Seq[String]): Unit = {
-    withClue("the regex should allow these valid cases\n") {
+    withClue("the regex must allow these valid cases\n") {
       for (data <- validData)
         withClue(f"$data did not pass\n") {
-          validText(data) shouldBe true
+          validText(data) mustBe true
         }
     }
-    withClue("the regex should reject these invalid cases\n") {
+    withClue("the regex must reject these invalid cases\n") {
       for (data <- invalidData)
         withClue(f"$data did not pass\n") {
-          validText(data) shouldBe false
+          validText(data) mustBe false
         }
     }
   }
 
-  "alpha numeric reg ex" should {
+  "alpha numeric reg ex" must {
     "satisfy the following valid and invalid cases" in {
       val validData = Seq("0", "9", "a", "A", "z", "Z")
       val invalidData = Seq("α", "&", "*", "@", "£")
@@ -59,7 +59,7 @@ class FormatValidationsTest extends UnitSpec {
     }
   }
 
-  "crn reg ex" should {
+  "crn reg ex" must {
     "satisfy the following valid" in {
       Seq(
         "12345678",
@@ -70,7 +70,7 @@ class FormatValidationsTest extends UnitSpec {
         "NO987654",
         "9876543"
       ) foreach { crn =>
-        crn.matches(crnRegex) shouldBe true
+        crn.matches(crnRegex) mustBe true
       }
     }
     "satisfy the following invalid" in {
@@ -85,12 +85,12 @@ class FormatValidationsTest extends UnitSpec {
         "A1234567",
         "SC 236367"
       ) foreach { crn =>
-        crn.matches(crnRegex) shouldBe false
+        crn.matches(crnRegex) mustBe false
       }
     }
   }
 
-  "validation functions" should {
+  "validation functions" must {
     "satisfy the following valid and invalid cases" in {
       val validData = Seq("0", "9", "a", "A", "z", "Z")
       val invalidData = Seq("α")

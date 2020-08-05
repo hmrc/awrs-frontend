@@ -23,10 +23,10 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 
-class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerPerSuite with BeforeAndAfterEach {
+class BusinessContactFormTest extends PlaySpec with MockitoSugar  with BeforeAndAfterEach with AwrsFormTestUtils {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val forms = BusinessContactsForm.businessContactsForm.form
 
@@ -37,7 +37,7 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
     super.beforeEach()
   }
 
-  "Business contacts form" should {
+  "Business contacts form" must {
 
     f"check validations for contactAddress " in {
       val preCondition: Map[String, String] = Map("contactAddressSame" -> BooleanRadioEnum.No.toString)
@@ -68,10 +68,10 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
       )
 
       val bindedForm = forms.bindFromRequest(badData)
-      bindedForm.errors.size shouldBe 1
+      bindedForm.errors.size mustBe 1
 
       val bindedFormGood = forms.bindFromRequest(goodData)
-      bindedFormGood.errors shouldBe Seq()
+      bindedFormGood.errors mustBe Seq()
     }
 
     "check validations for telephone" in
@@ -81,7 +81,7 @@ class BusinessContactFormTest extends UnitSpec with MockitoSugar with OneServerP
 
   }
 
-  "Form validation" should {
+  "Form validation" must {
     "check Welsh character validations for First Name, Last Name and Contact Address" in {
       val data: Map[String, String] =
         Map("contactAddressSame" -> "No",

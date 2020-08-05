@@ -128,7 +128,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
         val currentIndex = journey.indexOf(section)
         val startIndex = journey.indexOf(startLocation)
         currentIndex < startIndex match {
-          case true => urlIndex // if the the current location should have came before the start location of the journey in the session, then return to index
+          case true => urlIndex // if the the current location must have came before the start location of the journey in the session, then return to index
           case false =>
             // otherwise get the previous section in the journey, or index if the current section is the start of the journey
             currentIndex - 1 match {
@@ -176,11 +176,11 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
       case _ => None
     }
 
-    status(result) shouldBe SEE_OTHER
+    status(result) mustBe SEE_OTHER
     val expected = getPreviousPageInJourney(journey, startSection, expectedIdFunction)(currentSection, id)
     withClue(s"Current section: $currentSection\n" +
       s"Expected previous = $expected\n\n") {
-      redirectLocation(result).get shouldBe expected
+      redirectLocation(result).get mustBe expected
     }
   }
 
@@ -210,7 +210,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
       }
     }
 
-  "The backFrom method" should {
+  "The backFrom method" must {
     for (legal <- legalEntityList) {
       s"link to the correct previous pages for $legal journey" in {
         // this version tests that when the previous section is a multi page section then the ids are set to

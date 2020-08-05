@@ -27,15 +27,15 @@ class KeyStoreServiceTest extends MockKeyStoreService with MockAuthConnector {
 
   import FetchNoneType._
 
-  "KeyStore service functions and deleteDeRegistrationDate" should {
+  "KeyStore service functions and deleteDeRegistrationDate" must {
 
     "saveDeRegistrationDate" in {
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal()
       val result = testKeyStoreService.saveDeRegistrationDate(defaultDeRegistrationDateData)
-      await(result) shouldBe returnedCacheMap
+      await(result) mustBe returnedCacheMap
 
       val resultDelete = testKeyStoreService.deleteDeRegistrationDate
-      await(resultDelete) shouldBe returnedCacheMap
+      await(resultDelete) mustBe returnedCacheMap
 
       // this also tests the implementation of differentiating save and delete calls
       verifyKeyStoreService(
@@ -46,15 +46,15 @@ class KeyStoreServiceTest extends MockKeyStoreService with MockAuthConnector {
     "fetchDeRegistrationDate" in {
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal()
       val result = testKeyStoreService.fetchDeRegistrationDate
-      await(result) shouldBe defaultDeRegistrationDate
+      await(result) mustBe defaultDeRegistrationDate
 
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveDeRegDate = false)
       val resultNoData = testKeyStoreService.fetchDeRegistrationDate
-      await(resultNoData) shouldBe None
+      await(resultNoData) mustBe None
 
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveDeRegDate = false, fetchNoneType = DeletedData)
       val resultDeletedData = testKeyStoreService.fetchDeRegistrationDate
-      await(resultDeletedData) shouldBe None
+      await(resultDeletedData) mustBe None
 
       verifyKeyStoreService(fetchDeRegistrationDate = 3)
     }
@@ -62,10 +62,10 @@ class KeyStoreServiceTest extends MockKeyStoreService with MockAuthConnector {
     "saveDeRegistrationReason and deleteDeRegistrationReason" in {
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal()
       val result = testKeyStoreService.saveDeRegistrationReason(defaultDeRegistrationReasonData)
-      await(result) shouldBe returnedCacheMap
+      await(result) mustBe returnedCacheMap
 
       val resultDelete = testKeyStoreService.deleteDeRegistrationReason
-      await(resultDelete) shouldBe returnedCacheMap
+      await(resultDelete) mustBe returnedCacheMap
 
       // this also tests the implementation of differentiating save and delete calls
       verifyKeyStoreService(
@@ -76,15 +76,15 @@ class KeyStoreServiceTest extends MockKeyStoreService with MockAuthConnector {
     "fetchDeRegistrationReason" in {
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal()
       val result = testKeyStoreService.fetchDeRegistrationReason
-      await(result) shouldBe defaultDeRegistrationReason
+      await(result) mustBe defaultDeRegistrationReason
 
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveDeRegReason = false)
       val resultNoData = testKeyStoreService.fetchDeRegistrationReason
-      await(resultNoData) shouldBe None
+      await(resultNoData) mustBe None
 
       setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveDeRegReason = false, fetchNoneType = DeletedData)
       val resultDeletedData = testKeyStoreService.fetchDeRegistrationReason
-      await(resultDeletedData) shouldBe None
+      await(resultDeletedData) mustBe None
 
       verifyKeyStoreService(fetchDeRegistrationReason = 3)
     }
@@ -92,7 +92,7 @@ class KeyStoreServiceTest extends MockKeyStoreService with MockAuthConnector {
     "fetchBusinessCustomerAddress" in {
       setupMockKeyStoreServiceForBusinessCustomerAddress()
       val result = testKeyStoreService.fetchBusinessCustomerAddresss
-      await(result) shouldBe Some(defaultBCAddressApi3)
+      await(result) mustBe Some(defaultBCAddressApi3)
     }
   }
 

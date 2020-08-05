@@ -27,6 +27,7 @@ import utils.TestConstants._
 import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class EmailServiceTest extends AwrsUnitTestTraits
   with MockAWRSNotificationConnector
@@ -48,12 +49,12 @@ class EmailServiceTest extends AwrsUnitTestTraits
       .thenReturn(true)
   }
 
-  "Email Service" should {
+  "Email Service" must {
     "build the correct request object for the connectors for api4 None user" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName)
       val expected = GetExpectedOutput(ApiTypes.API4)
 
-      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness, TestUtil.defaultAuthRetrieval)
 
       intercept[InternalServerException](await(result))
@@ -63,48 +64,48 @@ class EmailServiceTest extends AwrsUnitTestTraits
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Pending")
       val expected = GetExpectedOutput(ApiTypes.API6Pending)
 
-      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "build the correct request object for the connectors for api6.approved Approved(04) user" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved")
       val expected = GetExpectedOutput(ApiTypes.API6Approved)
 
-      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "build the correct request object for the connectors for api6.approved Conditions(05) user" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved with Conditions")
       val expected = GetExpectedOutput(ApiTypes.API6Approved)
 
-      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testEmailService.sendConfirmationEmail(email = email, reference = reference, isNewBusiness = isNewBusiness, TestUtil.defaultAuthRetrieval)
 
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "get succesful response when sending withdraw email for API8 user" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Withdrawal")
       val expected = GetExpectedOutput(ApiTypes.API8,None,None,None)
 
-      when(mockAWRSNotificationConnector.sendWithdrawnEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockAWRSNotificationConnector.sendWithdrawnEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testEmailService.sendWithdrawnEmail(email = email)
 
-      await(result) shouldBe true
+      await(result) mustBe true
     }
 
     "get succesful response when sending cancellation email for API10 user" in {
       implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "De-Registered")
       val expected = GetExpectedOutput(ApiTypes.API10,None,None,defaultDeRegistrationDateData)
-      when(mockAWRSNotificationConnector.sendCancellationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(true)
+      when(mockAWRSNotificationConnector.sendCancellationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testEmailService.sendCancellationEmail(email = email,defaultDeRegistrationDateData)
-      await(result) shouldBe true
+      await(result) mustBe true
     }
   }
 

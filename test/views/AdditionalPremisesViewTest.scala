@@ -48,21 +48,21 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
     }
 
 
-  "Additional Premises Template" should {
+  "Additional Premises Template" must {
 
-    "linear journey" should {
+    "linear journey" must {
 
       "display h1 with correct premises number for existing records" in {
         for ((_, index) <- testList.zipWithIndex) {
           val id = index + 1
           showPremises(id) {
             result =>
-              status(result) shouldBe OK
+              status(result) mustBe OK
               val document = Jsoup.parse(contentAsString(result))
               val heading = document.getElementById("additional-premises-title").text()
               id match {
-                case 1 => heading should be(Messages("awrs.additional-premises.top-heading.first"))
-                case _ => heading should be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
+                case 1 => heading must be(Messages("awrs.additional-premises.top-heading.first"))
+                case _ => heading must be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id)))
               }
           }
         }
@@ -73,41 +73,41 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
         val nextId = testList2.size + 1
         showPremises(id = nextId, premises = testList2) {
           result =>
-            status(result) shouldBe OK
+            status(result) mustBe OK
             val document = Jsoup.parse(contentAsString(result))
             val heading = document.getElementById("additional-premises-title").text()
-            heading should be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(nextId)))
+            heading must be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(nextId)))
         }
       }
 
     }
 
-    "post linear jouney" should {
-      "edit mode" should {
+    "post linear jouney" must {
+      "edit mode" must {
         "display h1 with correct premises number when editing a record" in {
           for ((premises, index) <- testList.zipWithIndex) {
             val id = index + 1
             showPremises(id, isLinearMode = false, isNewRecord = false) {
               result =>
-                status(result) shouldBe OK
+                status(result) mustBe OK
                 val document = Jsoup.parse(contentAsString(result))
                 val heading = document.getElementById("additional-premises-title").text()
-                heading should be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
+                heading must be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id)))
             }
           }
         }
       }
 
-      "add new record mode" should {
+      "add new record mode" must {
         "display h1 with correct premises number when adding the first record after previously answered no to do you have additional premises" in {
           val noPremises = List(AdditionalBusinessPremises(Some("No"), None, None))
           showPremises(id = 1, isLinearMode = false, isNewRecord = true, premises = noPremises) {
             result =>
-              status(result) shouldBe OK
+              status(result) mustBe OK
               val document = Jsoup.parse(contentAsString(result))
               val heading = document.getElementById("additional-premises-title").text()
-              //              heading should be(Messages("awrs.additional-premises.top-heading.first"))
-              heading should be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(1)))
+              //              heading must be(Messages("awrs.additional-premises.top-heading.first"))
+              heading must be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(1)))
           }
         }
 
@@ -116,17 +116,17 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
           val nextId = testList2.size + 1
           showPremises(id = nextId, isLinearMode = false, isNewRecord = true, premises = testList2) {
             result =>
-              status(result) shouldBe OK
+              status(result) mustBe OK
               val document = Jsoup.parse(contentAsString(result))
               val heading = document.getElementById("additional-premises-title").text()
-              heading should be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(nextId)))
+              heading must be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(nextId)))
           }
         }
       }
 
       allEntities.foreach {
         legalEntity =>
-          s"$legalEntity" should {
+          s"$legalEntity" must {
             Seq(true, false).foreach {
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {

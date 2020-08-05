@@ -272,7 +272,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
   def tableHeaderForContainers[T](header: String, container: Traversable[T]) = f"$header (${container.size})"
 
-  "view-application page" should {
+  "view-application page" must {
 
     "display business details correctly" in {
       def testDataOne(legalEntity: Option[String]) = testBusinessNameDetails()
@@ -361,8 +361,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           }
         }
         withClue(debugInfo) {
-          subview.heading shouldBe expectedHeading
-          subview.rows shouldBe toExpectation(testData)(entity.legalEntity.get).drop(1)
+          subview.heading mustBe expectedHeading
+          subview.rows mustBe toExpectation(testData)(entity.legalEntity.get).drop(1)
         }
       }
 
@@ -423,8 +423,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           case _ => Messages(f"awrs.view_application.business_registration_details_text")
         }
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(entity.legalEntity, testData).drop(1)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(entity.legalEntity, testData).drop(1)
       }
 
     }
@@ -458,8 +458,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           case _ => Messages(f"awrs.view_application.place_of_business_text")
         }
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get)).drop(1)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get)).drop(1)
       }
 
       val entities = Seq(testBusinessDetailsEntityTypes(Partnership),
@@ -505,8 +505,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           case _ => Messages(f"awrs.view_application.business_contacts_text")
         }
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get)).drop(1)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get)).drop(1)
       }
 
       val entities = Seq(testBusinessDetailsEntityTypes(Partnership),
@@ -572,8 +572,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
         val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.group_member_details_text"), testData.members.tail)
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData)
       }
 
       test(testData)
@@ -680,8 +680,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
         val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.business_partners_text"), testData.partners)
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData)
       }
 
       test(testData)
@@ -712,8 +712,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
         val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.additional_premises_text"), testData.premises)
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData)
       }
 
       test(testData)
@@ -770,12 +770,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           case (Some(fn), Some(ln), _, _) => fn + " " + ln
           case (_, _, Some(cn), _) => cn
           case (_, _, _, Some(tn)) => tn
-          case _ => "" // this should never happen
+          case _ => "" // this must never happen
         }
       }
 
       val fetchUtrHeading = (businessLegalEntity: String) => businessLegalEntity match {
-        case "SOP" => Messages("awrs.generic.do_you_have_sa_UTR") // n.b. this case should never happen
+        case "SOP" => Messages("awrs.generic.do_you_have_sa_UTR") // n.b. this case must never happen
         case "Partnership" | "LP" | "LLP" | "LLP_GRP" => Messages("awrs.generic.do_they_have_partnership_UTR")
         case _ => Messages("awrs.generic.do_they_have_CT_UTR")
       }
@@ -814,8 +814,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
         val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.business_directors.index_text"), testData.directors)
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(entity.legalEntity.fold("")(x => x), testData)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(entity.legalEntity.fold("")(x => x), testData)
       }
 
       val entities = Seq(testBusinessDetailsEntityTypes(Partnership),
@@ -852,8 +852,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
         val expectedHeading = Messages("awrs.view_application.trading_activity_text")
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData).drop(1)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData).drop(1)
       }
 
       test(testData)
@@ -880,8 +880,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
         val expectedHeading = Messages("awrs.view_application.products_text")
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData).drop(1)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData).drop(1)
       }
 
       test(testData)
@@ -957,8 +957,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
         testSectionExists(suppliers = true)
         val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.suppliers_text"), testData.suppliers)
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData)
       }
 
       test(testData)
@@ -984,8 +984,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
         val expectedHeading = Messages("awrs.view_application.application_declaration_text")
 
-        subview.heading shouldBe expectedHeading
-        subview.rows shouldBe toExpectation(testData)
+        subview.heading mustBe expectedHeading
+        subview.rows mustBe toExpectation(testData)
       }
 
       test(testData)
@@ -1007,18 +1007,18 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                         applicationDeclaration: Boolean = false
                        )(implicit doc: Document) = {
 
-    doc.getElementById(businessDetailsId) != null shouldBe businessDetails
-    doc.getElementById(businessRegistrationDetailsId) != null shouldBe businessRegistrationDetails
-    doc.getElementById(placeOfBusinessId) != null shouldBe placeOfBusiness
-    doc.getElementById(businessContactsId) != null shouldBe businessContacts
-    doc.getElementById(groupMemberDetailsId) != null shouldBe groupMembers
-    doc.getElementById(partnerDetailsId) != null shouldBe partnerDetails
-    doc.getElementById(additionalPremisesId) != null shouldBe additionalBusinessPremises
-    doc.getElementById(businessDirectorsId) != null shouldBe businessDirectors
-    doc.getElementById(tradingActivityId) != null shouldBe tradingActivity
-    doc.getElementById(productsId) != null shouldBe products
-    doc.getElementById(suppliersId) != null shouldBe suppliers
-    doc.getElementById(applicationDeclarationId) != null shouldBe applicationDeclaration
+    doc.getElementById(businessDetailsId) != null mustBe businessDetails
+    doc.getElementById(businessRegistrationDetailsId) != null mustBe businessRegistrationDetails
+    doc.getElementById(placeOfBusinessId) != null mustBe placeOfBusiness
+    doc.getElementById(businessContactsId) != null mustBe businessContacts
+    doc.getElementById(groupMemberDetailsId) != null mustBe groupMembers
+    doc.getElementById(partnerDetailsId) != null mustBe partnerDetails
+    doc.getElementById(additionalPremisesId) != null mustBe additionalBusinessPremises
+    doc.getElementById(businessDirectorsId) != null mustBe businessDirectors
+    doc.getElementById(tradingActivityId) != null mustBe tradingActivity
+    doc.getElementById(productsId) != null mustBe products
+    doc.getElementById(suppliersId) != null mustBe suppliers
+    doc.getElementById(applicationDeclarationId) != null mustBe applicationDeclaration
   }
 
   case class Row(heading: String, content: List[String])

@@ -73,7 +73,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
   lazy val testPartnerDetails = Partners(List(testPartner(), testPartner(), testPartner(false)))
 
 
-  "Business partner page" should {
+  "Business partner page" must {
 
     List("Partnership", "LLP", "LP").foreach {
       partnerType =>
@@ -83,17 +83,17 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
           linearJourney(1, partnerType) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.select("#business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
+              document.select("#business_partner-title").text must be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
           }
           editJourney(1, partnerType) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.select("#business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.edit")))
+              document.select("#business_partner-title").text must be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.edit")))
           }
           postLinearJourneyAddition(1, partnerType) {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.select("#business_partner-title").text should be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
+              document.select("#business_partner-title").text must be(Messages("awrs.business-partner.heading_1", Messages("awrs.generic.tell_us_about")))
           }
         }
 
@@ -102,20 +102,20 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
             id =>
               linearJourney(id, partnerType) {
                 result =>
-                  status(result) shouldBe OK
+                  status(result) mustBe OK
                   val document = Jsoup.parse(contentAsString(result))
-                  document.getElementById("business_partner-title").text should be(Messages("awrs.business-partner.heading_2_or_more", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id - 1)))
+                  document.getElementById("business_partner-title").text must be(Messages("awrs.business-partner.heading_2_or_more", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id - 1)))
               }
               editJourney(id, partnerType) {
                 result =>
-                  status(result) shouldBe OK
+                  status(result) mustBe OK
                   val document = Jsoup.parse(contentAsString(result))
-                  document.getElementById("business_partner-title").text should be(Messages("awrs.business-partner.heading_2_or_more", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id - 1)))
+                  document.getElementById("business_partner-title").text must be(Messages("awrs.business-partner.heading_2_or_more", Messages("awrs.generic.edit"), views.html.helpers.ordinalIntSuffix(id - 1)))
               }
               postLinearJourneyAddition(id, partnerType) {
                 result =>
                   val document = Jsoup.parse(contentAsString(result))
-                  document.getElementById("business_partner-title").text should be(Messages("awrs.business-partner.heading_2_or_more", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id - 1)))
+                  document.getElementById("business_partner-title").text must be(Messages("awrs.business-partner.heading_2_or_more", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(id - 1)))
               }
           }
         }
@@ -123,32 +123,32 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
 
   }
 
-  "Request to showPartnerMemberDetails" should {
+  "Request to showPartnerMemberDetails" must {
 
     "return required field for individual class" in {
       setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = None)
 
       getWithAuthorisedUserSa(2) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
 
           val entityType = document.getElementById("entityType_field")
-          entityType should not be null
-          entityType.getElementById("entityType-individual") should not be null
-          entityType.getElementById("entityType-corporate_body") should not be null
-          entityType.getElementById("entityType-sole_trader") should not be null
+          entityType must not be null
+          entityType.getElementById("entityType-individual") must not be null
+          entityType.getElementById("entityType-corporate_body") must not be null
+          entityType.getElementById("entityType-sole_trader") must not be null
 
           val individualDocument = document.getElementsByClass("individual").toString
-          individualDocument should include("firstName_field")
-          individualDocument should include("lastName_field")
-          individualDocument should include("partnerAddress.postcode_field")
-          individualDocument should include("partnerAddress.addressLine1_field")
-          individualDocument should include("partnerAddress.addressLine2_field")
-          individualDocument should include("partnerAddress.addressLine3_field")
-          individualDocument should include("partnerAddress.addressLine4_field")
-          individualDocument should include("doYouHaveNino")
-          individualDocument should include("nino_field")
+          individualDocument must include("firstName_field")
+          individualDocument must include("lastName_field")
+          individualDocument must include("partnerAddress.postcode_field")
+          individualDocument must include("partnerAddress.addressLine1_field")
+          individualDocument must include("partnerAddress.addressLine2_field")
+          individualDocument must include("partnerAddress.addressLine3_field")
+          individualDocument must include("partnerAddress.addressLine4_field")
+          individualDocument must include("doYouHaveNino")
+          individualDocument must include("nino_field")
       }
     }
 
@@ -157,26 +157,26 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
 
       getWithAuthorisedUserSa(2) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
 
           val entityType = document.getElementById("entityType_field")
-          entityType should not be null
-          entityType.getElementById("entityType-individual") should not be null
-          entityType.getElementById("entityType-corporate_body") should not be null
-          entityType.getElementById("entityType-sole_trader") should not be null
+          entityType must not be null
+          entityType.getElementById("entityType-individual") must not be null
+          entityType.getElementById("entityType-corporate_body") must not be null
+          entityType.getElementById("entityType-sole_trader") must not be null
 
           val corporateDocument = document.getElementsByClass("corporate_body").toString
-          corporateDocument should include("companyNames.businessName_field")
-          corporateDocument should include("companyNames.tradingName_field")
-          corporateDocument should include("partnerAddress.postcode_field")
-          corporateDocument should include("partnerAddress.addressLine1_field")
-          corporateDocument should include("partnerAddress.addressLine2_field")
-          corporateDocument should include("partnerAddress.addressLine3_field")
-          corporateDocument should include("partnerAddress.addressLine4_field")
-          corporateDocument should include("doYouHaveVRN")
-          corporateDocument should include("vrn_field")
-          corporateDocument should include("utr_field")
+          corporateDocument must include("companyNames.businessName_field")
+          corporateDocument must include("companyNames.tradingName_field")
+          corporateDocument must include("partnerAddress.postcode_field")
+          corporateDocument must include("partnerAddress.addressLine1_field")
+          corporateDocument must include("partnerAddress.addressLine2_field")
+          corporateDocument must include("partnerAddress.addressLine3_field")
+          corporateDocument must include("partnerAddress.addressLine4_field")
+          corporateDocument must include("doYouHaveVRN")
+          corporateDocument must include("vrn_field")
+          corporateDocument must include("utr_field")
       }
     }
 
@@ -185,35 +185,35 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
 
       getWithAuthorisedUserSa(2) {
         result =>
-          status(result) shouldBe OK
+          status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
 
           val entityType = document.getElementById("entityType_field")
-          entityType should not be null
-          entityType.getElementById("entityType-individual") should not be null
-          entityType.getElementById("entityType-corporate_body") should not be null
-          entityType.getElementById("entityType-sole_trader") should not be null
+          entityType must not be null
+          entityType.getElementById("entityType-individual") must not be null
+          entityType.getElementById("entityType-corporate_body") must not be null
+          entityType.getElementById("entityType-sole_trader") must not be null
 
           val soleTraderDocument = document.getElementsByClass("sole_trader").toString
-          soleTraderDocument should include("firstName_field")
-          soleTraderDocument should include("lastName_field")
-          soleTraderDocument should include("tradingName_field")
-          soleTraderDocument should include("partnerAddress.postcode_field")
-          soleTraderDocument should include("partnerAddress.addressLine1_field")
-          soleTraderDocument should include("partnerAddress.addressLine2_field")
-          soleTraderDocument should include("partnerAddress.addressLine3_field")
-          soleTraderDocument should include("partnerAddress.addressLine4_field")
-          soleTraderDocument should include("doYouHaveNino")
-          soleTraderDocument should include("nino_field")
-          soleTraderDocument should include("doYouHaveVRN")
-          soleTraderDocument should include("vrn_field")
-          soleTraderDocument should include("utr_field")
+          soleTraderDocument must include("firstName_field")
+          soleTraderDocument must include("lastName_field")
+          soleTraderDocument must include("tradingName_field")
+          soleTraderDocument must include("partnerAddress.postcode_field")
+          soleTraderDocument must include("partnerAddress.addressLine1_field")
+          soleTraderDocument must include("partnerAddress.addressLine2_field")
+          soleTraderDocument must include("partnerAddress.addressLine3_field")
+          soleTraderDocument must include("partnerAddress.addressLine4_field")
+          soleTraderDocument must include("doYouHaveNino")
+          soleTraderDocument must include("nino_field")
+          soleTraderDocument must include("doYouHaveVRN")
+          soleTraderDocument must include("vrn_field")
+          soleTraderDocument must include("utr_field")
       }
     }
 
     partnerEntities.foreach {
       legalEntity =>
-        s"$legalEntity" should {
+        s"$legalEntity" must {
           Seq(true, false).foreach {
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {

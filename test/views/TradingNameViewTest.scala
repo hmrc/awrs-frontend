@@ -41,7 +41,7 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
     }
   }
 
-  "the trading name view" should {
+  "the trading name view" must {
     "not display the business name field" when {
       "the business is not a group in edit mode" in new Setup {
         val businessType = "test"
@@ -56,12 +56,12 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
           .thenReturn(Future.successful(NewApplicationMode))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(false))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
 
         val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD"))
         val document: String = contentAsString(result)
 
-        document shouldNot include(messages("awrs.generic.business_name"))
+        document mustNot include(messages("awrs.generic.business_name"))
       }
     }
 
@@ -79,12 +79,12 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
           .thenReturn(Future.successful(NewApplicationMode))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
-        setupMockKeyStoreService(fetchAlreadyTrading = Some(true))
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
 
         val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
         val document: String = contentAsString(result)
 
-        document should include(messages("awrs.generic.business_name"))
+        document must include(messages("awrs.generic.business_name"))
       }
     }
   }

@@ -35,12 +35,12 @@ class ResetControllerTest extends AwrsUnitTestTraits
   val testResetController: ResetController = new ResetController(
     mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig)
 
-  "Reset application page " should {
+  "Reset application page " must {
     "return a Signed out view for SA utr" in {
       getWithAuthorisedUserSa {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/logout")
+          status(result) mustBe 303
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/logout")
           verifySave4LaterService(removeAll = 1)
           verifyApiSave4LaterService(removeAll = 0)
       }
@@ -49,20 +49,20 @@ class ResetControllerTest extends AwrsUnitTestTraits
     "return a Signed out view for CT utr" in {
       getWithAuthorisedUserCt {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/logout")
+          status(result) mustBe 303
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/logout")
           verifySave4LaterService(removeAll = 1)
           verifyApiSave4LaterService(removeAll = 0)
       }
     }
   }
 
-  "Update reset page " should {
+  "Update reset page " must {
     "return a signed out view" in {
       getUpdateWithAuthorisedUserCt {
         result =>
-          status(result) shouldBe 303
-          redirectLocation(result).get should be("/alcohol-wholesale-scheme/logout")
+          status(result) mustBe 303
+          redirectLocation(result).get must be("/alcohol-wholesale-scheme/logout")
           verifySave4LaterService(removeAll = 1)
           verifyApiSave4LaterService(removeAll = 1)
       }

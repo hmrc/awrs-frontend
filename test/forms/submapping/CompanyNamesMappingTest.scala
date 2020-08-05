@@ -35,7 +35,7 @@ class CompanyNamesMappingTest extends AwrsUnitTestTraits {
   )(TestForm.apply)(TestForm.unapply))
 
 
-  "CompanyNamesMapping" should {
+  "CompanyNamesMapping" must {
     "When company name is validated" in {
       implicit val f = testForm(validateCompanyName = true)
       NamedUnitTests.companyNamesAreValid(idPrefix = prefix, isBusinessNameRequired = true)

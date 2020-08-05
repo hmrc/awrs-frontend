@@ -24,7 +24,6 @@ import javax.inject.Inject
 import models.FormBundleStatus.Approved
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
-import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, Request}
@@ -312,7 +311,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
                 warn(f"[API11 - $awrsRefNo ] - Failure response returned:\n$reason")
                 throw new BadRequestException(f"Failure response returned:\n$reason")
               case response@_ =>
-                // this should never happen as any invalid response from etmp should be turned into a failure response by the middle service
+                // this must never happen as any invalid response from etmp must be turned into a failure response by the middle service
                 warn(f"[API11 - $awrsRefNo ] - Unknown response returned:\n$response")
                 // given the unespected nature of this scenario, an exception is thrown for this case
                 throw new BadRequestException(f"Unknown response returned:\n$response")
@@ -401,7 +400,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
                 warn(f"[$auditAPI10TxName - $awrsRefNo ] - Failure response returned:\n$reason")
               // leaving to the higher level handlers to deal with this failure case
               case response@_ =>
-                // this should never happen as any invalid response from etmp should be turned into a failure response by the middle service
+                // this must never happen as any invalid response from etmp must be turned into a failure response by the middle service
                 warn(f"[$auditAPI10TxName - $awrsRefNo ] - Unknown response returned:\n$response")
                 // given the unespected nature of this scenario, an exception is thrown for this case
                 throw new BadRequestException(f"Unknown response returned:\n$response")
@@ -442,7 +441,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
         }
       }.recover {
         case e: Exception =>
-          Logger.warn(s"[AWRSConnector][checkEtmp] Etmp has returned an exception: ${e.getMessage}")
+          logger.warn(s"[AWRSConnector][checkEtmp] Etmp has returned an exception: ${e.getMessage}")
           None
       }
 
