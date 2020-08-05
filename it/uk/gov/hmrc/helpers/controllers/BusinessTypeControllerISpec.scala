@@ -129,7 +129,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 
-      val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId")
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
         .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
       )
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/index")
@@ -146,7 +146,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 
-      val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId")
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
         .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
       )
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/index")
@@ -249,7 +249,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
       withCaptureOfLoggingFrom(Logger(app.injector.instanceOf[BusinessTypeController].getClass)) { logs =>
-        val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId")
+        val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
           .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
         )
         resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/status-page?mustShow=false")

@@ -122,7 +122,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatc
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
-      val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
       resp.header("Location") mustBe Some("http://localhost:9923/business-customer/awrs")
       resp.status mustBe 303
     }
@@ -132,7 +132,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatc
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
-      val resp: WSResponse = await(client(controllerUrl).withHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
     }
