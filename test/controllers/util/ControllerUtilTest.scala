@@ -340,7 +340,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits with MockAuthConnector {
       val mockSaveAndTestItsInput: Answer[Future[Option[Any]]] = (invocation: InvocationOnMock) => {
         val dummyDataArg: List[DummyData] = {
           invocation.getArguments.find {
-            case _: List[DummyData] => true
+            case _: List[_] => true
             case _ => false
           }.map(_.asInstanceOf[List[DummyData]]).getOrElse(List.empty[DummyData])
         }

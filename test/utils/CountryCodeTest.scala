@@ -18,7 +18,6 @@ package utils
 
 import models.{Address, Supplier}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 

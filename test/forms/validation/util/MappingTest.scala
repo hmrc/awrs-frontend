@@ -22,13 +22,13 @@ import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
 import org.scalatest.WordSpecLike
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.Forms._
 import play.api.data.validation.Invalid
 import play.api.data.{FieldMapping, Form, FormError}
 import utils.AwrsValidator._
 
-class MappingTest extends AwrsFormTestUtils with WordSpecLike with MockitoSugar with OneAppPerSuite {
+class MappingTest extends AwrsFormTestUtils with WordSpecLike with MockitoSugar with GuiceOneAppPerSuite {
 
   val defaultMaxLength = 10
 
@@ -44,17 +44,11 @@ class MappingTest extends AwrsFormTestUtils with WordSpecLike with MockitoSugar 
   // it fills the form then tests the fill method of the form.
   // the correctness of the fill method depends on the unbinding method
   def performFillFormTest[T](form: Form[T], data: FormData) {
-    form.bind(data).fold(
-      _ => {},
-      model => {
-        val form2 = form.fill(model)
-        form2.fold(
-          _ => {},
-          model_2 => {
-            model mustBe model_2
-          })
-      })
+    val model = form.bind(data).get
+    val form2 = form.fill(model).get
+    form2 mustBe model
   }
+
 
   val defaultCompulsoryMapping: String => FieldMapping[Option[String]] = (fieldId: String) => compulsoryText(CompulsoryTextFieldMappingParameter(
     simpleFieldIsEmptyConstraintParameter(fieldId, "testkey1"),

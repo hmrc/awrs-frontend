@@ -16,7 +16,6 @@
 
 package services.helpers
 
-import forms.AWRSEnums.BooleanRadioEnum
 import models.{Address, BCAddress, BusinessCustomerDetails}
 import services.helper.AwrsAPI5Helper
 import utils.{AwrsUnitTestTraits, TestUtil}

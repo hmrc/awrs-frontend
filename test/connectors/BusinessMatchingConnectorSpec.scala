@@ -48,7 +48,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as OK, for successful call" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(matchSuccessResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, matchSuccessResponseJson.toString())))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       await(result) mustBe matchSuccessResponseJson
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -56,7 +56,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
     "for unsuccessful match, return error message" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(matchFailureResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, matchFailureResponseJson.toString())))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       await(result) mustBe matchFailureResponseJson
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -64,7 +64,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
     "throw service unavailable exception, if service is unavailable" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, None)))
+        .thenReturn(Future.successful(HttpResponse.apply(SERVICE_UNAVAILABLE, "")))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
       thrown.getMessage must include("Service unavailable")
@@ -73,7 +73,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
     "throw bad request exception, if bad request is passed" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, None)))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[BadRequestException] thrownBy await(result)
       thrown.getMessage must include("Bad Request")
@@ -82,7 +82,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
     "throw internal server error, if Internal server error status is returned" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, None)))
+        .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, "")))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[InternalServerException] thrownBy await(result)
       thrown.getMessage must include("Internal server error")
@@ -91,7 +91,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
    "throw runtime exception, unknown status is returned" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_GATEWAY, None)))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_GATEWAY, "")))
       val result = testBusinessMatchingConnector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[RuntimeException] thrownBy await(result)
       thrown.getMessage must include("Unknown response")

@@ -103,14 +103,14 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatc
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"""$baseURI$subscriptionURI$safeId""", OK, successResponse.toString)
 
-    stubS4LGet("5810451", "", None, Some("etmpDetails", Scenario.STARTED, "appStatus"))
-    stubS4LGet("5810451", "", data, Some("etmpDetails", "appStatus", "noneGET"))
+    stubS4LGet("5810451", "", None, Some(Tuple3("etmpDetails", Scenario.STARTED, "appStatus")))
+    stubS4LGet("5810451", "", data, Some(Tuple3("etmpDetails", "appStatus", "noneGET")))
 
     stubS4LGet("5810451", "businessRegistrationDetails",
       Some(Json.parse(
         """{
           | "utr" : "5810451"
-          |}""".stripMargin).as[JsObject]), Some("etmpDetails", "noneGET", "businessRegistration"))
+          |}""".stripMargin).as[JsObject]), Some(Tuple3("etmpDetails", "noneGET", "businessRegistration")))
   }
 
 

@@ -20,7 +20,6 @@ import forms.AWRSEnums._
 import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 

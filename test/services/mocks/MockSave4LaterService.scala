@@ -25,15 +25,15 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import play.api.http.Status._
 import services.DataCacheKeys._
-import services.{MainStore, Save4LaterService}
+import services.Save4LaterService
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
 import scala.concurrent.Future
-import play.api.http.Status._
-import uk.gov.hmrc.http.HttpResponse
 
 trait MockSave4LaterService extends AwrsUnitTestTraits
   with MockSave4LaterConnector {
@@ -307,5 +307,5 @@ object MockSave4LaterService {
 
   //
   val defaultFetchAll: CacheMap = createCacheMap("SOP")
-  val defaultRemoveAll: Future[HttpResponse] = Future.successful(HttpResponse(OK))
+  val defaultRemoveAll: Future[HttpResponse] = Future.successful(HttpResponse.apply(OK, ""))
 }

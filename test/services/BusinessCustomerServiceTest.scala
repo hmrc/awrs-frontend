@@ -19,13 +19,12 @@ package services
 import _root_.models.{BCAddress, BusinessCustomerDetails}
 import connectors._
 import connectors.mock.MockKeyStoreConnector
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class BusinessCustomerServiceTest extends AwrsUnitTestTraits
   with MockKeyStoreConnector {

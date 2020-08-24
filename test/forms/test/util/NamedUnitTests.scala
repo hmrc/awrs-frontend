@@ -374,7 +374,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
     val asnsweredYesToTradingName: Map[String, String] = Map(doYouHaveTradingName -> BooleanRadioEnum.Yes.toString)
 
-    def assertBusinessNameCompulsory = {
+    def assertBusinessNameCompulsory() = {
       val fieldId = businessName
 
       fieldId assertFieldIsCompulsoryWhen(preCondition, businessNameExpectations(fieldId))
@@ -382,7 +382,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
         fieldId assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
     }
 
-    def assertBusinessNameIsIgnored = {
+    def assertBusinessNameIsIgnored() = {
       val ignoreCondition = Map[String, String]()
 
       val fieldId = businessName
@@ -390,7 +390,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
       fieldId assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
     }
 
-    def assertDoYouHaveTradingNameCompulsory = {
+    def assertDoYouHaveTradingNameCompulsory() = {
       val fieldId = doYouHaveTradingName
 
       fieldId assertEnumFieldIsCompulsoryWhen(preCondition, doYouHaveTradingNameExpectations(fieldId))
@@ -400,7 +400,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
     }
 
 
-    def assertTradingNameCompulsoryYesToDoYouHaveTradingName = {
+    def assertTradingNameCompulsoryYesToDoYouHaveTradingName() = {
       val fieldId = tradingName
 
 

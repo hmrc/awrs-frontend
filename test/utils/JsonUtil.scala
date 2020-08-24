@@ -25,13 +25,13 @@ object JsonUtil extends JsonUtil
 
 trait JsonUtil {
 
-  lazy val dummyDataMap: Map[String, String] = Map("$nino" -> testNino,
-    "$utr" -> testUtr,
-    "$grpJoinDate" -> testGrpJoinDate,
-    "$testRefNo" -> testRefNo,
-    "$vrn" -> testVrn,
-    "$crn" -> testCrn,
-    "$postcode" -> testPostcode)
+  lazy val dummyDataMap: Map[String, String] = Map("nino" -> testNino,
+    "utr" -> testUtr,
+    "grpJoinDate" -> testGrpJoinDate,
+    "testRefNo" -> testRefNo,
+    "vrn" -> testVrn,
+    "crn" -> testCrn,
+    "postcode" -> testPostcode)
 
   def load(path: String): String = {
     Source.fromURL(getClass.getResource(path)).mkString
@@ -49,5 +49,3 @@ trait JsonUtil {
     jsonString
   }
 }
-
-

@@ -16,7 +16,7 @@
 
 package connectors.mock
 
-import connectors.{AwrsAPIDataCacheConnector, AwrsDataCacheConnector, Save4LaterConnector}
+import connectors.{AwrsAPIDataCacheConnector, AwrsDataCacheConnector}
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 

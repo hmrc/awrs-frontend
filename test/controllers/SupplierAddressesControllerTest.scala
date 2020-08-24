@@ -154,7 +154,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     "retrieve country" in {
       getWithAuthorisedUserSa() {
         result =>
-          val document = Jsoup.parse(contentAsString(result))
+          Jsoup.parse(contentAsString(result))
           status(result) mustBe OK
       }
     }

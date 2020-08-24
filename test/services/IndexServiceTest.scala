@@ -23,12 +23,10 @@ import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.DataCacheKeys._
-import utils.{AwrsUnitTestTraits, CacheUtil, TestUtil}
 import utils.TestConstants._
 import utils.TestUtil._
+import utils.{AwrsUnitTestTraits, TestUtil}
 import view_models._
-import play.api.libs.json._
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
@@ -141,11 +139,13 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           await(testIndexService.getStatus(emptyCachemap, x, TestUtil.defaultAuthRetrieval)).sectionModels)
         case x :: xs => testEachSectionStatusIsNotStarted(
           await(testIndexService.getStatus(emptyCachemap, x, TestUtil.defaultAuthRetrieval)).sectionModels); testForNotStarted(xs)
+        case Nil => Unit
       }
       @tailrec
       def testEachSectionStatusIsNotStarted(section: List[SectionModel]): Unit = section match {
         case x :: Nil => assert(x.status == SectionNotStarted)
         case x :: xs => assert(x.status == SectionNotStarted); testEachSectionStatusIsNotStarted(xs)
+        case _ => Unit
       }
     }
 
@@ -178,7 +178,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
             result.getSection(businessDetailsName, legalEntity).status mustBe SectionEdited
           }
           s"return COMPLETE when $legalEntity New Business is false and proposed start date is missing" in {
-            val temp = testBusinessDetailsWithMissingStartDate(legalEntity = legalEntity, isNewBusiness = false)
+            testBusinessDetailsWithMissingStartDate(legalEntity = legalEntity, isNewBusiness = false)
             val result = testIndexService.getStatus(testBusinessDetailsWithMissingStartDate(legalEntity = legalEntity, isNewBusiness = false, propDate = Some(TupleDate("20", "1", "2019"))), legalEntity, TestUtil.defaultAuthRetrieval)
             result.getSection(businessDetailsName, legalEntity).status mustBe SectionComplete
           }

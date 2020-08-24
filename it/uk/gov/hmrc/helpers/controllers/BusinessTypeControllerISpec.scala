@@ -119,7 +119,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"""$baseURI$subscriptionURI$safeId""", OK, successResponse.toString)
 
-    stubS4LGet("5810451", "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some("bt", STARTED, "legalEntity"))
+    stubS4LGet("5810451", "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(Tuple3("bt", STARTED, "legalEntity")))
   }
 
   "redirect to index page" when {
@@ -235,10 +235,10 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
       stubS4LPut(saUtr, "products", Json.toJson(products).as[JsObject])
       stubS4LPut(saUtr, "suppliers", Json.toJson(suppliers).as[JsObject])
       stubS4LPut(saUtr, "applicationDeclaration", Json.toJson(appDec).as[JsObject])
-      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some("bt", STARTED, "legalEntity"))
-      stubS4LGet(saUtr, "legalEntity", Some(Json.toJson(BusinessType(None, None, None)).as[JsObject]), Some("bt", "legalEntity", "legalEntity2"))
-      stubS4LGet(saUtr, "legalEntity", Some(Json.toJson(BusinessType(None, None, None)).as[JsObject]), Some("bt", "legalEntity2", "secondCall"))
-      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some("bt", "secondCall", "end"))
+      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(Tuple3("bt", STARTED, "legalEntity")))
+      stubS4LGet(saUtr, "legalEntity", Some(Json.toJson(BusinessType(None, None, None)).as[JsObject]), Some(Tuple3("bt", "legalEntity", "legalEntity2")))
+      stubS4LGet(saUtr, "legalEntity", Some(Json.toJson(BusinessType(None, None, None)).as[JsObject]), Some(Tuple3("bt", "legalEntity2", "secondCall")))
+      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(Tuple3("bt", "secondCall", "end")))
 
       stubbedPost("""/regime-etmp-check""", OK,
         """{

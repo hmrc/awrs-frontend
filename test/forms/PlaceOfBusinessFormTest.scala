@@ -21,7 +21,6 @@ import forms.AWRSEnums.{BooleanRadioEnum, OperatingDurationEnum}
 import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import org.scalatestplus.play.PlaySpec
 
 class PlaceOfBusinessFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {

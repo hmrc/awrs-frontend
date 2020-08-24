@@ -25,14 +25,13 @@ import play.api.http.Status.{CREATED, BAD_REQUEST => _, INTERNAL_SERVER_ERROR =>
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
 import services.GGConstants._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AwrsUnitTestTraits, TestUtil}
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
@@ -61,7 +60,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
     def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.endsWith(deEnrolURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(responseStatus = responseStatus, responseString = responseString)))
+        .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseString.toString())))
 
     def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
       when(mockAwrsMetrics.startTimer(ArgumentMatchers.any())).thenReturn(new Timer().time)
@@ -114,8 +113,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(responseStatus = responseStatus,
-          responseString = responseString)))
+        .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseString.toString())))
 
     def testCall(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
       val requestPayload = RequestPayload.apply("", "", "", List.empty)

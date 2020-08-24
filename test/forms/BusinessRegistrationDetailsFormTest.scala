@@ -22,9 +22,8 @@ import forms.test.util.{ExpectedFieldIsEmpty, _}
 import forms.validation.util.FieldError
 import models.BusinessRegistrationDetails
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.test.FakeRequest
 import org.scalatestplus.play.PlaySpec
+import play.api.test.FakeRequest
 import utils.TestConstants._
 import utils.TestUtil
 
@@ -36,7 +35,7 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
   val entities = Seq[String](SoleTrader, Ltd, Partnership)
 
   //all ids
-  private val allIds = Set[String](doYouHaveUtr, doYouHaveNino, doYouHaveCrn, doYouHaveVrn)
+  Set[String](doYouHaveUtr, doYouHaveNino, doYouHaveCrn, doYouHaveVrn)
 
   // ids required by entities
   private val soleTraderIds = Set[String](doYouHaveUtr, doYouHaveNino, doYouHaveVrn)

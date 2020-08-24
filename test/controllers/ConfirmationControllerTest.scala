@@ -122,7 +122,6 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
               val dateFormat = new SimpleDateFormat("d MMMM y")
               val submissionDate = dateFormat.format(today)
               val companyName = "North East Wines"
-              val uniqueRef = subscribeSuccessResponse.etmpFormBundleNumber
 
               val document = Jsoup.parse(contentAsString(result))
 

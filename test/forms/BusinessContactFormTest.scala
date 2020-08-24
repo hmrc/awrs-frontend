@@ -22,7 +22,6 @@ import forms.test.util._
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import org.scalatestplus.play.PlaySpec
 import utils.TestConstants._
 

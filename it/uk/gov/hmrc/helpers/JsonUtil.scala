@@ -16,14 +16,6 @@
 
 package uk.gov.hmrc.helpers
 
-import org.joda.time.LocalDate
-import play.api.libs.json._
-import uk.gov.hmrc.domain.SaUtrGenerator
-
-import scala.annotation.tailrec
-import scala.io.Source
-import scala.util.Random
-
 object JsonUtil extends JsonUtil
 
 trait JsonUtil {

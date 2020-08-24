@@ -109,7 +109,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
   }
 
   def addressLookupValidPostcode(test: Future[Result] => Any) {
-    implicit val hc = mock[HeaderCarrier]
+    mock[HeaderCarrier]
 
     when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
     setAuthMocks()
@@ -118,7 +118,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
   }
 
   def addressLookupInvalidPostcode(test: Future[Result] => Any) {
-    implicit val hc = mock[HeaderCarrier]
+    mock[HeaderCarrier]
 
     when(testAddressLookupController.addressLookupConnector.lookup(mockEq(invalidPostcode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new BadRequestException("")))
     setAuthMocks()
@@ -127,7 +127,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
   }
 
   def addressLookupInternalServerError(test: Future[Result] => Any) {
-    implicit val hc = mock[HeaderCarrier]
+    mock[HeaderCarrier]
 
     when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new Exception("")))
     setAuthMocks()
@@ -136,7 +136,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
   }
 
   def addressAuditCall(addressAudits: AddressAudits)(test: Future[Result] => Any): Unit = {
-    implicit val hc = mock[HeaderCarrier]
+    mock[HeaderCarrier]
 
     when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
     setAuthMocks()

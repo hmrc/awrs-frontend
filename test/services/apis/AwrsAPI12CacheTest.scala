@@ -24,6 +24,7 @@ import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedT
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.apis.mocks.MockAwrsAPI12Cache
+import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants._
 import uk.gov.hmrc.http.SessionKeys
@@ -36,7 +37,7 @@ class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId,
       "businessType" -> "SOP",
       "businessName" -> testTradingName

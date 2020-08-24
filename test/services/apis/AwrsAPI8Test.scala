@@ -20,13 +20,12 @@ import java.util.UUID
 
 import connectors.AWRSConnector
 import connectors.mock.MockAuthConnector
-import controllers.auth.StandardAuthRetrievals
 import models.{WithdrawalReason, WithdrawalResponse}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import services.mocks.MockKeyStoreService
-import uk.gov.hmrc.auth.core.Enrolment
+import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import uk.gov.hmrc.http.SessionKeys
 import utils.TestConstants._
 import utils.TestUtil
@@ -35,7 +34,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AwrsAPI8Test extends MockKeyStoreService with MockAuthConnector {
-  import MockKeyStoreService._
 
   lazy val mockAWRSConnector: AWRSConnector = mock[AWRSConnector]
   val testAwrsAPI8: AwrsAPI8 = new AwrsAPI8(mockAWRSConnector, testKeyStoreService)
@@ -49,7 +47,7 @@ class AwrsAPI8Test extends MockKeyStoreService with MockAuthConnector {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId,
       "businessType" -> "SOP",
       "businessName" -> testTradingName

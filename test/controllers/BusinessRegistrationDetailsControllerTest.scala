@@ -94,7 +94,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
         }
     }
 
-    def returnWithAuthorisedUser(businessRegistrationDetails: BusinessRegistrationDetails, legalEntity: String = "SOP")(test: Future[Result] => Any) {
+    def returnWithAuthorisedUser(businessRegistrationDetails: BusinessRegistrationDetails, legalEntity: String)(test: Future[Result] => Any) {
       val fakeRequest = testRequest(businessRegistrationDetails, legalEntity)
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessRegistrationDetails = businessRegistrationDetails

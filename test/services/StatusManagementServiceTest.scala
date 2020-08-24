@@ -25,6 +25,7 @@ import connectors.mock.MockAuthConnector
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.{MockKeyStoreService, MockTestStatusManagementService}
+import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import uk.gov.hmrc.http.SessionKeys
 
@@ -37,7 +38,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId,
       "businessType" -> "SOP",
       "businessName" -> "North East Wines"
@@ -55,7 +56,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
         val sessionId = s"session-${UUID.randomUUID}"
         FakeRequest().withSession(
           SessionKeys.sessionId -> sessionId,
-          SessionKeys.token -> "RANDOMTOKEN",
+          SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
           SessionKeys.userId -> userId,
           "businessType" -> "SOP",
           "businessName" -> "North East Wines",

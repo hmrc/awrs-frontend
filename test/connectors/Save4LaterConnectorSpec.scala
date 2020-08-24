@@ -68,7 +68,7 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "remove everything from save4later" in {
-      when(mockShortLivedCache.remove(any())(any(), any())).thenReturn(Future.successful(HttpResponse(Status.OK)))
+      when(mockShortLivedCache.remove(any())(any(), any())).thenReturn(Future.successful(HttpResponse.apply(Status.OK, "")))
 
       val result = testSave4LaterConnector.removeAll("TEST")
 

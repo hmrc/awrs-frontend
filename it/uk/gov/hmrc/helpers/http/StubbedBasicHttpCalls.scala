@@ -3,7 +3,6 @@ package uk.gov.hmrc.helpers.http
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.shaded.ahc.org.asynchttpclient.AsyncHttpClientConfig.ResponseBodyPartFactory
 
 trait StubbedBasicHttpCalls {
 

@@ -1248,7 +1248,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     setupMockSave4LaterService(fetchAll = cachedData())
     setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSubscription)
     setupMockAWRSConnectorWithOnly(updateGroupBusinessPartner = updateGroupBusinessPartnerResponse)
-    implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
+    FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     testApplicationService.callUpdateGroupBusinessPartner(cachedData(), Some(cachedSubscription), testSubscriptionStatusTypeApproved, TestUtil.defaultAuthRetrieval)
   }
 }

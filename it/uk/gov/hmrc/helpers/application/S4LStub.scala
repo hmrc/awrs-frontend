@@ -12,8 +12,6 @@ trait S4LStub {
   def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None)(implicit jsonCrypto: CryptoWithKeysFromConfig,
                                                                   encryptionFormat: JsonEncryptor[JsObject]): StubMapping = {
 
-    implicit lazy val encryptionFormatString: JsonEncryptor[JsString] = new JsonEncryptor[JsString]()
-
     val keyEncryptor = new JsonEncryptor[String]()
     val encKey = keyEncryptor.writes(Protected(key)).as[String]
 
@@ -51,8 +49,7 @@ trait S4LStub {
     }
   }
 
-  def stubS4LPut(id: String, key: String, data: JsObject, api: Boolean = false)(implicit jsonCrypto: CryptoWithKeysFromConfig,
-                                                          encryptionFormat: JsonEncryptor[JsObject]
+  def stubS4LPut(id: String, key: String, data: JsObject, api: Boolean = false)(implicit encryptionFormat: JsonEncryptor[JsObject]
                                                           ): StubMapping = {
 
     val encData = encryptionFormat.writes(Protected(data))

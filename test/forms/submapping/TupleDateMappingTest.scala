@@ -23,11 +23,10 @@ import forms.validation.util.FieldError
 import models.TupleDate
 import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import org.scalatestplus.play.PlaySpec
 import play.api.data.Forms._
 import play.api.data.validation.{Valid, ValidationResult}
 import play.api.data.{Form, Mapping}
-import org.scalatestplus.play.PlaySpec
 
 
 class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {

@@ -22,9 +22,8 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import models.WithdrawalReason
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.data.Form
 import org.scalatestplus.play.PlaySpec
+import play.api.data.Form
 import utils.AwrsFieldConfig
 
 class WithdrawalReasonFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {

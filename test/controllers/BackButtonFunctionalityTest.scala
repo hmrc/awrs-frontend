@@ -141,7 +141,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     }
   }
 
-  private def callBackFrom(businessEntity: String, startSection: String = businessDetailsName)(currentSection: String, id: Option[Int] = None): Future[Result] = {
+  private def callBackFrom(businessEntity: String, startSection: String)(currentSection: String, id: Option[Int]): Future[Result] = {
     setAuthMocks()
     val request = SessionBuilder.buildRequestWithSession(userId, businessEntity)
     val requestWithStart = request.withSession(request.session.+((AwrsSessionKeys.sessionJouneyStartLocation, startSection)).data.toSeq: _*)
@@ -225,7 +225,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     "when the user is on the page where their journey began, return to index page" in {
       // LLP_GRP is used here because it has all the sections in its journey
       val LLP_GRP = "LLP_GRP"
-      val journey = JourneyConstants.getJourney(LLP_GRP)
+      JourneyConstants.getJourney(LLP_GRP)
       testPage()(LLP_GRP, startSection = businessDetailsName)(businessDetailsName)
       beforeEach()
       testPage()(LLP_GRP, startSection = businessRegistrationDetailsName)(businessRegistrationDetailsName)
@@ -251,7 +251,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
 
     "when the user is in a subsection of a multi-page section, goto the previous page in the subsection even if they are on the page where their journey began" in {
       val LLP_GRP = "LLP_GRP"
-      val journey = JourneyConstants.getJourney(LLP_GRP)
+      JourneyConstants.getJourney(LLP_GRP)
       (1 to defaultEntriesForMultiEntryPages).foreach {
         id =>
           testPage()(LLP_GRP, startSection = groupMembersName)(groupMembersName, id = id)
@@ -268,7 +268,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
 
     "if for whatever reason the current section is prior to the session variable for where the journey began, then go back to index" in {
       val LLP_GRP = "LLP_GRP"
-      val journey = JourneyConstants.getJourney(LLP_GRP)
+      JourneyConstants.getJourney(LLP_GRP)
       testPage()(LLP_GRP, startSection = suppliersName)(businessDetailsName)
       beforeEach()
       testPage()(LLP_GRP, startSection = suppliersName)(businessRegistrationDetailsName)

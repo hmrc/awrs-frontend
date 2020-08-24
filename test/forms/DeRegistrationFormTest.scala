@@ -22,7 +22,6 @@ import models.TupleDate
 import models.TupleDate._
 import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import org.scalatestplus.play.PlaySpec
 
 class DeRegistrationFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {

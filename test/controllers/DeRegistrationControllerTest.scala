@@ -26,7 +26,6 @@ import models.FormBundleStatus.{DeRegistered, Rejected, RejectedUnderReviewOrApp
 import models._
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.{Action, AnyContent, Result}
 import play.api.test.FakeRequest
@@ -34,8 +33,9 @@ import play.api.test.Helpers._
 import services.apis.AwrsAPI10
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, EmailService}
+import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import uk.gov.hmrc.http.SessionKeys
-import utils.{AwrsSessionKeys, CountryCodes}
+import utils.AwrsSessionKeys
 import utils.TestUtil.cachedData
 
 import scala.concurrent.Future
@@ -376,7 +376,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId,
       "businessType" -> "SOP",
       AwrsSessionKeys.sessionStatusType -> status,

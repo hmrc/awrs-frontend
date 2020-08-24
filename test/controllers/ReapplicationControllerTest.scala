@@ -123,7 +123,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
 
   }
 
-  private def showWithException(statusNotification: Option[StatusNotification] = None)(test: Future[Result] => Any) {
+  private def showWithException(statusNotification: Option[StatusNotification])(test: Future[Result] => Any) {
     when(mockAWRSNotificationConnector.fetchNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(statusNotification))
     setAuthMocks()
     val result = testReapplicationController.show().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -136,7 +136,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     setupMockApiSave4LaterService()
     setAuthMocks()
     when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-    when(mockKeyStoreService.removeAll(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+    when(mockKeyStoreService.removeAll(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
     val result = testReapplicationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD"))
     test(result)
   }

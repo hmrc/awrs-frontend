@@ -16,7 +16,6 @@
 
 package connectors
 
-import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
 import exceptions.{DESValidationException, DuplicateSubscriptionException, GovernmentGatewayException, PendingDeregistrationException}
 import models.FormBundleStatus.Pending
@@ -29,17 +28,14 @@ import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AwrsTestJson._
 import utils.TestConstants._
 import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch, TestUtil}
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{BadRequestException, ForbiddenException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import utils.TestUtil.testBusinessRegistrationDetails
-
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
@@ -85,7 +81,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as OK, for successful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, subscribeSuccessResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       await(result) mustBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -93,14 +89,14 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as OK, for Partnership legal entity" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, subscribeSuccessResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api4PartnerJson, retrievalsWithAwrsEnrolment)
       await(result) mustBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
     }
     "return status as OK, for LTD legal entity" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, subscribeSuccessResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
       await(result) mustBe Right(subscribeSuccessResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -108,7 +104,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status ACCEPTED, for a organisation self heal case" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(ACCEPTED, Some(acceptedResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(ACCEPTED, acceptedResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
       await(result) mustBe Left(subscribeAcceptedResponse)
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -116,7 +112,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST and catch all, for bad data sent for subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailureResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[BadRequestException] thrownBy await(result)
@@ -126,7 +122,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST and throw DESValidationException, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureDesValResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailureDesValResponse.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[DESValidationException] thrownBy await(result)
@@ -136,7 +132,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST and throw GovernmentGatewayException, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureGovGateResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailureGovGateResponse.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
@@ -146,7 +142,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST and throw DuplicateSubscriptionException, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureDupSubsResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailureDupSubsResponse.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[DuplicateSubscriptionException] thrownBy await(result)
@@ -156,7 +152,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST and throw PendingDeregistrationException, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailurePendingDeregResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailurePendingDeregResponse.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[PendingDeregistrationException] thrownBy await(result)
@@ -166,7 +162,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as NOT_FOUND, for bad data sent for subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(subscribeFailureResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, subscribeFailureResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[NotFoundException] thrownBy await(result)
       thrown.getMessage mustBe "URL not found"
@@ -174,7 +170,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
     "return status as SERVICE_UNAVAILABLE, for bad data sent for subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(subscribeFailureResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(SERVICE_UNAVAILABLE, subscribeFailureResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
       thrown.getMessage mustBe "Service unavailable"
@@ -182,7 +178,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     }
     "return status INTERNAL SERVER ERROR" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[InternalServerException] thrownBy await(result)
       thrown.getMessage mustBe "Internal server error"
@@ -191,7 +187,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as INTERNAL SERVER ERROR and throw GovernmentGatewayException, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureGovGateResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, subscribeFailureGovGateResponse.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
@@ -201,7 +197,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status anything else" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(777, Some(subscribeFailureResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(777, subscribeFailureResponseJson.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
       val thrown = the[RuntimeException] thrownBy await(result)
       thrown.getMessage mustBe "Unknown response"
@@ -210,7 +206,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status anything else and throw GovernmentGatewayException, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(777, Some(subscribeFailureGovGateResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(777, subscribeFailureGovGateResponse.toString())))
       val result = testAWRSConnector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
@@ -222,7 +218,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   "A user with an AWRS enrolment " must {
     "try to lookup data from ETMP via API5 endpoint" in {
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(api5LTDJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, api5LTDJson.toString())))
 
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
@@ -231,7 +227,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST, for bad request made for API 5" in {
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(api5LTDJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, api5LTDJson.toString())))
 
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
@@ -241,7 +237,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as NOT_FOUND for API 5" in {
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(api5LTDJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, api5LTDJson.toString())))
 
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
@@ -251,7 +247,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as SERVICE_UNAVAILABLE for API 5" in {
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(api5LTDJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(SERVICE_UNAVAILABLE, api5LTDJson.toString())))
 
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
@@ -261,7 +257,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status INTERNAL_SERVER_ERROR for API 5" in {
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(api5LTDJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, api5LTDJson.toString())))
 
       val result = testAWRSConnector.lookupAWRSData(retrievalsWithAwrsEnrolment)
 
@@ -274,7 +270,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as OK, for successful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeApi6SuccessResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, subscribeApi6SuccessResponseJson.toString())))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
       await(result) mustBe api6SuccessResponse
       verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -282,7 +278,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, badRequestResponse.toString())))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[BadRequestException] thrownBy await(result)
@@ -291,7 +287,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as NOT_FOUND, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, notFoundResponse.toString())))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[NotFoundException] thrownBy await(result)
@@ -300,7 +296,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(SERVICE_UNAVAILABLE, serviceUnavailableResponse.toString())))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
@@ -309,7 +305,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, internalServerErrorResponse.toString())))
       val result = testAWRSConnector.updateAWRSData(api6LTDJson, retrievalsWithAwrsEnrolment)
 
       val thrown = the[InternalServerException] thrownBy await(result)
@@ -323,7 +319,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return OK on successful return of data" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(withdrawResponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, withdrawResponseJson.toString())))
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
       await(result) mustBe witdrawalResponse()
       verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -331,7 +327,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, badRequestResponse.toString())))
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
       val thrown = the[BadRequestException] thrownBy await(result)
       thrown.getMessage mustBe "The Submission has not passed validation"
@@ -339,7 +335,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as NOT_FOUND, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, notFoundResponse.toString())))
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
 
       val thrown = the[NotFoundException] thrownBy await(result)
@@ -348,7 +344,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(SERVICE_UNAVAILABLE, serviceUnavailableResponse.toString())))
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
 
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
@@ -357,7 +353,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful subscription" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, internalServerErrorResponse.toString())))
       val result = testAWRSConnector.withdrawApplication(retrievalsWithAwrsEnrolment, withdrawalJsonToSend)
 
       val thrown = the[InternalServerException] thrownBy await(result)
@@ -382,7 +378,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     def mockResponse(responseStatus: Int, responseData: JsValue): Unit =
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(getStatusInfoURI(awrsRef, contactNumber)))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(responseStatus, Some(responseData))))
+        .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.toString())))
 
     def testCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = testAWRSConnector.getStatusInfo(contactNumber, Pending, Some(MindedToReject), retrievalsWithAwrsEnrolment)
 
@@ -393,42 +389,42 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
       mockResponse(OK, statusInfoResponseFailureJson)
       val resultFailure = testCall
-      val thrownFailure = the[BadRequestException] thrownBy await(resultFailure)
+      the[BadRequestException] thrownBy await(resultFailure)
 
       mockResponse(OK, statusInfoCorruptResponseJson)
       val resultCorrupt = testCall
-      val thrown = the[BadRequestException] thrownBy await(resultCorrupt)
+      the[BadRequestException] thrownBy await(resultCorrupt)
     }
 
     "return status as BAD_REQUEST, for unsuccessful de-enrolment" in {
       mockResponse(BAD_REQUEST, statusInfoResponseSuccessJson)
       val result = testCall
-      val thrown = the[BadRequestException] thrownBy await(result)
+      the[BadRequestException] thrownBy await(result)
     }
 
     "return status as NOT_FOUND, for unsuccessful de-enrolment" in {
       mockResponse(NOT_FOUND, statusInfoResponseSuccessJson)
       val result = testCall
-      val thrown = the[NotFoundException] thrownBy await(result)
+      the[NotFoundException] thrownBy await(result)
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful de-enrolment" in {
       mockResponse(SERVICE_UNAVAILABLE, statusInfoResponseSuccessJson)
       val result = testCall
-      val thrown = the[ServiceUnavailableException] thrownBy await(result)
+      the[ServiceUnavailableException] thrownBy await(result)
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful de-enrolment" in {
       mockResponse(INTERNAL_SERVER_ERROR, statusInfoResponseSuccessJson)
       val result = testCall
-      val thrown = the[InternalServerException] thrownBy await(result)
+      the[InternalServerException] thrownBy await(result)
     }
 
     "return status as unexpected status, for unsuccessful de-enrolment" in {
       val otherStatus = 999
       mockResponse(otherStatus, statusInfoResponseSuccessJson)
       val result = testCall
-      val thrown = the[InternalServerException] thrownBy await(result)
+      the[InternalServerException] thrownBy await(result)
     }
   }
 
@@ -450,7 +446,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     def mockResponse(responseStatus: Int, responseData: JsValue): Unit =
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.endsWith(deRegisterURI(awrsRef)), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(responseStatus, Some(responseData))))
+        .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.toString())))
 
     def testCall(implicit  hc: HeaderCarrier, request: Request[AnyContent]) = testAWRSConnector.deRegistration(deRegistrationRequest, retrievalsWithAwrsEnrolment)
 
@@ -465,38 +461,38 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
       mockResponse(OK, deRegistrationCorruptResponseJson)
       val resultCorrupt = testCall
-      val thrown = the[BadRequestException] thrownBy await(resultCorrupt)
+      the[BadRequestException] thrownBy await(resultCorrupt)
     }
 
     "return status as BAD_REQUEST, for unsuccessful de-enrolment" in {
       mockResponse(BAD_REQUEST, deRegistrationResponseSuccessJson)
       val result = testCall
-      val thrown = the[BadRequestException] thrownBy await(result)
+      the[BadRequestException] thrownBy await(result)
     }
 
     "return status as NOT_FOUND, for unsuccessful de-enrolment" in {
       mockResponse(NOT_FOUND, deRegistrationResponseSuccessJson)
       val result = testCall
-      val thrown = the[NotFoundException] thrownBy await(result)
+      the[NotFoundException] thrownBy await(result)
     }
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful de-enrolment" in {
       mockResponse(SERVICE_UNAVAILABLE, deRegistrationResponseSuccessJson)
       val result = testCall
-      val thrown = the[ServiceUnavailableException] thrownBy await(result)
+      the[ServiceUnavailableException] thrownBy await(result)
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful de-enrolment" in {
       mockResponse(INTERNAL_SERVER_ERROR, deRegistrationResponseSuccessJson)
       val result = testCall
-      val thrown = the[InternalServerException] thrownBy await(result)
+      the[InternalServerException] thrownBy await(result)
     }
 
     "return status as unexpected status, for unsuccessful de-enrolment" in {
       val otherStatus = 999
       mockResponse(otherStatus, deRegistrationResponseSuccessJson)
       val result = testCall
-      val thrown = the[InternalServerException] thrownBy await(result)
+      the[InternalServerException] thrownBy await(result)
     }
 
   }
@@ -508,7 +504,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as OK, for successful update" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK, Some(updateGrpPartnerSuccessReponseJson))))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, updateGrpPartnerSuccessReponseJson.toString())))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
       await(result) mustBe api3SucecssResponse
       verify(mockWSHttp, times(1)).PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -516,7 +512,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as BAD_REQUEST, for unsuccessful update" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(badRequestResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, badRequestResponse.toString())))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
       val thrown = the[BadRequestException] thrownBy await(result)
@@ -525,7 +521,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as NOT_FOUND, for unsuccessful update" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, Some(notFoundResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, notFoundResponse.toString())))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
       val thrown = the[NotFoundException] thrownBy await(result)
@@ -534,7 +530,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as SERVICE_UNAVAILABLE, for unsuccessful update" in {
      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-       .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE, Some(serviceUnavailableResponse))))
+       .thenReturn(Future.successful(HttpResponse.apply(SERVICE_UNAVAILABLE, serviceUnavailableResponse.toString())))
      val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
      val thrown = the[ServiceUnavailableException] thrownBy await(result)
@@ -543,7 +539,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
    "return status as INTERNAL_SERVER_ERROR, for unsuccessful update" in {
      when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-       .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(internalServerErrorResponse))))
+       .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, internalServerErrorResponse.toString())))
      val result = testAWRSConnector.updateGroupBusinessPartner(testTradingName,"","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
      val thrown = the[InternalServerException] thrownBy await(result)
@@ -552,7 +548,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     "return status as FORBIDDEN, for unsuccessful update" in {
       when(mockWSHttp.PUT[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(FORBIDDEN, Some(forbiddenResponse))))
+        .thenReturn(Future.successful(HttpResponse.apply(FORBIDDEN, forbiddenResponse.toString())))
       val result = testAWRSConnector.updateGroupBusinessPartner("","","",updatedDataRequest, retrievalsWithAwrsEnrolment)
 
       val thrown = the[ForbiddenException] thrownBy await(result)
@@ -566,7 +562,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
     def mockResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
       when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(responseStatus, responseData)))
+        .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.getOrElse(Json.obj()), Map.empty[String, Seq[String]])))
     def testCall(implicit  hc: HeaderCarrier): Future[Option[SelfHealSubscriptionResponse]] = testAWRSConnector.checkEtmp(testBusinessCustomer, "SOP")
 
     val checkRegimeModelResponseSuccess = SelfHealSubscriptionResponse("123456")

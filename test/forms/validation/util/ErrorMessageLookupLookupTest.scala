@@ -19,10 +19,8 @@ package forms.validation.util
 import forms.test.util.AwrsFormTestUtils
 import forms.validation.util.ErrorMessageLookup._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.MessagesControllerComponents
-import org.scalatestplus.play.PlaySpec
 
 class ErrorMessageLookupLookupTest extends AwrsFormTestUtils with MockitoSugar  {
 

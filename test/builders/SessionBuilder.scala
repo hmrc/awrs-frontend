@@ -18,11 +18,11 @@ package builders
 
 import java.util.UUID
 
-import config.AwrsSessionCache
 import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson}
 import play.api.test.FakeRequest
-import utils.AwrsSessionKeys
+import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import uk.gov.hmrc.http.SessionKeys
+import utils.AwrsSessionKeys
 
 object SessionBuilder {
 
@@ -30,7 +30,7 @@ object SessionBuilder {
     val sessionId = s"session-${UUID.randomUUID}"
     fakeRequest.withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId)
   }
 
@@ -38,7 +38,7 @@ object SessionBuilder {
     val sessionId = s"session-${UUID.randomUUID}"
     fakeRequest.withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId,
       "businessType" -> businessType,
       "businessName" -> "North East Wines")
@@ -48,7 +48,7 @@ object SessionBuilder {
     val sessionId = s"session-${UUID.randomUUID}"
     fakeRequest.withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId)
   }
 
@@ -56,7 +56,7 @@ object SessionBuilder {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId,
       "businessName" -> "North East Wines"
     )
@@ -66,7 +66,7 @@ object SessionBuilder {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       SessionKeys.userId -> userId,
       "businessType" -> businessType,
       "businessName" -> "North East Wines"
@@ -78,7 +78,7 @@ object SessionBuilder {
     previousLocation match {
       case Some(location) => FakeRequest().withSession(
         SessionKeys.sessionId -> sessionId,
-        SessionKeys.token -> "RANDOMTOKEN",
+        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
         SessionKeys.userId -> userId,
         AwrsSessionKeys.sessionPreviousLocation -> location,
         "businessType" -> businessType,
@@ -86,7 +86,7 @@ object SessionBuilder {
       )
       case _ => FakeRequest().withSession(
         SessionKeys.sessionId -> sessionId,
-        SessionKeys.token -> "RANDOMTOKEN",
+        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
         SessionKeys.userId -> userId,
         "businessType" -> businessType,
         "businessName" -> "North East Wines"
@@ -99,7 +99,7 @@ object SessionBuilder {
     startLocation match {
       case Some(startLocation) => FakeRequest().withSession(
         SessionKeys.sessionId -> sessionId,
-        SessionKeys.token -> "RANDOMTOKEN",
+        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
         SessionKeys.userId -> userId,
         AwrsSessionKeys.sessionJouneyStartLocation -> startLocation,
         "businessType" -> businessType,
@@ -107,7 +107,7 @@ object SessionBuilder {
       )
       case _ => FakeRequest().withSession(
         SessionKeys.sessionId -> sessionId,
-        SessionKeys.token -> "RANDOMTOKEN",
+        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
         SessionKeys.userId -> userId,
         "businessType" -> businessType,
         "businessName" -> "North East Wines"

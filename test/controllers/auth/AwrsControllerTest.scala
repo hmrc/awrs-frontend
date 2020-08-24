@@ -51,10 +51,11 @@ class AwrsControllerTest extends AwrsUnitTestTraits
   }
 
   "The index page which implements AwrsController" must {
-    import scala.language.implicitConversions
+
     def noRedirection()(implicit result: Future[Result]): Unit = {
       status(result) mustBe OK
     }
+
     def redirected()(implicit result: Future[Result]): Unit = {
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/alcohol-wholesale-scheme/status-page")

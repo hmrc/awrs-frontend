@@ -16,20 +16,17 @@
 
 package services
 
-import connectors.{AWRSConnector, Save4LaterConnector}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatestplus.play.PlaySpec
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
 import services.mocks.MockSave4LaterService
-import uk.gov.hmrc.http.HeaderCarrier
-import org.scalatestplus.play.PlaySpec
-import utils.{AccountUtils, TestUtil}
+import utils.TestUtil
 import views.Configuration.{NewApplicationMode, ReturnedApplicationEditMode, ReturnedApplicationMode}
 
 import scala.concurrent.ExecutionContext.Implicits.global

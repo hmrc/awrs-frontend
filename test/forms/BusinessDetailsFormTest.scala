@@ -23,7 +23,6 @@ import forms.validation.util.ConstraintUtil.FormData
 import forms.validation.util.FieldError
 import models.TupleDate
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
 import org.scalatestplus.play.PlaySpec
 import utils.AwrsFieldConfig
 import utils.TestConstants._
@@ -113,7 +112,7 @@ class BusinessDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsField
 
     for (entity <- welshCharEntities; hasAwrs <- Seq(true))
     f"check Welsh character validations for entity: $entity and hasAwrs: $hasAwrs" in {
-      val validDate = List(ExpectedValidDateFormat(TupleDate("01", "04", "2016")))
+      List(ExpectedValidDateFormat(TupleDate("01", "04", "2016")))
       val data: Map[String, String] =
         Map("companyName" -> testWelshChars,
           "newAWBusiness.newAWBusiness" -> "No",

@@ -21,13 +21,13 @@ import java.util.UUID
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments}
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, GGCredId, ~}
-import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 sealed trait BType
 

@@ -92,7 +92,6 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
     "save the already trading answer" when {
       "provided with an answer to the already trading question" in {
         val businessType = "test"
-        val hasAwrs = true
 
         val fakeRequest = testRequest("Yes")
 
