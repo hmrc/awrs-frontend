@@ -34,7 +34,6 @@ import services.apis.AwrsAPI10
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, EmailService}
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
-import uk.gov.hmrc.http.SessionKeys
 import utils.AwrsSessionKeys
 import utils.TestUtil.cachedData
 
@@ -375,9 +374,9 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   def buildRequestWithSession(userId: String, status: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId,
+      "userId"-> userId,
       "businessType" -> "SOP",
       AwrsSessionKeys.sessionStatusType -> status,
       "businessName" -> "North East Wines"
