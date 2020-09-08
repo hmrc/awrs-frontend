@@ -28,12 +28,10 @@ import services.mocks.MockKeyStoreService
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import utils.TestConstants._
-
-import scala.concurrent.Future
-import uk.gov.hmrc.http.SessionKeys
 import utils.TestUtil
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
   import MockKeyStoreService._
@@ -49,9 +47,9 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
   implicit lazy val fakeRequest = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId,
+      "userId"-> userId,
       "businessType" -> "SOP",
       "businessName" -> testTradingName
     )

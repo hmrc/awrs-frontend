@@ -21,15 +21,15 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.{BadRequestException, HttpResponse, InternalServerException, ServiceUnavailableException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import utils.AwrsTestJson.{matchFailureResponseJson, matchSuccessResponseJson}
-import utils.{AwrsUnitTestTraits, TestUtil}
-import utils.TestConstants._
-
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{BadRequestException, HttpResponse, InternalServerException, ServiceUnavailableException, SessionKeys}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import utils.AwrsTestJson.{matchFailureResponseJson, matchSuccessResponseJson}
+import utils.TestConstants._
+import utils.{AwrsUnitTestTraits, TestUtil}
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
 
@@ -41,7 +41,7 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
   }
 
   val testBusinessMatchingConnector = new BusinessMatchingConnectorImpl(mockServicesConfig, mockAuditable, mockAccountUtils, mockWSHttp)
-  val matchBusinessData = MatchBusinessData(SessionKeys.sessionId, testUtr, false, false, None, None)
+  val matchBusinessData = MatchBusinessData("sessionId", testUtr, false, false, None, None)
   val userType = "org"
 
   "Business Matching connector" must {

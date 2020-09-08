@@ -26,7 +26,6 @@ import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import services.mocks.MockKeyStoreService
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
-import uk.gov.hmrc.http.SessionKeys
 import utils.TestConstants._
 import utils.TestUtil
 
@@ -46,9 +45,9 @@ class AwrsAPI8Test extends MockKeyStoreService with MockAuthConnector {
   implicit lazy val fakeRequest = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId,
+      "userId"-> userId,
       "businessType" -> "SOP",
       "businessName" -> testTradingName
     )

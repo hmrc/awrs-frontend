@@ -33,7 +33,6 @@ import play.api.test.Helpers._
 import services.Save4LaterService
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
-import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.AccountUtils
 
@@ -45,9 +44,9 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
   implicit lazy val fakeRequest: FakeRequest[AnyContent] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId,
+      "userId"-> userId,
       "businessType" -> "SOP",
       "businessName" -> "North East Wines"
     )

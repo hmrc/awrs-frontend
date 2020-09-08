@@ -18,16 +18,15 @@ package services
 
 import java.util.UUID
 
-import _root_.models.{FormBundleStatus, StatusContactType}
 import _root_.models.FormBundleStatus._
 import _root_.models.StatusContactType.{MindedToReject, MindedToRevoke}
+import _root_.models.{FormBundleStatus, StatusContactType}
 import connectors.mock.MockAuthConnector
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.{MockKeyStoreService, MockTestStatusManagementService}
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
-import uk.gov.hmrc.http.SessionKeys
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -37,9 +36,9 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId,
+      "userId"-> userId,
       "businessType" -> "SOP",
       "businessName" -> "North East Wines"
     )
@@ -55,9 +54,9 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
       implicit val fakeRequest = {
         val sessionId = s"session-${UUID.randomUUID}"
         FakeRequest().withSession(
-          SessionKeys.sessionId -> sessionId,
+          "sessionId" -> sessionId,
           SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-          SessionKeys.userId -> userId,
+          "userId"-> userId,
           "businessType" -> "SOP",
           "businessName" -> "North East Wines",
           AwrsSessionKeys.sessionStatusType -> "" // currently, it doesn't matter what value is here so long as the key exists
