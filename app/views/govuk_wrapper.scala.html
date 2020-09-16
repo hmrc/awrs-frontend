@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.play.views.html.layouts._
 
 @this(uiHead: Head, uiHeaderNav: HeaderNav, footer: Footer, uiServiceInfo: ServiceInfo, uiMainContentHeader: MainContentHeader,
-        reportAProblemLink: ReportAProblemLink, uiMainContent: MainContent, footerLinks: FooterLinks)
+        reportAProblemLink: ReportAProblemLink, uiMainContent: MainContent, footer_links: FooterLinks)
 
 @(
     appConfig: ApplicationConfig,
@@ -148,4 +148,4 @@
     )
 }
 
-@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(footerLinks), true)(content)
+@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(footer_links()), true)(content)
