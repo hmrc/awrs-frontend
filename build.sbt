@@ -1,14 +1,12 @@
 
-import uk.gov.hmrc._
-import DefaultBuildSettings._
-import uk.gov.hmrc.SbtAutoBuildPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.versioning.SbtGitVersioning
-import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import uk.gov.hmrc.SbtArtifactory
 import TestPhases._
 import sbt.Keys.scalacOptions
+import uk.gov.hmrc.DefaultBuildSettings._
+import uk.gov.hmrc.{SbtAutoBuildPlugin, _}
+import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.versioning.SbtGitVersioning
+import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "awrs-frontend"
 
@@ -28,10 +26,10 @@ lazy val scoverageSettings = {
   )
 }
 
-val silencerVersion = "1.7.0"
+val silencerVersion = "1.7.1"
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory) ++ plugins : _*)
+  .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins : _*)
   .settings(playSettings ++ scoverageSettings : _*)
   .settings( majorVersion := 3 )
   .settings(scalaSettings: _*)

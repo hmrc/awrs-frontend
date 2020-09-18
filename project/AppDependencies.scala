@@ -12,13 +12,13 @@ private object AppDependencies {
     "com.typesafe.play" %% "anorm" % "2.5.3",
     "uk.gov.hmrc" %% "url-builder" % "3.4.0-play-27",
     "uk.gov.hmrc" %% "http-caching-client" % "9.1.0-play-27",
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "2.23.0",
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "2.25.0",
     "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-27", // includes code for retrieving partials, e.g. the Help with this page form
-    "uk.gov.hmrc" %% "domain" % "5.9.0-play-27",
+    "uk.gov.hmrc" %% "domain" % "5.10.0-play-27",
     "uk.gov.hmrc" %% "json-encryption" % "4.8.0-play-27",
     "com.mohiva" %% "play-html-compressor" % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-27",
-    "uk.gov.hmrc" %% "govuk-template" % "5.55.0-play-27",
+    "uk.gov.hmrc" %% "auth-client" % "3.1.0-play-27",
+    "uk.gov.hmrc" %% "govuk-template" % "5.56.0-play-27",
     "uk.gov.hmrc" %% "play-ui" % "8.12.0-play-27",
     "com.typesafe.play" %% "play-json-joda" % "2.6.14"
   )
