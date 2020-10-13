@@ -208,8 +208,8 @@
                     });
 
                     clearResults(resultIndex);
-                    $('.dropdown-menu').empty();
-                    $('#address-' + num +' input:first').addClass('selected add-focus').focus()
+                    $('.dropdown-menu').hide();
+
                 }
     }
 
