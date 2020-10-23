@@ -25,7 +25,7 @@ import play.api.http.Status.{CREATED, BAD_REQUEST => _, INTERNAL_SERVER_ERROR =>
 import play.api.libs.json.JsValue
 import play.api.test.Helpers._
 import services.GGConstants._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{BadGatewayException, BadRequestException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -43,9 +43,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     reset(mockWSHttp)
   }
 
-  val testTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockServicesConfig, mockWSHttp, mockAwrsMetrics, mockAuditable) {
-    override val retryWait: Int = 50
-  }
+  val testTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockServicesConfig, mockWSHttp, mockAwrsMetrics, mockAuditable)
 
   "Tax enrolments connector de-enrolling AWRS" must {
     // used in the mock to check the destination of the connector calls
@@ -132,7 +130,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
     "return enrol response for unsuccessful enrolment" in {
       mockResponse(BAD_REQUEST)
-      testCall.isDefined mustBe true
+      intercept[BadRequestException](testCall)
     }
 
     "return enrol response for created response" in {
@@ -142,24 +140,24 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
     "return enrol response for not found response" in {
       mockResponse(NOT_FOUND)
-      testCall.isDefined mustBe true
+      intercept[NotFoundException](testCall)
     }
 
     "return enrol response for service unavailable response" in {
       mockResponse(SERVICE_UNAVAILABLE)
-      testCall.isDefined mustBe true
+      intercept[ServiceUnavailableException](testCall)
     }
 
     "return enrol response for bad gateway response" in {
       mockResponse(BAD_GATEWAY)
-      testCall.isDefined mustBe true
+      intercept[BadGatewayException](testCall)
     }
 
     "return enrol response for any other status" in {
       val otherStatus = 421
 
       mockResponse(otherStatus)
-      testCall.isDefined mustBe true
+      intercept[InternalServerException](testCall)
     }
   }
 }
