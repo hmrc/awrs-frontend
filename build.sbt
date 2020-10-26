@@ -55,7 +55,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     resolvers += Resolver.bintrayRepo("hmrc", "releases"),
     resolvers += Resolver.jcenterRepo,
-    scalacOptions += "-P:silencer:pathFilters=views;routes",
+    scalacOptions += "-P:silencer:pathFilters=views;routes;test/controllers/util;",
     libraryDependencies ++= Seq(
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
