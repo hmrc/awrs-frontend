@@ -120,9 +120,45 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     }
 
     "Submit Withdrawal Reasons" must {
-      "redirect to confirmation page" in {
+      "redirect to confirmation page when registered by mistake" in {
         continueWithSubmitWithdrawalReasons(
           testReasonRequest(WithdrawalReason(reason = WithdrawalReasonEnum.AppliedInError.toString, reasonOther = None))
+        ) {
+          result =>
+            status(result) mustBe SEE_OTHER
+        }
+      }
+
+      "redirect to confirmation page when no longer trading as an alcohol wholesaler or producer" in {
+        continueWithSubmitWithdrawalReasons(
+          testReasonRequest(WithdrawalReason(reason = WithdrawalReasonEnum.NoLongerTrading.toString, reasonOther = None))
+        ) {
+          result =>
+            status(result) mustBe SEE_OTHER
+        }
+      }
+
+      "redirect to confirmation page when registered more than once" in {
+        continueWithSubmitWithdrawalReasons(
+          testReasonRequest(WithdrawalReason(reason = WithdrawalReasonEnum.DuplicateApplication.toString, reasonOther = None))
+        ) {
+          result =>
+            status(result) mustBe SEE_OTHER
+        }
+      }
+
+      "redirect to confirmation page when registering with a group" in {
+        continueWithSubmitWithdrawalReasons(
+          testReasonRequest(WithdrawalReason(reason = WithdrawalReasonEnum.JoinedAWRSGroup.toString, reasonOther = None))
+        ) {
+          result =>
+            status(result) mustBe SEE_OTHER
+        }
+      }
+
+      "redirect to confirmation page when other is selected" in {
+        continueWithSubmitWithdrawalReasons(
+          testReasonRequest(WithdrawalReason(reason = WithdrawalReasonEnum.Other.toString, reasonOther = Some("No Longer Needed")))
         ) {
           result =>
             status(result) mustBe SEE_OTHER
