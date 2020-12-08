@@ -22,7 +22,7 @@ import models.TupleDate
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.validation.{Invalid, Valid, ValidationResult}
-import play.api.data.{FormError, Mapping}
+import play.api.data.{FieldMapping, FormError, Mapping}
 
 object TupleDateMapping {
 
@@ -50,7 +50,9 @@ object TupleDateMapping {
 
   def CompulsoryTupleDateFormatter(isEmptyErrMessage: (String) => Invalid,
                                    isInvalidErrMessage: (String) => Invalid,
-                                   dateRangeCheck: Option[(String) => (TupleDate) => ValidationResult] = Some(yearMustBe4Digits)) = new Formatter[TupleDate] {
+                                   dateRangeCheck: Option[(String) => (TupleDate) => ValidationResult] = Some(yearMustBe4Digits),
+                                   isTooEarlyCheck: Option[(String) => (TupleDate) => ValidationResult],
+                                   isTooLateCheck: Option[(String) => (TupleDate) => ValidationResult]) = new Formatter[TupleDate] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], TupleDate] = {
       val day = data.getOrElse(f"$key.day", "").trim()
       val month = data.getOrElse(f"$key.month", "").trim()
@@ -64,7 +66,19 @@ object TupleDateMapping {
         case _ if isInvalidDate(date) => err(isInvalidErrMessage(key))
         case _ => dateRangeCheck match {
           case Some(dateRangeFunction) => dateRangeFunction(key)(date) match {
-            case Valid => Right(date)
+            case Valid => isTooEarlyCheck match {
+              case Some(tooEarlyFunction) => tooEarlyFunction(key)(date) match {
+                case Valid => Right(date)
+                case invalid: Invalid => err(invalid)
+              }
+              case None => isTooLateCheck match {
+                case Some(tooLateFunction) => tooLateFunction(key)(date) match {
+                  case Valid => Right(date)
+                  case invalid: Invalid => err(invalid)
+                }
+                case None => Right(date)
+              }
+            }
             case invalid: Invalid => err(invalid)
           }
           case _ => Right(date)
@@ -79,11 +93,11 @@ object TupleDateMapping {
       )
   }
 
-
   def tupleDate_compulsory(isEmptyErrMessage: (String) => Invalid,
                            isInvalidErrMessage: (String) => Invalid,
-                           dateRangeCheck: Option[(String) => (TupleDate) => ValidationResult] = Some(TupleDateMapping.yearMustBe4Digits)) =
-    of(CompulsoryTupleDateFormatter(isEmptyErrMessage, isInvalidErrMessage, dateRangeCheck))
-
+                           dateRangeCheck: Option[(String) => TupleDate => ValidationResult] = Some(TupleDateMapping.yearMustBe4Digits),
+                           isTooEarlyCheck: Option[(String) => TupleDate => ValidationResult],
+                           isTooLateCheck: Option[(String) => TupleDate => ValidationResult]): FieldMapping[TupleDate] =
+    of(CompulsoryTupleDateFormatter(isEmptyErrMessage, isInvalidErrMessage, dateRangeCheck, isTooEarlyCheck, isTooLateCheck))
 
 }

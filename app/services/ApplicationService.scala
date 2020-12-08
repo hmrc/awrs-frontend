@@ -16,7 +16,7 @@
 
 package services
 
-import _root_.models._
+import _root_.models.{NewAWBusiness, _}
 import audit.Auditable
 import connectors.{AWRSConnector, AwrsDataCacheConnector}
 import controllers.auth.StandardAuthRetrievals
@@ -106,13 +106,12 @@ class ApplicationService @Inject()(enrolService: EnrolService,
   def assembleAWRSFEModel(cached: Option[CacheMap], businessCustomerDetails: Option[BusinessCustomerDetails], sections: Sections): AWRSFEModel =
     AWRSFEModel(assembleSubscriptionTypeFrontEnd(cached, businessCustomerDetails, sections))
 
-  private def isNewBusiness(cacheMap: Option[CacheMap]): Future[Boolean] = cacheMap match {
+  private[services] def isNewBusiness(cacheMap: Option[CacheMap]): Future[Boolean] = cacheMap match {
     case Some(cached) =>
-      val isNewBusiness: Boolean = cached.getBusinessDetails match {
-        case Some(BusinessDetails(_, _, Some(NewAWBusiness(BooleanRadioEnum.YesString, _)))) => true
-        case _ => false
+      cached.getTradingStartDetails match {
+        case Some(dets) => Future.successful(dets.isNewAWBusiness)
+        case _ => Future.successful(false)
       }
-      Future.successful(isNewBusiness)
     case None => Future.failed(new InternalServerException("No cache map found"))
   }
 
@@ -185,7 +184,9 @@ class ApplicationService @Inject()(enrolService: EnrolService,
         awrsConnector.submitAWRSData(Json.toJson(schema), authRetrievals)
       }
       processedData <- handleAWRSData(awrsData, authRetrievals, cached)
-    } yield processedData
+    } yield {
+      processedData
+    }
   }
 
   def hasAPI5ApplicationChanged(cacheID: String, authRetrievals: StandardAuthRetrievals)

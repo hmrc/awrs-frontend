@@ -11,7 +11,7 @@ private object AppDependencies {
     ws,
     "com.typesafe.play" %% "anorm" % "2.5.3",
     "uk.gov.hmrc" %% "url-builder" % "3.4.0-play-27",
-    "uk.gov.hmrc" %% "http-caching-client" % "9.1.0-play-27",
+    "uk.gov.hmrc" %% "http-caching-client" % "9.2.0-play-27",
     "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "3.1.0",
     "uk.gov.hmrc" %% "play-partials" % "7.0.0-play-27", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc" %% "domain" % "5.10.0-play-27",

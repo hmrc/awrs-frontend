@@ -68,10 +68,14 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
               maybeAWBusiness <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
             } yield {
               (maybeAWBusiness, savedQuestionType) match {
-                case (Some(NewAWBusiness(_, date)), Some(savedQ)) =>
+                case (Some(nab@NewAWBusiness(_, date)), Some(savedQ)) =>
                   val form = date match {
-                    case Some(dt) => tradingDateForm(savedQ).fill(dt)
-                    case None => tradingDateForm(savedQ)
+                    case Some(dt) => {
+                      tradingDateForm(savedQ, Some(nab.isNewAWBusiness)).fill(dt)
+                    }
+                    case None => {
+                      tradingDateForm(savedQ, Some(nab.isNewAWBusiness))
+                    }
                   }
 
                   Ok(template(form, businessType, savedQ))
@@ -105,20 +109,24 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
         val businessType = request.getBusinessType
         keyStoreService.fetchAlreadyTrading flatMap {
           case Some(alreadyTrading) =>
-            tradingDateForm(alreadyTrading).bindFromRequest.fold(
-              formWithErrors =>
-                Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading)))
-              ,
-              formData =>
-                save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
-                  val awToSave = fetchedAW match {
-                    case Some(NewAWBusiness(newAWBusiness, _)) => NewAWBusiness(newAWBusiness, Some(formData))
-                    case _ => throw new RuntimeException("Missing already started trading answer")
+            keyStoreService.fetchIsNewBusiness flatMap {
+              tradingDateForm(alreadyTrading, _).bindFromRequest.fold(
+                formWithErrors =>
+                  Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading)))
+                ,
+                formData =>
+                  save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
+                    val awToSave = fetchedAW match {
+                      case Some(NewAWBusiness(newAWBusiness, _)) => NewAWBusiness(newAWBusiness, Some(formData))
+                      case _ => throw new RuntimeException("Missing already started trading answer")
+                    }
+
+                    saveBusinessDetails(id, redirectRoute, isNewRecord, awToSave, authRetrievals)
                   }
 
-                  saveBusinessDetails(id, redirectRoute, isNewRecord, awToSave, authRetrievals)
-                }
-            )
+              )
+            }
+
           case _ => Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails()))
         }
       case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))

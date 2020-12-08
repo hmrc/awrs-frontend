@@ -112,6 +112,11 @@ case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleD
     case BooleanRadioEnum.YesString => NewAWBusiness(BooleanRadioEnum.NoString, proposedStartDate)
     case _                          => NewAWBusiness(BooleanRadioEnum.YesString, proposedStartDate)
   }
+
+  def isNewAWBusiness: Boolean = newAWBusiness match {
+    case BooleanRadioEnum.YesString => false
+    case BooleanRadioEnum.NoString => true
+  }
 }
 
 case class TupleDate(day: String, month: String, year: String) {
