@@ -1188,6 +1188,24 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         }
       }
     }
+
+    "isNewBusiness" must {
+      "return true if the business is not a NewAWBusiness (already set up and newly trading in alcohol)" in {
+        val cached = Some(CacheMap(testUtr, Map(
+          tradingStartDetailsName -> Json.toJson(NewAWBusiness("No", Some(TupleDate("01", "01", "2019"))))
+        )))
+
+        await(testApplicationService.isNewBusiness(cached)) mustBe true
+      }
+
+      "return false if the business is a NewAWBusiness (already set up and newly trading in alcohol)" in {
+        val cached = Some(CacheMap(testUtr, Map(
+          tradingStartDetailsName -> Json.toJson(NewAWBusiness("Yes", Some(TupleDate("01", "01", "2019"))))
+        )))
+
+        await(testApplicationService.isNewBusiness(cached)) mustBe false
+      }
+    }
   }
 
   def testAddGroupRepToGroupMembers: (CacheMap,Option[GroupMembers]) = {

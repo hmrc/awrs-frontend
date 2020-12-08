@@ -8,7 +8,12 @@ testkey3.summary= result {0} {1}
 
 testkey.tooEarly=too early
 testkey.tooEarly.summary=too early summary
+
+testkey.tooLate=too late
+testkey.tooLate.summary=too late summary
+
 testkey.emptyDate=empty date
 testkey.emptyDate.summary=empty date summary
+
 testkey.invalidDate=invalid date
 testkey.invalidDate.summary=invalid date summary

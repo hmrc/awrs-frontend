@@ -54,7 +54,9 @@ object DeRegistrationForm {
     tupleDate_compulsory(
       isEmptyErrMessage = simpleErrorMessage(_, "awrs.de_registration.error.date_empty"),
       isInvalidErrMessage = simpleErrorMessage(_, "awrs.de_registration.error.date_valid"),
-      dateRangeCheck = Some(isTooEarlyOrTooLate(_)))
+      dateRangeCheck = Some(isTooEarlyOrTooLate(_)),
+      isTooEarlyCheck = None,
+      isTooLateCheck = None)
 
   val deRegistrationForm = Form(mapping(
     "proposedEndDate" -> testDate_compulsory

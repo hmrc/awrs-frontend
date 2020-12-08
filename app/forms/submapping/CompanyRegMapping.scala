@@ -39,7 +39,9 @@ object CompanyRegMapping {
   def dateOfIncorporation_compulsory: Mapping[TupleDate] =
     tupleDate_compulsory(
       isEmptyErrMessage = simpleErrorMessage(_, "awrs.generic.error.companyRegDate_empty"),
-      isInvalidErrMessage = simpleErrorMessage(_, "awrs.generic.error.companyRegDate_invalid"))
+      isInvalidErrMessage = simpleErrorMessage(_, "awrs.generic.error.companyRegDate_invalid"),
+      isTooEarlyCheck = None,
+      isTooLateCheck = None)
 
   // Reusable company reg mapping
   def companyReg_compulsory(prefix: String): Mapping[CompanyRegDetails] = mapping(

@@ -17,6 +17,7 @@
 package forms.submapping
 
 import forms.AWRSEnums.BooleanRadioEnum
+import forms.TradingDateForm.isTooEarly
 import forms.helper.FormHelper._
 import forms.submapping.TupleDateMapping._
 import forms.validation.util.ConstraintUtil.CompulsoryEnumMappingParameter
@@ -45,14 +46,16 @@ object NewAWBusinessMapping {
   private val isTooEarly = (fieldKey: String) => (date: TupleDate) => isDateAfterOrEqual(cutOffAWBusinessStartDate,
     new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate) match {
     case true => Valid
-    case false => simpleErrorMessage(fieldKey, "awrs.business_details.error.proposedDate_toEarly")
+    case false => simpleErrorMessage(fieldKey, "awrs.business_details.error.proposedDate_tooEarly")
   }
 
   def proposedStartDate_compulsory: Mapping[Option[TupleDate]] =
     tupleDate_compulsory(
       isEmptyErrMessage = simpleErrorMessage(_, "awrs.business_details.error.proposedDate_empty"),
       isInvalidErrMessage = simpleErrorMessage(_, "awrs.generic.error.invalid.date"),
-      dateRangeCheck = Some(isTooEarly(_))).toOptionalTupleDate
+      dateRangeCheck = Some(isTooEarly(_)),
+      isTooEarlyCheck = None,
+      isTooLateCheck = None).toOptionalTupleDate
 
   val whenNewBusinessIsAnsweredYes = (prefix: String) => answerGivenInFieldIs(prefix attach "newAWBusiness", "Yes")
 

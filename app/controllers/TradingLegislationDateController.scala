@@ -82,11 +82,15 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                          (implicit hc: HeaderCarrier): Future[Result] = {
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap {
       case NewAWBusiness("Yes", _) =>
-        keyStoreService.saveAlreadyTrading(already = true) map { _ =>
-          Redirect(routes.TradingDateController.showBusinessDetails())
+        keyStoreService.saveAlreadyTrading(already = true) flatMap { _ =>
+          keyStoreService.saveIsNewBusiness(isNewBusiness = false) map { _ =>
+            Redirect(routes.TradingDateController.showBusinessDetails())
+          }
         }
-      case _                       =>
-        Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails()))
+      case _ =>
+        keyStoreService.saveIsNewBusiness(isNewBusiness = true) flatMap { _ =>
+          Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails()))
+        }
     }
   }
 
