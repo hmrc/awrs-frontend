@@ -88,7 +88,7 @@ class BusinessDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsField
 
       f"check validations for newAWBusiness for entity: $entity and hasAwrs: $hasAwrs" in {
         // N.B. this test is for the optional validation function used for proposed date is too early
-        // the rest of the tests are covered by NewAWBuesinessMappingTest
+        // the rest of the tests are covered by NewAWBusinessMappingTest
         val prefix = "newAWBusiness"
 
         val dateId = prefix attach "proposedStartDate"
@@ -99,7 +99,7 @@ class BusinessDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsField
             List(ExpectedInvalidDateFormat(
               TupleDate("31", "03", "2016"),
               dateId,
-              FieldError("awrs.business_details.error.proposedDate_toEarly"))),
+              FieldError("awrs.business_details.error.proposedDate_tooEarly"))),
             List(
               // tests the too early range check function
               ExpectedValidDateFormat(TupleDate("01", "04", "2016"))

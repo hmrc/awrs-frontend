@@ -98,8 +98,9 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
         alreadyStartedTradingForm.bindFromRequest.fold(
           formWithErrors =>
             Future.successful(BadRequest(template(formWithErrors, businessType))),
-          newAWBusiness =>
+          newAWBusiness => {
             saveBusinessDetails(newAWBusiness == "Yes")
+          }
         )
       case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
     }

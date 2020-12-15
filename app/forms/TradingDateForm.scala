@@ -16,6 +16,7 @@
 
 package forms
 
+import forms.helper.FormHelper.{isDateAfterOrEqual, isDateBefore}
 import forms.submapping.TupleDateMapping.{tupleDate_compulsory, _}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleErrorMessage
 import models.TupleDate
@@ -38,13 +39,35 @@ object TradingDateForm {
     }
   }
 
+  private val cutOffAWBusinessStartDate = "01/04/2016"
+
+  private val isTooEarly = (fieldKey: String) => (date: TupleDate) => {
+    val providedDate = new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate
+
+    if (isDateAfterOrEqual(cutOffAWBusinessStartDate, providedDate)){
+      Valid
+    } else {
+      simpleErrorMessage(fieldKey, "awrs.business_details.error.proposedDate_tooEarly")
+    }
+  }
+
+  private val isTooLate = (fieldKey: String) => (date: TupleDate) => {
+    val providedDate = new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate
+
+    if (isDateBefore(cutOffAWBusinessStartDate, providedDate)){
+      Valid
+    } else {
+      simpleErrorMessage(fieldKey, "awrs.business_details.error.proposedDate_tooLate")
+    }
+  }
+
   private val daysInTheFuture = 45
   private val farEnoughInFuture = (fieldKey: String) => (date: TupleDate) => {
     val enteredDate = new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate
     if (!enteredDate.before(LocalDate.now().plusDays(daysInTheFuture).toDate)) {
       Valid
     } else {
-      simpleErrorMessage(fieldKey, "awrs.business_details.error.proposedDate_tooEarly")
+      simpleErrorMessage(fieldKey, "awrs.business_details.error.proposedDate_lessThan45DaysAhead")
     }
   }
 
@@ -52,18 +75,40 @@ object TradingDateForm {
     tupleDate_compulsory(
       isEmptyErrMessage = simpleErrorMessage(_, "awrs.business_details.error.proposedDate_emptyP"),
       isInvalidErrMessage = simpleErrorMessage(_, "awrs.generic.error.invalid.date.summary"),
-      dateRangeCheck = Some(farEnoughInFuture(_))).toOptionalTupleDate
+      dateRangeCheck = Some(farEnoughInFuture(_)),
+      isTooEarlyCheck = None,
+      isTooLateCheck = None).toOptionalTupleDate
 
-  def didYouStartDate_compulsory: Mapping[Option[TupleDate]] =
+  def didYouStartDate_compulsoryNewAWBusiness : Mapping[Option[TupleDate]] =
     tupleDate_compulsory(
       isEmptyErrMessage = simpleErrorMessage(_, "awrs.business_details.error.proposedDate_pastP"),
       isInvalidErrMessage = simpleErrorMessage(_, "awrs.generic.error.invalid.date.summary"),
-      dateRangeCheck = Some(isInThePast(_))).toOptionalTupleDate
+      dateRangeCheck = Some(isInThePast(_)),
+      isTooEarlyCheck = None,
+      isTooLateCheck = Some(isTooLate(_)),
+    ).toOptionalTupleDate
 
-  def tradingDateForm(past: Boolean): Form[TupleDate] =
+  def didYouStartDate_compulsoryNewBusiness : Mapping[Option[TupleDate]] =
+    tupleDate_compulsory(
+      isEmptyErrMessage = simpleErrorMessage(_, "awrs.business_details.error.proposedDate_pastP"),
+      isInvalidErrMessage = simpleErrorMessage(_, "awrs.generic.error.invalid.date.summary"),
+      dateRangeCheck = Some(isInThePast(_)),
+      isTooEarlyCheck = Some(isTooEarly(_)),
+      isTooLateCheck = None
+    ).toOptionalTupleDate
+
+  def tradingDateForm(past: Boolean, newBusiness: Option[Boolean]): Form[TupleDate] = {
+
+    val awMapping = if(newBusiness.getOrElse(false)){
+        didYouStartDate_compulsoryNewBusiness
+      }else{
+        didYouStartDate_compulsoryNewAWBusiness
+      }
+
     Form(
       mapping(
-        "tradingDate" -> (if (past) didYouStartDate_compulsory else proposedStartDate_compulsory)
-      )((s : Option[TupleDate]) => s.get)((s: TupleDate) => Option(Option(s)))
+        "tradingDate" -> (if (past) awMapping else proposedStartDate_compulsory)
+      )((s: Option[TupleDate]) => s.get)((s: TupleDate) => Option(Option(s)))
     )
+  }
 }

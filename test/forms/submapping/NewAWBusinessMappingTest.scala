@@ -80,7 +80,7 @@ class NewAWBusinessMappingTest extends PlaySpec with MockitoSugar  with AwrsForm
             ExpectedInvalidDateFormat(
               TupleDate("31", "03", "2016"),
               dateId,
-              FieldError("awrs.business_details.error.proposedDate_toEarly"))
+              FieldError("awrs.business_details.error.proposedDate_tooEarly"))
           ),
           List(
             // tests the too early range check function

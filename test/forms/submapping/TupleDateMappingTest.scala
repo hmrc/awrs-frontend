@@ -25,7 +25,7 @@ import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Forms._
-import play.api.data.validation.{Valid, ValidationResult}
+import play.api.data.validation.Valid
 import play.api.data.{Form, Mapping}
 
 
@@ -41,28 +41,41 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTest
     case false => simpleErrorMessage(fieldKey, "testkey.tooEarly")
   }
 
+  private val latestDate = "01/04/2016"
+
+  private val isTooLate = (fieldKey: String) => (date: TupleDate) => isDateBefore(latestDate,
+    new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate) match {
+    case true => Valid
+    case false => simpleErrorMessage(fieldKey, "testkey.tooLate")
+  }
+
   private case class TestForm(sub: TupleDate, sub2: TupleDate)
 
-  private def testDate_compulsory(dateRangeCheck: (String) => (TupleDate) => ValidationResult): Mapping[TupleDate] =
+  private def testDate_compulsory(newBusiness: Boolean): Mapping[TupleDate] =
     tupleDate_compulsory(
       isEmptyErrMessage = simpleErrorMessage(_, "testkey.emptyDate"),
       isInvalidErrMessage = simpleErrorMessage(_, "testkey.invalidDate"),
-      dateRangeCheck = Some(dateRangeCheck)
+      dateRangeCheck = Some(yearMustBe4Digits),
+      isTooEarlyCheck = if(newBusiness) Some(isTooEarly) else None,
+      isTooLateCheck = if(!newBusiness) Some(isTooLate) else None
     )
 
   private implicit val testForm = Form(mapping(
-    "prefix" -> testDate_compulsory(isTooEarly),
-    "prefix2" -> testDate_compulsory(yearMustBe4Digits)
+    "newBusTrue" -> testDate_compulsory(true),
+    "newBusFalse" -> testDate_compulsory(false)
   )(TestForm.apply)(TestForm.unapply))
 
-
   "tupleDate_compulsory sub mapping" must {
-    "Correctly validate 'tupleDate'" in {
-      val fieldId = "prefix"
+    "Correctly validate 'tupleDate' for new business (started trading after 31st March 2016)" in {
+      val fieldId = "newBusTrue"
       val expectations = CompulsoryDateValidationExpectations(
         ExpectedFieldIsEmpty(fieldId, FieldError("testkey.emptyDate")),
         ExpectedDateFormat(
           List(
+            ExpectedInvalidDateFormat(
+              TupleDate("31", "03", "16"),
+              fieldId,
+              FieldError("awrs.business_details.error.year_toSmall")),
             ExpectedInvalidDateFormat(
               TupleDate("01", "01", ""),
               fieldId,
@@ -79,6 +92,7 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTest
               TupleDate("30", "02", "2000"),
               fieldId,
               FieldError("testkey.invalidDate")),
+
             // tests the too early range check function
             ExpectedInvalidDateFormat(
               TupleDate("31", "03", "2016"),
@@ -95,20 +109,20 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTest
       fieldId assertDateFieldIsCompulsory expectations
     }
 
-    "yearMustBe4Digits must enforce users to enter 4 digits in the year field" in {
-      val fieldId = "prefix2"
+    "Correctly validate 'tupleDate' for old business (started trading before 1st April 2016)" in {
+      val fieldId = "newBusFalse"
       val expectations = CompulsoryDateValidationExpectations(
         ExpectedFieldIsEmpty(fieldId, FieldError("testkey.emptyDate")),
         ExpectedDateFormat(
           List(
             ExpectedInvalidDateFormat(
-              TupleDate("31", "03", "16"),
+              TupleDate("01", "04", "2016"),
               fieldId,
-              FieldError("awrs.business_details.error.year_toSmall"))
+              FieldError("testkey.tooLate")
+            )
           ),
           List(
-            ExpectedValidDateFormat(TupleDate("01", "04", "0016")),
-            ExpectedValidDateFormat(TupleDate("29", "02", "2020"))
+            ExpectedValidDateFormat(TupleDate("31", "03", "2016"))
           )
         )
       )
