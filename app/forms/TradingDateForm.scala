@@ -108,7 +108,7 @@ object TradingDateForm {
         simpleErrorMessage(_, "awrs.generic.error.invalid.date.summary"),
       dateRangeCheck = Some(isInThePast(_)),
       isTooEarlyCheck = None,
-      isTooLateCheck = Some(isTooLate(_)),
+      isTooLateCheck = Some(isTooLate(_))
     ).toOptionalTupleDate
 
   def didYouStartDate_compulsoryNewBusiness: Mapping[Option[TupleDate]] =
