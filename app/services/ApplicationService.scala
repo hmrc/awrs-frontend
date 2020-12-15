@@ -16,12 +16,11 @@
 
 package services
 
-import _root_.models.{NewAWBusiness, _}
+import _root_.models._
 import audit.Auditable
 import connectors.{AWRSConnector, AwrsDataCacheConnector}
 import controllers.auth.StandardAuthRetrievals
 import exceptions.{InvalidStateException, ResubmissionException}
-import forms.AWRSEnums.BooleanRadioEnum
 import forms.AwrsFormFields
 import javax.inject.Inject
 import org.joda.time.LocalDate

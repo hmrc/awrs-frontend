@@ -17,7 +17,6 @@
 package forms.submapping
 
 import forms.helper.FormHelper._
-import forms.TradingDateForm._
 import forms.test.util._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.FieldError
@@ -26,7 +25,7 @@ import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Forms._
-import play.api.data.validation.{Valid, ValidationResult}
+import play.api.data.validation.Valid
 import play.api.data.{Form, Mapping}
 
 

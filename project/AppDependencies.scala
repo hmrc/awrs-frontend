@@ -12,8 +12,8 @@ private object AppDependencies {
     "com.typesafe.play" %% "anorm" % "2.5.3",
     "uk.gov.hmrc" %% "url-builder" % "3.4.0-play-27",
     "uk.gov.hmrc" %% "http-caching-client" % "9.2.0-play-27",
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "3.1.0",
-    "uk.gov.hmrc" %% "play-partials" % "7.0.0-play-27", // includes code for retrieving partials, e.g. the Help with this page form
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "3.2.0",
+    "uk.gov.hmrc" %% "play-partials" % "7.1.0-play-27", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc" %% "domain" % "5.10.0-play-27",
     "uk.gov.hmrc" %% "json-encryption" % "4.8.0-play-27",
     "com.mohiva" %% "play-html-compressor" % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework

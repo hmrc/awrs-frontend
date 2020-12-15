@@ -19,7 +19,7 @@ package forms
 import forms.helper.FormHelper.{isDateAfterOrEqual, isDateBefore}
 import forms.submapping.TupleDateMapping.{tupleDate_compulsory, _}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleErrorMessage
-import models.{NewAWBusiness, TupleDate}
+import models.TupleDate
 import org.joda.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.Valid

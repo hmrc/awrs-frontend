@@ -17,10 +17,9 @@
 package forms.submapping
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.TradingDateForm.isTooEarly
 import forms.helper.FormHelper._
 import forms.submapping.TupleDateMapping._
-import forms.validation.util.ConstraintUtil.CompulsoryEnumMappingParameter
+import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, FormData}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
@@ -35,7 +34,7 @@ object NewAWBusinessMapping {
 
   private val cutOffAWBusinessStartDate = "01/04/2016"
 
-  val newBusiness_compulsoryBoolean = (prefix: String) =>
+  val newBusiness_compulsoryBoolean: String => Mapping[String] = (prefix: String) =>
     compulsoryEnum(CompulsoryEnumMappingParameter(
       simpleFieldIsEmptyConstraintParameter(
         prefix attach "newAWBusiness",
@@ -57,10 +56,10 @@ object NewAWBusinessMapping {
       isTooEarlyCheck = None,
       isTooLateCheck = None).toOptionalTupleDate
 
-  val whenNewBusinessIsAnsweredYes = (prefix: String) => answerGivenInFieldIs(prefix attach "newAWBusiness", "Yes")
+  val whenNewBusinessIsAnsweredYes: String => FormData => Boolean = (prefix: String) => answerGivenInFieldIs(prefix attach "newAWBusiness", "Yes")
 
   // Reusable NewAWBusiness mapping
-  def newAWBusinessMapping(prefix: String) = mapping(
+  def newAWBusinessMapping(prefix: String): Mapping[NewAWBusiness] = mapping(
     "newAWBusiness" -> newBusiness_compulsoryBoolean(prefix), //conversion to boolean is currently done in the middle service
     "proposedStartDate" -> (proposedStartDate_compulsory iff whenNewBusinessIsAnsweredYes(prefix))
   )(NewAWBusiness.apply)(NewAWBusiness.unapply)
