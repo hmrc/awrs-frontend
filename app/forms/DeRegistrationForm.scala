@@ -88,7 +88,8 @@ object DeRegistrationReasonForm extends AwrsFieldConfig {
     compulsoryText(params)
   }
 
-  val whenOtherReasonIsSelected: FormData => Boolean = (data: FormData) => data.getOrElse(deRegistrationReasonId, "").equals(DeRegistrationReasonEnum.Other.toString)
+  val whenOtherReasonIsSelected: FormData => Boolean = (data: FormData) => data.getOrElse(deRegistrationReasonId, "").equals(DeRegistrationReasonEnum.
+    Other.toString)
 
   val deRegistrationReasonValidationForm = Form(mapping(
     deRegistrationReasonId -> deRegistrationReason_compulsory,
