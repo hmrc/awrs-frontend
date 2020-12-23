@@ -19,7 +19,7 @@ private object AppDependencies {
     "com.mohiva" %% "play-html-compressor" % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
     "uk.gov.hmrc" %% "auth-client" % "3.2.0-play-27",
     "uk.gov.hmrc" %% "govuk-template" % "5.60.0-play-27",
-    "uk.gov.hmrc" %% "play-ui" % "8.18.0-play-27",
+    "uk.gov.hmrc" %% "play-ui" % "8.19.0-play-27",
     "com.typesafe.play" %% "play-json-joda" % "2.6.14"
   )
 
