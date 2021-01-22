@@ -54,12 +54,12 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val emailVerificationBaseUrl: String = servicesConfig.getString("email-verification.continue.baseUrl")
 
   //From ExternalUrls
-  lazy val companyAuthHost: String = loadConfig("auth.company-auth.host")
+  lazy val basGatewayHost: String = loadConfig("auth.bas-gateway-frontend.host")
   lazy val loginCallback: String = loadConfig("auth.login-callback.url")
   lazy val loginPath: String = loadConfig("auth.login-path")
   lazy val accountType: String = loadConfig("auth.accountType")
-  lazy val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback&accountType=$accountType"
-  lazy val loginURL = s"$companyAuthHost/gg/$loginPath"
+  lazy val signIn: String = s"$basGatewayHost/bas-gateway/$loginPath?continue_url=$loginCallback"
+  lazy val loginURL: String = s"$basGatewayHost/bas-gateway/$loginPath"
   lazy val logoutCallbackUrl: String = loadConfig("auth.logout-callback.url")
   lazy val signOut: String = servicesConfig.getString("service-signout.url")
   lazy val businessCustomerStartPage: String = loadConfig("business-customer.serviceRedirectUrl")

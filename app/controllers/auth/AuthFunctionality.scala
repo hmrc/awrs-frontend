@@ -42,7 +42,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
   implicit val applicationConfig: ApplicationConfig
 
   def loginParams: Map[String, Seq[String]] = Map(
-    "continue" -> Seq(signInUrl),
+    "continue_url" -> Seq(signInUrl),
     "origin" -> Seq(origin)
   )
 
