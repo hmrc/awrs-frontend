@@ -205,6 +205,14 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         }
         )
 
+      def checkViewApplicationStatusLink(shouldExists: Boolean)(implicit result: Future[Result]) =
+        checkLinks(linkId = "status-page_link", shouldExists match {
+          case true =>
+            LinkExpectations(href = routes.ApplicationStatusController.showStatus().toString, text = Messages("awrs.index_page.view_application_status_link_text"))
+          case _ => None
+        }
+        )
+
       "display application-status showing correct application status" in {
         {
           implicit val result = showIndexPageAPI4()
@@ -212,6 +220,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = false)
+          checkViewApplicationStatusLink (shouldExists = false)
         }
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypePending)
@@ -219,6 +228,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = true)
           checkDeRegLink(shouldExists = false)
+          checkViewApplicationStatusLink (shouldExists = true)
         }
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApproved)
@@ -226,6 +236,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkAwrsRefNo(shouldExists = true)
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = true)
+          checkViewApplicationStatusLink (shouldExists = true)
         }
         {
           implicit val result = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApprovedWithConditions)
@@ -233,6 +244,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkAwrsRefNo(shouldExists = true)
           checkWithdrawLink(shouldExists = false)
           checkDeRegLink(shouldExists = true)
+          checkViewApplicationStatusLink (shouldExists = true)
         }
         // n.b. currently rejected users must simply be redirected, this will not be the case in these tests because
         // the status is not stored in the session. These tests are left in in-case this behaviour changes in the future.
