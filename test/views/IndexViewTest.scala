@@ -146,8 +146,14 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           val document = Jsoup.parse(contentAsString(result))
           document.select("#changes-banner") must not be null
         }
-      }
 
+        "check for logged in username" in {
+          val username = "ACME"
+          val result = showIndexPageAPI5()
+          val document = Jsoup.parse(contentAsString(result))
+          document.getElementById("loggedInUserName").text() must be (Messages("awrs.generic.name.screen-reader-tip") + username)
+        }
+      }
     }
 
     "The status window" must {
