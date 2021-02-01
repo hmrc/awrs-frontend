@@ -70,6 +70,24 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
       }
     }
 
+    "check UTR helpLink text is present" in {
+      postLinearJourneyAddition {
+        result =>
+          status(result) mustBe OK
+          val document = Jsoup.parse(contentAsString(result))
+          document.getElementById("details-content-utr-HelpLink").text must be(Messages("awrs.generic.iDoNotKnowTheirUTR_text"))
+      }
+    }
+
+    "check CRN helpLink text is present" in {
+      postLinearJourneyAddition {
+        result =>
+          status(result) mustBe OK
+          val document = Jsoup.parse(contentAsString(result))
+          document.getElementById("details-content-crn-HelpLink").text must be(Messages("awrs.generic.iDoNotKnowTheirCRN_text"))
+      }
+    }
+
     groupEntities.foreach {
       legalEntity =>
         s"$legalEntity" must {
