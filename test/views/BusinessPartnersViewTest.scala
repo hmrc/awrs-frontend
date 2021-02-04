@@ -121,6 +121,14 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
         }
     }
 
+    "check entity helpLink text is present" in {
+      getWithAuthorisedUserSa(2){
+        result =>
+          status(result) mustBe OK
+          val document = Jsoup.parse(contentAsString(result))
+          document.getElementById("entity-HelpLinkAnswer").text must be(Messages("awrs.business-partner.role_help_text"))
+      }
+    }
   }
 
   "Request to showPartnerMemberDetails" must {
@@ -149,6 +157,16 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
           individualDocument must include("partnerAddress.addressLine4_field")
           individualDocument must include("doYouHaveNino")
           individualDocument must include("nino_field")
+          individualDocument must not include("companyNames.businessName_field")
+          individualDocument must not include("companyNames.tradingName_field")
+          individualDocument must not include("utr_field")
+          individualDocument must not include("utr")
+          individualDocument must not include("companyRegDetails.companyRegistrationNumber_field")
+          individualDocument must not include("companyRegDetails.companyRegistrationNumber")
+          individualDocument must not include("companyRegDetails.dateOfIncorporation_field")
+          individualDocument must not include("doYouHaveVRN")
+          individualDocument must not include("vrn_field")
+
       }
     }
 
@@ -177,6 +195,11 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
           corporateDocument must include("doYouHaveVRN")
           corporateDocument must include("vrn_field")
           corporateDocument must include("utr_field")
+          corporateDocument must include("utr")
+          corporateDocument must include("companyRegDetails.companyRegistrationNumber_field")
+          corporateDocument must include("companyRegDetails.companyRegistrationNumber")
+          corporateDocument must not include("firstName_field")
+          corporateDocument must not include("lastName_field")
       }
     }
 
@@ -207,7 +230,12 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
           soleTraderDocument must include("nino_field")
           soleTraderDocument must include("doYouHaveVRN")
           soleTraderDocument must include("vrn_field")
+          soleTraderDocument must include("vrn")
           soleTraderDocument must include("utr_field")
+          soleTraderDocument must include("utr")
+          soleTraderDocument must not include("companyNames.businessName_field")
+          soleTraderDocument must not include("companyRegDetails.companyRegistrationNumber_field")
+          soleTraderDocument must not include("companyRegDetails.dateOfIncorporation_field")
       }
     }
 
