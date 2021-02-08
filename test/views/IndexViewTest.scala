@@ -133,6 +133,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           document.select("#save_and_logout").size() mustBe 0
           document.select("#continue").size() mustBe 0
           document.select("#submit_changes") must not be null
+          document.select("#changes-banner").size() mustBe 1
         }
 
         "When the application is unmodified, do not display the unsubmitted changes banner" in {

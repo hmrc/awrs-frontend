@@ -19,6 +19,7 @@ package controllers
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import models._
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
@@ -55,6 +56,11 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       val result = testBusinessNameChangeController.showConfirm().apply(SessionBuilder.buildRequestWithSession(userId))
       status(result) must be(OK)
+      val document = Jsoup.parse(contentAsString(result))
+      document.getElementById("businessNameChangeConfirmation-heading").text() must include("awrs.business_name_change.heading")
+      document.getElementById("businessNameChangeConfirmation-bullets").text() must include("awrs.business_name_change.warning.bullet.1")
+      document.getElementById("businessNameChangeConfirmation-bullets").text() must include("awrs.business_name_change.warning.bullet.2")
+      document.getElementById("businessNameChangeConfirmation-bullets").text() must include("awrs.business_name_change.warning.bullet.3")
     }
   }
 
