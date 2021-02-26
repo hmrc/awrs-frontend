@@ -18,9 +18,10 @@
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
+@import uk.gov.hmrc.play.views.html.layouts.HeadWithTrackingConsent
 @import uk.gov.hmrc.play.views.html.layouts._
 
-@this(uiHead: Head, uiHeaderNav: HeaderNav, footer: Footer, uiServiceInfo: ServiceInfo, uiMainContentHeader: MainContentHeader,
+@this(uiHead: HeadWithTrackingConsent, uiHeaderNav: HeaderNav, footer: Footer, uiServiceInfo: ServiceInfo, uiMainContentHeader: MainContentHeader,
         reportAProblemLink: ReportAProblemLink, uiMainContent: MainContent, footer_links: FooterLinks)
 
 @(
@@ -105,8 +106,8 @@
 
 @bodyEnd = {
     @footer(
-        analyticsToken = appConfig.analyticsToken,
-        analyticsHost = appConfig.analyticsHost,
+        analyticsToken = None,
+        analyticsHost = "",
         ssoUrl = None,
         scriptElem = scriptElem,
         gaCalls = None

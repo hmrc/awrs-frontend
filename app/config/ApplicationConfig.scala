@@ -41,8 +41,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
   lazy val betaFeedbackUrl = "/alcohol-wholesale-scheme/feedback"
-  lazy val analyticsToken: Option[String] = Some(servicesConfig.getString("google-analytics.token"))
-  lazy val analyticsHost: String = servicesConfig.getString("google-analytics.host")
   lazy val externalReportProblemUrl = s"$contactHost/contact/problem_reports"
   lazy val contactFormServiceIdentifier = "AWRS"
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
