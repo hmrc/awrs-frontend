@@ -10,14 +10,14 @@ private object AppDependencies {
   val compile = Seq(
     ws,
     "com.typesafe.play"  %% "anorm"                       % "2.6.0-M1",
-    "uk.gov.hmrc"        %% "url-builder"                 % "3.4.0-play-27",
+    "uk.gov.hmrc"        %% "url-builder"                 % "3.5.0-play-27",
     "uk.gov.hmrc"        %% "http-caching-client"         % "9.2.0-play-27",
     "uk.gov.hmrc"        %% "bootstrap-frontend-play-27"  % "3.4.0",
     "uk.gov.hmrc"        %% "play-partials"               % "7.1.0-play-27", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc"        %% "domain"                      % "5.11.0-play-27",
-    "uk.gov.hmrc"        %% "json-encryption"             % "4.8.0-play-27",
+    "uk.gov.hmrc"        %% "json-encryption"             % "4.10.0-play-27",
     "com.mohiva"         %% "play-html-compressor"        % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc"        %% "auth-client"                 % "3.2.0-play-27",
+    "uk.gov.hmrc"        %% "auth-client"                 % "3.3.0-play-27",
     "uk.gov.hmrc"        %% "govuk-template"              % "5.65.0-play-27",
     "uk.gov.hmrc"        %% "play-ui"                     % "9.1.0-play-27",
     "com.typesafe.play"  %% "play-json-joda"              % "2.9.2"
