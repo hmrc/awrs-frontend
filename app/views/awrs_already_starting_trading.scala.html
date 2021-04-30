@@ -16,14 +16,14 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+
 @(confirmationForm: Form[String], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
@@ -46,8 +46,8 @@
             @awrsProgressHelper(businessType, businessDetailsName)
         </header>
         @formWithCSRF(action = actionRoute) {
-        <div class="form-group">
-            <div class="form-group">
+        <div class="govuk-form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         confirmationForm("alreadyStartedTrading"),
@@ -57,11 +57,11 @@
                         fieldSetAttributes = "id=alreadyStartedTrading_field",
                         legend = messages("awrs.generic.have_you_already"),
                         legendId = "alreadyStartedTrading-legend",
-                        legendClass = "visuallyhidden",
+                        legendClass = "govuk-visually-hidden",
                     )
                 )
             </div>
-            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
         }
     </div>
 </div>

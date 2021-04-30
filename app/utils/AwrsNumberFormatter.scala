@@ -18,7 +18,6 @@ package utils
 
 import scala.util.Try
 
-
 object AwrsNumberFormatter {
 
   val awrsFormatPattern = "([A-Za-z]{4})([0-9]{3})([0-9]{4})([0-9]{4})".r

@@ -17,14 +17,13 @@
 @import config.ApplicationConfig
 @import play.twirl.api.Html
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -33,8 +32,8 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -68,7 +67,7 @@
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(
@@ -76,13 +75,13 @@
             ))
             @errorSummaryTemplate(placeOfBusinessForm)
             <header class="page-header">
-                <h1 id="contact-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
+                <h1 id="contact-information-heading" class="govuk-heading-l">@businessTypeHeading</h1>
                 @awrsProgressHelper(businessType, placeOfBusinessName)
             </header>
 
             @formWithCSRF(action = actionRoute) {
 
-                <p class="lede">@messages("awrs.business_contacts.place_of_business_help_text")</p>
+                <p class="govuk-body-lead">@messages("awrs.business_contacts.place_of_business_help_text")</p>
 
                   <ul class="bullets">
                 	    <li>@messages("awrs.business_contacts.place_of_business_help_text.bullet1")</li>
@@ -99,7 +98,7 @@
                         PrincipalPrevious = "Principal"
                     )
                 </div>
-                <div class="form-group">
+                <div class="govuk-form-group">
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             placeOfBusinessForm("placeOfBusinessLast3Years"),
@@ -128,7 +127,7 @@
                         )
                     </div>
                 </div>
-                <div class="form-group" id="operationDuration-label">
+                <div class="govuk-form-group" id="operationDuration-label">
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             placeOfBusinessForm("operatingDuration"),

@@ -16,14 +16,14 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+
 @(businessPremisesForm: Form[models.AdditionalBusinessPremises], businessPremisesId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent] , viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 
@@ -32,8 +32,8 @@
     }
 
     @pageScripts = {
-        <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-        <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+        <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+        <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
     }
 
     @actionRoute = @{
@@ -60,7 +60,7 @@
 }
 
     @awrsMain(title = messages("awrs.generic.tab.title", businessPremisesIdHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-        <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+        <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
         <div class="grid">
             <div class="grid grid-2-3">
                 @backLinkHelper(BackLinkParams(
@@ -69,18 +69,18 @@
                 ))
                 @errorSummaryTemplate(businessPremisesForm)
                 <header class="page-header">
-                    <h1 id="additional-premises-title" class="heading-xlarge">@businessPremisesIdHeading</h1>
+                    <h1 id="additional-premises-title" class="govuk-heading-l">@businessPremisesIdHeading</h1>
                     @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
                 </header>
 
-                <p id="additional-premises-subtext" class="lede">@messages("awrs.additional-premises.subtext")</p>
+                <p id="additional-premises-subtext" class="govuk-body-lead">@messages("awrs.additional-premises.subtext")</p>
 
                 @formWithCSRF(action = actionRoute) {
 
                     @if(isEditMode || businessPremisesId > 1) {
                         <input type="hidden" name="additionalPremises" value="Yes">
                     } else {
-                        <div id="diffAddress" class="form-group">
+                        <div id="diffAddress" class="govuk-form-group">
                         @awrsInputTypeRadioGroup(
                             InputTypeRadioGroupParams(
                                 businessPremisesForm("additionalPremises"),
@@ -88,7 +88,7 @@
                                     "No" -> messages("awrs.generic.no")),
                                 legend = messages("awrs.additional-premises.top-heading.first"),
                                 legendId = "additionalPremises-legend",
-                                legendClass = "visuallyhidden",
+                                legendClass = "govuk-visually-hidden",
                                 fieldSetClass = "inline",
                                 fieldSetAttributes = "id=additionalPremises_field"
                             )
@@ -104,7 +104,7 @@
                         @if(isEditMode) {
                             <input type="hidden" name="addAnother" value="No">
                         } else {
-                            <div id="addAnother" class="form-group">
+                            <div id="addAnother" class="govuk-form-group">
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     businessPremisesForm("addAnother"),

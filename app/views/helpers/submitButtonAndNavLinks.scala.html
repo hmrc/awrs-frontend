@@ -20,7 +20,7 @@
 
 @(params: SubmitAndNavLinkParams)(implicit viewApplicationType: ViewApplicationType, messages : Messages)
 
-@awrsSubmitButton(params.submitText)(id = params.submitId, classAttr = params.submitClass)
+@awrsSubmitButton(params.submitText)(id = params.submitId)
 @isEditMode() match {
     case false =>{
         <div class = "form-group">@returnToIndex()</div>

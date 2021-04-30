@@ -16,11 +16,11 @@
 
 package views.helpers
 
-import java.text.SimpleDateFormat
-import java.util.Calendar
-
 import models.TupleDate
 import org.joda.time.LocalDate
+
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 
 object DeRegistrationHelper {

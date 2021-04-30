@@ -16,14 +16,14 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+
 @(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessDirectorsForm) }
@@ -79,7 +79,7 @@
 }
 
 @personOnlySection ={
-    <div class="form-group">
+    <div class="govuk-form-group">
         @awrsInputTypeText(
             InputTypeTextParams(
                 businessDirectorsForm("firstName"),
@@ -131,7 +131,7 @@
     )
 
     <div id="company">
-        <div class="form-group">
+        <div class="govuk-form-group">
             @awrsInputTypeText(
                 InputTypeTextParams(
                     businessDirectorsForm("companyNames.businessName"),
@@ -142,7 +142,7 @@
                     required = true
                 )
             )
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         businessDirectorsForm("companyNames.doYouHaveTradingName"),
@@ -208,11 +208,11 @@
         ))
         @errorSummaryTemplate(businessDirectorsForm)
         <header class="page-header">
-            <h1 id="business-directors-heading" class="heading-xlarge">@h1text</h1>
+            <h1 id="business-directors-heading" class="govuk-heading-l">@h1text</h1>
             @awrsProgressHelper(businessType, businessDirectorsName)
         </header>
 
-        <p class="lede" id="directorsAndCompanySecretariesDescription">@messages("awrs.business_directors.topText")</p>
+        <p class="govuk-body-lead" id="directorsAndCompanySecretariesDescription">@messages("awrs.business_directors.topText")</p>
 
         @formWithCSRF(action = actionRoute) {
 
@@ -239,7 +239,7 @@
             </div>
 
             @if(!isEditMode){
-                <div class="form-group">
+                <div class="govuk-form-group">
 
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(

@@ -117,7 +117,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
     @core(withQuestion = false)
 }
 
-<div class="form-group">
+<div class="govuk-form-group">
     @someRadioField match {
         case Some(radioField) => {@withQuestion(radioField)}
         case _ => {@withoutQuestion}

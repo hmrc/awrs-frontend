@@ -17,14 +17,13 @@
 @import config.ApplicationConfig
 @import play.twirl.api.Html
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(confirmationForm: Form[TupleDate], businessType: Option[String], pastStart: Boolean)(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
@@ -44,22 +43,22 @@
 }
 
 @ariaDayMonthYear = {
-    <span id="tradingDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
-    <span id="tradingDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
-    <span id="tradingDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+    <span id="tradingDate-day_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+    <span id="tradingDate-month_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+    <span id="tradingDate-year_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
 }
 
 @preDatePast = {
     <div class="text-disclaimer">
         <i class="icon icon-important">
-            <span class="visuallyhidden">Warning</span>
+            <span class="govuk-visually-hidden">Warning</span>
         </i>
         <strong class="bold-small">@messages("awrs.business_details.what_date_did_p_warn")</strong>
     </div>
 }
 
 @preDateNow = {
-    <p>@messages("awrs.business_details.what_date_start_p")</p>
+    <p class="govuk-body">@messages("awrs.business_details.what_date_start_p")</p>
 }
 
 @preDateInfo = @{
@@ -83,7 +82,7 @@
         </header>
         @preDateInfo
         @formWithCSRF(action = actionRoute) {
-        <div class="form-group">
+        <div class="govuk-form-group">
             @awrsDateField(
                 DateHelperParams(
                     formItem = confirmationForm,
@@ -94,7 +93,7 @@
                     hintText = Some(Html(messages("awrs.generic.date_hint")))
                 )
             )
-            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+            <button class="govuk-button" role="button" data-module="govuk-button" type="submit" id="save-and-continue">@messages("awrs.generic.continue")</button>
         }
     </div>
 </div>

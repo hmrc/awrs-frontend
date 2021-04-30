@@ -127,7 +127,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
     @nationalIdPassport
 }
 
-<div class="form-group">
+<div class="govuk-form-group">
     @someRadioField match {
         case Some(radioField) => {@withQuestion(radioField)}
         case _ => {@withoutQuestion}

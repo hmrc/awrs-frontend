@@ -26,18 +26,18 @@
             <div id="headerType"><h2 class="heading-large">@heading</h2></div>
         }
         case _ => {
-            <h1 class="heading-xlarge">@heading</h1>
+            <h1 class="govuk-heading-l">@heading</h1>
         }
     }
 }
 
 @oneViewModeLink = {
-    <div id="headerLink"><a class="back-to-top-link print-hidden" href="#"><span class="visuallyhidden">@heading</span>@Messages("awrs.view_application.back_to_top")</a></div>
+    <div id="headerLink"><a class="govuk-link print-hidden" href="#"><span class="govuk-visually-hidden">@heading</span>@Messages("awrs.view_application.back_to_top")</a></div>
 }
 
 @editLinks = {
-    <div class="form-group">
-        <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.return_to_app_summary")</a>
+    <div class="govuk-form-group">
+        <a id="return-to-summary" class="govuk-button" role="button" data-module="govuk-button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.return_to_app_summary")</a>
     </div>
 }
 

@@ -1,5 +1,8 @@
 # AWRS routes
-GET         /assets/*file                                   controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                   controllers.Assets.versioned(path="/public", file)
+
+->          /govuk-frontend                                 govuk.Routes
+->          /hmrc-frontend                                  hmrcfrontend.Routes
 
 GET         /                                               controllers.HomeController.showOrRedirect(callerId: Option[String])
 # Leaving in landing-page route in case people have it bookmarked

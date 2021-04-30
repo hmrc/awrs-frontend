@@ -15,21 +15,27 @@
  *@
 
 @import config.ApplicationConfig
-@this(govUkWrapper: govuk_wrapper)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
-@contentHeader = {
-<h1>@heading</h1>
-}
+@this(layout: layout)
+@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@mainContent = {
-<p>@message</p>
-}
+ @contentHeader = {
+  <h1 class="govuk-heading-xl">@heading</h1>
+ }
 
-@linkElement = {
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/custom.css")'/>
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/palette.css")'/>
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/focus.css")'/>
-}
+ @mainContent = {
+  <p class="govuk-body">@message</p>
+ }
 
-@govUkWrapper(appConfig = applicationConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent,linkElement = Some(linkElement))
+ @content = {
+ @contentHeader
+ @mainContent
+ }
+
+ @scriptElement = {
+ <script src='@routes.Assets.versioned("javascripts/jquery.min.js")'></script>
+ <script src='@routes.Assets.versioned("javascripts/jquery-ui.min.js")'></script>
+ <link href='@Assets.versioned("assets/stylesheets/application.css")' media="screen" rel="stylesheet" />
+ }
+
+ @layout(pageTitle = Some(pageTitle), scripts = Some(scriptElement))(content)

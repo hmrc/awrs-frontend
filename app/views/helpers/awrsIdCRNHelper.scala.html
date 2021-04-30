@@ -44,15 +44,15 @@ businessEntity : Option[String] = ""
 
 
 @hintText = {
-    <span aria-hidden="true">@messages("awrs.generic.date_hint.corporation")</span><span class="visuallyhidden">@messages("awrs.generic.date_hint.reader.corporation")</span>
+    <span aria-hidden="true">@messages("awrs.generic.date_hint.corporation")</span><span class="govuk-visually-hidden">@messages("awrs.generic.date_hint.reader.corporation")</span>
 }
 
 @ariaDayMonthYear = {
     @dateField match {
         case Some(someDateField) => {
-            <span id="@someDateField.name-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
-            <span id="@someDateField.name-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
-            <span id="@someDateField.name-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+            <span id="@someDateField.name-day_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+            <span id="@someDateField.name-month_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+            <span id="@someDateField.name-year_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
         }
         case _ => {}
     }
@@ -164,7 +164,7 @@ businessEntity : Option[String] = ""
     @core(withQuestion = false)
 }
 
-<div class="form-group">
+<div class="govuk-form-group">
     @someRadioField match {
         case Some(radioField) => {@withQuestion(radioField)}
         case _ => {@withoutQuestion}

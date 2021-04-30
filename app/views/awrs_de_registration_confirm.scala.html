@@ -15,13 +15,13 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.DeRegistrationHelper._
 @import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+
 @(confirmationForm: Form[models.DeRegistrationConfirmation], proposedEndDate: models.TupleDate)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @declarationText = {@messages("awrs.de_registration.warning.confirm", stringifyDate(proposedEndDate))}
@@ -32,10 +32,10 @@
 @errorSummaryTemplate(confirmationForm)
 <div class="grid">
     <div class="grid grid-2-3">
-        <h1 id="de_registration-heading" class="heading-xlarge">@messages("awrs.de_registration.confirmation_heading")</h1>
+        <h1 id="de_registration-heading" class="govuk-heading-l">@messages("awrs.de_registration.confirmation_heading")</h1>
         @formWithCSRF(action = controllers.routes.DeRegistrationController.callToAction) {
-        <div class="form-group">
-            <div class="form-group">
+        <div class="govuk-form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         confirmationForm("deRegistrationConfirmation"),
@@ -45,14 +45,14 @@
                         fieldSetAttributes = "id=deRegistrationConfirmation_field",
                         legend = messages("awrs.de_registration.confirmation_heading"),
                         legendId = "deRegistrationConfirmation-legend",
-                        legendClass = "visuallyhidden",
+                        legendClass = "govuk-visually-hidden",
                         ariaDescribedBy = "deRegistrationConfirmation-legend deRegistrationConfirmation-yes-content-text",
                         ariaDescribedByForYesOptionOnly = true
                     )
                 )
             </div>
             @awrsWarningHelper(declarationTxt = declarationText.toString(), id="deRegistrationConfirmation-yes-content")
-            @awrsSubmitButton(messages("awrs.de_registration.cta"))(id = "save-and-continue", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.de_registration.cta"))(id = "save-and-continue")
         }
     </div>
 </div>

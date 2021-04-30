@@ -17,14 +17,13 @@
 @import config.ApplicationConfig
 @import forms.AwrsFormFields._
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -57,14 +56,14 @@
         ))
         @errorSummaryTemplate(tradingActivityForm)
         <header class="page-header">
-            <h1 id="trading-activity-heading" class="heading-xlarge">
+            <h1 id="trading-activity-heading" class="govuk-heading-l">
                 @pageHeading
             </h1>
             @awrsProgressHelper(request.getBusinessType, tradingActivityName)
         </header>
 
         @formWithCSRF(action = actionRoute){
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeGroupCheckbox(
                     InputTypeGroupCheckboxParams(
                         tradingActivityForm("wholesalerType"),
@@ -91,7 +90,7 @@
                     )
                 </div>
             </div>
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeGroupCheckbox(
                     InputTypeGroupCheckboxParams(
                         tradingActivityForm("typeOfAlcoholOrders"),
@@ -119,7 +118,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         tradingActivityForm("doesBusinessImportAlcohol"),
@@ -132,7 +131,7 @@
                     )
                 )
             </div>
-            <div class="form-group">
+            <div class="govuk-form-group">
             @awrsInputTypeRadioGroup(
                 InputTypeRadioGroupParams(
                     tradingActivityForm("doYouExportAlcohol"),
@@ -145,7 +144,7 @@
                 )
             )
             </div>
-            <div class="form-group">
+            <div class="govuk-form-group">
                 <div id="doYouExportAlcohol-yes-content">
                     @awrsInputTypeGroupCheckbox(
                         InputTypeGroupCheckboxParams(
@@ -157,7 +156,7 @@
                     )
                 </div>
             </div>
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         tradingActivityForm("thirdPartyStorage"),

@@ -16,13 +16,12 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.Html
-@import views.html.includes.awrs_main
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @(loginScreenUrl: String)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @awrsMain(title = messages(messages("awrs.generic.tab.title", "awrs.generic.signed_out.page_title")), showSignOutLink = false){
     <h1 id="title">@messages("awrs.generic.signed_out.page_title")</h1>
-    <p>@messages("awrs.generic.signed_out.reason")</p>
-    <p><a href="@loginScreenUrl">@Html(messages("awrs.generic.signed_out.link"))</a></p>
+    <p class="govuk-body">@messages("awrs.generic.signed_out.reason")</p>
+    <p class="govuk-body"><a class="govuk-link" href="@loginScreenUrl">@Html(messages("awrs.generic.signed_out.link"))</a></p>
 }

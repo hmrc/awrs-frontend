@@ -486,7 +486,7 @@ select option {
     color: #fff;
 }
 
-#ConfirmationNoteHeadingText.heading-medium {padding-top: 1.5em;}
+#ConfirmationNoteHeadingText.govuk-heading-m {padding-top: 1.5em;}
 
 .confirmation-description {
     margin-top: 0.4em;

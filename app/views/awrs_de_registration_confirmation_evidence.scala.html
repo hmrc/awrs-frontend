@@ -15,12 +15,11 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.includes.awrs_main
-
-@this(awrsMain: awrs_main)
-@(proposedEndDate: models.TupleDate, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import views.helpers.DeRegistrationHelper._
 @import views.html.helpers._
+
+@this(awrsMain: main)
+@(proposedEndDate: models.TupleDate, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @date = @{stringifyDate(proposedEndDate)}
 
@@ -36,8 +35,8 @@
                 @awrsPrintLink()
                 <hr aria-hidden="true">
                 @info
-                <div class="form-group">
-                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
+                <div class="govuk-form-group">
+                    <a id="confirmation-page-finish" class="govuk-button print-hidden" role="button" data-module="govuk-button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
                 </div>
             </div>
         </div>
@@ -45,7 +44,7 @@
 }
 @info = {
     <h2 class="heading-small" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
-    <p>@messages("awrs.de_registration.confirmation_page.information_what_next_2", date)<p>
+    <p class="govuk-body">@messages("awrs.de_registration.confirmation_page.information_what_next_2", date)<p class="govuk-body">
 
     @awrsWarningHelper(declarationTxt = messages("awrs.de_registration.warning", date), id = "confirmation-text-disclaimer")
 

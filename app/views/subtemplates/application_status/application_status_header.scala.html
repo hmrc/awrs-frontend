@@ -14,11 +14,12 @@
  * limitations under the License.
  *@
 
-@(params: views.subtemplates.application_status.ApplicationStatusParameter)(implicit request: Request[AnyRef], messages: Messages )
-@import views.subtemplates.application_status._
 @import models.FormBundleStatus._
-@import uk.gov.hmrc.http._
-@import utils.AwrsNumberFormatter
+@import views.subtemplates.application_status._
+@import uk.gov.hmrc.http.InternalServerException
+@import _root_.utils.AwrsNumberFormatter
+
+@(params: views.subtemplates.application_status.ApplicationStatusParameter)(implicit request: Request[AnyRef], messages: Messages )
 
 @awrsNumber = {
     @params match {
@@ -133,39 +134,39 @@
     }
 }
 
-<div class="appstatus" role="alert">
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">@Messages("awrs.application_status.appstatus-title")</h1>
 
-    <h1 class="heading-xlarge appstatus-title">@Messages("awrs.application_status.appstatus-title")</h1>
+    <div class="govuk-panel__body">
+        @lede
 
-    <p class="lede">@lede</p>
-
-    @if(params.status.formBundleStatus.name == "Pending") {
-    <ul class="appstatus-steps" aria-hidden="true">
-        <li>
-            <span id="indication-received"
-                  class="appstatus-complete tick" aria-label="Complete.">
-                @Messages("awrs.application_status.indication-received")
-            </span>
-        </li>
-        <li>
-            <span id="indication-processed"
-                  class="appstatus-complete @params.status.formBundleStatus match {
-                                                case Pending => {}
-                                                case _       => {tick}
-                                            }">
-                @Messages("awrs.application_status.indication-processing")
-            </span>
-        </li>
-        <li>
-            <span id="indication-approved"
-                  class="@params.status.formBundleStatus match {
-                             case Pending => {appstatus-processing}
-                             case _       => {appstatus-complete tick}
-                         }">
-                 @Messages("awrs.application_status.indication-decision")
-            </span>
-        </li>
-    </ul>
-    }
+        @if(params.status.formBundleStatus.name == "Pending") {
+        <ul class="appstatus-steps" aria-hidden="true">
+            <li>
+                <span id="indication-received"
+                      class="appstatus-complete tick" aria-label="Complete.">
+                    @Messages("awrs.application_status.indication-received")
+                </span>
+            </li>
+            <li>
+                <span id="indication-processed"
+                      class="appstatus-complete @params.status.formBundleStatus match {
+                                                    case Pending => {}
+                                                    case _       => {tick}
+                                                }">
+                    @Messages("awrs.application_status.indication-processing")
+                </span>
+            </li>
+            <li>
+                <span id="indication-approved"
+                      class="@params.status.formBundleStatus match {
+                                 case Pending => {appstatus-processing}
+                                 case _       => {appstatus-complete tick}
+                             }">
+                     @Messages("awrs.application_status.indication-decision")
+                </span>
+            </li>
+        </ul>
+        }
+    </div>
 </div>
-<br/>

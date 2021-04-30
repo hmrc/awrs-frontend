@@ -15,12 +15,12 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+
 @(feedbackForm: Form[models.Feedback])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.feedback.heading")), userLoggedIn = true) {
@@ -29,13 +29,13 @@
     <div class="grid">
         <div class="grid-2-3">
             <header class="page-header">
-                <h1 id="feedback-title" class="heading-xlarge">@messages("awrs.feedback.heading")</h1>
+                <h1 id="feedback-title" class="govuk-heading-l">@messages("awrs.feedback.heading")</h1>
             </header>
 
-            <p>@Html(messages("awrs.feedback.intro.instructions.line1","<a id=\"feedbackLedeLink\" href=\"#get-help-action\">", "</a>"))</p>
+            <p class="govuk-body">@Html(messages("awrs.feedback.intro.instructions.line1","<a class=\"govuk-link\" id=\"feedbackLedeLink\" href=\"#get-help-action\">", "</a>"))</p>
 
             <div class="feedback-questionnaire">
-                <h2 class="heading-medium">@messages("awrs.feedback.subheading")</h2>
+                <h2 class="govuk-heading-m">@messages("awrs.feedback.subheading")</h2>
 
                 @formWithCSRF(action = controllers.routes.FeedbackController.submitFeedback) {
 
@@ -53,7 +53,7 @@
                         '_showConstraints -> false
                     )
 
-                    <fieldset class="form-group">
+                    <fieldset class="govuk-form-group">
                         @awrsInputTypeRadioGroup(
                             InputTypeRadioGroupParams(
                                 feedbackForm("satisfactionRating"),
@@ -69,7 +69,7 @@
                             )
                         )
                     </fieldset>
-                    @awrsSubmitButton(messages("awrs.feedback.submit"))(id = "submit-feedback-button", classAttr = "button")
+                    @awrsSubmitButton(messages("awrs.feedback.submit"))(id = "submit-feedback-button")
                 }
             </div>
         </div>

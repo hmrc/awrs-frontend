@@ -15,12 +15,11 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(withdrawalConfirmationForm: Form[models.WithdrawalConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @awrsMain(messages("awrs.generic.tab.title", messages("awrs.withdrawal.confirm_page.heading")), userLoggedIn = true) {
@@ -29,9 +28,9 @@
     @backLink(backUrl = controllers.routes.WithdrawalController.showWithdrawalReasons.toString)
     <div class="grid grid-2-3">
         @errorSummaryTemplate(withdrawalConfirmationForm)
-        <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@messages("awrs.withdrawal.confirm_page.heading")</h1>
+        <h1 id="withdrawal-confirmation-title" class="govuk-heading-l">@messages("awrs.withdrawal.confirm_page.heading")</h1>
         @formWithCSRF(action = controllers.routes.WithdrawalController.submitConfirmWithdrawal) {
-            <div id="withdrawal-confirmation" class="form-group">
+            <div id="withdrawal-confirmation" class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         withdrawalConfirmationForm("confirmation"),
@@ -41,14 +40,14 @@
                         fieldSetAttributes = "id=confirmation_field",
                         legend = messages("awrs.withdrawal.confirm_page.heading"),
                         legendId = "withdrawalconfirmation-legend",
-                        legendClass = "visuallyhidden",
+                        legendClass = "govuk-visually-hidden",
                         ariaDescribedBy = "withdrawalconfirmation-legend confirmation-yes-content-text",
                         ariaDescribedByForYesOptionOnly = true
                     )
                 )
             </div>
             @awrsWarningHelper(declarationTxt = messages("awrs.generic.wait_info", messages("awrs.generic.wait_info_withdraw")), id = "confirmation-yes-content")
-            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "withdraw-application", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "withdraw-application")
         }
     </div>
 </div>

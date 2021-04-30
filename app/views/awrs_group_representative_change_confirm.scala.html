@@ -16,18 +16,17 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(confirmationForm: Form[models.BusinessNameChangeConfirmation], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 
 @warningText = {
-<p id="businessNameChangeConfirmation-warning">@messages("awrs.business_name_change.warning")</p>
+<p class="govuk-body" id="businessNameChangeConfirmation-warning">@messages("awrs.business_name_change.warning")</p>
 <ul id="businessNameChangeConfirmation-bullets" class="bullets">
     <li>@messages("awrs.business_name_change.warning.bullet.1")</li>
     <li>@messages("awrs.business_name_change.warning.bullet.2")</li>
@@ -43,13 +42,13 @@
 <div class="grid">
     <div class="grid grid-2-3">
         <header class="page-header">
-            <h1 id="businessNameChangeConfirmation-heading" class="heading-xlarge">@messages("awrs.business_name_change.heading")</h1>
+            <h1 id="businessNameChangeConfirmation-heading" class="govuk-heading-l">@messages("awrs.business_name_change.heading")</h1>
             @awrsProgressHelper(businessType, businessDetailsName)
         </header>
         @warningText
         @formWithCSRF(action = controllers.routes.BusinessNameChangeController.callToAction) {
-        <div class="form-group">
-            <div class="form-group">
+        <div class="govuk-form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         confirmationForm("businessNameChangeConfirmation"),
@@ -59,13 +58,13 @@
                         fieldSetAttributes = "id=businessNameChangeConfirmation_field",
                         legend = messages("awrs.business_name_change.heading"),
                         legendId = "businessNameChangeConfirmation-legend",
-                        legendClass = "visuallyhidden",
+                        legendClass = "govuk-visually-hidden",
                         ariaDescribedBy = "businessNameChangeConfirmation-legend businessNameChangeConfirmation-warning businessNameChangeConfirmation-bullets",
                         ariaDescribedByForYesOptionOnly = true
                     )
                 )
             </div>
-            @awrsSubmitButton(messages("awrs.business_name_change.cta"))(id = "save-and-continue", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.business_name_change.cta"))(id = "save-and-continue")
         }
     </div>
 </div>

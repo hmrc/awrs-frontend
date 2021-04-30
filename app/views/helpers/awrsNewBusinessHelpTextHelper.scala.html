@@ -16,12 +16,12 @@
 
 @(showHint1 : Boolean = true)(implicit messages: Messages)
 @showHint1 match {
-    case true => {<p id="newBus-information-para">@Messages("awrs.business_details.newAWBusiness_information.para_1")</p>}
+    case true => {<p class="govuk-body" id="newBus-information-para">@Messages("awrs.business_details.newAWBusiness_information.para_1")</p>}
     case false  => {}
 }
 
 @hintText = {
-    <span aria-hidden="true">@Messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@Messages("awrs.generic.date_hint.reader")</span>
+    <span aria-hidden="true">@Messages("awrs.generic.date_hint")</span><span class="govuk-visually-hidden">@Messages("awrs.generic.date_hint.reader")</span>
 }
 
-<p>@hintText</p>
+<p class="govuk-body">@hintText</p>

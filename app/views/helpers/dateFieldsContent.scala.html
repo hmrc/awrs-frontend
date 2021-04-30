@@ -14,18 +14,17 @@
  * limitations under the License.
  *@
 
-@(formItem:Form[_], fieldName: String, ariaLabelledBy: Option[String] = None, formHasErrors: Boolean = false)(implicit messages: Messages)
-
 @import play.api.i18n._
-@import uk.gov.hmrc.play.mappers.DateFields._
 @import views.helpers._
 @import views.html.helpers._
 
-@dayElem = @{ fieldName + "." + day }
+@(formItem:Form[_], fieldName: String, ariaLabelledBy: Option[String] = None, formHasErrors: Boolean = false)(implicit messages: Messages)
+
+@dayElem = @{ fieldName + "." + "day" }
 @dayInputId = @{ fieldName + "-day"  }
-@monthElem = @{ fieldName + "." + month }
+@monthElem = @{ fieldName + "." + "month" }
 @monthInputId = @{ fieldName + "-month" }
-@yearElem = @{ fieldName + "." + year }
+@yearElem = @{ fieldName + "." + "year" }
 @yearInputId = @{ fieldName + "-year" }
 
 @awrsInputTypeText(

@@ -20,24 +20,30 @@ import utils.SessionSectionHashUtil
 
 sealed trait IndexStatus {
   val messagesKey: String
+  val cssClass: String
 
   final override def toString: String = messagesKey
 }
 
 case object SectionComplete extends IndexStatus {
   val messagesKey: String = "awrs.index_page.complete"
+  val cssClass: String = "govuk-tag govuk-tag--green"
 }
 
 case object SectionIncomplete extends IndexStatus {
   val messagesKey: String = "awrs.index_page.incomplete"
+  val cssClass: String = "govuk-tag govuk-tag--red"
 }
 
 case object SectionEdited extends IndexStatus {
   val messagesKey: String = "awrs.index_page.edited"
+  val cssClass: String = "govuk-tag govuk-tag--green"
+
 }
 
 case object SectionNotStarted extends IndexStatus {
   val messagesKey: String = "awrs.index_page.not_started"
+  val cssClass: String = "govuk-tag govuk-tag--grey"
 }
 
 case class IndexViewModel(sectionModels: List[SectionModel]) {

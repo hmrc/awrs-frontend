@@ -15,22 +15,21 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(deRegistrationForm: Form[models.DeRegistrationDate])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @hintText = {
-<span aria-hidden="true">@messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@messages("awrs.generic.date_hint.reader")</span>
+    <span aria-hidden="true">@messages("awrs.generic.date_hint")</span><span class="govuk-visually-hidden">@messages("awrs.generic.date_hint.reader")</span>
 }
 
 @ariaDayMonthYear = {
-    <span id="proposedEndDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
-    <span id="proposedEndDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
-    <span id="proposedEndDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+    <span id="proposedEndDate-day_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+    <span id="proposedEndDate-month_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+    <span id="proposedEndDate-year_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
 }
 
 
@@ -39,13 +38,12 @@
 @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
 @errorSummaryTemplate(deRegistrationForm)
 
-
 <div class="grid">
     <div class="grid grid-2-3">
-        <h1 id="de_registration-heading" class="heading-xlarge">@messages("awrs.de_registration.heading")</h1>
-        <p class="lede">@messages("awrs.de_registration.lede")</p>
+        <h1 id="de_registration-heading" class="govuk-heading-l">@messages("awrs.de_registration.heading")</h1>
+        <p class="govuk-body-lead">@messages("awrs.de_registration.lede")</p>
         @formWithCSRF(action = controllers.routes.DeRegistrationController.submitDate) {
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @awrsDateField(
                     DateHelperParams(
                         formItem = deRegistrationForm,
@@ -57,7 +55,7 @@
                     )
                 )
             </div>
-            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+            <button class="govuk-button" role="button" data-module="govuk-button" type="submit" id="save-and-continue">@messages("awrs.generic.continue")</button>
         }
     </div>
 </div>

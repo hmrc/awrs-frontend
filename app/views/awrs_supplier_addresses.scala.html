@@ -16,22 +16,21 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(supplierAddressForm) }
 
 
 @pageScripts = {
-<script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-<script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 @actionRoute = @{
     if(isEditMode) {
@@ -65,8 +64,8 @@
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true){
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/jquery-ui.min.css")'/>
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/jquery-ui.min.css")'/>
+<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(
@@ -74,10 +73,10 @@
         ))
         @errorSummaryTemplate(supplierAddressForm)
         <header class="page-header">
-            <h1 id="supplier-addresses-title" class="heading-xlarge">@pageHeading</h1>
+            <h1 id="supplier-addresses-title" class="govuk-heading-l">@pageHeading</h1>
             @awrsProgressHelper(request.getBusinessType, suppliersName)
         </header>
-        <p id="supplier-address-description" class="lede">@Html(messages("awrs.supplier-addresses.description"))</p>
+        <p id="supplier-address-description" class="govuk-body-lead">@Html(messages("awrs.supplier-addresses.description"))</p>
         @formWithCSRF(action = actionRoute){
             @if(isEditMode() || supplierAddressId > 1){
                 <input type="hidden" name="alcoholSupplier" id="alcoholSupplier-yes" value="Yes">
@@ -90,7 +89,7 @@
                                 messages("awrs.generic.no") -> messages("awrs.generic.no")),
                             legend = messages("awrs.supplier-addresses.heading.first"),
                             legendId = "alcoholSupplierAddress-legend",
-                            legendClass = "visuallyhidden",
+                            legendClass = "govuk-visually-hidden",
                             fieldSetClass = "inline",
                             fieldSetAttributes = "id=alcoholSupplier_field"
                         )
@@ -98,7 +97,7 @@
                 </div>
             }
 
-            <div class="form-group">
+            <div class="govuk-form-group">
                 <div id="alcoholSupplier-yes-content">
                     @awrsInputTypeText(
                         InputTypeTextParams(
@@ -110,7 +109,7 @@
                             inputClass = "alcoholSupplierName"
                         )
                     )
-                    <div class="form-group">
+                    <div class="govuk-form-group">
                         @awrsInputTypeRadioGroup(
                             InputTypeRadioGroupParams(
                                 supplierAddressForm("ukSupplier"),
@@ -123,7 +122,7 @@
                             )
                         )
                         <div id="ukSupplier-all-content">
-                            <div class="form-group">
+                            <div class="govuk-form-group">
                                 @awrsAddressHelper(supplierAddressForm("supplierAddress"),
                                     AddressHelperParams(
                                         wrapperClass = "panel-indent",
@@ -143,7 +142,7 @@
                         </div>
                     </div>
                     @if(supplierAddressId < 5 && !isEditMode){
-                        <div class="form-group">
+                        <div class="govuk-form-group">
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     supplierAddressForm("additionalSupplier"),

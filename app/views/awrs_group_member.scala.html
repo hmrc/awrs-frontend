@@ -18,22 +18,20 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import uk.gov.hmrc.auth.core.Enrolment
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
-
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 @pageScripts = {
-<script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-<script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -65,7 +63,7 @@ if(accountUtils.hasAwrs(enrolments)) {
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(
@@ -73,13 +71,13 @@ if(accountUtils.hasAwrs(enrolments)) {
         ))
         @errorSummaryTemplate(groupMemberForm)
         <header class="page-header">
-            <h1 id="group-member-heading" class="heading-xlarge">
+            <h1 id="group-member-heading" class="govuk-heading-l">
                 @messages("awrs.group_member.top_heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalSuffix)
             </h1>
             @awrsProgressHelper(businessType, groupMembersName)
         </header>
 
-        <p id="group-member-lead-paragraph" class="lede">@messages("awrs.group_member.lead_paragraph")</p>
+        <p id="group-member-lead-paragraph" class="govuk-body-lead">@messages("awrs.group_member.lead_paragraph")</p>
 
         @formWithCSRF(action = actionRoute){
             @awrsInputTypeText(
@@ -92,7 +90,7 @@ if(accountUtils.hasAwrs(enrolments)) {
                     required = true
                 )
             )
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         groupMemberForm("companyNames.doYouHaveTradingName"),
@@ -119,12 +117,12 @@ if(accountUtils.hasAwrs(enrolments)) {
                 </div>
             </div>
             <div id="address-group">
-                <h2 class="heading-medium">@messages("awrs.generic.registered_address")</h2>
+                <h2 class="govuk-heading-m">@messages("awrs.generic.registered_address")</h2>
                 @awrsAddressHelper(groupMemberForm("address"),
                     AddressHelperParams()
                 )
             </div>
-            <h2 class="heading-medium">@messages("awrs.generic.company_reg_details")</h2>
+            <h2 class="govuk-heading-m">@messages("awrs.generic.company_reg_details")</h2>
             @awrsIdUTRHelper(
                 businessType,
                 None,
@@ -149,7 +147,7 @@ if(accountUtils.hasAwrs(enrolments)) {
                 formHasErrors = groupMemberForm.hasErrors
             )
             @if(!isEditMode){
-                <div class="form-group">
+                <div class="govuk-form-group">
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             groupMemberForm("addAnotherGrpMember"),

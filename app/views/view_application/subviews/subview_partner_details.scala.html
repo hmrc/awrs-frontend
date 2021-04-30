@@ -17,10 +17,10 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import views.html.view_application.helpers._
+@import views.html.view_application.subviews.contents.content_partner_detail
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers.ViewApplicationType
 @import views.view_application.subviews.SubviewIds
-@import views.html.view_application.subviews.contents.content_partner_detail
 @(headingKey: String,
   someModel: Option[models.Partners]
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
@@ -48,7 +48,7 @@
 
 @ledeAndTopAdd(model: models.Partners) = {
     @if(isSectionEdit) {
-        <p id="business_partners-subtext" class="lede">@messages("awrs.business-partner.topText")</p>
+        <p id="business_partners-subtext" class="govuk-body-lead">@messages("awrs.business-partner.topText")</p>
         @if(model.partners.size > 1) {
             <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.partner"))</div>
         }

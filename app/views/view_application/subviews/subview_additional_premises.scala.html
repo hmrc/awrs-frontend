@@ -17,10 +17,10 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import views.html.view_application.helpers._
+@import views.html.view_application.subviews.contents.content_additional_premises
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers.ViewApplicationType
 @import views.view_application.subviews.SubviewIds
-@import views.html.view_application.subviews.contents.content_additional_premises
 @(headingKey: String,
   someModel: Option[models.AdditionalBusinessPremisesList]
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
@@ -50,7 +50,7 @@
 @content(model: models.AdditionalBusinessPremisesList) = {
     @model match {
         case AdditionalBusinessPremisesList(List(AdditionalBusinessPremises(Some("No"), _, _))) => {
-            <p id="no-premises" class="lede">@messages("awrs.view_application.no_premises")</p>
+            <p id="no-premises" class="govuk-body-lead">@messages("awrs.view_application.no_premises")</p>
         }
         case _ => {
             @model.premises.zipWithIndex.map { case (premises, id) =>

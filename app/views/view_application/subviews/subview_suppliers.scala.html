@@ -17,10 +17,10 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import views.html.view_application.helpers._
+@import views.html.view_application.subviews.contents.content_supplier
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers.ViewApplicationType
 @import views.view_application.subviews.SubviewIds
-@import views.html.view_application.subviews.contents.content_supplier
 @(headingKey: String,
   someModel: Option[models.Suppliers]
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
@@ -63,7 +63,7 @@
 @content(model: models.Suppliers) = {
     @model match {
         case Suppliers(List(Supplier(Some("No"), _, _, _, _, _, _))) => {
-            <p id="no-suppliers" class="lede">@messages("awrs.view_application.no_suppliers")</p>
+            <p id="no-suppliers" class="govuk-body-lead">@messages("awrs.view_application.no_suppliers")</p>
         }
         case _ => {
             @model.suppliers.zipWithIndex.map { case (supplier, id) =>

@@ -16,18 +16,17 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.Html
-@import views.html.includes.awrs_main
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.unauthorised.heading"))){
-<h1 class="heading-xlarge" id="heading"> @Html(messages("awrs.generic.unauthorised.heading")) </h1>
-<p id="reason_start">@messages("awrs.generic.unauthorised.reason_start")</p>
+<h1 class="govuk-heading-l" id="heading"> @Html(messages("awrs.generic.unauthorised.heading")) </h1>
+<p class="govuk-body" id="reason_start">@messages("awrs.generic.unauthorised.reason_start")</p>
 <ul id="reasons" class="list list-bullet">
   <li id="reason_1">@messages("awrs.generic.unauthorised.reason_1")
-   <a id="reason_1_link" href="https://www.gov.uk/log-in-file-self-assessment-tax-return/register-if-youre-self-employed">
+   <a class="govuk-link" id="reason_1_link" href="https://www.gov.uk/log-in-file-self-assessment-tax-return/register-if-youre-self-employed">
    @messages("awrs.generic.unauthorised.reason_1_link")</a></li>
   <li id="reason_2">@messages("awrs.generic.unauthorised.reason_2")</li>
 </ul>

@@ -25,10 +25,11 @@ import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
                              val configuration: Configuration,
-                             implicit val applicationConfig: ApplicationConfig) extends FrontendErrorHandler {
+                             val templateError: views.html.error_template,
+                             implicit val appConfig: ApplicationConfig) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
-    applicationConfig.templateError(pageTitle, heading, message)
+    templateError(pageTitle, heading, message)
   }
 
   override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
@@ -38,6 +39,4 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi,
       Messages("awrs.generic.error.status")
     )
   }
-
-
 }

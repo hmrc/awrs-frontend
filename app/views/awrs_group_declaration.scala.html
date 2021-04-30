@@ -15,11 +15,10 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -31,7 +30,7 @@
     @errorSummaryTemplate(groupDeclarationForm)
     <div class="grid">
         <div class="grid grid-2-3">
-            <h1 id="group-declaration-heading" class="heading-xlarge">@Html(messages("awrs.group_declaration.heading"))</h1>
+            <h1 id="group-declaration-heading" class="govuk-heading-l">@Html(messages("awrs.group_declaration.heading"))</h1>
 
             <div id="declaration-group">
                 <div id="lead-paragraph">@Html(messages("awrs.group_declaration.declaration_statement_lead"))</div>
@@ -54,7 +53,7 @@
 
                 @awrsWarningHelper(declarationTxt = messages("awrs.group_declaration.declaration_statement_confirmation"), id = "confirmation-text-disclaimer")
 
-                @awrsSubmitButton(messages("awrs.confirmation.button"))(id = "sendGroupNowButton", classAttr = "button")
+                @awrsSubmitButton(messages("awrs.confirmation.button"))(id = "sendGroupNowButton")
             }
         </div>
     </div>

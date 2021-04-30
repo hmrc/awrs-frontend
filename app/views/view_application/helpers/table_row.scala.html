@@ -28,7 +28,7 @@
 }
 @anchor = {
     @someHref match {
-        case Some(href) => {<a href="@href@someId">@Messages("awrs.view_application.edit")</a>}
+        case Some(href) => {<a class="govuk-link" href="@href@someId">@Messages("awrs.view_application.edit")</a>}
         case _ => {}
     }
 }
@@ -48,7 +48,7 @@
                     <td class="row-data">
                         @for(rRow <- content) {
                             @rRow match {
-                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p>@Html(data)</p>}
+                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@Html(data)</p>}
                                 case _ => {}
                             }
                         }
@@ -61,7 +61,7 @@
                     <td class="row-data">
                         @for(rRow <- content) {
                             @rRow match {
-                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p>@data</p>}
+                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@data</p>}
                                 case _ => {}
                             }
                          }
@@ -70,7 +70,7 @@
                         case Some(link) => {
                             <td class="links">
                                 @for(linkRow <- link){
-                                    <p>@Html(linkRow)</p>
+                                    <p class="govuk-body">@Html(linkRow)</p>
                                 }
                             </td>
                         }

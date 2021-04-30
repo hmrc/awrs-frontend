@@ -16,9 +16,9 @@
 
 package views.helpers
 
-import java.text.SimpleDateFormat
-
 import org.joda.time.format.DateTimeFormat
+
+import java.text.SimpleDateFormat
 
 object WithdrawalHelper {
 

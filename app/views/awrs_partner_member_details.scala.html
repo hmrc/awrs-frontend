@@ -18,14 +18,14 @@
 @import forms.AWRSEnums._
 @import play.twirl.api.Html
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+
 @(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -40,8 +40,8 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -71,13 +71,13 @@
     @someText match {
         case None => {}
         case Some(text) => {
-            <h2 id="partner-heading" class="heading-medium">@text</h2>
+            <h2 id="partner-heading" class="govuk-heading-m">@text</h2>
         }
     }
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(
@@ -85,10 +85,10 @@
             ))
             @errorSummaryTemplate(partnerForm)
             <header class="page-header">
-                <h1 id="business_partner-title" class="heading-xlarge">@h1text</h1>
+                <h1 id="business_partner-title" class="govuk-heading-l">@h1text</h1>
                 @awrsProgressHelper(businessType, partnersName)
             </header>
-            <p id="business_partners-subtext" class="lede">@messages("awrs.business-partner.topText")</p>
+            <p id="business_partners-subtext" class="govuk-body-lead">@messages("awrs.business-partner.topText")</p>
             @formWithCSRF(action = actionRoute) {
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
@@ -109,7 +109,7 @@
                         fieldSetQuestionWrapperClass = "panel-indent"
                     )
                 )
-                <div class="form-group">
+                <div class="govuk-form-group">
                     <div class="individual sole_trader">
                         @awrsInputTypeText(
                             InputTypeTextParams(
@@ -143,7 +143,7 @@
                             )
                         )
                     </div>
-                    <div class="form-group">
+                    <div class="govuk-form-group">
                         <div class="corporate_body sole_trader">
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
@@ -223,7 +223,7 @@
                         <input type="hidden" name="otherPartners" value="Yes">
                     } else {
                         @if(!isEditMode) {
-                            <div class="form-group" id="businessPartner.otherPartners">
+                            <div class="govuk-form-group" id="businessPartner.otherPartners">
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     partnerForm("otherPartners"),

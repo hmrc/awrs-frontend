@@ -23,12 +23,12 @@
         (isOneViewMode, alwaysShow, backUrl) match {
             case (true, false, _) =>
             case (_, _, `lastLocationString`) =>
-                <p>
-                    <a id="back" class="back-link print-hidden"
+                <p class="govuk-body">
+                    <a id="back" class="govuk-back-link print-hidden"
                     href="javascript:history.back()">{messages("awrs.generic.back")}</a>
                 </p>
             case _ =>
-                <p>
+                <p class="govuk-body">
                     <a id="back" class="back-link print-hidden"
                     href={backUrl}>{messages("awrs.generic.back")}</a>
                 </p>

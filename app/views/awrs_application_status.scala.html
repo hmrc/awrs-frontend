@@ -18,10 +18,10 @@
 @import models.FormBundleStatus._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.html.subtemplates.application_status._
 @import views.subtemplates.application_status._
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
+
 @(params: views.subtemplates.application_status.ApplicationStatusParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @normalInfo = {
@@ -56,8 +56,7 @@
 @viewAppBlock = {
     <div class="form-group print-hidden">
         <a id="view-application"
-           class="button print-hidden"
-           role="button"
+           class="govuk-button print-hidden" role="button" data-module="govuk-button"
            href="@controllers.routes.ViewApplicationController.show(false)">
             @messages("awrs.generic.application_status_continue_read_only")
         </a>
@@ -82,15 +81,14 @@
 
 @createNewAppBlock = {
     <div class="print-hidden">
-        <p><a href="@controllers.routes.ReapplicationController.show()">@Html(messages("awrs.generic.create_new_application_link"))</a></p>
+        <p class="govuk-body"><a class="govuk-link" href="@controllers.routes.ReapplicationController.show()">@Html(messages("awrs.generic.create_new_application_link"))</a></p>
         <br>
     </div>
 }
 
 @govWrapper = {
     @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_status.page_title")), nameBusiness = Some(params.organisationName), userLoggedIn = true) {
-    <div class="grid">
-        <div class="grid grid-2-3">
+
             @application_status_header(params)
             @info
             @params.status.formBundleStatus match {
@@ -102,8 +100,7 @@
                 case _ => {}
             }
             @awrsPrintLink()
-        </div>
-    </div>
+
     }
 }
 @content = {

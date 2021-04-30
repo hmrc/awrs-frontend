@@ -1,5 +1,6 @@
 # Generic messages
 #============================================================
+service.name=Register as an alcohol wholesaler or producer
 
 # Buttons & links
 #============================================================
@@ -357,11 +358,11 @@ awrs.index_page.not_started_class=not-started
 awrs.index_page.incomplete_class=incomplete
 awrs.index_page.complete_class=complete
 awrs.index_page.edited_class=edited
-awrs.index_page.not_started_link=Start now <span class="visuallyhidden">{0}</span>
-awrs.index_page.incomplete_link=View or edit <span class="visuallyhidden">{0}</span>
-awrs.index_page.complete_link=View or edit <span class="visuallyhidden">{0}</span>
-awrs.index_page.edited_link=View or edit <span class="visuallyhidden">{0}</span>
-awrs.index_page.complete_link_rejected=View <span class="visuallyhidden">{0}</span> details
+awrs.index_page.not_started_link=Start now <span class="govuk-visually-hidden">{0}</span>
+awrs.index_page.incomplete_link=View or edit <span class="govuk-visually-hidden">{0}</span>
+awrs.index_page.complete_link=View or edit <span class="govuk-visually-hidden">{0}</span>
+awrs.index_page.edited_link=View or edit <span class="govuk-visually-hidden">{0}</span>
+awrs.index_page.complete_link_rejected=View <span class="govuk-visually-hidden">{0}</span> details
 awrs.index_page.status_description_text=, status is
 awrs.index_page.section_text=Section
 awrs.index_page.application_status_text=Application
@@ -935,3 +936,11 @@ awrs.application_resubmission_error.message=Your resubmission has been rejected 
 awrs.application_pending_deregistration.title=Your submission has failed
 awrs.application_pending_deregistration.heading=Your submission has failed
 awrs.application_pending_deregistration.message=You cannot submit a new application while your cancelled application is still pending.
+
+# Footer Messages
+#===========================
+footer.links.accessibility.text = Accessibility statement
+footer.links.cookies.text = Cookies
+footer.links.privacy_policy.text = Privacy policy
+footer.links.terms_and_conditions.text = Terms and conditions
+footer.links.help_page.text = Help using GOV.UK

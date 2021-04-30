@@ -16,11 +16,10 @@
 
 @import services.DataCacheKeys._
 @import views.html.view_application.helpers._
+@import views.html.view_application.subviews.contents.content_director
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers.ViewApplicationType
 @import views.view_application.subviews.SubviewIds
-
-@import views.html.view_application.subviews.contents.content_director
 @(headingKey: String,
   someModel: Option[models.BusinessDirectors],
   businessLegalEntity: String
@@ -60,7 +59,7 @@
 
 @content(model: models.BusinessDirectors) = {
     @if(model.directors.isEmpty) {
-        <p id="business_directors-subtext" class="lede">@messages("awrs.business_directors.edit")</p>
+        <p id="business_directors-subtext" class="govuk-body-lead">@messages("awrs.business_directors.edit")</p>
     }
     @model.directors.zipWithIndex.map { case (director, id) =>
         @content_director(director, businessLegalEntity, id + 1)

@@ -24,13 +24,14 @@
     ErrorMessageInterpreter.getFieldErrors(params.field)
 }
 @fieldSetClass = @{
-    Html((params.fieldSetClass, fieldErrors.nonEmpty) match {
-        case (None, false) => ""
-        case (Some(""), false) => ""
-        case (Some(fieldSetClass), false) => "class=\"" + fieldSetClass + "\""
-        case (Some(fieldSetClass), true) => "class=\"" + fieldSetClass + " form-field--error" + "\""
-        case (None, true) => "class=form-field--error"
-    })
+    Html(
+        if(fieldErrors.nonEmpty) {
+            "class=\"" + params.fieldSetClass.getOrElse("") + " form-field--error" + "\""
+
+        } else {
+            "class=\"" + params.fieldSetClass.getOrElse("") + "\""
+        }
+    )
 }
 @fieldSetAttributes = @{
     params.fieldSetAttributes match {
@@ -147,9 +148,10 @@
     
         @params.radioOptions.map { case (value, label) =>
             @defining(s"${params.field.name}-${value.toLowerCase.replace(" ", "_")}") { inputId =>
-                <label id="@inputId-label" for="@inputId" class="block-label @labelClass @params.field.value.filter(_ == value).map { _ => selected }">
+                <label id="@inputId-label" for="@inputId" class="govuk-label govuk-radios__label @labelClass @params.field.value.filter(_ == value).map { _ => selected }">
                     @if(!labelAfter)@{addLabelIfSpecified(label, params)}
-                    <input type="radio"
+                    <input class="govuk-radios__input"
+                            type="radio"
                             id="@inputId"
                             @if(params.ariaDescribedBy){
                                 @if(params.ariaDescribedByForYesOptionOnly && (value == "Yes")) {

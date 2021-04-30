@@ -112,10 +112,10 @@
 @isPostCodeInput = {
     @params.isPostCode match {
         case true => {
-            <a id="postcode-lookup-button-@number" class="button postcode-lookup" role="button" tabindex="0">@Messages("awrs.generic.find_address")</a>
+            <a id="postcode-lookup-button-@number" class="govuk-button postcode-lookup" role="button" data-module="govuk-button" tabindex="0">@Messages("awrs.generic.find_address")</a>
             <div class="loading" id="spinner-@number">@Messages("awrs.generic.search_address")</div>
             <fieldset class="postcode-results-fieldset" >
-                <legend id="postcode-lookup-ledgend-@number" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.address.lookup_dropdown_label")</legend>
+                <legend id="postcode-lookup-ledgend-@number" class="govuk-visually-hidden" aria-hidden="true">@Messages("awrs.generic.address.lookup_dropdown_label")</legend>
                 <div class="btn-group postcode-lookup-results">
                         <div class="dropdown-menu" id="result-container-@number">
                             <div class="btn-group postcode-lookup-results show" id="result-@{number}">
@@ -130,7 +130,7 @@
 }
 @additionalHiddenLabelText = {
     @params.additionalHiddenLabelText match {
-        case Some(text) => {<span class="visuallyhidden">@text</span>}
+        case Some(text) => {<span class="govuk-visually-hidden">@text</span>}
         case None => {}
     }
 }

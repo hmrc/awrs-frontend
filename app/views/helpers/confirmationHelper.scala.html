@@ -26,7 +26,7 @@
         @if(submissionOrResubmissionDate.isDefined){ @submissionOrResubmissionDate}
         </span>
     </h1>
-    <span id="ariaConfirmation" class="visuallyhidden" aria-hidden="true">
+    <span id="ariaConfirmation" class="govuk-visually-hidden" aria-hidden="true">
         @Messages(text_1) @request.session.get("businessName").getOrElse("") @Messages(text_2) @if(submissionOrResubmissionDate.isDefined) {@submissionOrResubmissionDate}.
     </span>
 </div>

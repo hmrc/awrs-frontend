@@ -15,12 +15,11 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 
@@ -31,13 +30,13 @@
     <div class="grid grid-2-3">
         @backLink()
         @errorSummaryTemplate(reapplicationForm)
-        <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@messages("awrs.reapplication.confirm_page.heading")</h1>
-        <p class="lede">
+        <h1 id="withdrawal-confirmation-title" class="govuk-heading-l">@messages("awrs.reapplication.confirm_page.heading")</h1>
+        <p class="govuk-body-lead">
             @messages("awrs.reapplication.confirm_page.text")
         </p>
 
         @formWithCSRF(action = controllers.routes.ReapplicationController.submit) {
-            <div id="withdrawal-confirmation" class="form-group">
+            <div id="withdrawal-confirmation" class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         reapplicationForm("answer"),
@@ -46,12 +45,12 @@
                         fieldSetClass = "inline",
                         fieldSetAttributes = "id=answer_field",
                         legend = messages("awrs.reapplication.confirm_page.heading"),
-                        legendClass = "visuallyhidden",
+                        legendClass = "govuk-visually-hidden",
                         legendId = "createNewApp-legend"
                     )
                 )
             </div>
-            @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "withdraw-application", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "withdraw-application")
         }
     </div>
 </div>

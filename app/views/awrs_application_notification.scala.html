@@ -16,18 +16,17 @@
 
 @import config.ApplicationConfig
 @import play.twirl.api.Html
-@import views.html.includes.awrs_main
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
-<link rel="stylesheet" href=@routes.Assets.at("stylesheets/custom.css")>
+<link rel="stylesheet" href=@routes.Assets.versioned("stylesheets/custom.css")>
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_notification.heading")), userLoggedIn = true){
 
 
 <div>
-    <h1 id="application-submission-header" class="heading-xlarge">@Html(messages("awrs.application_notification.heading"))</h1>
-    <h2 id="application-submission-description" class="heading-medium">@Html(messages("awrs.application_notification.status"))</h2>
+    <h1 id="application-submission-header" class="govuk-heading-l">@Html(messages("awrs.application_notification.heading"))</h1>
+    <h2 id="application-submission-description" class="govuk-heading-m">@Html(messages("awrs.application_notification.status"))</h2>
 </div>
 
 
