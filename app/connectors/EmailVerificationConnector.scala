@@ -49,7 +49,7 @@ class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
       linkExpiryDuration = defaultEmailExpiryPeriod,
       continueUrl = continueUrl)
     val postURL = s"""$serviceURL$baseURI$sendEmail"""
-    http.POST(postURL, verificationRequest).map {
+    http.POST(postURL, verificationRequest, Seq.empty).map {
       response =>
         response.status match {
           case OK | CREATED =>
@@ -73,7 +73,7 @@ class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
       case Some(emailAddress) =>
         val verifyURL = s"""$serviceURL$baseURI$verifyEmail"""
 
-        http.POST(verifyURL, Json.obj("email" -> emailAddress)).map { _ =>
+        http.POST(verifyURL, Json.obj("email" -> emailAddress), Seq.empty).map { _ =>
           audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
           true
         } recover {

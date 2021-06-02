@@ -40,8 +40,9 @@ class AddressLookupConnector @Inject()(servicesConfig: ServicesConfig,
   val addressLookupUrl: String = servicesConfig.baseUrl("address-lookup")
 
   def lookup(postcode: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AddressLookupResponse] = {
-    val awrsHc = hc.withExtraHeaders("X-Hmrc-Origin" -> "AWRS")
-    http.GET[JsValue](s"$addressLookupUrl/v2/uk/addresses?postcode=$postcode")(implicitly, awrsHc, ec) map {
+    val headers = Seq("X-Hmrc-Origin" -> "AWRS")
+
+    http.GET[JsValue](s"$addressLookupUrl/v2/uk/addresses?postcode=$postcode", Seq.empty, headers)(implicitly, hc, ec) map {
       addressListJson =>
         AddressLookupSuccessResponse(RecordSet.fromJsonAddressLookupService(addressListJson))
     } recover {

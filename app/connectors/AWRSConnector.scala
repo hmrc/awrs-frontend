@@ -56,7 +56,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
     val postURL = s"""$serviceURL/awrs/send-data"""
 
-    http.POST[JsValue, HttpResponse](postURL, fileData) map {
+    http.POST[JsValue, HttpResponse](postURL, fileData, Seq.empty) map {
       response =>
         response.status match {
           case 200 =>
@@ -117,7 +117,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
     val putURL = s"""$serviceURL/$awrsRefNo/registration-details/$safeId"""
     val updateRegistrationDetailsJsonRequest = Json.toJson(updateRegistrationDetailsRequest)
-    http.PUT[JsValue, HttpResponse](putURL, updateRegistrationDetailsJsonRequest) map {
+    http.PUT[JsValue, HttpResponse](putURL, updateRegistrationDetailsJsonRequest, Seq.empty) map {
       response =>
         response.status match {
           case 200 =>
@@ -163,7 +163,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     val awrsRefNo = accountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
 
     val putURL = s"""$serviceURL/awrs/update/$awrsRefNo"""
-    http.PUT[JsValue, HttpResponse](putURL, fileData) map {
+    http.PUT[JsValue, HttpResponse](putURL, fileData, Seq.empty) map {
       response =>
         response.status match {
           case 200 =>
@@ -203,7 +203,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
     val getURL = s"""$serviceURL/awrs/lookup/$awrsRefNo"""
 
-    http.GET(getURL) map {
+    http.GET(getURL, Seq.empty, Seq.empty) map {
       response =>
         response.status match {
           case 200 =>
@@ -244,7 +244,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
         }
       }, eventType = eventTypeSuccess)
 
-    http.GET(getURL) map {
+    http.GET(getURL, Seq.empty, Seq.empty) map {
       response =>
         response.status match {
           case 200 =>
@@ -294,7 +294,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
 
     debug(f"getStatusInfo calling - $getURL")
-    http.GET(getURL) map {
+    http.GET(getURL, Seq.empty, Seq.empty) map {
       response =>
         response.status match {
           case 200 =>
@@ -344,7 +344,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     val postURL = s"""$serviceURL/awrs/withdrawal/$awrsRefNo"""
     debug(f"withdrawal calling - $postURL")
 
-    http.POST[JsValue, HttpResponse](postURL, withdrawalReason) map {
+    http.POST[JsValue, HttpResponse](postURL, withdrawalReason, Seq.empty) map {
       response =>
         response.status match {
 
@@ -383,7 +383,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
     val postURL = s"""$serviceURL/awrs/de-registration/$awrsRefNo"""
     debug(f"deRegistration calling - $postURL")
-    http.POST(postURL, body) map {
+    http.POST(postURL, body, Seq.empty) map {
       response =>
         response.status match {
           case 200 =>
@@ -434,7 +434,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
       val json = Json.toJson(regimeModel)
       val postURL = s"""$serviceURL/regime-etmp-check"""
 
-      http.POST[JsValue, HttpResponse](postURL, json).map { resp =>
+      http.POST[JsValue, HttpResponse](postURL, json, Seq.empty).map { resp =>
         resp.status match {
           case OK => Some(resp.json.as[SelfHealSubscriptionResponse])
           case _ => None

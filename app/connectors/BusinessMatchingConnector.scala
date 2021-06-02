@@ -52,7 +52,7 @@ trait BusinessMatchingConnector extends RawResponseReads with LoggingUtils {
 
     val url = s"""$serviceUrl/${accountUtils.authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"""
     debug(s"[BusinessMatchingConnector][lookup] Call $url")
-    http.POST[JsValue, HttpResponse](url, Json.toJson(lookupData)) map { response =>
+    http.POST[JsValue, HttpResponse](url, Json.toJson(lookupData), Seq.empty) map { response =>
       auditMatchCall(lookupData, userType, response)
       response.status match {
         case OK | NOT_FOUND =>
