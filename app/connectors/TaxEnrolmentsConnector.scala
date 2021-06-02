@@ -64,9 +64,8 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
   def send(postUrl: String, requestPayload: RequestPayload,
            auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val jsonData: JsValue = Json.toJson(requestPayload)
-    http.POST[JsValue, HttpResponse](postUrl, jsonData).map {
+    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty).map {
       processResponse(_, postUrl, requestPayload, auditMap)
-
     }
   }
 
@@ -134,7 +133,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     val auditSubscribeTxName: String = "AWRS ETMP de-enrol"
 
     val postUrl = s"""$serviceURL/$deEnrolURI/$service"""
-    http.POST[JsValue, HttpResponse](postUrl, jsonData) map {
+    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty) map {
       response =>
         timer.stop()
         response.status match {

@@ -18,6 +18,7 @@ package connectors
 
 import models._
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
 import play.api.libs.json.{JsValue, Json}
@@ -46,9 +47,9 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
       .thenReturn(mockServicesConfig)
     when(mockServicesConfig.baseUrl(ArgumentMatchers.eq("awrs")))
       .thenReturn("testURL")
-    when(mockAccountUtils.authLink(ArgumentMatchers.any()))
+    when(mockAccountUtils.authLink(any()))
       .thenReturn("org/UNUSED")
-    when(mockAccountUtils.getAwrsRefNo(ArgumentMatchers.any()))
+    when(mockAccountUtils.getAwrsRefNo(any()))
       .thenReturn("0123456")
   }
 
@@ -58,7 +59,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   // these values doesn't really matter since the call itself is mocked
   implicit val request = FakeRequest()
   def awrsRef: String = {
-    when(mockAccountUtils.getAwrsRefNo(ArgumentMatchers.any()))
+    when(mockAccountUtils.getAwrsRefNo(any()))
       .thenReturn("0123456")
 
     "0123456"
@@ -81,11 +82,11 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     lazy val mindedToRejectJson = StatusNotification.writer.writes(mindedToReject.get)
 
     def mockFetchResponse(responseStatus: Int, responseData: JsValue): Unit =
-      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.toString())))
 
     def mockDeleteResponse(responseStatus: Int): Unit =
-      when(mockWSHttp.DELETE[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.DELETE[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, "")))
 
     def testFetchCall(implicit  hc: HeaderCarrier) = testAWRSNotificationConnector.fetchNotificationCache(TestUtil.defaultAuthRetrieval)
@@ -183,7 +184,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   "getNotificationViewedStatus" must {
 
     def mockGetViewedStatusResponse(responseStatus: Int, responseData: Option[JsValue]): Unit =
-      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.getOrElse(Json.obj()), Map.empty[String, Seq[String]])))
 
     def testGetViewedStatusCall(implicit  hc: HeaderCarrier) = testAWRSNotificationConnector.getNotificationViewedStatus(TestUtil.defaultAuthRetrieval)
@@ -206,7 +207,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   "markNotificationViewedStatusAsViewed" must {
 
     def mockMarkViewedStatusResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.PUT[Unit, HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.PUT[Unit, HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), any(), any())(any(), any(), any(), any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))
@@ -233,7 +234,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API4, "test business", testUtr, "example@example.com", isNewBusiness = true)
 
     def sendConfirmationEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(confirmationEmailURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(confirmationEmailURI), any(), any())(any(), any(), any(), any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))
@@ -256,7 +257,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API10, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendCancellationEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(cancellationEmailURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(cancellationEmailURI), any(), any())(any(), any(), any(), any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))
@@ -279,7 +280,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API8, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendWithdrawnEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(withdranEmailURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(withdranEmailURI), any(), any())(any(), any(), any(), any()))
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))
