@@ -56,6 +56,17 @@ case class BCAddressApi3(addressLine1: String,
 
 object BCAddressApi3 {
   implicit val formats = Json.format[BCAddressApi3]
+
+  def apply(placeOfBusiness: PlaceOfBusiness): BCAddressApi3 = {
+    val address = placeOfBusiness.mainAddress.get
+    BCAddressApi3(
+      address.addressLine1,
+      address.addressLine2,
+      address.addressLine3,
+      address.addressLine4,
+      address.postcode,
+      if(address.postcode.isDefined) Some("GB") else address.addressCountryCode)
+  }
 }
 
 case class MatchSuccessResponse(isAnIndividual: Boolean,

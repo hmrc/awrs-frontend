@@ -36,7 +36,6 @@ import scala.concurrent.Future
 class ApplicationServiceTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
   val mockDataCacheService: Save4LaterService = mock[Save4LaterService]
-  val mockEnrolService: EnrolService = mock[EnrolService]
   val mockEmailService: EmailService = mock[EmailService]
 
   val selfHealSuccessResponse = SelfHealSubscriptionResponse(regimeRefNumber = "12345")
@@ -61,7 +60,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     super.beforeEach()
   }
 
-  def cachedData(legalEntity: BusinessType = testLegalEntity) =
+  def cachedData(legalEntity: BusinessType = testLegalEntity): CacheMap =
     CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
       "businessCustomerDetails" -> Json.toJson(testReviewDetails),
       businessNameDetailsName -> Json.toJson(testBusinessNameDetails()),
@@ -124,7 +123,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   lazy val feModel: AWRSFEModel = api6LTDJson.as[AWRSFEModel]
   lazy val cachedSubscription: SubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd
 
-  val testApplicationService: ApplicationService = new ApplicationService(mockEnrolService, mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
+  val testApplicationService: ApplicationService = new ApplicationService(mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
 
   "Application Service" must {
     "getRegistrationReferenceNumber must return left when given self heal case " in {
@@ -1136,11 +1135,25 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                 val businessType = BusinessType(Some(legalEntity), None, Some(true))
                 (updatedBusinessName, legalEntity) match {
                   case (true, ("LTD_GRP" | "LLP_GRP")) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) mustBe true
+                  case (false, ("LTD_GRP" | "LLP_GRP")) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) mustBe false
                   case (true, _) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "Changed")) mustBe false
                   case _ => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) mustBe false
                 }
               }
           }
+          Seq(true, false).foreach {
+            updatedAddress =>
+              s"return the correct value for legalEntity: $legalEntity and updatedAddress: $updatedAddress" in {
+                val businessType = BusinessType(Some(legalEntity), None, Some(true))
+                (updatedAddress, legalEntity) match {
+                  case (true, ("LTD_GRP" | "LLP_GRP")) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME", placeOfBusiness = Some(testPlaceOfBusinessDefault(mainAddress = testAddress)))) mustBe true
+                  case (false, ("LTD_GRP" | "LLP_GRP")) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) mustBe false
+                  case (true, _) => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME", placeOfBusiness = testPlaceOfBusinessDefault(mainAddress = testAddress))) mustBe false
+                  case _ => testApplicationService.isGrpRepChanged(cachedData(businessType), testSubscriptionTypeFrontEnd(businessPartnerName = "ACME")) mustBe false
+                }
+              }
+          }
+
       }
     }
 
