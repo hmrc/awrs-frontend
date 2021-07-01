@@ -98,7 +98,7 @@ class PlaceOfBusinessControllerTest extends AwrsUnitTestTraits
         }
       }
 
-      "be presented with the Place of Business page with eerrors, and a 400 status when invalid form data submitted" in {
+      "be presented with the Place of Business page with errors, and a 400 status when invalid form data submitted" in {
         returnWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody(
           "mainPlaceOfBusiness" -> "No",
           "mainAddress.addressLine1" -> "",
