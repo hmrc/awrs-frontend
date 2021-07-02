@@ -22,10 +22,10 @@ import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable, convertBCAddressToAddress}
 import forms.PlaceOfBusinessForm._
 import javax.inject.Inject
-import models.PlaceOfBusiness
+import models.{BCAddressApi3, PlaceOfBusiness}
 import play.api.mvc._
 import services.DataCacheKeys._
-import services.{DeEnrolService, Save4LaterService}
+import services.{DeEnrolService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
@@ -35,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
                                           val save4LaterService: Save4LaterService,
+                                          val keyStoreService: KeyStoreService,
                                           val authConnector: DefaultAuthConnector,
                                           val deEnrolService: DeEnrolService,
                                           val auditable: Auditable,
@@ -79,10 +80,12 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
       formWithErrors =>
         Future.successful(BadRequest(template(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, formWithErrors)))
       ,
-      placeOfBusinessData =>
+      placeOfBusinessData => {
+        keyStoreService.saveBusinessCustomerAddress(BCAddressApi3(placeOfBusinessData))
         save4LaterService.mainStore.savePlaceOfBusiness(authRetrievals, placeOfBusinessData) flatMap {
           _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
         }
+      }
     )
   }
 }

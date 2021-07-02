@@ -158,7 +158,9 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              fetchWithdrawalReason: Option[Int] = None,
                                              saveWithdrawalReason: Option[Int] = None,
                                              fetchViewedStatus: Option[Int] = None,
-                                             saveViewedStatus: Option[Int] = None
+                                             saveViewedStatus: Option[Int] = None,
+                                             fetchBusinessCustomerAddress: Option[Int] = None,
+                                             saveBusinessCustomerAddress: Option[Int] = None
                                            ): Unit = {
     def verifyDeleteSupportFetch[T](key: String, someCount: Option[Int]): Unit =
       someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[Option[T]](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -196,6 +198,9 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
     verifyFetch(viewedStatusName, fetchViewedStatus)
     verifySave(viewedStatusName, saveViewedStatus)
+
+    verifyFetch(businessCustomerAddressName, fetchBusinessCustomerAddress)
+    verifySave(businessCustomerAddressName, saveBusinessCustomerAddress)
   }
 
 }

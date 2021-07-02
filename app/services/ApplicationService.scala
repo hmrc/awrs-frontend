@@ -34,8 +34,7 @@ import utils.{AccountUtils, LoggingUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ApplicationService @Inject()(enrolService: EnrolService,
-                                   awrsConnector: AWRSConnector,
+class ApplicationService @Inject()(awrsConnector: AWRSConnector,
                                    emailService: EmailService,
                                    val save4LaterService: Save4LaterService,
                                    val keyStoreService: KeyStoreService,
@@ -134,12 +133,16 @@ class ApplicationService @Inject()(enrolService: EnrolService,
   def addGroupRepToGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
     Some(GroupMembers(createGroupRep(cached) :: cached.get.getGroupMembers.get.members, GroupMembers.latestModelVersion))
 
-  def replaceGroupRepInGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] =
+  def replaceGroupRepInGroupMembers(cached: Option[CacheMap]) : Option[GroupMembers] = {
     Some(GroupMembers(cached.get.getGroupMembers.get.members.patch(0, Seq(createGroupRep(cached)), 1), GroupMembers.latestModelVersion))
+  }
 
   def isGrpRepChanged(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Boolean = {
     cached.get.getBusinessType.get.legalEntity match {
-      case Some("LTD_GRP") | Some("LLP_GRP") => cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessPartnerName.get
+      case Some("LTD_GRP") | Some("LLP_GRP") => {
+        (cached.get.getBusinessCustomerDetails.get.businessName != cachedSubscription.get.businessPartnerName.get) ||
+        (cached.get.getPlaceOfBusiness.get.mainAddress != cachedSubscription.get.placeOfBusiness.get.mainAddress)
+      }
       case _ => false
     }
   }
@@ -462,8 +465,6 @@ class ApplicationService @Inject()(enrolService: EnrolService,
         }
         case false => changedIndicators
       }
-
-      // to here <<<<<<<<<<<<<<<<<<
 
       newChangeInds
 

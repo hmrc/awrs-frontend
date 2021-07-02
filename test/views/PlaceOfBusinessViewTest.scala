@@ -45,7 +45,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
 
   val template = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
 
-  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig, template)
+  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
   "BusinessContactsController" must {
 
