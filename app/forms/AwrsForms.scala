@@ -39,7 +39,7 @@ object BusinessTypeForm {
     }
   }
 
-  val businessTypeForm = Form(mapping(
+  val businessTypeForm: Form[BusinessType] = Form(mapping(
     "legalEntity" -> optional(text),
     "isSaAccount" -> optional(boolean),
     "isOrgAccount" -> optional(boolean)

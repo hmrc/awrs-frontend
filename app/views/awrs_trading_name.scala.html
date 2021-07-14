@@ -23,11 +23,11 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
-@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukRadios : GovukRadios, govukInput: GovukInput)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukRadios : GovukRadios, govukInput: GovukInput, govukErrorSummary: GovukErrorSummary)
 @(businessType: Option[String], businessName: String, businessDetailsForm: Form[models.BusinessNameDetails], enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessDetailsForm) }
@@ -105,7 +105,9 @@
         @backLinkHelper(BackLinkParams(
             sectionName = businessDetailsName
         ))
-        @errorSummaryTemplate(businessDetailsForm)
+        @if(businessDetailsForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessDetailsForm))
+        }
         <header class="page-header">
             @awrsProgressHelper(businessType, businessDetailsName)<br>
             <h1 id="additional-information-heading" class="govuk-heading-xl">@Messages("awrs.generic.do_you_have_trading_name")</h1>

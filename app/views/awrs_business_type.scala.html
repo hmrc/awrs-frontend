@@ -20,15 +20,18 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukRadios : GovukRadios)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukRadios : GovukRadios, govukErrorSummary: GovukErrorSummary)
 @(businessTypeForm: Form[models.BusinessType], businessName : String, isAGroup : Boolean = false, isSaAccount : Option[Boolean], isOrgAccount : Option[Boolean])(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessTypeForm) }
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.business_verification.heading")), nameBusiness = Some(businessName), userLoggedIn = true){
 
-@errorSummaryTemplate(businessTypeForm)
+    @if(businessTypeForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessTypeForm))
+    }
 
         <h1  class="govuk-heading-xl">@messages("awrs.business_verification.heading")</h1>
         @formWithCSRF(action = controllers.routes.BusinessTypeController.saveAndContinue){
