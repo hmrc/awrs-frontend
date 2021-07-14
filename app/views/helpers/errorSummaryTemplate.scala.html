@@ -19,14 +19,16 @@
 @import _root_.forms.validation.util.ErrorMessageLookup._
 @if(form.hasGlobalErrors || form.hasErrors) {
 
-<div id="errors" class="validation-summary" role="group" tabindex="-1">
-    <h1 class="govuk-heading-m error-summary-heading" id="errorMessageHeadingText">@Messages("awrs.generic.errors_heading")</h1>
-    <ul>@for((summaryError,index) <- getSummaryErrors(form).zipWithIndex){
-        <li class="validation-summary-message">
-            <a href="#@{summaryError.anchor}_field" class="error-list" id="@{summaryError.anchor}_errorLink" data-focuses="@{summaryError.anchor}_field">
-                @Html(messageLookup(summaryError))
-            </a>
-        </li>
-    }</ul>
+<div id="errors" class="govuk-error-summary" role="group" tabindex="-1">
+    <h1 class="govuk-error-summary__title" id="errorMessageHeadingText">@Messages("awrs.generic.errors_heading")</h1>
+    <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list">@for((summaryError,index) <- getSummaryErrors(form).zipWithIndex){
+            <li class="validation-summary-message">
+                <a href="#@{summaryError.anchor}" class="error-list" id="@{summaryError.anchor}_errorLink" data-focuses="@{summaryError.anchor}">
+                    @Html(messageLookup(summaryError))
+                </a>
+            </li>
+        }</ul>
+    </div>
 </div>
 }

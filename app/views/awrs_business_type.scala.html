@@ -17,9 +17,11 @@
 @import config.ApplicationConfig
 @import views.helpers._
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukRadios : GovukRadios)
 @(businessTypeForm: Form[models.BusinessType], businessName : String, isAGroup : Boolean = false, isSaAccount : Option[Boolean], isOrgAccount : Option[Boolean])(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessTypeForm) }
@@ -27,44 +29,70 @@
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.business_verification.heading")), nameBusiness = Some(businessName), userLoggedIn = true){
 
 @errorSummaryTemplate(businessTypeForm)
-<div class="grid">
-    <div class="grid grid-2-3">
-        <h1 id="business-verification-heading" class="govuk-heading-l">@messages("awrs.business_verification.heading")</h1>
+
+        <h1  class="govuk-heading-xl">@messages("awrs.business_verification.heading")</h1>
         @formWithCSRF(action = controllers.routes.BusinessTypeController.saveAndContinue){
+
             <input type="hidden" name="isSaAccount" value="@{isSaAccount}">
             <input type="hidden" name="isOrgAccount" value="@{isOrgAccount}">
             @if(isAGroup){
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        businessTypeForm("legalEntity"),
-                        Seq("LTD_GRP" -> messages("awrs.business_verification.limited_company"),
-                            "LLP_GRP" -> messages("awrs.business_verification.limited_liability_partnership")),
-                        legend = messages("awrs.business_verification.heading"),
-                        legendId = "legalEntity-legend",
-                        legendClass = "govuk-visually-hidden",
-                        fieldSetClass = "form-group",
-                        fieldSetAttributes = "id=legalEntity_field"
-                    )
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-visually-hidden",
+                                content = Text(messages("awrs.business_verification.heading"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.business_verification.limited_company")),
+                                value = Some("LTD_GRP")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.business_verification.limited_liability_partnership")),
+                                value = Some("LLP_GRP")
+                            )
+                        )
+                    ).withFormField(businessTypeForm("legalEntity"))
                 )
+
             } else {
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        businessTypeForm("legalEntity"),
-                        Seq("Partnership" -> messages("awrs.business_verification.business_partnership"),
-                            "LTD" -> messages("awrs.business_verification.limited_company"),
-                            "LLP" -> messages("awrs.business_verification.limited_liability_partnership"),
-                            "LP" -> messages("awrs.business_verification.limited_partnership"),
-                            "SOP" -> messages("awrs.business_verification.sole_trader")),
-                        legend = messages("awrs.business_verification.heading"),
-                        legendId = "legalEntity-legend",
-                        legendClass = "govuk-visually-hidden",
-                        fieldSetClass = "form-group",
-                        fieldSetAttributes = "id=legalEntity_field"
-                    )
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-visually-hidden",
+                                content = Text(messages("awrs.business_verification.heading"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.business_verification.business_partnership")),
+                                value = Some("Partnership")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.business_verification.limited_company")),
+                                value = Some("LTD")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.business_verification.limited_liability_partnership")),
+                                value = Some("LLP")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.business_verification.limited_partnership")),
+                                value = Some("LP")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.business_verification.sole_trader")),
+                                value = Some("SOP")
+                            )
+                        )
+                    ).withFormField(businessTypeForm("legalEntity"))
                 )
             }
             @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
         }
-    </div>
-</div>
 }
