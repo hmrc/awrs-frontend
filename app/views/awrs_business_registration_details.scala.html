@@ -16,13 +16,13 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
@@ -61,8 +61,8 @@
             ))
             @errorSummaryTemplate(businessRegistrationDetailsForm)
             <header class="page-header">
-                <h1 id="additional-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
-                @awrsProgressHelper(businessType, businessRegistrationDetailsName)
+                @awrsProgressHelper(businessType, businessRegistrationDetailsName)<br>
+                <h1 id="additional-information-heading" class="govuk-heading-xl">@businessTypeHeading</h1>
             </header>
 
             @formWithCSRF(action = actionRoute){
@@ -112,10 +112,6 @@
                     submitId = "save-and-continue"
                 ))
             }
-        </div>
+
     </div>
 }
-
-
-
-

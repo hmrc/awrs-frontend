@@ -17,9 +17,8 @@
 @import config.ApplicationConfig
 @import forms.AWRSEnums.ApplicationStatusEnum
 @import play.twirl.api.Html
-@import views.html.includes.awrs_main
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @(applicationStatus: ApplicationStatus)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @removeStatus() = @{

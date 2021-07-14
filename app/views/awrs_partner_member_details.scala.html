@@ -18,14 +18,14 @@
 @import forms.AWRSEnums._
 @import play.twirl.api.Html
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+
 @(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -40,8 +40,8 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -71,25 +71,27 @@
     @someText match {
         case None => {}
         case Some(text) => {
-            <h2 id="partner-heading" class="heading-medium">@text</h2>
+            <h2 id="partner-heading" class="govuk-heading-m">@text</h2>
         }
     }
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
-    <div class="grid">
-        <div class="grid grid-2-3">
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
+
             @backLinkHelper(BackLinkParams(
                 sectionName = partnersName
             ))
             @errorSummaryTemplate(partnerForm)
             <header class="page-header">
-                <h1 id="business_partner-title" class="heading-xlarge">@h1text</h1>
-                @awrsProgressHelper(businessType, partnersName)
+                @awrsProgressHelper(businessType, partnersName)<br>
+                <h1 id="business_partner-title" class="govuk-heading-xl">@h1text</h1>
             </header>
-            <p id="business_partners-subtext" class="lede">@messages("awrs.business-partner.topText")</p>
+            <p id="business_partners-subtext" class="govuk-body-l">@messages("awrs.business-partner.topText")</p>
             @formWithCSRF(action = actionRoute) {
+
+            <div class="govuk-form-group"></div>
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         partnerForm("entityType"),
@@ -99,23 +101,29 @@
                         ),
                         legend = messages("awrs.business-partner.partner_role"),
                         legendId = "partnerMember-legend",
-                        fieldSetClass = "form-group",
+                        fieldSetClass = "govuk-fieldset",
                         fieldSetAttributes = "id=entityType_field",
                         formHint = messages("awrs.business-partner.role_hint_text"),
                         formHintId = "partner_role-hint",
                         fieldSetQuestion = messages("awrs.business-partner.role_question_text"),
                         fieldSetQuestionId = "entity-HelpLink",
                         fieldSetQuestionAnswer = Html(messages("awrs.business-partner.role_help_text", "<br><br>")),
-                        fieldSetQuestionWrapperClass = "panel-indent"
+                        fieldSetQuestionWrapperClass = "panel-indent",
+                        labelClass = "govuk-label govuk-radios__label",
+                        inputClass = "govuk-radios__input",
+                        legendClass = "govuk-fieldset__legend govuk-fieldset__legend"
                     )
                 )
-                <div class="form-group">
+            </div>
+                <div>
                     <div class="individual sole_trader">
                         @awrsInputTypeText(
                             InputTypeTextParams(
                                 partnerForm("firstName"),
                                 maxLength = applicationConfig.firstNameLen.toString,
                                 required = true,
+                                inputClass = "govuk-input",
+                                labelClass = "govuk-label",
                                 label = messages("awrs.generic.first_name"),
                                 labelHighlight = true
                             )
@@ -125,6 +133,8 @@
                                 partnerForm("lastName"),
                                 maxLength = applicationConfig.lastNameLen.toString,
                                 required = true,
+                                inputClass = "govuk-input",
+                                labelClass = "govuk-label",
                                 label = messages("awrs.generic.surname"),
                                 labelHighlight = true
                             )
@@ -139,21 +149,27 @@
                                 label = messages("awrs.generic.business_name"),
                                 maxLength = applicationConfig.companyNameLen.toString,
                                 required = true,
+                                inputClass = "govuk-input",
+                                labelClass = "govuk-label",
                                 labelHighlight = true
                             )
                         )
                     </div>
-                    <div class="form-group">
+                    <br>
+                    <div>
                         <div class="corporate_body sole_trader">
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     partnerForm("companyNames.doYouHaveTradingName"),
                                     Seq("Yes" -> messages("awrs.generic.yes"),
                                         "No" -> messages("awrs.generic.no")),
-                                    fieldSetClass = "inline",
                                     fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
                                     legend = messages("awrs.generic.do_they_have_trading_name"),
-                                    legendId = "companyNames.doYouHaveTradingName-legend"
+                                    legendId = "companyNames.doYouHaveTradingName-legend",
+                                    labelClass = "govuk-label govuk-radios__label",
+                                    inputClass = "govuk-radios__input",
+                                    legendClass = "govuk-fieldset__legend",
+                                    fieldSetClass = "govuk-fieldset"
                                 )
                             )
                             <div id="companyNames.doYouHaveTradingName-yes-content">
@@ -164,6 +180,8 @@
                                     label = messages("awrs.generic.trading_name"),
                                     maxLength = applicationConfig.tradingNameLen.toString,
                                     required = true,
+                                    inputClass = "govuk-input",
+                                    labelClass = "govuk-label",
                                     labelHighlight = true,
                                     wrapperClass = "panel-indent"
                                 )
@@ -187,7 +205,7 @@
                             formHasErrors = partnerForm.hasErrors
                         )
                     </div>
-
+                    <br>
                     <div class="individual sole_trader">
                         @awrsIdNINOHelper(
                             partnerForm("doYouHaveNino"),
@@ -223,7 +241,7 @@
                         <input type="hidden" name="otherPartners" value="Yes">
                     } else {
                         @if(!isEditMode) {
-                            <div class="form-group" id="businessPartner.otherPartners">
+                            <div class="govuk-form-group" id="businessPartner.otherPartners">
                             @awrsInputTypeRadioGroup(
                                 InputTypeRadioGroupParams(
                                     partnerForm("otherPartners"),
@@ -232,7 +250,9 @@
                                     legend = messages("awrs.business-partner.add_more_partners"),
                                     legendId = "otherPartners",
                                     fieldSetAttributes = "id=otherPartners_field",
-                                    fieldSetClass = "inline"
+                                    inputClass = "govuk-radios__input",
+                                    legendClass = "govuk-fieldset__legend",
+                                    fieldSetClass = "govuk-fieldset"
                                 )
                             )
                             </div>
@@ -247,9 +267,9 @@
                         submitId = "save-and-continue"
                     ))
                 }
-            </div>
-        </div>
-    </div>
+
+
+
 }
 
 

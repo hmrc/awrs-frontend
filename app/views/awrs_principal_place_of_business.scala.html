@@ -17,14 +17,16 @@
 @import config.ApplicationConfig
 @import play.twirl.api.Html
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukInput: GovukInput, govukDetails : GovukDetails, govukRadios: GovukRadios)
 @(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -33,8 +35,8 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -67,8 +69,146 @@
     }
 }
 
+
+@addressLineMessagesPrincipal(line : String) = @{
+    messages(s"awrs.generic.principal.address_$line", "Principal")
+}
+@postCodeMessagePrincipal = @{
+    Messages("awrs.generic.principal.postcode", "Principal")
+}
+@addressLineMessagesPreviousPrincipal(line : String) = @{
+messages(s"awrs.generic.principal.address_$line", "Previous principal")
+}
+@postCodeMessagePreviousPrincipal = @{
+Messages("awrs.generic.principal.postcode", "Previous principal")
+}
+
+@conditionalHtml = {
+              <p class="govuk-fieldset__legend">@messages("awrs.business_details.awrs_add_your_previous_address")</p>
+              @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line1"))
+                         )
+                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine1"))
+                )
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line2"))
+                         )
+                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine2"))
+                )
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line3"))
+                         )
+                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine3"))
+                )
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line4"))
+                         )
+                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine4"))
+                )
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(postCodeMessagePreviousPrincipal)
+                         ),
+                        classes = "govuk-input--width-10",
+                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.postcode"))
+                )
+}
+
+@htmlHint ={
+    @govukDetails(Details(
+        summary = Text(Messages("awrs.business_contacts.last_3_years_help_question")),
+        content = Text(Messages("awrs.business_contacts.last_3_years_help_text"))
+    ))
+}
+
+@mainPlaceOfBusiness ={
+
+            @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPrincipal("line1"))
+                         )
+                    ).withFormField(placeOfBusinessForm("mainAddress.addressLine1"))
+                )
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPrincipal("line2"))
+                         )
+                    ).withFormField(placeOfBusinessForm("mainAddress.addressLine2"))
+                )
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPrincipal("line3"))
+                         )
+                    ).withFormField(placeOfBusinessForm("mainAddress.addressLine3"))
+                )
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(addressLineMessagesPrincipal("line4"))
+                         )
+                    ).withFormField(placeOfBusinessForm("mainAddress.addressLine4"))
+                )
+
+}
+
+@postcode ={
+            @govukInput(
+                    Input(
+                        label = Label(
+                            content = HtmlContent(postCodeMessagePrincipal)
+                         ),
+                        classes = "govuk-input--width-10",
+                    ).withFormField(placeOfBusinessForm("mainAddress.postcode"))
+                )
+}
+
+@radio2 ={
+@govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-fieldset__legend--s",
+                                content = Text(Messages("awrs.business_contacts.place_of_business_changed_last_3_years"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some(Messages("awrs.generic.yes"))
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some(Messages("awrs.generic.no")),
+                                conditionalHtml = Some(conditionalHtml),
+                                hint = Some(Hint(
+                                    content = HtmlContent(htmlHint)))
+                            )
+                        )
+                    ).withFormField(placeOfBusinessForm("placeOfBusinessLast3Years"))
+                )
+}
+
 @awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(
@@ -76,15 +216,15 @@
             ))
             @errorSummaryTemplate(placeOfBusinessForm)
             <header class="page-header">
-                <h1 id="contact-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
-                @awrsProgressHelper(businessType, placeOfBusinessName)
+                @awrsProgressHelper(businessType, placeOfBusinessName)<br>
+                <h1 id="contact-information-heading" class="govuk-heading-xl">@businessTypeHeading</h1>
             </header>
 
             @formWithCSRF(action = actionRoute) {
 
-                <p class="lede">@messages("awrs.business_contacts.place_of_business_help_text")</p>
+                <p class="govuk-body-l">@messages("awrs.business_contacts.place_of_business_help_text")</p>
 
-                  <ul class="bullets">
+                  <ul class=" govuk-list govuk-list--bullet">
                 	    <li>@messages("awrs.business_contacts.place_of_business_help_text.bullet1")</li>
                       <li> @messages("awrs.business_contacts.place_of_business_help_text.bullet2")</li>
                       <li> @messages("awrs.business_contacts.place_of_business_help_text.bullet3")</li>
@@ -99,7 +239,8 @@
                         PrincipalPrevious = "Principal"
                     )
                 </div>
-                <div class="form-group">
+                <br>
+                <div class="govuk-form-group">
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             placeOfBusinessForm("placeOfBusinessLast3Years"),
@@ -107,16 +248,19 @@
                                 "No" -> messages("awrs.generic.no")),
                             legend = messages("awrs.business_contacts.place_of_business_changed_last_3_years"),
                             legendId = "placeOfBusinessLast3Years-legend",
-                            fieldSetClass = "inline",
                             fieldSetAttributes = "id=placeOfBusinessLast3Years_field",
                             fieldSetQuestion = messages("awrs.business_contacts.last_3_years_help_question"),
                             fieldSetQuestionId = "trading-HelpLink",
                             fieldSetQuestionAnswer = Html(messages("awrs.business_contacts.last_3_years_help_text")),
-                            fieldSetQuestionWrapperClass = "panel-indent"
+                            fieldSetQuestionWrapperClass = "panel-indent",
+                            labelClass = "govuk-label govuk-radios__label",
+                            inputClass = "govuk-radios__input",
+                            legendClass = "govuk-fieldset__legend govuk-fieldset__legend",
+                            fieldSetClass = "govuk-fieldset"
                         )
                     )
                     <div id="placeOfBusinessLast3Years-no-content">
-                        <h2 id="addYourPreviousAddress" class="heading-small panel-indent">@messages("awrs.business_details.awrs_add_your_previous_address")</h2>
+                        <h2 id="addYourPreviousAddress" class="govuk-fieldset__legend govuk-fieldset__legend">@messages("awrs.business_details.awrs_add_your_previous_address")</h2>
                         @awrsAddressHelper(
                             placeOfBusinessForm("placeOfBusinessAddressLast3Years"),
                             AddressHelperParams(
@@ -128,20 +272,36 @@
                         )
                     </div>
                 </div>
-                <div class="form-group" id="operationDuration-label">
-                    @awrsInputTypeRadioGroup(
-                        InputTypeRadioGroupParams(
-                            placeOfBusinessForm("operatingDuration"),
-                            Seq(messages("awrs.generic.0to2years.value") -> messages("awrs.generic.0to2years"),
-                                messages("awrs.generic.2to4years.value") -> messages("awrs.generic.2to4years"),
-                                messages("awrs.generic.5to9years.value") -> messages("awrs.generic.5to9years"),
-                                messages("awrs.generic.10plusYears.value") -> messages("awrs.generic.10plusYears")
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-fieldset__legend",
+                                content = Text(Messages("awrs.business_contacts.business_operating_from_current_address"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.0to2years")),
+                                value = Messages("awrs.generic.0to2years")
                             ),
-                            legend = messages("awrs.business_contacts.business_operating_from_current_address"),
-                            legendId = "operatingDuration-legend",
-                            fieldSetAttributes = "id=operatingDuration_field"
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.2to4years")),
+                                value = Messages("awrs.generic.2to4years")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.5to9years")),
+                                value = Messages("awrs.generic.5to9years")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.10plusYears")),
+                                value = Messages("awrs.generic.10plusYears")
+                            ),
                         )
-                    )
+                    ).withFormField(placeOfBusinessForm("operatingDuration"))
+                )
+
                 </div>
                 @submitButtonAndNavLinks(SubmitAndNavLinkParams(
                     sectionName = placeOfBusinessName,
@@ -150,7 +310,7 @@
                 ))
             }
         </div>
-    </div>
+
 }
 
 

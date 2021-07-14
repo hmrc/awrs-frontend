@@ -18,22 +18,21 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import uk.gov.hmrc.auth.core.Enrolment
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 
 @(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 @pageScripts = {
-<script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-<script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -65,7 +64,7 @@ if(accountUtils.hasAwrs(enrolments)) {
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 <div class="grid">
     <div class="grid grid-2-3">
         @backLinkHelper(BackLinkParams(
@@ -73,14 +72,14 @@ if(accountUtils.hasAwrs(enrolments)) {
         ))
         @errorSummaryTemplate(groupMemberForm)
         <header class="page-header">
-            <h1 id="group-member-heading" class="heading-xlarge">
+            @awrsProgressHelper(businessType, groupMembersName)<br>
+            <h1 id="group-member-heading" class="govuk-heading-xl">
                 @messages("awrs.group_member.top_heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalSuffix)
             </h1>
-            @awrsProgressHelper(businessType, groupMembersName)
         </header>
 
-        <p id="group-member-lead-paragraph" class="lede">@messages("awrs.group_member.lead_paragraph")</p>
-
+        <p id="group-member-lead-paragraph" class="govuk-body-l">@messages("awrs.group_member.lead_paragraph")</p>
+        <div class="govuk-form-group">
         @formWithCSRF(action = actionRoute){
             @awrsInputTypeText(
                 InputTypeTextParams(
@@ -89,22 +88,27 @@ if(accountUtils.hasAwrs(enrolments)) {
                     label = messages("awrs.business_directors.business_name"),
                     labelHighlight = true,
                     maxLength = applicationConfig.companyNameLen.toString,
-                    required = true
+                    required = true,
+                    inputClass = "govuk-input",
+                    labelClass = "govuk-label"
                 )
             )
-            <div class="form-group">
+        </div>
+            <div class="govuk-form-group">
                 @awrsInputTypeRadioGroup(
                     InputTypeRadioGroupParams(
                         groupMemberForm("companyNames.doYouHaveTradingName"),
                         Seq("Yes" -> messages("awrs.generic.yes"),
                             "No" -> messages("awrs.generic.no")),
-                        fieldSetClass = "inline",
                         fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
                         legendId = "companyNames.doYouHaveTradingName-legend",
-                        legend = messages("awrs.generic.do_they_have_trading_name")
+                        legend = messages("awrs.generic.do_they_have_trading_name"),
+                        inputClass = "govuk-radios__input",
+                        legendClass = "govuk-fieldset__legend",
+                        fieldSetClass = "govuk-fieldset"
                     )
                 )
-                <div id="companyNames.doYouHaveTradingName-yes-content">
+                <div id="companyNames.doYouHaveTradingName-yes-content" class="govuk-form-group">
                 @awrsInputTypeText(
                     InputTypeTextParams(
                         groupMemberForm("companyNames.tradingName"),
@@ -113,18 +117,20 @@ if(accountUtils.hasAwrs(enrolments)) {
                         maxLength = applicationConfig.tradingNameLen.toString,
                         required = true,
                         labelHighlight = true,
-                        wrapperClass = "panel-indent"
+                        wrapperClass = "panel-indent",
+                        inputClass = "govuk-input",
+                        labelClass = "govuk-label"
                     )
                 )
                 </div>
             </div>
-            <div id="address-group">
-                <h2 class="heading-medium">@messages("awrs.generic.registered_address")</h2>
+            <div id="address-group" class="govuk-form-group">
+                <h2 class="govuk-heading-m">@messages("awrs.generic.registered_address")</h2>
                 @awrsAddressHelper(groupMemberForm("address"),
                     AddressHelperParams()
                 )
             </div>
-            <h2 class="heading-medium">@messages("awrs.generic.company_reg_details")</h2>
+            <h2 class="govuk-heading-m">@messages("awrs.generic.company_reg_details")</h2>
             @awrsIdUTRHelper(
                 businessType,
                 None,
@@ -149,7 +155,7 @@ if(accountUtils.hasAwrs(enrolments)) {
                 formHasErrors = groupMemberForm.hasErrors
             )
             @if(!isEditMode){
-                <div class="form-group">
+                <div class="govuk-form-group">
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             groupMemberForm("addAnotherGrpMember"),
@@ -158,7 +164,9 @@ if(accountUtils.hasAwrs(enrolments)) {
                             legend = messages("awrs.group_member.addAnother"),
                             legendId = "addAnotherGrpMember",
                             fieldSetAttributes = "id=addAnotherGrpMember_field",
-                            fieldSetClass = "inline"
+                            inputClass = "govuk-radios__input",
+                            legendClass = "govuk-fieldset__legend",
+                            fieldSetClass = "govuk-fieldset"
                         )
                     )
                 </div>
@@ -173,7 +181,7 @@ if(accountUtils.hasAwrs(enrolments)) {
             ))
         }
     </div>
-</div>
+
 
 }
 

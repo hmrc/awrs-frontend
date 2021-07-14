@@ -111,15 +111,15 @@
     function buildOptions(data, num) {
         filterData(data);
         var address = data.addresses.length != 1 ? "addresses" : "address";
-        var options = '<legend>' + data.addresses.length + ' ' + address + ' found...</legend>';
+        var options = '<legend class="govuk-body">' + data.addresses.length + ' ' + address + ' found...</legend>';
         jQuery.map(data.addresses, function(results,index) {
-            options += '<label id="result-' + num + 'choi' + index + '" class="block-label" for="result-' + num + 'choice' + index + '" value="' + index + '"><input class="postcode-lookup-results-entry" type="radio" id="result-' + num + 'choice' + index + '" name="res" value="' + index + '">' +
+            options += '<div id="result-' + num + 'choi' + index + '" class="govuk-form-group govuk-body" for="result-' + num + 'choice' + index + '" value="' + index + '"><input class="postcode-lookup-results-entry" type="radio" id="result-' + num + 'choice' + index + '" name="res" value="' + index + '">' +
                 jQuery.map(results.address.lines, function( line,index ) {
                     return index == 0 ? line : ' ' + line;
                 }) + ', ' +
                 results.address.town + ', ' +
                 results.address.postcode +
-                '</label>';
+                '</div>';
             return options;
         });
 
@@ -259,7 +259,7 @@
             $postcodeLookupWrapper.addClass('form-field--error');
 
             $postcodeLookupWrapper.find('label').prepend(
-                '<span class="error-notification" role="tooltip" data-journey="search-page:error:additionalAddress.postcode">' + message + '</span>'
+                '<span class="error-notification govuk-error-message" role="tooltip" data-journey="search-page:error:additionalAddress.postcode">' + message + '</span>'
             );
         }
         $('.postcode-results-fieldset').hide();

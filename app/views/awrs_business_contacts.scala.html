@@ -16,14 +16,14 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(isAPI5: Boolean, businessType: Option[String], business: models.BCAddress, businessContactsForm: Form[models.BusinessContacts])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -31,8 +31,8 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -82,7 +82,7 @@
 
 
 @awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
     <div class="grid">
         <div class="grid grid-2-3">
             @backLinkHelper(BackLinkParams(
@@ -90,17 +90,19 @@
             ))
             @errorSummaryTemplate(businessContactsForm)
             <header class="page-header">
-                <h1 id="contact-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
-                @awrsProgressHelper(businessType, businessContactsName)
+                @awrsProgressHelper(businessType, businessContactsName)<br>
+                <h1 id="contact-information-heading" class="govuk-heading-xl">@businessTypeHeading</h1>
             </header>
 
             @formWithCSRF(action = actionRoute) {
-                <p id="contactDetailsNominatedPerson" class="lede">@messages("awrs.business_contacts.contact_detail_nominated_person")</p>
-                <div class="form-group">
+                <p id="contactDetailsNominatedPerson" class="govuk-body-l">@messages("awrs.business_contacts.contact_detail_nominated_person")</p>
+                <div class="govuk-form-group">
                     @awrsInputTypeText(
                         InputTypeTextParams(
                             businessContactsForm("contactFirstName"),
                             inputId = "contactFirstName",
+                            inputClass = "govuk-input",
+                            labelClass = "govuk-label",
                             label = messages("awrs.generic.first_name"),
                             labelHighlight = true,
                             required = true
@@ -110,6 +112,8 @@
                         InputTypeTextParams(
                             businessContactsForm("contactLastName"),
                             inputId = "contactLastName",
+                            inputClass = "govuk-input",
+                            labelClass = "govuk-label",
                             label = messages("awrs.generic.surname"),
                             labelHighlight = true,
                             required = true
@@ -119,6 +123,8 @@
                         InputTypeTextParams(
                             businessContactsForm("telephone"),
                             inputId = "telephone",
+                            inputClass = "govuk-input",
+                            labelClass = "govuk-label",
                             label = messages("awrs.generic.telephone"),
                             labelHighlight = true,
                             required = true
@@ -128,6 +134,8 @@
                         InputTypeTextParams(
                             businessContactsForm("email"),
                             inputId = "email",
+                            inputClass = "govuk-input",
+                            labelClass = "govuk-label",
                             label = messages("awrs.generic.email"),
                             labelHighlight = true,
                             required = true,
@@ -136,15 +144,16 @@
                     )
                 </div>
 
-                <div id="review-details" class="form-group">
-                    <strong>@messages("awrs.generic.registered_address")</strong><br>
+                <div id="review-details" class="govuk-form-group">
+                    <p class="govuk-body">
+                    @messages("awrs.generic.registered_address")<br>
                     @business.line_1<br>
                     @business.line_2<br>
                     @if(business.line_3.nonEmpty) {@business.line_3<br>}
                     @if(business.line_4.nonEmpty) {@business.line_4<br>}
-                    @postcodeHelper(business.postcode.get)<br>
+                        @postcodeHelper(business.postcode.get)<br></p>
                 </div>
-                <div class="form-group">
+                <div class="govuk-form-group">
                     @awrsInputTypeRadioGroup(
                         InputTypeRadioGroupParams(
                             businessContactsForm("contactAddressSame"),
@@ -152,8 +161,11 @@
                                 "No" -> messages("awrs.generic.no")),
                             legend = messages("awrs.business_contacts.contact_address_same"),
                             legendId = "contactAddressSame-legend",
-                            fieldSetClass = "inline",
-                            fieldSetAttributes = "id=contactAddressSame_field"
+                            fieldSetAttributes = "id=contactAddressSame_field",
+                            labelClass = "govuk-label govuk-radios__label",
+                            inputClass = "govuk-radios__input",
+                            legendClass = "govuk-fieldset__legend govuk-fieldset__legend",
+                            fieldSetClass = "govuk-fieldset"
                         )
                     )
                     <div id="contactAddressSame-no-content">

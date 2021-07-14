@@ -101,7 +101,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
 
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("heading-xlarge").text() must be(Messages("awrs.generic.error.title"))
-            document.getElementsByClass("heading-medium").text() must be(Messages("awrs.generic.error.status"))
+            document.getElementsByClass("govuk-heading-m").text() must be(Messages("awrs.generic.error.status"))
         }
       }
 

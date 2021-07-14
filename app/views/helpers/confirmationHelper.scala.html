@@ -16,8 +16,8 @@
 
 @(text_1: String, text_2: String, submissionOrResubmissionDate: Option[String] = None)(implicit request: Request[AnyRef], messages: Messages )
 
-<div class="alert-complete" role="alert">
-    <h1 id="confirmation" aria-labelledby="ariaConfirmation">
+<div class="alert-complete govuk-panel govuk-panel--confirmation" role="alert">
+    <h1 id="confirmation" aria-labelledby="ariaConfirmation" class="govuk-panel__title">
         <span class="heading-large">
             <img height="24" width="24" class="inline" aria-hidden="true" src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="" aria-label="tick">
             @Messages(text_1) @request.session.get("businessName").getOrElse("")
@@ -26,7 +26,7 @@
         @if(submissionOrResubmissionDate.isDefined){ @submissionOrResubmissionDate}
         </span>
     </h1>
-    <span id="ariaConfirmation" class="visuallyhidden" aria-hidden="true">
+    <span id="ariaConfirmation" class="govuk-visually-hidden" aria-hidden="true">
         @Messages(text_1) @request.session.get("businessName").getOrElse("") @Messages(text_2) @if(submissionOrResubmissionDate.isDefined) {@submissionOrResubmissionDate}.
     </span>
 </div>

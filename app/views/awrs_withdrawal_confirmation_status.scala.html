@@ -15,12 +15,12 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.includes.awrs_main
-
-@this(awrsMain: awrs_main)
-@(processingDate: String, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import views.helpers.WithdrawalHelper._
 @import views.html.helpers._
+
+@this(awrsMain: main)
+@(processingDate: String, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+
 
 @date = @{stringifyDate(processingDate)}
 
@@ -36,9 +36,9 @@
                 @awrsPrintLink()
                 <hr aria-hidden="true">
                 <h2 class="heading-small" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
-                <p>@messages("awrs.withdrawal.confirmation_page.information_what_next_1")</p>
-                <div class="form-group">
-                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
+                <p class="govuk-body">@messages("awrs.withdrawal.confirmation_page.information_what_next_1")</p>
+                <div class="govuk-form-group">
+                    <a id="confirmation-page-finish" class="govuk-button print-hidden" role="button" data-module="govuk-button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
     )
     @awrsPrintLink()
     <h2 class="heading-small">@messages("awrs.confirmation.information")</h2>
-    <p>@messages("awrs.withdrawal.confirmation_page.information_what_next_1") @messages("awrs.withdrawal.confirmation_page.information_what_next_1_href"). </p>
+    <p class="govuk-body">@messages("awrs.withdrawal.confirmation_page.information_what_next_1") @messages("awrs.withdrawal.confirmation_page.information_what_next_1_href"). </p>
     @backLink()
 }
 @if(printFriendly) {

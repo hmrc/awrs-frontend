@@ -39,7 +39,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
 }
 
 
-<div class="form-group">
+<div class="govuk-form-group">
     @awrsInputTypeRadioGroup(
         InputTypeRadioGroupParams(
             radioField,
@@ -48,7 +48,9 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             fieldSetAttributes = "id="+radioField.name+"_field",
             legend = messageKey,
             legendId = radioField.name+"-legend",
-            fieldSetClass = "inline"
+            inputClass = "govuk-radios__input",
+            legendClass = "govuk-fieldset__legend",
+            fieldSetClass = "govuk-fieldset"
         )
     )
     <div id="@radioField.name-yes-content">
@@ -61,6 +63,8 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
                 label = youOrTheyMessagekey,
                 required = true,
                 labelHighlight = true,
+                inputClass = "govuk-input",
+                labelClass = "govuk-label",
                 formHint = Messages("awrs.generic.do_you_have_VAT_information"),
                 formHintId = "vrn-information",
                 ariaLabelledBy = ariaLabelledBy,

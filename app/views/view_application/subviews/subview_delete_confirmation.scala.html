@@ -16,14 +16,13 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.html.view_application.subviews.contents._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main)
 @(confirmationForm: Form[models.DeleteConfirmation], section: String, headingParameter: String, formAction: Int => Call, id: Int, data : Any)(implicit request: Request[AnyContent], viewMode : ViewApplicationType= OneViewMode, messages : Messages, applicationConfig: ApplicationConfig)
 
 @modelRender = {
@@ -52,26 +51,27 @@
         ))(EditMode, messages)
         @errorSummaryTemplate(confirmationForm)
         <header class="page-header">
-            <h1 id="deleteConfirmation-heading" class="heading-xlarge">@messages("awrs.delete.confirmation_heading", messages(headingParameter))</h1>
-            @awrsProgressHelper(request.getBusinessType, section)(EditMode, messages)
+            @awrsProgressHelper(request.getBusinessType, section)(EditMode, messages) <br>
+            <h1 id="deleteConfirmation-heading" class="govuk-heading-xl">@messages("awrs.delete.confirmation_heading", messages(headingParameter))</h1>
         </header>
         @modelRender
         @formWithCSRF(action = formAction(id)) {
-        <div class="form-group">
+        <div class="govuk-form-group">
             @awrsInputTypeRadioGroup(
                 InputTypeRadioGroupParams(
                     confirmationForm("deleteConfirmation"),
                     Seq("Yes" -> messages("awrs.generic.yes"),
                         "No" -> messages("awrs.generic.no")),
-                    fieldSetClass = "inline",
                     legend = messages("awrs.delete.confirmation_heading", messages(headingParameter)),
                     legendId = "deleteConfirmation-legend",
-                    legendClass = "visuallyhidden",
-                    fieldSetAttributes = "id=deleteConfirmation_field"
+                    legendClass = "govuk-visually-hidden",
+                    fieldSetAttributes = "id=deleteConfirmation_field",
+                    inputClass = "govuk-radios__input",
+                    fieldSetClass = "govuk-fieldset govuk-radios--inline"
                 )
             )
         </div>
-        @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "save-and-continue", classAttr = "button")
+        @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "save-and-continue")
         }
     </div>
 </div>

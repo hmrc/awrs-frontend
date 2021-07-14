@@ -22,13 +22,13 @@
 @fieldErrors = @{ ErrorMessageInterpreter.getFieldErrorsByName(params.fieldName)(Some(params.formItem), messages)}
 @legend = {
     @params.label match {
-        case Some(label) => {<legend id="@params.fieldName-legend">@label</legend>}
+        case Some(label) => {<label id="@params.fieldName-legend" class = "govuk-fieldset__legend">@label</label>}
         case _ => {}
     }
 }
 @formHint = {
     @params.hintText match {
-        case Some(formHint) => {<span @if(params.hintTextId.nonEmpty){id="@params.hintTextId"} class="form-hint">@formHint</span>}
+        case Some(formHint) => {<div @if(params.hintTextId.nonEmpty){id="@params.hintTextId"} class="govuk-hint">@formHint</div>}
         case _ => {}
     }
 }
@@ -56,14 +56,15 @@
     params.fieldName.replaceAll(" [.]", "_")
 }
 
-<fieldset id="@{divId}_field" class="form-field touch @groupClass @wrapperClass @if(fieldErrors.nonEmpty) { form-field--error}">
+<div id="@{divId}_field" class="govuk-form-group @groupClass @wrapperClass @if(fieldErrors.nonEmpty) { form-field--error}">
     @legend
-    <div class="form-date">
+    <div class="govuk-form-date">
         @formHint
         @ariaDayMonthYear
+        </div>
         @commonHelper(params.formItem(params.fieldName), fieldErrors)
-        <div class="no-touch native-date-picker form-date" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0"}>
+        <div  class="govuk-date-input" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0" id = "tradingDate"}>
             @dateFieldsContent(params.formItem, params.fieldName, params.ariaLabelledBy, fieldErrors.nonEmpty)
         </div>
     </div>
-</fieldset>
+</div>

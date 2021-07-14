@@ -51,8 +51,8 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
 @core(withQuestion : Boolean) = @{
     val (wrapperClassSetting : Option[String], labelSetting : Option[String]) =
         withQuestion match {
-            case true => (Some("panel-indent"), Some(Messages("awrs.generic.UTR_number")))
-            case false => (None, businessType.map {
+            case true => (Some("govuk-form-group"), Some(Messages("awrs.generic.UTR_number")))
+            case false => (Some("govuk-form-group"), businessType.map {
                     case "SOP" => Messages("awrs.generic.sa_UTR_number")
                     case "Partnership" | "LP" | "LLP" | "LLP_GRP" =>  Messages(s"awrs.generic.partnership_UTR_number")
                     case _ =>  Messages(s"awrs.generic.CT_UTR_number")
@@ -70,6 +70,8 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             label = labelSetting,
             labelHighlight = true,
             required = true,
+            inputClass = "govuk-input",
+            labelClass = "govuk-label",
             formHint = Messages("awrs.generic.do_you_have_UTR_information"),
             formHintId = "utr-information",
             ariaLabelledBy = ariaLabelledBy,
@@ -108,16 +110,16 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             fieldSetQuestionWrapperClass = "panel-indent"
         )
     )
-    <div id="@questionField.name-yes-content">
+    <div id="@questionField.name-yes-content" class="govuk-heading-m">
         @core(withQuestion = true)
     </div>
 }
-
-@withoutQuestion = {
-    @core(withQuestion = false)
-}
-
-<div class="form-group">
+    <div class="govuk-form-group">
+        @withoutQuestion = {
+            @core(withQuestion = false)
+        }
+    </div>
+<div class="govuk-form-group">
     @someRadioField match {
         case Some(radioField) => {@withQuestion(radioField)}
         case _ => {@withoutQuestion}

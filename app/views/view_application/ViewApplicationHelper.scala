@@ -67,7 +67,7 @@ object ViewApplicationHelper {
     } + " class=\"" + classAttr + "\" href=\"" + href.get + "\">" + message + {
       visuallyHidden match {
         case "" => ""
-        case text => "<span class=\"visuallyhidden\">" + text + "</span>"
+        case text => "<span class=\"govuk-visually-hidden\">" + text + "</span>"
       }
     } + "</a>"
   }

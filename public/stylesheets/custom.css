@@ -57,13 +57,7 @@
 }
 
 .postcode-lookup {
-    top: 6px;
-    display: none;
     margin: 0 0 0 10px;
-    background-color: #BFC1C3;
-    box-shadow: 0 2px 0 #6F777B;
-    color: #000;
-    height: 23px;
 }
 
 .address-container .font-small {
@@ -221,6 +215,9 @@ table.view-application tr.record-spacer td, .record-add td {
 a.edit-section, a.back-to-top-link {
     position: relative;
     float: right;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: "GDS Transport",arial,sans-serif;
 }
 
 a.edit-link {
@@ -294,20 +291,16 @@ a:visited, .link-style:visited, .button--link-style:visited {
 }
 
 .panel-indent .form-control {
-   width: 50%;
+   width: 100%;
 }
 
-.form-field.form-field--error .error-notification, fieldset.form-field--error .error-notification {
-    font-weight: 700;
-    font-size: 1em;
-    color: #d4351c;
-}
 
 .form-field--error {
     border-left: 5px solid #d4351c;
     margin: 0 0 0.75em;
     padding-bottom: 0;
     padding-top: 0;
+    padding: 20px 15px 15px;
 }
 
 
@@ -372,6 +365,21 @@ fieldset dl dt span.form-hint {
         background-color: #28a197;
         -webkit-print-color-adjust: exact;
     }
+}
+.print-link {
+    text-align: left;
+    margin: 2em 0 0 0;
+    font-size: 20px;
+    font-family: "GDS Transport",arial,sans-serif;
+}
+.link {
+    font-size: 20px;
+    font-family: "GDS Transport",arial,sans-serif;
+}
+.font-banner{
+    font-size: 19px;
+    font-family: "GDS Transport",arial,sans-serif;
+    margin-left: 15px;
 }
 
 @media (min-width: 641px) {
@@ -486,7 +494,7 @@ select option {
     color: #fff;
 }
 
-#ConfirmationNoteHeadingText.heading-medium {padding-top: 1.5em;}
+#ConfirmationNoteHeadingText.govuk-heading-m {padding-top: 1.5em;}
 
 .confirmation-description {
     margin-top: 0.4em;
@@ -573,7 +581,7 @@ div #confirmation-date {
 
 .banner {
     padding: 10px 0 10px 13px;
-    background-color: #DEE0E2;
+    background-color: #f5f5f5;
     margin-bottom: 30px;
 }
 
@@ -728,6 +736,7 @@ p.lede, .lede {
 
 table td.row-title {
     font-weight: 700;
+    font-family: "GDS Transport",arial,sans-serif;
 }
 
 #add-link-top {margin-bottom: 1.57895em;}
@@ -831,16 +840,24 @@ html.noScroll {
 details {display: block;}
 .summary {display: list-item;}
 
-[role="link"].link-style {text-decoration: none;}
-[role="link"].link-style:hover {text-decoration: underline;}
+[role="link"].link-style {
+    text-decoration: none;
+    font-family: "GDS Transport",arial,sans-serif;
+    cursor:pointer;
+    font-size: 19px;}
+[role="link"].link-style:hover {
+    text-decoration: underline;
+    font-family: "GDS Transport",arial,sans-serif;
+    cursor:pointer;
+    font-size: 19px;}
 .postcode-lookup-results {margin-top: 1em;}
 
 p.heading-secondary, span.heading-secondary {
     color: #6f777b;
     display: block;
-    font-family: "nta",Arial,sans-serif;
+    font-family: "GDS Transport",arial,sans-serif;
     font-size: 27px;
-    font-weight: 400;
+    font-weight: 100;
     line-height: 1.11111;
     margin-bottom: 0.42105em;
     text-transform: none;
@@ -850,20 +867,7 @@ p.heading-secondary, span.heading-secondary {
     display: table-header-group;
 }
 
-.page-header {
-    clear: both;
-    display: table;
-    margin-top: 1.8em;
-}
 
-.page-header-block {
-    display: block;
-}
-
-
-.page-header .heading-xlarge {
-    margin: 0.15em 0 1.25em;
-}
 
 #businessNameChangeConfirmation-bullets {margin-bottom:1.5em;}
 

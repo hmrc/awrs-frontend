@@ -23,21 +23,21 @@
 @headerType = {
     @viewApplicationType match {
         case views.view_application.helpers.OneViewMode =>{
-            <div id="headerType"><h2 class="heading-large">@heading</h2></div>
+            <div id="headerType"><h2 class="govuk-heading-l">@heading</h2></div>
         }
         case _ => {
-            <h1 class="heading-xlarge">@heading</h1>
+            <h1 class="govuk-heading-xl">@heading</h1>
         }
     }
 }
 
 @oneViewModeLink = {
-    <div id="headerLink"><a class="back-to-top-link print-hidden" href="#"><span class="visuallyhidden">@heading</span>@Messages("awrs.view_application.back_to_top")</a></div>
+    <div id="headerLink"><a class="govuk-link back-to-top-link print-hidden" href="#"><span class="govuk-visually-hidden">@heading</span>@Messages("awrs.view_application.back_to_top")</a></div>
 }
 
 @editLinks = {
-    <div class="form-group">
-        <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.return_to_app_summary")</a>
+    <div class="govuk-form-group">
+        <a id="return-to-summary" class="govuk-button" role="button" data-module="govuk-button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.return_to_app_summary")</a>
     </div>
 }
 
@@ -49,11 +49,12 @@
     }
 }
 
-<div id="@headingId" class="form-group view-application-section">
+<div id="@headingId" class="govuk-form-group view-application-section">
         @backLink(backUrl = controllers.routes.IndexController.showIndex().url)
         <header class="page-header @if(isOneViewMode){page-header-block}">
+            @awrsProgressHelper(request.getBusinessType, sectionName)<br>
             @headerType
-            @awrsProgressHelper(request.getBusinessType, sectionName)
+
         </header>
         @dynamicContent(
             ifOneViewMode = Some(oneViewModeLink)

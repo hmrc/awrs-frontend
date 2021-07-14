@@ -14,26 +14,30 @@
  * limitations under the License.
  *@
 
-@(formItem:Form[_], fieldName: String, ariaLabelledBy: Option[String] = None, formHasErrors: Boolean = false)(implicit messages: Messages)
-
 @import play.api.i18n._
-@import uk.gov.hmrc.play.mappers.DateFields._
 @import views.helpers._
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 
-@dayElem = @{ fieldName + "." + day }
+
+@(formItem:Form[_], fieldName: String, ariaLabelledBy: Option[String] = None, formHasErrors: Boolean = false)(implicit messages: Messages)
+
+@dayElem = @{ fieldName + "." + "day" }
 @dayInputId = @{ fieldName + "-day"  }
-@monthElem = @{ fieldName + "." + month }
+@monthElem = @{ fieldName + "." + "month" }
 @monthInputId = @{ fieldName + "-month" }
-@yearElem = @{ fieldName + "." + year }
+@yearElem = @{ fieldName + "." + "year" }
 @yearInputId = @{ fieldName + "-year" }
 
 @awrsInputTypeText(
     InputTypeTextParams(
         formItem(dayElem),
         inputId = dayInputId,
-        label = Messages("date.fields.day"),
-        divClass = "form-group form-group-day",
+        inputClass = "govuk-input govuk-date-input__input govuk-input--width-2",
+        label = Messages("awrs.generic.date_day"),
+        divClass = "govuk-date-input__item",
+        labelClass = "govuk-label govuk-date-input__label",
         maxLength = "2",
         labelHighlight = true,
         required = true,
@@ -48,8 +52,10 @@
     InputTypeTextParams(
         formItem(monthElem),
         inputId = monthInputId,
-        label = Messages("date.fields.month"),
-        divClass = "form-group form-group-month",
+        inputClass = "govuk-input govuk-date-input__input govuk-input--width-2",
+        label =  Messages("awrs.generic.date_month"),
+        divClass = "govuk-date-input__item",
+        labelClass = "govuk-label govuk-date-input__label",
         maxLength = "2",
         labelHighlight = true,
         required = true,
@@ -64,8 +70,10 @@
     InputTypeTextParams(
         formItem(yearElem),
         inputId = yearInputId,
-        label = Messages("date.fields.year"),
-        divClass = "form-group form-group-year",
+        inputClass = "govuk-input govuk-date-input__input govuk-input--width-4",
+        label =  Messages("awrs.generic.date_year"),
+        divClass = "govuk-date-input__item",
+        labelClass = "govuk-label govuk-date-input__label",
         maxLength = "4",
         labelHighlight = true,
         required = true,

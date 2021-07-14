@@ -125,7 +125,7 @@
                     label = str.find('.data-label');
 
                 if (label.length) {
-                    var p = $('<p></p>');
+                    var p = $('<p class="govuk-body"></p>');
                     p.append(label.clone());
                     str = p.html();
                 }

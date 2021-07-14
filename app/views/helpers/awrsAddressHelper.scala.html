@@ -48,12 +48,14 @@
     }
 }
 
-<div id="address-@number" class="address-container" @addressContainerDataAttribute>
+<div id="address-@number" class="address-container govuk-form-group" @addressContainerDataAttribute>
     <div class="address-lines">
        @awrsInputTypeText(
            InputTypeTextParams(
                field("addressLine1"),
                 inputId = field("addressLine1").name,
+                inputClass = "govuk-input",
+                labelClass = "govuk-label",
                 label = adressLineMessages("line1"),
                 maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
@@ -65,6 +67,8 @@
             InputTypeTextParams(
                 field("addressLine2"),
                 inputId = field("addressLine2").name,
+                inputClass = "govuk-input",
+                labelClass = "govuk-label",
                 label = adressLineMessages("line2"),
                 maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
@@ -76,6 +80,8 @@
             InputTypeTextParams(
                 field("addressLine3"),
                 inputId = field("addressLine3").name,
+                inputClass = "govuk-input",
+                labelClass = "govuk-label",
                 label = adressLineMessages("line3"),
                 maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
@@ -86,6 +92,8 @@
             InputTypeTextParams(
                 field("addressLine4"),
                 inputId = field("addressLine4").name,
+                inputClass = "govuk-input",
+                labelClass = "govuk-label",
                 label = adressLineMessages("line4"),
                 maxLength = applicationConfig.addressLineLen.toString,
                 wrapperClass = wrapperClass,
@@ -98,7 +106,8 @@
             InputTypeTextParams(
                 field("postcode"),
                 inputId = field("postcode").name,
-                inputClass = "input--normal",
+                inputClass = "govuk-input input--normal govuk-input--width-10",
+                labelClass = "govuk-label",
                 label = postCodeMessage,
                 maxLength = applicationConfig.addressPostcodeLen.toString,
                 wrapperClass = wrapperClass,
@@ -109,8 +118,8 @@
             )
         )
     </div>
-    <div id="manual-address-@number" class="font-small form-group @wrapperClass">
-        <span id="manual-address-span-@number" class="link-style" tabindex="0" role="link">@Messages("awrs.generic.enter_address_manually")</span>
+    <div id="manual-address-@number" class="@wrapperClass"><br>
+        <a id="manual-address-span-@number" class="link-style" tabindex="0" role="link">@Messages("awrs.generic.enter_address_manually")</a>
     </div>
     @if(!isUkAddress) {
         <div class="non-uk-address">
@@ -118,8 +127,9 @@
                 InputTypeTextParams(
                     field("addressCountry"),
                     inputId = field("addressCountry").name,
-                    inputClass = "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left form-control",
+                    inputClass = " govuk-input custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left form-control",
                     label = Messages("awrs.supplier-addresses.supplier_address_country"),
+                    labelClass = "govuk-label",
                     maxLength = "35",
                     wrapperClass = wrapperClass,
                     labelHighlight = true,

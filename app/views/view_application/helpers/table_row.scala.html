@@ -28,7 +28,7 @@
 }
 @anchor = {
     @someHref match {
-        case Some(href) => {<a href="@href@someId">@Messages("awrs.view_application.edit")</a>}
+        case Some(href) => {<a class="govuk-link" href="@href@someId">@Messages("awrs.view_application.edit")</a>}
         case _ => {}
     }
 }
@@ -37,18 +37,18 @@
     case count if count > 0 => {
         @cssClass match {
             case Some("record-spacer") => {
-                <tr @cssClassAttr><td></td><td></td></tr>
+                <tr @cssClassAttr class="govuk-table__row"><td></td><td></td></tr>
             }
             case Some("record-header") => {
-                <tr @cssClassAttr>
+                <tr @cssClassAttr class="govuk-table__row">
                     @rowTitle match {
-                        case data if data != "" => {<td class="row-title">@rowTitle</td>}
-                        case _ => {<td class="row-title"></td>}
+                        case data if data != "" => {<td class="row-title govuk-table__cell">@rowTitle</td>}
+                        case _ => {<td class="row-title govuk-table__cell"></td>}
                     }
-                    <td class="row-data">
+                    <td class="row-data govuk-table__cell">
                         @for(rRow <- content) {
                             @rRow match {
-                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p>@Html(data)</p>}
+                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@Html(data)</p>}
                                 case _ => {}
                             }
                         }
@@ -56,28 +56,28 @@
                 </tr>
             }
             case _ => {
-                <tr @cssClassAttr>
-                    <td class="row-title">@Html(rowTitle)</td>
-                    <td class="row-data">
+                <tr @cssClassAttr class="govuk-table__row">
+                    <td class="row-title govuk-table__cell">@Html(rowTitle)</td>
+                    <td class="row-data govuk-table__cell">
                         @for(rRow <- content) {
                             @rRow match {
-                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p>@data</p>}
+                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@data</p>}
                                 case _ => {}
                             }
                          }
                     </td>
                     @links match {
                         case Some(link) => {
-                            <td class="links">
+                            <td class="links govuk-table__cell">
                                 @for(linkRow <- link){
-                                    <p>@Html(linkRow)</p>
+                                    <p class="govuk-body">@Html(linkRow)</p>
                                 }
                             </td>
                         }
                         case _ => {}
                     }
                     @someHref match {
-                        case Some(href) => {<td class="edit-link">@anchor</td>}
+                        case Some(href) => {<td class="edit-link govuk-table__cell">@anchor</td>}
                         case _ => {}
                     }
                 </tr>

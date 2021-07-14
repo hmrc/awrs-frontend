@@ -35,19 +35,23 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             passport,
             inputId = passport.name,
             label = messages("awrs.generic.passport_no"),
-            wrapperClass = "panel-indent",
+            inputClass = "govuk-input",
+            labelClass = "govuk-label",
+            wrapperClass = "govuk-from-group",
             maxLength = frontendDefaultLen,
             required = true
         )
     )
-    Or
+<br><p class="govuk-body">Or</p>
     @awrsInputTypeText(
         InputTypeTextParams(
             nationalId,
             parentForm = formInstance,
             inputId = nationalId.name,
             label = messages("awrs.generic.national_id_no"),
-            wrapperClass = "panel-indent",
+            inputClass = "govuk-input",
+            labelClass = "govuk-label",
+            wrapperClass = "govuk-from-group",
             maxLength = frontendDefaultLen,
             required = true
         )
@@ -61,7 +65,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
         case (Some(passport), Some(nationalId)) => {
             @someRadioField match {
                 case Some(radioField) => {
-                    <div id="@radioField.name-no-content">
+                    <div id="@radioField.name-no-content" class ="govuk-form-group">
                         @nationalIdPassportCore(passport,nationalId)
                     </div>
                 }
@@ -85,14 +89,16 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             parentForm = formInstance,
             inputId = ninoField.name,
             maxLength = frontendDefaultLen,
-            wrapperClass = wrapperClassSetting,
+            wrapperClass = "govuk-form-group",
             label = messages("awrs.director.NINO"),
             required = true,
             labelHighlight = true,
             formHint = messages("awrs.generic.do_you_have_NINO_information"),
             formHintId = "NINO-information",
             ariaLabelledBy = ariaLabelledBy,
-            formHasErrors = formHasErrors
+            formHasErrors = formHasErrors,
+            inputClass = "govuk-input",
+            labelClass = "govuk-label"
         )
     )
 }
@@ -111,9 +117,11 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
                 case None => None
                 case _ =>Some("Nino-question-hint")
             },
-            fieldSetClass = "inline",
             ariaDescribedBy = ariaDescribedBy,
-            formHasErrors = formHasErrors
+            formHasErrors = formHasErrors,
+            inputClass = "govuk-radios__input",
+            legendClass = "govuk-fieldset__legend",
+            fieldSetClass = "govuk-fieldset"
         )
     )
     <div id="@questionField.name-yes-content">
@@ -127,7 +135,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
     @nationalIdPassport
 }
 
-<div class="form-group">
+<div class="govuk-form-group">
     @someRadioField match {
         case Some(radioField) => {@withQuestion(radioField)}
         case _ => {@withoutQuestion}

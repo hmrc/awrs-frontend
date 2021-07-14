@@ -17,11 +17,10 @@
 @(declarationTxt: String, id: String)(implicit messages: Messages)
 
 
-<div id=@id class="form-group text-disclaimer">
-    <i>
-        <span class="visuallyhidden">@Messages("awrs.generic.warning_icon_text")</span>
-    </i>
-    <strong id="@id-text"class="bold-small">
+<div id=@id class="govuk-warning-text">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong id="@id-text"class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
         @Html(declarationTxt)
     </strong>
 </div>
