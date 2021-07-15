@@ -23,9 +23,10 @@
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-
-@this(formWithCSRF: FormWithCSRF, awrsMain: main,govukWarningText : GovukWarningText)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main,govukWarningText : GovukWarningText, govukDateInput: GovukDateInput, govukErrorSummary: GovukErrorSummary)
 @(confirmationForm: Form[TupleDate], businessType: Option[String], pastStart: Boolean)(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
@@ -73,7 +74,9 @@
 
 @backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails().url)
 
-@errorSummaryTemplate(confirmationForm)
+    @if(confirmationForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(confirmationForm, mapping = Map("tradingDate" -> "tradingDate.day")))
+    }
 <div class="grid">
     <div class="grid grid-2-3">
         <header class="page-header">
@@ -83,18 +86,17 @@
         @preDateInfo
         @formWithCSRF(action = actionRoute) {
         <div class="govuk-form-group">
-
             <div class="govuk-form-group">
-                @awrsDateField(
-                    DateHelperParams(
-                        formItem = confirmationForm,
-                        fieldName = "tradingDate",
-                        ariaDayMonthYear = ariaDayMonthYear,
-                        ariaLabelledBy = "tradingDate-legend",
-                        label = Some(Html(messages(headerTitleName))),
-                        hintText = Some(Html(messages("awrs.generic.date_hint")))
-                    )
+            @govukDateInput(DateInput(
+                errorMessage = if(confirmationForm.errors.nonEmpty){ Some(ErrorMessage(content = (HtmlContent(messages(confirmationForm.errors.head.message)))))} else None,
+                hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(messages(headerTitleName)),
+                        classes = "govuk-visually-hidden",
+                        isPageHeading = false)))
                 )
+            ).withFormField(confirmationForm("tradingDate")))
             </div>
             @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
         }

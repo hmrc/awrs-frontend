@@ -24,7 +24,7 @@
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsIdUTRHelper: awrsIdUTRHelper, awrsIdVRNHelper: awrsIdVRNHelper)
 
 @(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 

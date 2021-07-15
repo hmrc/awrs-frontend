@@ -21,12 +21,13 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.ReportTechnicalIssue
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardFooter, HmrcStandardHeader, HmrcTrackingConsentSnippet, HmrcHead, HmrcTimeoutDialogHelper }
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardFooter, HmrcStandardHeader, HmrcTrackingConsentSnippet, HmrcHead, HmrcTimeoutDialogHelper,HmrcScripts}
 
 @this(
         govukLayout: GovukLayout,
         hmrcHead: HmrcHead,
         govukHeader: HmrcStandardHeader,
+        hmrcScripts: HmrcScripts,
         hmrcStandardFooter: HmrcStandardFooter,
         hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
         problemLink: HmrcReportTechnicalIssueHelper,
@@ -36,6 +37,7 @@
 
 @(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(
         implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+
 
 @headBlock = {
     @hmrcTrackingConsentSnippet(nonce = CSPNonce.get)
@@ -85,7 +87,7 @@
     headerBlock = Some(siteHeader),
     headBlock = Some(headBlock),
     beforeContentBlock = Some(beforeContentBlock),
-    scriptsBlock  = Some(scriptsBlock),
+    scriptsBlock  = Some(hmrcScripts(Some(scriptsBlock))),
     footerBlock = Some(hmrcStandardFooter())
 
 )(content)

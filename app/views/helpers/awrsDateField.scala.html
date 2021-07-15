@@ -61,7 +61,7 @@
     <div class="govuk-form-date">
         @formHint
         @ariaDayMonthYear
-        </div>
+    </div>
         @commonHelper(params.formItem(params.fieldName), fieldErrors)
         <div  class="govuk-date-input" @if(fieldErrors.nonEmpty) {aria-labelledby="@params.fieldName-error-0" id = "tradingDate"}>
             @dateFieldsContent(params.formItem, params.fieldName, params.ariaLabelledBy, fieldErrors.nonEmpty)

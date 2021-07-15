@@ -19,7 +19,7 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
-import forms.BusinessTypeForm._
+import forms.BusinessTypeForm.{businessTypeForm, _}
 import javax.inject.Inject
 import models.{BusinessType, NewApplicationType}
 import play.api.data.Form
@@ -97,7 +97,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       save4LaterService.mainStore.fetchBusinessCustomerDetails(ar) flatMap {
         case Some(businessDetails) =>
-          businessTypeForm.bindFromRequest.fold(
+           validateBusinessType(businessTypeForm.bindFromRequest).fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessDetails.businessType.fold("")(x => x), businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
             businessTypeData =>
               save4LaterService.mainStore.saveBusinessType(businessTypeData, ar) flatMap { _ =>
