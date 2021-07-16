@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsIdUTRHelper: awrsIdUTRHelper, govukErrorSummary: GovukErrorSummary, awrsIdVRNHelper: awrsIdVRNHelper)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsIdUTRHelper: awrsIdUTRHelper, govukErrorSummary: GovukErrorSummary, awrsIdVRNHelper: awrsIdVRNHelper, awrsIdCRNHelper: awrsIdCRNHelper, awrsIdNINOHelper: awrsIdNINOHelper)
 @(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
@@ -61,7 +61,7 @@
                 sectionName = businessRegistrationDetailsName
             ))
             @if(businessRegistrationDetailsForm.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(businessRegistrationDetailsForm))
+                @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(businessRegistrationDetailsForm, mapping = Map("companyRegDetails.dateOfIncorporation" -> "companyRegDetails.dateOfIncorporation.day")))
             }
 
             <header class="page-header">

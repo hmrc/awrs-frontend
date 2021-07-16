@@ -19,7 +19,7 @@
 @import views.html.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup)
 @(withdrawalConfirmationForm: Form[models.WithdrawalConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @awrsMain(messages("awrs.generic.tab.title", messages("awrs.withdrawal.confirm_page.heading")), userLoggedIn = true) {

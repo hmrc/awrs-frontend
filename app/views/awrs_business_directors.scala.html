@@ -22,7 +22,7 @@
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsIdUTRHelper: awrsIdUTRHelper, awrsIdVRNHelper: awrsIdVRNHelper)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsIdUTRHelper: awrsIdUTRHelper, awrsIdVRNHelper: awrsIdVRNHelper, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup, awrsIdNINOHelper: awrsIdNINOHelper, awrsIdCRNHelper: awrsIdCRNHelper)
 
 @(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 

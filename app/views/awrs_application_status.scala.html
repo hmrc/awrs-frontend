@@ -20,14 +20,14 @@
 @import views.html.helpers._
 @import views.html.subtemplates.application_status._
 @import views.subtemplates.application_status._
-@this(awrsMain: main)
+@this(awrsMain: main, awrsAnswerQuestionHelper: awrsAnswerQuestionHelper, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup, approvedWithConditionsInfo: approved_with_conditions_info)
 @(params: views.subtemplates.application_status.ApplicationStatusParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @normalInfo = {
     @params.status.formBundleStatus match {
         case Pending                     => {@pending_info(params.asInstanceOf[ApplicationPendingParameter].isNewBusiness, printFriendly)}
         case Approved                    => {@approved_info(printFriendly)}
-        case ApprovedWithConditions      => {@approved_with_conditions_info(params.asInstanceOf[ApplicationApprovedWithConditionsParameter], printFriendly)}
+        case ApprovedWithConditions      => {@approvedWithConditionsInfo(params.asInstanceOf[ApplicationApprovedWithConditionsParameter], printFriendly)}
         case Rejected                    => {@rejected_info(params.asInstanceOf[ApplicationRejectedParameter], printFriendly)}
         case Revoked                     => {@revoked_info(params.asInstanceOf[ApplicationRevokedParameter], printFriendly)}
         case RejectedUnderReviewOrAppeal => {@rejected_review_info(params.asInstanceOf[ApplicationRejectedReviewParameter])}
@@ -80,7 +80,7 @@
 
 @createNewAppBlock = {
     <div class="print-hidden">
-        <p class="govuk-body"><a class="govuk-link"><a href="@controllers.routes.ReapplicationController.show()">@Html(messages("awrs.generic.create_new_application_link"))</a></p>
+        <p class="govuk-body"><a class="govuk-link" href="@controllers.routes.ReapplicationController.show()">@Html(messages("awrs.generic.create_new_application_link"))</a></p>
         <br>
     </div>
 }

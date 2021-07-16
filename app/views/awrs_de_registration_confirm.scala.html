@@ -20,7 +20,7 @@
 @import views.html.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup)
 @(confirmationForm: Form[models.DeRegistrationConfirmation], proposedEndDate: models.TupleDate)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @declarationText = {@messages("awrs.de_registration.warning.confirm", stringifyDate(proposedEndDate))}

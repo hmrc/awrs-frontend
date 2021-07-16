@@ -25,8 +25,16 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukInput: GovukInput, govukDetails : GovukDetails, govukRadios: GovukRadios)
+@this(formWithCSRF: FormWithCSRF,
+        awrsMain: main,
+        govukInput: GovukInput,
+        govukDetails : GovukDetails,
+        govukRadios: GovukRadios,
+        awrsInputTypeRadioGroup: awrsInputTypeRadioGroup,
+        awrsAddressHelper: awrsAddressHelper,
+        govukErrorSummary: GovukErrorSummary)
 @(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -84,47 +92,47 @@ Messages("awrs.generic.principal.postcode", "Previous principal")
 }
 
 @conditionalHtml = {
-              <p class="govuk-fieldset__legend">@messages("awrs.business_details.awrs_add_your_previous_address")</p>
-              @govukInput(
-                    Input(
-                        label = Label(
-                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line1"))
-                         )
-                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine1"))
-                )
+@*              <p class="govuk-fieldset__legend">@messages("awrs.business_details.awrs_add_your_previous_address")</p>*@
+@*              @govukInput(*@
+@*                    Input(*@
+@*                        label = Label(*@
+@*                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line1"))*@
+@*                         )*@
+@*                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine1"))*@
+@*                )*@
 
-                @govukInput(
-                    Input(
-                        label = Label(
-                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line2"))
-                         )
-                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine2"))
-                )
+@*                @govukInput(*@
+@*                    Input(*@
+@*                        label = Label(*@
+@*                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line2"))*@
+@*                         )*@
+@*                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine2"))*@
+@*                )*@
 
-                @govukInput(
-                    Input(
-                        label = Label(
-                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line3"))
-                         )
-                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine3"))
-                )
+@*                @govukInput(*@
+@*                    Input(*@
+@*                        label = Label(*@
+@*                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line3"))*@
+@*                         )*@
+@*                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine3"))*@
+@*                )*@
 
-                @govukInput(
-                    Input(
-                        label = Label(
-                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line4"))
-                         )
-                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine4"))
-                )
+@*                @govukInput(*@
+@*                    Input(*@
+@*                        label = Label(*@
+@*                            content = HtmlContent(addressLineMessagesPreviousPrincipal("line4"))*@
+@*                         )*@
+@*                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.addressLine4"))*@
+@*                )*@
 
-                @govukInput(
-                    Input(
-                        label = Label(
-                            content = HtmlContent(postCodeMessagePreviousPrincipal)
-                         ),
-                        classes = "govuk-input--width-10",
-                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.postcode"))
-                )
+@*                @govukInput(*@
+@*                    Input(*@
+@*                        label = Label(*@
+@*                            content = HtmlContent(postCodeMessagePreviousPrincipal)*@
+@*                         ),*@
+@*                        classes = "govuk-input--width-10",*@
+@*                    ).withFormField(placeOfBusinessForm("placeOfBusinessAddressLast3Years.postcode"))*@
+@*                )*@
 }
 
 @htmlHint ={
@@ -214,7 +222,9 @@ Messages("awrs.generic.principal.postcode", "Previous principal")
             @backLinkHelper(BackLinkParams(
                 sectionName = placeOfBusinessName
             ))
-            @errorSummaryTemplate(placeOfBusinessForm)
+            @if(placeOfBusinessForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(placeOfBusinessForm))
+            }
             <header class="page-header">
                 @awrsProgressHelper(businessType, placeOfBusinessName)<br>
                 <h1 id="contact-information-heading" class="govuk-heading-xl">@businessTypeHeading</h1>

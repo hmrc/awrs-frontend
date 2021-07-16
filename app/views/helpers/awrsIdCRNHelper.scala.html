@@ -14,6 +14,10 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@this(awrsAnswerQuestionHelper: awrsAnswerQuestionHelper, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup, govukInput: GovukInput, govukDateInput: GovukDateInput)
 @(someRadioField: Option[Field],
 inputField: Field,
 youOrThey: String,
@@ -68,18 +72,31 @@ businessEntity : Option[String] = ""
 
     dateField match {
         case Some(someDateField) =>
-            awrsDateField(
-                DateHelperParams(
-                    formItem = formInstance.get,
-                    fieldName = someDateField.name,
-                    label = Some(Html(messages("awrs.generic.date_of_incorporation"))),
-                    hintText = hintText,
-                    hintTextId  = "doi-information",
-                    ariaDayMonthYear = ariaDayMonthYear,
-                    wrapperClass = "govuk-form-group",
-                    ariaLabelledBy = someDateField.name+"-legend"
-                )
-            )
+    govukDateInput(DateInput(
+//    errorMessage = if(formInstance.get.errors.nonEmpty){ Some(ErrorMessage(content = (HtmlContent(messages(formInstance.get.errors.head.message)))))} else None,
+    hint = Some(Hint(content = HtmlContent(hintText))),
+    fieldset = Some(Fieldset(
+    legend = Some(Legend(
+    content = HtmlContent(messages("awrs.generic.date_of_incorporation")),
+    classes = "govuk-label",
+    isPageHeading = false)))
+    )
+    ).withFormField(someDateField))
+
+
+
+//            awrsDateField(
+//                DateHelperParams(
+//                    formItem = formInstance.get,
+//                    fieldName = someDateField.name,
+//                    label = Some(Html(messages("awrs.generic.date_of_incorporation"))),
+//                    hintText = hintText,
+//                    hintTextId  = "doi-information",
+//                    ariaDayMonthYear = ariaDayMonthYear,
+//                    wrapperClass = "govuk-form-group",
+//                    ariaLabelledBy = someDateField.name+"-legend"
+//                )
+//            )
         case _ =>
     }
 }
@@ -91,24 +108,17 @@ businessEntity : Option[String] = ""
             case false => None
         }
 
-    val mainInput = awrsInputTypeText(
-        InputTypeTextParams(
-            inputField,
-            parentForm = formInstance,
-            inputId = inputField.name,
-            maxLength = frontendDefaultLen,
-            wrapperClass = "govuk-form-group",
-            label = messages("awrs.generic.company_reg"),
-            required = true,
-            labelHighlight = true,
-            inputClass = "govuk-input",
-            labelClass = "govuk-label",
-            formHint = messages("awrs.generic.do_you_have_company_reg_information"),
-            formHintId = "company_reg-information",
-            ariaLabelledBy = ariaLabelledBy,
-            formHasErrors = formHasErrors
+    val mainInput =
+        govukInput(Input(
+            label = Label(
+                content = Text(messages("awrs.generic.company_reg"))
+            ),
+            hint = Some(Hint(
+                content = Text(messages("awrs.generic.do_you_have_company_reg_information")),
+                id = Some("company_reg-information"))),
+            attributes = Map("maxlength" -> frontendDefaultLen)
+        ).withFormField(inputField)
         )
-    )
 
     val outsideHintCrn = awrsAnswerQuestionHelper(
         QuestionAnswerParameters(

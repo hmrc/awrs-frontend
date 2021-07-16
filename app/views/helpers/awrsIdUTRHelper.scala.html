@@ -19,7 +19,7 @@
 @import views.helpers.{InputTypeRadioGroupParams, InputTypeTextParams, QuestionAnswerParameters}
 @import views.html.helpers._
 @import play.api.i18n._
-@this(govukInput: GovukInput)
+@this(govukInput: GovukInput, awrsAnswerQuestionHelper: awrsAnswerQuestionHelper, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup)
 @(businessType: Option[String],
 someRadioField: Option[Field],
 inputField: Field,

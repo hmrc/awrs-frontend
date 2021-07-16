@@ -21,7 +21,7 @@
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup)
 @(confirmationForm: Form[models.BusinessNameChangeConfirmation], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 

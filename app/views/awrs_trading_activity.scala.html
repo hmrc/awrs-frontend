@@ -26,8 +26,9 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukInput: GovukInput, govukCheckboxes : GovukCheckboxes, govukRadios: GovukRadios)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, govukInput: GovukInput, govukCheckboxes : GovukCheckboxes, govukRadios: GovukRadios, govukErrorSummary: GovukErrorSummary)
 @(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -53,36 +54,28 @@
 
 @conditionalHtmlOtherWholesaler = {
     <div id="other-wholesalerType">
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                tradingActivityForm("otherWholesaler"),
-                label = messages("awrs.additional_information.other.wholesaler_type"),
-                labelHighlight = true,
-                inputId = "otherWholesaler",
-                maxLength = frontendDefaultLen,
-                wrapperClass = "panel-indent",
-                required = true,
-                inputClass = "govuk-input",
-                labelClass = "govuk-label"
-            )
+
+        @govukInput(Input(
+            label = Label(
+                classes = "govuk-label",
+                content = Text(messages("awrs.additional_information.other.wholesaler_type"))
+            ),
+            attributes = Map("maxLength" -> frontendDefaultLen)
+        ).withFormField(tradingActivityForm("otherWholesaler"))
         )
+
     </div>
 }
 
 @conditionalHtmlOtherOrders = {
     <div id="other-typeOfAlcoholOrders1">
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                tradingActivityForm("otherTypeOfAlcoholOrders"),
-                label = messages("awrs.additional_information.orders.other.orders_question"),
-                labelHighlight = true,
-                inputId = "otherTypeOfAlcoholOrders",
-                maxLength = frontendDefaultLen,
-                wrapperClass = "panel-indent",
-                required = true,
-                inputClass = "govuk-input",
-                labelClass = "govuk-label"
-            )
+        @govukInput(Input(
+            label = Label(
+                classes = "govuk-label",
+                content = Text(messages("awrs.additional_information.orders.other.orders_question"))
+            ),
+            attributes = Map("maxLength" -> frontendDefaultLen)
+        ).withFormField(tradingActivityForm("otherTypeOfAlcoholOrders"))
         )
     </div>
 
@@ -122,7 +115,9 @@
         @backLinkHelper(BackLinkParams(
             sectionName = tradingActivityName
         ))
-        @errorSummaryTemplate(tradingActivityForm)
+        @if(tradingActivityForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(tradingActivityForm))
+        }
         <header class="page-header">
             @awrsProgressHelper(request.getBusinessType, tradingActivityName) <br>
             <h1 id="trading-activity-heading" class="govuk-heading-xl">

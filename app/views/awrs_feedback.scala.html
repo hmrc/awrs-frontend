@@ -19,7 +19,7 @@
 @import views.html.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup)
 @(feedbackForm: Form[models.Feedback])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.feedback.heading")), userLoggedIn = true) {

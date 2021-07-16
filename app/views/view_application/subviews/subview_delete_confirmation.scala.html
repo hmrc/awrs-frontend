@@ -22,7 +22,7 @@
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup)
 @(confirmationForm: Form[models.DeleteConfirmation], section: String, headingParameter: String, formAction: Int => Call, id: Int, data : Any)(implicit request: Request[AnyContent], viewMode : ViewApplicationType= OneViewMode, messages : Messages, applicationConfig: ApplicationConfig)
 
 @modelRender = {

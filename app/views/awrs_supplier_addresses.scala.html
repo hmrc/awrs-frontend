@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsIdVRNHelper: awrsIdVRNHelper)
+@this(formWithCSRF: FormWithCSRF, awrsMain: main, awrsIdVRNHelper: awrsIdVRNHelper, awrsInputTypeRadioGroup: awrsInputTypeRadioGroup, awrsAddressHelper: awrsAddressHelper)
 @(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(supplierAddressForm) }

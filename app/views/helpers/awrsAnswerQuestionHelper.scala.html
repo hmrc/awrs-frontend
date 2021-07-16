@@ -14,33 +14,44 @@
  * limitations under the License.
  *@
 
-@(params: views.helpers.QuestionAnswerParameters)(implicit messages: Messages)
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@this(govukDetails: GovukDetails)
+@(params: views.helpers.QuestionAnswerParameters)(implicit messages: Messages)
 
 <div id="questionAnswer-@params.questionId">
-    <details class="govuk-details">
-        @* Do not add spaces to the value of the summary tag *@
-        <summary aria-controls="details-content-@params.questionId" tabindex="0" class="govuk-details__summary" id="@params.questionId">
-            <span class="govuk-details__summary-text">
-            @params.question
-            </span>
-        </summary>
-        <div id="details-content-@params.questionId" class="govuk-details__text"
-            @params.wrapperClass match {
-                case Some(className) => {
-                    class="@className"
-                }
-                case _ => {}
-            } tabindex="0">
+@*    <details class="govuk-details">*@
+@*        *@@* Do not add spaces to the value of the summary tag *@
+@*        <summary aria-controls="details-content-@params.questionId" tabindex="0" class="govuk-details__summary" id="@params.questionId">*@
+@*            <span class="govuk-details__summary-text">*@
+@*            @params.question*@
+@*            </span>*@
+@*        </summary>*@
+@*        <div id="details-content-@params.questionId" class="govuk-details__text"*@
+@*            @params.wrapperClass match {*@
+@*                case Some(className) => {*@
+@*                    class="@className"*@
+@*                }*@
+@*                case _ => {}*@
+@*            } tabindex="0">*@
 
-            @params.answer match {
-                case Some(answer) => {
-                    @awrsAnswerHint(params.questionId, answer)
-                }
-                case _ => {
-                    @awrsAnswerStatusDecision(messages)
-                }
-            }
-        </div>
-    </details>
+@*            @params.answer match {*@
+@*                case Some(answer) => {*@
+@*                    @awrsAnswerHint(params.questionId, answer)*@
+@*                }*@
+@*                case _ => {*@
+@*                    @awrsAnswerStatusDecision(messages)*@
+@*                }*@
+@*            }*@
+@*        </div>*@
+@*    </details>*@
+
+    @govukDetails(Details(
+        summary = Text(params.question),
+        content = params.answer match {
+            case Some(answer) => HtmlContent(awrsAnswerHint(params.questionId, answer))
+            case _ => HtmlContent(awrsAnswerStatusDecision(messages))
+        }
+    ))
+
 </div>
