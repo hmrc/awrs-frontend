@@ -74,7 +74,12 @@
 }
 
 @postcodeHelper(postcode: String) = @{
-    val splitPoint = postcode.length - 3
+    val splitPoint = if(postcode.length < 4) {
+        0
+    } else {
+        postcode.length - 3
+    }
+
     val startPostCode = postcode.substring(0, splitPoint)
     val endPostCode = postcode.substring(splitPoint, postcode.length)
     startPostCode + " " + endPostCode
@@ -142,7 +147,7 @@
                     @business.line_2<br>
                     @if(business.line_3.nonEmpty) {@business.line_3<br>}
                     @if(business.line_4.nonEmpty) {@business.line_4<br>}
-                    @postcodeHelper(business.postcode.get)<br>
+                    @postcodeHelper(business.postcode.getOrElse("   "))<br>
                 </div>
                 <div class="form-group">
                     @awrsInputTypeRadioGroup(

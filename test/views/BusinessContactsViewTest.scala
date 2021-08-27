@@ -68,6 +68,22 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
     testIfExists(mockData.businessAddress.postcode)
   }
 
+  def reviewDetailMatchNoPostCode(reviewDetail: Element): Any = {
+
+    def testIfExists(someString: Option[String]) =
+      someString match {
+        case Some(string) => reviewDetail.text() must include(string)
+        case _ =>
+      }
+
+    val mockData = testBusinessCustomerDetailsWithoutPostcode("SOP")
+    reviewDetail.text() must include(mockData.businessAddress.line_1)
+    reviewDetail.text() must include(mockData.businessAddress.line_2)
+    testIfExists(mockData.businessAddress.line_3)
+    testIfExists(mockData.businessAddress.line_4)
+    testIfExists(mockData.businessAddress.postcode)
+  }
+
   "BusinessContactsController" must {
 
     "AWRS Contact Details entered " must {
@@ -91,6 +107,17 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
             document.getElementById("contactAddressSame-no-content") mustNot be(null)
         }
       }
+
+      "must not display the postcode when the post code is not present" in {
+        noPostcodeJourney {
+          result =>
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementById("contact-information-heading").text() mustBe Messages("awrs.business_contacts.heading", Messages("awrs.generic.edit"))
+            reviewDetailMatchNoPostCode(document.getElementById("review-details"))
+            document.getElementById("contactAddressSame-no-content") mustNot be(null)
+        }
+      }
+
     }
 
     allEntities.foreach {
@@ -118,6 +145,17 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
           }
         }
     }
+  }
+
+  private def noPostcodeJourney(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(
+      fetchBusinessCustomerDetails = testBusinessCustomerDetailsWithoutPostcode("SOP"),
+      fetchBusinessContacts = testBusinessContactsDefault()
+    )
+
+    setAuthMocks()
+    val result = testBusinessContactsController.showBusinessContacts(false).apply(SessionBuilder.buildRequestWithSession(userId, testBusinessCustomerDetailsWithoutPostcode("SOP").businessType.get))
+    test(result)
   }
 
   private def editJourney(test: Future[Result] => Any) {

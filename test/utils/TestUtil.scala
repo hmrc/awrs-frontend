@@ -52,7 +52,9 @@ object TestUtil extends PlaySpec {
 
   val legalEntityList = List("SOP", "Partnership", "LTD", "LLP", "LP", "LLP_GRP", "LTD_GRP")
   val testBCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("NE98 1ZZ"), Option("country"))
+  val testBCAddressNoPostcode = BCAddress("line1", "line2", Option("line3"), Option("line4"), postcode = None , Option("country"))
   val testBusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
+  val testBusinessCustomerDetailsWithoutPostcode = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddressNoPostcode, "sap123", "safe123", false, Some("agent123"), testUtr)
   val testBusinessCustomerDetailsWithoutSafeID = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123","", false, Some("agent123"), testUtr)
 
   val testSoleTraderBusinessRegistrationDetails = testBusinessRegistrationDetails(doYouHaveNino = Yes, nino = testNino, doYouHaveVRN = No, doYouHaveUTR = No)
@@ -599,6 +601,21 @@ object TestUtil extends PlaySpec {
       addressCountry = addressCountry,
       addressCountryCode = addressCountryCode)
 
+  def testAddressNoPostCode(addressLine1: Option[String] = Some("address Line1"),
+                  addressLine2: Option[String] = Some("address Line2"),
+                  addressLine3: Option[String] = Some("address Line3"),
+                  addressLine4: Option[String] = Some("address Line4"),
+                  postcode: Option[String] = None,
+                  addressCountry: Option[String] = None,
+                  addressCountryCode: Option[String] = None) =
+    Address(addressLine1 = addressLine1.get,
+      addressLine2 = addressLine2.get,
+      addressLine3 = addressLine3,
+      addressLine4 = addressLine4,
+      postcode = postcode,
+      addressCountry = addressCountry,
+      addressCountryCode = addressCountryCode)
+
   def testBusinessContactsDefault(
 
                                    contactAddressSame: Option[String] = No,
@@ -616,6 +633,22 @@ object TestUtil extends PlaySpec {
       email = email,
       telephone = telephone
     )
+
+  def testBusinessContactsNoPostCode(
+                                      contactAddressSame: Option[String] = No,
+                                      contactAddress: Option[Address] = Some(testAddressNoPostCode()),
+                                      contactFirstName: Option[String] = Some("John"),
+                                      contactLastName: Option[String] = Some("Walker"),
+                                      email: Option[String] = Some(testEmail),
+                                      confirmEmail: Option[String] = Some(testEmail),
+                                      telephone: Option[String] = Some("01123456789")) =
+    BusinessContacts(
+      contactAddressSame = contactAddressSame,
+      contactAddress = contactAddress,
+      contactFirstName = contactFirstName,
+      contactLastName = contactLastName,
+      email = email,
+      telephone = telephone)
 
   def testPlaceOfBusinessDefault(mainPlaceOfBusiness: Option[String] = No,
                                  mainAddress: Option[Address] = Some(testAddress()),
