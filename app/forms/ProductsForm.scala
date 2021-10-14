@@ -22,6 +22,7 @@ import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.Products
 import play.api.data.Forms._
+import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{Form, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
@@ -36,8 +37,9 @@ object ProductsForm extends AwrsFieldConfig {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_mainCustomers"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages(otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.customer"),
-        genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.other_mainCustomers_invalid_format")
+        FieldMaxLengthConstraintParameter(otherProductsLen, Invalid("awrs.additional_information.error.maximum_length.customer", fieldNameInErrorMessage, otherProductsLen)),
+        FieldFormatConstraintParameter((name: String) => if (validAlphaNumeric(name)) Valid else Invalid("awrs.additional_information.error.other_mainCustomers_invalid_format", fieldNameInErrorMessage))
+
       )
     compulsoryText(companyNameConstraintParameters)
   }
@@ -50,8 +52,8 @@ object ProductsForm extends AwrsFieldConfig {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.type_of_product_other"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages(otherProductsLen, fieldId, fieldNameInErrorMessage,errorMsg = "awrs.additional_information.error.maximum_length.product"),
-        genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.type_of_product_other_validation")
+        FieldMaxLengthConstraintParameter(otherProductsLen, Invalid("awrs.additional_information.error.maximum_length.product", fieldNameInErrorMessage, otherProductsLen)),
+        FieldFormatConstraintParameter((name: String) => if (validAlphaNumeric(name)) Valid else Invalid("awrs.additional_information.error.type_of_product_other_validation", fieldNameInErrorMessage))
       )
     compulsoryText(companyNameConstraintParameters)
   }

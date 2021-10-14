@@ -14,8 +14,17 @@
  * limitations under the License.
  *@
 
-@(someRadioField: Option[Field],
-inputField: Field,
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@import play.api.i18n._
+@import views.helpers.QuestionAnswerParameters
+@import views.html.helpers._
+@this(
+    awrsAnswerQuestionHelper: awrsAnswerQuestionHelper,
+    govukInput: GovukInput,
+    govukDateInput: GovukDateInput)
+@(inputField: Field,
 youOrThey: String,
 crnAndDate: Boolean = true,
 dateField: Option[Field] = None,
@@ -24,9 +33,6 @@ formHasErrors: Boolean = false,
 businessEntity : Option[String] = ""
 )(implicit formInstance: Option[Form[_]] = None, messages: Messages)
 
-@import play.api.i18n._
-@import views.helpers.{DateHelperParams, InputTypeRadioGroupParams, InputTypeTextParams, QuestionAnswerParameters}
-@import views.html.helpers._
 
 @iDoNotKnowCRNHintQuestion = @{
     youOrThey match {
@@ -42,71 +48,58 @@ businessEntity : Option[String] = ""
     }
 }
 
-
 @hintText = {
-    <span aria-hidden="true">@messages("awrs.generic.date_hint.corporation")</span><span class="visuallyhidden">@messages("awrs.generic.date_hint.reader.corporation")</span>
+    <span aria-hidden="true">@messages("awrs.generic.date_hint.corporation")</span><span class="govuk-visually-hidden">@messages("awrs.generic.date_hint.reader.corporation")</span>
 }
 
 @ariaDayMonthYear = {
     @dateField match {
         case Some(someDateField) => {
-            <span id="@someDateField.name-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
-            <span id="@someDateField.name-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
-            <span id="@someDateField.name-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+            <span id="@someDateField.name-day_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+            <span id="@someDateField.name-month_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+            <span id="@someDateField.name-year_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
         }
         case _ => {}
     }
 }
 
-@isDateField(withQuestion : Boolean) = @{
-    val wrapperClassSetting : Option[String] =
-        if(withQuestion) {
-            Some("panel-indent")
-        } else {
-            None
-        }
+@inputItems = @{
+    Seq(InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "4"))
+    )
+}
 
+@isDateField = @{
     dateField match {
         case Some(someDateField) =>
-            awrsDateField(
-                DateHelperParams(
-                    formItem = formInstance.get,
-                    fieldName = someDateField.name,
-                    label = Some(Html(messages("awrs.generic.date_of_incorporation"))),
-                    hintText = hintText,
-                    hintTextId  = "doi-information",
-                    ariaDayMonthYear = ariaDayMonthYear,
-                    wrapperClass = wrapperClassSetting,
-                    ariaLabelledBy = someDateField.name+"-legend"
-                )
-            )
+            govukDateInput(DateInput(
+                hint = Some(Hint(content = HtmlContent(hintText))),
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(messages("awrs.generic.date_of_incorporation")),
+                        classes = "govuk-fieldset__legend--s")))),
+                    items = inputItems
+            ).withFormFieldWithErrorAsHtml(someDateField))
+
         case _ =>
     }
 }
 
-@core(withQuestion : Boolean) = @{
-    val wrapperClassSetting : Option[String] =
-        withQuestion match {
-            case true => Some("panel-indent")
-            case false => None
-        }
-
-    val mainInput = awrsInputTypeText(
-        InputTypeTextParams(
-            inputField,
-            parentForm = formInstance,
-            inputId = inputField.name,
-            maxLength = frontendDefaultLen,
-            wrapperClass = wrapperClassSetting,
-            label = messages("awrs.generic.company_reg"),
-            required = true,
-            labelHighlight = true,
-            formHint = messages("awrs.generic.do_you_have_company_reg_information"),
-            formHintId = "company_reg-information",
-            ariaLabelledBy = ariaLabelledBy,
-            formHasErrors = formHasErrors
+@core = @{
+    val mainInput =
+        govukInput(Input(
+            label = Label(
+                content = Text(messages("awrs.generic.company_reg")),
+                classes = "govuk-label--s"
+            ),
+            hint = Some(Hint(
+                content = Text(messages("awrs.generic.do_you_have_company_reg_information")),
+                id = Some("company_reg-information"))),
+            attributes = Map("maxlength" -> frontendDefaultLen),
+            classes = "govuk-input--width-20"
+        ).withFormField(inputField)
         )
-    )
 
     val outsideHintCrn = awrsAnswerQuestionHelper(
         QuestionAnswerParameters(
@@ -132,41 +125,10 @@ businessEntity : Option[String] = ""
         outsideHintCrn
     }
 
-    if(withQuestion) {
-        Seq(mainInput, isDateField(withQuestion))
-    } else {
-        Seq(mainInput, isDateField(withQuestion), outsideHint)
-    }
+    Seq(mainInput, isDateField, outsideHint)
 }
 
-@withQuestion(questionField : Field) = {
-    @awrsInputTypeRadioGroup(
-        InputTypeRadioGroupParams(
-            questionField,
-            Seq("Yes" -> messages("awrs.generic.yes"),
-                "No" -> messages("awrs.generic.no")),
-            fieldSetAttributes = "id="+questionField.name+"_field",
-            legend = messages(s"awrs.generic.do_${youOrThey}_have_company_reg"),
-            legendId = questionField.name+"-legend",
-            fieldSetClass = "inline",
-            fieldSetQuestion = messages(s"awrs.generic.do_${youOrThey}_have_company_reg_help_question"),
-            fieldSetQuestionAnswer = Html(messages(s"awrs.generic.do_${youOrThey}_have_company_reg_help_text","<br><br>")),
-            fieldSetQuestionId = "crn-HelpLink",
-            fieldSetQuestionWrapperClass = "panel-indent"
-        )
-    )
-    <div id="@questionField.name-yes-content">
-        @core(withQuestion = true)
+    <div class="govuk-form-group">
+        @core
     </div>
-}
 
-@withoutQuestion = {
-    @core(withQuestion = false)
-}
-
-<div class="form-group">
-    @someRadioField match {
-        case Some(radioField) => {@withQuestion(radioField)}
-        case _ => {@withoutQuestion}
-    }
-</div>

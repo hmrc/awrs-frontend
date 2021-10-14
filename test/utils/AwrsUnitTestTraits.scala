@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.{Assertion, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -31,8 +31,12 @@ import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMess
 import services.{BusinessDetailsService, DeEnrolService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import play.api.test.Helpers.{await => helperAwait, defaultAwaitTimeout}
+import play.api.test.Helpers.{defaultAwaitTimeout, await => helperAwait}
+import views.html.helpers.awrsErrorNotFoundTemplate
+import views.html.{awrs_application_error, error_template, unauthorised}
+import views.html.view_application.subviews.subview_delete_confirmation
 
+import scala.language.implicitConversions
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -77,11 +81,11 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   when(mockCountryCodes.getSupplierAddressWithCountry(any()))
     .thenReturn(Some(TestUtil.testAddressInternational))
 
-  lazy val mockUnauthorised = app.injector.instanceOf[views.html.unauthorised]
-  lazy val mockDeleteConfirm = app.injector.instanceOf[views.html.view_application.subviews.subview_delete_confirmation]
-  lazy val mockAppError = app.injector.instanceOf[views.html.awrs_application_error]
-  lazy val mockNotFound = app.injector.instanceOf[views.html.helpers.awrsErrorNotFoundTemplate]
-  lazy val mockError = app.injector.instanceOf[views.html.error_template]
+  lazy val mockUnauthorised: unauthorised = app.injector.instanceOf[views.html.unauthorised]
+  lazy val mockDeleteConfirm: subview_delete_confirmation = app.injector.instanceOf[views.html.view_application.subviews.subview_delete_confirmation]
+  lazy val mockAppError: awrs_application_error = app.injector.instanceOf[views.html.awrs_application_error]
+  lazy val mockNotFound: awrsErrorNotFoundTemplate = app.injector.instanceOf[views.html.helpers.awrsErrorNotFoundTemplate]
+  lazy val mockError: error_template = app.injector.instanceOf[views.html.error_template]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -113,7 +117,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
 
   // used to help mock setup functions to clarify if certain results must be mocked.
   sealed trait MockConfiguration[+A] {
-    final def get = this match {
+    final def get: A = this match {
       case Configure(config) => config
       case _ => throw new RuntimeException("This element is not to be configured")
     }
@@ -150,7 +154,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
 
   implicit class VerificationUtil(someCount: Option[Int]) {
     // util function designed for aiding verify functions
-    def ifDefinedThen(action: (Int) => Unit) = someCount match {
+    def ifDefinedThen(action: Int => Unit): Unit = someCount match {
       case Some(count) => action(count)
       case _ =>
     }
@@ -164,12 +168,12 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
     case _ => Ids(utr = true, nino = false, crn = true, vrn = true)
   }
 
-  def testId(shouldExist: Boolean)(targetFieldId: String)(implicit doc: Document) = shouldExist match {
+  def testId(shouldExist: Boolean)(targetFieldId: String)(implicit doc: Document): Assertion = shouldExist match {
     case false => doc.getElementById(targetFieldId) mustBe null
     case true => doc.getElementById(targetFieldId) must not be null
   }
 
-  def testText(expectedText: String)(targetFieldId: String)(implicit doc: Document) = {
+  def testText(expectedText: String)(targetFieldId: String)(implicit doc: Document): Assertion = {
     doc.getElementById(targetFieldId).text mustBe expectedText
   }
 

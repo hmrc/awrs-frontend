@@ -20,6 +20,7 @@ import builders.SessionBuilder
 import controllers.TradingNameController
 import models.BusinessNameDetails
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.Messages

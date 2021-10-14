@@ -23,13 +23,7 @@ import play.api.libs.json.{JsValue, Json, OFormat}
 
 import scala.io.Source
 
-class CountryCodesImpl @Inject()(val environment: Environment) extends CountryCodes {
-
-}
-
-trait CountryCodes {
-
-  def environment: Environment
+class CountryCodes @Inject()(val environment: Environment) {
 
   case class Country(country: String, countryCode: String)
 
@@ -44,18 +38,21 @@ trait CountryCodes {
     }
   }
 
+  val countryCodeList: Seq[Country] = readJson.validate[Seq[Country]].get
+  val countryCodesTuplesSeq: Seq[(String, String)] = countryCodeList.map(
+    x => (x.countryCode, x.country)
+  ).sortBy(_._2)
+
   val countries: String = {
     Json.toJson(readJson.\\("country").toList.map(x => x.toString().replaceAll("\"", ""))).toString()
   }
 
   private val countryCodesMap: Map[String, String] = {
-    val countryCodeList = readJson.validate[List[Country]].get
     countryCodeList.map(country => (country.countryCode, country.country)).toMap
   }
 
   private val countriesMap: Map[String, String] = {
-    val countryList = readJson.validate[List[Country]].get
-    countryList.map(country => (country.country.toLowerCase, country.countryCode)).toMap
+    countryCodeList.map(country => (country.country.toLowerCase, country.countryCode)).toMap
   }
 
   def getCountry(countryCode: String): Option[String] = {
@@ -113,5 +110,4 @@ trait CountryCodes {
         Some(address.copy(addressCountry = country))
       case _ => None
     }
-
 }

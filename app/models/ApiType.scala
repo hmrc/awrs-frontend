@@ -19,6 +19,6 @@ package models
 object ApiType extends Enumeration {
   type ApiType = Value
 
-  val API4Enrolment = Value
-  val API10DeEnrolment = Value
+  val API4Enrolment: models.ApiType.Value = Value
+  val API10DeEnrolment: models.ApiType.Value = Value
 }

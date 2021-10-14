@@ -40,7 +40,7 @@ object SubscriptionStatusType {
   //  }
 
 
-  val reader = new Reads[SubscriptionStatusType] {
+  val reader: Reads[SubscriptionStatusType] = new Reads[SubscriptionStatusType] {
 
     def reads(js: JsValue): JsResult[SubscriptionStatusType] = {
       for {
@@ -62,7 +62,7 @@ object SubscriptionStatusType {
     }
   }
 
-  implicit val formats = Json.format[SubscriptionStatusType]
+  implicit val formats: OFormat[SubscriptionStatusType] = Json.format[SubscriptionStatusType]
 }
 
 sealed trait FormBundleStatus {

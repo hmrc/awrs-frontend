@@ -15,13 +15,21 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.helpers.{InputTypeRadioGroupParams, InputTypeTextParams}
 @import views.helpers.WithdrawalHelper._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import views.view_application.helpers._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukRadios : GovukRadios,
+    govukInput: GovukInput,
+    govukErrorSummary: GovukErrorSummary)
+
 @(withdrawalReasonForm: Form[models.WithdrawalReason])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @enumPairToMessage(enumName: String, msgKey: String) = @{
@@ -29,44 +37,60 @@
     messages(key) -> messages(value)
 }
 
+@conditionalHtml = {
+    @govukInput(
+        Input(
+            label = Label(
+                content = Text(messages("awrs.withdrawal.reason.other_message"))
+            ),
+            attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+        ).withFormField(withdrawalReasonForm("reasonOther"))
+    )
+}
+
     @awrsMain(messages("awrs.generic.tab.title", messages("awrs.withdrawal.reasons_page.heading")), userLoggedIn = true) {
         @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
-        <div class="grid">
-            <div class="grid grid-2-3">
-                @errorSummaryTemplate(withdrawalReasonForm)
-                <h1 id="withdrawal-reasons-heading" class="heading-xlarge">@messages("awrs.withdrawal.reasons_page.heading")</h1>
+
+                @if(withdrawalReasonForm.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(withdrawalReasonForm))
+                }
+                <h1 id="withdrawal-reasons-heading" class="govuk-heading-xl">@messages("awrs.withdrawal.reasons_page.heading")</h1>
                 @formWithCSRF(action = controllers.routes.WithdrawalController.submitWithdrawalReasons) {
-                    <div id="withdrawal-reason" class="form-group">
-                        @awrsInputTypeRadioGroup(
-                            InputTypeRadioGroupParams(
-                                withdrawalReasonForm("reason"),
-                                Seq(enumPairToMessage("applied_in_error", "withdrawal"),
-                                    enumPairToMessage("no_longer_trading", "withdrawal"),
-                                    enumPairToMessage("duplicate_application", "withdrawal"),
-                                    enumPairToMessage("joined_awrs_group", "withdrawal"),
-                                    enumPairToMessage("other", "withdrawal")),
-                                legend = messages("awrs.withdrawal.reasons_page.heading"),
-                                legendId = "withdrawalreasons-legend",
-                                legendClass = "visuallyhidden",
-                                fieldSetAttributes = "id=withdrawalReason_field"
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-visually-hidden",
+                                content = Text(Messages("awrs.withdrawal.reasons_page.heading"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.withdrawal.reason.applied_in_error")),
+                                value = Some("Applied in error")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.withdrawal.reason.no_longer_trading")),
+                                value = Some("No Longer trading")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.withdrawal.reason.duplicate_application")),
+                                value = Some("Duplicate Application")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.withdrawal.reason.joined_awrs_group")),
+                                value = Some("Joined AWRS Group")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.withdrawal.reason.other")),
+                                value = Some("Others"),
+                                conditionalHtml = Some(conditionalHtml)
                             )
                         )
-                        <div id="other-withdrawalReason">
-                            @awrsInputTypeText(
-                                InputTypeTextParams(
-                                    withdrawalReasonForm("reasonOther"),
-                                    inputId = "withdrawalReason-other",
-                                    label = messages("awrs.withdrawal.reason.other_message"),
-                                    labelHighlight = true,
-                                    maxLength = frontendDefaultLen,
-                                    wrapperClass = "panel-indent",
-                                    required = true
-                                )
-                            )
-                        </div>
-                    </div>
-                    @awrsSubmitButton(messages("awrs.generic.continue"))(id = "withdraw-application", classAttr = "button")
+                    ).withFormField(withdrawalReasonForm("reason"))
+                )
+
+                    @awrsSubmitButton(messages("awrs.generic.continue"))(id = "withdraw-application")
                 }
-            </div>
-        </div>
     }

@@ -29,16 +29,14 @@
 }
 @param match {
     case Some(ucParam) => {
-        <div class="grid grid-3-3 banner-@bannerClass print-hidden" id="changes-banner">
-            <div class="grid grid-3-3">
-                <div class="inner-block">
+        <div class="banner-@bannerClass print-hidden" id="changes-banner">
+                <div class="inner-block font-banner govuk-body">
                     @if(ucParam.allSectionComplete) {
                         @unsubmittedMessage
                     } else {
                         @incompleteMessage
                     }
                 </div>
-            </div>
         </div>
     }
     case None => {}

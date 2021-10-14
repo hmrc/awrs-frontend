@@ -37,6 +37,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, CacheUtil}
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
+import scala.language.postfixOps
 
 import scala.concurrent.{ExecutionContext, Future}
 

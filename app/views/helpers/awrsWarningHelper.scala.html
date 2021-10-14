@@ -14,14 +14,13 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(govukWarningText : GovukWarningText)
 @(declarationTxt: String, id: String)(implicit messages: Messages)
 
 
-<div id=@id class="form-group text-disclaimer">
-    <i>
-        <span class="visuallyhidden">@Messages("awrs.generic.warning_icon_text")</span>
-    </i>
-    <strong id="@id-text"class="bold-small">
-        @Html(declarationTxt)
-    </strong>
-</div>
+@govukWarningText(WarningText(
+    iconFallbackText = messages("awrs.generic.warning_text"),
+    content = HtmlContent(declarationTxt)
+))

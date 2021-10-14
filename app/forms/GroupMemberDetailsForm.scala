@@ -58,7 +58,7 @@ object GroupMemberDetailsForm {
 
     val doYouHaveUtrInferred = inferBasedOn(data.get(utr))
 
-    data.+((doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
+    data. +((doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
   }
 
   /*

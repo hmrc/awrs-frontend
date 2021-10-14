@@ -57,7 +57,7 @@ private[controllers] trait ControllerUtil {
                     messages: Messages,
                     applicationConfig: ApplicationConfig,
                     ec: ExecutionContext
-                  ) =
+                  ): Future[Result] =
   fetchData flatMap {
     case Some(data) =>
       val total = toList(data).size
@@ -189,7 +189,7 @@ private[controllers] trait ControllerUtil {
                               messages: Messages,
                               applicationConfig: ApplicationConfig,
                               ec: ExecutionContext
-                            ) = {
+                            ): Future[Result] = {
     lazy val toNextPage = (data: T) => redirectRoute(haveAnotherAnswer(data), id)
     // set redirect based on un-cleansed data so that it follows the route based on the addAnother question before it is reset to 'No'
     val redirectTo = toNextPage(data)

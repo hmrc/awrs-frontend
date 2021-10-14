@@ -12,8 +12,7 @@ $(document).ready(function () {
         $partnerDetails = $('input:radio[name="entityType"]'),
         $suppliers = $('input:radio[name="ukSupplier"]'),
         $deRegistrationReason = $('input:radio[name="deRegistrationReason"]'),
-        $withdrawalReason = $('input:radio[name="reason"]'),
-        $feedbackLedeLink = $("#feedbackLedeLink");
+        $withdrawalReason = $('input:radio[name="reason"]');
 
     function showHide(radio) {
         if (radio.indexOf(".") >= 0) {
@@ -123,12 +122,12 @@ $(document).ready(function () {
 
     // show and hide content according to director, company secretary & individual and company status
     function personOrCompany() {
-        if ($("#personOrCompany-person").is(":checked")) {
+        if ($("#personOrCompany").is(":checked")) {
             $("#individual").show();
             hideAndClear("#company");
         }
 
-        if ($("#personOrCompany-company").is(":checked")) {
+        if ($("#personOrCompany-2").is(":checked")) {
             $("#company").show();
             hideAndClear("#individual");
         }
@@ -296,10 +295,6 @@ $(document).ready(function () {
     });
 
     $('a[rel="external"]').attr("target", "_blank");
-
-    $feedbackLedeLink.on("click", function () {
-        $("#get-help-action").trigger("click");
-    });
 
     $(".validation-summary-message a").on("click", function (e) {
         e.preventDefault();

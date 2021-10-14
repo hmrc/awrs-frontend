@@ -14,6 +14,13 @@
  * limitations under the License.
  *@
 
+@import play.api.i18n._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+
+@this(govukInput: GovukInput, govukRadios: GovukRadios)
 @(someRadioField: Option[Field],
 ninoField: Field,
 youOrThey: String,
@@ -24,33 +31,29 @@ ariaDescribedBy: Option[String] = None,
 ariaLabelledBy: Option[String] = None,
 formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
 
-@import play.api.i18n._
-@import views.helpers.{InputTypeRadioGroupParams, InputTypeTextParams}
-@import views.html.helpers._
-
-
 @nationalIdPassportCore(passport : Field, nationalId : Field) = {
-    @awrsInputTypeText(
-        InputTypeTextParams(
-            passport,
-            inputId = passport.name,
-            label = messages("awrs.generic.passport_no"),
-            wrapperClass = "panel-indent",
-            maxLength = frontendDefaultLen,
-            required = true
-        )
+    @govukInput(Input(
+        label = Label(
+            content = Text(messages("awrs.generic.passport_no")),
+            classes = "govuk-label",
+        ),
+        attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+    ).withFormField(passport)
     )
-    Or
-    @awrsInputTypeText(
-        InputTypeTextParams(
-            nationalId,
-            parentForm = formInstance,
-            inputId = nationalId.name,
-            label = messages("awrs.generic.national_id_no"),
-            wrapperClass = "panel-indent",
-            maxLength = frontendDefaultLen,
-            required = true
-        )
+
+<p class="govuk-body">Or</p>
+
+    @govukInput(Input(
+        label = Label(
+            content = Text(messages("awrs.generic.national_id_no")),
+            classes = "govuk-label",
+        ),
+        // manually adding error message to field so that it is not duplicated in the error summary
+        errorMessage = if(formInstance.get.errors.map(_.message).contains("awrs.business_directors.error.non_resident.passport_no_and_nationalId_empty")) {
+            Some(ErrorMessage(content = Text(messages(formInstance.get.error(passport.name).get.message))))
+        } else None,
+        attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+    ).withFormField(nationalId)
     )
 }
 
@@ -61,7 +64,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
         case (Some(passport), Some(nationalId)) => {
             @someRadioField match {
                 case Some(radioField) => {
-                    <div id="@radioField.name-no-content">
+                    <div class ="govuk-form-group">
                         @nationalIdPassportCore(passport,nationalId)
                     </div>
                 }
@@ -79,47 +82,53 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             None
         }
 
-    awrsInputTypeText(
-        InputTypeTextParams(
-            ninoField,
-            parentForm = formInstance,
-            inputId = ninoField.name,
-            maxLength = frontendDefaultLen,
-            wrapperClass = wrapperClassSetting,
-            label = messages("awrs.director.NINO"),
-            required = true,
-            labelHighlight = true,
-            formHint = messages("awrs.generic.do_you_have_NINO_information"),
-            formHintId = "NINO-information",
-            ariaLabelledBy = ariaLabelledBy,
-            formHasErrors = formHasErrors
-        )
+    val (labelContent, labelClass) : (String, String) =
+        if (youOrThey == "you"){
+            (messages("awrs.sole.NINO"), "govuk-label--s")
+        }else {
+           (messages("awrs.organisation.NINO"), "govuk-label")
+    }
+
+    govukInput(Input(
+        label = Label(
+            content = Text(labelContent),
+            classes = labelClass,
+        ),
+        classes = "govuk-input--width-20",
+        hint = Some(Hint(id = "NINO-information", content = Text(messages("awrs.generic.do_you_have_NINO_information")))),
+        attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+    ).withFormField(ninoField)
     )
 }
 
 @withQuestion(questionField : Field) = {
-    @awrsInputTypeRadioGroup(
-        InputTypeRadioGroupParams(
-            questionField,
-            Seq("Yes" -> messages("awrs.generic.yes"),
-                "No" -> messages("awrs.generic.no")),
-            fieldSetAttributes = "id="+questionField.name+"_field",
-            legend = messages(s"awrs.generic.do_${youOrThey}_have_NINO"),
-            legendId = questionField.name+"-legend",
-            formHint = questionHintText,
-            formHintId = questionHintText match {
-                case None => None
-                case _ =>Some("Nino-question-hint")
-            },
-            fieldSetClass = "inline",
-            ariaDescribedBy = ariaDescribedBy,
-            formHasErrors = formHasErrors
+
+@govukRadios(
+    Radios(
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+                content = Text(messages(s"awrs.generic.do_${youOrThey}_have_NINO")),
+                classes = "govuk-fieldset__legend--s",
+            ))
+        )),
+        hint = questionHintText match {
+            case Some(text) => Some(Hint(id = Some("Nino-question-hint"), content = Text(text)))
+            case _ => None
+        },
+        items = Seq(
+            RadioItem(
+                content = Text(messages("awrs.generic.yes")),
+                value = Some("Yes"),
+                conditionalHtml = Some(core(withQuestion = true))
+            ),
+            RadioItem(
+                content = Text(messages("awrs.generic.no")),
+                value = Some("No"),
+                conditionalHtml = Some(nationalIdPassport)
+            )
         )
-    )
-    <div id="@questionField.name-yes-content">
-        @core(withQuestion = true)
-    </div>
-    @nationalIdPassport
+    ).withFormField(questionField)
+)
 }
 
 @withoutQuestion = {
@@ -127,7 +136,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
     @nationalIdPassport
 }
 
-<div class="form-group">
+<div class="govuk-form-group">
     @someRadioField match {
         case Some(radioField) => {@withQuestion(radioField)}
         case _ => {@withoutQuestion}

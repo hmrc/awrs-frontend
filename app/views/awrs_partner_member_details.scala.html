@@ -18,14 +18,28 @@
 @import forms.AWRSEnums._
 @import play.twirl.api.Html
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    awrsIdUTRHelper: awrsIdUTRHelper,
+    awrsIdVRNHelper: awrsIdVRNHelper,
+    awrsIdNINOHelper: awrsIdNINOHelper,
+    awrsIdCRNHelper: awrsIdCRNHelper,
+    awrsAddressHelper: awrsAddressHelper,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    govukDetails : GovukDetails,
+    govukInput : GovukInput)
+
 @(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -40,8 +54,8 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -71,106 +85,152 @@
     @someText match {
         case None => {}
         case Some(text) => {
-            <h2 id="partner-heading" class="heading-medium">@text</h2>
+            <h2 id="partner-heading" class="govuk-heading-m">@text</h2>
         }
     }
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
-    <div class="grid">
-        <div class="grid grid-2-3">
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
+
             @backLinkHelper(BackLinkParams(
                 sectionName = partnersName
             ))
-            @errorSummaryTemplate(partnerForm)
+    @if(partnerForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(partnerForm,
+        mapping = Map(
+            "companyRegDetails.dateOfIncorporation" -> "companyRegDetails.dateOfIncorporation.day",
+            "entityType" -> "entityType-individual",
+            "companyNames.doYouHaveTradingName" -> "companyNames.doYouHaveTradingName-yes")))
+    }
             <header class="page-header">
-                <h1 id="business_partner-title" class="heading-xlarge">@h1text</h1>
-                @awrsProgressHelper(businessType, partnersName)
+                @awrsProgressHelper(businessType, partnersName)<br>
+                <h1 id="business_partner-title" class="govuk-heading-xl">@h1text</h1>
             </header>
-            <p id="business_partners-subtext" class="lede">@messages("awrs.business-partner.topText")</p>
+            <p id="business_partners-subtext" class="govuk-body-l">@messages("awrs.business-partner.topText")</p>
             @formWithCSRF(action = actionRoute) {
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        partnerForm("entityType"),
-                        Seq(IndividualString -> messages("awrs.business-partner.entityType_individual"),
-                            CorporateBodyString -> messages("awrs.business-partner.entityType_corporate_body"),
-                            SoleTraderString -> messages("awrs.business-partner.entityType_sole_trader")
-                        ),
-                        legend = messages("awrs.business-partner.partner_role"),
-                        legendId = "partnerMember-legend",
-                        fieldSetClass = "form-group",
-                        fieldSetAttributes = "id=entityType_field",
-                        formHint = messages("awrs.business-partner.role_hint_text"),
-                        formHintId = "partner_role-hint",
-                        fieldSetQuestion = messages("awrs.business-partner.role_question_text"),
-                        fieldSetQuestionId = "entity-HelpLink",
-                        fieldSetQuestionAnswer = Html(messages("awrs.business-partner.role_help_text", "<br><br>")),
-                        fieldSetQuestionWrapperClass = "panel-indent"
+
+
+            <div class="govuk-form-group">
+
+                 @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    classes = "govuk-fieldset__legend--s",
+                                    content = Text(messages("awrs.business-partner.partner_role"))
+                                )),
+
+                                attributes = Map("id" ->"entityType_field")
+                            )),
+                            hint = Some(Hint(
+                                content = Text(messages("awrs.business-partner.role_hint_text")),
+                                id = Some("partner_role-hint")
+                            )),
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(messages("awrs.business-partner.entityType_individual")),
+                                    value = Some(IndividualString),
+                                    id = "entityType-individual"
+                                ),
+                                RadioItem(
+                                    content = Text(messages("awrs.business-partner.entityType_corporate_body")),
+                                    value = Some(CorporateBodyString),
+                                    id = "entityType-corporate_body"
+                                ),
+                                RadioItem(
+                                    content = Text(messages("awrs.business-partner.entityType_sole_trader")),
+                                    value = Some(SoleTraderString),
+                                    id = "entityType-sole_trader"
+                                )
+                            )
+                        ).withFormField(partnerForm("entityType"))
                     )
-                )
-                <div class="form-group">
+                </div>
+                @govukDetails(Details(
+                    attributes = Map("id" -> "entity-HelpLinkAnswer"),
+                    summary = Text(messages("awrs.business-partner.role_question_text")),
+                    content = HtmlContent(messages("awrs.business-partner.role_help_text", "<br><br>"))
+                ))
+
+                <div>
                     <div class="individual sole_trader">
-                        @awrsInputTypeText(
-                            InputTypeTextParams(
-                                partnerForm("firstName"),
-                                maxLength = applicationConfig.firstNameLen.toString,
-                                required = true,
-                                label = messages("awrs.generic.first_name"),
-                                labelHighlight = true
-                            )
+
+                        @govukInput(
+                            Input(
+                                label = Label(
+                                    classes = "govuk-label",
+                                    content = Text(Messages("awrs.generic.first_name"))
+                                ),
+                                attributes = Map("maxLength" -> applicationConfig.firstNameLen.toString, "aria-required" -> "true" )
+                            ).withFormField(partnerForm("firstName"))
                         )
-                        @awrsInputTypeText(
-                            InputTypeTextParams(
-                                partnerForm("lastName"),
-                                maxLength = applicationConfig.lastNameLen.toString,
-                                required = true,
-                                label = messages("awrs.generic.surname"),
-                                labelHighlight = true
-                            )
+
+                        @govukInput(
+                            Input(
+                                label = Label(
+                                    classes = "govuk-label",
+                                    content = Text(Messages("awrs.generic.surname"))
+                                ),
+                                attributes = Map("maxLength" -> applicationConfig.lastNameLen.toString, "aria-required" -> "true" )
+                            ).withFormField(partnerForm("lastName"))
                         )
                     </div>
 
                     <div class="corporate_body">
-                        @awrsInputTypeText(
-                            InputTypeTextParams(
-                                partnerForm("companyNames.businessName"),
-                                inputId = "companyNames.businessName",
-                                label = messages("awrs.generic.business_name"),
-                                maxLength = applicationConfig.companyNameLen.toString,
-                                required = true,
-                                labelHighlight = true
-                            )
+
+                         @govukInput(
+                            Input(
+                                label = Label(
+                                    classes = "govuk-label--s",
+                                    content = Text(Messages("awrs.generic.business_name"))
+                                ),
+                                attributes = Map("maxLength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true" )
+                            ).withFormField(partnerForm("companyNames.businessName"))
                         )
                     </div>
-                    <div class="form-group">
+
                         <div class="corporate_body sole_trader">
-                            @awrsInputTypeRadioGroup(
-                                InputTypeRadioGroupParams(
-                                    partnerForm("companyNames.doYouHaveTradingName"),
-                                    Seq("Yes" -> messages("awrs.generic.yes"),
-                                        "No" -> messages("awrs.generic.no")),
-                                    fieldSetClass = "inline",
-                                    fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
-                                    legend = messages("awrs.generic.do_they_have_trading_name"),
-                                    legendId = "companyNames.doYouHaveTradingName-legend"
+
+                        @govukRadios(
+                            Radios(
+                                fieldset = Some(Fieldset(
+                                    legend = Some(Legend(
+                                        classes = "govuk-fieldset__legend--s",
+                                        content = Text(messages("awrs.generic.do_they_have_trading_name"))
+                                    )),
+
+                                    attributes = Map("id" ->"companyNames.doYouHaveTradingName_field")
+                                )),
+                                items = Seq(
+                                    RadioItem(
+                                        content = Text(messages("awrs.generic.yes")),
+                                        value = Some("Yes"),
+                                        id = "companyNames.doYouHaveTradingName-yes"
+                                    ),
+                                    RadioItem(
+                                        content = Text(messages("awrs.generic.no")),
+                                        value = Some("No"),
+                                        id = "companyNames.doYouHaveTradingName-no"
+                                    )
                                 )
-                            )
+                            ).withFormField(partnerForm("companyNames.doYouHaveTradingName"))
+                        )
                             <div id="companyNames.doYouHaveTradingName-yes-content">
-                            @awrsInputTypeText(
-                                InputTypeTextParams(
-                                    partnerForm("companyNames.tradingName"),
-                                    inputId = "companyNames.tradingName",
-                                    label = messages("awrs.generic.trading_name"),
-                                    maxLength = applicationConfig.tradingNameLen.toString,
-                                    required = true,
-                                    labelHighlight = true,
-                                    wrapperClass = "panel-indent"
+
+                                @govukInput(
+                                    Input(
+                                        label = Label(
+                                            classes = "govuk-label",
+                                            content = Text(Messages("awrs.generic.trading"))
+                                        ),
+                                        attributes = Map("maxLength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true" )
+                                    ).withFormField(partnerForm("companyNames.tradingName"))
                                 )
-                            )
+
                             </div>
                         </div>
-                    </div>
+
                     <div id="businessPartnerAddress" class="individual corporate_body sole_trader">
                         @awrsAddressHelper(partnerForm("partnerAddress"),
                             AddressHelperParams()
@@ -180,7 +240,6 @@
                     <div class="corporate_body sole_trader">
                         @awrsIdUTRHelper(
                             businessType,
-                            None,
                             partnerForm("utr"),
                             youOrThey = "they",
                             ariaLabelledBy = "utr_field utr-information",
@@ -200,7 +259,6 @@
 
                     <div class="corporate_body">
                         @awrsIdCRNHelper(
-                            None,
                             partnerForm("companyRegDetails.companyRegistrationNumber"),
                             dateField = Some(partnerForm("companyRegDetails.dateOfIncorporation")),
                             youOrThey = "they",
@@ -223,18 +281,31 @@
                         <input type="hidden" name="otherPartners" value="Yes">
                     } else {
                         @if(!isEditMode) {
-                            <div class="form-group" id="businessPartner.otherPartners">
-                            @awrsInputTypeRadioGroup(
-                                InputTypeRadioGroupParams(
-                                    partnerForm("otherPartners"),
-                                    Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                                        messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                                    legend = messages("awrs.business-partner.add_more_partners"),
-                                    legendId = "otherPartners",
-                                    fieldSetAttributes = "id=otherPartners_field",
-                                    fieldSetClass = "inline"
+                            <div class="govuk-form-group" id="businessPartner.otherPartners">
+
+                                @govukRadios(
+                                    Radios(
+                                        fieldset = Some(Fieldset(
+                                            legend = Some(Legend(
+                                                classes = "govuk-fieldset__legend--s",
+                                                content = Text(messages("awrs.business-partner.add_more_partners"))
+                                            )),
+
+                                            attributes = Map("id" ->"otherPartners_field")
+                                        )),
+                                        items = Seq(
+                                            RadioItem(
+                                                content = Text(messages("awrs.generic.yes")),
+                                                value = Some("Yes")
+                                            ),
+                                            RadioItem(
+                                                content = Text(messages("awrs.generic.no")),
+                                                value = Some("No")
+                                            )
+                                        )
+                                    ).withFormField(partnerForm("otherPartners"))
                                 )
-                            )
+
                             </div>
                         } else {
                             <input type="hidden" name="otherPartners" value="No">
@@ -247,11 +318,6 @@
                         submitId = "save-and-continue"
                     ))
                 }
-            </div>
-        </div>
     </div>
+
 }
-
-
-
-

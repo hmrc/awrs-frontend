@@ -15,26 +15,23 @@
  *@
 
 @(printFriendly: Boolean = false)(implicit messages: Messages)
-@import scala.util.Try
 @import views.html.helpers._
-@import views.helpers._
-<div class="form-group">
-    <div>
-        <p>@Messages(f"awrs.application_status.info.approved.line1")</p>
-        <p>@Messages(f"awrs.application_status.info.approved.line2")</p>
-        <h2 class="heading-medium">@Messages(f"awrs.application_status.info.approved.heading1")</h2>
-        <p>@Messages(f"awrs.application_status.info.approved.line3")</p>
-        <p>@Messages(f"awrs.application_status.info.approved.line4")</p>
-        <ul class="list-bullet">
-            <li>@Messages(f"awrs.application_status.info.approved.line4.1")</li>
-            <li>@Messages(f"awrs.application_status.info.approved.line4.2")</li>
-        </ul>
-        <p>@Messages(f"awrs.application_status.info.approved.line5")</p>
-        <h2 class="heading-medium">@Messages(f"awrs.application_status.info.approved.heading2")</h2>
-        <p>@Messages(f"awrs.application_status.info.approved.line6")</p>
-        @printFriendly match {
-            case false => {@awrsStatusPageSignInPara(messages)}
-            case true => {}
-        }
-    </div>
-</div>
+
+<p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line1")</p>
+<p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line2")</p>
+<h2 class="govuk-heading-m">@Messages(f"awrs.application_status.info.approved.heading1")</h2>
+<p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line3")</p>
+<p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line4")</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>@Messages(f"awrs.application_status.info.approved.line4.1")</li>
+    <li>@Messages(f"awrs.application_status.info.approved.line4.2")</li>
+</ul>
+<p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line5")</p>
+<h2 class="govuk-heading-m">@Messages(f"awrs.application_status.info.approved.heading2")</h2>
+<p class="govuk-body print-only" aria-hidden="true">@Messages(f"awrs.application_status.info.approved.line6_print")</p>
+<p class="govuk-body print-hidden">@Html(messages("awrs.application_status.info.approved.line6","<a class='govuk-link' href='https://www.tax.service.gov.uk/check-the-awrs-register'>","</a>"))</p>
+<p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line7")</p>
+@printFriendly match {
+    case false => {@awrsStatusPageSignInPara(messages)}
+    case true => {}
+}

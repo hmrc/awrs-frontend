@@ -17,21 +17,15 @@
 package controllers
 
 import builders.SessionBuilder
-import forms.{BusinessRegistrationDetailsForm, PlaceOfBusinessForm}
+import forms.PlaceOfBusinessForm
 import models._
-import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
-import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.{BusinessMatchingService, ServicesUnitTestFixture}
-import utils.TestConstants._
+import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
-import views.Configuration.NewApplicationMode
 
 import scala.concurrent.Future
 

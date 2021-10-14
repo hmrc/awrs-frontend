@@ -16,9 +16,9 @@
 
 package forms.validation.util
 
-import forms.validation.util.ConstraintUtil.{FieldFormatConstraintParameter, FieldIsEmptyConstraintParameter, FieldMaxLengthConstraintParameter}
+import forms.validation.util.ConstraintUtil.FieldIsEmptyConstraintParameter
 import forms.validation.util.ErrorMessageFactory._
-import play.api.data.validation.{Invalid, Valid}
+import play.api.data.validation.Invalid
 
 
 object ErrorMessagesUtilAPI {
@@ -37,33 +37,5 @@ object ErrorMessagesUtilAPI {
 
   def simpleFieldIsEmptyConstraintParameter(fieldId: String, msgId: String): FieldIsEmptyConstraintParameter =
     FieldIsEmptyConstraintParameter(simpleErrorMessage(fieldId, msgId))
-
-
-  def genericInvalidFormatConstraintParameter(validationFunction: (String) => Boolean, fieldId: String, fieldNameInErrorMessage: String, errorMsg: String = "awrs.generic.error.character_invalid"): Seq[FieldFormatConstraintParameter] =
-    Seq[FieldFormatConstraintParameter](
-      FieldFormatConstraintParameter(
-        (name: String) => if (validationFunction(name)) {
-          Valid
-        } else {
-          createErrorMessage(
-            TargetFieldIds(fieldId),
-            FieldErrorConfig(errorMsg),
-            SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage)))
-        }
-      )
-    )
-
-  def genericFieldMaxLengthConstraintParameter(maxLen: Int, fieldId: String, fieldNameInErrorMessage: String): FieldMaxLengthConstraintParameter =
-    FieldMaxLengthConstraintParameter(maxLen,
-      createErrorMessage(TargetFieldIds(fieldId),
-        FieldErrorConfig("awrs.generic.error.maximum_length",
-          MessageArguments(fieldNameInErrorMessage, maxLen)),
-        SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage, maxLen))))
-
-  def genericFieldMaxLengthConstraintParameterForDifferentMessages(maxLen: Int, fieldId: String, fieldNameInErrorMessage: String, errorMsg: String = "awrs.generic.error.character_invalid"): FieldMaxLengthConstraintParameter =
-    FieldMaxLengthConstraintParameter(maxLen,
-      createErrorMessage(TargetFieldIds(fieldId),
-        FieldErrorConfig(errorMsg,MessageArguments(fieldNameInErrorMessage, maxLen)),
-        SummaryErrorConfig(MessageArguments(fieldNameInErrorMessage, maxLen))))
 
 }

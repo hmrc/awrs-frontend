@@ -17,13 +17,16 @@
 package models
 
 import java.text.SimpleDateFormat
+import java.util.Date
 
 import forms.AWRSEnums.{ApplicationStatusEnum, BooleanRadioEnum}
-import forms.AwrsFormFields
+import forms.{AWRSEnums, AwrsFormFields}
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import org.joda.time.{LocalDate, LocalDateTime}
 import play.api.libs.json._
 import utils.AwrsFieldConfig
+
+import scala.language.implicitConversions
 
 trait ModelVersionControl {
   def modelVersion: String
@@ -122,9 +125,9 @@ case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleD
 case class TupleDate(day: String, month: String, year: String) {
   lazy val localDate = new LocalDate(year.toInt, month.toInt, day.toInt)
 
-  lazy val date = localDate.toDate
+  lazy val date: Date = localDate.toDate
 
-  def toString(format: String) = new SimpleDateFormat(format).format(date)
+  def toString(format: String): String = new SimpleDateFormat(format).format(date)
 }
 
 case class AdditionalBusinessPremises(additionalPremises: Option[String], additionalAddress: Option[Address], addAnother: Option[String])
@@ -172,7 +175,7 @@ case class Address(
                     addressCountryCode: Option[String] = None
                   ) {
 
-  override def toString = {
+  override def toString: String = {
     val line3display = addressLine3.map(line3 => s"$line3, ").getOrElse("")
     val line4display = addressLine4.map(line4 => s"$line4, ").getOrElse("")
     val postcodeDisplay = postcode.map(postcode1 => s"$postcode1, ").getOrElse("")
@@ -215,7 +218,7 @@ case class BCAddress(
                       postcode: Option[String] = None,
                       country: Option[String] = None) {
 
-  override def toString = {
+  override def toString: String = {
     val line3display = line_3.map(line3 => s"$line3, ").getOrElse("")
     val line4display = line_4.map(line4 => s"$line4, ").getOrElse("")
     val postcodeDisplay = postcode.map(postcode1 => s"$postcode1, ").getOrElse("")
@@ -305,38 +308,23 @@ case class ChangeIndicators(businessDetailsChanged: Boolean = false,
                             groupMembersChanged: Boolean = false,
                             declarationChanged: Boolean = false)
 
-case class Survey(visitReason: Option[String],
-                  easeOfAccess: Option[String],
-                  easeOfUse: Option[String],
-                  satisfactionRating: Option[String],
-                  helpNeeded: Option[String],
-                  howDidYouFindOut: Option[String],
-                  comments: Option[String],
-                  contactFullName: Option[String],
-                  contactEmail: Option[String],
-                  contactTelephone: Option[String]
-                 )
-
-case class Feedback(visitReason: Option[String],
-                    satisfactionRating: Option[String],
-                    comments: Option[String])
 
 object ApplicationStatus {
   val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
 
-  val jodaDateTimeReads = Reads[LocalDateTime](js =>
+  val jodaDateTimeReads: Reads[LocalDateTime] = Reads[LocalDateTime](js =>
     js.validate[String].map[LocalDateTime](dtString =>
       LocalDateTime.parse(dtString, DateTimeFormat.forPattern(dateFormat))
     )
   )
 
-  val enumReads = Reads[ApplicationStatusEnum.Value](js =>
+  val enumReads: Reads[AWRSEnums.ApplicationStatusEnum.Value] = Reads[ApplicationStatusEnum.Value](js =>
     js.validate[String].map[ApplicationStatusEnum.Value](enum =>
       ApplicationStatusEnum.withName(enum)
     )
   )
 
-  implicit val writer = new Writes[ApplicationStatus] {
+  implicit val writer: Writes[ApplicationStatus] = new Writes[ApplicationStatus] {
     def writes(applicationStatus: ApplicationStatus): JsValue = {
       Json.obj()
         .++(Json.obj("status" -> applicationStatus.status.toString)
@@ -344,7 +332,7 @@ object ApplicationStatus {
     }
   }
 
-  implicit val reader = new Reads[ApplicationStatus] {
+  implicit val reader: Reads[ApplicationStatus] = new Reads[ApplicationStatus] {
     def reads(js: JsValue): JsResult[ApplicationStatus] = {
       for {
         status <- (js \ "status").validate[ApplicationStatusEnum.Value](enumReads)
@@ -357,23 +345,23 @@ object ApplicationStatus {
 }
 
 object SectionChangeIndicators {
-  implicit val formats = Json.format[SectionChangeIndicators]
+  implicit val formats: OFormat[SectionChangeIndicators] = Json.format[SectionChangeIndicators]
 }
 
 object ChangeIndicators {
-  implicit val formats = Json.format[ChangeIndicators]
+  implicit val formats: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
 }
 
 object BCAddress {
-  implicit val formats = Json.format[BCAddress]
+  implicit val formats: OFormat[BCAddress] = Json.format[BCAddress]
 }
 
 object BusinessCustomerDetails {
-  implicit val formats = Json.format[BusinessCustomerDetails]
+  implicit val formats: OFormat[BusinessCustomerDetails] = Json.format[BusinessCustomerDetails]
 }
 
 object TupleDate {
-  implicit val formats = Json.format[TupleDate]
+  implicit val formats: OFormat[TupleDate] = Json.format[TupleDate]
 
   implicit def convert(date: LocalDate): TupleDate = TupleDate("%02d".format(date.getDayOfMonth), "%02d".format(date.getMonthOfYear), "%04d".format(date.getYear))
 }
@@ -488,15 +476,15 @@ object Partner {
 
 object Partners {
   val latestModelVersion = "1.0"
-  implicit val formats = Json.format[Partners]
+  implicit val formats: OFormat[Partners] = Json.format[Partners]
 }
 
 object AdditionalBusinessPremises {
-  implicit val formats = Json.format[AdditionalBusinessPremises]
+  implicit val formats: OFormat[AdditionalBusinessPremises] = Json.format[AdditionalBusinessPremises]
 }
 
 object AdditionalBusinessPremisesList {
-  implicit val formats = Json.format[AdditionalBusinessPremisesList]
+  implicit val formats: OFormat[AdditionalBusinessPremisesList] = Json.format[AdditionalBusinessPremisesList]
 }
 
 object BusinessDirector {
@@ -509,32 +497,32 @@ object BusinessDirectors {
 }
 
 object Supplier {
-  implicit val formats = Json.format[Supplier]
+  implicit val formats: OFormat[Supplier] = Json.format[Supplier]
 }
 
 object Suppliers {
-  implicit val formats = Json.format[Suppliers]
+  implicit val formats: OFormat[Suppliers] = Json.format[Suppliers]
 }
 
 object BusinessType {
-  implicit val formats = Json.format[BusinessType]
+  implicit val formats: OFormat[BusinessType] = Json.format[BusinessType]
 }
 
 object ApplicationDeclaration {
-  implicit val formats = Json.format[ApplicationDeclaration]
+  implicit val formats: OFormat[ApplicationDeclaration] = Json.format[ApplicationDeclaration]
 }
 
 object GroupDeclaration {
-  implicit val formats = Json.format[GroupDeclaration]
+  implicit val formats: OFormat[GroupDeclaration] = Json.format[GroupDeclaration]
 }
 
 object GroupMember {
-  implicit val formats = Json.format[GroupMember]
+  implicit val formats: OFormat[GroupMember] = Json.format[GroupMember]
 }
 
 object GroupMembers {
   val latestModelVersion = "1.0"
-  implicit val formats = Json.format[GroupMembers]
+  implicit val formats: OFormat[GroupMembers] = Json.format[GroupMembers]
 }
 
 // This can be replaced by an implicit format if CapGemini update their schema
@@ -636,8 +624,8 @@ object TradingActivity_old extends AwrsFieldConfig {
 // This can be replaced by an implicit format if CapGemini update their schema
 object TradingActivity extends AwrsFieldConfig {
 
-  val Producer = ("Producer", "04")
-  val Broker = ("Broker", "05")
+  val Producer: (String, String) = ("Producer", "04")
+  val Broker: (String, String) = ("Broker", "05")
   val Other = "99"
   val Delimiter = " "
 
@@ -738,38 +726,30 @@ object TradingActivity extends AwrsFieldConfig {
 }
 
 object Products {
-  implicit val formats = Json.format[Products]
+  implicit val formats: OFormat[Products] = Json.format[Products]
 }
 
 object SubscriptionTypeFrontEnd {
   val latestModelVersion = "1.1"
 
-  implicit val formats = Json.format[SubscriptionTypeFrontEnd]
+  implicit val formats: OFormat[SubscriptionTypeFrontEnd] = Json.format[SubscriptionTypeFrontEnd]
 }
 
 object AWRSFEModel {
-  implicit val formats = Json.format[AWRSFEModel]
-}
-
-object Survey {
-  implicit val formats = Json.format[Survey]
-}
-
-object Feedback {
-  implicit val formats = Json.format[Feedback]
+  implicit val formats: OFormat[AWRSFEModel] = Json.format[AWRSFEModel]
 }
 
 object WithdrawalConfirmation {
-  implicit val formats = Json.format[WithdrawalConfirmation]
+  implicit val formats: OFormat[WithdrawalConfirmation] = Json.format[WithdrawalConfirmation]
 }
 
 object WithdrawalReason {
-  implicit val formats = Json.format[WithdrawalReason]
-  implicit val optionFormats = Format.optionWithNull[WithdrawalReason]
+  implicit val formats: OFormat[WithdrawalReason] = Json.format[WithdrawalReason]
+  implicit val optionFormats: Format[Option[WithdrawalReason]] = Format.optionWithNull[WithdrawalReason]
 }
 
 object ReapplicationConfirmation {
-  implicit val formats = Json.format[ReapplicationConfirmation]
+  implicit val formats: OFormat[ReapplicationConfirmation] = Json.format[ReapplicationConfirmation]
 }
 
 object DeleteConfirmation {

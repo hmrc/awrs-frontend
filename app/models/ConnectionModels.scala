@@ -16,58 +16,58 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class SuccessfulSubscriptionResponse(processingDate: String, awrsRegistrationNumber: String, etmpFormBundleNumber: String)
 
 object SuccessfulSubscriptionResponse {
-  implicit val formats = Json.format[SuccessfulSubscriptionResponse]
+  implicit val formats: OFormat[SuccessfulSubscriptionResponse] = Json.format[SuccessfulSubscriptionResponse]
 }
 case class SelfHealSubscriptionResponse(regimeRefNumber: String)
 
 object SelfHealSubscriptionResponse {
-  implicit val formats = Json.format[SelfHealSubscriptionResponse]
+  implicit val formats: OFormat[SelfHealSubscriptionResponse] = Json.format[SelfHealSubscriptionResponse]
 }
 
 case class EnrolRequest(portalId: String, serviceName: String, friendlyName: String, knownFacts: Seq[String])
 
 object EnrolRequest {
-  implicit val formats = Json.format[EnrolRequest]
+  implicit val formats: OFormat[EnrolRequest] = Json.format[EnrolRequest]
 }
 
 case class Identifier(`type`: String, value: String)
 
 object Identifier {
-  implicit val formats = Json.format[Identifier]
+  implicit val formats: OFormat[Identifier] = Json.format[Identifier]
 }
 
 case class EnrolResponse(serviceName: String, state: String, identifiers: Seq[Identifier])
 
 object EnrolResponse {
-  implicit val formats = Json.format[EnrolResponse]
+  implicit val formats: OFormat[EnrolResponse] = Json.format[EnrolResponse]
 }
 
 case class SuccessfulUpdateSubscriptionResponse(processingDate: String, etmpFormBundleNumber: String)
 
 object SuccessfulUpdateSubscriptionResponse {
-  implicit val formats = Json.format[SuccessfulUpdateSubscriptionResponse]
+  implicit val formats: OFormat[SuccessfulUpdateSubscriptionResponse] = Json.format[SuccessfulUpdateSubscriptionResponse]
 }
 
 case class SuccessfulUpdateGroupBusinessPartnerResponse(processingDate: String)
 
 object SuccessfulUpdateGroupBusinessPartnerResponse {
-  implicit val formats = Json.format[SuccessfulUpdateGroupBusinessPartnerResponse]
+  implicit val formats: OFormat[SuccessfulUpdateGroupBusinessPartnerResponse] = Json.format[SuccessfulUpdateGroupBusinessPartnerResponse]
 }
 
 case class WithdrawalResponse(processingDate: String)
 
 object WithdrawalResponse {
-  implicit val formats = Json.format[WithdrawalResponse]
+  implicit val formats: OFormat[WithdrawalResponse] = Json.format[WithdrawalResponse]
 }
 
 // de-enroll
 case class DeEnrolRequest(keepAgentAllocations: Boolean)
 
 object DeEnrolRequest {
-  implicit val format = Json.format[DeEnrolRequest]
+  implicit val format: OFormat[DeEnrolRequest] = Json.format[DeEnrolRequest]
 }

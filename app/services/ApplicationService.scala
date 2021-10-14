@@ -376,7 +376,9 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       val premisesChanged: Boolean = if (data.additionalPremises.isDefined) {
         val dataAdditionalPremises = Some(AdditionalBusinessPremisesList(data.additionalPremises.get.premises.drop(1)))
         !dataAdditionalPremises.equals(additionalPremises)
-      } else false
+      } else {
+        false
+      }
 
       val suppliersChanged: Boolean = if (data.suppliers.isDefined) {
         val suppliersLst = suppliers.get.suppliers
@@ -390,12 +392,16 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
           case _ => List()
         }
         !data.suppliers.get.suppliers.equals(formAddressSupplier)
-      } else false
+      } else {
+          false
+        }
 
       val declarationChanged: Boolean = if (data.applicationDeclaration.isDefined) {
         val appDeclaration = applicationDeclaration.map(appDec => appDec.copy(confirmation = None))
         !data.applicationDeclaration.equals(appDeclaration)
-      } else false
+      } else {
+          false
+        }
 
       val coOfficialsChanged: Boolean = if (data.businessDirectors.isDefined) !data.businessDirectors.equals(businessDirectors) else false
 
@@ -408,7 +414,9 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
           typeOfAlcoholOrders = addDetails.typeOfAlcoholOrders.sortAndFilterWith(AwrsFormFields.orders)))
 
         !formTradingActivity.equals(savedTradingActivity)
-      } else false
+      } else {
+          false
+        }
 
       val productsChanged: Boolean = if (data.products.isDefined) {
 
@@ -419,7 +427,9 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
           productType = addDetails.productType.sortAndFilterWith(AwrsFormFields.products)))
 
         !formProducts.equals(savedProducts)
-      } else false
+      } else {
+          false
+        }
 
       val groupMemberDetailsChanged: Boolean = if (data.groupMembers.isDefined) !data.groupMembers.equals(groupMemberDetails) else false
 

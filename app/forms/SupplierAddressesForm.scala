@@ -26,6 +26,7 @@ import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.Supplier
 import play.api.data.Forms._
+import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{Form, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
@@ -48,8 +49,8 @@ object SupplierAddressesForm extends AwrsFieldConfig {
     val supplierNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.supplier-addresses.error.supplier_name_blank"),
-        genericFieldMaxLengthConstraintParameter(supplierNameLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId = "supplierName", fieldNameInErrorMessage)
+        FieldMaxLengthConstraintParameter(supplierNameLen, Invalid("awrs.generic.error.maximum_length", fieldNameInErrorMessage, supplierNameLen)),
+        FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage))
       )
     compulsoryText(supplierNameConstraintParameters)
   }

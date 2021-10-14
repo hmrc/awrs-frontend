@@ -15,4 +15,7 @@
  *@
 
 @(implicit messages: Messages)
-<p><br/><a id="sign-in-to-view" class="button print-hidden" role="button" href="@controllers.routes.IndexController.showIndex">@Messages("awrs.generic.application_status_continue")</a></p>
+<a id="sign-in-to-view" class="govuk-button print-hidden" role="button" data-module="govuk-button" href="@controllers.routes.IndexController.showIndex">
+ @Messages("awrs.generic.application_status_continue")
+</a>
+<br/>

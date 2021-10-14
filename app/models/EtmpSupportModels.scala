@@ -34,7 +34,7 @@ case class BusinessDetailsSupport(missingProposedStartDate: Boolean)
 
 object BusinessDetailsSupport {
 
-  implicit val format = Json.format[BusinessDetailsSupport]
+  implicit val format: OFormat[BusinessDetailsSupport] = Json.format[BusinessDetailsSupport]
 
   def evaluate(newAWBusiness: NewAWBusiness): BusinessDetailsSupport = {
     val missing: Boolean =

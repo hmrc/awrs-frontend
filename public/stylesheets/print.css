@@ -1,0 +1,27 @@
+* {
+	font-family: "GDS Transport",arial,sans-serif;
+}
+
+/* Hide unnecessary elements */
+.cbanner-govuk-cookie-banner,
+.govuk-skip-link,
+.govuk-header,
+footer,
+.govuk-link,
+.govuk-button,
+.govuk-phase-banner {
+	display: none;
+}
+
+@media print {
+
+  /* visible when printed */
+  .print-only {
+    display: block;
+  }
+  #section-text {
+    width: 70%;
+  }
+
+
+}

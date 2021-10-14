@@ -14,17 +14,15 @@
  * limitations under the License.
  *@
 
-
+@import _root_.utils.AwrsNumberFormatter
 @import config.ApplicationConfig
 @import controllers.util.UnSubmittedChangesBannerParam
 @import models.FormBundleStatus._
 @import models._
 @import play.twirl.api.Html
 @import views.html.helpers._
-@import views.html.includes.awrs_main
-@import _root_.utils.AwrsNumberFormatter
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @(
     awrsRef: Option[String],
     hasApplicationChanged: Boolean,
@@ -52,31 +50,29 @@
     messages("awrs.index_page.top_heading", businessName)
 }
 
-    
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.index_page.application")), nameBusiness = Some(businessName), userLoggedIn = true){
-
-    <div class="grid">
+       <div>
        @changesBanner
-        <div class="grid grid-2-3">
-            <h1 id="index-top-heading" class="heading-xlarge">@pageHeading</h1>
+            <br>
+            <h1 class="govuk-heading-xl">@pageHeading</h1>
                 @someStatus match {
                     case Some(status) => {
-                        <h2 class="heading-medium" id="application-status">@messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h2>
-                        <p class="font-xsmall">
-                            <a id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">
+                        <h2 class="govuk-heading-m" id="application-status">@messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h2>
+                        <p class="govuk-body">
+                            <a class="govuk-link" id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">
                                 @messages("awrs.index_page.view_application_status_link_text")
                             </a>
                         </p>
                         @if(status.formBundleStatus.name == Pending.name){
-                            <p class="font-xsmall">
-                                <a id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@messages("awrs.index_page.withdraw_link")
+                            <p class="govuk-body">
+                                <a class="govuk-link" id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@messages("awrs.index_page.withdraw_link")
                                 </a>
                             </p>
                         }
                     }
                     case None => {
 
-                        <h2 class="heading-medium" id="application-status">@messages("awrs.index_page.draft") @messages("awrs.index_page.application_status_text").toLowerCase</h2>
+                        <h2 class="govuk-heading-m" id="application-status">@messages("awrs.index_page.draft") @messages("awrs.index_page.application_status_text").toLowerCase</h2>
                     }
                 }
 
@@ -86,12 +82,12 @@
                         case Approved | ApprovedWithConditions => {
                             @awrsRef match {
                                 case Some(ref) => {
-                                    <p id="awrsRefNo">@messages("awrs.index_page.awrs_ref")<br>@{AwrsNumberFormatter.format(ref)}</p>
+                                    <p class="govuk-body" id="awrsRefNo">@messages("awrs.index_page.awrs_ref")<br>@{AwrsNumberFormatter.format(ref)}</p>
                                 }
                                 case _ => {}
                             }
-                            <p class="font-xsmall">
-                                <a id="de_reg_page_link" href="@routes.DeRegistrationController.showReason">@messages("awrs.index_page.de_registration_link")</a>
+                            <p class="govuk-body">
+                                <a id="de_reg_page_link" class="govuk-link" href="@routes.DeRegistrationController.showReason">@messages("awrs.index_page.de_registration_link")</a>
                             </p>
                         }
                         case _ => {}
@@ -101,77 +97,73 @@
                 case _ => {}
             }
             @if(showOneViewLink) {
-                <div class="form-group">
-                    <a id="view-application"
+                <p class="govuk-body">
+                    <a class="govuk-link" id="view-application"
                     href="@controllers.routes.ViewApplicationController.show(false)">
                     @messages("awrs.generic.print_application")
                     </a>
-                </div>
+                </p>
             }
 
-            <p id="applicationInfo">@messages("awrs.index_page.topText")</p>
+            <p class="govuk-body" id="applicationInfo">@messages("awrs.index_page.topText")</p>
 
-            <div class="form-group">
-                <table id="index-table">
-                    <thead>
-                        <tr>
-                            <th id="section-text">@messages("awrs.index_page.section_text")</th>
-                            <th id="status-text">@messages("awrs.index_page.status_text")</th>
-                            <th id="action-text">@messages("awrs.index_page.action_text")</th>
+                <table class="govuk-table" id="index-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" id="section-text" class="govuk-table__header">@messages("awrs.index_page.section_text")</th>
+                            <th scope="col" id="status-text" class="govuk-table__header govuk-!-width-one-quarter">@messages("awrs.index_page.status_text")</th>
+                            <th scope="col" id="action-text" class="govuk-table__header print-hidden">@messages("awrs.index_page.action_text")</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="govuk-table__body">
                     @indexStatusModel.sectionModels.zipWithIndex.map { case (i, id) =>
-                    <tr>
-                        <td id="@i.id">
-                            <p>
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell" id="@i.id">
                                 @{id+1}. @messages(i.text)
                                 @i.size match {
-                                    case Some(size) => {&nbsp;(@size)<span class="visuallyhidden">entries</span>}
+                                    case Some(size) => {&nbsp;(@size)<span class="govuk-visually-hidden">entries</span>}
                                     case _ => {}
                                 }
-                            </p>
                         </td>
-                        <td class="awrs-status">
-                            <span id="@{i.id + "_status"}" class="@messages({i.status + "_class"})">
-                            @messages(i.status.messagesKey)
-                            </span>
+                        <td class="govuk-table__cell awrs-status">
+                            <strong class="govuk-tag @{i.status.cssClass}" id="@{i.id + "_status"}">
+                                @messages(i.status.messagesKey)
+                            </strong>
                         </td>
-                        <td>
-                            <a id="@{i.id + "_link"}" href="@i.href">
-                            @Html(messages({i.status + "_link" +
-                                    {
-                                        someStatus match {
-                                            case Some(subStatus :SubscriptionStatusType) =>
-                                                subStatus.formBundleStatus match {
-                                                    case Rejected | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal=> "_rejected"
-                                                    case _        => ""
-                                                }
-                                            case _ => ""
+                        <td class="govuk-table__cell">
+                            <a class="govuk-link" href="@i.href">
+                                @Html(messages({i.status + "_link" +
+                                        {
+                                            someStatus match {
+                                                case Some(subStatus :SubscriptionStatusType) =>
+                                                    subStatus.formBundleStatus match {
+                                                        case Rejected | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal=> "_rejected"
+                                                        case _        => ""
+                                                    }
+                                                case _ => ""
+                                            }
                                         }
-                                    }
-                            }, messages(i.text) + messages("awrs.index_page.status_description_text") + " " + messages(i.status.messagesKey) + ", "))
-                    </a>
-                    </td>
+                                }, messages(i.text) + messages("awrs.index_page.status_description_text") + " " + messages(i.status.messagesKey) + ", "))
+                            </a>
+                        </td>
                     </tr>
                     }
                     </tbody>
                 </table>
-            </div>
+
             @awrsRef match {
                 case Some(_) => {
                     @if(hasApplicationChanged && allSectionComplete) {
-                        <a href="@routes.EmailVerificationController.checkEmailVerification" class="button" role="button" id="submit_changes">@Messages("awrs.index_page.submit_changes")</a>
+                        <a href="@routes.EmailVerificationController.checkEmailVerification" class="govuk-button" role="button" data-module="govuk-button" id="submit_changes">@Messages("awrs.index_page.submit_changes")</a>
                     }
                 }
                 case _ => {
                     @if(allSectionComplete) {
-                        <a href="@routes.EmailVerificationController.checkEmailVerification" class="button" role="button" id="continue">@Messages("awrs.confirmation.button")</a>
+                        <a href="@routes.EmailVerificationController.checkEmailVerification" class="govuk-button" role="button" data-module="govuk-button" id="continue">@Messages("awrs.confirmation.button")</a>
                     } else {
-                        <a href="@routes.ApplicationController.logout" class="button" role="button" id="save_and_logout">@Messages("awrs.generic.alternate_logout.button")</a>
+                        <a href="@routes.ApplicationController.logout" class="govuk-button" role="button" data-module="govuk-button" id="save_and_logout">@Messages("awrs.generic.alternate_logout.button")</a>
                     }
                 }
             }
         </div>
-    </div>
 }

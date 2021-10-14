@@ -19,6 +19,7 @@ package forms.test.util
 import forms.validation.util.{FieldError, MessageArguments, MessageLookup, SummaryError}
 import models.TupleDate
 import play.api.data.Form
+import scala.language.implicitConversions
 
 
 trait ImplicitSingleFieldTestAPI {

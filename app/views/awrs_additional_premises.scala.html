@@ -16,14 +16,21 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+formWithCSRF: FormWithCSRF,
+awrsMain: main,
+awrsAddressHelper: awrsAddressHelper,
+govukRadios: GovukRadios,
+govukErrorSummary: GovukErrorSummary)
+
 @(businessPremisesForm: Form[models.AdditionalBusinessPremises], businessPremisesId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent] , viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 
@@ -32,8 +39,8 @@
     }
 
     @pageScripts = {
-        <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-        <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+        <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+        <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
     }
 
     @actionRoute = @{
@@ -60,39 +67,53 @@
 }
 
     @awrsMain(title = messages("awrs.generic.tab.title", businessPremisesIdHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-        <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
-        <div class="grid">
-            <div class="grid grid-2-3">
+        <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
+
                 @backLinkHelper(BackLinkParams(
                     sectionName = additionalBusinessPremisesName,
                     sectionEntryId = businessPremisesId
                 ))
-                @errorSummaryTemplate(businessPremisesForm)
+                @if(businessPremisesForm.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessPremisesForm, mapping = Map("additionalPremises" -> "additionalPremises-yes")))
+                }
+
                 <header class="page-header">
-                    <h1 id="additional-premises-title" class="heading-xlarge">@businessPremisesIdHeading</h1>
-                    @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)
+                    @awrsProgressHelper(request.getBusinessType, additionalBusinessPremisesName)<br>
+                    <h1 id="additional-premises-title" class="govuk-heading-xl">@businessPremisesIdHeading</h1>
                 </header>
 
-                <p id="additional-premises-subtext" class="lede">@messages("awrs.additional-premises.subtext")</p>
+                <p id="additional-premises-subtext" class="govuk-body-l">@messages("awrs.additional-premises.subtext")</p>
 
                 @formWithCSRF(action = actionRoute) {
 
                     @if(isEditMode || businessPremisesId > 1) {
                         <input type="hidden" name="additionalPremises" value="Yes">
                     } else {
-                        <div id="diffAddress" class="form-group">
-                        @awrsInputTypeRadioGroup(
-                            InputTypeRadioGroupParams(
-                                businessPremisesForm("additionalPremises"),
-                                Seq("Yes" -> messages("awrs.generic.yes"),
-                                    "No" -> messages("awrs.generic.no")),
-                                legend = messages("awrs.additional-premises.top-heading.first"),
-                                legendId = "additionalPremises-legend",
-                                legendClass = "visuallyhidden",
-                                fieldSetClass = "inline",
-                                fieldSetAttributes = "id=additionalPremises_field"
+                        <div id="diffAddress" class="govuk-form-group">
+
+                             @govukRadios(
+                                Radios(
+                                    fieldset = Some(Fieldset(
+                                        classes = "govuk-radios--inline",
+                                        legend = Some(Legend(
+                                            content = Text(messages("awrs.additional-premises.top-heading.first")),
+                                            classes = "govuk-visually-hidden"
+                                        )),
+                                    )),
+                                    items = Seq(
+                                        RadioItem(
+                                            content = Text(Messages("awrs.generic.yes")),
+                                            value = Some("Yes"),
+                                            id = "additionalPremises-yes"
+                                        ),
+                                        RadioItem(
+                                             content = Text(Messages("awrs.generic.no")),
+                                             value = Some("No"),
+                                             id = "additionalPremises-no"
+                                        )
+                                    )
+                                ).withFormField(businessPremisesForm("additionalPremises"))
                             )
-                        )
                         </div>
                     }
                     <div id="additionalPremises-yes-content">
@@ -104,18 +125,28 @@
                         @if(isEditMode) {
                             <input type="hidden" name="addAnother" value="No">
                         } else {
-                            <div id="addAnother" class="form-group">
-                            @awrsInputTypeRadioGroup(
-                                InputTypeRadioGroupParams(
-                                    businessPremisesForm("addAnother"),
-                                    Seq("Yes" -> messages("awrs.generic.yes"),
-                                        "No" -> messages("awrs.generic.no")
-                                    ),
-                                    legend = messages("awrs.additional-premises.do_you_have_additional_addresses"),
-                                    legendId = "addAnother-legend",
-                                    fieldSetAttributes = "id=addAnother_field",
-                                    fieldSetClass = "inline"
-                                )
+                            <div class="govuk-form-group">
+
+                                @govukRadios(
+                                Radios(
+                                    fieldset = Some(Fieldset(
+                                        classes = "govuk-radios--inline",
+                                        legend = Some(Legend(
+                                            content = Text(messages("awrs.additional-premises.do_you_have_additional_addresses")),
+                                            classes = "govuk-fieldset__legend--s"
+                                        )),
+                                    )),
+                                    items = Seq(
+                                        RadioItem(
+                                            content = Text(Messages("awrs.generic.yes")),
+                                            value = Some("Yes")
+                                        ),
+                                        RadioItem(
+                                             content = Text(Messages("awrs.generic.no")),
+                                             value = Some("No")
+                                        )
+                                    )
+                                ).withFormField(businessPremisesForm("addAnother"))
                             )
                             </div>
                         }
@@ -127,7 +158,4 @@
                         submitId = "save-and-continue"
                     ))
                 }
-            </div>
-        </div>
     }
-

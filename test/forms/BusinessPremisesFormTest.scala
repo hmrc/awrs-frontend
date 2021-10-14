@@ -18,6 +18,7 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
+import forms.ProductsForm.addressLineLen
 import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
@@ -38,12 +39,78 @@ class BusinessPremisesFormTest extends PlaySpec with MockitoSugar  with AwrsForm
       fieldId assertEnumFieldIsCompulsory expectations
     }
 
-    "display correct validation for additionalAddress" in {
+    "display correct validation for additionalAddress" when {
       val preCondition: Map[String, String] = Map("additionalPremises" -> BooleanRadioEnum.Yes.toString)
-      val ignoreCondition: Set[Map[String, String]] = Set(Map("additionalPremises" -> BooleanRadioEnum.No.toString))
-      val idPrefix: String = "additionalAddress"
+      val ignoreCondition: Map[String, String] = Map("additionalPremises" -> BooleanRadioEnum.No.toString)
+      val prefix: String = "additionalAddress"
+      val fieldNameInErrorMessage = "address line"
+      val fieldNameInErrorMessagePostcode = "postcode"
 
-      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix)
+      "the fields are left empty" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "",
+          s"$prefix.addressLine2" -> "",
+          s"$prefix.addressLine3" -> "",
+          s"$prefix.addressLine4" -> "",
+          s"$prefix.postcode" -> ""
+        ) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe "awrs.generic.error.addressLine1_empty"
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe "awrs.generic.error.addressLine2_empty"
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe "awrs.generic.error.postcode_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the field maxLength is exceeded" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "a" * 36,
+          s"$prefix.addressLine2" -> "a" * 36,
+          s"$prefix.addressLine3" -> "a" * 36,
+          s"$prefix.addressLine4" -> "a" * 36,
+          s"$prefix.postcode" -> "a" * 21
+        ) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+      "invalid characters are entered in the field" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "α",
+          s"$prefix.addressLine2" -> "α",
+          s"$prefix.addressLine3" -> "α",
+          s"$prefix.addressLine4" -> "α",
+          s"$prefix.postcode" -> "α"
+        ) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "no errors are thrown when NO is selected" in {
+        val boundForm = form.bind(Map(
+          s"$prefix.addressLine1" -> "",
+          s"$prefix.addressLine2" -> "",
+          s"$prefix.addressLine3" -> "α",
+          s"$prefix.addressLine4" -> "α",
+          s"$prefix.postcode" -> ""
+        ) ++ ignoreCondition)
+
+        assert(!boundForm.hasErrors, s"form contains errors: ${boundForm.errors}")
+      }
     }
 
     "display correct validation for addAnother" in {

@@ -30,20 +30,22 @@ import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 import utils.TestUtil._
+import views.html.awrs_supplier_addresses
 
 import scala.concurrent.Future
 
 class AdditionalSupplierViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  val template = app.injector.instanceOf[views.html.awrs_supplier_addresses]
+  val template: awrs_supplier_addresses = app.injector.instanceOf[views.html.awrs_supplier_addresses]
 
   lazy val testSupplier: Option[String] => Supplier = (_: Option[String]) => testSupplierDefault(alcoholSuppliers = Some("Yes"), supplierName = Some("Supplier Name"), ukSupplier = Some("Yes"), vatRegistered = Some("Yes"), vatNumber = testUtr, supplierAddress = Some(testAddress), additionalSupplier = Some("Yes"))
   lazy val testList = List(testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("No")))
 
   val testSupplierAddressesController: SupplierAddressesController =
-    new SupplierAddressesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+    new SupplierAddressesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, mockAppConfig, template) {
     override val signInUrl: String = "/sign-in"
+    override val countryList: Seq[(String, String)] = Seq()
   }
   "Additional Supplier Template" must {
 

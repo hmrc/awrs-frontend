@@ -18,17 +18,18 @@ package models
 
 import play.api.libs.json._
 
+import scala.language.implicitConversions
 import scala.util.{Failure, Success, Try}
 
 object BusinessDetailsEntityTypes extends Enumeration {
-  val SoleTrader = Value("SoleTrader")
-  val CorporateBody = Value("CorporateBody")
-  val GroupRep = Value("GroupRep")
-  val Llp = Value("Llp")
-  val Lp = Value("Lp")
-  val Partnership = Value("Partnership")
+  val SoleTrader: BusinessDetailsEntityTypes.Value = Value("SoleTrader")
+  val CorporateBody: BusinessDetailsEntityTypes.Value = Value("CorporateBody")
+  val GroupRep: BusinessDetailsEntityTypes.Value = Value("GroupRep")
+  val Llp: BusinessDetailsEntityTypes.Value = Value("Llp")
+  val Lp: BusinessDetailsEntityTypes.Value = Value("Lp")
+  val Partnership: BusinessDetailsEntityTypes.Value = Value("Partnership")
 
-  implicit val reader = new Reads[BusinessDetailsEntityTypes.Value] {
+  implicit val reader: Reads[BusinessDetailsEntityTypes.Value] = new Reads[BusinessDetailsEntityTypes.Value] {
     def reads(js: JsValue): JsResult[BusinessDetailsEntityTypes.Value] = js match {
       case JsString(s) =>
         Try(BusinessDetailsEntityTypes.withName(s)) match {
@@ -38,7 +39,7 @@ object BusinessDetailsEntityTypes extends Enumeration {
       case _ => JsError("String value expected")
     }
   }
-  implicit val writer = new Writes[BusinessDetailsEntityTypes.Value] {
+  implicit val writer: Writes[BusinessDetailsEntityTypes.Value] = new Writes[BusinessDetailsEntityTypes.Value] {
     def writes(entityType: BusinessDetailsEntityTypes.Value): JsValue = Json.toJson(entityType.toString)
   }
 
@@ -110,7 +111,7 @@ object ExtendedBusinessDetails {
 
 object BusinessRegistrationDetails {
   implicit val formats: Format[BusinessRegistrationDetails] = Json.format[BusinessRegistrationDetails]
-  implicit val optionFormats = Format.optionWithNull[BusinessRegistrationDetails]
+  implicit val optionFormats: Format[Option[BusinessRegistrationDetails]] = Format.optionWithNull[BusinessRegistrationDetails]
 }
 
 object BusinessContacts {
@@ -118,7 +119,7 @@ object BusinessContacts {
   val latestModelVersion = "1.1"
 
   implicit val formats: Format[BusinessContacts] = Json.format[BusinessContacts]
-  implicit val optionFormats = Format.optionWithNull[BusinessContacts]
+  implicit val optionFormats: Format[Option[BusinessContacts]] = Format.optionWithNull[BusinessContacts]
 
 }
 
@@ -127,6 +128,6 @@ object PlaceOfBusiness {
   val latestModelVersion = "1.0"
 
   implicit val formats: Format[PlaceOfBusiness] = Json.format[PlaceOfBusiness]
-  implicit val optionFormats = Format.optionWithNull[PlaceOfBusiness]
+  implicit val optionFormats: Format[Option[PlaceOfBusiness]] = Format.optionWithNull[PlaceOfBusiness]
 
 }

@@ -20,6 +20,7 @@ import models.{FormBundleStatus, StatusContactType, StatusInfoType}
 import services.{StatusManagementService, StatusReturnType}
 import services.apis.mocks.{MockAwrsAPI11, MockAwrsAPI12Cache, MockAwrsAPI9}
 import utils.AwrsUnitTestTraits
+import scala.language.implicitConversions
 
 trait MockTestStatusManagementService extends AwrsUnitTestTraits
   with MockAwrsAPI9

@@ -15,45 +15,67 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers.DeRegistrationHelper._
-@import views.helpers.InputTypeRadioGroupParams
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukRadios: GovukRadios,
+    govukWarningText : GovukWarningText,
+    govukErrorSummary: GovukErrorSummary)
+
 @(confirmationForm: Form[models.DeRegistrationConfirmation], proposedEndDate: models.TupleDate)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @declarationText = {@messages("awrs.de_registration.warning.confirm", stringifyDate(proposedEndDate))}
+@conditionalHtml = {
+    @govukWarningText(WarningText(
+        iconFallbackText = "Warning",
+        content = HtmlContent(declarationText)
+    ))
+}
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.de_registration.confirmation_heading")), userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showDate.toString)
-@errorSummaryTemplate(confirmationForm)
-<div class="grid">
-    <div class="grid grid-2-3">
-        <h1 id="de_registration-heading" class="heading-xlarge">@messages("awrs.de_registration.confirmation_heading")</h1>
+
+@if(confirmationForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(confirmationForm))
+}
+
+        <h1 id="de_registration-heading" class="govuk-heading-xl">
+            @messages("awrs.de_registration.confirmation_heading")
+        </h1>
         @formWithCSRF(action = controllers.routes.DeRegistrationController.callToAction) {
-        <div class="form-group">
-            <div class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        confirmationForm("deRegistrationConfirmation"),
-                        Seq("Yes" -> messages("awrs.generic.yes"),
-                            "No" -> messages("awrs.generic.no")),
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=deRegistrationConfirmation_field",
-                        legend = messages("awrs.de_registration.confirmation_heading"),
-                        legendId = "deRegistrationConfirmation-legend",
-                        legendClass = "visuallyhidden",
-                        ariaDescribedBy = "deRegistrationConfirmation-legend deRegistrationConfirmation-yes-content-text",
-                        ariaDescribedByForYesOptionOnly = true
+
+            @govukRadios(
+                Radios(
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            classes = "govuk-visually-hidden",
+                            content = Text(Messages("awrs.de_registration.confirmation_heading"))
+                        ))
+                    )),
+                    items = Seq(
+                        RadioItem(
+                            content = Text(Messages("awrs.generic.yes")),
+                            value = Some("Yes"),
+                            conditionalHtml = Some(conditionalHtml)
+                        ),
+
+                        RadioItem(
+                            content = Text(messages("awrs.generic.no")),
+                            value = Some("No")
+                        )
                     )
-                )
-            </div>
-            @awrsWarningHelper(declarationTxt = declarationText.toString(), id="deRegistrationConfirmation-yes-content")
-            @awrsSubmitButton(messages("awrs.de_registration.cta"))(id = "save-and-continue", classAttr = "button")
+                ).withFormField(confirmationForm("deRegistrationConfirmation"))
+            )
+
+            @awrsSubmitButton(messages("awrs.de_registration.cta"))(id = "save-and-continue")
         }
-    </div>
-</div>
 }

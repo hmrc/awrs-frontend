@@ -15,9 +15,8 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.includes.awrs_main
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @(email: String, resent: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @import play.twirl.api.Html
@@ -28,33 +27,29 @@
 }
 
 @contactsLink = {
-    <a id="return-to-contacts" href="@controllers.routes.BusinessContactsController.showBusinessContacts(false)">@messages("awrs.email_verification_error.contacts_link")</a>
+    <a class="govuk-link" id="return-to-contacts" href="@controllers.routes.BusinessContactsController.showBusinessContacts(false)">@messages("awrs.email_verification_error.contacts_link")</a>
 }
 
 @resendLink = {
-    <a id="return-to-contacts" href="@controllers.routes.EmailVerificationController.resend">@messages("awrs.email_verification_error.resend_link")</a>
+    <a class="govuk-link" id="return-to-contacts" href="@controllers.routes.EmailVerificationController.resend">@messages("awrs.email_verification_error.resend_link")</a>
 }
 
 @resentText = {
     @if(resent) {
-        <p id="email-verification-error-resent">@Html(messages("awrs.email_verification_error.resent", emailAddress))</p>
-    } else {
-        {}
+        <p id="email-verification-error-resent" class="govuk-body">@Html(messages("awrs.email_verification_error.resent", emailAddress))</p>
     }
 }
 
 @callToAction = {
     @if(resent) {
-        <a href="@routes.EmailVerificationController.checkEmailVerification" class="button" role="button" id="continue">@messages("awrs.confirmation.button")</a>
+         <a href="@routes.EmailVerificationController.checkEmailVerification" class="govuk-button" role="button" data-module="govuk-button" id="continue">@messages("awrs.confirmation.button")</a>
     } else {
-        <a id="return-to-summary" class="button" role="button" href="@controllers.routes.IndexController.showIndex">@messages("awrs.generic.return_to_app_summary")</a>
+         <a id="return-to-summary" class="govuk-button" role="button" data-module="govuk-button" href="@controllers.routes.IndexController.showIndex">@messages("awrs.generic.return_to_app_summary")</a>
     }
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_error.heading"))) {
 
-    <div class="grid">
-        <div class="grid grid-2-3">
             @backLink(backUrl = if(resent) {
                 controllers.routes.EmailVerificationController.checkEmailVerification().url
             } else {
@@ -62,18 +57,15 @@
             }
             )
             <div>
-                <h1 id="email-verification-error-header" class="heading-xlarge">@Html(messages("awrs.email_verification_error.heading"))</h1>
-                <p id="email-verification-error-lede" class="lede">@Html(messages("awrs.email_verification_error.lede"))</p>
-                <p id="email-verification-error-description-1">@Html(messages("awrs.email_verification_error.info_1", emailAddress))</p>
-                <p id="email-verification-error-description-2">@Html(messages("awrs.email_verification_error.info_2"))</p>
-                <p id="email-verification-error-description-3">@Html(messages("awrs.email_verification_error.info_3", contactsLink, resendLink))</p>
+                <h1 id="email-verification-error-header" class="govuk-heading-xl">@Html(messages("awrs.email_verification_error.heading"))</h1>
+                <p id="email-verification-error-lede" class="govuk-body-l">@Html(messages("awrs.email_verification_error.lede"))</p>
+                <p id="email-verification-error-description-1" class="govuk-body">@Html(messages("awrs.email_verification_error.info_1", emailAddress))</p>
+                <p id="email-verification-error-description-2" class="govuk-body">@Html(messages("awrs.email_verification_error.info_2"))</p>
+                <p id="email-verification-error-description-3" class="govuk-body">@Html(messages("awrs.email_verification_error.info_3", contactsLink, resendLink))</p>
             </div>
-            <div class="form-group">
+            <div class="govuk-form-group">
                 @resentText
                 <br/>
                 @callToAction
             </div>
-        </div>
-    </div>
-
 }

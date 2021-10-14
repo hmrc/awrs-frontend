@@ -14,19 +14,25 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@this(govukPanel : GovukPanel)
+
 @(text_1: String, text_2: String, submissionOrResubmissionDate: Option[String] = None)(implicit request: Request[AnyRef], messages: Messages )
 
-<div class="alert-complete" role="alert">
-    <h1 id="confirmation" aria-labelledby="ariaConfirmation">
-        <span class="heading-large">
-            <img height="24" width="24" class="inline" aria-hidden="true" src="/alcohol-wholesale-scheme/assets/images/complete.png" alt="" aria-label="tick">
-            @Messages(text_1) @request.session.get("businessName").getOrElse("")
-        </span>
-        <span class="confirmation-description">@Messages(text_2)
+@htmlContent = {
+    <span>@Messages(text_2)
         @if(submissionOrResubmissionDate.isDefined){ @submissionOrResubmissionDate}
-        </span>
-    </h1>
-    <span id="ariaConfirmation" class="visuallyhidden" aria-hidden="true">
+    </span>
+    <span id="ariaConfirmation" class="govuk-visually-hidden">
         @Messages(text_1) @request.session.get("businessName").getOrElse("") @Messages(text_2) @if(submissionOrResubmissionDate.isDefined) {@submissionOrResubmissionDate}.
     </span>
-</div>
+}
+
+@htmlTitle = {
+    @Messages(text_1) @request.session.get("businessName").getOrElse("")
+}
+
+@govukPanel(Panel(
+    title = HtmlContent(htmlTitle),
+    content = HtmlContent(htmlContent)
+))

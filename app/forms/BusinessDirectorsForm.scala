@@ -129,7 +129,7 @@ object BusinessDirectorsForm {
 
     val doYouHaveUtrInferred = inferBasedOn(data.get(utr))
 
-    data.+((doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
+    data. +((doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
   }
 
   /*
@@ -156,7 +156,7 @@ object BusinessDirectorsForm {
       doYouHaveNino -> (doTheyHaveNino_compulsory iff whenDirectorIsAPerson),
       nino -> (nino_compulsory() iff (whenDirectorIsAPerson &&& answeredYesToNino(doYouHaveNino))), // the implicit `&&&` is defined in ConstraintUtil
       "passportNumber" -> ((passportNumber_optional + passportAndNationalIDCannotBothBeEmpty) iff (whenDirectorIsAPerson &&& answeredNoToNino)),
-      "nationalID" -> (nationalID_optional iff (whenDirectorIsAPerson &&& answeredNoToNino)),
+      "nationalID" -> (nationalID_optional  iff (whenDirectorIsAPerson &&& answeredNoToNino)),
       companyNames -> (companyNamesMapping(companyNames).toOptional iff whenDirectorIsCompany),
       doYouHaveUtr -> (doYouHaveUTR_compulsory() iff whenDirectorIsCompany),
       utr -> (utr_compulsory() iff (whenDirectorIsCompany &&& (noIdIsSupplied ||| whenAnsweredYesToUTR))),

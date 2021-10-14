@@ -17,14 +17,25 @@
 @import config.ApplicationConfig
 @import forms.AwrsFormFields._
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukInput: GovukInput,
+    govukCheckboxes : GovukCheckboxes,
+    govukRadios: GovukRadios,
+    govukErrorSummary: GovukErrorSummary)
+
 @(tradingActivityForm: Form[models.TradingActivity])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
@@ -48,138 +59,216 @@
     messages("awrs.additional_information.trading_activity.heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about")))
 }
 
+@conditionalHtmlOtherWholesaler = {
+        @govukInput(Input(
+            label = Label(
+                classes = "govuk-label",
+                content = Text(messages("awrs.additional_information.other.wholesaler_type"))
+            ),
+            attributes = Map("maxLength" -> frontendDefaultLen, "aria-required" -> "true")
+        ).withFormField(tradingActivityForm("otherWholesaler"))
+        )
+}
+
+@conditionalHtmlOtherOrders = {
+        @govukInput(Input(
+            label = Label(
+                classes = "govuk-label",
+                content = Text(messages("awrs.additional_information.orders.other.orders_question"))
+            ),
+            attributes = Map("maxLength" -> frontendDefaultLen, "aria-required" -> "true")
+        ).withFormField(tradingActivityForm("otherTypeOfAlcoholOrders"))
+        )
+}
+
+@conditionalHtmlExport = {
+    @govukCheckboxes(
+        Checkboxes(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                content = Text(Messages("awrs.additional_information.export_location")),
+                classes = "govuk-fieldset__legend"
+                ))
+            )),
+            hint = Some(Hint(
+                content = Text(Messages("awrs.additional_information.form_hint"))
+            )),
+            idPrefix = Some("exportLocation"),
+            items = Seq(
+                CheckboxItem(
+                    content = Text(Messages("awrs.additional_information.within_eu")),
+                    value = "euDispatches"
+                ),
+                CheckboxItem(
+                    content = Text(Messages("awrs.additional_information.outside_eu")),
+                    value = "outsideEU"
+                )
+            )
+        ).withFormField(tradingActivityForm("exportLocation"))
+    )
+}
+
 @awrsMain(
     title = messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
-<div class="grid">
-    <div class="grid grid-2-3">
+
         @backLinkHelper(BackLinkParams(
             sectionName = tradingActivityName
         ))
-        @errorSummaryTemplate(tradingActivityForm)
+        @if(tradingActivityForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(tradingActivityForm))
+        }
         <header class="page-header">
-            <h1 id="trading-activity-heading" class="heading-xlarge">
+            @awrsProgressHelper(request.getBusinessType, tradingActivityName)<br>
+            <h1 id="trading-activity-heading" class="govuk-heading-xl">
                 @pageHeading
             </h1>
-            @awrsProgressHelper(request.getBusinessType, tradingActivityName)
         </header>
 
         @formWithCSRF(action = actionRoute){
-            <div class="form-group">
-                @awrsInputTypeGroupCheckbox(
-                    InputTypeGroupCheckboxParams(
-                        tradingActivityForm("wholesalerType"),
-                        wholesaler,
-                        legend = messages("awrs.additional_information.wholesaler_type"),
-                        fieldSetAttributes = "id=wholesalerType_field",
-                        formHint = messages("awrs.additional_information.form_hint"),
-                        formHintId = "wholesalerType-hint",
-                        ariaDescribedBy = "wholesalerType-legend wholesalerType-hint",
-                        formHasErrors = tradingActivityForm.hasErrors
-                    )
-                )
-                <div id="other-wholesalerType">
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            tradingActivityForm("otherWholesaler"),
-                            label = messages("awrs.additional_information.other.wholesaler_type"),
-                            labelHighlight = true,
-                            inputId = "otherWholesaler",
-                            maxLength = frontendDefaultLen,
-                            wrapperClass = "panel-indent",
-                            required = true
-                        )
-                    )
-                </div>
-            </div>
-            <div class="form-group">
-                @awrsInputTypeGroupCheckbox(
-                    InputTypeGroupCheckboxParams(
-                        tradingActivityForm("typeOfAlcoholOrders"),
-                        orders,
-                        legend = messages("awrs.additional_information.orders.orders_question"),
-                        fieldSetAttributes = "id=typeOfAlcoholOrders_field",
-                        formHint = messages("awrs.additional_information.form_hint"),
-                        formHintId = "typeOfAlcoholOrders-hint",
-                        ariaDescribedBy = "typeOfAlcoholOrders-legend typeOfAlcoholOrders-hint",
-                        formHasErrors = tradingActivityForm.hasErrors
-                    )
-                )
-                <div id="other-typeOfAlcoholOrders">
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            tradingActivityForm("otherTypeOfAlcoholOrders"),
-                            label = messages("awrs.additional_information.orders.other.orders_question"),
-                            labelHighlight = true,
-                            inputId = "otherTypeOfAlcoholOrders",
-                            maxLength = frontendDefaultLen,
-                            wrapperClass = "panel-indent",
-                            required = true
-                        )
-                    )
-                </div>
-            </div>
 
-            <div class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        tradingActivityForm("doesBusinessImportAlcohol"),
-                        Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                            messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                        legend = messages("awrs.additional_information.alcohol_import"),
-                        legendId = "doesBusinessImportAlcohol-legend",
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=doesBusinessImportAlcohol_field"
+            @govukCheckboxes(Checkboxes(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(Messages("awrs.additional_information.wholesaler_type")),
+                        classes = "govuk-fieldset__legend--s"
+                    ))
+                )),
+                hint = Some(Hint(
+                    content = Text(Messages("awrs.additional_information.form_hint"))
+                )),
+                idPrefix = Some("wholesalerType"),
+                items = Seq(
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.broker")),
+                        value = "05"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.cash_and_carry")),
+                        value = "01"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.producer")),
+                        value = "04"
+                    ),
+                     CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.supply_off_trade")),
+                        value = "02"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.supply_on_trade")),
+                        value = "03"
+                    ),
+                     CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.other")),
+                        value = "99",
+                        conditionalHtml = Some(conditionalHtmlOtherWholesaler),
                     )
-                )
-            </div>
-            <div class="form-group">
-            @awrsInputTypeRadioGroup(
-                InputTypeRadioGroupParams(
-                    tradingActivityForm("doYouExportAlcohol"),
-                    Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                        messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                    legend = messages("awrs.additional_information.alcohol_export"),
-                    legendId = "doYouExportAlcohol-legend",
-                    fieldSetClass = "inline",
-                    fieldSetAttributes = "id=doYouExportAlcohol_field"
-                )
+                )).withFormField(tradingActivityForm("wholesalerType"))
             )
-            </div>
-            <div class="form-group">
-                <div id="doYouExportAlcohol-yes-content">
-                    @awrsInputTypeGroupCheckbox(
-                        InputTypeGroupCheckboxParams(
-                            tradingActivityForm("exportLocation"),
-                            exportAlcohol,
-                            legend = messages("awrs.additional_information.export_location"),
-                            fieldSetAttributes = "id=exportLocation_field"
+
+            @govukCheckboxes(Checkboxes(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(Messages("awrs.additional_information.orders.orders_question")),
+                        classes = "govuk-fieldset__legend--s"
+                    ))
+                )),
+                hint = Some(Hint(
+                    content = Text(Messages("awrs.additional_information.form_hint"))
+                )),
+                idPrefix = Some("typeOfAlcoholOrders"),
+                items = Seq(
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.orders.facetoface")),
+                        value = "04"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.orders.internet")),
+                        value = "02"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.orders.telephonefax")),
+                        value = "03"
+                    ),
+                     CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.other")),
+                        value = "99",
+                        conditionalHtml = Some(conditionalHtmlOtherOrders),
+                    )
+                )).withFormField(tradingActivityForm("typeOfAlcoholOrders"))
+            )
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-fieldset__legend--s",
+                                content = Text(Messages("awrs.additional_information.alcohol_import"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some(Messages("awrs.generic.yes"))
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some(Messages("awrs.generic.no"))
+                            )
                         )
-                    )
-                </div>
-            </div>
-            <div class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        tradingActivityForm("thirdPartyStorage"),
-                        Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                            messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                        legend = messages("awrs.additional_information.third_party_storage"),
-                        legendId = "thirdPartyStorage-legend",
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=thirdPartyStorage_field",
-                        formHint = messages("awrs.additional_information.third_party_storage_help_text"),
-                        formHintId = "thirdPartyStorage-hint",
-                        ariaDescribedBy = "thirdPartyStorage-legend thirdPartyStorage-hint",
-                        formHasErrors = tradingActivityForm.hasErrors
-                    )
+                    ).withFormField(tradingActivityForm("doesBusinessImportAlcohol"))
                 )
-            </div>
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-fieldset__legend--s",
+                                content = Text(Messages("awrs.additional_information.alcohol_export"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some(Messages("awrs.generic.yes")),
+                                conditionalHtml = Some(conditionalHtmlExport)
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some(Messages("awrs.generic.no"))
+                            )
+                        )
+                    ).withFormField(tradingActivityForm("doYouExportAlcohol"))
+                )
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-fieldset__legend--s",
+                                content = Text(Messages("awrs.additional_information.third_party_storage"))
+                            ))
+                        )),
+                        hint = Some(Hint(
+                            content = Text(Messages("awrs.additional_information.third_party_storage_help_text"))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some(Messages("awrs.generic.yes"))
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some(Messages("awrs.generic.no"))
+                            )
+                        )
+                    ).withFormField(tradingActivityForm("thirdPartyStorage"))
+                )
+
             @submitButtonAndNavLinks(SubmitAndNavLinkParams(
                 sectionName = tradingActivityName,
                 submitText = ctaMessage,
                 submitId = "save-and-continue"
             ))
         }
-    </div>
-</div>
 }

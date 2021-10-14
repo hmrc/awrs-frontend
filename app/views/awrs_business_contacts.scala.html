@@ -16,14 +16,24 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    awrsAddressHelper: awrsAddressHelper,
+    govukInput : GovukInput,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios)
+
 @(isAPI5: Boolean, businessType: Option[String], business: models.BCAddress, businessContactsForm: Form[models.BusinessContacts])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -31,8 +41,8 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -51,11 +61,13 @@
     }
 }
 
-@emailMessage = @{
-    if(applicationConfig.emailVerificationEnabled) {
-        Some(messages("awrs.business_contacts.email_info"))
-    } else {
-        None
+@emailMessage = {
+    @{
+        if(applicationConfig.emailVerificationEnabled) {
+            Some(messages("awrs.business_contacts.email_info"))
+        } else {
+            None
+        }
     }
 }
 
@@ -87,61 +99,71 @@
 
 
 @awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
-    <div class="grid">
-        <div class="grid grid-2-3">
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
+
             @backLinkHelper(BackLinkParams(
                 sectionName = businessContactsName
             ))
-            @errorSummaryTemplate(businessContactsForm)
+
+            @if(businessContactsForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(businessContactsForm, mapping = Map("contactAddressSame" -> "contactAddressSame-yes")))
+            }
             <header class="page-header">
-                <h1 id="contact-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
-                @awrsProgressHelper(businessType, businessContactsName)
+                @awrsProgressHelper(businessType, businessContactsName)<br>
+                <h1 id="contact-information-heading" class="govuk-heading-xl">@businessTypeHeading</h1>
             </header>
 
             @formWithCSRF(action = actionRoute) {
-                <p id="contactDetailsNominatedPerson" class="lede">@messages("awrs.business_contacts.contact_detail_nominated_person")</p>
-                <div class="form-group">
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            businessContactsForm("contactFirstName"),
-                            inputId = "contactFirstName",
-                            label = messages("awrs.generic.first_name"),
-                            labelHighlight = true,
-                            required = true
-                        )
+                <p id="contactDetailsNominatedPerson" class="govuk-body-l">@messages("awrs.business_contacts.contact_detail_nominated_person")</p>
+                <div class="govuk-form-group">
+
+                    @govukInput(
+                        Input(
+                            label = Label(
+                                classes = "govuk-label",
+                                content = Text(Messages("awrs.generic.first_name"))
+                            ),
+                            attributes = Map("aria-required" -> "true")
+                        ).withFormField(businessContactsForm("contactFirstName"))
                     )
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            businessContactsForm("contactLastName"),
-                            inputId = "contactLastName",
-                            label = messages("awrs.generic.surname"),
-                            labelHighlight = true,
-                            required = true
-                        )
+
+                    @govukInput(
+                        Input(
+                            label = Label(
+                                classes = "govuk-label",
+                                content = Text(Messages("awrs.generic.surname"))
+                            ),
+                            attributes = Map("aria-required" -> "true")
+                        ).withFormField(businessContactsForm("contactLastName"))
                     )
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            businessContactsForm("telephone"),
-                            inputId = "telephone",
-                            label = messages("awrs.generic.telephone"),
-                            labelHighlight = true,
-                            required = true
-                        )
+
+                    @govukInput(
+                        Input(
+                            label = Label(
+                                classes = "govuk-label",
+                                content = Text(Messages("awrs.generic.telephone"))
+                            ),
+                            attributes = Map("aria-required" -> "true")
+                        ).withFormField(businessContactsForm("telephone"))
                     )
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            businessContactsForm("email"),
-                            inputId = "email",
-                            label = messages("awrs.generic.email"),
-                            labelHighlight = true,
-                            required = true,
-                            formHint = emailMessage
-                        )
+
+                    @govukInput(
+                        Input(
+                            label = Label(
+                                classes = "govuk-label",
+                                content = Text(Messages("awrs.generic.email"))
+                            ),
+                            hint = Some(Hint(
+                                content = HtmlContent(emailMessage)
+                            )),
+                            attributes = Map("aria-required" -> "true")
+                        ).withFormField(businessContactsForm("email"))
                     )
+
                 </div>
 
-                <div id="review-details" class="form-group">
+                <div id="review-details" class="govuk-form-group">
+                    <p class="govuk-body">
                     <strong>@messages("awrs.generic.registered_address")</strong><br>
                     @business.line_1<br>
                     @business.line_2<br>
@@ -149,17 +171,30 @@
                     @if(business.line_4.nonEmpty) {@business.line_4<br>}
                     @postcodeHelper(business.postcode.getOrElse("   "))<br>
                 </div>
-                <div class="form-group">
-                    @awrsInputTypeRadioGroup(
-                        InputTypeRadioGroupParams(
-                            businessContactsForm("contactAddressSame"),
-                            Seq("Yes" -> messages("awrs.generic.yes"),
-                                "No" -> messages("awrs.generic.no")),
-                            legend = messages("awrs.business_contacts.contact_address_same"),
-                            legendId = "contactAddressSame-legend",
-                            fieldSetClass = "inline",
-                            fieldSetAttributes = "id=contactAddressSame_field"
-                        )
+                <div class="govuk-form-group">
+
+                    @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    classes = "govuk-fieldset__legend--s",
+                                    content = Text(messages("awrs.business_contacts.contact_address_same"))
+                                )),
+                                attributes = Map("id" ->"contactAddressSame_field")
+                            )),
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.yes")),
+                                    value = Some("Yes"),
+                                    id = "contactAddressSame-yes"
+                                ),
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.no")),
+                                    value = Some("No"),
+                                    id = "contactAddressSame-no"
+                                )
+                            )
+                        ).withFormField(businessContactsForm("contactAddressSame"))
                     )
                     <div id="contactAddressSame-no-content">
                     @awrsAddressHelper(businessContactsForm("contactAddress"),
@@ -176,10 +211,5 @@
                     submitId = "save-and-continue"
                 ))
             }
-        </div>
-    </div>
+
 }
-
-
-
-

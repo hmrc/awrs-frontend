@@ -90,7 +90,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
             status(result) mustBe INTERNAL_SERVER_ERROR
 
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementsByClass("heading-xlarge").text() must be(Messages("awrs.generic.error.title"))
+            document.getElementsByClass("govuk-heading-xl").text() must be(Messages("awrs.generic.error.title"))
         }
       }
 
@@ -100,8 +100,8 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
             status(result) mustBe INTERNAL_SERVER_ERROR
 
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementsByClass("heading-xlarge").text() must be(Messages("awrs.generic.error.title"))
-            document.getElementsByClass("heading-medium").text() must be(Messages("awrs.generic.error.status"))
+            document.getElementsByClass("govuk-heading-xl").text() must be(Messages("awrs.generic.error.title"))
+            document.getElementById("application-error-description").text() must be(Messages("awrs.generic.error.status"))
         }
       }
 

@@ -14,29 +14,19 @@
  * limitations under the License.
  *@
 
-@(params: views.helpers.QuestionAnswerParameters)(implicit messages: Messages)
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@this(govukDetails: GovukDetails)
+@(params: views.helpers.QuestionAnswerParameters)(implicit messages: Messages)
 
 <div id="questionAnswer-@params.questionId">
-    <details>
-        @* Do not add spaces to the value of the summary tag *@
-        <summary aria-controls="details-content-@params.questionId" tabindex="0" class="summary" id="@params.questionId">@params.question</summary>
-        <div id="details-content-@params.questionId"
-            @params.wrapperClass match {
-                case Some(className) => {
-                    class="@className"
-                }
-                case _ => {}
-            } tabindex="0">
 
-            @params.answer match {
-                case Some(answer) => {
-                    @awrsAnswerHint(params.questionId, answer)
-                }
-                case _ => {
-                    @awrsAnswerStatusDecision(messages)
-                }
-            }
-        </div>
-    </details>
+    @govukDetails(Details(
+        summary = Text(params.question),
+        content = params.answer match {
+            case Some(answer) => HtmlContent(awrsAnswerHint(params.questionId, answer))
+            case _ => HtmlContent(awrsAnswerStatusDecision(messages))
+        }
+    ))
+
 </div>

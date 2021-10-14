@@ -27,7 +27,7 @@
 @tableRowTitle = @{member.companyNames.businessName.getOrElse(member.companyNames.tradingName.get)}
 
 @content = {
-    <table class="view-application">
+    <table class="view-application govuk-table">
     @* Top record row including edit and delete links *@
     @table_row(
         tableRowTitle,
@@ -37,7 +37,7 @@
 
     @if(member.companyNames.businessName.isDefined){
         @table_row(
-            Messages("awrs.generic.trading_name"),
+            Messages("awrs.generic.trading"),
             member.companyNames.tradingName
         )
     }

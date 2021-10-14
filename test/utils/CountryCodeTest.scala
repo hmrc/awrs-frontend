@@ -24,7 +24,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite {
 
   trait Setup {
-    val countryCodes = new CountryCodesImpl(app.environment)
+    val countryCodes = new CountryCodes(app.environment)
   }
 
   "CountryCode countries" must {
@@ -58,17 +58,17 @@ class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuit
 
   "CountryCode getSupplierAddressWithCountryCode" must {
     "get an address with a country code" in new Setup {
-      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, Some("Andorra"))
-      val supplier = Supplier(None, None, None, Some(supplierAddress), None, None, None)
+      val supplierAddress: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, Some("Andorra"))
+      val supplier: Supplier = Supplier(None, None, None, Some(supplierAddress), None, None, None)
 
       countryCodes.getSupplierAddressWithCountryCode(supplier).get.addressCountryCode must be(Some("AD"))
 
-      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
-      val supplierNone = Supplier(None, None, None, Some(supplierAddressNone), None, None, None)
+      val supplierAddressNone: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+      val supplierNone: Supplier = Supplier(None, None, None, Some(supplierAddressNone), None, None, None)
 
       countryCodes.getSupplierAddressWithCountryCode(supplierNone).get.addressCountryCode must be(Some("GB"))
 
-      val supplierEmpty = Supplier(None, None, None, None, None, None, None)
+      val supplierEmpty: Supplier = Supplier(None, None, None, None, None, None, None)
 
       countryCodes.getSupplierAddressWithCountryCode(supplierEmpty).isEmpty mustBe true
     }
@@ -76,11 +76,11 @@ class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuit
 
   "CountryCode getAddressWithCountryCode" must {
     "get an address with a country code" in new Setup {
-      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, Some("Andorra"))
+      val supplierAddress: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, Some("Andorra"))
 
       countryCodes.getAddressWithCountryCode(Some(supplierAddress)).get.addressCountryCode must be(Some("AD"))
 
-      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+      val supplierAddressNone: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
 
       countryCodes.getAddressWithCountryCode(Some(supplierAddressNone)).get.addressCountryCode must be(Some("GB"))
       countryCodes.getAddressWithCountryCode(None).isEmpty mustBe true
@@ -89,17 +89,17 @@ class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuit
 
   "CountryCode getSupplierAddressWithCountry" must {
     "get an address with a country" in new Setup {
-      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None, Some("AD"))
-      val supplier = Supplier(None, None, None, Some(supplierAddress), None, None, None)
+      val supplierAddress: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None, Some("AD"))
+      val supplier: Supplier = Supplier(None, None, None, Some(supplierAddress), None, None, None)
 
       countryCodes.getSupplierAddressWithCountry(supplier).get.addressCountry must be(Some("Andorra"))
 
-      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
-      val supplierNone = Supplier(None, None, None, Some(supplierAddressNone), None, None, None)
+      val supplierAddressNone: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+      val supplierNone: Supplier = Supplier(None, None, None, Some(supplierAddressNone), None, None, None)
 
       countryCodes.getSupplierAddressWithCountry(supplierNone).get.addressCountry must be(Some("United Kingdom"))
 
-      val supplierEmpty = Supplier(None, None, None, None, None, None, None)
+      val supplierEmpty: Supplier = Supplier(None, None, None, None, None, None, None)
 
       countryCodes.getSupplierAddressWithCountry(supplierEmpty).isEmpty mustBe true
     }
@@ -107,11 +107,11 @@ class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuit
 
   "CountryCode getAddressWithCountry" must {
     "get an address with a country" in new Setup {
-      val supplierAddress = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None, Some("AD"))
+      val supplierAddress: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None, Some("AD"))
 
       countryCodes.getAddressWithCountry(Some(supplierAddress)).get.addressCountry must be(Some("Andorra"))
 
-      val supplierAddressNone = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
+      val supplierAddressNone: Address = Address("Supplier Address 1", "Supplier Address 2", None, None, None, None)
 
       countryCodes.getAddressWithCountry(Some(supplierAddressNone)).get.addressCountry must be(Some("United Kingdom"))
       countryCodes.getAddressWithCountry(None).isEmpty mustBe true

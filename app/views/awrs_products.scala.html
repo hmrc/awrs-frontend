@@ -17,19 +17,27 @@
 @import config.ApplicationConfig
 @import forms.AwrsFormFields._
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukInput: GovukInput,
+    govukCheckboxes : GovukCheckboxes,
+    govukErrorSummary: GovukErrorSummary)
+
 @(productsForm: Form[models.Products])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(productsForm) }
-
 
 @actionRoute = @{
     if(isEditMode) {
@@ -51,87 +59,150 @@
     messages("awrs.additional_information.products.heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about")))
 }
 
+@conditionalHtmlOtherMainCustomer = {
+    @govukInput(Input(
+        label = Label(
+            classes = "govuk-label",
+            content = Text(messages("awrs.additional_information.other.main_customers"))
+        ),
+        attributes = Map("maxLength" -> frontendDefaultLen, "aria-required" -> "true")
+    ).withFormField(productsForm("otherMainCustomers"))
+    )
+}
+
+@conditionalHtmlOtherProductType = {
+    @govukInput(Input(
+        label = Label(
+            classes = "govuk-label",
+            content = Text(messages("awrs.additional_information.other.products"))
+        ),
+        attributes = Map("maxLength" -> frontendDefaultLen, "aria-required" -> "true")
+    ).withFormField(productsForm("otherProductType"))
+    )
+}
+
 @awrsMain(title = messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
 
-<div class="grid">
-    <div class="grid grid-2-3">
+
         @backLinkHelper(BackLinkParams(
             sectionName = productsName
         ))
-        @errorSummaryTemplate(productsForm)
+        @if(productsForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(productsForm))
+        }
 
         <header class="page-header">
-            <h1 id="products-heading" class="heading-xlarge">
+            @awrsProgressHelper(request.getBusinessType, productsName)<br>
+            <h1 id="products-heading" class="govuk-heading-xl">
                 @pageHeading
             </h1>
-            @awrsProgressHelper(request.getBusinessType, productsName)
         </header>
 
         @formWithCSRF(action = actionRoute){
-            <div class="form-group">
-                @awrsInputTypeGroupCheckbox(
-                    InputTypeGroupCheckboxParams(
-                        productsForm("mainCustomers"),
-                        mainCustomerOptions,
-                        legend = messages("awrs.additional_information.main_customers"),
-                        fieldSetAttributes = "id=mainCustomers_field",
-                        fieldSetClass = "test",
-                        legendClass = "test",
-                        formHint = messages("awrs.additional_information.form_hint"),
-                        formHintId = "mainCustomers-hint",
-                        ariaDescribedBy = "mainCustomers-legend mainCustomers-hint",
-                        formHasErrors = productsForm.hasErrors
-                    )
-                )
-                <div id="other-mainCustomers">
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            productsForm("otherMainCustomers"),
-                            label = messages("awrs.additional_information.other.main_customers"),
-                            labelHighlight = true,
-                            inputId = "otherMainCustomers",
-                            maxLength = frontendDefaultLen,
-                            wrapperClass = "panel-indent",
-                            required = true
-                        )
-                    )
-                </div>
-            </div>
-            <div class="form-group">
-                @awrsInputTypeGroupCheckbox(
-                    InputTypeGroupCheckboxParams(
-                        productsForm("productType"),
-                        products,
-                        legend = messages("awrs.additional_information.products"),
-                        fieldSetAttributes = "id=productType_field",
-                        formHint = messages("awrs.additional_information.form_hint"),
-                        formHintId = "productType-hint",
-                        ariaDescribedBy = "productType-legend productType-hint",
-                        formHasErrors = productsForm.hasErrors
-                    )
-                )
-                <div id="other-productType">
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            productsForm("otherProductType"),
-                            label = messages("awrs.additional_information.other.products"),
-                            inputId = "otherProductType",
-                            labelHighlight = true,
-                            maxLength = frontendDefaultLen,
-                            wrapperClass = "panel-indent",
-                            required = true,
-                            ariaLabelledBy = "otherProductType_field"
 
-                        )
+            @govukCheckboxes(Checkboxes(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(Messages("awrs.additional_information.main_customers")),
+                        classes = "govuk-fieldset__legend--s"
+                    ))
+                )),
+                hint = Some(Hint(
+                    content = Text(Messages("awrs.additional_information.form_hint"))
+                )),
+                idPrefix = Some("mainCustomers"),
+                items = Seq(
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.hospitality_catering")),
+                        value = "05"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.hotels")),
+                        value = "04"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.independent_retailers")),
+                        value = "07"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.national_retailers")),
+                        value = "08"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.night_clubs")),
+                        value = "02"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.other_wholesalers")),
+                        value = "10"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.private_members_clubs")),
+                        value = "03"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.public")),
+                        value = "09"
+                    ),
+                     CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.pubs")),
+                        value = "01"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.mainCustomers.restaurants")),
+                        value = "06"
+                    ),
+                     CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.other")),
+                        value = "99",
+                        conditionalHtml = Some(conditionalHtmlOtherMainCustomer),
                     )
-                </div>
-            </div>
+                )).withFormField(productsForm("mainCustomers"))
+            )
+
+            @govukCheckboxes(Checkboxes(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(Messages("awrs.additional_information.products")),
+                        classes = "govuk-fieldset__legend--s"
+                    ))
+                )),
+                hint = Some(Hint(
+                    content = Text(Messages("awrs.additional_information.form_hint"))
+                )),
+                idPrefix = Some("productType"),
+                items = Seq(
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.beer")),
+                        value = "05"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.cider")),
+                        value = "04"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.perry")),
+                        value = "06"
+                    ),
+                     CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.spirits")),
+                        value = "03"
+                    ),
+                    CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.wine")),
+                        value = "02"
+                    ),
+                     CheckboxItem(
+                        content = Text(Messages("awrs.additional_information.other")),
+                        value = "99",
+                        conditionalHtml = Some(conditionalHtmlOtherProductType),
+                    )
+                )).withFormField(productsForm("productType"))
+            )
             @submitButtonAndNavLinks(SubmitAndNavLinkParams(
                 sectionName = productsName,
                 submitText = ctaMessage,
                 submitId = "save-and-continue"
             ))
         }
-    </div>
-</div>
 }

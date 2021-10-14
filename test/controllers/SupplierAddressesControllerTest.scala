@@ -30,6 +30,7 @@ import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_supplier_addresses
 
 import scala.concurrent.Future
 
@@ -37,7 +38,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   implicit val mockConfig: ApplicationConfig = mockAppConfig
-  val template = app.injector.instanceOf[views.html.awrs_supplier_addresses]
+  val template: awrs_supplier_addresses = app.injector.instanceOf[views.html.awrs_supplier_addresses]
 
   def testRequest(supplier: Supplier): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[Supplier](FakeRequest(), SupplierAddressesForm.supplierAddressesValidationForm, supplier)
@@ -140,7 +141,6 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     }
   }
 
-
   "When loading the page with 5 suppliers already entered we" must {
     "see to the 1st supplier" in {
       getWithAuthorisedUser5Suppliers {
@@ -206,8 +206,9 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
 
 
   val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, mockAppConfig, template) {
     override val signInUrl: String = "/sign-in"
+    override val countryList: Seq[(String, String)] = Seq()
   }
 
   private def getWithAuthorisedUserSa(id: Int = 1)(test: Future[Result] => Any): Future[Any] = {

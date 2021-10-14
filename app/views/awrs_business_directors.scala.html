@@ -16,14 +16,24 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(formWithCSRF: FormWithCSRF,
+        awrsMain: main,
+        awrsIdUTRHelper: awrsIdUTRHelper,
+        awrsIdVRNHelper: awrsIdVRNHelper,
+        awrsIdNINOHelper: awrsIdNINOHelper,
+        awrsIdCRNHelper: awrsIdCRNHelper,
+        govukErrorSummary: GovukErrorSummary,
+        govukRadios: GovukRadios,
+        govukInput: GovukInput)
+
 @(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessDirectorsForm) }
@@ -63,11 +73,11 @@
 
 @directorSeq = @{
     (businessDirectorId, isNewRecord) match {
-        case (1, true) => Seq(messages("awrs.generic.status.director_value") -> messages("awrs.generic.status.director"),
-            messages("awrs.generic.status.both_value") -> messages("awrs.generic.status.both"))
-        case _ => Seq(messages("awrs.generic.status.director_value") -> messages("awrs.generic.status.director"),
-            messages("awrs.generic.status.company_secretary_value") -> messages("awrs.generic.status.company_secretary"),
-            messages("awrs.generic.status.both_value") -> messages("awrs.generic.status.both"))
+        case (1, true) => Seq(RadioItem(value = messages("awrs.generic.status.director_value"), content = Text(messages("awrs.generic.status.director"))),
+            RadioItem(value = messages("awrs.generic.status.both_value"), content = Text(messages("awrs.generic.status.both"))))
+        case _ => Seq(RadioItem(value = messages("awrs.generic.status.director_value"), content = Text(messages("awrs.generic.status.director"))),
+            RadioItem(value = messages("awrs.generic.status.company_secretary_value"), content = Text(messages("awrs.generic.status.company_secretary"))),
+            RadioItem(value = messages("awrs.generic.status.both_value"), content = Text(messages("awrs.generic.status.both"))))
     }
 }
 
@@ -79,23 +89,25 @@
 }
 
 @personOnlySection ={
-    <div class="form-group">
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                businessDirectorsForm("firstName"),
-                required = true,
-                labelHighlight = true,
-                label = messages("awrs.generic.first_name")
-            )
+    <div class="govuk-form-group">
+        @govukInput(Input(
+            label = Label(
+                content = Text(messages("awrs.generic.first_name")),
+                classes = "govuk-label"
+            ),
+            attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+        ).withFormField(businessDirectorsForm("firstName"))
         )
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                businessDirectorsForm("lastName"),
-                required = true,
-                labelHighlight = true,
-                label = messages("awrs.generic.surname")
-            )
+
+        @govukInput(Input(
+            label = Label(
+                content = Text(messages("awrs.generic.surname")),
+                classes = "govuk-label"
+            ),
+            attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+        ).withFormField(businessDirectorsForm("lastName"))
         )
+
     </div>
     @awrsIdNINOHelper(
         businessDirectorsForm("doTheyHaveNationalInsurance"),
@@ -109,76 +121,104 @@
     )(implicitly, formInstance = businessDirectorsForm)
 }
 
-@personOrCompanySection = {
-
-    @awrsInputTypeRadioGroup(
-        InputTypeRadioGroupParams(
-            businessDirectorsForm("personOrCompany"),
-            Seq(messages("awrs.generic.status.person_value") -> messages("awrs.generic.status.person"),
-                messages("awrs.generic.status.company_value") -> messages("awrs.generic.status.company")
-            ),
-            legend = messages("awrs.business_directors.personOrCompany_question"),
-            legendId = "personOrCompany-legend",
-            fieldSetClass = "form-group inline" + personOrCompanyClass,
-            fieldSetQuestionId = "crn-HelpLink",
-            fieldSetQuestionAnswer = Html(messages("awrs.business_directors.personOrCompany_answer_text", "<br><br>")),
-            fieldSetQuestionWrapperClass = "panel-indent",
-            formHint = messages("awrs.business_directors.personOrCompany_hint_text"),
-            formHintId = "personOrCompany-hint",
-            fieldSetAttributes = "id=personOrCompany_field",
-            ariaDescribedBy = "personOrCompany-legend personOrCompany-hint"
-        )
+@tradingName = {
+    @govukInput(Input(
+        label = Label(
+            content = Text(messages("awrs.generic.trading_name")),
+            classes = "govuk-label"
+        ),
+        attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+    ).withFormField(businessDirectorsForm("companyNames.tradingName"))
     )
+}
 
-    <div id="company">
-        <div class="form-group">
-            @awrsInputTypeText(
-                InputTypeTextParams(
-                    businessDirectorsForm("companyNames.businessName"),
-                    inputId = "companyNames.businessName",
-                    label = messages("awrs.business_directors.business_name"),
-                    maxLength = applicationConfig.companyNameLen.toString,
-                    labelHighlight = true,
-                    required = true
-                )
+@tradingNameSection = {
+@govukRadios(
+    Radios(
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+                content = Text(messages("awrs.generic.do_they_have_trading_name")),
+                classes = "govuk-fieldset__legend--s"
+            )),
+            attributes = Map("id" ->"companyNames.doYouHaveTradingName_field")
+        )),
+        hint = Some(Hint(
+            id = Some("personOrCompany-hint"),
+            content = Text(messages("awrs.business_directors.personOrCompany_hint_text"))
+        )),
+        items = Seq(
+            RadioItem(
+                id = Some("companyNames.doYouHaveTradingName-yes"),
+                content = Text(Messages("awrs.generic.yes")),
+                value = Some("Yes"),
+            ),
+            RadioItem(
+                id = Some("companyNames.doYouHaveTradingName-no"),
+                content = Text(Messages("awrs.generic.no")),
+                value = Some("No")
             )
-            <div class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        businessDirectorsForm("companyNames.doYouHaveTradingName"),
-                        Seq("Yes" -> messages("awrs.generic.yes"),
-                            "No" -> messages("awrs.generic.no")),
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
-                        legendId = "companyNames.doYouHaveTradingName-legend",
-                        legend = messages("awrs.generic.do_they_have_trading_name")
-                    )
-                )
-                <div id="companyNames.doYouHaveTradingName-yes-content">
-                @awrsInputTypeText(
-                    InputTypeTextParams(
-                        businessDirectorsForm("companyNames.tradingName"),
-                        inputId = "companyNames.tradingName",
-                        label = messages("awrs.generic.trading_name"),
-                        labelHighlight = true,
-                        maxLength = applicationConfig.tradingNameLen.toString,
-                        required = true,
-                        wrapperClass = "panel-indent"
-                    )
-                )
-                </div>
+        )
+    ).withFormField(businessDirectorsForm("companyNames.doYouHaveTradingName"))
+)
+<div id="companyNames.doYouHaveTradingName-yes-content" class="govuk-form-group">
+@govukInput(Input(
+    label = Label(
+        content = Text(messages("awrs.generic.trading_name")),
+        classes = "govuk-label"
+    ),
+    attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+).withFormField(businessDirectorsForm("companyNames.tradingName"))
+)
+</div>
+}
+
+@personOrCompanySection = {
+@govukRadios(
+    Radios(
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(
+                content = Text(messages("awrs.business_directors.personOrCompany_question")),
+                classes = "govuk-fieldset__legend--s"
+            )),
+            classes = "govuk-fieldset govuk-radios--inline" + personOrCompanyClass)),
+        attributes = Map("id" ->"personOrCompany_field"),
+        hint = Some(Hint(id = Some("personOrCompany-hint"), content = Text(messages("awrs.business_directors.personOrCompany_hint_text")))),
+        items = Seq(
+            RadioItem(
+                content = Text(messages("awrs.generic.status.person")),
+                value = Some(messages("awrs.generic.status.person_value")),
+            ),
+            RadioItem(
+                content = Text(messages("awrs.generic.status.company")),
+                value = Some(messages("awrs.generic.status.company_value")),
+            )
+        )
+    ).withFormField(businessDirectorsForm("personOrCompany"))
+)
+    <div id="company">
+        <div class="govuk-form-group">
+
+            @govukInput(Input(
+                label = Label(
+                    content = Text(messages("awrs.business_directors.business_name")),
+                    classes = "govuk-label--s"
+                ),
+                attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true")
+            ).withFormField(businessDirectorsForm("companyNames.businessName"))
+            )
+
+            <div class="govuk-form-group">
+                    @tradingNameSection
             </div>
         </div>
         @awrsIdUTRHelper(
             businessType,
-            None,
             businessDirectorsForm("utr"),
             youOrThey = "they",
             ariaLabelledBy = "utr_field utr-information",
             formHasErrors = businessDirectorsForm.hasErrors
         )
         @awrsIdCRNHelper(
-            None,
             businessDirectorsForm("companyRegNumber"),
             youOrThey = "they",
             crnAndDate = false,
@@ -197,22 +237,23 @@
     <div id="individual">
         @personOnlySection
     </div>
+
 }
 
-
 @awrsMain(title = messages("awrs.generic.tab.title", h1text), userLoggedIn = true){
-<div class="grid">
-    <div class="grid grid-2-3">
+
         @backLinkHelper(BackLinkParams(
             sectionName = businessDirectorsName
         ))
-        @errorSummaryTemplate(businessDirectorsForm)
+        @if(businessDirectorsForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessDirectorsForm, mapping = Map("companyNames.doYouHaveTradingName" -> "companyNames.doYouHaveTradingName-yes")))
+        }
         <header class="page-header">
-            <h1 id="business-directors-heading" class="heading-xlarge">@h1text</h1>
-            @awrsProgressHelper(businessType, businessDirectorsName)
+            @awrsProgressHelper(businessType, businessDirectorsName)<br>
+            <h1 id="business-directors-heading" class="govuk-heading-xl">@h1text</h1>
         </header>
 
-        <p class="lede" id="directorsAndCompanySecretariesDescription">@messages("awrs.business_directors.topText")</p>
+        <p class="govuk-body-l" id="directorsAndCompanySecretariesDescription">@messages("awrs.business_directors.topText")</p>
 
         @formWithCSRF(action = actionRoute) {
 
@@ -225,32 +266,45 @@
             }
 
             @* wrapper div required for summary error anchor message link *@
-            <div>
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        businessDirectorsForm("directorsAndCompanySecretaries"),
-                        directorSeq,
-                        legend = directorHeading,
-                        legendId = "directorsAndCompanySecretaries-legend",
-                        fieldSetClass = "form-group",
-                        fieldSetAttributes = "id=directorsAndCompanySecretaries_field"
-                    )
+            <div class="govuk-form-group">
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            attributes = Map("id" -> "directorsAndCompanySecretaries_field"),
+                            legend = Some(Legend(
+                                classes = "govuk-fieldset__legend--s",
+                                content = Text(directorHeading)
+                            ))
+                        )),
+                        items = directorSeq
+                    ).withFormField(businessDirectorsForm("directorsAndCompanySecretaries"))
                 )
             </div>
 
             @if(!isEditMode){
-                <div class="form-group">
+                <div class="govuk-form-group">
 
-                    @awrsInputTypeRadioGroup(
-                        InputTypeRadioGroupParams(
-                            businessDirectorsForm("otherDirectors"),
-                            Seq("Yes" -> messages("awrs.generic.yes"),
-                                "No" -> messages("awrs.generic.no")),
-                            legend = messages("awrs.business_directors.add_another_director"),
-                            legendId = "otherDirectors-legend",
-                            fieldSetClass = "inline",
-                            fieldSetAttributes = "id=otherDirectors_field"
-                        )
+                    @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    classes = "govuk-fieldset__legend--s",
+                                    content = Text(messages("awrs.business_directors.add_another_director"))
+                                ))
+                            )),
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.yes")),
+                                    value = Some("Yes"),
+                                ),
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.no")),
+                                    value = Some("No"),
+                                )
+                            ),
+                            classes = "govuk-radios--inline"
+                        ).withFormField(businessDirectorsForm("otherDirectors"))
                     )
                 </div>
             } else {
@@ -264,7 +318,4 @@
                 submitId = "save-and-continue"
             ))
         }
-    </div>
-
-</div>
 }

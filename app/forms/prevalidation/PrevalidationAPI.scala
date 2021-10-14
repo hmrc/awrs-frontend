@@ -17,6 +17,7 @@
 package forms.prevalidation
 
 import play.api.data.Form
+import scala.language.implicitConversions
 
 
 object TrimOption extends Enumeration {
@@ -56,10 +57,10 @@ trait PrevalidationAPI[T] {
     val crules = caseRules
     val newPreprocessFunctions = preprocessFunctions :+ preprocessFunction
     new PrevalidationAPI[T] {
-      val formValidation = fValidation
-      val trimRules = trules
-      val caseRules = crules
-      override val preprocessFunctions = newPreprocessFunctions
+      val formValidation: Form[T] = fValidation
+      val trimRules: Map[String, TrimOption] = trules
+      val caseRules: Map[String, CaseOption] = crules
+      override val preprocessFunctions: Seq[PreprocessFunction] = newPreprocessFunctions
     }
   }
 

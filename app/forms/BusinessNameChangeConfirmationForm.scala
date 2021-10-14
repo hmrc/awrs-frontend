@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@(legend: String, selectionMapping: Map[String, String], selected: List[String], otherField: Option[String] = None, otherFieldLabel: Option[String] = Some("Other: "))(implicit messages : Messages)
-@import views.view_application.ViewApplicationHelper._
+package forms
 
+import forms.validation.util.NamedMappingAndUtil._
+import models._
+import play.api.data.Form
+import play.api.data.Forms._
 
-@table_row(
-    legend,
-    selected.map(
-        x => {
-            val mappedValue = selectionMapping.get(x).fold("")(x => x)
-            mappedValue match {
-                case "All" => None
-                case "Other" => otherFieldLabel + otherField
-                case _ => Some(mappedValue)
-            }
-        }
-    ) : _*
+object BusinessNameChangeConfirmationForm {
 
-)
+  val businessNameChangeConfirmationForm: Form[BusinessNameChangeConfirmation] = Form(mapping(
+    "businessNameChangeConfirmation" -> yesNoQuestion_compulsory(fieldId = "businessNameChangeConfirmation", errorMessageId = "awrs.business_name_change.error.empty")
+  )(BusinessNameChangeConfirmation.apply)(BusinessNameChangeConfirmation.unapply))
+
+}

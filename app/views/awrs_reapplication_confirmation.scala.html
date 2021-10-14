@@ -15,46 +15,57 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukRadios : GovukRadios,
+    govukErrorSummary: GovukErrorSummary)
+
 @(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
-
 
 
 @awrsMain(messages("awrs.generic.tab.title", messages("awrs.reapplication.confirm_page.heading")), userLoggedIn = true) {
 
-<div class="grid">
-    <div class="grid grid-2-3">
         @backLink()
-        @errorSummaryTemplate(reapplicationForm)
-        <h1 id="withdrawal-confirmation-title" class="heading-xlarge">@messages("awrs.reapplication.confirm_page.heading")</h1>
-        <p class="lede">
+        @if(reapplicationForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(reapplicationForm))
+        }
+        <h1 id="withdrawal-confirmation-title" class="govuk-heading-xl">@messages("awrs.reapplication.confirm_page.heading")</h1>
+        <p class="govuk-body-l">
             @messages("awrs.reapplication.confirm_page.text")
         </p>
 
         @formWithCSRF(action = controllers.routes.ReapplicationController.submit) {
-            <div id="withdrawal-confirmation" class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        reapplicationForm("answer"),
-                        Seq("Yes" -> messages("awrs.generic.yes"),
-                            "No" -> messages("awrs.generic.no")),
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=answer_field",
-                        legend = messages("awrs.reapplication.confirm_page.heading"),
-                        legendClass = "visuallyhidden",
-                        legendId = "createNewApp-legend"
-                    )
+            <div id="withdrawal-confirmation" class="govuk-form-group">
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            classes = "govuk-radios--inline",
+                            legend = Some(Legend(
+                                classes = "govuk-visually-hidden",
+                                content = Text(messages("awrs.reapplication.confirm_page.heading"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some("Yes")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some("No")
+                            )
+                        )
+                    ).withFormField(reapplicationForm("answer"))
                 )
             </div>
-            @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "withdraw-application", classAttr = "button")
+            @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "withdraw-application")
         }
-    </div>
-</div>
-
 }
-

@@ -15,11 +15,17 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukWarningText : GovukWarningText,
+    govukErrorSummary: GovukErrorSummary)
+
 @(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{
@@ -28,15 +34,17 @@
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.group_declaration.heading")), userLoggedIn = true) {
 
-    @errorSummaryTemplate(groupDeclarationForm)
-    <div class="grid">
-        <div class="grid grid-2-3">
-            <h1 id="group-declaration-heading" class="heading-xlarge">@Html(messages("awrs.group_declaration.heading"))</h1>
+            @if(groupDeclarationForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary().withFormErrorsAsText(groupDeclarationForm))
+            }
+
+
+            <h1 id="group-declaration-heading" class="govuk-heading-xl">@Html(messages("awrs.group_declaration.heading"))</h1>
 
             <div id="declaration-group">
-                <div id="lead-paragraph">@Html(messages("awrs.group_declaration.declaration_statement_lead"))</div>
+                <div id="lead-paragraph" class="govuk-body">@Html(messages("awrs.group_declaration.declaration_statement_lead"))</div>
                 <ul style="list-style-type: disc;
-                    padding-left: 1em;">
+                    padding-left: 1em;" class="govuk-list govuk-list--bullet">
                     <li id="bullet-1">@Html(messages("awrs.group_declaration.declaration_statement_bullet_1"))</li>
                     <li id="bullet-2">@Html(messages("awrs.group_declaration.declaration_statement_bullet_2"))</li>
                     <li id="bullet-3">@Html(messages("awrs.group_declaration.declaration_statement_bullet_3"))</li>
@@ -52,11 +60,11 @@
 
                 <input type="hidden" name="groupRepConfirmation" value="true">
 
-                @awrsWarningHelper(declarationTxt = messages("awrs.group_declaration.declaration_statement_confirmation"), id = "confirmation-text-disclaimer")
+                    @govukWarningText(WarningText(
+                        iconFallbackText = "Warning",
+                        content = Text(Messages("awrs.group_declaration.declaration_statement_confirmation"))
+                    ))
 
-                @awrsSubmitButton(messages("awrs.confirmation.button"))(id = "sendGroupNowButton", classAttr = "button")
+                @awrsSubmitButton(messages("awrs.confirmation.button"))(id = "sendGroupNowButton")
             }
-        </div>
-    </div>
 }
-

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.address.client.v1
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsValue, Json, OFormat}
 
 /** Represents a country as per ISO3166. */
 case class Country(
@@ -29,7 +29,7 @@ case class Country(
                     name: String)
 
 object Country {
-  implicit val formats = Json.format[Country]
+  implicit val formats: OFormat[Country] = Json.format[Country]
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ case class Address(lines: Seq[String],
                    postcode: String,
                    country: Country) {
 
-  def isValid = lines.nonEmpty && lines.size <= (if (town.isEmpty) 4 else 3)
+  def isValid: Boolean = lines.nonEmpty && lines.size <= (if (town.isEmpty) 4 else 3)
 
   def nonEmptyFields: List[String] = lines.toList ::: town.toList ::: List(postcode)
 
@@ -55,20 +55,20 @@ case class Address(lines: Seq[String],
   def printable: String = printable(", ")
 
   // Gets line1 if non-empty. */
-  def line1 = if (lines.nonEmpty) lines.head else ""
+  def line1: String = if (lines.nonEmpty) lines.head else ""
 
   // Gets line2 if non-empty. */
-  def line2 = if (lines.size > 1) lines(1) else ""
+  def line2: String = if (lines.size > 1) lines(1) else ""
 
   // Gets line3 if non-empty. */
-  def line3 = if (lines.size > 2) lines(2) else ""
+  def line3: String = if (lines.size > 2) lines(2) else ""
 
   // Gets line4 if non-empty. */
-  def line4 = if (lines.size > 3) lines(3) else ""
+  def line4: String = if (lines.size > 3) lines(3) else ""
 }
 
 object Address {
-  implicit val formats = Json.format[Address]
+  implicit val formats: OFormat[Address] = Json.format[Address]
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -83,11 +83,11 @@ case class AddressRecord(
                           // see https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
                           language: String) {
 
-  def isValid = address.isValid && language.length == 2
+  def isValid: Boolean = address.isValid && language.length == 2
 }
 
 object AddressRecord {
-  implicit val formats = Json.format[AddressRecord]
+  implicit val formats: OFormat[AddressRecord] = Json.format[AddressRecord]
 }
 
 //-------------------------------------------------------------------------------------------------

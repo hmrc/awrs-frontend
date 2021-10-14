@@ -18,14 +18,22 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import uk.gov.hmrc.auth.core.Enrolment
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukRadios : GovukRadios,
+    govukInput: GovukInput,
+    govukErrorSummary: GovukErrorSummary)
+
 @(businessType: Option[String], businessName: String, businessDetailsForm: Form[models.BusinessNameDetails], enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessDetailsForm) }
@@ -47,7 +55,6 @@
     }
 }
 
-
 @tradingNameLabel = @{
     messages("awrs.generic.enter_trading") + (businessType match {
         // this is left in in case we need to append "(optional)" to the end of this text in the future again
@@ -65,15 +72,14 @@
 
 @businessNameSectionContent = {
     <div id="businessName-content">
-    @awrsInputTypeText(
-        InputTypeTextParams(
-            businessDetailsForm("companyName"),
-            inputId = "companyName",
-            label = messages("awrs.generic.business_name"),
-            maxLength = applicationConfig.companyNameLen.toString,
-            required = true,
-            labelHighlight = true
-        )
+        @govukInput(
+        Input(
+            label = Label(
+                content = Text(messages("awrs.generic.business_name")),
+                classes = "govuk-label--s"
+            ),
+            attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true")
+        ).withFormField(businessDetailsForm("companyName"))
     )
     </div>
 }
@@ -85,51 +91,55 @@
     }
 }
 
+@conditionalHtml = {
+    @govukInput(
+        Input(
+            label = Label(
+                content = HtmlContent(tradingNameLabel)
+            ),
+            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+        ).withFormField(businessDetailsForm("tradingName"))
+    )
+}
+
 @awrsMain(title = messages("awrs.generic.tab.title", Messages("awrs.generic.do_you_have_trading_name")), userLoggedIn = true){
-<div class="grid">
-    <div class="grid grid-2-3">
+
         @backLinkHelper(BackLinkParams(
             sectionName = businessDetailsName
         ))
-        @errorSummaryTemplate(businessDetailsForm)
+        @if(businessDetailsForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessDetailsForm))
+        }
         <header class="page-header">
-            <h1 id="additional-information-heading" class="heading-large">@Messages("awrs.generic.do_you_have_trading_name")</h1>
-            @awrsProgressHelper(businessType, businessDetailsName)
+            @awrsProgressHelper(businessType, businessDetailsName)<br>
+            <h1 id="additional-information-heading" class="govuk-heading-xl">@Messages("awrs.generic.do_you_have_trading_name")</h1>
         </header>
 
-        @uk.gov.hmrc.play.views.html.helpers.form(action = actionRoute){
+        @formWithCSRF(action = actionRoute){
 
-            <div class="form-group">
                 @businessNameSection
-            </div>
 
-            <div class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        businessDetailsForm("doYouHaveTradingName"),
-                        Seq("Yes" -> messages("awrs.generic.yes"),
-                        "No" -> messages("awrs.generic.no")),
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=doYouHaveTradingName_field",
-                        legend = messages("awrs.generic.do_you_have_trading_name"),
-                        legendId = "doYouHaveTradingName-legend",
-                        legendClass = "visuallyhidden",
-                    )
-                )
-                <div id="doYouHaveTradingName-yes-content">
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            businessDetailsForm("tradingName"),
-                            inputId = "tradingName",
-                            label = tradingNameLabel,
-                            maxLength = applicationConfig.tradingNameLen.toString,
-                            required = true,
-                            labelHighlight = true,
-                            wrapperClass = "panel-indent"
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-visually-hidden",
+                                content = Text(Messages("awrs.generic.do_you_have_trading_name"))
+                            ))
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some("Yes"),
+                                conditionalHtml = Some(conditionalHtml)
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some("No")
+                            )
                         )
-                    )
-                </div>
-            </div>
+                    ).withFormField(businessDetailsForm("doYouHaveTradingName"))
+                )
 
             @submitButtonAndNavLinks(SubmitAndNavLinkParams(
                 sectionName = businessDetailsName,
@@ -137,10 +147,4 @@
                 submitId = "save-and-continue"
             ))
         }
-    </div>
-</div>
 }
-
-
-
-

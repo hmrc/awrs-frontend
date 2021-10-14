@@ -16,57 +16,64 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.helpers.InputTypeRadioGroupParams
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, _}
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers._
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukRadios: GovukRadios,
+    govukErrorSummary: GovukErrorSummary)
+
 @(confirmationForm: Form[models.BusinessNameChangeConfirmation], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
+    @warningText = {
+        <p class="govuk-body" id="businessNameChangeConfirmation-warning">@messages("awrs.business_name_change.warning")</p>
+        <ul id="businessNameChangeConfirmation-bullets" class="govuk-list--bullet govuk-body">
+            <li>@messages("awrs.business_name_change.warning.bullet.1")</li>
+            <li>@messages("awrs.business_name_change.warning.bullet.2")</li>
+            <li>@messages("awrs.business_name_change.warning.bullet.3")</li>
+        </ul>
+    }
 
-@warningText = {
-<p id="businessNameChangeConfirmation-warning">@messages("awrs.business_name_change.warning")</p>
-<ul id="businessNameChangeConfirmation-bullets" class="bullets">
-    <li>@messages("awrs.business_name_change.warning.bullet.1")</li>
-    <li>@messages("awrs.business_name_change.warning.bullet.2")</li>
-    <li>@messages("awrs.business_name_change.warning.bullet.3")</li>
-</ul>
-}
+    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.business_name_change.heading")), userLoggedIn = true) {
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.business_name_change.heading")), userLoggedIn = true) {
+        @backLink()
 
-@backLink()
-
-@errorSummaryTemplate(confirmationForm)
-<div class="grid">
-    <div class="grid grid-2-3">
+        @if(confirmationForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmationForm))
+        }
         <header class="page-header">
-            <h1 id="businessNameChangeConfirmation-heading" class="heading-xlarge">@messages("awrs.business_name_change.heading")</h1>
-            @awrsProgressHelper(businessType, businessDetailsName)
+            @awrsProgressHelper(businessType, businessDetailsName)<br>
+            <h1 id="businessNameChangeConfirmation-heading" class="govuk-heading-xl">@messages("awrs.business_name_change.heading")</h1>
         </header>
         @warningText
         @formWithCSRF(action = controllers.routes.BusinessNameChangeController.callToAction) {
-        <div class="form-group">
-            <div class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        confirmationForm("businessNameChangeConfirmation"),
-                        Seq("Yes" -> messages("awrs.generic.yes"),
-                            "No" -> messages("awrs.generic.no")),
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=businessNameChangeConfirmation_field",
-                        legend = messages("awrs.business_name_change.heading"),
-                        legendId = "businessNameChangeConfirmation-legend",
-                        legendClass = "visuallyhidden",
-                        ariaDescribedBy = "businessNameChangeConfirmation-legend businessNameChangeConfirmation-warning businessNameChangeConfirmation-bullets",
-                        ariaDescribedByForYesOptionOnly = true
-                    )
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-visually-hidden",
+                                content = Text(Messages("awrs.business_name_change.heading"))
+                            )),
+                            classes = "govuk-radios--inline"
+                        )),
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some("Yes"),
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some("No")
+                            )
+                        )
+                    ).withFormField(confirmationForm("businessNameChangeConfirmation"))
                 )
-            </div>
-            @awrsSubmitButton(messages("awrs.business_name_change.cta"))(id = "save-and-continue", classAttr = "button")
+                @awrsSubmitButton(messages("awrs.business_name_change.cta"))(id = "save-and-continue")
         }
-    </div>
-</div>
-}
+    }

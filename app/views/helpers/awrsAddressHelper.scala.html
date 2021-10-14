@@ -18,8 +18,12 @@
 @import play.api.i18n._
 @import views.helpers._
 @import views.html.helpers._
-
-@(field: Field, params: views.helpers.AddressHelperParams, isPrincipalPlace : Option[Boolean] =  false, PrincipalPrevious: String =  "")(implicit messages: Messages, formInstance: Option[Form[_]] = None, applicationConfig: ApplicationConfig)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukFieldset
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+@this(govukInput: GovukInput, govukFieldset: GovukFieldset, govukSelect: GovukSelect)
+@(field: Field, params: views.helpers.AddressHelperParams, countryList: Seq[(String, String)] = Seq())(implicit messages: Messages, formInstance: Option[Form[_]] = None, applicationConfig: ApplicationConfig)
 
 @isUkAddress = @{params.isUk}
 @number = @{params.number.fold("0")(x => x)}
@@ -35,70 +39,54 @@
         case _ => ""
     }
 }
-@adressLineMessages(line : String) = @{
-    isPrincipalPlace match {
-    case Some(true) => Messages(s"awrs.generic.principal.address_$line", PrincipalPrevious)
-    case _ =>      Messages(s"awrs.generic.address_$line")
-    }
+@addressLineMessages(line : String) = @{
+    Messages(s"awrs.generic.address_$line")
 }
 @postCodeMessage = @{
-    isPrincipalPlace match {
-        case Some(true) => Messages("awrs.generic.principal.postcode", PrincipalPrevious)
-        case _ =>     Messages("awrs.generic.postcode")
-    }
+    Messages("awrs.generic.postcode")
 }
 
-<div id="address-@number" class="address-container" @addressContainerDataAttribute>
-    <div class="address-lines">
-       @awrsInputTypeText(
-           InputTypeTextParams(
-               field("addressLine1"),
-                inputId = field("addressLine1").name,
-                label = adressLineMessages("line1"),
-                maxLength = applicationConfig.addressLineLen.toString,
-                wrapperClass = wrapperClass,
-                labelHighlight = true,
-                required = true
+<div id="address-@number" class="address-container govuk-form-group" @addressContainerDataAttribute>
+
+    <div class="address-lines govuk-form-group">
+        @govukInput(Input(
+                label = Label(
+                    content = Text(addressLineMessages("line1"))
+                ),
+                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+            ).withFormField(field("addressLine1"))
             )
-        )
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                field("addressLine2"),
-                inputId = field("addressLine2").name,
-                label = adressLineMessages("line2"),
-                maxLength = applicationConfig.addressLineLen.toString,
-                wrapperClass = wrapperClass,
-                labelHighlight = true,
-                required = true
+        @govukInput(Input(
+                label = Label(
+                    content = Text(addressLineMessages("line2"))
+                ),
+                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+            ).withFormField(field("addressLine2"))
             )
-        )
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                field("addressLine3"),
-                inputId = field("addressLine3").name,
-                label = adressLineMessages("line3"),
-                maxLength = applicationConfig.addressLineLen.toString,
-                wrapperClass = wrapperClass,
-                labelHighlight = true
+        @govukInput(Input(
+                label = Label(
+                    content = Text(addressLineMessages("line3"))
+                ),
+                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+            ).withFormField(field("addressLine3"))
             )
-        )
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                field("addressLine4"),
-                inputId = field("addressLine4").name,
-                label = adressLineMessages("line4"),
-                maxLength = applicationConfig.addressLineLen.toString,
-                wrapperClass = wrapperClass,
-                labelHighlight = true
+        @govukInput(Input(
+                label = Label(
+                    content = Text(addressLineMessages("line4"))
+                ),
+                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+            ).withFormField(field("addressLine4"))
             )
-        )
+
     </div>
     <div class="uk-address">
         @awrsInputTypeText(
             InputTypeTextParams(
                 field("postcode"),
+                formInstance,
                 inputId = field("postcode").name,
-                inputClass = "input--normal",
+                inputClass = "govuk-input govuk-input--width-10",
+                labelClass = "govuk-label",
                 label = postCodeMessage,
                 maxLength = applicationConfig.addressPostcodeLen.toString,
                 wrapperClass = wrapperClass,
@@ -109,22 +97,24 @@
             )
         )
     </div>
-    <div id="manual-address-@number" class="font-small form-group @wrapperClass">
+    <div id="manual-address-@number" class="@wrapperClass"><br>
         <span id="manual-address-span-@number" class="link-style" tabindex="0" role="link">@Messages("awrs.generic.enter_address_manually")</span>
     </div>
     @if(!isUkAddress) {
-        <div class="non-uk-address">
-            @awrsInputTypeText(
-                InputTypeTextParams(
-                    field("addressCountry"),
-                    inputId = field("addressCountry").name,
-                    inputClass = "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left form-control",
-                    label = Messages("awrs.supplier-addresses.supplier_address_country"),
-                    maxLength = "35",
-                    wrapperClass = wrapperClass,
-                    labelHighlight = true,
-                    required = true
-                )
+        <div class="non-uk-address govuk-input--width-20">
+
+            @govukSelect(
+                Select(
+                    label = Label(
+                        content = Text(messages("awrs.supplier-addresses.supplier_address_country"))
+                    ),
+                    items = Seq(SelectItem(Some(""), "")) ++ countryList.map {
+                        case (code, country) => SelectItem(
+                            value = Some(country),
+                            text = country
+                        )
+                    }
+                ).withFormField(field("addressCountry"))
             )
         </div>
     }

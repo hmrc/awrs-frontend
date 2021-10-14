@@ -27,6 +27,7 @@ import services.{ApplicationService, DeEnrolService, IndexService, Save4LaterSer
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
+import scala.language.postfixOps
 
 import scala.concurrent.{ExecutionContext, Future}
 

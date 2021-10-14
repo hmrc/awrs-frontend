@@ -98,5 +98,4 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
         }
     )
   }
-
 }

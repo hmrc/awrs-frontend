@@ -67,7 +67,7 @@ object ViewApplicationHelper {
     } + " class=\"" + classAttr + "\" href=\"" + href.get + "\">" + message + {
       visuallyHidden match {
         case "" => ""
-        case text => "<span class=\"visuallyhidden\">" + text + "</span>"
+        case text => "<span class=\"govuk-visually-hidden\">" + text + "</span>"
       }
     } + "</a>"
   }
@@ -78,7 +78,7 @@ object ViewApplicationHelper {
       link(
         Some(editUrl(id)),
         "Edit",
-        classAttr = "edit-link",
+        classAttr = "govuk-link",
         idAttr = Some("edit-" + id),
         visuallyHidden = visuallyHidden
       )
@@ -93,7 +93,7 @@ object ViewApplicationHelper {
       link(
         Some(editUrl),
         "Edit",
-        classAttr = "edit-link",
+        classAttr = "govuk-link",
         idAttr = Some("edit-link"),
         visuallyHidden = visuallyHidden
       )
@@ -108,7 +108,7 @@ object ViewApplicationHelper {
       link(
         Some(deleteUrl(id)),
         "Delete",
-        classAttr = "edit-link",
+        classAttr = "govuk-link",
         idAttr = Some("delete-" + id),
         visuallyHidden = visuallyHidden
       )

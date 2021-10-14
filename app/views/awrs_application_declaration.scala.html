@@ -15,11 +15,19 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.helpers.InputTypeTextParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukInput : GovukInput,
+    govukWarningText : GovukWarningText,
+    govukErrorSummary: GovukErrorSummary)
+
 @(applicationDeclarationForm: Form[models.ApplicationDeclaration], isEnrolledApplicant: Boolean)(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
 @declarationTxt = @{
@@ -32,40 +40,44 @@
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading")), userLoggedIn = true){
 
-@errorSummaryTemplate(applicationDeclarationForm)
-<div class="grid">
-    <div class="grid grid-2-3">
+@if(applicationDeclarationForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(applicationDeclarationForm))
+}
+
         @backLink(backUrl = controllers.routes.IndexController.showIndex().url)
-        <h1 id="application-declaration-heading" class="heading-xlarge">@Html(messages("awrs.application_declaration.heading"))</h1>
-        <p class="lede">@messages("awrs.application_declaration.lede")</p>
+        <h1 id="application-declaration-heading" class="govuk-heading-xl">@Html(messages("awrs.application_declaration.heading"))</h1>
+        <p class="govuk-body-l">@messages("awrs.application_declaration.lede")</p>
         @formWithCSRF(action = controllers.routes.ApplicationDeclarationController.sendApplication){
-            @awrsInputTypeText(
-                InputTypeTextParams(
-                    applicationDeclarationForm("declarationName"),
-                    label = messages("awrs.generic.full_name"),
-                    inputId = "declarationName",
-                    maxLength = applicationConfig.applicationDeclarationNameLen.toString,
-                    required = true
-                )
+
+            @govukInput(
+                Input(
+                    label = Label(
+                        classes = "govuk-label",
+                        content = Text(Messages("awrs.generic.full_name"))
+                    ),
+                    attributes = Map("maxLength" -> applicationConfig.applicationDeclarationNameLen.toString)
+                ).withFormField(applicationDeclarationForm("declarationName"))
             )
-            @awrsInputTypeText(
-                InputTypeTextParams(
-                    applicationDeclarationForm("declarationRole"),
-                    label = messages("awrs.application_declaration.declaration_role"),
-                    inputId = "declarationRole",
-                    maxLength = applicationConfig.applicationDeclarationRoleLen.toString,
-                    required = true
-                )
+
+            @govukInput(
+                Input(
+                    label = Label(
+                        classes = "govuk-label",
+                        content = Text(Messages("awrs.application_declaration.declaration_role"))
+                    ),
+                    attributes = Map("maxLength" -> applicationConfig.applicationDeclarationRoleLen.toString)
+                ).withFormField(applicationDeclarationForm("declarationRole"))
             )
 
             <input type="hidden" name="confirmation" value="true">
 
-            @awrsWarningHelper(declarationTxt = declarationTxt, id = "confirmation-text-disclaimer")
+            @govukWarningText(WarningText(
+                iconFallbackText = "Warning",
+                content = HtmlContent(declarationTxt)
+            ))
 
-            @awrsSubmitButton(messages("awrs.application_declaration.confirmation_and_send_application"))(id = "sendApplicationNowButton", classAttr = "button")
-            @returnToIndex()
+            @awrsSubmitButton(messages("awrs.application_declaration.confirmation_and_send_application"))(id = "sendApplicationNowButton")
+            <div class = "govuk-form-group">@returnToIndex()</div>
         }
-    </div>
-</div>
 }
 

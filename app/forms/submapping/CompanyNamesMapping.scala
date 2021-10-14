@@ -17,13 +17,14 @@
 package forms.submapping
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FormData, FormQuery}
+import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter, FormData, FormQuery}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.CompanyNames
 import play.api.data.Forms._
 import play.api.data.Mapping
+import play.api.data.validation.{Invalid, Valid}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
@@ -40,8 +41,8 @@ object CompanyNamesMapping extends AwrsFieldConfig {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.businessName_empty"),
-        genericFieldMaxLengthConstraintParameter(companyNameLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
+        FieldMaxLengthConstraintParameter(companyNameLen, Invalid("awrs.generic.error.maximum_length", fieldNameInErrorMessage, companyNameLen)),
+        FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage))
       )
     compulsoryText(companyNameConstraintParameters)
   }
@@ -55,9 +56,9 @@ object CompanyNamesMapping extends AwrsFieldConfig {
 
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
-        simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.error.tradingName_empty"),
-        genericFieldMaxLengthConstraintParameter(tradingNameLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
+        simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.generic.enter_trading"),
+        FieldMaxLengthConstraintParameter(tradingNameLen, Invalid("awrs.generic.error.maximum_length", fieldNameInErrorMessage, tradingNameLen)),
+        FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage))
       )
     compulsoryText(companyNameConstraintParameters)
   }

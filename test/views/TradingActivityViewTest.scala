@@ -45,7 +45,6 @@ class TradingActivityViewTest extends AwrsUnitTestTraits with ServicesUnitTestFi
         continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("wholesalerType[0]" -> "")) {
           result =>
             val document = Jsoup.parse(contentAsString(result))
-
             val id = "wholesalerType"
             val expectedErrorKey = "awrs.additional_information.error.type_of_wholesaler"
 

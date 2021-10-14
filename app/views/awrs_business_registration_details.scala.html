@@ -16,13 +16,22 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    awrsIdUTRHelper: awrsIdUTRHelper,
+    govukErrorSummary: GovukErrorSummary,
+    awrsIdVRNHelper: awrsIdVRNHelper,
+    awrsIdCRNHelper: awrsIdCRNHelper,
+    awrsIdNINOHelper: awrsIdNINOHelper)
+
 @(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
@@ -52,23 +61,23 @@
     }
 }
 
-
 @awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), userLoggedIn = true) {
-    <div class="grid">
-        <div class="grid grid-2-3">
+
             @backLinkHelper(BackLinkParams(
                 sectionName = businessRegistrationDetailsName
             ))
-            @errorSummaryTemplate(businessRegistrationDetailsForm)
+            @if(businessRegistrationDetailsForm.errors.nonEmpty) {
+                @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(businessRegistrationDetailsForm, mapping = Map("companyRegDetails.dateOfIncorporation" -> "companyRegDetails.dateOfIncorporation.day")))
+            }
+
             <header class="page-header">
-                <h1 id="additional-information-heading" class="heading-xlarge">@businessTypeHeading</h1>
-                @awrsProgressHelper(businessType, businessRegistrationDetailsName)
+                @awrsProgressHelper(businessType, businessRegistrationDetailsName)<br>
+                <h1 id="additional-information-heading" class="govuk-heading-xl">@businessTypeHeading</h1>
             </header>
 
             @formWithCSRF(action = actionRoute){
                 @awrsIdUTRHelper(
                     businessType,
-                    None,
                     businessRegistrationDetailsForm("utr"),
                     youOrThey = "you",
                     ariaLabelledBy = "utr_field utr-information",
@@ -87,15 +96,12 @@
                     case "Partnership" => {}
                     case _ => {
                         @awrsIdCRNHelper(
-                            None,
                             businessRegistrationDetailsForm("companyRegDetails.companyRegistrationNumber"),
                             dateField = Some(businessRegistrationDetailsForm("companyRegDetails.dateOfIncorporation")),
                             youOrThey = "you",
                             ariaLabelledBy = "companyRegDetails.companyRegistrationNumber_field company_reg-information",
                             formHasErrors = businessRegistrationDetailsForm.hasErrors,
                             businessEntity = businessType
-
-
                         )
                     }
                 }
@@ -112,10 +118,4 @@
                     submitId = "save-and-continue"
                 ))
             }
-        </div>
-    </div>
 }
-
-
-
-
