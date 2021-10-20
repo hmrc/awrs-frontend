@@ -16,16 +16,16 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class AddressAudits(addressAudits: List[AddressAudit])
 
 case class AddressAudit(auditPointId: Option[String], eventType: Option[String], uprn: Option[String], fromAddress: Option[Address], toAddress: Option[Address])
 
 object AddressAudit {
-  implicit val formats = Json.format[AddressAudit]
+  implicit val formats: OFormat[AddressAudit] = Json.format[AddressAudit]
 }
 
 object AddressAudits {
-  implicit val formats = Json.format[AddressAudits]
+  implicit val formats: OFormat[AddressAudits] = Json.format[AddressAudits]
 }

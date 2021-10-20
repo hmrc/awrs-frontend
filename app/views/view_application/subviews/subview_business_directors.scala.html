@@ -60,7 +60,7 @@
 
 @content(model: models.BusinessDirectors) = {
     @if(model.directors.isEmpty) {
-        <p id="business_directors-subtext" class="lede">@messages("awrs.business_directors.edit")</p>
+        <p id="business_directors-subtext" class="govuk-body-l">@messages("awrs.business_directors.edit")</p>
     }
     @model.directors.zipWithIndex.map { case (director, id) =>
         @content_director(director, businessLegalEntity, id + 1)

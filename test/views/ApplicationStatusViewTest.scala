@@ -61,8 +61,9 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
       viewStatusPage {
         result =>
           val document = Jsoup.parse(contentAsString(result))
-
-          document.select("#details-content-awrsStatusDecision:nth-child(2)").text() must include(Messages("awrs.application_status.decision_answer.para_3"))
+          document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_1"))
+          document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_2"))
+          document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_3"))
       }
     }
   }

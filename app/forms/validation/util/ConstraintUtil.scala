@@ -19,6 +19,7 @@ package forms.validation.util
 import forms.AWRSEnums.{AWRSEnumeration, BooleanEnumeration}
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
+import scala.language.implicitConversions
 
 object ConstraintUtil {
 
@@ -72,7 +73,7 @@ object ConstraintUtil {
   // always valid is required in case an empty sequence is passed in
   def alwaysValidConstraint[A]: Constraint[A] = Constraint[A]((a: A) => Valid)
 
-  def andThenSeqChain[A](seq: Seq[Constraint[A]]) = seq.foldLeft(alwaysValidConstraint[A])(_ andThen _)
+  def andThenSeqChain[A](seq: Seq[Constraint[A]]): Constraint[A] = seq.foldLeft(alwaysValidConstraint[A])(_ andThen _)
 
   // generic validation functions
   private val fieldIsNotEmptyValidationFunction = (field: String, invalid: ValidationResult) =>
@@ -112,7 +113,7 @@ object ConstraintUtil {
 
   // custom Option[MaxLengthConstraintDefinition]
   sealed trait MaxLengthConstraintOption[+A] {
-    def toOption = this match {
+    def toOption: Option[A] = this match {
       case MaxLengthConstraintDefinition(maxLength) => Some(maxLength)
       case MaxLengthConstraintIsHandledByTheRegEx() => None
     }

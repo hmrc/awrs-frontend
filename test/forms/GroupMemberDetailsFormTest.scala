@@ -18,24 +18,162 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.GroupMemberDetailsForm._
 import forms.test.util._
 import forms.validation.util.FieldError
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import utils.AwrsFieldConfig
 
-class GroupMemberDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils {
+class GroupMemberDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils with AwrsFieldConfig {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form = GroupMemberDetailsForm.groupMemberForm.form
 
   "Form validation" must {
 
-    "check validations for BusinessName and TradingName" in {
-      NamedUnitTests.companyNamesAreValid(idPrefix = names)
+    "check validations for BusinessName" when {
+      val fieldId = "companyNames.businessName"
+      val fieldNameInErrorMessage = "business name"
+
+      "the field is left empty" in {
+        form.bind(Map(fieldId -> "")).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            formWithErrors(fieldId).errors.head.message mustBe "awrs.generic.error.businessName_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the field maxLength is exceeded" in {
+        form.bind(Map(fieldId -> "a" * 141)).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.maximum_length", fieldNameInErrorMessage, companyNameLen)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "invalid characters are entered in the field" in {
+        form.bind(Map(fieldId -> "α")).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
     }
 
-    "display correct validation for group member address" in {
-      NamedUnitTests.ukAddressIsCompulsoryAndValid(idPrefix = "address")
+    "check validations for TradingName" when {
+      val fieldId = "companyNames.tradingName"
+      val fieldNameInErrorMessage = "trading name"
+      val preCondition: Map[String, String] = Map("companyNames.doYouHaveTradingName" -> BooleanRadioEnum.Yes.toString)
+
+      "the field is left empty" in {
+        form.bind(Map(fieldId -> "") ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            formWithErrors(fieldId).errors.head.message mustBe "awrs.generic.enter_trading"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the field maxLength is exceeded" in {
+        form.bind(Map(fieldId -> "a" * 121) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.maximum_length", fieldNameInErrorMessage, tradingNameLen)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "invalid characters are entered in the field" in {
+        form.bind(Map(fieldId -> "α") ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+    }
+
+    "check validations for TradingName radio button " when {
+      val fieldId = "companyNames.doYouHaveTradingName"
+
+      "the radio button is not selected" in {
+        form.bind(Map(fieldId -> "")).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            formWithErrors(fieldId).errors.head.message mustBe "awrs.generic.error.do_you_have_trading_name_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+    }
+
+    "check validations for AddressLine" when {
+      val prefix = "address"
+      val fieldNameInErrorMessage = "address line"
+      val fieldNameInErrorMessagePostcode = "postcode"
+
+      "the fields are left empty" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "",
+          s"$prefix.addressLine2" -> "",
+          s"$prefix.addressLine3" -> "",
+          s"$prefix.addressLine4" -> "",
+          s"$prefix.postcode" -> ""
+        )).fold(
+          formWithErrors => {
+            formWithErrors("address.addressLine1").errors.head.message mustBe "awrs.generic.error.addressLine1_empty"
+            formWithErrors("address.addressLine2").errors.head.message mustBe "awrs.generic.error.addressLine2_empty"
+            formWithErrors("address.postcode").errors.head.message mustBe "awrs.generic.error.postcode_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the field maxLength is exceeded" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "a" * 36,
+          s"$prefix.addressLine2" -> "a" * 36,
+          s"$prefix.addressLine3" -> "a" * 36,
+          s"$prefix.addressLine4" -> "a" * 36,
+          s"$prefix.postcode" -> "a" * 21
+        )).fold(
+          formWithErrors => {
+            formWithErrors("address.addressLine1").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors("address.addressLine2").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors("address.addressLine3").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors("address.addressLine4").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors("address.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "invalid characters are entered in the field" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "α",
+          s"$prefix.addressLine2" -> "α",
+          s"$prefix.addressLine3" -> "α",
+          s"$prefix.addressLine4" -> "α",
+          s"$prefix.postcode" -> "α"
+        )).fold(
+          formWithErrors => {
+            formWithErrors("address.addressLine1").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors("address.addressLine2").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors("address.addressLine3").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors("address.addressLine4").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors("address.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
     }
 
     "display correct validation for group member VRN" in {

@@ -77,8 +77,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
           returnWithAuthorisedUser(testBusinessRegistrationDetails(doYouHaveUTR = "Yes", utr = testNonMatchingUtr, legalEntity = legalEntity), legalEntity) {
             result =>
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("utr_errorLink").text mustBe Messages("awrs.generic.error.utr_invalid_match")
-              doc.getElementById("utr-error-0").text mustBe Messages("awrs.generic.error.utr_invalid_match")
+              doc.select("""a[href="#utr"]""").text mustBe Messages("awrs.generic.error.utr_invalid_match")
+              doc.getElementById("utr-error").text must include (Messages("awrs.generic.error.utr_invalid_match"))
               verifySave4LaterService(saveBusinessRegistrationDetails = 0)
           }
         }
@@ -87,8 +87,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
           returnWithAuthorisedUser(testBusinessRegistrationDetails(doYouHaveUTR = "Yes", utr = None, legalEntity = legalEntity), legalEntity) {
             result =>
               val doc = Jsoup.parse(contentAsString(result))
-              doc.getElementById("utr_errorLink").text mustBe Messages("awrs.generic.error.utr_empty")
-              doc.getElementById("utr-error-0").text mustBe Messages("awrs.generic.error.utr_empty")
+              doc.select("""a[href="#utr"]""").text mustBe Messages("awrs.generic.error.utr_empty")
+              doc.getElementById("utr-error").text must include (Messages("awrs.generic.error.utr_empty"))
               verifySave4LaterService(saveBusinessRegistrationDetails = 0)
           }
         }

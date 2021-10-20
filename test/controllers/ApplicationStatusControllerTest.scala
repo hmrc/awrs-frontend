@@ -22,7 +22,7 @@ import controllers.auth.StandardAuthRetrievals
 import models.FormBundleStatus.Pending
 import models._
 import org.jsoup.Jsoup
-import org.jsoup.nodes.{Document, Element}
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -105,11 +105,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
           testPendingSubscriptionStatusType.processingDate,
           None)
         checkLedeIsCorrect(document, lede)
-        val pendingProgressBarParam =
-          ProgressBarTestParam(Indicator(HasTickBox, progressBarFullClass),
-            Indicator(NoTickBox, progressBarFullClass),
-            Indicator(NoTickBox, progressBarEmptyClass))
-        checkStatusProgressBarIsCorrect(document, pendingProgressBarParam)
         document
       }: Document
 
@@ -133,11 +128,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
             Messages("awrs.application_status.alert_lede.verb_in_main.mindful_to_reject"),
             None)
           checkLedeIsCorrect(document, lede)
-          val pendingProgressBarParam =
-            ProgressBarTestParam(Indicator(HasTickBox, progressBarFullClass),
-              Indicator(NoTickBox, progressBarFullClass),
-              Indicator(NoTickBox, progressBarEmptyClass))
-          checkStatusProgressBarIsCorrect(document, pendingProgressBarParam)
           statusInfoMessageIsDisplayed(document, testStatusInfoTypeMindedToReject.response.get.asInstanceOf[StatusInfoSuccessResponseType].secureCommText)
       }
     }
@@ -386,7 +376,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   case class AlertLedeParam(companyName: String, verb: String, awrsRegeNo: Option[String]) extends LedgeParam
 
   def checkLedeIsCorrect(document: Document, expected: LedgeParam): Unit = {
-    val lede = document.select("p.lede")
+    val lede = document.select(".govuk-panel__body")
 
     val coreLede = expected match {
       case param: StandardLedeParam =>
@@ -403,7 +393,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     }
 
     expected.awrsRegeNo match {
-      case None => lede.text mustBe coreLede
+      case None => lede.text() must include (coreLede)
       case Some(awrsRegN) =>
         val awrsRegText: String = Messages("awrs.application_status.awrsRegNo", AwrsNumberFormatter.format(awrsRegN))
         lede.text mustBe f"$coreLede $awrsRegText"
@@ -420,28 +410,6 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     status mustBe null
   }
 
-  def checkStatusProgressBarIsCorrect(document: Document, expected: ProgressBarTestParam): Unit = {
-    val received = document.getElementById("indication-received")
-    val processed = document.getElementById("indication-processed")
-    val status = document.getElementById("indication-approved")
-
-    def assertCorrectTickBox(element: Element, expected: tickBox) {
-      expected match {
-        case HasTickBox | true => element.attr("class") must include(tickBoxClass)
-        case NoTickBox | false => element.attr("class") must not include tickBoxClass
-      }
-    }
-
-    assertCorrectTickBox(received, expected.received.tickBox)
-    received.attr("class") must include(expected.received.fillBar)
-
-    assertCorrectTickBox(processed, expected.processed.tickBox)
-    processed.attr("class") must include(expected.processed.fillBar)
-
-    assertCorrectTickBox(status, expected.status.tickBox)
-    status.attr("class") must include(expected.status.fillBar)
-  }
-
   def checkStatusPageExitPoints(document: Document, status: String): Unit =
     status match {
       case "Rejected" | "Revoked" | "RejectedUnderReviewOrAppeal" | "RevokedUnderReviewOrAppeal " =>
@@ -452,13 +420,13 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     }
 
   def checkViewApplicationPointsToViewApplication(document: Document): Unit =
-    document.select("a.button").attr("href") mustBe controllers.routes.ViewApplicationController.show(false).url
+    document.select("a.govuk-button").attr("href") mustBe controllers.routes.ViewApplicationController.show(false).url
 
   def checkViewOrEditApplicationDoesNotExist(document: Document): Unit =
-    document.select("a.button").attr("href").length mustBe 0
+    document.select("a.govuk-button").attr("href").length mustBe 0
 
   def statusInfoMessageIsDisplayed(document: Document, expected: String): Unit =
-    document.select(".form-group").first().text() must include(expected)
+    document.select("#statusInfo").text() must include(expected)
 
   def statusTestUser(status: SubscriptionStatusType,
                      statusInfo: MockConfiguration[Option[StatusInfoType]] = DoNotConfigure,

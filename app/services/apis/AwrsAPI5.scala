@@ -83,7 +83,7 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
     val amendedSTFE = convertEtmpFormatSTFE(subscriptionTypeFrontEnd)
     val newFeModel = feModel.copy(subscriptionTypeFrontEnd = amendedSTFE)
     lazy val updatedPremises = AdditionalBusinessPremisesList(amendedSTFE.additionalPremises.get.premises.drop(1))
-    
+
     for {
       dataCache <- save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
       businessCustomerDetails <- save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, convertToBusinessCustomerDetails(amendedSTFE))

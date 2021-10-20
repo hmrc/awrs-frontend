@@ -41,10 +41,10 @@
 <div id="back-link">
     @backLink(alwaysShow = true)
 </div>
-<div class="alert alert--info alert--info__light" role="alert">
-    <p class="alert__message">@messages("awrs.view_application.status_colon") @status</p>
+<div class="alert alert--info alert--info__light banner" role="alert">
+    <p class="govuk-body alert__message">@messages("awrs.view_application.status_colon") @status</p>
 </div>
-<h1 class="heading-xlarge">@messages("awrs.view_application.heading", businessName.fold("")(x => x))</h1>
+<h1 class="govuk-heading-xl">@messages("awrs.view_application.heading", businessName.fold("")(x => x))</h1>
 
 @awrsPrintLink()
 
@@ -64,6 +64,3 @@
 <div id="back-link-bottom">
     @backLink(alwaysShow = true)
 </div>
-
-
-

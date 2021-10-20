@@ -147,7 +147,7 @@ object MappingUtilAPI {
 
   class CrossFieldConstraint(val condition: FormQuery, val errorMessage: Invalid, val booleanValueOfInvalid: Boolean = true) {
 
-    def bind(data: Map[String, String]) =
+    def bind(data: Map[String, String]): ValidationResult =
       condition(data) match {
         case `booleanValueOfInvalid` => errorMessage
         case _ => Valid
@@ -155,7 +155,7 @@ object MappingUtilAPI {
 
     def xiff(preCondition: FormQuery): CrossFieldConstraint =
       new CrossFieldConstraint(condition, errorMessage, booleanValueOfInvalid) {
-        override def bind(data: Map[String, String]) =
+        override def bind(data: Map[String, String]): ValidationResult =
           preCondition(data) match {
             case true => super.bind(data)
             case false => Valid
@@ -170,7 +170,7 @@ object MappingUtilAPI {
   }
 
 
-  def CompulsoryBooleanOptionFormatter(config: CompulsoryBooleanMappingParameter) = new Formatter[Option[Boolean]] {
+  def CompulsoryBooleanOptionFormatter(config: CompulsoryBooleanMappingParameter): Formatter[Option[Boolean]] = new Formatter[Option[Boolean]] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Option[Boolean]] = {
       val value = data.getOrElse(key, "")
       val isBoolean = config.enumType.isEnumValue(value)
@@ -200,7 +200,7 @@ object MappingUtilAPI {
   }
 
 
-  def CompulsoryEnumOptionFormatter(config: CompulsoryEnumMappingParameter) = new Formatter[Option[String]] {
+  def CompulsoryEnumOptionFormatter(config: CompulsoryEnumMappingParameter): Formatter[Option[String]] = new Formatter[Option[String]] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Option[String]] = {
       val value: String = data.getOrElse(key, "")
       val isEnum = config.enumType.isEnumValue(value)
@@ -223,7 +223,7 @@ object MappingUtilAPI {
       Map(key -> value.getOrElse(""))
   }
 
-  def CompulsoryTextFieldFormatter(config: CompulsoryTextFieldMappingParameter) = new Formatter[Option[String]] {
+  def CompulsoryTextFieldFormatter(config: CompulsoryTextFieldMappingParameter): Formatter[Option[String]] = new Formatter[Option[String]] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Option[String]] = {
       val value = data.getOrElse(key, "").trim
       compulsaryTextFieldMappingConstraints(config)(value) match {
@@ -236,7 +236,7 @@ object MappingUtilAPI {
       Map(key -> value.getOrElse(""))
   }
 
-  def OptionalTextFieldMapping(config: OptionalTextFieldMappingParameter) = new Formatter[Option[String]] {
+  def OptionalTextFieldMapping(config: OptionalTextFieldMappingParameter): Formatter[Option[String]] = new Formatter[Option[String]] {
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Option[String]] = {
       val value = data.getOrElse(key, "").trim

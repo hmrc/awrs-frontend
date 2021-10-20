@@ -19,6 +19,7 @@ package models
 import play.api.libs.json.Json
 import utils.TestUtil._
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
+import scala.language.reflectiveCalls
 
 class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
 

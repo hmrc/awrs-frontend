@@ -16,12 +16,12 @@
 
 package models
 
-import play.api.libs.json.{JsValue, JsResult, Reads, Json}
+import play.api.libs.json.{JsResult, JsValue, Json, OFormat, Reads}
 
 case class NewApplicationType(isNewApplication: Option[Boolean])
 
 object NewApplicationType {
-  val reader = new Reads[NewApplicationType] {
+  val reader: Reads[NewApplicationType] = new Reads[NewApplicationType] {
     def reads(js: JsValue): JsResult[NewApplicationType] = {
       for{
         isNewApplications <- (js \ "isNewApplication").validateOpt[Boolean]
@@ -31,5 +31,5 @@ object NewApplicationType {
     }
   }
 
-  implicit val formats = Json.format[NewApplicationType]
+  implicit val formats: OFormat[NewApplicationType] = Json.format[NewApplicationType]
 }

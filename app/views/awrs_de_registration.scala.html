@@ -15,50 +15,59 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukDateInput: GovukDateInput,
+    govukErrorSummary: GovukErrorSummary)
+
 @(deRegistrationForm: Form[models.DeRegistrationDate])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @hintText = {
-<span aria-hidden="true">@messages("awrs.generic.date_hint")</span><span class="visuallyhidden">@messages("awrs.generic.date_hint.reader")</span>
+<span aria-hidden="true">@messages("awrs.generic.date_hint")</span><span class="govuk-visually-hidden">@messages("awrs.generic.date_hint.reader")</span>
 }
 
 @ariaDayMonthYear = {
-    <span id="proposedEndDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
-    <span id="proposedEndDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
-    <span id="proposedEndDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+    <span id="proposedEndDate-day_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+    <span id="proposedEndDate-month_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+    <span id="proposedEndDate-year_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
 }
 
+    @inputItems = @{
+        Seq(InputItem(attributes = Map("maxLength" -> "2")),
+            InputItem(attributes = Map("maxLength" -> "2")),
+            InputItem(attributes = Map("maxLength" -> "4"))
+        )
+    }
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.de_registration.heading")), userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
-@errorSummaryTemplate(deRegistrationForm)
 
-
-<div class="grid">
-    <div class="grid grid-2-3">
-        <h1 id="de_registration-heading" class="heading-xlarge">@messages("awrs.de_registration.heading")</h1>
-        <p class="lede">@messages("awrs.de_registration.lede")</p>
+@if(deRegistrationForm.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(deRegistrationForm, mapping = Map("proposedEndDate" -> "proposedEndDate.day")))
+}
+        <h1 id="de_registration-heading" class="govuk-heading-xl">@messages("awrs.de_registration.heading")</h1>
+        <p class="govuk-body-l">@messages("awrs.de_registration.lede")</p>
         @formWithCSRF(action = controllers.routes.DeRegistrationController.submitDate) {
-            <div class="form-group">
-                @awrsDateField(
-                    DateHelperParams(
-                        formItem = deRegistrationForm,
-                        fieldName = "proposedEndDate",
-                        hintText = hintText,
-                        hintTextId  = "de_registration-hint",
-                        ariaDayMonthYear = ariaDayMonthYear,
-                        ariaLabelledBy = "de_registration-heading"
-                    )
-                )
-            </div>
-            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+
+                    @govukDateInput(DateInput(
+                        hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("awrs.de_registration.heading")),
+                                classes = "govuk-visually-hidden")))
+                            ),
+                        items = inputItems
+            ).withFormField(deRegistrationForm("proposedEndDate")))
+
+            <button class="govuk-button" role="button" data-module="govuk-button" type="submit" id="save-and-continue">@messages("awrs.generic.continue")</button>
         }
-    </div>
-</div>
 }

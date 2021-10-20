@@ -38,6 +38,7 @@ import controllers.auth.StandardAuthRetrievals
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers.stubMessages
+import scala.language.implicitConversions
 
 import scala.annotation.tailrec
 import scala.io.Source
@@ -816,7 +817,7 @@ object TestUtil extends PlaySpec {
   @inline private def trimmedMessage(key: String, args: Any*) = Messages(key, args: _*).trim().replaceAll(" +", " ")
 
   @inline private def messageAssertion(caller: String)(id: String, errorKey: String, expectedErrorKey: String, errorArgs: Any*) = {
-    errorKey mustBe trimmedMessage(expectedErrorKey, errorArgs: _*)
+    errorKey must include(trimmedMessage(expectedErrorKey, errorArgs: _*))
 
     // This test checks if there is a valid message in the messages file associated with the key
     // This test relies on the play framework propery: if a key doesn't exists in the messages file then the key itself is displayed
@@ -828,34 +829,28 @@ object TestUtil extends PlaySpec {
   }
 
   @inline def errorSummaryValidation(document: Document, id: String, expectedErrorKey: String, expectedhref: String, errorArgs: Any*) = {
-    val expectedSummaryErrorKey: String = expectedErrorKey
-    val associatedSummaryErrMsg = document.getElementById(id + "_errorLink")
+    val associatedSummaryErrMsg = document.select(s"""a[href="$expectedhref"]""")
     val errorKey = associatedSummaryErrMsg.text
 
-    assert(associatedSummaryErrMsg != null, ", No error summary associated to the field #%s can be found in the given document".format(id))
+    errorKey must include(trimmedMessage(expectedErrorKey, errorArgs: _*))
 
-    errorKey must include(trimmedMessage(expectedSummaryErrorKey, errorArgs: _*))
-
-    messageAssertion("summary")(id, errorKey, expectedSummaryErrorKey, errorArgs: _*)
+    messageAssertion("summary")(id, errorKey, expectedErrorKey, errorArgs: _*)
 
     // This test validates the link from the summary error message to the correct field.
     associatedSummaryErrMsg.attr("href") mustBe expectedhref
   }
 
   @inline def errorNotificationValidation(document: Document, id: String, expectedErrorKey: String, errorArgs: Any*) = {
-    val associatedErrMsg = document.getElementById(id + "-error-0")
+    val associatedErrMsg = document.getElementById(id + "-error")
     assert(associatedErrMsg != null, ", No error message associated to the field #%s can be found in the given document".format(id))
 
     val errorKey = associatedErrMsg.text
-
-    // only a single error must be displayed per field
-    document.getElementById(id + "-error-1") mustBe null
 
     messageAssertion("field")(id, errorKey, expectedErrorKey, errorArgs: _*)
   }
 
   @inline def testErrorMessageValidation(document: Document, id: String, expectedErrorKey: String, errorArgs: Any*) = {
-    errorSummaryValidation(document, id, expectedErrorKey, "#" + id + "_field", errorArgs: _*)
+    errorSummaryValidation(document, id, expectedErrorKey, "#" + id, errorArgs: _*)
     errorNotificationValidation(document, id, expectedErrorKey, errorArgs: _*)
   }
 

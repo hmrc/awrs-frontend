@@ -99,11 +99,11 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
           loadDataFromS4LWithAuthorisedUser {
             result =>
               val document = Jsoup.parse(contentAsString(result))
-              document.select("#legalEntity_field").text() must include(Messages("awrs.business_verification.limited_company"))
-              document.select("#legalEntity_field").text() must include(Messages("awrs.business_verification.limited_liability_partnership"))
-              document.select("#legalEntity_field").text() must not include Messages("awrs.business_verification.sole_trader")
-              document.select("#legalEntity_field").text() must not include Messages("awrs.business_verification.business_partnership")
-              document.select("#legalEntity_field").text() must not include Messages("awrs.business_verification.limited_partnership")
+              document.getElementsByAttributeValue("for", "legalEntity").text() must be("awrs.business_verification.limited_company")
+              document.getElementsByAttributeValue("for", "legalEntity-2").text() must be("awrs.business_verification.limited_liability_partnership")
+              document.text() must not include Messages("awrs.business_verification.sole_trader")
+              document.text() must not include Messages("awrs.business_verification.business_partnership")
+              document.text() must not include Messages("awrs.business_verification.limited_partnership")
           }
         }
 

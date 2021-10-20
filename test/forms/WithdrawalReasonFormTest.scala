@@ -29,7 +29,7 @@ import utils.AwrsFieldConfig
 class WithdrawalReasonFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
   // lazy required when AwrsFieldConfig is used to make sure the app is started before the config is accessed
-  implicit lazy val testForm: Form[WithdrawalReason] = WithdrawalReasonForm.withdrawalReasonForm.form
+  implicit lazy val form: Form[WithdrawalReason] = WithdrawalReasonForm.withdrawalReasonForm.form
   val preDefinedTypes: Set[AWRSEnums.WithdrawalReasonEnum.Value] = Set(AppliedInError, NoLongerTrading, DuplicateApplication, JoinedAWRSGroup)
 
   "Withdrawal Reason Form" must {
@@ -42,28 +42,53 @@ class WithdrawalReasonFormTest extends PlaySpec with MockitoSugar  with AwrsFiel
       val expectations = CompulsoryEnumValidationExpectations(emptyError, WithdrawalReasonEnum)
       fieldName assertEnumFieldIsCompulsory expectations
     }
-  }
 
-  "check other details entered if 'Other' selected " must {
-    val conditionPreDefinedSelected_theseShouldIgnoreTheValidationOnThisField: Set[Map[String, String]] =
-      preDefinedTypes.foldLeft(Set[Map[String, String]]())((map, value) => map + Map("reason" -> value.toString))
+    "validate no radio buttons are selected" in {
+      val fieldId = "reason"
 
-    val conditionOtherSelected: Map[String, String] = Map("reason" -> Other.toString)
-
-    "check 'Other' reason validation, when other is selected" in {
-      val fieldId = "withdrawalReason-other"
-      val fieldName = "reasonOther"
-
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.withdrawal.error.other.reason_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "other reasons", withdrawalOtherReasonsLen)
-      val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "other reasons"))
-      val formatError = ExpectedFieldFormat(invalidFormats)
-
-      val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
-
-      fieldName assertFieldIsCompulsoryWhen(conditionOtherSelected, expectations)
-      fieldName assertFieldIsIgnoredWhen(conditionPreDefinedSelected_theseShouldIgnoreTheValidationOnThisField, expectations.toFieldToIgnore)
+      form.bind(Map(fieldId -> "")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.withdrawal.error.reason_empty"
+        },
+        _ => fail("Field should contain errors")
+      )
     }
   }
 
+  "validate content if 'Other' button selected " must {
+    val conditionOtherSelected: Map[String, String] = Map("reason" -> Other.toString)
+    val fieldId = "reasonOther"
+    val fieldNameInErrorMessage = "other reasons why you are withdrawing your registration"
+
+    "the other reasons field is left empty" in {
+      form.bind(Map(fieldId -> "") ++ conditionOtherSelected).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.withdrawal.error.other.reason_empty"
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "the other reasons field maxLength is exceeded" in {
+      form.bind(Map(fieldId -> "a" * 41) ++ conditionOtherSelected).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.maximum_length", fieldNameInErrorMessage, withdrawalOtherReasonsLen)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "invalid characters are entered in the other reasons field" in {
+      form.bind(Map(fieldId -> "α") ++ conditionOtherSelected).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+  }
 }

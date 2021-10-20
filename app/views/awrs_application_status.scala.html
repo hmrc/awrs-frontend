@@ -18,17 +18,20 @@
 @import models.FormBundleStatus._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.html.subtemplates.application_status._
 @import views.subtemplates.application_status._
-@this(awrsMain: awrs_main)
+@this(
+    awrsMain: main,
+    awrsAnswerQuestionHelper: awrsAnswerQuestionHelper,
+    approvedWithConditionsInfo: approved_with_conditions_info)
+
 @(params: views.subtemplates.application_status.ApplicationStatusParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @normalInfo = {
     @params.status.formBundleStatus match {
         case Pending                     => {@pending_info(params.asInstanceOf[ApplicationPendingParameter].isNewBusiness, printFriendly)}
         case Approved                    => {@approved_info(printFriendly)}
-        case ApprovedWithConditions      => {@approved_with_conditions_info(params.asInstanceOf[ApplicationApprovedWithConditionsParameter], printFriendly)}
+        case ApprovedWithConditions      => {@approvedWithConditionsInfo(params.asInstanceOf[ApplicationApprovedWithConditionsParameter], printFriendly)}
         case Rejected                    => {@rejected_info(params.asInstanceOf[ApplicationRejectedParameter], printFriendly)}
         case Revoked                     => {@revoked_info(params.asInstanceOf[ApplicationRevokedParameter], printFriendly)}
         case RejectedUnderReviewOrAppeal => {@rejected_review_info(params.asInstanceOf[ApplicationRejectedReviewParameter])}
@@ -54,10 +57,9 @@
 }
 
 @viewAppBlock = {
-    <div class="form-group print-hidden">
+    <div class="govuk-form-group print-hidden">
         <a id="view-application"
-           class="button print-hidden"
-           role="button"
+           class="govuk-button print-hidden" role="button" data-module="govuk-button"
            href="@controllers.routes.ViewApplicationController.show(false)">
             @messages("awrs.generic.application_status_continue_read_only")
         </a>
@@ -67,7 +69,7 @@
 @infoBlock = {
     @params.status.formBundleStatus match {
         case Rejected | Revoked => {
-            <div class="form-group print-hidden">
+            <div class="govuk-form-group print-hidden">
                 @awrsAnswerQuestionHelper(
                     QuestionAnswerParameters(
                         messages("awrs.application_status.decision_question"),
@@ -82,15 +84,14 @@
 
 @createNewAppBlock = {
     <div class="print-hidden">
-        <p><a href="@controllers.routes.ReapplicationController.show()">@Html(messages("awrs.generic.create_new_application_link"))</a></p>
+        <p class="govuk-body"><a class="govuk-link" href="@controllers.routes.ReapplicationController.show()">@Html(messages("awrs.generic.create_new_application_link"))</a></p>
         <br>
     </div>
 }
 
 @govWrapper = {
     @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_status.page_title")), nameBusiness = Some(params.organisationName), userLoggedIn = true) {
-    <div class="grid">
-        <div class="grid grid-2-3">
+
             @application_status_header(params)
             @info
             @params.status.formBundleStatus match {
@@ -102,8 +103,6 @@
                 case _ => {}
             }
             @awrsPrintLink()
-        </div>
-    </div>
     }
 }
 @content = {
@@ -112,8 +111,5 @@
     @info
     @backLink()
 }
-@if(printFriendly) {
-    @awrsPrintFriendlyWrapper(content)
-} else {
-    @govWrapper
-}
+
+@govWrapper

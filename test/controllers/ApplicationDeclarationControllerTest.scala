@@ -120,14 +120,14 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     "show error page if a DuplicateSubscriptionException is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), DuplicateSubscriptionException("This subscription already exists")) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementsByClass("page-header").text() must include(Messages("awrs.application_duplicate_request.heading"))
+        document.getElementsByClass("govuk-heading-xl").text() must include(Messages("awrs.application_duplicate_request.heading"))
       }
     }
 
     "show error page if a PendingDeregistrationException is encountered" in {
       saveWithException(testRequest(testApplicationDeclarationTrue), PendingDeregistrationException("You cannot submit a new application while your cancelled application is still pending")) { result =>
         val document = Jsoup.parse(contentAsString(result))
-        document.getElementsByClass("page-header").text() must include(Messages("awrs.application_pending_deregistration.heading"))
+        document.getElementsByClass("govuk-heading-xl").text() must include(Messages("awrs.application_pending_deregistration.heading"))
       }
     }
 

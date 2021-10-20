@@ -14,22 +14,21 @@
  * limitations under the License.
  *@
 
-@(params: views.subtemplates.application_status.ApplicationApprovedWithConditionsParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages )
 @import views.html.helpers._
 @import views.helpers._
-<div class="form-group">
-    <div>
-        <h2 class="heading-medium">@Messages("awrs.application_status.info.approved_with_conditions.heading")</h2>
-    </div>
-    @Html(params.statusInfo.secureCommText)
-    @printFriendly match {
-        case false => {@awrsStatusPageSignInPara(messages)}
-        case true => {}
-    }
-</div>
+@this(awrsAnswerQuestionHelper: awrsAnswerQuestionHelper)
+@(params: views.subtemplates.application_status.ApplicationApprovedWithConditionsParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages )
+
+<h2 class="govuk-heading-m">@Messages("awrs.application_status.info.approved_with_conditions.heading")</h2>
+<div class="govuk-body"><span id="statusInfo">@Html(params.statusInfo.secureCommText)</span></div>
+@printFriendly match {
+    case false => {@awrsStatusPageSignInPara(messages)}
+    case true => {}
+}
+
 @printFriendly match {
     case false => {
-        <div class="form-group print-hidden">
+        <div class="govuk-form-group print-hidden">
             @awrsAnswerQuestionHelper(
                 QuestionAnswerParameters(
                     Messages("awrs.application_status.decision_question"),

@@ -126,7 +126,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
         result =>
           status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("entity-HelpLinkAnswer").text must be(Messages("awrs.business-partner.role_help_text"))
+          document.getElementById("entity-HelpLinkAnswer").text must include (Messages("awrs.business-partner.role_help_text"))
       }
     }
   }
@@ -141,31 +141,33 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
           status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
 
-          val entityType = document.getElementById("entityType_field")
-          entityType must not be null
-          entityType.getElementById("entityType-individual") must not be null
-          entityType.getElementById("entityType-corporate_body") must not be null
-          entityType.getElementById("entityType-sole_trader") must not be null
+          document must not be null
+          document.getElementById("entityType-individual") must not be null
+          document.getElementById("entityType-corporate_body") must not be null
+          document.getElementById("entityType-sole_trader") must not be null
+
+          document.getElementsByAttributeValue("for", "firstName").text() must be("awrs.generic.first_name")
+          document.getElementsByAttributeValue("for", "lastName").text() must be("awrs.generic.surname")
+          document.getElementsByAttributeValue("for", "nino").text() must be("awrs.organisation.NINO")
+          document.getElementById("doYouHaveNino") must not be null
 
           val individualDocument = document.getElementsByClass("individual").toString
-          individualDocument must include("firstName_field")
-          individualDocument must include("lastName_field")
+          individualDocument must include("firstName")
+          individualDocument must include("lastName")
           individualDocument must include("partnerAddress.postcode_field")
-          individualDocument must include("partnerAddress.addressLine1_field")
-          individualDocument must include("partnerAddress.addressLine2_field")
-          individualDocument must include("partnerAddress.addressLine3_field")
-          individualDocument must include("partnerAddress.addressLine4_field")
+          individualDocument must include("partnerAddress.addressLine1")
+          individualDocument must include("partnerAddress.addressLine2")
+          individualDocument must include("partnerAddress.addressLine3")
+          individualDocument must include("partnerAddress.addressLine4")
           individualDocument must include("doYouHaveNino")
-          individualDocument must include("nino_field")
-          individualDocument must not include("companyNames.businessName_field")
-          individualDocument must not include("companyNames.tradingName_field")
-          individualDocument must not include("utr_field")
+          individualDocument must include("nino")
+          individualDocument must not include("companyNames.businessName")
+          individualDocument must not include("companyNames.tradingName")
           individualDocument must not include("utr")
-          individualDocument must not include("companyRegDetails.companyRegistrationNumber_field")
           individualDocument must not include("companyRegDetails.companyRegistrationNumber")
-          individualDocument must not include("companyRegDetails.dateOfIncorporation_field")
+          individualDocument must not include("companyRegDetails.dateOfIncorporation")
           individualDocument must not include("doYouHaveVRN")
-          individualDocument must not include("vrn_field")
+          individualDocument must not include("vrn")
 
       }
     }
@@ -178,28 +180,33 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
           status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
 
-          val entityType = document.getElementById("entityType_field")
-          entityType must not be null
-          entityType.getElementById("entityType-individual") must not be null
-          entityType.getElementById("entityType-corporate_body") must not be null
-          entityType.getElementById("entityType-sole_trader") must not be null
+          document.getElementsByAttributeValue("for", "companyNames.businessName").text() must be("awrs.generic.business_name")
+          document.getElementsByAttributeValue("for", "companyNames.tradingName").text() must be("awrs.generic.trading")
+          document.getElementsByAttributeValue("for", "utr").text() must be("awrs.generic.CT_UTR_number")
+          document.getElementsByAttributeValue("for", "companyRegDetails.companyRegistrationNumber").text() must be("awrs.generic.company_reg")
+          document.getElementsByAttributeValue("for", "companyRegDetails.dateOfIncorporation.day").text() must be("date.input.day")
+          document.getElementById("doYouHaveVRN") must not be null
+
+          document must not be null
+          document.getElementById("entityType-individual") must not be null
+          document.getElementById("entityType-corporate_body") must not be null
+          document.getElementById("entityType-sole_trader") must not be null
 
           val corporateDocument = document.getElementsByClass("corporate_body").toString
-          corporateDocument must include("companyNames.businessName_field")
-          corporateDocument must include("companyNames.tradingName_field")
+          corporateDocument must include("companyNames.businessName")
+          corporateDocument must include("companyNames.tradingName")
           corporateDocument must include("partnerAddress.postcode_field")
-          corporateDocument must include("partnerAddress.addressLine1_field")
-          corporateDocument must include("partnerAddress.addressLine2_field")
-          corporateDocument must include("partnerAddress.addressLine3_field")
-          corporateDocument must include("partnerAddress.addressLine4_field")
+          corporateDocument must include("partnerAddress.addressLine1")
+          corporateDocument must include("partnerAddress.addressLine2")
+          corporateDocument must include("partnerAddress.addressLine3")
+          corporateDocument must include("partnerAddress.addressLine4")
           corporateDocument must include("doYouHaveVRN")
-          corporateDocument must include("vrn_field")
-          corporateDocument must include("utr_field")
+          corporateDocument must include("vrn")
           corporateDocument must include("utr")
-          corporateDocument must include("companyRegDetails.companyRegistrationNumber_field")
           corporateDocument must include("companyRegDetails.companyRegistrationNumber")
-          corporateDocument must not include("firstName_field")
-          corporateDocument must not include("lastName_field")
+          corporateDocument must not include("firstName")
+          corporateDocument must not include("lastName")
+          corporateDocument must not include("doYouHaveNino")
       }
     }
 
@@ -211,31 +218,36 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
           status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
 
-          val entityType = document.getElementById("entityType_field")
-          entityType must not be null
-          entityType.getElementById("entityType-individual") must not be null
-          entityType.getElementById("entityType-corporate_body") must not be null
-          entityType.getElementById("entityType-sole_trader") must not be null
+          document.getElementsByAttributeValue("for", "firstName").text() must be("awrs.generic.first_name")
+          document.getElementsByAttributeValue("for", "lastName").text() must be("awrs.generic.surname")
+          document.getElementsByAttributeValue("for", "companyNames.tradingName").text() must be("awrs.generic.trading")
+          document.getElementsByAttributeValue("for", "utr").text() must be("awrs.generic.CT_UTR_number")
+          document.getElementsByAttributeValue("for", "nino").text() must be("awrs.organisation.NINO")
+          document.getElementsByAttributeValue("for", "vrn").text() must be("awrs.generic.VAT_registration_number")
+          document.getElementById("doYouHaveVRN") must not be null
+          document.getElementById("doYouHaveNino") must not be null
+
+          document must not be null
+          document.getElementById("entityType-individual") must not be null
+          document.getElementById("entityType-corporate_body") must not be null
+          document.getElementById("entityType-sole_trader") must not be null
 
           val soleTraderDocument = document.getElementsByClass("sole_trader").toString
-          soleTraderDocument must include("firstName_field")
-          soleTraderDocument must include("lastName_field")
-          soleTraderDocument must include("tradingName_field")
+          soleTraderDocument must include("firstName")
+          soleTraderDocument must include("lastName")
+          soleTraderDocument must include("tradingName")
           soleTraderDocument must include("partnerAddress.postcode_field")
-          soleTraderDocument must include("partnerAddress.addressLine1_field")
-          soleTraderDocument must include("partnerAddress.addressLine2_field")
-          soleTraderDocument must include("partnerAddress.addressLine3_field")
-          soleTraderDocument must include("partnerAddress.addressLine4_field")
+          soleTraderDocument must include("partnerAddress.addressLine1")
+          soleTraderDocument must include("partnerAddress.addressLine2")
+          soleTraderDocument must include("partnerAddress.addressLine3")
+          soleTraderDocument must include("partnerAddress.addressLine4")
           soleTraderDocument must include("doYouHaveNino")
-          soleTraderDocument must include("nino_field")
           soleTraderDocument must include("doYouHaveVRN")
-          soleTraderDocument must include("vrn_field")
           soleTraderDocument must include("vrn")
-          soleTraderDocument must include("utr_field")
           soleTraderDocument must include("utr")
-          soleTraderDocument must not include("companyNames.businessName_field")
-          soleTraderDocument must not include("companyRegDetails.companyRegistrationNumber_field")
-          soleTraderDocument must not include("companyRegDetails.dateOfIncorporation_field")
+          soleTraderDocument must not include("companyNames.businessName")
+          soleTraderDocument must not include("companyRegDetails.companyRegistrationNumber")
+          soleTraderDocument must not include("companyRegDetails.dateOfIncorporation")
       }
     }
 

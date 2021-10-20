@@ -42,7 +42,7 @@ object PlaceOfBusinessForm {
     compulsoryEnum(question)
   }
 
-  def placeOfBusinessValidationForm(implicit applicationConfig: ApplicationConfig) = Form(mapping(
+  def placeOfBusinessValidationForm(implicit applicationConfig: ApplicationConfig): Form[PlaceOfBusiness] = Form(mapping(
     "mainPlaceOfBusiness" -> principalAddress_compulsory,
     "mainAddress" -> (ukAddress_compulsory(prefix = "mainAddress", prefixRefNameInErrorMessage = "principal place of business", applicationConfig.countryCodes).toOptionalAddressMapping iff whenPrincipalAddressNo),
     "placeOfBusinessLast3Years" -> previousAddress_compulsory,

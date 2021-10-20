@@ -14,16 +14,18 @@
  * limitations under the License.
  *@
 
+@import play.api.i18n._
+@import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+
+@this(govukRadios: GovukRadios, govukInput: GovukInput)
 @(radioField: Field,
 inputField: Field,
 youOrThey: String = "",
 legend: Option[String] = None,
 ariaLabelledBy: Option[String] = None,
 formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Option[Form[_]] = None)
-
-@import play.api.i18n._
-@import views.helpers.{InputTypeRadioGroupParams, InputTypeTextParams}
-@import views.html.helpers._
 
 @messageKey = @{
     legend match {
@@ -38,34 +40,42 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
     }
 }
 
-
-<div class="form-group">
-    @awrsInputTypeRadioGroup(
-        InputTypeRadioGroupParams(
-            radioField,
-            Seq("Yes" -> Messages("awrs.generic.yes"),
-                "No" -> Messages("awrs.generic.no")),
-            fieldSetAttributes = "id="+radioField.name+"_field",
-            legend = messageKey,
-            legendId = radioField.name+"-legend",
-            fieldSetClass = "inline"
-        )
+@conditionalHtml = {
+    @govukInput(Input(
+        label = Label(
+            content = Text(youOrTheyMessagekey),
+            classes = "govuk-label"
+        ),
+        hint = Some(Hint(
+            content = Text(messages("awrs.generic.do_you_have_VAT_information")),
+            id = Some("vrn-information"))
+        ),
+        attributes = Map("maxlength" -> frontendDefaultLen),
+        classes = "govuk-input--width-20"
+    ).withFormField(inputField)
     )
-    <div id="@radioField.name-yes-content">
-        @awrsInputTypeText(
-            InputTypeTextParams(
-                inputField,
-                inputId = inputField.name,
-                maxLength = frontendDefaultLen,
-                wrapperClass = "panel-indent",
-                label = youOrTheyMessagekey,
-                required = true,
-                labelHighlight = true,
-                formHint = Messages("awrs.generic.do_you_have_VAT_information"),
-                formHintId = "vrn-information",
-                ariaLabelledBy = ariaLabelledBy,
-                formHasErrors = formHasErrors
+}
+
+<div class="govuk-form-group">
+    @govukRadios(
+        Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messageKey),
+                    classes = "govuk-fieldset__legend--s"
+                ))
+            )),
+            items = Seq(
+                RadioItem(
+                    content = Text(Messages("awrs.generic.yes")),
+                    value = Some("Yes"),
+                    conditionalHtml = Some(conditionalHtml)
+                ),
+                RadioItem(
+                    content = Text(Messages("awrs.generic.no")),
+                    value = Some("No")
+                )
             )
-        )
-    </div>
+        ).withFormField(radioField)
+    )
 </div>

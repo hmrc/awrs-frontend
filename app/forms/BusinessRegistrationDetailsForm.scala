@@ -24,7 +24,7 @@ import forms.validation.util.ConstraintUtil._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil.{doYouHaveCRN_compulsory => _, _}
 import models._
-import play.api.data.Form
+import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
 
 object BusinessRegistrationDetailsForm {
@@ -38,15 +38,15 @@ object BusinessRegistrationDetailsForm {
   val vrn = "vrn"
   val crnMapping = "companyRegDetails"
 
-  @inline def doYouHaveCRN_compulsory = yesNoQuestion_compulsory(doYouHaveCrn, "awrs.generic.error.do_you_have_company_reg_empty")
+  @inline def doYouHaveCRN_compulsory(): Mapping[Option[String]] = yesNoQuestion_compulsory(doYouHaveCrn, "awrs.generic.error.do_you_have_company_reg_empty")
 
-  @inline def answeredYesToDoYouHaveCRN = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveCRN: FormData => Boolean = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
 
-  @inline def answeredYesToDoYouHaveNino = whenAnswerToFieldIs(doYouHaveNino, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveNino: FormData => Boolean = whenAnswerToFieldIs(doYouHaveNino, BooleanRadioEnum.YesString)(_)
 
-  @inline def answeredYesToDoYouHaveVRN = whenAnswerToFieldIs(doYouHaveVrn, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveVRN: FormData => Boolean = whenAnswerToFieldIs(doYouHaveVrn, BooleanRadioEnum.YesString)(_)
 
-  @inline def answeredYesToDoYouHaveUTR = whenAnswerToFieldIs(doYouHaveUtr, BooleanRadioEnum.YesString)(_)
+  @inline def answeredYesToDoYouHaveUTR: FormData => Boolean = whenAnswerToFieldIs(doYouHaveUtr, BooleanRadioEnum.YesString)(_)
 
   private val soleTraderIds = Seq[String](doYouHaveUtr, doYouHaveNino, doYouHaveVrn)
   private val limitedIds = Seq[String](doYouHaveUtr, doYouHaveCrn, doYouHaveVrn)
@@ -70,7 +70,7 @@ object BusinessRegistrationDetailsForm {
 
     val doYouHaveUtrInferred = inferBasedOn(data.get(utr))
 
-    data.+((doYouHaveNino, doYouhaveNinoInferred), (doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
+    data. +((doYouHaveNino, doYouhaveNinoInferred), (doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
   }
 
   /*
@@ -91,7 +91,7 @@ object BusinessRegistrationDetailsForm {
     }
   }
 
-  val businessRegistrationDetailsValidationForm = (entityType: String) => {
+  val businessRegistrationDetailsValidationForm: String => Form[BusinessRegistrationDetails] = (entityType: String) => {
     val ids = entityIds(entityType)
     val noIdIsSupplied = (associatedQuestion: String) => noIdsHaveBeenSupplied(ids)(associatedQuestion)(_)
     Form(
@@ -108,5 +108,5 @@ object BusinessRegistrationDetailsForm {
       )(BusinessRegistrationDetails.apply)(BusinessRegistrationDetails.unapply))
   }
 
-  val businessRegistrationDetailsForm = (entityType: String) => PreprocessedForm(businessRegistrationDetailsValidationForm(entityType)).addNewPreprocessFunction(inferDoYouHave)
+  val businessRegistrationDetailsForm: String => PrevalidationAPI[BusinessRegistrationDetails] = (entityType: String) => PreprocessedForm(businessRegistrationDetailsValidationForm(entityType)).addNewPreprocessFunction(inferDoYouHave)
 }

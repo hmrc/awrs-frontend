@@ -43,7 +43,7 @@ object TupleDateMapping {
         tupleToOptionalTuple)
   }
 
-  val yearMustBe4Digits = (fieldKey: String) => (date: TupleDate) => date.year.matches("""^\d{4}$""") match {
+  val yearMustBe4Digits: String => TupleDate => ValidationResult = (fieldKey: String) => (date: TupleDate) => date.year.matches("""^\d{4}$""") match {
     case true => Valid
     case _ => simpleErrorMessage(fieldKey, "awrs.business_details.error.year_toSmall")
   }
@@ -52,7 +52,7 @@ object TupleDateMapping {
                                    isInvalidErrMessage: (String) => Invalid,
                                    dateRangeCheck: Option[(String) => (TupleDate) => ValidationResult] = Some(yearMustBe4Digits),
                                    isTooEarlyCheck: Option[(String) => (TupleDate) => ValidationResult],
-                                   isTooLateCheck: Option[(String) => (TupleDate) => ValidationResult]) = new Formatter[TupleDate] {
+                                   isTooLateCheck: Option[(String) => (TupleDate) => ValidationResult]): Formatter[TupleDate] = new Formatter[TupleDate] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], TupleDate] = {
       val day = data.getOrElse(f"$key.day", "").trim()
       val month = data.getOrElse(f"$key.month", "").trim()

@@ -1,5 +1,8 @@
 # AWRS routes
-GET         /assets/*file                                   controllers.Assets.at(path="/public", file)
+->          /hmrc-frontend                                  hmrcfrontend.Routes
+
+GET         /assets/*file                                   controllers.Assets.versioned(path="/public", file: Asset)
+
 
 GET         /                                               controllers.HomeController.showOrRedirect(callerId: Option[String])
 # Leaving in landing-page route in case people have it bookmarked
@@ -121,10 +124,6 @@ POST        /group-declaration/sendConfirmation             controllers.GroupDec
 
 GET         /address-lookup                                 controllers.AddressLookupController.addressLookup(postcode: String)
 POST        /address-lookup                                 controllers.AddressLookupController.auditAddress
-
-GET         /feedback                                       controllers.FeedbackController.showFeedback
-GET         /feedback/thanks                                controllers.FeedbackController.showFeedbackThanks
-POST        /feedback-submit                                controllers.FeedbackController.submitFeedback
 
 GET         /withdraw-registration                          controllers.WithdrawalController.showWithdrawalReasons
 POST        /withdraw-registration                          controllers.WithdrawalController.submitWithdrawalReasons

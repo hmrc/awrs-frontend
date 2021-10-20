@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class Individual(firstName: String, lastName: String, dateOfBirth: Option[String])
 
@@ -32,19 +32,19 @@ case class MatchBusinessData(acknowledgementReference: String,
                              organisation: Option[Organisation])
 
 object Individual {
-  implicit val formats = Json.format[Individual]
+  implicit val formats: OFormat[Individual] = Json.format[Individual]
 }
 
 object Organisation {
-  implicit val formats = Json.format[Organisation]
+  implicit val formats: OFormat[Organisation] = Json.format[Organisation]
 }
 
 object OrganisationResponse {
-  implicit val formats = Json.format[OrganisationResponse]
+  implicit val formats: OFormat[OrganisationResponse] = Json.format[OrganisationResponse]
 }
 
 object MatchBusinessData {
-  implicit val formats = Json.format[MatchBusinessData]
+  implicit val formats: OFormat[MatchBusinessData] = Json.format[MatchBusinessData]
 }
 
 case class BCAddressApi3(addressLine1: String,
@@ -55,7 +55,7 @@ case class BCAddressApi3(addressLine1: String,
                       countryCode: Option[String] = None)
 
 object BCAddressApi3 {
-  implicit val formats = Json.format[BCAddressApi3]
+  implicit val formats: OFormat[BCAddressApi3] = Json.format[BCAddressApi3]
 
   def apply(placeOfBusiness: PlaceOfBusiness): BCAddressApi3 = {
     val address = placeOfBusiness.mainAddress.get
@@ -78,5 +78,5 @@ case class MatchSuccessResponse(isAnIndividual: Boolean,
                                 individual: Option[Individual] = None)
 
 object MatchSuccessResponse {
-  implicit val format = Json.format[MatchSuccessResponse]
+  implicit val format: OFormat[MatchSuccessResponse] = Json.format[MatchSuccessResponse]
 }

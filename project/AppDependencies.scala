@@ -12,13 +12,12 @@ private object AppDependencies {
     "com.typesafe.play"  %% "anorm"                       % "2.6.0-M1",
     "uk.gov.hmrc"        %% "url-builder"                 % "3.5.0-play-27",
     "uk.gov.hmrc"        %% "http-caching-client"         % "9.5.0-play-27",
-    "uk.gov.hmrc"        %% "bootstrap-frontend-play-27"  % "5.6.0",
-    "uk.gov.hmrc"        %% "play-partials"               % "7.1.0-play-27", // includes code for retrieving partials, e.g. the Help with this page form
+    "uk.gov.hmrc"        %% "bootstrap-frontend-play-27"  % "5.16.0",
+    "uk.gov.hmrc"        %% "play-partials"               % "8.2.0-play-27", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc"        %% "domain"                      % "5.11.0-play-27",
     "uk.gov.hmrc"        %% "json-encryption"             % "4.10.0-play-27",
     "com.mohiva"         %% "play-html-compressor"        % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc"        %% "govuk-template"              % "5.69.0-play-27",
-    "uk.gov.hmrc"        %% "play-ui"                     % "9.6.0-play-27",
+    "uk.gov.hmrc"        %% "play-frontend-hmrc"          % "1.22.0-play-27",
     "com.typesafe.play"  %% "play-json-joda"              % "2.9.2"
   )
 
@@ -33,8 +32,8 @@ private object AppDependencies {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
         "org.pegdown"             % "pegdown"              % "1.6.0" % scope,
-        "org.jsoup"               % "jsoup"                % "1.13.1" % scope,
-        "org.mockito"             % "mockito-core"         % "3.11.2" % scope,
+        "org.jsoup"               % "jsoup"                % "1.14.3" % scope,
+        "org.mockito"             % "mockito-core"         % "3.12.4" % scope,
         "org.scalatestplus.play"  %% "scalatestplus-play"  % scalaTestplusPlayVersion % scope
       )
     }.test
@@ -49,7 +48,7 @@ private object AppDependencies {
         "org.pegdown"             % "pegdown"              % pegdownVersion % scope,
         "com.typesafe.play"       %% "play-test"           % PlayVersion.current % scope,
         "org.scalatestplus.play"  %% "scalatestplus-play"  % scalaTestplusPlayVersion % scope,
-        "com.github.tomakehurst"  % "wiremock-jre8"        % "2.29.0" % scope
+        "com.github.tomakehurst"  % "wiremock-jre8"        % "2.31.0" % scope
       )
     }.test
   }

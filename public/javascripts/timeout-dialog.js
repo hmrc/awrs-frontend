@@ -118,7 +118,7 @@ String.prototype.format = function() {
                         dialogClass: 'timeout-dialog',
                         classes: {
                             "ui-dialog": "ui-corner-all",
-                            "ui-dialog-titlebar": "ui-corner-all visuallyhidden"
+                            "ui-dialog-titlebar": "ui-corner-all govuk-visually-hidden"
                         },
                         title: settings.title,
                         buttons: {

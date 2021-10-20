@@ -75,7 +75,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
         result =>
           status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("details-content-utr-HelpLink").text must be(Messages("awrs.generic.iDoNotKnowTheirUTR_text"))
+          document.getElementById("utr-HelpLinkAnswer").text must include (Messages("awrs.generic.iDoNotKnowTheirUTR_text"))
       }
     }
 
@@ -84,7 +84,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
         result =>
           status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("details-content-crn-HelpLink").text must be(Messages("awrs.generic.iDoNotKnowTheirCRN_text"))
+          document.getElementById("crn-HelpLinkAnswer").text must include (Messages("awrs.generic.iDoNotKnowTheirCRN_text"))
       }
     }
 

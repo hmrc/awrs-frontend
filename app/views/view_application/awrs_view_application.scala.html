@@ -17,9 +17,8 @@
 @import config.ApplicationConfig
 @import controllers.util.UnSubmittedChangesBannerParam
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @(
     coreContent: Boolean => play.twirl.api.Html,
     printFriendly: Boolean,
@@ -41,17 +40,9 @@
 
 @govWrapper(content: Html) = {
     @awrsMain(title = messages("awrs.generic.tab.title", titleString), userLoggedIn = true) {
-        <div class="grid">
-            @awrsUnSubmittedBanner(unSubmittedChangesParam, messages("awrs.index_page.modified_application_incomplete.edit"), messages("awrs.index_page.not_submitted_changes.return"))
-            <div class="grid grid-2-3">
-                @content
-            </div>
-        </div>
+        @awrsUnSubmittedBanner(unSubmittedChangesParam, messages("awrs.index_page.modified_application_incomplete.edit"), messages("awrs.index_page.not_submitted_changes.return"))
+        @content
     }
 }
 
-@if(printFriendly) {
-    @awrsPrintFriendlyWrapper(content)
-} else {
-    @govWrapper(content)
-}
+@govWrapper(content)

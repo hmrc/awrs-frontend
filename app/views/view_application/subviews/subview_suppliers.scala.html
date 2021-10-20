@@ -47,7 +47,6 @@
     }
 }
 
-
 @topAdd(model: models.Suppliers) = {
     @if(model.suppliers.size < 5 && model.suppliers.size > 1) {
         <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.supplier"))</div>
@@ -63,7 +62,7 @@
 @content(model: models.Suppliers) = {
     @model match {
         case Suppliers(List(Supplier(Some("No"), _, _, _, _, _, _))) => {
-            <p id="no-suppliers" class="lede">@messages("awrs.view_application.no_suppliers")</p>
+            <p id="no-suppliers" class="govuk-body-l">@messages("awrs.view_application.no_suppliers")</p>
         }
         case _ => {
             @model.suppliers.zipWithIndex.map { case (supplier, id) =>

@@ -15,40 +15,39 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.includes.awrs_main
-
-@this(awrsMain: awrs_main)
-@(proposedEndDate: models.TupleDate, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import views.helpers.DeRegistrationHelper._
 @import views.html.helpers._
+
+@this(
+    awrsMain: main,
+    awrsWarningHelper: awrsWarningHelper,
+    confirmationHelper: confirmationHelper)
+
+@(proposedEndDate: models.TupleDate, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @date = @{stringifyDate(proposedEndDate)}
 
 @govWrapper = {
     @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.de_registration.confirmation_page.title")), userLoggedIn = true){
-        <div class="grid">
-            <div class="grid grid-2-3">
+
                 @confirmationHelper(
                     "awrs.de_registration.confirmation_page.description",
                     messages("awrs.de_registration.confirmation_page.description_1", today)
                 )
-                <h2 class="heading-small print-hidden">@messages("awrs.generic.print_confirmation")</h2>
+                <h2 class="govuk-heading-s print-hidden">@messages("awrs.generic.print_confirmation")</h2>
                 @awrsPrintLink()
                 <hr aria-hidden="true">
                 @info
-                <div class="form-group">
-                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
+                <div class="govuk-form-group">
+                    <a id="confirmation-page-finish" class="govuk-button print-hidden" role="button" data-module="govuk-button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
                 </div>
-            </div>
-        </div>
     }
 }
 @info = {
-    <h2 class="heading-small" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
-    <p>@messages("awrs.de_registration.confirmation_page.information_what_next_2", date)<p>
+    <h2 class="govuk-heading-s" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
+    <p class="govuk-body">@messages("awrs.de_registration.confirmation_page.information_what_next_2", date)</p>
 
     @awrsWarningHelper(declarationTxt = messages("awrs.de_registration.warning", date), id = "confirmation-text-disclaimer")
-
 }
 @content = {
     @confirmationHelper(
@@ -60,8 +59,4 @@
     @backLink()
 }
 
-@if(printFriendly) {
-    @awrsPrintFriendlyWrapper(content)
-} else {
-    @govWrapper
-}
+@govWrapper

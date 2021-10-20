@@ -20,14 +20,14 @@ import forms.AWRSEnums.DeRegistrationReasonEnum
 import forms.helper.FormHelper._
 import forms.prevalidation._
 import forms.submapping.TupleDateMapping._
-import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, CompulsoryTextFieldMappingParameter, FormData}
+import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter, FormData}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.{DeRegistrationConfirmation, DeRegistrationDate, DeRegistrationReason, TupleDate}
 import org.joda.time.LocalDate
 import play.api.data.Forms._
-import play.api.data.validation.Valid
+import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
@@ -58,7 +58,7 @@ object DeRegistrationForm {
       isTooEarlyCheck = None,
       isTooLateCheck = None)
 
-  val deRegistrationForm = Form(mapping(
+  val deRegistrationForm: Form[DeRegistrationDate] = Form(mapping(
     "proposedEndDate" -> testDate_compulsory
   )(DeRegistrationDate.apply)(DeRegistrationDate.unapply))
 
@@ -82,8 +82,8 @@ object DeRegistrationReasonForm extends AwrsFieldConfig {
     val fieldNameInErrorMessage = "other reasons"
     val params = CompulsoryTextFieldMappingParameter(
       empty = simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.de_registration.error.other.reason_empty"),
-      maxLengthValidation = genericFieldMaxLengthConstraintParameter(deRegistrationOtherReasonsLen, fieldId, fieldNameInErrorMessage),
-      formatValidations = genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
+      FieldMaxLengthConstraintParameter(deRegistrationOtherReasonsLen, Invalid("awrs.generic.error.maximum_length",fieldNameInErrorMessage, deRegistrationOtherReasonsLen)),
+      FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage))
     )
     compulsoryText(params)
   }
@@ -91,7 +91,7 @@ object DeRegistrationReasonForm extends AwrsFieldConfig {
   val whenOtherReasonIsSelected: FormData => Boolean = (data: FormData) => data.getOrElse(deRegistrationReasonId, "").equals(DeRegistrationReasonEnum.
     Other.toString)
 
-  val deRegistrationReasonValidationForm = Form(mapping(
+  val deRegistrationReasonValidationForm: Form[DeRegistrationReason] = Form(mapping(
     deRegistrationReasonId -> deRegistrationReason_compulsory,
     deRegReasonOtherId -> (otherReason_compulsory iff whenOtherReasonIsSelected)
   )(DeRegistrationReason.apply)(DeRegistrationReason.unapply))

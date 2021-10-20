@@ -71,7 +71,7 @@ trait LoggingUtils extends Logging {
     )
   }
 
-  def audit(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier) = splunkFunction(transactionName, detail, eventType)
+  def audit(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier): Unit = splunkFunction(transactionName, detail, eventType)
 
   @inline def trace(msg: String): Unit = logger.trace(msg)
   @inline def debug(msg: String): Unit = logger.debug(msg)

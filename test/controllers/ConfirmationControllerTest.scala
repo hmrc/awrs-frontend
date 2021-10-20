@@ -86,9 +86,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
               val companyName = "North East Wines"
 
               val document = Jsoup.parse(contentAsString(result))
-
-              document.getElementById("confirmation").text() must include(s"$companyName")
-              document.getElementById("confirmation").text() must include(submissionDate)
+              document.getElementsByTag("h1").text() must include(s"$companyName")
+              document.getElementById("ariaConfirmation").text() must include(submissionDate)
               document.getElementById("print-confirmation").text() must be(Messages("awrs.generic.print_confirmation"))
               document.getElementById("print-application").text() must be(Messages("awrs.generic.application"))
 
@@ -125,8 +124,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
 
               val document = Jsoup.parse(contentAsString(result))
 
-              document.getElementById("confirmation").text() must include(s"$companyName")
-              document.getElementById("confirmation").text() must include(submissionDate)
+              document.getElementsByTag("h1").text() must include(s"$companyName")
+              document.getElementById("ariaConfirmation").text() must include(submissionDate)
               document.getElementById("print-confirmation").text() must be(Messages("awrs.generic.print_confirmation"))
               document.getElementById("print-application").text() must be(Messages("awrs.generic.application"))
 
@@ -166,10 +165,10 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
 
                 val document = Jsoup.parse(contentAsString(result))
 
-                document.getElementById("confirmation").text() must include(s"$companyName")
+                document.getElementsByTag("h1").text() must include(s"$companyName")
                 val format = new SimpleDateFormat("d MMMM y")
                 val resubmissionDate = format.format(Calendar.getInstance().getTime)
-                document.getElementById("confirmation").text() must include(s"$resubmissionDate")
+                document.getElementById("ariaConfirmation").text() must include(s"$resubmissionDate")
                 document.getElementById("print-confirmation").text() must be(Messages("awrs.generic.print_confirmation"))
                 document.getElementById("print-application").text() must be(Messages("awrs.generic.application"))
 

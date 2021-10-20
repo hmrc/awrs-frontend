@@ -18,22 +18,34 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import uk.gov.hmrc.auth.core.Enrolment
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    awrsIdUTRHelper: awrsIdUTRHelper,
+    awrsIdVRNHelper: awrsIdVRNHelper,
+    awrsIdCRNHelper: awrsIdCRNHelper,
+    awrsAddressHelper: awrsAddressHelper,
+    govukInput : GovukInput,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios)
 
 @(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 @pageScripts = {
-<script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-<script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+<script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @actionRoute = @{
@@ -63,78 +75,102 @@ if(accountUtils.hasAwrs(enrolments)) {
 @pageHeading = @{
     messages("awrs.group_member.top_heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalSuffix)
 }
+<!--TODO-->
+@conditionalHtml = {
+    @govukInput(
+        Input(
+            label = Label(
+                classes = "govuk-label",
+                content = Text(messages("awrs.generic.trading_name"))
+            ),
+            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+        ).withFormField(groupMemberForm("companyNames.tradingName"))
+    )
+}
 
 @awrsMain(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
-<div class="grid">
-    <div class="grid grid-2-3">
+<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
+
         @backLinkHelper(BackLinkParams(
             sectionName = groupMembersName
         ))
-        @errorSummaryTemplate(groupMemberForm)
+        @if(groupMemberForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(groupMemberForm, mapping = Map("companyNames.doYouHaveTradingName" -> "companyNames.doYouHaveTradingName-yes", "companyRegDetails.dateOfIncorporation" -> "companyRegDetails.dateOfIncorporation.day")))
+        }
         <header class="page-header">
-            <h1 id="group-member-heading" class="heading-xlarge">
+            @awrsProgressHelper(businessType, groupMembersName)<br>
+            <h1 id="group-member-heading" class="govuk-heading-xl">
                 @messages("awrs.group_member.top_heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalSuffix)
             </h1>
-            @awrsProgressHelper(businessType, groupMembersName)
         </header>
 
-        <p id="group-member-lead-paragraph" class="lede">@messages("awrs.group_member.lead_paragraph")</p>
-
         @formWithCSRF(action = actionRoute){
-            @awrsInputTypeText(
-                InputTypeTextParams(
-                    groupMemberForm("companyNames.businessName"),
-                    inputId = "companyNames.businessName",
-                    label = messages("awrs.business_directors.business_name"),
-                    labelHighlight = true,
-                    maxLength = applicationConfig.companyNameLen.toString,
-                    required = true
-                )
+            <p class="govuk-body-l">@messages("awrs.group_member.lead_paragraph")</p>
+
+            @govukInput(
+                Input(
+                    label = Label(
+                        classes = "govuk-label--s",
+                        content = Text(Messages("awrs.business_directors.business_name"))
+                    ),
+                    attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true")
+                ).withFormField(groupMemberForm("companyNames.businessName"))
             )
-            <div class="form-group">
-                @awrsInputTypeRadioGroup(
-                    InputTypeRadioGroupParams(
-                        groupMemberForm("companyNames.doYouHaveTradingName"),
-                        Seq("Yes" -> messages("awrs.generic.yes"),
-                            "No" -> messages("awrs.generic.no")),
-                        fieldSetClass = "inline",
-                        fieldSetAttributes = "id=companyNames.doYouHaveTradingName_field",
-                        legendId = "companyNames.doYouHaveTradingName-legend",
-                        legend = messages("awrs.generic.do_they_have_trading_name")
+
+            <div class="govuk-form-group">
+                @govukRadios(
+                Radios(
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            classes = "govuk-fieldset__legend--s",
+                            content = Text(messages("awrs.generic.do_they_have_trading_name"))
+                        )),
+                        attributes = Map("id" ->"companyNames.doYouHaveTradingName_field")
+                    )),
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("awrs.generic.yes")),
+                            value = Some("Yes"),
+                            id = "companyNames.doYouHaveTradingName-yes"
+                        ),
+                        RadioItem(
+                            content = Text(messages("awrs.generic.no")),
+                            value = Some("No"),
+                            id = "companyNames.doYouHaveTradingName-no"
+                        )
                     )
-                )
-                <div id="companyNames.doYouHaveTradingName-yes-content">
-                @awrsInputTypeText(
-                    InputTypeTextParams(
-                        groupMemberForm("companyNames.tradingName"),
-                        inputId = "companyNames.tradingName",
-                        label = messages("awrs.generic.trading_name"),
-                        maxLength = applicationConfig.tradingNameLen.toString,
-                        required = true,
-                        labelHighlight = true,
-                        wrapperClass = "panel-indent"
+                ).withFormField(groupMemberForm("companyNames.doYouHaveTradingName"))
+            )
+
+                <div id="companyNames.doYouHaveTradingName-yes-content" class="govuk-form-group">
+
+                    @govukInput(
+                        Input(
+                            label = Label(
+                                classes = "govuk-label",
+                                content = Text(messages("awrs.generic.trading"))
+                            ),
+                            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+                        ).withFormField(groupMemberForm("companyNames.tradingName"))
                     )
-                )
+
                 </div>
             </div>
-            <div id="address-group">
-                <h2 class="heading-medium">@messages("awrs.generic.registered_address")</h2>
+            <div id="address-group" class="govuk-form-group">
+                <h2 class="govuk-heading-m">@messages("awrs.generic.registered_address")</h2>
                 @awrsAddressHelper(groupMemberForm("address"),
                     AddressHelperParams()
                 )
             </div>
-            <h2 class="heading-medium">@messages("awrs.generic.company_reg_details")</h2>
+            <h2 class="govuk-heading-m">@messages("awrs.generic.company_reg_details")</h2>
             @awrsIdUTRHelper(
                 businessType,
-                None,
                 groupMemberForm("utr"),
                 youOrThey = "they",
                 ariaLabelledBy = "utr_field utr-information",
                 formHasErrors = groupMemberForm.hasErrors
             )
             @awrsIdCRNHelper(
-                None,
                 groupMemberForm("companyRegDetails.companyRegistrationNumber"),
                 dateField = Some(groupMemberForm("companyRegDetails.dateOfIncorporation")),
                 youOrThey = "they",
@@ -149,17 +185,28 @@ if(accountUtils.hasAwrs(enrolments)) {
                 formHasErrors = groupMemberForm.hasErrors
             )
             @if(!isEditMode){
-                <div class="form-group">
-                    @awrsInputTypeRadioGroup(
-                        InputTypeRadioGroupParams(
-                            groupMemberForm("addAnotherGrpMember"),
-                            Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                                messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                            legend = messages("awrs.group_member.addAnother"),
-                            legendId = "addAnotherGrpMember",
-                            fieldSetAttributes = "id=addAnotherGrpMember_field",
-                            fieldSetClass = "inline"
-                        )
+                <div class="govuk-form-group">
+
+                    @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    classes = "govuk-fieldset__legend--s",
+                                    content = Text(messages("awrs.group_member.addAnother"))
+                                )),
+                                attributes = Map("id" ->"addAnotherGrpMember_field")
+                            )),
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.yes")),
+                                    value = Some("Yes")
+                                ),
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.no")),
+                                    value = Some("No")
+                                )
+                            )
+                        ).withFormField(groupMemberForm("addAnotherGrpMember"))
                     )
                 </div>
             } else {
@@ -172,11 +219,4 @@ if(accountUtils.hasAwrs(enrolments)) {
                 submitId = "save-and-continue"
             ))
         }
-    </div>
-</div>
-
 }
-
-
-
-

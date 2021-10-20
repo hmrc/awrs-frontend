@@ -16,23 +16,45 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
-@(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    awrsIdVRNHelper: awrsIdVRNHelper,
+    awrsAddressHelper: awrsAddressHelper,
+    govukRadios: GovukRadios,
+    govukErrorSummary: GovukErrorSummary,
+    govukInput: GovukInput)
+
+@(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean, countryList: Seq[(String, String)])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(supplierAddressForm) }
 
 
 @pageScripts = {
-<script src='@routes.Assets.at("javascripts/postcodeLookup.js")'></script>
-<script src='@routes.Assets.at("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/accessible-autocomplete.min.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
+<script>
+    $(document).ready(function() {
+
+      accessibleAutocomplete.enhanceSelectElement({
+        defaultValue: '',
+        selectElement: document.querySelector('#supplierAddress\\.addressCountry')
+      })
+
+    });
+  </script>
 }
+
 @actionRoute = @{
     if(isEditMode) {
         controllers.routes.SupplierAddressesController.saveAndReturn(supplierAddressId, isNewRecord)
@@ -65,70 +87,100 @@
 }
 
 @awrsMain(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true){
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/jquery-ui.min.css")'/>
-<link rel="stylesheet" href='@routes.Assets.at("stylesheets/dropdowns-enhancement.min.css")'/>
-<div class="grid">
-    <div class="grid grid-2-3">
+<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/jquery-ui.min.css")'/>
+<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
+
         @backLinkHelper(BackLinkParams(
             sectionName = suppliersName
         ))
-        @errorSummaryTemplate(supplierAddressForm)
+
+        @if(supplierAddressForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(supplierAddressForm, mapping = Map("alcoholSupplier" -> "alcoholSupplier-yes", "ukSupplier" -> "ukSupplier-yes")))
+        }
         <header class="page-header">
-            <h1 id="supplier-addresses-title" class="heading-xlarge">@pageHeading</h1>
-            @awrsProgressHelper(request.getBusinessType, suppliersName)
+            @awrsProgressHelper(request.getBusinessType, suppliersName)<br>
+            <h1 id="supplier-addresses-title" class="govuk-heading-xl">@pageHeading</h1>
         </header>
-        <p id="supplier-address-description" class="lede">@Html(messages("awrs.supplier-addresses.description"))</p>
+
+        <p id="supplier-address-description" class="govuk-body-l">@Html(messages("awrs.supplier-addresses.description"))</p>
         @formWithCSRF(action = actionRoute){
             @if(isEditMode() || supplierAddressId > 1){
                 <input type="hidden" name="alcoholSupplier" id="alcoholSupplier-yes" value="Yes">
             } else {
-                <div class="form-group overseas-alcohol-suppliers">
-                    @awrsInputTypeRadioGroup(
-                        InputTypeRadioGroupParams(
-                            supplierAddressForm("alcoholSupplier"),
-                            Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                                messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                            legend = messages("awrs.supplier-addresses.heading.first"),
-                            legendId = "alcoholSupplierAddress-legend",
-                            legendClass = "visuallyhidden",
-                            fieldSetClass = "inline",
-                            fieldSetAttributes = "id=alcoholSupplier_field"
-                        )
+                <div class="govuk-form-group overseas-alcohol-suppliers">
+
+                    @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                classes = "govuk-radios--inline",
+                                legend = Some(Legend(
+                                    content = Text(messages("awrs.supplier-addresses.heading.first")),
+                                    classes = "govuk-visually-hidden"
+                                )),
+                                attributes = Map("id" -> "alcoholSupplier_field"),
+                            )),
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(Messages("awrs.generic.yes")),
+                                    value = Some(messages("awrs.generic.yes")),
+                                    id = "alcoholSupplier-yes"
+                                ),
+                                RadioItem(
+                                    content = Text(Messages("awrs.generic.no")),
+                                    value = Some(messages("awrs.generic.no")),
+                                    id = "alcoholSupplier-no"
+                                )
+                            )
+                        ).withFormField(supplierAddressForm("alcoholSupplier"))
                     )
                 </div>
             }
 
-            <div class="form-group">
+            <div class="govuk-form-group">
                 <div id="alcoholSupplier-yes-content">
-                    @awrsInputTypeText(
-                        InputTypeTextParams(
-                            supplierAddressForm("supplierName"),
-                            label = messages("awrs.supplier-addresses.supplier_name"),
-                            maxLength = supplierNameLen.toString,
-                            labelHighlight = true,
-                            required = true,
-                            inputClass = "alcoholSupplierName"
-                        )
+
+                    @govukInput(Input(
+                        label = Label(
+                            classes = "govuk-label--s",
+                            content = Text(messages("awrs.supplier-addresses.supplier_name"))
+                        ),
+                        attributes = Map("maxlength" -> supplierNameLen.toString, "aria-required" -> "true")
+                    ).withFormField(supplierAddressForm("supplierName"))
                     )
-                    <div class="form-group">
-                        @awrsInputTypeRadioGroup(
-                            InputTypeRadioGroupParams(
-                                supplierAddressForm("ukSupplier"),
-                                Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                                    messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                                legend = messages("awrs.supplier-addresses.uk_supplier"),
-                                legendId = "ukSupplierAddress-legend",
-                                fieldSetClass = "inline",
-                                fieldSetAttributes = "id=ukSupplier_field"
+
+                    <div class="govuk-form-group">
+
+                    @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    content = Text(messages("awrs.supplier-addresses.uk_supplier")),
+                                    classes = "govuk-fieldset__legend--s"
+                                )),
+                                attributes = Map("id" -> "ukSupplier_field"),
+                            )),
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(Messages("awrs.generic.yes")),
+                                    value = Some(messages("awrs.generic.yes")),
+                                    id = "ukSupplier-yes"
+                                ),
+                                RadioItem(
+                                    content = Text(Messages("awrs.generic.no")),
+                                    value = Some(messages("awrs.generic.no")),
+                                    id = "ukSupplier-no"
+                                )
                             )
-                        )
+                        ).withFormField(supplierAddressForm("ukSupplier"))
+                    )
                         <div id="ukSupplier-all-content">
-                            <div class="form-group">
+                            <div class="govuk-form-group">
                                 @awrsAddressHelper(supplierAddressForm("supplierAddress"),
                                     AddressHelperParams(
                                         wrapperClass = "panel-indent",
                                         isUk = false
-                                    )
+                                    ),
+                                    countryList = countryList
                                 )
                             </div>
                             <div id="ukSupplier-yes-content">
@@ -143,18 +195,29 @@
                         </div>
                     </div>
                     @if(supplierAddressId < 5 && !isEditMode){
-                        <div class="form-group">
-                            @awrsInputTypeRadioGroup(
-                                InputTypeRadioGroupParams(
-                                    supplierAddressForm("additionalSupplier"),
-                                    Seq(messages("awrs.generic.yes") -> messages("awrs.generic.yes"),
-                                        messages("awrs.generic.no") -> messages("awrs.generic.no")),
-                                    legend = messages("awrs.supplier-addresses.add_supplier"),
-                                    legendId = "additionalSupplier-legend",
-                                    fieldSetClass = "inline",
-                                    fieldSetAttributes = "id=additionalSupplier_field"
+                        <div class="govuk-form-group">
+
+                    @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    content = Text(messages("awrs.supplier-addresses.add_supplier")),
+                                    classes = "govuk-fieldset__legend--s"
+                                )),
+                            )),
+                            attributes = Map("id" -> "additionalSupplier_field"),
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(Messages("awrs.generic.yes")),
+                                    value = Some(messages("awrs.generic.yes"))
+                                ),
+                                RadioItem(
+                                    content = Text(Messages("awrs.generic.no")),
+                                    value = Some(messages("awrs.generic.no"))
                                 )
                             )
+                        ).withFormField(supplierAddressForm("additionalSupplier"))
+                    )
                         </div>
                     } else {
                         <input type="hidden" name="additionalSupplier" value="No">
@@ -168,6 +231,4 @@
                 submitId = "save-and-continue"
             ))
         }
-    </div>
-</div>
 }

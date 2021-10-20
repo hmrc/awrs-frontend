@@ -21,6 +21,7 @@ import forms.validation.util.{FieldError, MessageLookup, SummaryError}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import utils.AwrsUnitTestTraits
+import scala.language.implicitConversions
 
 trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI with TestUtilAPI with MockitoSugar {
 
@@ -512,6 +513,41 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
 
     def assertAllFieldsCannotBeAnsweredWithInvalidIsIgnoredWhen(conditions: Set[Map[String, String]], config: CrossFieldValidationExpectations, invalidAnswer: String): Unit =
       conditions.foreach(condition => assertAllFieldsCannotBeAnsweredWithInvalidIsIgnoredWhen(condition, config, invalidAnswer))
+  }
+  def compulsoryFieldTest[T](fieldId: String, maxLength: Int, precondition: Map[String, String] = Map())(implicit form: Form[T]): Unit = {
+    val emptyForm = form.bind(Map(fieldId -> "") ++ precondition)
+    val longForm = form.bind(Map(fieldId -> "a" * 11) ++ precondition)
+    val invalidForm = form.bind(Map(fieldId -> "α") ++ precondition)
+
+    val forms: Set[Form[T]] = Set(emptyForm, longForm, invalidForm)
+
+    assert(forms.forall(form => form(fieldId).hasErrors))
+    assert(emptyForm.errors(fieldId).head.message == "error.empty")
+    assert(messages(longForm.errors(fieldId).head.message) == messages("awrs.generic.error.maximum_length", fieldId, maxLength))
+    assert(messages(invalidForm.errors(fieldId).head.message) == messages("awrs.generic.error.character_invalid", ""))
+  }
+
+  def ignoredFieldTest[T](fieldId: String, precondition: Map[String, String])(implicit form: Form[T]): Unit = {
+    val emptyForm = form.bind(Map(fieldId -> "") ++ precondition)
+    val longForm = form.bind(Map(fieldId -> "a" * 11) ++ precondition)
+    val invalidForm = form.bind(Map(fieldId -> "α") ++ precondition)
+
+    val forms: Set[Form[T]] = Set(emptyForm, longForm, invalidForm)
+
+    assert(forms.forall(form => !form(fieldId).hasErrors))
+  }
+
+  def optionalFieldTest[T](fieldId: String, maxLength: Int, precondition: Map[String, String] = Map())(implicit form: Form[T]): Unit = {
+    val emptyForm = form.bind(Map(fieldId -> "") ++ precondition)
+    val longForm = form.bind(Map(fieldId -> "a" * 11) ++ precondition)
+    val invalidForm = form.bind(Map(fieldId -> "α") ++ precondition)
+
+    assert(!emptyForm(fieldId).hasErrors)
+    assert(longForm(fieldId).hasErrors)
+    assert(invalidForm(fieldId).hasErrors)
+    assert(messages(longForm.errors(fieldId).head.message) == messages("awrs.generic.error.maximum_length", fieldId, maxLength))
+    assert(messages(invalidForm.errors(fieldId).head.message) == messages("awrs.generic.error.character_invalid", ""))
+
   }
 
 }

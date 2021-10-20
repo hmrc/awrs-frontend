@@ -31,5 +31,4 @@ class BusinessCustomerService @Inject()(businessCustomerConnector: BusinessCusto
   // in our application
   def getReviewBusinessDetails[T](implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
     businessCustomerConnector.fetchDataFromKeystore[T](bcSourceId)
-
 }

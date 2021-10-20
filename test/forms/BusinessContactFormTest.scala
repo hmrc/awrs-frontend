@@ -19,15 +19,18 @@ package forms
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.test.util._
+import models.BusinessContacts
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.data.Form
+import utils.AwrsFieldConfig
 import utils.TestConstants._
 
-class BusinessContactFormTest extends PlaySpec with MockitoSugar  with BeforeAndAfterEach with AwrsFormTestUtils {
+class BusinessContactFormTest extends PlaySpec with MockitoSugar  with BeforeAndAfterEach with AwrsFormTestUtils with AwrsFieldConfig {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val forms = BusinessContactsForm.businessContactsForm.form
+  implicit lazy val form: Form[BusinessContacts] = BusinessContactsForm.businessContactsForm.form
 
   override def beforeEach(): Unit = {
     when(mockAppConfig.countryCodes)
@@ -38,16 +41,136 @@ class BusinessContactFormTest extends PlaySpec with MockitoSugar  with BeforeAnd
 
   "Business contacts form" must {
 
-    f"check validations for contactAddress " in {
-      val preCondition: Map[String, String] = Map("contactAddressSame" -> BooleanRadioEnum.No.toString)
-      val ignoreCondition: Set[Map[String, String]] = Set(Map("contactAddressSame" -> BooleanRadioEnum.Yes.toString))
-      val idPrefix: String = "contactAddress"
 
-      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition, idPrefix, nameInErrorMessage = "")
+    "check validations for Address Lines" when {
+      val prefix = "contactAddress"
+      val fieldNameInErrorMessage = "address line"
+      val fieldNameInErrorMessagePostcode = "postcode"
+      val preCondition: Map[String, String] = Map("contactAddressSame" -> BooleanRadioEnum.No.toString)
+
+      "the fields are left empty" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "",
+          s"$prefix.addressLine2" -> "",
+          s"$prefix.addressLine3" -> "",
+          s"$prefix.addressLine4" -> "",
+          s"$prefix.postcode" -> ""
+        ) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe "awrs.generic.error.addressLine1_empty"
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe "awrs.generic.error.addressLine2_empty"
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe "awrs.generic.error.postcode_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the field maxLength is exceeded" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "a" * 36,
+          s"$prefix.addressLine2" -> "a" * 36,
+          s"$prefix.addressLine3" -> "a" * 36,
+          s"$prefix.addressLine4" -> "a" * 36,
+          s"$prefix.postcode" -> "a" * 21
+        ) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "invalid characters are entered in the field" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "α",
+          s"$prefix.addressLine2" -> "α",
+          s"$prefix.addressLine3" -> "α",
+          s"$prefix.addressLine4" -> "α",
+          s"$prefix.postcode" -> "α"
+        ) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
     }
 
-    "check validations for contactFirstName and contactLastName" in
-      NamedUnitTests.firstNameAndLastNameIsCompulsoryAndValid(firstNameId = "contactFirstName", lastNameId = "contactLastName")
+    "check 'first name' and 'last name' validation" when {
+
+      val fieldIdFirstName = "contactFirstName"
+      val fieldIdSurname = "contactLastName"
+      val fieldNameInErrorMessageFN = "first name"
+      val fieldNameInErrorMessageLN = "last name"
+
+      "the first name field is left empty" in {
+        form.bind(Map(fieldIdFirstName -> "")).fold(
+          formWithErrors => {
+            formWithErrors(fieldIdFirstName).errors.size mustBe 1
+            formWithErrors(fieldIdFirstName).errors.head.message mustBe "awrs.generic.error.first_name_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the last name field is left empty" in {
+        form.bind(Map(fieldIdSurname -> "")).fold(
+          formWithErrors => {
+            formWithErrors(fieldIdSurname).errors.size mustBe 1
+            formWithErrors(fieldIdSurname).errors.head.message mustBe "awrs.generic.error.last_name_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+//      "the first name field maxLength is exceeded" in {
+//        form.bind(Map(fieldIdFirstName -> "a" * 36)).fold(
+//          formWithErrors => {
+//            formWithErrors(fieldIdFirstName).errors.size mustBe 1
+//            messages(formWithErrors(fieldIdFirstName).errors.head.message) mustBe messages("awrs.generic.error.name.maximum_length", fieldNameInErrorMessageFN, firstNameLen)
+//          },
+//          _ => fail("Field should contain errors")
+//        )
+//      }
+//
+//      "the last name field maxLength is exceeded" in {
+//        form.bind(Map(fieldIdSurname -> "a" * 36)).fold(
+//          formWithErrors => {
+//            formWithErrors(fieldIdSurname).errors.size mustBe 1
+//            messages(formWithErrors(fieldIdSurname).errors.head.message) mustBe messages("awrs.generic.error.name.maximum_length", fieldNameInErrorMessageLN, lastNameLen)
+//          },
+//          _ => fail("Field should contain errors")
+//        )
+//      }
+
+      "invalid characters are entered in the first name field" in {
+        form.bind(Map(fieldIdFirstName -> "α")).fold(
+          formWithErrors => {
+            formWithErrors(fieldIdFirstName).errors.size mustBe 1
+            messages(formWithErrors(fieldIdFirstName).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessageFN)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "invalid characters are entered in the last name field" in {
+        form.bind(Map(fieldIdSurname -> "α")).fold(
+          formWithErrors => {
+            formWithErrors(fieldIdSurname).errors.size mustBe 1
+            messages(formWithErrors(fieldIdSurname).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessageLN)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+    }
 
     "check validations for email" in {
       val goodData = Map(
@@ -66,10 +189,10 @@ class BusinessContactFormTest extends PlaySpec with MockitoSugar  with BeforeAnd
         BusinessContactsForm.contactAddressSame -> Seq(BooleanRadioEnum.Yes.toString)
       )
 
-      val bindedForm = forms.bindFromRequest(badData)
+      val bindedForm = form.bindFromRequest(badData)
       bindedForm.errors.size mustBe 1
 
-      val bindedFormGood = forms.bindFromRequest(goodData)
+      val bindedFormGood = form.bindFromRequest(goodData)
       bindedFormGood.errors mustBe Seq()
     }
 
@@ -94,7 +217,7 @@ class BusinessContactFormTest extends PlaySpec with MockitoSugar  with BeforeAnd
           "email" -> "test@test.com",
           "telephone" -> "01912244194"
         )
-      assertFormIsValid(forms, data)
+      assertFormIsValid(form, data)
     }
   }
 }

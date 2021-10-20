@@ -16,14 +16,21 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.helpers._
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.html.view_application.subviews.contents._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios
+)
 @(confirmationForm: Form[models.DeleteConfirmation], section: String, headingParameter: String, formAction: Int => Call, id: Int, data : Any)(implicit request: Request[AnyContent], viewMode : ViewApplicationType= OneViewMode, messages : Messages, applicationConfig: ApplicationConfig)
 
 @modelRender = {
@@ -45,34 +52,46 @@
         case p : Partner => partnersName
     }
 ).url)
-<div class="grid">
-    <div class="grid grid-2-3">
+
         @backLinkHelper(BackLinkParams(
             sectionName = section
         ))(EditMode, messages)
-        @errorSummaryTemplate(confirmationForm)
+
+        @if(confirmationForm.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(confirmationForm))
+        }
+
         <header class="page-header">
-            <h1 id="deleteConfirmation-heading" class="heading-xlarge">@messages("awrs.delete.confirmation_heading", messages(headingParameter))</h1>
-            @awrsProgressHelper(request.getBusinessType, section)(EditMode, messages)
+            @awrsProgressHelper(request.getBusinessType, section)(EditMode, messages) <br>
+            <h1 id="deleteConfirmation-heading" class="govuk-heading-xl">@messages("awrs.delete.confirmation_heading", messages(headingParameter))</h1>
         </header>
         @modelRender
         @formWithCSRF(action = formAction(id)) {
-        <div class="form-group">
-            @awrsInputTypeRadioGroup(
-                InputTypeRadioGroupParams(
-                    confirmationForm("deleteConfirmation"),
-                    Seq("Yes" -> messages("awrs.generic.yes"),
-                        "No" -> messages("awrs.generic.no")),
-                    fieldSetClass = "inline",
-                    legend = messages("awrs.delete.confirmation_heading", messages(headingParameter)),
-                    legendId = "deleteConfirmation-legend",
-                    legendClass = "visuallyhidden",
-                    fieldSetAttributes = "id=deleteConfirmation_field"
-                )
-            )
+        <div class="govuk-form-group">
+
+                    @govukRadios(
+                        Radios(
+                            fieldset = Some(Fieldset(
+                                legend = Some(Legend(
+                                    classes = "govuk-visually-hidden",
+                                    content = Text(messages("awrs.delete.confirmation_heading", messages(headingParameter)))
+                                )),
+                                attributes = Map("id" ->"deleteConfirmation_field")
+                            )),
+                            classes = "govuk-fieldset govuk-radios--inline",
+                            items = Seq(
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.yes")),
+                                    value = Some("Yes")
+                                ),
+                                RadioItem(
+                                    content = Text(messages("awrs.generic.no")),
+                                    value = Some("No")
+                                )
+                            )
+                        ).withFormField(confirmationForm("deleteConfirmation"))
+                    )
         </div>
-        @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "save-and-continue", classAttr = "button")
+        @awrsSubmitButton(messages("awrs.generic.confirmation.button"))(id = "save-and-continue")
         }
-    </div>
-</div>
 }

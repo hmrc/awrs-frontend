@@ -18,12 +18,13 @@ package forms
 
 import forms.AWRSEnums.BooleanCheckboxEnum
 import forms.prevalidation._
-import forms.validation.util.ConstraintUtil.{CompulsoryBooleanMappingParameter, CompulsoryTextFieldMappingParameter, castSingleToSet}
+import forms.validation.util.ConstraintUtil.{CompulsoryBooleanMappingParameter, CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter, castSingleToSet}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import models.ApplicationDeclaration
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.validation.{Invalid, Valid}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
 
@@ -31,15 +32,15 @@ object ApplicationDeclarationForm extends AwrsFieldConfig {
   val declarationNameConstraintParameters =
     CompulsoryTextFieldMappingParameter(
       simpleFieldIsEmptyConstraintParameter(fieldId = "declarationName", "awrs.application_declaration.error.declaration_name_empty"),
-      genericFieldMaxLengthConstraintParameter(applicationDeclarationNameLen, fieldId = "declarationName", fieldNameInErrorMessage = "your name"),
-      genericInvalidFormatConstraintParameter(validText, fieldId = "declarationName", fieldNameInErrorMessage = "your name")
+      FieldMaxLengthConstraintParameter(applicationDeclarationNameLen, Invalid("awrs.generic.error.name.maximum_length", "Your name", applicationDeclarationNameLen)),
+      FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary_declaration", "Your name"))
     )
 
   val declarationRoleConstraintParameters =
     CompulsoryTextFieldMappingParameter(
       simpleFieldIsEmptyConstraintParameter(fieldId = "declarationRole", "awrs.application_declaration.error.declaration_role_empty"),
-      genericFieldMaxLengthConstraintParameter(applicationDeclarationRoleLen, fieldId = "declarationRole", fieldNameInErrorMessage = "your role"),
-      genericInvalidFormatConstraintParameter(validText, fieldId = "declarationRole", fieldNameInErrorMessage = "your role")
+      FieldMaxLengthConstraintParameter(applicationDeclarationRoleLen, Invalid("awrs.generic.error.name.maximum_length", "Your role", applicationDeclarationRoleLen)),
+      FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary_declaration", "Your role"))
     )
 
   val confirmationConstraintParameters =

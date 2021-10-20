@@ -40,7 +40,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   private lazy val awrsHost = loadConfig("awrs.host")
 
   lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
-  lazy val betaFeedbackUrl = "/alcohol-wholesale-scheme/feedback"
   lazy val externalReportProblemUrl = s"$contactHost/contact/problem_reports"
   lazy val contactFormServiceIdentifier = "AWRS"
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
@@ -62,4 +61,10 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val signOut: String = servicesConfig.getString("service-signout.url")
   lazy val businessCustomerStartPage: String = loadConfig("business-customer.serviceRedirectUrl")
   lazy val businessTaxAccountPage: String = loadConfig("business-tax-account.serviceRedirectUrl")
+
+  lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
+  lazy val accessibilityStatement: String = servicesConfig.getString("urls.footer.accessibility_statement")
+  lazy val privacy: String = servicesConfig.getString("urls.footer.privacy_policy")
+  lazy val termsConditions: String = servicesConfig.getString("urls.footer.terms_and_conditions")
+  lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
 }

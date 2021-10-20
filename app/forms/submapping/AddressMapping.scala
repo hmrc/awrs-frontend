@@ -18,13 +18,11 @@ package forms.submapping
 
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessageFactory._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
 import forms.validation.util.NamedMappingAndUtil._
-import forms.validation.util.{FieldErrorConfig, MessageArguments, SummaryErrorConfig, TargetFieldIds}
 import play.api.data.Forms._
-import play.api.data.validation.Valid
+import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Mapping}
 import utils.AwrsValidator._
 import utils.{AwrsFieldConfig, CountryCodes}
@@ -33,55 +31,39 @@ object AddressMapping extends AwrsFieldConfig {
 
   import models.Address
 
-  private def addressLinex_compulsory(line: Int, prefix: String, prefixRefNameInErrorMessage: String): Mapping[Option[String]] = {
-    val fieldId = prefix attach f"addressLine$line"
+  private def addressLinex_compulsory(line: Int, prefixRefNameInErrorMessage: String): Mapping[Option[String]] = {
     val fieldNameInErrorMessage = f"$prefixRefNameInErrorMessage address line $line"
-
-    val emptyErrorMessage = createErrorMessage(
-      TargetFieldIds(fieldId),
-      FieldErrorConfig(f"awrs.generic.error.addressLine${line}_empty", MessageArguments(prefixRefNameInErrorMessage)),
-      SummaryErrorConfig(MessageArguments(prefixRefNameInErrorMessage))
-    )
 
     val addresslineConstraintParameters =
       CompulsoryTextFieldMappingParameter(
-        FieldIsEmptyConstraintParameter(emptyErrorMessage),
-        genericFieldMaxLengthConstraintParameter(addressLineLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
+        FieldIsEmptyConstraintParameter(Invalid(f"awrs.generic.error.addressLine${line}_empty", prefixRefNameInErrorMessage)),
+        FieldMaxLengthConstraintParameter(addressLineLen, Invalid("awrs.generic.error.maximum_length",fieldNameInErrorMessage, addressLineLen)),
+        FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage))
       )
     compulsoryText(addresslineConstraintParameters)
   }
 
-  private def addressLinex_optional(line: Int, prefix: String, prefixRefNameInErrorMessage: String): Mapping[Option[String]] = {
-    val fieldId = prefix attach f"addressLine$line"
+  private def addressLinex_optional(line: Int, prefixRefNameInErrorMessage: String): Mapping[Option[String]] = {
     val fieldNameInErrorMessage = f"$prefixRefNameInErrorMessage address line $line"
     val addresslineConstraintParameters =
       OptionalTextFieldMappingParameter(
-        genericFieldMaxLengthConstraintParameter(addressLineLen, fieldId, fieldNameInErrorMessage),
-        genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
+        FieldMaxLengthConstraintParameter(addressLineLen, Invalid("awrs.generic.error.maximum_length",fieldNameInErrorMessage, addressLineLen)),
+        FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage))
       )
     optionalText(addresslineConstraintParameters)
   }
 
   // The type of mapping returned depends on if the form of the address mapping can accept foreign addresses
-  private def postcode_compulsory(prefix: String, prefixRefNameInErrorMessage: String, canBeForeignAddress: Boolean): Mapping[Option[String]] = {
-    val fieldId = prefix attach "postcode"
+  private def postcode_compulsory(prefixRefNameInErrorMessage: String, canBeForeignAddress: Boolean): Mapping[Option[String]] = {
 
-    val emptyErrorMessage = createErrorMessage(
-      TargetFieldIds(fieldId),
-      FieldErrorConfig("awrs.generic.error.postcode_empty", MessageArguments(prefixRefNameInErrorMessage)),
-      SummaryErrorConfig(MessageArguments(prefixRefNameInErrorMessage))
-    )
+    val emptyErrorMessage = Invalid("awrs.generic.error.postcode_empty", prefixRefNameInErrorMessage)
 
     val invalidPostcodeErrorMessage = Seq[FieldFormatConstraintParameter](
       FieldFormatConstraintParameter(
         (postcode: String) => if (postcode.matches(postcodeRegex)) {
           Valid
         } else {
-          createErrorMessage(
-            TargetFieldIds(fieldId),
-            FieldErrorConfig("awrs.generic.error.postcode_invalid", MessageArguments(prefixRefNameInErrorMessage)),
-            SummaryErrorConfig(MessageArguments(prefixRefNameInErrorMessage)))
+          Invalid("awrs.generic.error.postcode_invalid", prefixRefNameInErrorMessage)
         }
       )
     )
@@ -154,11 +136,11 @@ object AddressMapping extends AwrsFieldConfig {
 
   // Reusable address mapping
   private def addressMapping(prefix: String, prefixRefNameInErrorMessage: String, canBeForeignAddress: Boolean, countryCodes: CountryCodes): Mapping[Address] = mapping(
-    "addressLine1" -> addressLinex_compulsory(1, prefix, prefixRefNameInErrorMessage).toStringFormatter,
-    "addressLine2" -> addressLinex_compulsory(2, prefix, prefixRefNameInErrorMessage).toStringFormatter,
-    "addressLine3" -> addressLinex_optional(3, prefix, prefixRefNameInErrorMessage),
-    "addressLine4" -> addressLinex_optional(4, prefix, prefixRefNameInErrorMessage),
-    "postcode" -> postcode_compulsory(prefix, prefixRefNameInErrorMessage, canBeForeignAddress),
+    "addressLine1" -> addressLinex_compulsory(1,  prefixRefNameInErrorMessage).toStringFormatter,
+    "addressLine2" -> addressLinex_compulsory(2,  prefixRefNameInErrorMessage).toStringFormatter,
+    "addressLine3" -> addressLinex_optional(3,  prefixRefNameInErrorMessage),
+    "addressLine4" -> addressLinex_optional(4,  prefixRefNameInErrorMessage),
+    "postcode" -> postcode_compulsory(prefixRefNameInErrorMessage, canBeForeignAddress),
     "addressCountry" -> addressCountry_compulsory(prefix, canBeForeignAddress, countryCodes),
     "addressCountryCode" -> addressCountryCode_compulsory(canBeForeignAddress)
   )(Address.apply)(Address.unapply)
@@ -177,5 +159,4 @@ object AddressMapping extends AwrsFieldConfig {
       )
     }
   }
-
 }

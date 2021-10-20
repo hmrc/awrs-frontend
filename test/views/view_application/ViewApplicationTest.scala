@@ -551,7 +551,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           // company name takes precedence, and at least one must be present
           prepRow(companyOrTradingName, List[Option[String]](None, None)) ++
             // trading name will only be displayed if it's not already displayed above
-            prepRowCustom(Messages("awrs.generic.trading_name"), testData.companyNames.businessName)(testData.companyNames.tradingName) ++
+            prepRowCustom(Messages("awrs.generic.trading"), testData.companyNames.businessName)(testData.companyNames.tradingName) ++
             addressToExpectation(Messages("awrs.generic.address"), testData.address) ++
             identificationToExpectation(testData) ++
             Row("", None)

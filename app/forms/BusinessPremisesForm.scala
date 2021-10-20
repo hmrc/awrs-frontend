@@ -32,7 +32,7 @@ object BusinessPremisesForm {
   private val additionalPremises_compulsory = yesNoQuestion_compulsory("additionalPremises", "awrs.additional-premises.error.do_you_have_additional_premises")
   private val addAnother_compulsory = yesNoQuestion_compulsory("addAnother", "awrs.additional-premises.error.add_another")
 
-  def businessPremisesValidationForm(implicit applicationConfig: ApplicationConfig) = Form(
+  def businessPremisesValidationForm(implicit applicationConfig: ApplicationConfig): Form[AdditionalBusinessPremises] = Form(
     mapping(
       "additionalPremises" -> additionalPremises_compulsory,
       "additionalAddress" -> (ukAddress_compulsory(prefix = "additionalAddress", "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenThereAreAdditionalTradingPremises),
@@ -41,5 +41,5 @@ object BusinessPremisesForm {
     (AdditionalBusinessPremises.apply)(AdditionalBusinessPremises.unapply)
   )
 
-  def businessPremisesForm(implicit applicationConfig: ApplicationConfig) = PreprocessedForm(businessPremisesValidationForm)
+  def businessPremisesForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[AdditionalBusinessPremises] = PreprocessedForm(businessPremisesValidationForm)
 }

@@ -15,16 +15,21 @@
  *@
 
 @import config.ApplicationConfig
-@import play.twirl.api.Html
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers._
-@import views.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukWarningText : GovukWarningText,
+    govukDateInput: GovukDateInput,
+    govukErrorSummary: GovukErrorSummary)
+
 @(confirmationForm: Form[TupleDate], businessType: Option[String], pastStart: Boolean)(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
@@ -44,22 +49,20 @@
 }
 
 @ariaDayMonthYear = {
-    <span id="tradingDate-day_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
-    <span id="tradingDate-month_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
-    <span id="tradingDate-year_reader" class="visuallyhidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
+    <span id="tradingDate-day_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_day.reader")</span>
+    <span id="tradingDate-month_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_month.reader")</span>
+    <span id="tradingDate-year_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
 }
 
 @preDatePast = {
-    <div class="text-disclaimer">
-        <i class="icon icon-important">
-            <span class="visuallyhidden">Warning</span>
-        </i>
-        <strong class="bold-small">@messages("awrs.business_details.what_date_did_p_warn")</strong>
-    </div>
+    @govukWarningText(WarningText(
+        iconFallbackText = "Warning",
+        content = Text(Messages("awrs.business_details.what_date_did_p_warn"))
+    ))
 }
 
 @preDateNow = {
-    <p>@messages("awrs.business_details.what_date_start_p")</p>
+    <p class="govuk-body">@messages("awrs.business_details.what_date_start_p")</p>
 }
 
 @preDateInfo = @{
@@ -70,32 +73,38 @@
     }
 }
 
+@inputItems = @{
+    Seq(InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "2")),
+        InputItem(attributes = Map("maxLength" -> "4"))
+    )
+}
+
 @awrsMain(title = messages("awrs.generic.tab.title", messages(headerTitleName)), userLoggedIn = true) {
 
 @backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails().url)
 
-@errorSummaryTemplate(confirmationForm)
-<div class="grid">
-    <div class="grid grid-2-3">
+    @if(confirmationForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(confirmationForm, mapping = Map("tradingDate" -> "tradingDate.day")))
+    }
+
         <header class="page-header">
-            <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages(headerTitleName)</h1>
-            @awrsProgressHelper(businessType, businessDetailsName)
+            @awrsProgressHelper(businessType, businessDetailsName)<br>
+            <h1 id="businessNameChangeConfirmation-heading" class="govuk-heading-xl">@messages(headerTitleName)</h1>
         </header>
         @preDateInfo
         @formWithCSRF(action = actionRoute) {
-        <div class="form-group">
-            @awrsDateField(
-                DateHelperParams(
-                    formItem = confirmationForm,
-                    fieldName = "tradingDate",
-                    ariaDayMonthYear = ariaDayMonthYear,
-                    ariaLabelledBy = "tradingDate-legend",
-                    label = Some(Html(messages(headerTitleName))),
-                    hintText = Some(Html(messages("awrs.generic.date_hint")))
-                )
-            )
-            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+
+            @govukDateInput(DateInput(
+                hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(messages(headerTitleName)),
+                        classes = "govuk-visually-hidden")))
+                ),
+                items = inputItems
+            ).withFormFieldWithErrorAsHtml(confirmationForm("tradingDate")))
+
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
         }
-    </div>
-</div>
 }

@@ -24,7 +24,7 @@ import services.DataCacheKeys._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AccountUtils
-
+import scala.language.implicitConversions
 import scala.concurrent.{ExecutionContext, Future}
 
 trait Save4LaterUtil {

@@ -23,11 +23,9 @@
         link(
             Some(href),
             Messages("awrs.view_application.add_another", message),
-            "link",
+            "govuk-link",
             Some("add-link-" + position)
         ),
         Some(NoneBreakingSpace)
     )(cssClass = Some("record-add"), messages = messages)
-} else {
-    {}
 }

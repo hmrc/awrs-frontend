@@ -14,17 +14,14 @@
  * limitations under the License.
  *@
 
-@(params: views.helpers.InputTypeTextParams)(implicit messages : Messages)
-
 @import forms.validation.util._
 @import views.html.helpers._
+@(params: views.helpers.InputTypeTextParams)(implicit messages : Messages)
 
 @fieldErrors = @{
-    params.parentForm match {
-        case Some(parentForm) => ErrorMessageInterpreter.getFieldErrors(params.field, parentForm)
-        case None => ErrorMessageInterpreter.getFieldErrors(params.field)
-    }
+    params.field.errors
 }
+
 @number = @{params.postCodeLookupAddressNumber.fold("0")(x => x)}
 @value = @{
     params.field.value match {
@@ -33,15 +30,9 @@
         case x => x
     }
 }
-@wrapperClass = @{
-    params.wrapperClass match {
-        case Some(wrapperClass) => wrapperClass
-        case _ => ""
-    }
-}
 @formHint = {
     @params.formHint match {
-        case Some(formHint) => {<span @if(params.formHintId.nonEmpty){id="@params.formHintId"} class="form-hint">@formHint</span>}
+        case Some(formHint) => {<span @if(params.formHintId.nonEmpty){id="@params.formHintId"} class="govuk-hint">@formHint</span>}
         case _ => {}
     }
 }
@@ -83,12 +74,6 @@
         case (divClass, labelClass) => "class=\""+labelClass+" "+divClass+"\""
     })
 }
-@divClass = @{
-    params.divClass match {
-        case Some(divClass) => divClass
-        case _ => ""
-    }
-}
 @labelDataAttributes = @{
     params.labelDataAttributes match {
         case Some(labelDataAttributes) => labelDataAttributes
@@ -100,7 +85,7 @@
         case Some(label) => {
             @Html(
                 params.labelHighlight match {
-                    case true => s"<strong>$label</strong>"
+                    case true => s"$label"
                     case false => label
                 }
             )
@@ -112,12 +97,12 @@
 @isPostCodeInput = {
     @params.isPostCode match {
         case true => {
-            <a id="postcode-lookup-button-@number" class="button postcode-lookup" role="button" tabindex="0">@Messages("awrs.generic.find_address")</a>
+            <a id="postcode-lookup-button-@number" class="govuk-button postcode-lookup" role="button" data-module="govuk-button" tabindex="0">@Messages("awrs.generic.find_address")</a>
             <div class="loading" id="spinner-@number">@Messages("awrs.generic.search_address")</div>
-            <fieldset class="postcode-results-fieldset" >
-                <legend id="postcode-lookup-ledgend-@number" class="visuallyhidden" aria-hidden="true">@Messages("awrs.generic.address.lookup_dropdown_label")</legend>
+            <fieldset class="postcode-results-fieldset govuk-fieldset" >
+                <legend id="postcode-lookup-ledgend-@number" class="govuk-visually-hidden" aria-hidden="true">@Messages("awrs.generic.address.lookup_dropdown_label")</legend>
                 <div class="btn-group postcode-lookup-results">
-                        <div class="dropdown-menu" id="result-container-@number">
+                        <div class="govuk-fieldset dropdown-menu" id="result-container-@number">
                             <div class="btn-group postcode-lookup-results show" id="result-@{number}">
                             </div>
                         </div>
@@ -130,16 +115,16 @@
 }
 @additionalHiddenLabelText = {
     @params.additionalHiddenLabelText match {
-        case Some(text) => {<span class="visuallyhidden">@text</span>}
+        case Some(text) => {<span class="govuk-visually-hidden">@text</span>}
         case None => {}
     }
 }
-<div class="form-field @if(fieldErrors.nonEmpty) {form-field--error} @wrapperClass @divClass">
+<div class="@if(fieldErrors.nonEmpty) {form-field--error}">
     <label for="@inputId" id="@{inputId}_field" @labelClass @labelDataAttributes>@label@additionalHiddenLabelText</label>
     @formHint
-    @commonHelper(params.field, fieldErrors)
+    @fieldErrorHelper(params.field, fieldErrors)
     <input type="text"
-           class="form-control @inputClass"
+           class="@inputClass"
            name="@params.field.name"
            id="@inputId"
            value="@value"
@@ -154,7 +139,7 @@
                 } else {
                     aria-labelledby="@{inputId}_field@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
                 }
-           } 
+           }
     >
     @isPostCodeInput
 </div>

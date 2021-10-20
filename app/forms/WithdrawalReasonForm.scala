@@ -23,6 +23,7 @@ import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import models.WithdrawalReason
 import play.api.data.Forms._
+import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
@@ -44,9 +45,9 @@ object WithdrawalReasonForm extends AwrsFieldConfig {
     val fieldNameInErrorMessage = "other reasons"
     val fieldId = "withdrawalReason-other"
     val params = CompulsoryTextFieldMappingParameter(
-      empty = simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.withdrawal.error.other.reason_empty"),
-      maxLengthValidation = genericFieldMaxLengthConstraintParameter(withdrawalOtherReasonsLen, fieldId, fieldNameInErrorMessage),
-      formatValidations = genericInvalidFormatConstraintParameter(validText, fieldId, fieldNameInErrorMessage)
+    empty = simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.withdrawal.error.other.reason_empty"),
+      FieldMaxLengthConstraintParameter(withdrawalOtherReasonsLen, Invalid("awrs.generic.error.maximum_length",fieldNameInErrorMessage, withdrawalOtherReasonsLen)),
+      FieldFormatConstraintParameter((name: String) => if (validText(name)) Valid else Invalid("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage))
     )
     compulsoryText(params)
   }

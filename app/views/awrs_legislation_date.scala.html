@@ -16,14 +16,20 @@
 
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import views.helpers.InputTypeRadioGroupParams
 @import views.html.helpers._
-@import views.html.includes.awrs_main
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(formWithCSRF: FormWithCSRF, awrsMain: awrs_main)
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios)
+
 @(confirmationForm: Form[String], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
@@ -37,31 +43,39 @@
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before")), userLoggedIn = true) {
     @backLink(controllers.routes.TradingNameController.showTradingName(true).url)
 
-    @errorSummaryTemplate(confirmationForm)
-    <div class="grid">
-        <div class="grid grid-2-3">
+    @if(confirmationForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmationForm))
+    }
+
             <header class="page-header">
-                <h1 id="businessNameChangeConfirmation-heading" class="heading-large">@messages("awrs.generic.legislation_before")</h1>
-                @awrsProgressHelper(businessType, businessDetailsName)
+                @awrsProgressHelper(businessType, businessDetailsName)<br>
+                <h1 id="group-member-heading" class="govuk-heading-xl">
+                    @messages("awrs.generic.legislation_before")
+                </h1>
             </header>
             @formWithCSRF(action = actionRoute) {
-            <div class="form-group">
-                <div class="form-group">
-                    @awrsInputTypeRadioGroup(
-                        InputTypeRadioGroupParams(
-                            confirmationForm("tradingLegislationDate"),
-                            Seq("Yes" -> messages("awrs.generic.yes"),
-                                "No" -> messages("awrs.generic.no")),
-                            fieldSetClass = "inline",
-                            fieldSetAttributes = "id=tradingLegislationDate_field",
-                            legend = messages("awrs.generic.legislation_before"),
-                            legendId = "tradingLegislationDate-legend",
-                            legendClass = "visuallyhidden",
+
+                @govukRadios(
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-visually-hidden",
+                                content = Text(Messages("awrs.generic.legislation_before"))
+                            ))
+                        )),
+                        classes = "govuk-fieldset govuk-radios--inline",
+                        items = Seq(
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.yes")),
+                                value = Some("Yes")
+                            ),
+                            RadioItem(
+                                content = Text(Messages("awrs.generic.no")),
+                                value = Some("No")
+                            )
                         )
-                    )
-                </div>
-                @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue", classAttr = "button")
+                    ).withFormField(confirmationForm("tradingLegislationDate"))
+                )
+                @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
             }
-        </div>
-    </div>
 }

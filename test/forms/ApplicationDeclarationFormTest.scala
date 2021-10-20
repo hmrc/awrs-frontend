@@ -28,47 +28,85 @@ class ApplicationDeclarationFormTest extends PlaySpec with MockitoSugar  with Aw
 
   implicit lazy val form = ApplicationDeclarationForm.applicationDeclarationForm.form
 
-  "Form validation" must {
-    "display the correct validation errors for declarationName" in {
-      val fieldId = "declarationName"
+  "Declaration form validation" must {
 
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.application_declaration.error.declaration_name_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "your name", applicationDeclarationNameLen)
-      val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "your name"))
-      //      val validFormats = List(ValidFormatConfig("a"))
-      //      val formatError = FormatConfig(invalidFormats,validFormats)
-      val formatError = ExpectedFieldFormat(invalidFormats)
+    val fieldId = "declarationName"
+    val fieldNameInErrorMessage = "full name"
+    val fieldIdRole = "declarationRole"
+    val fieldNameInErrorMessageRole = "job title or role"
 
-      val expecations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
-
-      fieldId assertFieldIsCompulsory expecations
+    "the full name field is left empty" in {
+      form.bind(Map(fieldId -> "")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.application_declaration.error.declaration_name_empty"
+        },
+        _ => fail("Field should contain errors")
+      )
     }
 
-    "display the correct validation errors for declarationRole" in {
-      val fieldId = "declarationRole"
-
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.application_declaration.error.declaration_role_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "your role", applicationDeclarationRoleLen)
-      val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "your role"))
-      val formatError = ExpectedFieldFormat(invalidFormats)
-
-      val expecations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
-
-      fieldId assertFieldIsCompulsory expecations
+    "the full name field maxLength is exceeded" in {
+      form.bind(Map(fieldId -> "a" * 141)).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.name.maximum_length", fieldNameInErrorMessage, applicationDeclarationNameLen)
+        },
+        _ => fail("Field should contain errors")
+      )
     }
 
-    "enforce the confirmation box must be checked" in {
-      val fieldId = "confirmation"
-
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.application_declaration.error.confirmation_empty"))
-
-      val expecations =
-        CompulsoryEnumValidationExpectations(emptyError,
-          Set(BooleanCheckboxEnum.True),
-          Set(BooleanCheckboxEnum.False))
-
-      fieldId assertEnumFieldIsCompulsory expecations
+    "invalid characters are entered in the full name field" in {
+      form.bind(Map(fieldId -> "α")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary_declaration", fieldNameInErrorMessage)
+        },
+        _ => fail("Field should contain errors")
+      )
     }
+
+    "the job title or role field is left empty" in {
+      form.bind(Map(fieldIdRole -> "")).fold(
+        formWithErrors => {
+          formWithErrors(fieldIdRole).errors.size mustBe 1
+          formWithErrors(fieldIdRole).errors.head.message mustBe "awrs.application_declaration.error.declaration_role_empty"
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "the job title or role field maxLength is exceeded" in {
+      form.bind(Map(fieldIdRole -> "a" * 41)).fold(
+        formWithErrors => {
+          formWithErrors(fieldIdRole).errors.size mustBe 1
+          messages(formWithErrors(fieldIdRole).errors.head.message) mustBe messages("awrs.generic.error.name.maximum_length", fieldNameInErrorMessageRole, applicationDeclarationRoleLen)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "invalid characters are entered in the job title or role field" in {
+      form.bind(Map(fieldIdRole -> "α")).fold(
+        formWithErrors => {
+          formWithErrors(fieldIdRole).errors.size mustBe 1
+          messages(formWithErrors(fieldIdRole).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary_declaration", fieldNameInErrorMessageRole)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+  }
+
+  "enforce the confirmation box must be checked" in {
+    val fieldId = "confirmation"
+
+    val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.application_declaration.error.confirmation_empty"))
+
+    val expecations =
+      CompulsoryEnumValidationExpectations(emptyError,
+        Set(BooleanCheckboxEnum.True),
+        Set(BooleanCheckboxEnum.False))
+
+    fieldId assertEnumFieldIsCompulsory expecations
   }
 
   "Form validation" must {

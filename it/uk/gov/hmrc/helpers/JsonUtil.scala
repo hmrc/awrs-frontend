@@ -20,7 +20,7 @@ object JsonUtil extends JsonUtil
 
 trait JsonUtil {
 
-  val llpJson = """{
+  val llpJson: String = """{
                   |  "subscriptionTypeFrontEnd": {
                   |    "legalEntity": {
                   |      "legalEntity": "LLP"

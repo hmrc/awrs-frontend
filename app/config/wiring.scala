@@ -23,7 +23,15 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 
-class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) extends CachedStaticHtmlPartialRetriever
+import scala.concurrent.duration.{Duration, DurationInt}
+
+class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) extends CachedStaticHtmlPartialRetriever {
+  override def refreshAfter: Duration = 60.seconds
+
+  override def expireAfter: Duration = 60.minutes
+
+  override def maximumEntries: Int = 1000
+}
 
 class BusinessCustomerSessionCache @Inject()(servicesConfig: ServicesConfig,
                                              val http: DefaultHttpClient) extends SessionCache {

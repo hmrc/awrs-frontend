@@ -57,16 +57,29 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
             val document = Jsoup.parse(contentAsString(result))
             val heading = document.getElementById("business-directors-heading").text()
             val personOrCompanySection = document.getElementById("personOrCompany_field")
-            val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
+            val roleRadio_first = document.getElementById("directorsAndCompanySecretaries")
+            val roleRadio_second = document.getElementById("directorsAndCompanySecretaries-2")
+            val roleRadio_third = document.getElementById("directorsAndCompanySecretaries-3")
+
             id match {
               case 1 =>
                 heading must be(Messages("awrs.business_directors.heading.first"))
                 personOrCompanySection mustBe null
-                companySecretaryOption mustBe null
+                roleRadio_first must not be null
+                roleRadio_second must not be null
+                roleRadio_third mustBe null
+                document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries").text() must be("awrs.generic.status.director")
+                document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-2").text() must be("awrs.generic.status.both")
+
               case _ =>
                 heading must be(Messages("awrs.business_directors.heading", Messages("awrs.director.what.are"), views.html.helpers.ordinalIntSuffix(id)))
                 personOrCompanySection must not be null
-                companySecretaryOption must not be null
+                roleRadio_first must not be null
+                roleRadio_second must not be null
+                roleRadio_third must not be null
+                document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries").text() must be("awrs.generic.status.director")
+                document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-2").text() must be("awrs.generic.status.company_secretary")
+                document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-3").text() must be("awrs.generic.status.both")
             }
         }
       }
@@ -85,8 +98,15 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
           val personOrCompanySection = document.getElementById("personOrCompany_field")
           personOrCompanySection mustBe null
 
-          val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
-          companySecretaryOption mustBe null
+          val roleRadio_first = document.getElementById("directorsAndCompanySecretaries")
+          val roleRadio_second = document.getElementById("directorsAndCompanySecretaries-2")
+
+          roleRadio_first must not be null
+          roleRadio_second must not be null
+
+          document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries").text() must be("awrs.generic.status.director")
+          document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-2").text() must be("awrs.generic.status.both")
+
       }
     }
 
@@ -101,8 +121,17 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
           val personOrCompanySection = document.getElementById("personOrCompany_field")
           personOrCompanySection must not be null
 
-          val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
-          companySecretaryOption must not be null
+          val roleRadio_first = document.getElementById("directorsAndCompanySecretaries")
+          val roleRadio_second = document.getElementById("directorsAndCompanySecretaries-2")
+          val roleRadio_third = document.getElementById("directorsAndCompanySecretaries-3")
+
+          roleRadio_first must not be null
+          roleRadio_second must not be null
+          roleRadio_third must not be null
+
+          document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries").text() must be("awrs.generic.status.director")
+          document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-2").text() must be("awrs.generic.status.company_secretary")
+          document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-3").text() must be("awrs.generic.status.both")
       }
     }
 
@@ -125,8 +154,17 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
             val personOrCompanySection = document.getElementById("personOrCompany_field")
             personOrCompanySection must not be null
 
-            val companySecretaryOption = document.getElementById("directorsAndCompanySecretaries-awrs.generic.status.company_secretary_value-label")
-            companySecretaryOption must not be null
+            val roleRadio_first = document.getElementById("directorsAndCompanySecretaries")
+            val roleRadio_second = document.getElementById("directorsAndCompanySecretaries-2")
+            val roleRadio_third = document.getElementById("directorsAndCompanySecretaries-3")
+
+            roleRadio_first must not be null
+            roleRadio_second must not be null
+            roleRadio_third must not be null
+
+            document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries").text() must be("awrs.generic.status.director")
+            document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-2").text() must be("awrs.generic.status.company_secretary")
+            document.getElementsByAttributeValue("for", "directorsAndCompanySecretaries-3").text() must be("awrs.generic.status.both")
         }
       }
     }

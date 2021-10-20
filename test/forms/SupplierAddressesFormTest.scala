@@ -21,16 +21,33 @@ import forms.AWRSEnums.BooleanRadioEnum
 import forms.AWRSEnums.BooleanRadioEnum._
 import forms.test.util._
 import forms.validation.util.FieldError
+import models.Supplier
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.data.Form
 import utils.AwrsFieldConfig
 import utils.TestConstants._
 
 class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form = SupplierAddressesForm.supplierAddressesForm.form
+  implicit lazy val form: Form[Supplier] = SupplierAddressesForm.supplierAddressesForm.form
 
   "Form validations" must {
+
+    "check validations for alcoholSupplier radio button " when {
+      val fieldId = "alcoholSupplier"
+
+      "the radio button is not selected" in {
+        form.bind(Map(fieldId -> "")).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            formWithErrors(fieldId).errors.head.message mustBe "awrs.supplier-addresses.alcohol_supplier_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+    }
+
     "display the correct validation errors for alcoholSupplier" in {
       val fieldId = "alcoholSupplier"
 
@@ -40,37 +57,162 @@ class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFie
       fieldId assertEnumFieldIsCompulsory expectations
     }
 
-    "display the correct validation errors for supplierName" in {
+    "display the correct validation errors for supplierName" when {
       val fieldId = "supplierName"
-
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.supplier-addresses.error.supplier_name_blank"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "supplier name", supplierNameLen)
-      val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "supplier name"))
-      val formatError = ExpectedFieldFormat(invalidFormats)
-
-      val expecations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
-
+      val fieldNameInErrorMessage = "name of supplier"
       val preCondition = Map("alcoholSupplier" -> "Yes")
-      fieldId assertFieldIsCompulsoryWhen(preCondition, expecations)
 
-      val ignoreCondition = Map("alcoholSupplier" -> "No")
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, expecations.toFieldToIgnore)
+      "the field is left empty" in {
+        form.bind(Map(fieldId -> "") ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            formWithErrors(fieldId).errors.head.message mustBe "awrs.supplier-addresses.error.supplier_name_blank"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the field maxLength is exceeded" in {
+        form.bind(Map(fieldId -> "a" * 141) ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.maximum_length", fieldNameInErrorMessage, supplierNameLen)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "invalid characters are entered in the field" in {
+        form.bind(Map(fieldId -> "α") ++ preCondition).fold(
+          formWithErrors => {
+            formWithErrors(fieldId).errors.size mustBe 1
+            messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
     }
 
-    "display the correct validation errors for ukSupplier" in {
-      val fieldId = "ukSupplier"
+    "display the correct validation errors for ukSupplier" when {
+      val preCondition = Map("alcoholSupplier" -> "Yes", "ukSupplier" -> "Yes" )
+      val prefix = "supplierAddress"
+      val fieldNameInErrorMessage = "supplier address line"
+      val fieldNameInErrorMessagePostcode = "postcode"
 
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.supplier-addresses.error.uk_supplier_blank"))
-      val expecations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
+      "the fields are left empty" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "",
+          s"$prefix.addressLine2" -> "",
+          s"$prefix.addressLine3" -> "",
+          s"$prefix.addressLine4" -> "",
+          s"$prefix.postcode" -> ""
+        ) ++preCondition ).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe "awrs.generic.error.addressLine1_empty"
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe "awrs.generic.error.addressLine2_empty"
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe "awrs.generic.error.postcode_empty"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
 
-      val preCondition = Map("alcoholSupplier" -> "Yes")
-      fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expecations)
+      "the field maxLength is exceeded" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "a" * 36,
+          s"$prefix.addressLine2" -> "a" * 36,
+          s"$prefix.addressLine3" -> "a" * 36,
+          s"$prefix.addressLine4" -> "a" * 36,
+          s"$prefix.postcode" -> "a" * 21
+        ) ++preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
 
-      val ignoreCondition = Map("alcoholSupplier" -> "No")
-      fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expecations.toIgnoreEnumFieldExpectation)
+      "invalid characters are entered in the field" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "α",
+          s"$prefix.addressLine2" -> "α",
+          s"$prefix.addressLine3" -> "α",
+          s"$prefix.addressLine4" -> "α",
+          s"$prefix.postcode" -> "α"
+        ) ++preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 4", addressLineLen)
+            formWithErrors(s"$prefix.postcode").errors.head.message mustBe messages("awrs.generic.error.postcode_invalid", fieldNameInErrorMessagePostcode)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
     }
 
-    //TODO refactor
+    "display the correct validation errors for NOT ukSupplier" when {
+      val preCondition = Map("alcoholSupplier" -> "Yes", "ukSupplier" -> "No" )
+      val prefix = "supplierAddress"
+      val fieldNameInErrorMessage = "supplier address line"
+
+      "the fields are left empty" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "",
+          s"$prefix.addressLine2" -> "",
+          s"$prefix.addressLine3" -> "",
+          s"$prefix.addressLine4" -> "",
+          s"$prefix.addressCountry" -> ""
+        ) ++preCondition ).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe "awrs.generic.error.addressLine1_empty"
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe "awrs.generic.error.addressLine2_empty"
+            formWithErrors(s"$prefix.addressCountry").errors.head.message mustBe "awrs.supplier-addresses.error.supplier_address_country_blank"
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "the field maxLength is exceeded" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "a" * 36,
+          s"$prefix.addressLine2" -> "a" * 36,
+          s"$prefix.addressLine3" -> "a" * 36,
+          s"$prefix.addressLine4" -> "a" * 36
+        ) ++preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.maximum_length", s"$fieldNameInErrorMessage 4", addressLineLen)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+
+      "invalid characters are entered in the field" in {
+        form.bind(Map(
+          s"$prefix.addressLine1" -> "α",
+          s"$prefix.addressLine2" -> "α",
+          s"$prefix.addressLine3" -> "α",
+          s"$prefix.addressLine4" -> "α",
+          s"$prefix.addressCountry" -> "α"
+        ) ++preCondition).fold(
+          formWithErrors => {
+            formWithErrors(s"$prefix.addressLine1").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 1", addressLineLen)
+            formWithErrors(s"$prefix.addressLine2").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 2", addressLineLen)
+            formWithErrors(s"$prefix.addressLine3").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 3", addressLineLen)
+            formWithErrors(s"$prefix.addressLine4").errors.head.message mustBe messages("awrs.generic.error.character_invalid.summary", s"$fieldNameInErrorMessage 4", addressLineLen)
+          },
+          _ => fail("Field should contain errors")
+        )
+      }
+    }
+
     "display the correct validation errors for vatRegistered" in {
       val fieldId = "vatRegistered"
 
@@ -84,7 +226,6 @@ class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFie
       fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expecations.toIgnoreEnumFieldExpectation)
     }
 
-    //TODO refactor
     "display the correct validation errors for vatNumber" in {
       val fieldId = "vatNumber"
 
@@ -103,12 +244,6 @@ class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFie
 
       val ignoreCondition = Map("alcoholSupplier" -> "No")
       fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
-    }
-
-    "display the correct validation errors for supplierAddress when it is an UK address" in {
-      val preCondition = Map("alcoholSupplier" -> "Yes", "ukSupplier" -> "Yes")
-      val ignoreConditions = Set(Map("alcoholSupplier" -> "No"))
-      NamedUnitTests.ukAddressIsCompulsoryAndValid(preCondition, ignoreCondition = ignoreConditions, idPrefix = "supplierAddress", nameInErrorMessage = "supplier")
     }
 
     "display the correct validation errors for supplierAddress when it is a foreign address" in {
@@ -138,72 +273,73 @@ class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFie
       val ignoreCondition = Map("alcoholSupplier" -> "No")
       fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expecations.toIgnoreEnumFieldExpectation)
     }
-  }
 
-  "Form validations" must {
 
-    "Allow submission if alcoholSupplier is answered with 'No'" in {
-      val data: Map[String, String] =
-        Map("alcoholSupplier" -> BooleanRadioEnum.No.toString)
-      assertFormIsValid(form, data)
-    }
+    "Form validations" must {
 
-    "Allow submission if alcoholSupplier is answered with 'Yes for an UK address" in {
-      val data: Map[String, String] =
-        Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
-          "ukSupplier" -> "Yes",
-          "supplierName" -> "supplierName",
-          "vatRegistered" -> "No",
-          "supplierAddress.addressLine1" -> "addressLine1",
-          "supplierAddress.addressLine2" -> "addressLine2",
-          "supplierAddress.addressLine3" -> "addressLine3",
-          "supplierAddress.addressLine4" -> "addressLine4",
-          "supplierAddress.postcode" -> testPostcode,
-          "additionalSupplier" -> BooleanRadioEnum.Yes.toString
-        )
-      assertFormIsValid(form, data)
+      "Allow submission if alcoholSupplier is answered with 'No'" in {
+        val data: Map[String, String] =
+          Map("alcoholSupplier" -> BooleanRadioEnum.No.toString)
+        assertFormIsValid(form, data)
+      }
 
-      val data2: Map[String, String] =
-        Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
-          "ukSupplier" -> "Yes",
-          "supplierName" -> "supplierName",
-          "vatRegistered" -> "Yes",
-          "vatNumber" -> testVrn,
-          "supplierAddress.addressLine1" -> "addressLine1",
-          "supplierAddress.addressLine2" -> "addressLine2",
-          "supplierAddress.postcode" -> testPostcode,
-          "additionalSupplier" -> BooleanRadioEnum.No.toString
-        )
-      assertFormIsValid(form, data2)
-    }
+      "Allow submission if alcoholSupplier is answered with 'Yes for an UK address" in {
+        val data: Map[String, String] =
+          Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
+            "ukSupplier" -> "Yes",
+            "supplierName" -> "supplierName",
+            "vatRegistered" -> "No",
+            "supplierAddress.addressLine1" -> "addressLine1",
+            "supplierAddress.addressLine2" -> "addressLine2",
+            "supplierAddress.addressLine3" -> "addressLine3",
+            "supplierAddress.addressLine4" -> "addressLine4",
+            "supplierAddress.postcode" -> testPostcode,
+            "additionalSupplier" -> BooleanRadioEnum.Yes.toString
+          )
+        assertFormIsValid(form, data)
 
-    "Allow submission if alcoholSupplier is answered with 'Yes for a foreign address" in {
-      val data: Map[String, String] =
-        Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
-          "ukSupplier" -> "No",
-          "supplierName" -> "supplierName",
-          "supplierAddress.addressLine1" -> "addressLine1",
-          "supplierAddress.addressLine2" -> "addressLine2",
-          "supplierAddress.addressCountry" -> "France",
-          "additionalSupplier" -> BooleanRadioEnum.No.toString
-        )
-      assertFormIsValid(form, data)
-    }
+        val data2: Map[String, String] =
+          Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
+            "ukSupplier" -> "Yes",
+            "supplierName" -> "supplierName",
+            "vatRegistered" -> "Yes",
+            "vatNumber" -> testVrn,
+            "supplierAddress.addressLine1" -> "addressLine1",
+            "supplierAddress.addressLine2" -> "addressLine2",
+            "supplierAddress.postcode" -> testPostcode,
+            "additionalSupplier" -> BooleanRadioEnum.No.toString
+          )
+        assertFormIsValid(form, data2)
+      }
 
-    "Allow submission if fields contain Welsh characters" in {
-      val data: Map[String, String] =
-        Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
-          "ukSupplier" -> "Yes",
-          "supplierName" -> testWelshChars,
-          "vatRegistered" -> "No",
-          "supplierAddress.addressLine1" -> testWelshChars,
-          "supplierAddress.addressLine2" -> testWelshChars,
-          "supplierAddress.addressLine3" -> testWelshChars,
-          "supplierAddress.addressLine4" -> testWelshChars,
-          "supplierAddress.postcode" -> testPostcode,
-          "additionalSupplier" -> BooleanRadioEnum.Yes.toString
-        )
-      assertFormIsValid(form, data)
+      "Allow submission if alcoholSupplier is answered with 'Yes for a foreign address" in {
+        val data: Map[String, String] =
+          Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
+            "ukSupplier" -> "No",
+            "supplierName" -> "supplierName",
+            "supplierAddress.addressLine1" -> "addressLine1",
+            "supplierAddress.addressLine2" -> "addressLine2",
+            "supplierAddress.addressCountry" -> "France",
+            "additionalSupplier" -> BooleanRadioEnum.No.toString
+          )
+        assertFormIsValid(form, data)
+      }
+
+      "Allow submission if fields contain Welsh characters" in {
+        val data: Map[String, String] =
+          Map("alcoholSupplier" -> BooleanRadioEnum.Yes.toString,
+            "ukSupplier" -> "Yes",
+            "supplierName" -> testWelshChars,
+            "vatRegistered" -> "No",
+            "supplierAddress.addressLine1" -> testWelshChars,
+            "supplierAddress.addressLine2" -> testWelshChars,
+            "supplierAddress.addressLine3" -> testWelshChars,
+            "supplierAddress.addressLine4" -> testWelshChars,
+            "supplierAddress.postcode" -> testPostcode,
+            "additionalSupplier" -> BooleanRadioEnum.Yes.toString
+          )
+        assertFormIsValid(form, data)
+      }
     }
   }
 }

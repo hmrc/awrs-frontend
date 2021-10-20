@@ -22,7 +22,6 @@ import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util._
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.SupplierAddressesForm._
-import javax.inject.Inject
 import models.{Supplier, Suppliers}
 import play.api.mvc._
 import services.DataCacheKeys._
@@ -30,9 +29,10 @@ import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AccountUtils
+import utils.{AccountUtils, CountryCodes}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponents,
@@ -41,6 +41,7 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
                                             val authConnector: DefaultAuthConnector,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
+                                            val countryCodes: CountryCodes,
                                             implicit val applicationConfig: ApplicationConfig,
                                             template: views.html.awrs_supplier_addresses) extends FrontendController(mcc) with AwrsController
   with JourneyPage
@@ -48,6 +49,7 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
 
   override implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
+  val countryList: Seq[(String, String)] = countryCodes.countryCodesTuplesSeq
 
   override def fetch(authRetrievals: StandardAuthRetrievals)
                     (implicit hc: HeaderCarrier): Future[Option[Suppliers]] = save4LaterService.mainStore.fetchSuppliers(authRetrievals)
@@ -74,12 +76,12 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
         }
 
         lazy val newEntryAction = (id: Int) =>
-          Future.successful(Ok(template(supplierAddressesForm.form, id, isNewRecord)))
+          Future.successful(Ok(template(supplierAddressesForm.form, id, isNewRecord, countryList)))
 
         lazy val existingEntryAction = (data: Suppliers, id: Int) => {
           val supplier = data.suppliers(id - 1)
           val updatedSupplier = supplier.copy(supplierAddress = applicationConfig.countryCodes.getSupplierAddressWithCountry(supplier))
-          Future.successful(Ok(template(supplierAddressesForm.form.fill(updatedSupplier), id, isNewRecord)))
+          Future.successful(Ok(template(supplierAddressesForm.form.fill(updatedSupplier), id, isNewRecord, countryList)))
         }
 
         lazy val haveAnother = (data: Suppliers) =>
@@ -105,8 +107,8 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
     supplierAddressesForm.bindFromRequest.fold(
       formWithErrors =>
         fetch(authRetrievals) flatMap {
-          case Some(_) => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord)))
-          case _ => Future.successful(BadRequest(template(formWithErrors, 1, isNewRecord)))
+          case Some(_) => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord, countryList)))
+          case _ => Future.successful(BadRequest(template(formWithErrors, 1, isNewRecord, countryList)))
         },
       supplierAddressesData => {
         val countryCodeSupplierAddressData = supplierAddressesData.copy(supplierAddress = applicationConfig.countryCodes.getSupplierAddressWithCountryCode(supplierAddressesData))

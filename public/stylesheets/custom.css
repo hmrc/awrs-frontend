@@ -1,23 +1,5 @@
-#business_partners-subtext, #group-member-lead-paragraph {
-    float: left;
-}
-
-.alert-complete {
-    background-color: #28a197;
-    color: #fff;
-    padding: 30px 60px 20px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.alert-complete h2 {
-    background-color: #28a197;
-    color: #fff;
-}
-
-.alert-complete h2 img {
-    position: relative;
-    top: -1px;
+.panel-size{
+font-size: 24px;
 }
 
 .centered-content {
@@ -60,7 +42,6 @@
     top: 6px;
     display: none;
     margin: 0 0 0 10px;
-    background-color: #BFC1C3;
     box-shadow: 0 2px 0 #6F777B;
     color: #000;
     height: 23px;
@@ -84,7 +65,7 @@
 }
 
 .postcode-lookup:hover, .postcode-lookup:focus, .postcode-lookup-color-change {
-    background-color: #00823B;
+    background-color: #00823b;
     box-shadow: 0 2px 0 #003518;
     color: #fff;
 }
@@ -96,18 +77,8 @@
     background: url("/alcohol-wholesale-scheme/assets/images/loading.gif") no-repeat;
 }
 
-select {
-    width: 50%;
-    height: 44px;
-    background: #DEE0E2;
-    font-weight: 600;
-    box-shadow: 0 2px 0 #6F777B;
-    display: none;
-    margin: 35px 0 0 0;
-}
-
-select.show {
-    display: block;
+.autocomplete__option {
+    font-family: "GDS Transport",arial,sans-serif;
 }
 
 summary .arrow {
@@ -221,6 +192,9 @@ table.view-application tr.record-spacer td, .record-add td {
 a.edit-section, a.back-to-top-link {
     position: relative;
     float: right;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: "GDS Transport",arial,sans-serif;
 }
 
 a.edit-link {
@@ -294,20 +268,16 @@ a:visited, .link-style:visited, .button--link-style:visited {
 }
 
 .panel-indent .form-control {
-   width: 50%;
+   width: 100%;
 }
 
-.form-field.form-field--error .error-notification, fieldset.form-field--error .error-notification {
-    font-weight: 700;
-    font-size: 1em;
-    color: #d4351c;
-}
 
 .form-field--error {
     border-left: 5px solid #d4351c;
     margin: 0 0 0.75em;
     padding-bottom: 0;
     padding-top: 0;
+    padding: 20px 15px 15px;
 }
 
 
@@ -357,21 +327,28 @@ fieldset dl dt span.form-hint {
     .print-hidden, .header-wrapper, .service-info, .report-error  {
         display: none !important;
     }
-    .appstatus {
-        background-color: #005ea5;
-        color: #fff;
-        -webkit-print-color-adjust: exact;
-        margin-bottom: 1.05263em;
-        padding: 2em 2em .94737em 2em;
-        margin-top: 1.05263em;
+}
+
+@media screen {
+    .print-only {
+        display: none;
     }
-    .appstatus p, .appstatus strong, .alert-complete div, .alert-complete span {
-        color: #fff;
-    }
-    .alert-complete {
-        background-color: #28a197;
-        -webkit-print-color-adjust: exact;
-    }
+}
+
+.print-link {
+    text-align: left;
+    margin: 2em 0 0 0;
+    font-size: 20px;
+    font-family: "GDS Transport",arial,sans-serif;
+}
+.link {
+    font-size: 20px;
+    font-family: "GDS Transport",arial,sans-serif;
+}
+.font-banner{
+    font-size: 19px;
+    margin-left: 15px;
+    margin-bottom: 0px;
 }
 
 @media (min-width: 641px) {
@@ -405,11 +382,6 @@ fieldset dl dt span.form-hint {
     .appstatus-steps li {
         display: inline;
         margin-left: 0;
-        width: 100%;
-    }
-
-    select {
-        margin: 19px 10px 0 0;
         width: 100%;
     }
 
@@ -486,7 +458,7 @@ select option {
     color: #fff;
 }
 
-#ConfirmationNoteHeadingText.heading-medium {padding-top: 1.5em;}
+#ConfirmationNoteHeadingText.govuk-heading-m {padding-top: 1.5em;}
 
 .confirmation-description {
     margin-top: 0.4em;
@@ -573,7 +545,7 @@ div #confirmation-date {
 
 .banner {
     padding: 10px 0 10px 13px;
-    background-color: #DEE0E2;
+    background-color: #f5f5f5;
     margin-bottom: 30px;
 }
 
@@ -587,13 +559,6 @@ div #confirmation-date {
 
 /*= added for application status page */
 
-.appstatus {
-    background-color: #005ea5;
-    color: #fff;
-    margin-bottom: 1.05263em;
-    padding: 2em 2em .94737em 2em;
-    margin-top: 1.05263em;
-}
 
 h1.appstatus-title {
     color: #fff;
@@ -610,8 +575,10 @@ h1.appstatus-title {
 .appstatus-steps {
     list-style-type: none;
     border-collapse: collapse;
-    width: 100%;
+    width: 90%;
+    text-align: center;
     display: inline-block;
+    padding-left: 0%;
 }
 
 .appstatus-steps .appstatus-processing {
@@ -636,8 +603,7 @@ h1.appstatus-title {
 }
 
 .appstatus-steps span {
-    border-bottom: 3px solid #2b8cc4;
-    color: #2b8cc4;
+    border-bottom: 3px solid;
     display: block;
     font-weight: bold;
     padding: 10px 26px 10px 0;
@@ -659,10 +625,6 @@ h1.appstatus-title {
     width: 22px;
 }
 
-.tick {
-    background: url("/alcohol-wholesale-scheme/assets/images/complete.png") right center/24px 24px no-repeat;
-}
-
 .alert--important {
     background-color: #b10e1e;
     color: white;
@@ -677,12 +639,12 @@ h1.appstatus-title {
 }
 
 .alert .alert__message {
-    font-family: nta, Arial, sans-serif;
-    font-size: 19px;
-    line-height: 1.31579;
-    font-weight: 400;
-    text-transform: none;
-    margin: 0px 0px 0.52632em;
+   margin: auto;
+}
+
+.alert--info.alert--info__light {
+    background-color: #f8f8f8;
+    border-color: #bfc1c3;
 }
 
 p.lede, .lede {
@@ -728,6 +690,7 @@ p.lede, .lede {
 
 table td.row-title {
     font-weight: 700;
+    font-family: "GDS Transport",arial,sans-serif;
 }
 
 #add-link-top {margin-bottom: 1.57895em;}
@@ -831,16 +794,24 @@ html.noScroll {
 details {display: block;}
 .summary {display: list-item;}
 
-[role="link"].link-style {text-decoration: none;}
-[role="link"].link-style:hover {text-decoration: underline;}
+[role="link"].link-style {
+    text-decoration: none;
+    font-family: "GDS Transport",arial,sans-serif;
+    cursor:pointer;
+    font-size: 19px;}
+[role="link"].link-style:hover {
+    text-decoration: underline;
+    font-family: "GDS Transport",arial,sans-serif;
+    cursor:pointer;
+    font-size: 19px;}
 .postcode-lookup-results {margin-top: 1em;}
 
 p.heading-secondary, span.heading-secondary {
     color: #6f777b;
     display: block;
-    font-family: "nta",Arial,sans-serif;
+    font-family: "GDS Transport",arial,sans-serif;
     font-size: 27px;
-    font-weight: 400;
+    font-weight: 100;
     line-height: 1.11111;
     margin-bottom: 0.42105em;
     text-transform: none;
@@ -850,20 +821,7 @@ p.heading-secondary, span.heading-secondary {
     display: table-header-group;
 }
 
-.page-header {
-    clear: both;
-    display: table;
-    margin-top: 1.8em;
-}
 
-.page-header-block {
-    display: block;
-}
-
-
-.page-header .heading-xlarge {
-    margin: 0.15em 0 1.25em;
-}
 
 #businessNameChangeConfirmation-bullets {margin-bottom:1.5em;}
 

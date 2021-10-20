@@ -23,6 +23,7 @@ import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.TradingActivity
 import play.api.data.Forms._
+import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{Form, Forms, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
@@ -37,8 +38,8 @@ object TradingActivityForm extends AwrsFieldConfig {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_wholesaler"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages (otherWholesalerLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.order.maxlength"),
-        genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.wholesaler_validation")
+        FieldMaxLengthConstraintParameter(otherWholesalerLen, Invalid("awrs.view_application.error.trading_activity.order.maxlength", fieldNameInErrorMessage, otherWholesalerLen)),
+        FieldFormatConstraintParameter((name: String) => if (validAlphaNumeric(name)) Valid else Invalid("awrs.additional_information.error.wholesaler_validation", fieldNameInErrorMessage))
       )
     compulsoryText(companyNameConstraintParameters)
   }
@@ -53,8 +54,8 @@ object TradingActivityForm extends AwrsFieldConfig {
     val companyNameConstraintParameters =
       CompulsoryTextFieldMappingParameter(
         simpleFieldIsEmptyConstraintParameter(fieldId, "awrs.additional_information.error.other_order"),
-        genericFieldMaxLengthConstraintParameterForDifferentMessages (otherOrdersLen, fieldId, fieldNameInErrorMessage,  errorMsg = "awrs.view_application.error.trading_activity.maxlength"),
-        genericInvalidFormatConstraintParameter(validAlphaNumeric, fieldId, fieldNameInErrorMessage, errorMsg = "awrs.additional_information.error.order_validation")
+        FieldMaxLengthConstraintParameter(otherOrdersLen, Invalid("awrs.view_application.error.trading_activity.maxlength", fieldNameInErrorMessage, otherOrdersLen)),
+        FieldFormatConstraintParameter((name: String) => if (validAlphaNumeric(name)) Valid else Invalid("awrs.additional_information.error.order_validation", fieldNameInErrorMessage))
       )
     compulsoryText(companyNameConstraintParameters)
   }

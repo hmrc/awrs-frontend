@@ -14,19 +14,18 @@
  * limitations under the License.
  *@
 
-@import config.ApplicationConfig
 @import play.twirl.api.Html
-@import views.html.includes.awrs_main
+@import config.ApplicationConfig
 
-@this(awrsMain: awrs_main)
+@this(awrsMain: main)
 @()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.error.title"))){
 
-
 <div>
-    <h1 id="application-error-header" class="heading-xlarge">@Html(messages("awrs.generic.error.title"))</h1>
-    <h2 id="application-error-description" class="heading-medium">@Html(messages("awrs.generic.error.status"))</h2>
+    <h1 id="application-error-header" class="govuk-heading-xl">@Html(messages("awrs.generic.error.title"))</h1>
+    <h2 id="application-error-description" class="govuk-body">@Html(messages("awrs.generic.error.status"))</h2>
+    <br>
 </div>
 
 }

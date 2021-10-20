@@ -15,33 +15,32 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.includes.awrs_main
-
-@this(awrsMain: awrs_main)
-@(processingDate: String, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @import views.helpers.WithdrawalHelper._
 @import views.html.helpers._
+
+@this(
+    awrsMain: main,
+    confirmationHelper: confirmationHelper)
+
+@(processingDate: String, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @date = @{stringifyDate(processingDate)}
 
 @govWrapper = {
     @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.withdrawal.confirmation.title")), userLoggedIn = true){
-        <div class="grid">
-            <div class="grid grid-2-3">
+
                 @confirmationHelper(
                     "awrs.withdrawal.confirmation_page.description",
                     messages("awrs.withdrawal.description_1", date)
                 )
-                <h2 class="heading-small print-hidden">@messages("awrs.generic.print_confirmation")</h2>
+                <h2 class="govuk-heading-s print-hidden">@messages("awrs.generic.print_confirmation")</h2>
                 @awrsPrintLink()
                 <hr aria-hidden="true">
-                <h2 class="heading-small" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
-                <p>@messages("awrs.withdrawal.confirmation_page.information_what_next_1")</p>
-                <div class="form-group">
-                    <a id="confirmation-page-finish" class="button print-hidden" role="button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
+                <h2 class="govuk-heading-s" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
+                <p class="govuk-body">@messages("awrs.withdrawal.confirmation_page.information_what_next_1")</p>
+                <div class="govuk-form-group">
+                    <a id="confirmation-page-finish" class="govuk-button print-hidden" role="button" data-module="govuk-button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
                 </div>
-            </div>
-        </div>
     }
 }
 
@@ -51,12 +50,9 @@
         messages("awrs.de_registration.confirmation_page.description_1", date)
     )
     @awrsPrintLink()
-    <h2 class="heading-small">@messages("awrs.confirmation.information")</h2>
-    <p>@messages("awrs.withdrawal.confirmation_page.information_what_next_1") @messages("awrs.withdrawal.confirmation_page.information_what_next_1_href"). </p>
+    <h2 class="govuk-heading-s">@messages("awrs.confirmation.information")</h2>
+    <p class="govuk-body">@messages("awrs.withdrawal.confirmation_page.information_what_next_1") @messages("awrs.withdrawal.confirmation_page.information_what_next_1_href"). </p>
     @backLink()
 }
-@if(printFriendly) {
-    @awrsPrintFriendlyWrapper(content)
-} else {
-    @govWrapper
-}
+
+@govWrapper
