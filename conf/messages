@@ -393,6 +393,8 @@ awrs.index_page.trading_activity_text=Trading activities
 awrs.index_page.products_text=Products
 awrs.index_page.suppliers_text=Suppliers
 awrs.index_page.business_partners_text=Business partners
+awrs.index_page.changes.answer.para_3=has a full list of changes and the circumstances where you need to immediately inform us.
+awrs.index_page.changes.answer.para_3_link=Excise Notice 2002 Section 10.4
 
 # Business details
 #============================================================
@@ -742,6 +744,7 @@ awrs.confirmation.newBusiness.information_what_next_0=You cannot trade until an 
 awrs.confirmation.newBusiness.information_what_next_1=It will take up to 45 days from your initial application before we make a decision.
 awrs.confirmation.detailed_information=More detailed information can be found in the {0}AWRS guidance{1}
 awrs.confirmation.detailed_information_print=Find out more by searching GOV.UK for ''Alcohol Wholesaler Registration Scheme''.
+awrs.confirmation.detailed_information_print_2=More detailed information can be found by searching GOV.UK for ''Alcohol Wholesaler Registration Scheme''.
 
 awrs.confirmation.finish=Finish and sign out
 

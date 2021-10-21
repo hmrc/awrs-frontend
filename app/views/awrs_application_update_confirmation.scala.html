@@ -43,8 +43,9 @@
                 </div>
                 <hr aria-hidden="true">
                 @list
-                <p class="govuk-body" id="detailed-information">@Html(messages("awrs.confirmation.detailed_information","<a class='govuk-link' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
-                <p class="govuk-body"><a id="inform-us-link" class="govuk-link print-hidden element-inline external_link" href="https://www.gov.uk/government/publications/excise-notice-2002-alcohol-wholesaler-registration-scheme/excise-notice-2002-alcohol-wholesaler-registration-scheme#approval-details-change">@messages("awrs.index_page.changes.answer.para_3_link")</a><div class="screen-hidden element-inline">@messages("awrs.index_page.changes.answer.para_3_link")</div><p class="govuk-body">&nbsp;@messages("awrs.index_page.changes.answer.para_3")</p>
+                <p class="govuk-body print-hidden" id="detailed-information">@Html(messages("awrs.confirmation.detailed_information","<a class='govuk-link' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
+                <p class="govuk-body print-only" aria-hidden="true" id="detailed-information-printonly">@messages("awrs.confirmation.detailed_information_print_2")</p>
+                <span class="govuk-body print-hidden"><a id="inform-us-link" class="govuk-link element-inline external_link" href="https://www.gov.uk/government/publications/excise-notice-2002-alcohol-wholesaler-registration-scheme/excise-notice-2002-alcohol-wholesaler-registration-scheme#approval-details-change">@messages("awrs.index_page.changes.answer.para_3_link")</a><div class="screen-hidden element-inline">@messages("awrs.index_page.changes.answer.para_3_link")</div><p class="govuk-body">&nbsp;@messages("awrs.index_page.changes.answer.para_3")</p></span>
                 <div class="govuk-form-group">
                     <a id="confirmation-page-finish" class="govuk-button print-hidden" role="button" data-module="govuk-button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
                 </div>
