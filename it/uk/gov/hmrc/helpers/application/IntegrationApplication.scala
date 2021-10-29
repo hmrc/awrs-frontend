@@ -31,7 +31,9 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
     "microservice.services.tax-enrolments.host" -> wireMockHost,
     "microservice.services.tax-enrolments.port" -> wireMockPort,
     "microservice.services.awrs.host" -> wireMockHost,
-    "microservice.services.awrs.port" -> wireMockPort
+    "microservice.services.awrs.port" -> wireMockPort,
+    "microservice.services.address-lookup.host" -> wireMockHost,
+    "microservice.services.address-lookup.port" -> wireMockPort
 
   ) ++ extraConfig
 
