@@ -1,6 +1,6 @@
 package uk.gov.hmrc.helpers.connectors
 
-import connectors.{AddressLookupConnector, AddressLookupSuccessResponse}
+import connectors.{AddressLookupConnector, AddressLookupErrorResponse, AddressLookupSuccessResponse}
 import org.scalatest.MustMatchers
 import play.api.test.Injecting
 import uk.gov.hmrc.address.client.v1.{Address, AddressRecord, Country, RecordSet}
@@ -37,6 +37,20 @@ class AddressLookupConnectorISpec extends IntegrationSpec with Injecting with Mu
                 language = "en")
             ))
           )
+      }
+    }
+    "an exception is encountered when calling Address Lookup" must {
+      "return and AddressLookupErrorResponse" in {
+        lazy val res = {
+          AddressLookupStub.errorResponsePostPostcode("BB000BB")(400, """{"Reason":"Your submission contains one or more errors."}""")
+          await(connector.lookup("BB000BB"))
+        }
+        try {
+          res
+        }
+        catch {
+          case e: Exception => res mustBe AddressLookupErrorResponse(e)
+        }
       }
     }
   }

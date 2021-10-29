@@ -19,7 +19,11 @@ object AddressLookupStub {
   def responsePostUprn(uprn: String)(status: Int, body: String): Unit =
     stubPost("/lookup/by-uprn", Some(s"""{"uprn" : "$uprn"}"""), status, body)
 
-  def responsePostPostcode(postcode: String, filter: Option[String] = None)(status: Int, body: String): Unit = {
+  def responsePostPostcode(postcode: String)(status: Int, body: String): Unit = {
+    stubPost("/lookup", Some(s"""{ "postcode": "$postcode" }"""), status, body)
+  }
+
+  def errorResponsePostPostcode(postcode: String)(status: Int, body: String): Unit = {
     stubPost("/lookup", Some(s"""{ "postcode": "$postcode" }"""), status, body)
   }
 
