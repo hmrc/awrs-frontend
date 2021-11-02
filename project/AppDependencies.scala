@@ -32,13 +32,16 @@ private object AppDependencies {
 
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
+        "uk.gov.hmrc"            %% "bootstrap-test-play-28"  % "5.16.0",
         "org.pegdown"             % "pegdown"                 % "1.6.0" % scope,
         "org.jsoup"               % "jsoup"                   % "1.14.3" % scope,
         "org.mockito"            % "mockito-core"             % "4.0.0" % scope,
         "org.mockito"            %% "mockito-scala"           % "1.16.42" % scope,
         "org.mockito"            %% "mockito-scala-scalatest" % "1.16.42" % scope,
         "org.mockito"             % "mockito-core"            % "3.12.4" % scope,
-        "org.scalatestplus.play"  %% "scalatestplus-play"     % scalaTestplusPlayVersion % scope
+        "org.scalatestplus.play"  %% "scalatestplus-play"     % scalaTestplusPlayVersion % scope,
+        "org.scalatestplus"       %% "scalatestplus-mockito"        % "1.0.0-M2",
+        "org.scalatestplus" %% "scalatestplus-scalacheck" % "3.1.0.0-RC2" % "test"
       )
     }.test
   }
@@ -49,10 +52,14 @@ private object AppDependencies {
       override lazy val scope: String = "it"
 
       override lazy val test = Seq(
+        "uk.gov.hmrc"             %% "bootstrap-test-play-28"  % "5.16.0",
         "org.pegdown"             % "pegdown"              % pegdownVersion % scope,
         "com.typesafe.play"       %% "play-test"           % PlayVersion.current % scope,
         "org.scalatestplus.play"  %% "scalatestplus-play"  % scalaTestplusPlayVersion % scope,
-        "com.github.tomakehurst"  % "wiremock-jre8"        % "2.31.0" % scope
+        "com.github.tomakehurst"       %  "wiremock-jre8"           % "2.31.0",
+        "com.fasterxml.jackson.module" %% "jackson-module-scala"    % "2.12.5",
+        "org.scalatestplus"       %% "scalatestplus-mockito"        % "1.0.0-M2",
+        "org.scalatestplus" %% "scalatestplus-scalacheck" % "3.1.0.0-RC2" % "test"
       )
     }.test
   }

@@ -9,12 +9,12 @@ import uk.gov.hmrc.helpers.application.IntegrationApplication
 import uk.gov.hmrc.helpers.http.StubbedBasicHttpCalls
 import uk.gov.hmrc.helpers.wiremock.WireMockSetup
 import uk.gov.hmrc.http.HeaderCarrier
-
+import org.scalatest.wordspec.AnyWordSpecLike
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
 trait IntegrationSpec
-  extends WordSpecLike
+  extends AnyWordSpecLike
     with OptionValues
     with FutureAwaits
     with DefaultAwaitTimeout
