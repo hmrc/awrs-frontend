@@ -17,9 +17,9 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 
-@(backUrl: String = controllers.routes.IndexController.showLastLocation().toString, alwaysShow: Boolean = false)(implicit viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
+@(backUrl: String = controllers.routes.IndexController.showLastLocation.toString, alwaysShow: Boolean = false)(implicit viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
     @{
-        val lastLocationString = controllers.routes.IndexController.showLastLocation().toString
+        val lastLocationString = controllers.routes.IndexController.showLastLocation.toString
         (isOneViewMode, alwaysShow, backUrl) match {
             case (true, false, _) =>
             case (_, _, `lastLocationString`) =>

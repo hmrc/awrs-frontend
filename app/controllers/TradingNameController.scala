@@ -114,7 +114,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
               case Some(businessCustomerDetails) =>
                 if (businessCustomerDetails.businessName != businessNameDetails.businessName.get) {
                   keyStoreService.saveBusinessNameChange(businessNameDetails) map { _ =>
-                    Redirect(routes.BusinessNameChangeController.showConfirm())
+                    Redirect(routes.BusinessNameChangeController.showConfirm)
                   }
                 } else {
                   saveBusinessDetails(id, redirectRoute, isNewRecord, businessNameDetails, authRetrievals)

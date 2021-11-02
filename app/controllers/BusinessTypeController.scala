@@ -110,9 +110,9 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                     }
                   } else {
                     {if (businessDetails.isAGroup) {
-                      Future.successful(Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration()))
+                      Future.successful(Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration))
                     } else {
-                      Future.successful(Redirect(controllers.routes.IndexController.showIndex()))
+                      Future.successful(Redirect(controllers.routes.IndexController.showIndex))
                     }} map { result =>
                       result addBusinessTypeToSession legalEntity addBusinessNameToSession businessDetails.businessName
                     }

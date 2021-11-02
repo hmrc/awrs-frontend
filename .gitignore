@@ -33,3 +33,7 @@ tmp
 bin
 .bsp
 .bsp/sbt.json
+.bloop
+.metals
+project/.bloop
+project/metals.sbt

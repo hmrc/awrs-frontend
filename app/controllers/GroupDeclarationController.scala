@@ -57,7 +57,7 @@ class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
       groupDeclarationForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
         groupDeclarationData =>
-          save4LaterService.mainStore.saveGroupDeclaration(ar, groupDeclarationData) flatMap (_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex())))
+          save4LaterService.mainStore.saveGroupDeclaration(ar, groupDeclarationData) flatMap (_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex)))
       )
     }
   }

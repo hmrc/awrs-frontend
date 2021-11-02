@@ -52,13 +52,13 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
           isEmailVerified <- emailVerificationService.isEmailVerified(businessContacts)
         } yield {
           if (isEmailVerified) {
-            Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration())
+            Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration)
           } else {
             Ok(templateError(businessContacts.fold("")(x => x.email.fold("")(x => x))))
           }
         }
       } else {
-        Future.successful(Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration()))
+        Future.successful(Redirect(routes.ApplicationDeclarationController.showApplicationDeclaration))
       }
     }
   }

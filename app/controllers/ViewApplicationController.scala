@@ -216,7 +216,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
    */
   def backFrom(sectionName: String, id: Option[Int] = None): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>
-      lazy val gotoIndex = Future.successful(Redirect(controllers.routes.IndexController.showIndex()))
+      lazy val gotoIndex = Future.successful(Redirect(controllers.routes.IndexController.showIndex))
       id match {
         // if id is > 1 then simply goto the id - 1 version of the page
         case Some(entryId) if entryId > 1 => displayPage(sectionName, Some(entryId - 1), ar)

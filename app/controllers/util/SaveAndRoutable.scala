@@ -166,7 +166,7 @@ trait SaveAndRoutable extends FrontendController with AwrsController {
       case ErrorString => showErrorPage
       case nextSection@_ =>
         redirectToIndex(nextSection) map {
-          case true => Redirect(controllers.routes.IndexController.showIndex())
+          case true => Redirect(controllers.routes.IndexController.showIndex)
           case false => Redirect(goToSection(nextSection, isNewRecord))
         }
     }
