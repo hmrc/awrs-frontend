@@ -32,12 +32,12 @@ private object AppDependencies {
 
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
-        "uk.gov.hmrc"            %% "bootstrap-test-play-28"   % "5.16.0",
+        "uk.gov.hmrc"            %% "bootstrap-test-play-28"   % "5.16.0"                 % scope,
         "org.pegdown"            %  "pegdown"                  % "1.6.0"                  % scope,
         "org.jsoup"              %  "jsoup"                    % "1.14.3"                 % scope,
         "org.mockito"            %  "mockito-core"             % "4.0.0"                  % scope,
         "org.scalatestplus.play" %% "scalatestplus-play"       % scalaTestplusPlayVersion % scope,
-        "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"
+        "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"               % scope
       )
     }.test
   }
@@ -48,9 +48,11 @@ private object AppDependencies {
       override lazy val scope: String = "it"
 
       override lazy val test = Seq(
-        "com.typesafe.play"            %% "play-test"                % PlayVersion.current % scope,
-        "com.github.tomakehurst"       %  "wiremock-jre8"            % "2.31.0",
-        "com.fasterxml.jackson.module" %% "jackson-module-scala"     % "2.13.0"
+        "uk.gov.hmrc"                  %% "bootstrap-test-play-28"   % "5.16.0"                 % scope,
+        "com.typesafe.play"            %% "play-test"                % PlayVersion.current      % scope,
+        "com.github.tomakehurst"       %  "wiremock-jre8"            % "2.31.0"                 % scope,
+        "com.fasterxml.jackson.module" %% "jackson-module-scala"     % "2.13.0"                 % scope,
+        "org.scalatestplus.play"       %% "scalatestplus-play"       % scalaTestplusPlayVersion % scope
       )
     }.test
   }
