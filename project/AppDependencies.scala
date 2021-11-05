@@ -36,7 +36,6 @@ private object AppDependencies {
         "org.pegdown"            %  "pegdown"                  % "1.6.0"                  % scope,
         "org.jsoup"              %  "jsoup"                    % "1.14.3"                 % scope,
         "org.mockito"            %  "mockito-core"             % "4.0.0"                  % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play"       % scalaTestplusPlayVersion % scope,
         "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"               % scope
       )
     }.test
@@ -51,8 +50,7 @@ private object AppDependencies {
         "uk.gov.hmrc"                  %% "bootstrap-test-play-28"   % "5.16.0"                 % scope,
         "com.typesafe.play"            %% "play-test"                % PlayVersion.current      % scope,
         "com.github.tomakehurst"       %  "wiremock-jre8"            % "2.31.0"                 % scope,
-        "com.fasterxml.jackson.module" %% "jackson-module-scala"     % "2.13.0"                 % scope,
-        "org.scalatestplus.play"       %% "scalatestplus-play"       % scalaTestplusPlayVersion % scope
+        "com.fasterxml.jackson.module" %% "jackson-module-scala"     % "2.13.0"                 % scope
       )
     }.test
   }
