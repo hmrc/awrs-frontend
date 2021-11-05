@@ -207,7 +207,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
             }
           case unsupportedType@_ =>
             warn(f"Application status : unsupported - $unsupportedType")
-            Redirect(controllers.routes.IndexController.showIndex())
+            Redirect(controllers.routes.IndexController.showIndex)
         }
     }
   }
@@ -233,7 +233,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                   authRetrievals
                 )
               } else {
-                Redirect(controllers.routes.IndexController.showIndex()) addSessionStatus statusReturnType.status addLocation
+                Redirect(controllers.routes.IndexController.showIndex) addSessionStatus statusReturnType.status addLocation
               }
             case None => showErrorPageRaw
           }

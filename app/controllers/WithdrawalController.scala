@@ -81,7 +81,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
         },
         surveyDetails => {
           keyStoreService.saveWithdrawalReason(surveyDetails) map {
-            _ => Redirect(controllers.routes.WithdrawalController.showConfirmWithdrawal())
+            _ => Redirect(controllers.routes.WithdrawalController.showConfirmWithdrawal)
           }
         }
       )
@@ -132,7 +132,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
               }
             case _ =>
               keyStoreService.deleteWithdrawalReason map {
-                _ => Redirect(controllers.routes.IndexController.showIndex())
+                _ => Redirect(controllers.routes.IndexController.showIndex)
               }
           }
       )

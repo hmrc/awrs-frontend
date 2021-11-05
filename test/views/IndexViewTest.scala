@@ -191,7 +191,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       def checkWithdrawLink(shouldExists: Boolean)(implicit result: Future[Result]) =
         checkLinks(linkId = "withdraw_link", shouldExists match {
           case true =>
-            LinkExpectations(href = routes.WithdrawalController.showWithdrawalReasons().toString, text = Messages("awrs.index_page.withdraw_link"))
+            LinkExpectations(href = routes.WithdrawalController.showWithdrawalReasons.toString, text = Messages("awrs.index_page.withdraw_link"))
           case _ => None
         }
         )
@@ -199,7 +199,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       def checkDeRegLink(shouldExists: Boolean)(implicit result: Future[Result]) =
         checkLinks(linkId = "de_reg_page_link", shouldExists match {
           case true =>
-            LinkExpectations(href = routes.DeRegistrationController.showReason().toString, text = Messages("awrs.index_page.de_registration_link"))
+            LinkExpectations(href = routes.DeRegistrationController.showReason.toString, text = Messages("awrs.index_page.de_registration_link"))
           case _ => None
         }
         )

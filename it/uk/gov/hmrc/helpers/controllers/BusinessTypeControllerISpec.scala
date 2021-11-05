@@ -9,7 +9,7 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import controllers.{BusinessTypeController, routes}
 import models._
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import play.api.{Logger, Logging}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -21,7 +21,7 @@ import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, JsonUtil, LogCapturing
 import uk.gov.hmrc.http.HeaderNames
 import utils.{AWRSFeatureSwitches, FeatureSwitch}
 
-class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub with LogCapturing with Logging {
+class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers with S4LStub with LogCapturing with Logging {
 
   val baseURI = "/alcohol-wholesaler-register"
   val subscriptionURI = "/subscription/"

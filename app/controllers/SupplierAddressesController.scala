@@ -115,7 +115,7 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
         countryCodeSupplierAddressData.alcoholSuppliers match {
           case Some("No") =>
             save(authRetrievals, Suppliers(suppliers = List(countryCodeSupplierAddressData))) flatMap {
-              _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex())) // No suppliers so return to index
+              _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex)) // No suppliers so return to index
             }
           case _ =>
 

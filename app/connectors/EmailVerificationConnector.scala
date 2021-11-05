@@ -38,7 +38,7 @@ class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
   val baseURI = "/email-verification"
   val sendEmail = "/verification-requests"
   val verifyEmail = "/verified-email-check"
-  val continueUrl: String = applicationConfig.emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess().url
+  val continueUrl: String = applicationConfig.emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess.url
   val defaultEmailExpiryPeriod: String = Period.days(1).toString
   val defaultTemplate = "awrs_email_verification"
 

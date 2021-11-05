@@ -414,9 +414,9 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     status match {
       case "Rejected" | "Revoked" | "RejectedUnderReviewOrAppeal" | "RevokedUnderReviewOrAppeal " =>
         document.select("a.link").attr("href") mustBe controllers.routes.ApplicationStatusController.showStatus(true).url
-        document.select("a.button").attr("href") mustBe controllers.routes.IndexController.showIndex().url
+        document.select("a.button").attr("href") mustBe controllers.routes.IndexController.showIndex.url
       case _ =>
-        document.getElementById("sign-in-to-view").attr("href") mustBe controllers.routes.IndexController.showIndex().url
+        document.getElementById("sign-in-to-view").attr("href") mustBe controllers.routes.IndexController.showIndex.url
     }
 
   def checkViewApplicationPointsToViewApplication(document: Document): Unit =

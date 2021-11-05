@@ -70,7 +70,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     keyStoreService.deleteDeRegistrationDate flatMap {
       _ =>
         keyStoreService.deleteDeRegistrationReason flatMap {
-          _ => Future.successful(Redirect(routes.IndexController.showIndex()))
+          _ => Future.successful(Redirect(routes.IndexController.showIndex))
         }
     }
 
@@ -96,7 +96,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
         },
         deRegistrationReasonForm =>
           keyStoreService.saveDeRegistrationReason(deRegistrationReasonForm) flatMap {
-            _ => Future.successful(Redirect(routes.DeRegistrationController.showDate()))
+            _ => Future.successful(Redirect(routes.DeRegistrationController.showDate))
           }
       )
     }
@@ -112,7 +112,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
                 case Some(data) => Future.successful(Ok(template(deRegistrationForm.fill(data))))
                 case _ => Future.successful(Ok(template(deRegistrationForm)))
               }
-            case _ => Future.successful(Redirect(routes.DeRegistrationController.showReason()))
+            case _ => Future.successful(Redirect(routes.DeRegistrationController.showReason))
           }
         )
       }
@@ -127,7 +127,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
         ,
         deRegistrationFormData =>
           keyStoreService.saveDeRegistrationDate(deRegistrationFormData) flatMap {
-            _ => Future.successful(Redirect(routes.DeRegistrationController.showConfirm()))
+            _ => Future.successful(Redirect(routes.DeRegistrationController.showConfirm))
           }
       )
     }
@@ -138,10 +138,10 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     statusPermission(
       keyStoreService.fetchDeRegistrationReason flatMap {
         // if de-registration date has not been given then redirect back to the date page
-        case None => Future.successful(Redirect(routes.DeRegistrationController.showReason()))
+        case None => Future.successful(Redirect(routes.DeRegistrationController.showReason))
         case Some(_) =>
           keyStoreService.fetchDeRegistrationDate flatMap {
-            case None => Future.successful(Redirect(routes.DeRegistrationController.showDate()))
+            case None => Future.successful(Redirect(routes.DeRegistrationController.showDate))
             // otherwise continue
             case Some(date) => callToAction(date.proposedEndDate)
           }

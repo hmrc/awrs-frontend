@@ -51,9 +51,9 @@
 @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_error.heading"))) {
 
             @backLink(backUrl = if(resent) {
-                controllers.routes.EmailVerificationController.checkEmailVerification().url
+                controllers.routes.EmailVerificationController.checkEmailVerification.url
             } else {
-                controllers.routes.IndexController.showIndex().url
+                controllers.routes.IndexController.showIndex.url
             }
             )
             <div>

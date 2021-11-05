@@ -1,14 +1,14 @@
 package uk.gov.hmrc.helpers.connectors
 
 import connectors.{AddressLookupConnector, AddressLookupErrorResponse, AddressLookupSuccessResponse}
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import play.api.test.Injecting
 import uk.gov.hmrc.address.client.v1.{Address, AddressRecord, Country, RecordSet}
 import uk.gov.hmrc.helpers.{AddressLookupStub, IntegrationSpec}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class AddressLookupConnectorISpec extends IntegrationSpec with Injecting with MustMatchers {
+class AddressLookupConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
   val connector = inject[AddressLookupConnector]
 

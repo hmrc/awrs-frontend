@@ -42,7 +42,7 @@ class ResetController @Inject()(mcc: MessagesControllerComponents,
   def resetApplication: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       save4LaterService.mainStore.removeAll(ar)
-      Future.successful(Redirect(routes.ApplicationController.logout()))
+      Future.successful(Redirect(routes.ApplicationController.logout))
     }
   }
 
@@ -50,7 +50,7 @@ class ResetController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       save4LaterService.mainStore.removeAll(ar)
       save4LaterService.api.removeAll(ar)
-      Future.successful(Redirect(routes.ApplicationController.logout()))
+      Future.successful(Redirect(routes.ApplicationController.logout))
     }
   }
 }

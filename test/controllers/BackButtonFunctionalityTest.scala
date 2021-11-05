@@ -57,7 +57,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     (suppliersName, (id: Option[Int]) => controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url)
   )
   
-  lazy val urlIndex: String = controllers.routes.IndexController.showIndex().url
+  lazy val urlIndex: String = controllers.routes.IndexController.showIndex.url
 
   lazy val defaultEntriesForMultiEntryPages = 3
 

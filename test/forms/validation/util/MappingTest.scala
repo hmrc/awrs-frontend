@@ -20,7 +20,7 @@ import forms.test.util._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, _}
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
-import org.scalatest.WordSpecLike
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.Forms._
@@ -28,7 +28,7 @@ import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form, FormError}
 import utils.AwrsValidator._
 
-class MappingTest extends AwrsFormTestUtils with WordSpecLike with MockitoSugar with GuiceOneAppPerSuite {
+class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSugar with GuiceOneAppPerSuite {
 
   implicit class Helper(errors: Seq[FormError]) {
     def shouldContain(expected: Invalid): Boolean = {

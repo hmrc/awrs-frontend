@@ -6,7 +6,7 @@ import java.util.UUID
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import controllers.routes
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
@@ -16,7 +16,7 @@ import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec}
 import uk.gov.hmrc.http.HeaderNames
 
-class HomeControllerISpec extends IntegrationSpec with AuthHelpers with MustMatchers with S4LStub {
+class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers with S4LStub {
 
   val baseURI = "/alcohol-wholesaler-register"
   val subscriptionURI = "/subscription/"

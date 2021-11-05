@@ -44,7 +44,7 @@
     @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(applicationDeclarationForm))
 }
 
-        @backLink(backUrl = controllers.routes.IndexController.showIndex().url)
+        @backLink(backUrl = controllers.routes.IndexController.showIndex.url)
         <h1 id="application-declaration-heading" class="govuk-heading-xl">@Html(messages("awrs.application_declaration.heading"))</h1>
         <p class="govuk-body-l">@messages("awrs.application_declaration.lede")</p>
         @formWithCSRF(action = controllers.routes.ApplicationDeclarationController.sendApplication){
