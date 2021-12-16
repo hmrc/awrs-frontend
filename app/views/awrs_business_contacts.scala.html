@@ -122,8 +122,7 @@
                             label = Label(
                                 classes = "govuk-label",
                                 content = Text(Messages("awrs.generic.first_name"))
-                            ),
-                            attributes = Map("aria-required" -> "true")
+                            )
                         ).withFormField(businessContactsForm("contactFirstName"))
                     )
 
@@ -132,8 +131,7 @@
                             label = Label(
                                 classes = "govuk-label",
                                 content = Text(Messages("awrs.generic.surname"))
-                            ),
-                            attributes = Map("aria-required" -> "true")
+                            )
                         ).withFormField(businessContactsForm("contactLastName"))
                     )
 
@@ -142,8 +140,7 @@
                             label = Label(
                                 classes = "govuk-label",
                                 content = Text(Messages("awrs.generic.telephone"))
-                            ),
-                            attributes = Map("aria-required" -> "true")
+                            )
                         ).withFormField(businessContactsForm("telephone"))
                     )
 
@@ -155,8 +152,7 @@
                             ),
                             hint = Some(Hint(
                                 content = HtmlContent(emailMessage)
-                            )),
-                            attributes = Map("aria-required" -> "true")
+                            ))
                         ).withFormField(businessContactsForm("email"))
                     )
 

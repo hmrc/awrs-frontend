@@ -65,7 +65,7 @@
             classes = "govuk-label",
             content = Text(messages("awrs.additional_information.other.main_customers"))
         ),
-        attributes = Map("maxLength" -> frontendDefaultLen, "aria-required" -> "true")
+        attributes = Map("maxLength" -> frontendDefaultLen)
     ).withFormField(productsForm("otherMainCustomers"))
     )
 }
@@ -76,7 +76,7 @@
             classes = "govuk-label",
             content = Text(messages("awrs.additional_information.other.products"))
         ),
-        attributes = Map("maxLength" -> frontendDefaultLen, "aria-required" -> "true")
+        attributes = Map("maxLength" -> frontendDefaultLen)
     ).withFormField(productsForm("otherProductType"))
     )
 }

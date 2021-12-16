@@ -95,7 +95,7 @@
                 content = Text(messages("awrs.generic.first_name")),
                 classes = "govuk-label"
             ),
-            attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+            attributes = Map("maxlength" -> frontendDefaultLen)
         ).withFormField(businessDirectorsForm("firstName"))
         )
 
@@ -104,7 +104,7 @@
                 content = Text(messages("awrs.generic.surname")),
                 classes = "govuk-label"
             ),
-            attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+            attributes = Map("maxlength" -> frontendDefaultLen)
         ).withFormField(businessDirectorsForm("lastName"))
         )
 
@@ -127,7 +127,7 @@
             content = Text(messages("awrs.generic.trading_name")),
             classes = "govuk-label"
         ),
-        attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+        attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
     ).withFormField(businessDirectorsForm("companyNames.tradingName"))
     )
 }
@@ -166,7 +166,7 @@
         content = Text(messages("awrs.generic.trading_name")),
         classes = "govuk-label"
     ),
-    attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+    attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
 ).withFormField(businessDirectorsForm("companyNames.tradingName"))
 )
 </div>
@@ -203,7 +203,7 @@
                     content = Text(messages("awrs.business_directors.business_name")),
                     classes = "govuk-label--s"
                 ),
-                attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true")
+                attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString)
             ).withFormField(businessDirectorsForm("companyNames.businessName"))
             )
 

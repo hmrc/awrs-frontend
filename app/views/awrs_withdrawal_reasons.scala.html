@@ -43,7 +43,7 @@
             label = Label(
                 content = Text(messages("awrs.withdrawal.reason.other_message"))
             ),
-            attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+            attributes = Map("maxlength" -> frontendDefaultLen)
         ).withFormField(withdrawalReasonForm("reasonOther"))
     )
 }
