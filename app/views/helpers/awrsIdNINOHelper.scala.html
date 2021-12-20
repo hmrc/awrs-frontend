@@ -37,7 +37,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             content = Text(messages("awrs.generic.passport_no")),
             classes = "govuk-label",
         ),
-        attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+        attributes = Map("maxlength" -> frontendDefaultLen)
     ).withFormField(passport)
     )
 
@@ -52,7 +52,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
         errorMessage = if(formInstance.get.errors.map(_.message).contains("awrs.business_directors.error.non_resident.passport_no_and_nationalId_empty")) {
             Some(ErrorMessage(content = Text(messages(formInstance.get.error(passport.name).get.message))))
         } else None,
-        attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+        attributes = Map("maxlength" -> frontendDefaultLen)
     ).withFormField(nationalId)
     )
 }
@@ -96,7 +96,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
         ),
         classes = "govuk-input--width-20",
         hint = Some(Hint(id = "NINO-information", content = Text(messages("awrs.generic.do_you_have_NINO_information")))),
-        attributes = Map("maxlength" -> frontendDefaultLen, "aria-required" -> "true")
+        attributes = Map("maxlength" -> frontendDefaultLen)
     ).withFormField(ninoField)
     )
 }

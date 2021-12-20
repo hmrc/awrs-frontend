@@ -83,7 +83,7 @@ if(accountUtils.hasAwrs(enrolments)) {
                 classes = "govuk-label",
                 content = Text(messages("awrs.generic.trading_name"))
             ),
-            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
         ).withFormField(groupMemberForm("companyNames.tradingName"))
     )
 }
@@ -113,7 +113,7 @@ if(accountUtils.hasAwrs(enrolments)) {
                         classes = "govuk-label--s",
                         content = Text(Messages("awrs.business_directors.business_name"))
                     ),
-                    attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true")
+                    attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString)
                 ).withFormField(groupMemberForm("companyNames.businessName"))
             )
 
@@ -150,7 +150,7 @@ if(accountUtils.hasAwrs(enrolments)) {
                                 classes = "govuk-label",
                                 content = Text(messages("awrs.generic.trading"))
                             ),
-                            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+                            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
                         ).withFormField(groupMemberForm("companyNames.tradingName"))
                     )
 

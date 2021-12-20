@@ -78,7 +78,7 @@
                 content = Text(messages("awrs.generic.business_name")),
                 classes = "govuk-label--s"
             ),
-            attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true")
+            attributes = Map("maxlength" -> applicationConfig.companyNameLen.toString)
         ).withFormField(businessDetailsForm("companyName"))
     )
     </div>
@@ -97,7 +97,7 @@
             label = Label(
                 content = HtmlContent(tradingNameLabel)
             ),
-            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true")
+            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
         ).withFormField(businessDetailsForm("tradingName"))
     )
 }

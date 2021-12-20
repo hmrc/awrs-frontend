@@ -162,7 +162,7 @@
                                     classes = "govuk-label",
                                     content = Text(Messages("awrs.generic.first_name"))
                                 ),
-                                attributes = Map("maxLength" -> applicationConfig.firstNameLen.toString, "aria-required" -> "true" )
+                                attributes = Map("maxLength" -> applicationConfig.firstNameLen.toString )
                             ).withFormField(partnerForm("firstName"))
                         )
 
@@ -172,7 +172,7 @@
                                     classes = "govuk-label",
                                     content = Text(Messages("awrs.generic.surname"))
                                 ),
-                                attributes = Map("maxLength" -> applicationConfig.lastNameLen.toString, "aria-required" -> "true" )
+                                attributes = Map("maxLength" -> applicationConfig.lastNameLen.toString)
                             ).withFormField(partnerForm("lastName"))
                         )
                     </div>
@@ -185,7 +185,7 @@
                                     classes = "govuk-label--s",
                                     content = Text(Messages("awrs.generic.business_name"))
                                 ),
-                                attributes = Map("maxLength" -> applicationConfig.companyNameLen.toString, "aria-required" -> "true" )
+                                attributes = Map("maxLength" -> applicationConfig.companyNameLen.toString)
                             ).withFormField(partnerForm("companyNames.businessName"))
                         )
                     </div>
@@ -224,7 +224,7 @@
                                             classes = "govuk-label",
                                             content = Text(Messages("awrs.generic.trading"))
                                         ),
-                                        attributes = Map("maxLength" -> applicationConfig.tradingNameLen.toString, "aria-required" -> "true" )
+                                        attributes = Map("maxLength" -> applicationConfig.tradingNameLen.toString)
                                     ).withFormField(partnerForm("companyNames.tradingName"))
                                 )
 
