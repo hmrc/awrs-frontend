@@ -42,7 +42,7 @@
 }
 
 @content = {
-    <table class="view-application govuk-table">
+    <dl class="view-application govuk-summary-list">
     @* Nominated partner heading for partner 1 and Additional Business Partners heading above remainder of list *@
     @id match {
         case 1 => {
@@ -89,7 +89,7 @@
     @identification_helper_partner(
         partner
     )
-    </table>
+    </dl>
 }
 
 @content

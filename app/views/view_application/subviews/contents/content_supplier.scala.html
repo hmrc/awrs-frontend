@@ -27,7 +27,7 @@
 @tableRowTitle = @{supplier.supplierName.fold("")(x => x)}
 
 @content = {
-    <table class="view-application govuk-table">
+    <dl class="view-application govuk-summary-list">
     @* Top record row including edit and delete links *@
     @table_row(
         tableRowTitle,
@@ -57,7 +57,7 @@
         }
         case _ => {}
     }
-    </table>
+    </dl>
 }
 
 @content
