@@ -26,6 +26,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -102,7 +103,9 @@
     )
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", Messages("awrs.generic.do_you_have_trading_name")), userLoggedIn = true){
+@awrsMain(
+    title = s"${errorPrefix(businessDetailsForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.do_you_have_trading_name"))}",
+    userLoggedIn = true){
 
         @backLinkHelper(BackLinkParams(
             sectionName = businessDetailsName

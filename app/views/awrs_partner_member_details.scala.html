@@ -26,6 +26,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -90,7 +91,9 @@
     }
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", h1text), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(partnerForm)} ${messages(messages("awrs.generic.tab.title", h1text))}",
+    pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 
             @backLinkHelper(BackLinkParams(

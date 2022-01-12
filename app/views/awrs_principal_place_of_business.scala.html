@@ -26,6 +26,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -91,7 +92,9 @@ messages(s"awrs.generic.principal.address_$line", "Previous principal")
 Messages("awrs.generic.principal.postcode", "Previous principal")
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", businessTypeHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(placeOfBusinessForm)} ${messages("awrs.generic.tab.title", businessTypeHeading)}",
+    pageScripts = Some(pageScripts), userLoggedIn = true) {
     <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 
             @backLinkHelper(BackLinkParams(

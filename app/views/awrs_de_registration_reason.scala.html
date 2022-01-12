@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import forms.DeRegistrationReasonForm._
 @import views.html.helpers._
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -45,7 +46,9 @@
     )
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.de_registration_reason.page_heading")), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(deRegistrationReason)} ${messages("awrs.generic.tab.title", messages("awrs.de_registration_reason.page_heading"))}",
+    userLoggedIn = true) {
 
     @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
     @if(deRegistrationReason.errors.nonEmpty) {

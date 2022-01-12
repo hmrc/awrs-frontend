@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -47,7 +48,9 @@
         )
     }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.de_registration.heading")), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(deRegistrationForm)} ${messages("awrs.generic.tab.title", messages("awrs.de_registration.heading"))}",
+    userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
 

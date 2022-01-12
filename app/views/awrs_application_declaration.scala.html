@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -38,7 +39,9 @@
     }
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading")), userLoggedIn = true){
+@awrsMain(
+    title = s"${errorPrefix(applicationDeclarationForm)} ${messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading"))}",
+    userLoggedIn = true){
 
 @if(applicationDeclarationForm.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(applicationDeclarationForm))

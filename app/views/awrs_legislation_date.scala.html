@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -40,7 +41,9 @@
     }
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before")), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before"))}",
+    userLoggedIn = true) {
     @backLink(controllers.routes.TradingNameController.showTradingName(true).url)
 
     @if(confirmationForm.errors.nonEmpty) {

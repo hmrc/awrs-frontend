@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import views.view_application.helpers._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -48,7 +49,9 @@
     )
 }
 
-    @awrsMain(messages("awrs.generic.tab.title", messages("awrs.withdrawal.reasons_page.heading")), userLoggedIn = true) {
+    @awrsMain(
+        title = s"${errorPrefix(withdrawalReasonForm)} ${messages("awrs.generic.tab.title", messages("awrs.withdrawal.reasons_page.heading"))}",
+        userLoggedIn = true) {
         @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
 
                 @if(withdrawalReasonForm.errors.nonEmpty) {

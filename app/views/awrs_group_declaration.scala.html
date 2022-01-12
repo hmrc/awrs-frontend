@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -32,7 +33,9 @@
     Some(groupDeclarationForm)
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.group_declaration.heading")), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(groupDeclarationForm)} ${messages("awrs.generic.tab.title", messages("awrs.group_declaration.heading"))}",
+    userLoggedIn = true) {
 
             @if(groupDeclarationForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary().withFormErrorsAsText(groupDeclarationForm))

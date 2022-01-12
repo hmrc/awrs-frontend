@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
 formWithCSRF: FormWithCSRF,
@@ -66,7 +67,9 @@ govukErrorSummary: GovukErrorSummary)
     }
 }
 
-    @awrsMain(title = messages("awrs.generic.tab.title", businessPremisesIdHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+    @awrsMain(
+        title = s"${errorPrefix(businessPremisesForm)} ${messages("awrs.generic.tab.title", businessPremisesIdHeading)}",
+        pageScripts = Some(pageScripts), userLoggedIn = true) {
         <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 
                 @backLinkHelper(BackLinkParams(

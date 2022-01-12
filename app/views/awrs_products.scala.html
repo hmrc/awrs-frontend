@@ -26,6 +26,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -81,7 +82,9 @@
     )
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", pageHeading), userLoggedIn = true){
+@awrsMain(
+    title = s"${errorPrefix(productsForm)} ${messages("awrs.generic.tab.title", pageHeading)}",
+    userLoggedIn = true){
 
 
         @backLinkHelper(BackLinkParams(
