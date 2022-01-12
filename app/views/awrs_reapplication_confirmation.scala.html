@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -30,7 +31,9 @@
 @(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 
-@awrsMain(messages("awrs.generic.tab.title", messages("awrs.reapplication.confirm_page.heading")), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(reapplicationForm)} ${messages("awrs.generic.tab.title", messages("awrs.reapplication.confirm_page.heading"))}",
+    userLoggedIn = true) {
 
         @backLink()
         @if(reapplicationForm.errors.nonEmpty) {

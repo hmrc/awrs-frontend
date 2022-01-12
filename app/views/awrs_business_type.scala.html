@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -32,7 +33,9 @@
 
 @implicitFormInstance = @{ Some(businessTypeForm) }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.business_verification.heading")), nameBusiness = Some(businessName), userLoggedIn = true){
+@awrsMain(
+    title = s"${errorPrefix(businessTypeForm)} ${messages("awrs.generic.tab.title", messages("awrs.business_verification.heading"))}",
+    nameBusiness = Some(businessName), userLoggedIn = true){
 
     @if(businessTypeForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessTypeForm))

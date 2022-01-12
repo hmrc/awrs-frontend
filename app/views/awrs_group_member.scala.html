@@ -27,6 +27,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -88,7 +89,9 @@ if(accountUtils.hasAwrs(enrolments)) {
     )
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", pageHeading), pageScripts = Some(pageScripts), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(groupMemberForm)} ${messages("awrs.generic.tab.title", pageHeading)}",
+    pageScripts = Some(pageScripts), userLoggedIn = true) {
 <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 
         @backLinkHelper(BackLinkParams(

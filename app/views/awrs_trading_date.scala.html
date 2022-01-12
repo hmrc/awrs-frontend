@@ -22,6 +22,7 @@
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -80,7 +81,9 @@
     )
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages(headerTitleName)), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages(headerTitleName))}",
+    userLoggedIn = true) {
 
 @backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails().url)
 

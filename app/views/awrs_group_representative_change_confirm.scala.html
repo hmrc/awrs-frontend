@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.html.helpers._
 @import views.view_application.helpers._
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -39,7 +40,9 @@
         </ul>
     }
 
-    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.business_name_change.heading")), userLoggedIn = true) {
+    @awrsMain(
+        title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.business_name_change.heading"))}",
+        userLoggedIn = true) {
 
         @backLink()
 

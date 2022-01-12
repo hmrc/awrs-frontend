@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.html.helpers._
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -40,7 +41,9 @@
     ))
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.de_registration.confirmation_heading")), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.de_registration.confirmation_heading"))}",
+    userLoggedIn = true) {
 
 @backLink(backUrl = controllers.routes.DeRegistrationController.showDate.toString)
 

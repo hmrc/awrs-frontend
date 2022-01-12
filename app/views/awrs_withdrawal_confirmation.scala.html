@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -33,7 +34,9 @@
     @awrsWarningHelper(declarationTxt = messages("awrs.generic.wait_info", messages("awrs.generic.wait_info_withdraw")), id = "confirmation-content")
 }
 
-@awrsMain(messages("awrs.generic.tab.title", messages("awrs.withdrawal.confirm_page.heading")), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(withdrawalConfirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.withdrawal.confirm_page.heading"))}",
+    userLoggedIn = true) {
 
     @backLink(backUrl = controllers.routes.WithdrawalController.showWithdrawalReasons.toString)
 

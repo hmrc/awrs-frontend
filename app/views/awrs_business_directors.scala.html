@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import views.ViewUtils._
 
 @this(formWithCSRF: FormWithCSRF,
         awrsMain: main,
@@ -240,7 +241,9 @@
 
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", h1text), userLoggedIn = true){
+@awrsMain(
+    title = s"${errorPrefix(businessDirectorsForm)} ${messages("awrs.generic.tab.title", h1text)}",
+    userLoggedIn = true){
 
         @backLinkHelper(BackLinkParams(
             sectionName = businessDirectorsName

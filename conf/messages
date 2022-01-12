@@ -1,6 +1,7 @@
 # Generic messages
 #============================================================
 service.name=Register as an alcohol wholesaler or producer
+error.browser.title.prefix = Error:
 
 # Buttons & links
 #============================================================

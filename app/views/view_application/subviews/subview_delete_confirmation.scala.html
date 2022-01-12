@@ -24,6 +24,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils._
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -43,7 +44,9 @@
     }
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.delete.confirmation_heading", messages(headingParameter))), userLoggedIn = true) {
+@awrsMain(
+    title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.delete.confirmation_heading", messages(headingParameter)))}",
+    userLoggedIn = true) {
 @backLink(backUrl = controllers.routes.ViewApplicationController.viewSection(data match {
         case s : Supplier => suppliersName
         case p : AdditionalBusinessPremises => additionalBusinessPremisesName
