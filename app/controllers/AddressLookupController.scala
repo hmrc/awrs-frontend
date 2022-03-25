@@ -103,6 +103,8 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
 
   def auditAddress(): Action[AnyContent] = Action.async {
     implicit request =>
+      logger.info("[auditAddress] Attemping to auth for auditing address")
+
       authorisedAction { _ =>
 
         val addressToAudit = request.body.asJson match {
@@ -110,9 +112,13 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
           case None => AddressAudits(addressAudits = List())
         }
 
+        logger.info(s"[auditAddress] Auditing ${addressToAudit.addressAudits.size} addresses")
+
         addressToAudit.addressAudits.foreach {
           toAudit: AddressAudit =>
             lazy val uprn = Map(("uprn", toAudit.uprn.fold("")(x => x)))
+
+            logger.info(s"[auditAddress] Auditing ${toAudit.eventType} address")
 
             toAudit.eventType match {
               case Some(`postcodeAddressSubmitted`) =>
@@ -128,6 +134,9 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
               case _ =>
             }
         }
+
+        logger.info(s"[auditAddress] Audited addresses, sending 200")
+
         Future.successful(Ok)
       }
   }
