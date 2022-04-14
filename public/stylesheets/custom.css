@@ -39,13 +39,19 @@ font-size: 24px;
 }
 
 .postcode-lookup {
-    top: 6px;
+    top: 20px;
     display: none;
-    margin: 0 0 0 10px;
     box-shadow: 0 2px 0 #6F777B;
     color: #000;
-    height: 23px;
+
 }
+
+#postcode-lookup-button-0, #postcode-lookup-button-1, #postcode-lookup-button-2 {
+  display: block;
+  max-width: 23ex;
+  margin-bottom: 10px
+}
+
 
 .address-container .font-small {
     display: none;
@@ -65,6 +71,7 @@ font-size: 24px;
 }
 
 .postcode-lookup:hover, .postcode-lookup:focus, .postcode-lookup-color-change {
+    top: 20px;
     background-color: #00823b;
     box-shadow: 0 2px 0 #003518;
     color: #fff;
@@ -72,8 +79,8 @@ font-size: 24px;
 
 .loading {
     display: none;
-    margin-top: 10px;
-    padding: 5px 0 0 39px;
+    margin-top: 30px;
+    padding: 5px 0 10px 39px;
     background: url("/alcohol-wholesale-scheme/assets/images/loading.gif") no-repeat;
 }
 
