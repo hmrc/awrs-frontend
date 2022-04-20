@@ -122,14 +122,14 @@
     )(implicitly, formInstance = businessDirectorsForm)
 }
 
-@tradingName = {
+@tradingNameInput = {
     @govukInput(Input(
         label = Label(
             content = Text(messages("awrs.generic.trading_name")),
             classes = "govuk-label"
         ),
         attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
-    ).withFormField(businessDirectorsForm("companyNames.tradingName"))
+        ).withFormField(businessDirectorsForm("companyNames.tradingName"))
     )
 }
 
@@ -149,28 +149,19 @@
         )),
         items = Seq(
             RadioItem(
-                id = Some("companyNames.doYouHaveTradingName-yes"),
                 content = Text(Messages("awrs.generic.yes")),
                 value = Some("Yes"),
+                conditionalHtml = Some(tradingNameInput),
+                id = Some("trading-yes")
             ),
             RadioItem(
-                id = Some("companyNames.doYouHaveTradingName-no"),
                 content = Text(Messages("awrs.generic.no")),
-                value = Some("No")
+                value = Some("No"),
+                id = Some("trading-no")
             )
         )
     ).withFormField(businessDirectorsForm("companyNames.doYouHaveTradingName"))
 )
-<div id="companyNames.doYouHaveTradingName-yes-content" class="govuk-form-group">
-@govukInput(Input(
-    label = Label(
-        content = Text(messages("awrs.generic.trading_name")),
-        classes = "govuk-label"
-    ),
-    attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
-).withFormField(businessDirectorsForm("companyNames.tradingName"))
-)
-</div>
 }
 
 @personOrCompanySection = {

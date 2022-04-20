@@ -185,12 +185,12 @@
                                 RadioItem(
                                     content = Text(messages("awrs.generic.yes")),
                                     value = Some("Yes"),
-                                    id = "contactAddressSame-yes"
+                                    id = Some("contactAddressSame-yes")
                                 ),
                                 RadioItem(
                                     content = Text(messages("awrs.generic.no")),
                                     value = Some("No"),
-                                    id = "contactAddressSame-no"
+                                    id = Some("contactAddressSame-no")
                                 )
                             )
                         ).withFormField(businessContactsForm("contactAddressSame"))

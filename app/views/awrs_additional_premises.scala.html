@@ -108,12 +108,12 @@ govukErrorSummary: GovukErrorSummary)
                                         RadioItem(
                                             content = Text(Messages("awrs.generic.yes")),
                                             value = Some("Yes"),
-                                            id = "additionalPremises-yes"
+                                            id = Some("additionalPremises-yes")
                                         ),
                                         RadioItem(
                                              content = Text(Messages("awrs.generic.no")),
                                              value = Some("No"),
-                                             id = "additionalPremises-no"
+                                             id = Some("additionalPremises-no")
                                         )
                                     )
                                 ).withFormField(businessPremisesForm("additionalPremises"))
