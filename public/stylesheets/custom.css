@@ -48,7 +48,7 @@ font-size: 24px;
 
 #postcode-lookup-button-0, #postcode-lookup-button-1, #postcode-lookup-button-2 {
   display: block;
-  max-width: 23ex;
+  max-width: 15ex;
   margin-bottom: 10px
 }
 
