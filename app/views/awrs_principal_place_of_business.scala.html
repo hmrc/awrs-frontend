@@ -141,12 +141,12 @@ Messages("awrs.generic.principal.postcode", "Previous principal")
                                 RadioItem(
                                     content = Text(messages("awrs.generic.yes")),
                                     value = Some("Yes"),
-                                    id = "placeOfBusinessLast3Years-yes"
+                                    id = Some("placeOfBusinessLast3Years-yes")
                                 ),
                                 RadioItem(
                                     content = Text(messages("awrs.generic.no")),
                                     value = Some("No"),
-                                    id = "placeOfBusinessLast3Years-no"
+                                    id = Some("placeOfBusinessLast3Years-no")
                                 )
                             )
                         ).withFormField(placeOfBusinessForm("placeOfBusinessLast3Years"))

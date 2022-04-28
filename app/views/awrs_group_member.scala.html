@@ -76,8 +76,8 @@ if(accountUtils.hasAwrs(enrolments)) {
 @pageHeading = @{
     messages("awrs.group_member.top_heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about", isNewRecord = isNewRecord)), ordinalSuffix)
 }
-<!--TODO-->
-@conditionalHtml = {
+
+@tradingNameInput = {
     @govukInput(
         Input(
             label = Label(
@@ -134,12 +134,13 @@ if(accountUtils.hasAwrs(enrolments)) {
                         RadioItem(
                             content = Text(messages("awrs.generic.yes")),
                             value = Some("Yes"),
-                            id = "companyNames.doYouHaveTradingName-yes"
+                            conditionalHtml = Some(tradingNameInput),
+                            id = Some("trading-yes")
                         ),
                         RadioItem(
                             content = Text(messages("awrs.generic.no")),
                             value = Some("No"),
-                            id = "companyNames.doYouHaveTradingName-no"
+                            id = Some("trading-no")
                         )
                     )
                 ).withFormField(groupMemberForm("companyNames.doYouHaveTradingName"))
