@@ -57,11 +57,15 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
     enrolments.exists(_.key == "HMRC-AWRS-ORG")
   }
 
-  def getAwrsRefNo(enrolments: Set[Enrolment]): String = {
-    val refno: Option[String] = enrolments.collectFirst {
+  def lookupAwrsRefNo(enrolments: Set[Enrolment]): Option[String] =
+    enrolments.collectFirst {
       case enrolment if enrolment.key == "HMRC-AWRS-ORG" => enrolment.identifiers.find(_.key == "AWRSRefNumber").get.value
     }
 
-    refno.get
-  }
+  def getAwrsRefNo(enrolments: Set[Enrolment]): String =
+    lookupAwrsRefNo(enrolments).fold({
+      logger.warn(s"Missing AwrsRefNo within list of enrolements $enrolments")
+      ""
+    })(v => v)
+
 }

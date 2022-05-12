@@ -82,282 +82,174 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
     !indexViewModel.sectionModels.forall(_.status.equals(SectionNotStarted))
 
 
-  def isLegalEntityNone(cache: Option[BusinessRegistrationDetails]): Boolean = {
-    try {
-      cache.get.legalEntity.isEmpty
-    }
-    catch {
-      case _: Throwable =>
-        false
-    }
-  }
+  def isLegalEntityNone(cache: Option[BusinessRegistrationDetails]): Boolean = cache.fold(false)(_.legalEntity.isEmpty)
 
-  def isMainPlaceOfBusinessNone(cache: Option[PlaceOfBusiness]): Boolean = {
-    try {
-      cache.get.mainPlaceOfBusiness.isEmpty
-    }
-    catch {
-      case _: Throwable =>
-        false
-    }
-  }
+  def isMainPlaceOfBusinessNone(cache: Option[PlaceOfBusiness]): Boolean = cache.fold(false)(_.mainPlaceOfBusiness.isEmpty)
 
-  def isContactFirstNameNone(cache: Option[BusinessContacts]): Boolean = {
-    try {
-      cache.get.contactFirstName.isEmpty
-    }
-    catch {
-      case _: Throwable =>
-        false
-    }
-  }
-
+  def isContactFirstNameNone(cache: Option[BusinessContacts]): Boolean = cache.fold(false)(_.contactFirstName.isEmpty)
 
   def getStatus(cacheMap: Option[CacheMap], businessType: String, authRetrievals: StandardAuthRetrievals)
                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
 
-    applicationService.getApi5ChangeIndicators(cacheMap, authRetrievals) map {
-      changeIndicators =>
-        val someBusinessType = Some(businessType)
-        val cache = cacheMap.get
+    def foldOverOption[A,B](default:B)(cm: Option[A], block: A => B): B = cm.fold[B](default)(block)
+    val indexStatus = foldOverOption[CacheMap, view_models.IndexStatus](SectionNotStarted) _
+    def href(cm: Option[CacheMap], noDataUrl: String, block: CacheMap => String): String = cm.fold(noDataUrl)(block)
 
-        val businessDetailsStatus = cacheMap match {
-          case Some(cache) => (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
+    applicationService.getApi5ChangeIndicators(cacheMap, authRetrievals) map { changeIndicators =>
+
+        val businessDetailsStatus = indexStatus(cacheMap, {cache =>
+          (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
             case (Some(bnd), Some(gtsd)) => if (changeIndicators.businessDetailsChanged) {
               SectionEdited
             } else {
-              if (bnd.doYouHaveTradingName.isDefined && isNewAWBusinessAnswered(gtsd.invertedBeforeMarch2016Question)) {
-                SectionComplete
-              } else {
-                SectionIncomplete
-              }
+              if (bnd.doYouHaveTradingName.isDefined && isNewAWBusinessAnswered(gtsd.invertedBeforeMarch2016Question)) SectionComplete else SectionIncomplete
             }
             case _ => SectionNotStarted
           }
-          case _ => SectionNotStarted
-        }
+        })
 
-        val businessRegistrationDetailsStatus = cacheMap match {
-          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
+        val businessRegistrationDetailsStatus = indexStatus(cacheMap, {cache =>
+          (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
             case (Some(businessRegistrationDetails), false) => if (changeIndicators.businessRegistrationDetailsChanged) {
               SectionEdited
             } else {
-              if (displayCompleteForBusinessType(businessRegistrationDetails, someBusinessType)) {
-                SectionComplete
-              } else {
-                SectionIncomplete
-              }
+              if (displayCompleteForBusinessType(businessRegistrationDetails, Some(businessType))) SectionComplete else SectionIncomplete
             }
             case (_, _) => SectionNotStarted
           }
-          case _ => SectionNotStarted
-        }
+        })
 
-        val businessDetailsHref = cacheMap match {
-          case Some(cache) => (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
-            case (Some(bnd), Some(td)) =>
-              controllers.routes.ViewApplicationController.viewSection(businessDetailsName).url
+        val businessDetailsHref = href(cacheMap, controllers.routes.TradingNameController.showTradingName(true).url, cache =>
+          (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
+            case (Some(_), Some(td)) => controllers.routes.ViewApplicationController.viewSection(businessDetailsName).url
             case _ => controllers.routes.TradingNameController.showTradingName(true).url
           }
-          case _ => controllers.routes.TradingNameController.showTradingName(true).url
-        }
+        )
 
-        val businessRegistrationDetailsHref = cacheMap match {
-          case Some(cache) => (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
+        val businessRegistrationDetailsHref = href(cacheMap, controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url, cache =>
+          (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
             case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(businessRegistrationDetailsName).url
             case (_, _) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url
           }
-          case _ => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url
-        }
+        )
 
-        val businessContactsStatus = cacheMap match {
-          case Some(cache) => (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
-            case (Some(businessContacts), false) => changeIndicators.contactDetailsChanged match {
-              case true => SectionEdited
-              case false => SectionComplete
-            }
+        val businessContactsStatus = indexStatus(cacheMap, cache =>
+          (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
+            case (Some(_), false) => if (changeIndicators.contactDetailsChanged) SectionEdited else SectionComplete
             case (_, _) => SectionNotStarted
           }
-          case _ => SectionNotStarted
-        }
+        )
 
-        val placeOfBusinessStatus = cacheMap match {
-          case Some(cache) => (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
-            case (Some(placeOfBusiness), false) => changeIndicators.businessAddressChanged match {
-              case false => placeOfBusiness.operatingDuration.exists(_.isEmpty) || !placeOfBusiness.mainAddress.get.postcode.exists(_.nonEmpty) match {
-                case true => SectionIncomplete
-                case _ => SectionComplete
-              }
-              case true => SectionEdited
-            }
+        val placeOfBusinessStatus = indexStatus(cacheMap, cache =>
+          (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
+            case (Some(placeOfBusiness), false) =>
+              if (changeIndicators.businessAddressChanged) SectionEdited
+              else if (placeOfBusiness.operatingDuration.exists(_.isEmpty) || !placeOfBusiness.mainAddress.fold(false)(_.postcode.exists(_.nonEmpty)))
+                SectionIncomplete else SectionComplete
             case (_, _) => SectionNotStarted
           }
-          case _ => SectionNotStarted
-        }
+        )
 
-        val businessContactsHref = cacheMap match {
-          case Some(cache) => (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
+        val businessContactsHref = href(cacheMap, controllers.routes.BusinessContactsController.showBusinessContacts(true).url, cache =>
+          (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
             case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(businessContactsName).url
             case (_, _) => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
           }
-          case _ => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
-        }
+        )
 
-        val placeOfBusinessHref = cacheMap match {
-          case Some(cache) => (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
+        val placeOfBusinessHref = href(cacheMap, controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url, cache =>
+          (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
             case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(placeOfBusinessName).url
             case (_, _) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
           }
-          case _ => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
-        }
+        )
 
-        val additionalBusinessPremisesStatus = cacheMap match {
-          case Some(cache) => cache.getAdditionalBusinessPremises.isDefined match {
-            case true => changeIndicators.premisesChanged match {
-              case false => SectionComplete
-              case true => SectionEdited
+        val additionalBusinessPremisesStatus = indexStatus(cacheMap,
+          _.getAdditionalBusinessPremises.fold[view_models.IndexStatus](SectionNotStarted){_ =>
+            if (changeIndicators.premisesChanged) SectionEdited else SectionComplete
+          }
+        )
+
+        val additionalBusinessPremisesHref = href(cacheMap, controllers.routes.AdditionalPremisesController.showPremisePage(1, true, true).url,
+          _.getAdditionalBusinessPremises.fold(controllers.routes.AdditionalPremisesController.showPremisePage(1, true, true).url){_ =>
+            controllers.routes.ViewApplicationController.viewSection(additionalBusinessPremisesName).url
+          }
+        )
+
+        val businessDirectorsHref = href(cacheMap, controllers.routes.BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true).url,
+          _.getBusinessDirectors.fold(controllers.routes.BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true).url){_ =>
+            controllers.routes.ViewApplicationController.viewSection(businessDirectorsName).url
+          }
+        )
+
+        val businessDirectorsStatus = indexStatus(cacheMap,
+          _.getBusinessDirectors.fold[view_models.IndexStatus](SectionNotStarted){
+            _.directors match {
+              // need at least 1 director
+              // this condition can only be reached if they have entered some directors and then deleted them
+              case Nil => SectionIncomplete
+              case _ => if (changeIndicators.coOfficialsChanged) SectionEdited else SectionComplete
             }
-            case _ => SectionNotStarted
           }
-          case _ => SectionNotStarted
-        }
+        )
 
-        val additionalBusinessPremisesHref = cacheMap match {
-          case Some(cache) => cache.getAdditionalBusinessPremises.isDefined match {
-            case true => controllers.routes.ViewApplicationController.viewSection(additionalBusinessPremisesName).url
-            case false => controllers.routes.AdditionalPremisesController.showPremisePage(id = 1, isLinearMode = true, isNewRecord = true).url
+        val tradingActivityStatus = indexStatus(cacheMap,
+          _.getTradingActivity.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.tradingActivityChanged) SectionEdited else SectionComplete)
+        )
+
+        val tradingActivityHref = href(cacheMap, controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url,
+          _.getTradingActivity.fold(controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url){_ =>
+            controllers.routes.ViewApplicationController.viewSection(tradingActivityName).url
           }
-          case _ => controllers.routes.AdditionalPremisesController.showPremisePage(id = 1, isLinearMode = true, isNewRecord = true).url
-        }
+        )
 
-        val businessDirectorsHref = cacheMap match {
-          case Some(cache) => cache.getBusinessDirectors.isDefined match {
-            case true => controllers.routes.ViewApplicationController.viewSection(businessDirectorsName).url
-            case false => controllers.routes.BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true).url
+        val productsHref = href(cacheMap, controllers.routes.ProductsController.showProducts(isLinearMode = true).url,
+          _.getProducts.fold(controllers.routes.ProductsController.showProducts(isLinearMode = true).url){_=>
+            controllers.routes.ViewApplicationController.viewSection(productsName).url
           }
-          case _ => controllers.routes.BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true).url
-        }
+        )
 
-        val businessDirectorsStatus = cacheMap match {
-          case Some(cache) => cache.getBusinessDirectors match {
-            case Some(directors) =>
-              directors.directors match {
-                // need at least 1 director
-                // this condition can only be reached if they have entered some directors and then deleted them
-                case Nil => SectionIncomplete
-                case _ =>
-                  changeIndicators.coOfficialsChanged match {
-                    case true => SectionEdited
-                    case _ => SectionComplete
-                  }
-              }
-            case None => SectionNotStarted
+        val productsStatus = indexStatus(cacheMap,
+          _.getProducts.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.productsChanged) SectionEdited else SectionComplete)
+        )
+
+        val suppliersStatus = indexStatus(cacheMap,
+          _.getSuppliers.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.suppliersChanged) SectionEdited else SectionComplete)
+        )
+
+        val suppliersHref = href(cacheMap, controllers.routes.SupplierAddressesController.showSupplierAddressesPage(1, true, true).url,
+          _.getSuppliers.fold(controllers.routes.SupplierAddressesController.showSupplierAddressesPage(1, true, true).url){_ =>
+            controllers.routes.ViewApplicationController.viewSection(suppliersName).url
           }
-          case _ => SectionNotStarted
-        }
+        )
 
-        val tradingActivityStatus = cacheMap match {
-          case Some(cache) => cache.getTradingActivity match {
-            case Some(_) => changeIndicators.tradingActivityChanged match {
-              case false => SectionComplete
-              case true => SectionEdited
-            }
-            case _ => SectionNotStarted
-          }
-          case _ => SectionNotStarted
-        }
-
-        val tradingActivityHref = cacheMap match {
-          case Some(cache) => cache.getTradingActivity match {
-            case Some(_) => controllers.routes.ViewApplicationController.viewSection(tradingActivityName).url
-            case _ => controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url
-          }
-          case _ => controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url
-        }
-
-        val productsHref = cacheMap match {
-          case Some(cache) => cache.getProducts match {
-            case Some(_) => controllers.routes.ViewApplicationController.viewSection(productsName).url
-            case _ => controllers.routes.ProductsController.showProducts(isLinearMode = true).url
-          }
-          case _ => controllers.routes.ProductsController.showProducts(isLinearMode = true).url
-        }
-
-        val productsStatus = cacheMap match {
-          case Some(cache) => cache.getProducts match {
-            case Some(_) => changeIndicators.productsChanged match {
-              case false => SectionComplete
-              case true => SectionEdited
-            }
-            case _ => SectionNotStarted
-          }
-          case _ => SectionNotStarted
-        }
-
-        val suppliersStatus = cacheMap match {
-          case Some(cache) => cache.getSuppliers match {
-            case Some(_) => changeIndicators.suppliersChanged match {
-              case false => SectionComplete
-              case true => SectionEdited
-            }
-            case _ => SectionNotStarted
-          }
-          case _ => SectionNotStarted
-        }
-
-        val suppliersHref = cacheMap match {
-          case Some(cache) => cache.getSuppliers match {
-            case Some(_) => controllers.routes.ViewApplicationController.viewSection(suppliersName).url
-            case _ => controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id = 1, isLinearMode = true, isNewRecord = true).url
-          }
-          case _ => controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id = 1, isLinearMode = true, isNewRecord = true).url
-        }
-
-        val businessPartnersStatus = cacheMap match {
-          case Some(cache) => cache.getPartners match {
+        val businessPartnersStatus = indexStatus(cacheMap,
+          _.getPartners.fold[view_models.IndexStatus](SectionNotStarted){partnerDetails =>
             // Defensive coding for old LLP applications that didn't used to have partners on them
             // must have at least 2 partners
-            case Some(partnerDetails) if partnerDetails.partners.size > 1 =>
-              changeIndicators.partnersChanged match {
-                case true => SectionEdited
-                case _ => SectionComplete
-              }
-            case Some(_) => SectionIncomplete
-            case None => SectionNotStarted
+            if (partnerDetails.partners.size > 1){
+              if (changeIndicators.partnersChanged) SectionEdited else SectionComplete
+            } else SectionIncomplete
           }
-          case _ => SectionNotStarted
-        }
+        )
 
-        val groupMembersStatus = cacheMap match {
-          case Some(cache) => cache.getGroupMembers.isDefined match {
-            // must have at least 1 entry
-            case true => cache.getGroupMembers.get.members.nonEmpty match {
-              case true => changeIndicators.groupMembersChanged match {
-                case true => SectionEdited
-                case _ => SectionComplete
-              }
-              case false => SectionIncomplete
-            }
-            case _ => SectionNotStarted
+        val groupMembersStatus = indexStatus(cacheMap,
+          _.getGroupMembers.fold[view_models.IndexStatus](SectionNotStarted){ gm =>
+            if (gm.members.nonEmpty) {if (changeIndicators.groupMembersChanged) SectionEdited else SectionComplete} else SectionIncomplete
           }
-          case _ => SectionNotStarted
-        }
+        )
 
-        val businessPartnersHref = cacheMap match {
-          case Some(cache) => cache.getPartners match {
-            case Some(_) => controllers.routes.ViewApplicationController.viewSection(partnersName).url
-            case _ => controllers.routes.BusinessPartnersController.showPartnerMemberDetails(id = 1, isLinearMode = true, isNewRecord = true).url
-          }
-          case _ => controllers.routes.BusinessPartnersController.showPartnerMemberDetails(id = 1, isLinearMode = true, isNewRecord = true).url
-        }
+        val businessPartnersHref = href(cacheMap, controllers.routes.BusinessPartnersController.showPartnerMemberDetails(1, true, true).url,
+          _.getPartners.fold(controllers.routes.BusinessPartnersController.showPartnerMemberDetails(1, true, true).url)(_ =>
+            controllers.routes.ViewApplicationController.viewSection(partnersName).url
+          )
+        )
 
-        val groupMembersHref = cacheMap match {
-          case Some(cache) => cache.getGroupMembers match {
-            case Some(_) => controllers.routes.ViewApplicationController.viewSection(groupMembersName).url
-            case _ => controllers.routes.GroupMemberController.showMemberDetails(id = 1, isLinearMode = true, isNewRecord = true).url
-          }
-          case _ => controllers.routes.GroupMemberController.showMemberDetails(id = 1, isLinearMode = true, isNewRecord = true).url
-        }
+        val groupMembersHref = href(cacheMap, controllers.routes.GroupMemberController.showMemberDetails(1, true, true).url,
+          _.getGroupMembers.fold(controllers.routes.GroupMemberController.showMemberDetails(1, true, true).url)(_ =>
+            controllers.routes.ViewApplicationController.viewSection(groupMembersName).url
+          )
+        )
 
         val (id, busTypeInMsg): (String, String) = businessType match {
           case "SOP" | "LTD" => ("business", "business")
@@ -381,11 +273,11 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
 
         val additionalPremisesSection = SectionModel(
           "additionalPremises", additionalBusinessPremisesHref, "awrs.index_page.additional_premises_text", additionalBusinessPremisesStatus,
-          size = cache.getAdditionalBusinessPremises.getOrElseSize
+          size = cacheMap.fold[Option[Int]](None)(_.getAdditionalBusinessPremises.getOrElseSize)
         )
         val businessDirectorsSection = SectionModel(
           "directorsAndCompanySecretaries", businessDirectorsHref, "awrs.index_page.business_directors.index_text", businessDirectorsStatus,
-          size = cache.getBusinessDirectors.getOrElseSize
+          size = cacheMap.fold[Option[Int]](None)(_.getBusinessDirectors.getOrElseSize)
         )
         val tradingActivity = SectionModel(
           "tradingActivity", tradingActivityHref, "awrs.index_page.trading_activity_text", tradingActivityStatus
@@ -395,15 +287,15 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
         )
         val suppliersSection = SectionModel(
           "aboutYourSuppliers", suppliersHref, "awrs.index_page.suppliers_text", suppliersStatus,
-          size = cache.getSuppliers.getOrElseSize
+          size = cacheMap.fold[Option[Int]](None)(_.getSuppliers.getOrElseSize)
         )
         val businessPartnersSection = SectionModel(
           "businessPartners", businessPartnersHref, "awrs.index_page.business_partners_text", businessPartnersStatus,
-          size = cache.getPartners.getOrElseSize
+          size = cacheMap.fold[Option[Int]](None)(_.getPartners.getOrElseSize)
         )
         val groupMemberDetailsSection = SectionModel(
           "groupMembers", groupMembersHref, "awrs.index_page.group_member_details_text", groupMembersStatus,
-          size = cache.getGroupMembers.getOrElseSize match {
+          size = cacheMap.fold[Option[Int]](None)(_.getGroupMembers.getOrElseSize) match {
             case Some(x) if accountUtils.hasAwrs(authRetrievals.enrolments) => Some(x - 1)
             case Some(x) => Some(x)
             case _ => Some(0)
@@ -429,10 +321,8 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
 
   }
 
-  def displayCompleteForBusinessType(businessRegistrationDetails: BusinessRegistrationDetails, legalEntity: Option[String]): Boolean = legalEntity match {
-    case Some(legal) => businessRegistrationDetails.legalEntity.isDefined && isSameEntityIdCategory(businessRegistrationDetails.legalEntity.get, legal)
-    case _ => false
-  }
+  def displayCompleteForBusinessType(businessRegistrationDetails: BusinessRegistrationDetails, legalEntity: Option[String]): Boolean =
+    legalEntity.fold(false)(legal => businessRegistrationDetails.legalEntity.fold(false)(breLegal => isSameEntityIdCategory(breLegal, legal)))
 
   def isNewAWBusinessAnswered(businessDetails: NewAWBusiness): Boolean =
       businessDetails.newAWBusiness match {

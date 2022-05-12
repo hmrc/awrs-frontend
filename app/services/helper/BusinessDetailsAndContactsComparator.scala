@@ -23,13 +23,13 @@ import utils.CacheUtil._
 // change flag categories based on JIRA story AWRS-385
 object BusinessDetailsAndContactsComparator {
 
-  def compare(data: SubscriptionTypeFrontEnd, cached: Option[CacheMap]): (Boolean, Boolean, Boolean, Boolean) = {
+  def compare(data: SubscriptionTypeFrontEnd, cached: CacheMap): (Boolean, Boolean, Boolean, Boolean) = {
 
-    val businessNameDetails = cached.get.getBusinessNameDetails
-    val tradingNameDetails = cached.get.getTradingStartDetails
-    val businessRegistrationDetails = cached.get.getBusinessRegistrationDetails
-    val businessContacts = cached.get.getBusinessContacts
-    val placeOfBusiness = cached.get.getPlaceOfBusiness
+    val businessNameDetails = cached.getBusinessNameDetails
+    val tradingNameDetails = cached.getTradingStartDetails
+    val businessRegistrationDetails = cached.getBusinessRegistrationDetails
+    val businessContacts = cached.getBusinessContacts
+    val placeOfBusiness = cached.getPlaceOfBusiness
 
     val corporateSessionCacheBusinessDetChangeData = data.businessDetails.map(corBusDetails => (corBusDetails.tradingName, corBusDetails.newAWBusiness))
 
@@ -57,8 +57,8 @@ object BusinessDetailsAndContactsComparator {
     val corporateTempCacheContactDetChangeData = businessContacts.map(corBusDetails => (corBusDetails.contactFirstName,
       corBusDetails.contactLastName, corBusDetails.telephone, corBusDetails.email, corBusDetails.contactAddress))
 
-    val businessName = cached.get.getBusinessCustomerDetails.get.businessName
-    val businessType = cached.get.getBusinessType.get.legalEntity
+    val businessName = cached.getBusinessCustomerDetails.map(_.businessName).getOrElse("")
+    val businessType = cached.getBusinessType.map(_.legalEntity).getOrElse("")
     val businessNameChanged: Boolean = if (data.businessPartnerName.isDefined) !data.businessPartnerName.get.equals(businessName) else false
     val BusinessDetChangeData: Boolean = (corporateSessionCacheBusinessDetChangeData.equals(corporateTempCacheBusinessDetChangeData), businessNameChanged) match {
       case (true, false) => false
