@@ -91,13 +91,12 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
   def getStatus(cacheMap: Option[CacheMap], businessType: String, authRetrievals: StandardAuthRetrievals)
                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
 
-    def foldOverOption[A,B](default:B)(cm: Option[A], block: A => B): B = cm.fold[B](default)(block)
-    val indexStatus = foldOverOption[CacheMap, view_models.IndexStatus](SectionNotStarted) _
+    val sectionStatus = foldOverOption[CacheMap, view_models.IndexStatus](SectionNotStarted) _
     def href(cm: Option[CacheMap], noDataUrl: String, block: CacheMap => String): String = cm.fold(noDataUrl)(block)
 
     applicationService.getApi5ChangeIndicators(cacheMap, authRetrievals) map { changeIndicators =>
 
-        val businessDetailsStatus = indexStatus(cacheMap, {cache =>
+        val businessDetailsStatus = sectionStatus(cacheMap, {cache =>
           (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
             case (Some(bnd), Some(gtsd)) => if (changeIndicators.businessDetailsChanged) {
               SectionEdited
@@ -108,7 +107,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         })
 
-        val businessRegistrationDetailsStatus = indexStatus(cacheMap, {cache =>
+        val businessRegistrationDetailsStatus = sectionStatus(cacheMap, {cache =>
           (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
             case (Some(businessRegistrationDetails), false) => if (changeIndicators.businessRegistrationDetailsChanged) {
               SectionEdited
@@ -133,14 +132,14 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val businessContactsStatus = indexStatus(cacheMap, cache =>
+        val businessContactsStatus = sectionStatus(cacheMap, cache =>
           (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
             case (Some(_), false) => if (changeIndicators.contactDetailsChanged) SectionEdited else SectionComplete
             case (_, _) => SectionNotStarted
           }
         )
 
-        val placeOfBusinessStatus = indexStatus(cacheMap, cache =>
+        val placeOfBusinessStatus = sectionStatus(cacheMap, cache =>
           (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
             case (Some(placeOfBusiness), false) =>
               if (changeIndicators.businessAddressChanged) SectionEdited
@@ -164,7 +163,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val additionalBusinessPremisesStatus = indexStatus(cacheMap,
+        val additionalBusinessPremisesStatus = sectionStatus(cacheMap,
           _.getAdditionalBusinessPremises.fold[view_models.IndexStatus](SectionNotStarted){_ =>
             if (changeIndicators.premisesChanged) SectionEdited else SectionComplete
           }
@@ -182,7 +181,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val businessDirectorsStatus = indexStatus(cacheMap,
+        val businessDirectorsStatus = sectionStatus(cacheMap,
           _.getBusinessDirectors.fold[view_models.IndexStatus](SectionNotStarted){
             _.directors match {
               // need at least 1 director
@@ -193,7 +192,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val tradingActivityStatus = indexStatus(cacheMap,
+        val tradingActivityStatus = sectionStatus(cacheMap,
           _.getTradingActivity.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.tradingActivityChanged) SectionEdited else SectionComplete)
         )
 
@@ -209,11 +208,11 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val productsStatus = indexStatus(cacheMap,
+        val productsStatus = sectionStatus(cacheMap,
           _.getProducts.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.productsChanged) SectionEdited else SectionComplete)
         )
 
-        val suppliersStatus = indexStatus(cacheMap,
+        val suppliersStatus = sectionStatus(cacheMap,
           _.getSuppliers.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.suppliersChanged) SectionEdited else SectionComplete)
         )
 
@@ -223,7 +222,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val businessPartnersStatus = indexStatus(cacheMap,
+        val businessPartnersStatus = sectionStatus(cacheMap,
           _.getPartners.fold[view_models.IndexStatus](SectionNotStarted){partnerDetails =>
             // Defensive coding for old LLP applications that didn't used to have partners on them
             // must have at least 2 partners
@@ -233,7 +232,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val groupMembersStatus = indexStatus(cacheMap,
+        val groupMembersStatus = sectionStatus(cacheMap,
           _.getGroupMembers.fold[view_models.IndexStatus](SectionNotStarted){ gm =>
             if (gm.members.nonEmpty) {if (changeIndicators.groupMembersChanged) SectionEdited else SectionComplete} else SectionIncomplete
           }
