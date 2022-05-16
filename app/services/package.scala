@@ -15,5 +15,7 @@
  */
 
 package object services {
-  def foldOverOption[A,B](default:B)(cm: Option[A], block: A => B): B = cm.fold[B](default)(block)  
+  def foldOverOptionWithDefault[A,B](default:B)(cm: Option[A], block: A => B): B = cm.fold[B](default)(block)
+  def existsAndHasValue(s: Option[String]): Boolean = s.fold(false)(_.nonEmpty)
+  def existsAndHasNoValue(s: Option[String]): Boolean = s.fold(false)(_.isEmpty)
 }

@@ -17,6 +17,7 @@
 package services
 
 import _root_.models._
+import play.api.mvc.Call
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
 import forms.AWRSEnums.BooleanRadioEnum
@@ -48,29 +49,25 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
         case size@_ => size
       }
 
-    def getOrElseSize: Option[Int] = {
-      option match {
-        case Some(dataType) => Some(dataType match {
-          case d: BusinessDirectors => d.directors.size
-          case g: GroupMembers => g.members.size
-          case a: AdditionalBusinessPremisesList =>
-            // for additional premises if they answered no to having any additional premises then we also do not
-            // want to display (0)
-            val p = a.premises
-            isAnswered(p.size, p.head.additionalPremises)
-          case s: Suppliers =>
-            // for suppliers if they answered no to having any suppliers then we also do not want to display (0)
-            val sup = s.suppliers
-            isAnswered(sup.size, sup.head.alcoholSuppliers)
-          case p: Partners => p.partners.size
-          case _ => throw new RuntimeException("unsupported type for getOrElseSize")
-        })
-        case None => None
-      }
-    } match {
-      case Some(0) => None
-      case x@_ => x
+    def getOrElseSize: Option[Int] = option.map{
+      case d: BusinessDirectors => d.directors.size
+      case g: GroupMembers => g.members.size
+      case a: AdditionalBusinessPremisesList =>
+        // for additional premises if they answered no to having any additional premises then we also do not
+        // want to display (0)
+        val p = a.premises
+        isAnswered(p.size, p.head.additionalPremises)
+      case s: Suppliers =>
+        // for suppliers if they answered no to having any suppliers then we also do not want to display (0)
+        val sup = s.suppliers
+        isAnswered(sup.size, sup.head.alcoholSuppliers)
+      case p: Partners => p.partners.size
+      case _ => throw new RuntimeException("unsupported type for getOrElseSize")
+    }.flatMap{
+      case 0 => None
+      case x => Some(x)
     }
+
   }
 
   def showContinueButton(indexViewModel: IndexViewModel): Boolean = {
@@ -91,8 +88,10 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
   def getStatus(cacheMap: Option[CacheMap], businessType: String, authRetrievals: StandardAuthRetrievals)
                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
 
-    val sectionStatus = foldOverOption[CacheMap, view_models.IndexStatus](SectionNotStarted) _
-    def href(cm: Option[CacheMap], noDataUrl: String, block: CacheMap => String): String = cm.fold(noDataUrl)(block)
+    val sectionStatus = foldOverOptionWithDefault[CacheMap, view_models.IndexStatus](SectionNotStarted) _
+    def sectionHref(cm: Option[CacheMap], noData: Call, block: CacheMap => Call): String = (cm.fold(noData)(block)).url
+
+    import controllers.routes._
 
     applicationService.getApi5ChangeIndicators(cacheMap, authRetrievals) map { changeIndicators =>
 
@@ -118,17 +117,17 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         })
 
-        val businessDetailsHref = href(cacheMap, controllers.routes.TradingNameController.showTradingName(true).url, cache =>
+        val businessDetailsHref = sectionHref(cacheMap, TradingNameController.showTradingName(true), cache =>
           (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
-            case (Some(_), Some(td)) => controllers.routes.ViewApplicationController.viewSection(businessDetailsName).url
-            case _ => controllers.routes.TradingNameController.showTradingName(true).url
+            case (Some(_), Some(td)) => ViewApplicationController.viewSection(businessDetailsName)
+            case _ => TradingNameController.showTradingName(true)
           }
         )
 
-        val businessRegistrationDetailsHref = href(cacheMap, controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url, cache =>
+        val businessRegistrationDetailsHref = sectionHref(cacheMap, BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true), cache =>
           (cache.getBusinessRegistrationDetails, isLegalEntityNone(cache.getBusinessRegistrationDetails)) match {
-            case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(businessRegistrationDetailsName).url
-            case (_, _) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true).url
+            case (Some(_), false) => ViewApplicationController.viewSection(businessRegistrationDetailsName)
+            case (_, _) => BusinessRegistrationDetailsController.showBusinessRegistrationDetails(true)
           }
         )
 
@@ -141,25 +140,24 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
 
         val placeOfBusinessStatus = sectionStatus(cacheMap, cache =>
           (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
-            case (Some(placeOfBusiness), false) =>
-              if (changeIndicators.businessAddressChanged) SectionEdited
-              else if (placeOfBusiness.operatingDuration.exists(_.isEmpty) || !placeOfBusiness.mainAddress.fold(false)(_.postcode.exists(_.nonEmpty)))
-                SectionIncomplete else SectionComplete
+            case (Some(placeOfBusiness), false) => if (changeIndicators.businessAddressChanged) SectionEdited
+              else if (existsAndHasNoValue(placeOfBusiness.operatingDuration) ||
+                       !placeOfBusiness.mainAddress.fold(false)(addr => existsAndHasValue(addr.postcode))) SectionIncomplete else SectionComplete
             case (_, _) => SectionNotStarted
           }
         )
 
-        val businessContactsHref = href(cacheMap, controllers.routes.BusinessContactsController.showBusinessContacts(true).url, cache =>
+        val businessContactsHref = sectionHref(cacheMap, BusinessContactsController.showBusinessContacts(true), cache =>
           (cache.getBusinessContacts, isContactFirstNameNone(cache.getBusinessContacts)) match {
-            case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(businessContactsName).url
-            case (_, _) => controllers.routes.BusinessContactsController.showBusinessContacts(true).url
+            case (Some(_), false) => ViewApplicationController.viewSection(businessContactsName)
+            case (_, _) => BusinessContactsController.showBusinessContacts(true)
           }
         )
 
-        val placeOfBusinessHref = href(cacheMap, controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url, cache =>
+        val placeOfBusinessHref = sectionHref(cacheMap, PlaceOfBusinessController.showPlaceOfBusiness(true), cache =>
           (cache.getPlaceOfBusiness, isMainPlaceOfBusinessNone(cache.getPlaceOfBusiness)) match {
-            case (Some(_), false) => controllers.routes.ViewApplicationController.viewSection(placeOfBusinessName).url
-            case (_, _) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(true).url
+            case (Some(_), false) => ViewApplicationController.viewSection(placeOfBusinessName)
+            case (_, _) => PlaceOfBusinessController.showPlaceOfBusiness(true)
           }
         )
 
@@ -169,15 +167,15 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val additionalBusinessPremisesHref = href(cacheMap, controllers.routes.AdditionalPremisesController.showPremisePage(1, true, true).url,
-          _.getAdditionalBusinessPremises.fold(controllers.routes.AdditionalPremisesController.showPremisePage(1, true, true).url){_ =>
-            controllers.routes.ViewApplicationController.viewSection(additionalBusinessPremisesName).url
+        val additionalBusinessPremisesHref = sectionHref(cacheMap, AdditionalPremisesController.showPremisePage(1, true, true),
+          _.getAdditionalBusinessPremises.fold(AdditionalPremisesController.showPremisePage(1, true, true)){_ =>
+            ViewApplicationController.viewSection(additionalBusinessPremisesName)
           }
         )
 
-        val businessDirectorsHref = href(cacheMap, controllers.routes.BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true).url,
-          _.getBusinessDirectors.fold(controllers.routes.BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true).url){_ =>
-            controllers.routes.ViewApplicationController.viewSection(businessDirectorsName).url
+        val businessDirectorsHref = sectionHref(cacheMap, BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true),
+          _.getBusinessDirectors.fold(BusinessDirectorsController.showBusinessDirectors(isLinearMode = true, isNewRecord = true)){_ =>
+            ViewApplicationController.viewSection(businessDirectorsName)
           }
         )
 
@@ -193,18 +191,19 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
         )
 
         val tradingActivityStatus = sectionStatus(cacheMap,
-          _.getTradingActivity.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.tradingActivityChanged) SectionEdited else SectionComplete)
+          _.getTradingActivity.fold[view_models.IndexStatus](SectionNotStarted)(_ =>
+            if (changeIndicators.tradingActivityChanged) SectionEdited else SectionComplete)
         )
 
-        val tradingActivityHref = href(cacheMap, controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url,
-          _.getTradingActivity.fold(controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url){_ =>
-            controllers.routes.ViewApplicationController.viewSection(tradingActivityName).url
+        val tradingActivityHref = sectionHref(cacheMap, TradingActivityController.showTradingActivity(isLinearMode = true),
+          _.getTradingActivity.fold(TradingActivityController.showTradingActivity(isLinearMode = true)){_ =>
+            ViewApplicationController.viewSection(tradingActivityName)
           }
         )
 
-        val productsHref = href(cacheMap, controllers.routes.ProductsController.showProducts(isLinearMode = true).url,
-          _.getProducts.fold(controllers.routes.ProductsController.showProducts(isLinearMode = true).url){_=>
-            controllers.routes.ViewApplicationController.viewSection(productsName).url
+        val productsHref = sectionHref(cacheMap, ProductsController.showProducts(isLinearMode = true),
+          _.getProducts.fold(ProductsController.showProducts(isLinearMode = true)){_=>
+            ViewApplicationController.viewSection(productsName)
           }
         )
 
@@ -216,9 +215,9 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           _.getSuppliers.fold[view_models.IndexStatus](SectionNotStarted)(_ => if (changeIndicators.suppliersChanged) SectionEdited else SectionComplete)
         )
 
-        val suppliersHref = href(cacheMap, controllers.routes.SupplierAddressesController.showSupplierAddressesPage(1, true, true).url,
-          _.getSuppliers.fold(controllers.routes.SupplierAddressesController.showSupplierAddressesPage(1, true, true).url){_ =>
-            controllers.routes.ViewApplicationController.viewSection(suppliersName).url
+        val suppliersHref = sectionHref(cacheMap, SupplierAddressesController.showSupplierAddressesPage(1, true, true),
+          _.getSuppliers.fold(SupplierAddressesController.showSupplierAddressesPage(1, true, true)){_ =>
+            ViewApplicationController.viewSection(suppliersName)
           }
         )
 
@@ -238,16 +237,14 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
           }
         )
 
-        val businessPartnersHref = href(cacheMap, controllers.routes.BusinessPartnersController.showPartnerMemberDetails(1, true, true).url,
-          _.getPartners.fold(controllers.routes.BusinessPartnersController.showPartnerMemberDetails(1, true, true).url)(_ =>
-            controllers.routes.ViewApplicationController.viewSection(partnersName).url
+        val businessPartnersHref = sectionHref(cacheMap, BusinessPartnersController.showPartnerMemberDetails(1, true, true),
+          _.getPartners.fold(BusinessPartnersController.showPartnerMemberDetails(1, true, true))(_ =>
+            ViewApplicationController.viewSection(partnersName)
           )
         )
 
-        val groupMembersHref = href(cacheMap, controllers.routes.GroupMemberController.showMemberDetails(1, true, true).url,
-          _.getGroupMembers.fold(controllers.routes.GroupMemberController.showMemberDetails(1, true, true).url)(_ =>
-            controllers.routes.ViewApplicationController.viewSection(groupMembersName).url
-          )
+        val groupMembersHref = sectionHref(cacheMap, GroupMemberController.showMemberDetails(1, true, true),
+          _.getGroupMembers.fold(GroupMemberController.showMemberDetails(1, true, true))(_ => ViewApplicationController.viewSection(groupMembersName))
         )
 
         val (id, busTypeInMsg): (String, String) = businessType match {
