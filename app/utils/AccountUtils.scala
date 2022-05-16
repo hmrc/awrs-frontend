@@ -58,9 +58,8 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
   }
 
   def lookupAwrsRefNo(enrolments: Set[Enrolment]): Option[String] =
-    enrolments.collectFirst {
-      case enrolment if enrolment.key == "HMRC-AWRS-ORG" => enrolment.identifiers.find(_.key == "AWRSRefNumber").get.value
-    }
+    enrolments.collectFirst{case enrolment if enrolment.key == "HMRC-AWRS-ORG" => enrolment.identifiers}
+              .flatMap(_.find(_.key == "AWRSRefNumber").map(_.value))
 
   def getAwrsRefNo(enrolments: Set[Enrolment]): String =
     lookupAwrsRefNo(enrolments).fold({
