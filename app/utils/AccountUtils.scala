@@ -20,6 +20,7 @@ import audit.Auditable
 import controllers.auth.StandardAuthRetrievals
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
+import uk.gov.hmrc.http.InternalServerException
 
 @Singleton
 class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
@@ -62,9 +63,9 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
               .flatMap(_.find(_.key == "AWRSRefNumber").map(_.value))
 
   def getAwrsRefNo(enrolments: Set[Enrolment]): String =
-    lookupAwrsRefNo(enrolments).fold({
-      logger.warn(s"Missing AwrsRefNo within list of enrolements $enrolments")
-      ""
-    })(v => v)
+    lookupAwrsRefNo(enrolments).getOrElse{
+      logger.error(s"Missing AwrsRefNo within list of enrolements $enrolments, when required")
+      throw new InternalServerException(f"Unable to request data, No AwrsRefNo found.")
+    }
 
 }
