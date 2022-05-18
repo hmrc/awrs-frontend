@@ -57,11 +57,18 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
   def showApplicationDeclaration: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-          save4LaterService.mainStore.fetchApplicationDeclaration(ar) map {
-            case Some(data) => Ok(template(applicationDeclarationForm.form.fill(data), isEnrolledApplicant))
-            case _ => Ok(template(applicationDeclarationForm.form, isEnrolledApplicant))
-          }
+        // Confirm cached application data available
+        save4LaterService.mainStore.fetchAll(ar).flatMap{
+          case Some(_) =>
+            save4LaterService.mainStore.fetchApplicationDeclaration(ar) map {
+              case Some(data) => Ok(template(applicationDeclarationForm.form.fill(data), isEnrolledApplicant))
+              case _ => Ok(template(applicationDeclarationForm.form, isEnrolledApplicant))
+            }
+          case None =>
+            logger.warn(s"Arrived at Application declaration page with no cached application data, possible browser back after application, redirect to logout page")
+            Future.successful(Redirect(routes.ApplicationController.logout))
         }
+      }
     }
   }
 

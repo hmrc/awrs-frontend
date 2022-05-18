@@ -1189,7 +1189,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
               val businessTypeOther = BusinessType(Some(otherData), None, Some(true))
 
               val changeInds = testApplicationService.getChangeIndicators(
-                Some(cachedData(businessTypeOther)),
+                cachedData(businessTypeOther),
                 testSubscriptionTypeFrontEnd(legalEntity = Some(businessTypeData), businessRegistrationDetails = testBusinessRegistrationDetails(legalEntity = data))
               )
 

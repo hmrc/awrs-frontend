@@ -276,7 +276,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
     val businessPartnerName: String = cached.get.getBusinessCustomerDetails.get.businessName
     val businessDirectors = cached.get.getBusinessDirectors
 
-    val newChangeInds = toChangeIndicators(getChangeIndicators(cached, cachedSubscription))
+    val newChangeInds = toChangeIndicators(getChangeIndicators(cached.get, cachedSubscription))
     newChangeInds match {
       case Some(ChangeIndicators(false, false, false, false, false, false, false, false, false, false)) => throw ResubmissionException(ResubmissionException.resubmissionMessage)
       case _ =>
@@ -326,38 +326,41 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
     case _ => None
   }
 
-  def isApplicationDifferent(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Future[Boolean] = {
-    getChangeIndicators(cached, cachedSubscription) match {
-      case Some(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)) => Future.successful(false)
-      case _ => Future.successful(true)
+  def isApplicationDifferent(cachedData: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Future[Boolean] = {
+    cachedData.fold(Future.successful(false)){ cached =>
+      getChangeIndicators(cached, cachedSubscription) match {
+        case Some(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)) => Future.successful(false)
+        case _ => Future.successful(true)
+      }
     }
   }
 
   def getApi5ChangeIndicators(cached: Option[CacheMap], authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SectionChangeIndicators] = {
-    if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
+    if (accountUtils.hasAwrs(authRetrievals.enrolments) && cached.isDefined) {
       for {
         cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
       } yield {
-        getChangeIndicators(cached, cachedSubscription).fold(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false))(x => x)
+        val default = SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false)
+        cached.fold(default)(getChangeIndicators(_, cachedSubscription).fold(default)(x => x))
       }
     } else {
       Future.successful(SectionChangeIndicators(false, false, false, false, false, false, false, false, false, false, false, false))
     }
   }
 
-  def getChangeIndicators(cached: Option[CacheMap], cachedSubscription: Option[SubscriptionTypeFrontEnd]): Option[SectionChangeIndicators] = {
-    val suppliers = cached.get.getSuppliers
-
+  def getChangeIndicators(cached: CacheMap, cachedSubscription: Option[SubscriptionTypeFrontEnd]): Option[SectionChangeIndicators] = {
     info(s" Cached Data from AWRS-FRONTEND Cache*** ")
 
-    val additionalPremises = cached.get.getAdditionalBusinessPremises
-    val partnership = cached.get.getPartners
-    val tradingActivity = cached.get.getTradingActivity
-    val products = cached.get.getProducts
-    val applicationDeclaration = cached.get.getApplicationDeclaration
-    val legalEntity = cached.get.getBusinessType
-    val businessDirectors = cached.get.getBusinessDirectors
-    val groupMemberDetails = cached.get.getGroupMembers
+    val additionalPremises = cached.getAdditionalBusinessPremises
+    val partnership = cached.getPartners
+    val tradingActivity = cached.getTradingActivity
+    val products = cached.getProducts
+    val applicationDeclaration = cached.getApplicationDeclaration
+    val legalEntity = cached.getBusinessType
+
+
+    val businessDirectors = cached.getBusinessDirectors
+    val groupMemberDetails = cached.getGroupMembers
 
     info(s" cachedSubscription Data from AWRS-FRONTEND-API Cache*** ")
 
@@ -380,8 +383,8 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
         false
       }
 
-      val suppliersChanged: Boolean = if (data.suppliers.isDefined) {
-        val suppliersLst = suppliers.get.suppliers
+      val suppliersChanged: Boolean = data.suppliers.fold(false){_ =>
+        val suppliersLst = cached.getSuppliers.get.suppliers
 
         val formAddressSupplier = suppliersLst match {
           case supplierList :: supplierLst => suppliersLst.zipWithIndex.map {
@@ -392,9 +395,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
           case _ => List()
         }
         !data.suppliers.get.suppliers.equals(formAddressSupplier)
-      } else {
-          false
-        }
+      }
 
       val declarationChanged: Boolean = if (data.applicationDeclaration.isDefined) {
         val appDeclaration = applicationDeclaration.map(appDec => appDec.copy(confirmation = None))

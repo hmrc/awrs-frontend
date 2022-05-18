@@ -54,6 +54,8 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       .thenReturn("org/UNUSED")
     when(mockAccountUtils.getAwrsRefNo(any()))
       .thenReturn("0123456")
+    when(mockAccountUtils.lookupAwrsRefNo(any()))
+      .thenReturn(Some("0123456"))
   }
 
   val testAWRSConnector = new AWRSConnector(mockWSHttp, mockAuditable, mockAccountUtils, mockAppConfig)
