@@ -197,40 +197,37 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
   }
 
   def lookupAWRSData(standardAuthRetrievals: StandardAuthRetrievals)
-                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[JsValue] =
-    accountUtils.lookupAwrsRefNo(standardAuthRetrievals.enrolments).fold{
-      err(f"Unable to contact AWRS due to missing AwrsRefNo")
-      throw new InternalServerException(f"Unable to request data, No AwrsRefNo found.")
-    }( awrsRefNo => {
-      val getURL = s"""$serviceURL/awrs/lookup/$awrsRefNo"""
+                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[JsValue] = {
 
-      http.GET(getURL, Seq.empty, Seq.empty) map {
-        response =>
-          response.status match {
-            case 200 =>
-              warn(s"[$auditAPI5TxName - $awrsRefNo ] - Successful return of API5 Response")
-              debug(s"[$auditAPI5TxName - $awrsRefNo ] - Json:\n${response.json}\n")
-              response.json
-            case 404 =>
-              warn(s"[$auditAPI5TxName - $awrsRefNo ] - The remote endpoint has indicated that no data can be found")
-              throw new NotFoundException("The remote endpoint has indicated that no data can be found")
-            case 503 =>
-              warn(s"[$auditAPI5TxName - $awrsRefNo ] - Unsuccessful return of data")
-              throw new ServiceUnavailableException("Dependant systems are currently not responding")
-            case 400 =>
-              warn(s"[$auditAPI5TxName - $awrsRefNo ] - Bad Request \n API5 Response fron DES ##" + response.body)
-              throw new BadRequestException("The Submission has not passed validation")
-            case 500 =>
-              warn(s"[$auditAPI5TxName - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
-              throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
-            case status@_ =>
-              warn(f"[$auditAPI5TxName - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
-              throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
-          }
-      }
+    val awrsRefNo = accountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
+
+    val getURL = s"""$serviceURL/awrs/lookup/$awrsRefNo"""
+
+    http.GET(getURL, Seq.empty, Seq.empty) map {
+      response =>
+        response.status match {
+          case 200 =>
+            warn(s"[$auditAPI5TxName - $awrsRefNo ] - Successful return of API5 Response")
+            debug(s"[$auditAPI5TxName - $awrsRefNo ] - Json:\n${response.json}\n")
+            response.json
+          case 404 =>
+            warn(s"[$auditAPI5TxName - $awrsRefNo ] - The remote endpoint has indicated that no data can be found")
+            throw new NotFoundException("The remote endpoint has indicated that no data can be found")
+          case 503 =>
+            warn(s"[$auditAPI5TxName - $awrsRefNo ] - Unsuccessful return of data")
+            throw new ServiceUnavailableException("Dependant systems are currently not responding")
+          case 400 =>
+            warn(s"[$auditAPI5TxName - $awrsRefNo ] - Bad Request \n API5 Response fron DES ##" + response.body)
+            throw new BadRequestException("The Submission has not passed validation")
+          case 500 =>
+            warn(s"[$auditAPI5TxName - $awrsRefNo ] - WSO2 is currently experiencing problems that require live service intervention")
+            throw new InternalServerException("WSO2 is currently experiencing problems that require live service intervention")
+          case status@_ =>
+            warn(f"[$auditAPI5TxName - $awrsRefNo ] - Unsuccessful return of data. Status code: $status")
+            throw new InternalServerException(f"Unsuccessful return of data. Status code: $status")
+        }
     }
-  )
-
+  }
 
   def checkStatus(standardAuthRetrievals: StandardAuthRetrievals, orgName: String)
                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionStatusType] = {

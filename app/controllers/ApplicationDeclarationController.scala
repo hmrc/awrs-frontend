@@ -57,7 +57,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
   def showApplicationDeclaration: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        // Confirm cached applcation data available
+        // Confirm cached application data available
         save4LaterService.mainStore.fetchAll(ar).flatMap{
           case Some(_) =>
             save4LaterService.mainStore.fetchApplicationDeclaration(ar) map {
