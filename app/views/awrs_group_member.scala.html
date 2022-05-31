@@ -82,7 +82,7 @@ if(accountUtils.hasAwrs(enrolments)) {
         Input(
             label = Label(
                 classes = "govuk-label",
-                content = Text(messages("awrs.generic.trading_name"))
+                content = Text(messages("awrs.generic.trading"))
             ),
             attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
         ).withFormField(groupMemberForm("companyNames.tradingName"))
@@ -122,44 +122,31 @@ if(accountUtils.hasAwrs(enrolments)) {
 
             <div class="govuk-form-group">
                 @govukRadios(
-                Radios(
-                    fieldset = Some(Fieldset(
-                        legend = Some(Legend(
-                            classes = "govuk-fieldset__legend--s",
-                            content = Text(messages("awrs.generic.do_they_have_trading_name"))
+                    Radios(
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                classes = "govuk-fieldset__legend--s",
+                                content = Text(messages("awrs.generic.do_they_have_trading_name"))
+                            )),
+                            attributes = Map("id" ->"companyNames.doYouHaveTradingName_field")
                         )),
-                        attributes = Map("id" ->"companyNames.doYouHaveTradingName_field")
-                    )),
-                    items = Seq(
-                        RadioItem(
-                            content = Text(messages("awrs.generic.yes")),
-                            value = Some("Yes"),
-                            conditionalHtml = Some(tradingNameInput),
-                            id = Some("trading-yes")
-                        ),
-                        RadioItem(
-                            content = Text(messages("awrs.generic.no")),
-                            value = Some("No"),
-                            id = Some("trading-no")
-                        )
-                    )
-                ).withFormField(groupMemberForm("companyNames.doYouHaveTradingName"))
-            )
-
-                <div id="companyNames.doYouHaveTradingName-yes-content" class="govuk-form-group">
-
-                    @govukInput(
-                        Input(
-                            label = Label(
-                                classes = "govuk-label",
-                                content = Text(messages("awrs.generic.trading"))
+                        items = Seq(
+                            RadioItem(
+                                content = Text(messages("awrs.generic.yes")),
+                                value = Some("Yes"),
+                                conditionalHtml = Some(tradingNameInput),
+                                id = Some("trading-yes")
                             ),
-                            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
-                        ).withFormField(groupMemberForm("companyNames.tradingName"))
-                    )
-
-                </div>
+                            RadioItem(
+                                content = Text(messages("awrs.generic.no")),
+                                value = Some("No"),
+                                id = Some("trading-no")
+                            )
+                        )
+                    ).withFormField(groupMemberForm("companyNames.doYouHaveTradingName"))
+                )
             </div>
+
             <div id="address-group" class="govuk-form-group">
                 <h2 class="govuk-heading-m">@messages("awrs.generic.registered_address")</h2>
                 @awrsAddressHelper(groupMemberForm("address"),

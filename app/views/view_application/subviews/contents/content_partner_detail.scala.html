@@ -70,7 +70,7 @@
     @partner.entityType.get match {
         case CorporateBodyString | SoleTraderString => {
             @table_row(
-                messages("awrs.generic.trading_name"),
+                messages("awrs.generic.trading"),
                 partner.companyNames.tradingName
             )
         }
