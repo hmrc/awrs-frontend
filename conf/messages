@@ -212,7 +212,6 @@ awrs.generic.first_name=First name
 awrs.generic.surname=Last name
 awrs.generic.full_name=Full name
 awrs.generic.business_name=Business name
-awrs.generic.trading_name= What is your trading name?
 awrs.generic.enter_trading= Enter trading name
 awrs.generic.trading= What is the trading name
 awrs.generic.registered_address=Contact address

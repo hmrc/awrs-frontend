@@ -18,7 +18,7 @@ private object AppDependencies {
     "uk.gov.hmrc"            %% "json-encryption"            % "4.11.0-play-28",
     "com.yahoo.platform.yui" %  "yuicompressor"              % "2.4.8",
     "com.mohiva"             %% "play-html-compressor"       % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "3.17.0-play-28",
+    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "3.21.0-play-28",
     "com.typesafe.play"      %% "play-json-joda"             % "2.9.2"
   )
 
@@ -35,7 +35,7 @@ private object AppDependencies {
         "uk.gov.hmrc"            %% "bootstrap-test-play-28"   % "5.20.0"                 % scope,
         "org.pegdown"            %  "pegdown"                  % "1.6.0"                  % scope,
         "org.jsoup"              %  "jsoup"                    % "1.15.1"                 % scope,
-        "org.mockito"            %  "mockito-core"             % "4.5.1"                  % scope,
+        "org.mockito"            %  "mockito-core"             % "4.6.0"                  % scope,
         "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"               % scope
       )
     }.test

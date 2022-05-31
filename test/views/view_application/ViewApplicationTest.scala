@@ -315,7 +315,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
         Row("", None) ++
           Row(Messages("awrs.business_details.name"), bcd.businessName) ++
           Row(Messages("awrs.business_details.type_of_business"), expectedBusinessType) ++
-          prepRow(Messages("awrs.generic.trading_name"), testData.tradingName) ++
+          prepRow(Messages("awrs.generic.trading"), testData.tradingName) ++
           Row(Messages("awrs.business_details.new_AWBusiness"), testAWBusiness.newAWBusiness) ++
           Row(Messages("awrs.business_details.start_date"), testAWBusiness.proposedStartDate.get.toString("dd MMMM yyyy"))
       }
@@ -641,11 +641,11 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
               case "corporate body" =>
                 val name = testData.companyNames.fold("")(x => x.businessName.fold("")(x => x))
                 Row(name, None) ++
-                  prepRow(Messages("awrs.generic.trading_name"), testData.companyNames.tradingName)
+                  prepRow(Messages("awrs.generic.trading"), testData.companyNames.tradingName)
               case "sole trader" =>
                 val name = testData.firstName.get + " " + testData.lastName.get
                 Row(name, None) ++
-                  prepRow(Messages("awrs.generic.trading_name"), testData.companyNames.tradingName)
+                  prepRow(Messages("awrs.generic.trading"), testData.companyNames.tradingName)
             }
 
           def identificationToExpectation(partner: Partner): List[Row] =
@@ -793,7 +793,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       def toExpectation(businessLegalEntity: String, testData: BusinessDirectors): List[Row] = {
         def toList(testData: BusinessDirector): List[Row] =
           Row(fetchName(testData), None) ++
-            prepRow(Messages("awrs.generic.trading_name"), testData.companyNames.tradingName) ++
+            prepRow(Messages("awrs.generic.trading"), testData.companyNames.tradingName) ++
             prepRow(Messages("awrs.business_directors.role_question.additional"), DirectorAndSecretaryEnum.getMessageKey(testData.directorsAndCompanySecretaries.get)) ++
             prepRow(Messages("awrs.business_directors.personOrCompany_question"), PersonOrCompanyEnum.getMessageKey(testData.personOrCompany.get)) ++
             identificationToExpectation(businessLegalEntity, testData)
