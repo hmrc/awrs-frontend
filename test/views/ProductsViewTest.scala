@@ -167,7 +167,7 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks()
-    val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

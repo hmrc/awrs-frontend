@@ -61,14 +61,14 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
     setAuthMocks()
-    val result = testTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
-    val result = testTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

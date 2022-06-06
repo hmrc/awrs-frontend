@@ -18,6 +18,7 @@ package controllers
 
 import builders.SessionBuilder
 import forms.TradingLegislationDateForm
+import forms.TradingLegislationDateForm.tradingLegislationForm
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -29,6 +30,7 @@ import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
 
+import scala.collection.immutable.ListMap
 import scala.concurrent.Future
 
 class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
@@ -110,7 +112,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
           .thenReturn(Future.successful(NewApplicationMode))
 
         val res = tradingLegislationDateController.saveAndContinue()
-          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+          .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303
         redirectLocation(res).get must include("/alcohol-wholesale-scheme/start-date-trading")
@@ -135,7 +137,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
           .thenReturn(Future.successful(NewApplicationMode))
 
         val res = tradingLegislationDateController.saveAndContinue()
-          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+          .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303
         redirectLocation(res).get must include("/alcohol-wholesale-scheme/already-trading")

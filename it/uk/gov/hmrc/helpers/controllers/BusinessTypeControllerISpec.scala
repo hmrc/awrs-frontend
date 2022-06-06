@@ -2,7 +2,6 @@
 package uk.gov.hmrc.helpers.controllers
 
 import java.util.UUID
-
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, postRequestedFor, stubFor, urlEqualTo, urlMatching, verify, exactly => exactlyTimes}
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
@@ -129,7 +128,10 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 
-      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+        HeaderNames.xSessionId -> s"$SessionId",
+        HeaderNames.authorisation -> "authtoken"
+      ).withMethod("POST")
         .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
       )
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/index")
@@ -146,7 +148,10 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 
-      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+        HeaderNames.xSessionId -> s"$SessionId",
+        HeaderNames.authorisation -> "authtoken"
+      ).withMethod("POST")
         .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
       )
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/index")
@@ -227,7 +232,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
       stubS4LPut(saUtr, "businessNameDetails", stfeObj)
       stubS4LPut(saUtr, "tradingStartDetails", Json.toJson(newAWBusiness).as[JsObject])
       stubS4LPut(saUtr, "businessRegistrationDetails", Json.toJson(busRegDetails).as[JsObject])
-      stubS4LPut(saUtr, "placeOfBusiness", Json.toJson(pob).as[JsObject])
+      stubS4LPut(saUtr, "placeOf  Business", Json.toJson(pob).as[JsObject])
       stubS4LPut(saUtr, "businessContacts", Json.toJson(bc).as[JsObject])
       stubS4LPut(saUtr, "partnerDetails", Json.toJson(partnerDetails).as[JsObject])
       stubS4LPut(saUtr, "additionalBusinessPremises", Json.toJson(abp).as[JsObject])
@@ -249,11 +254,19 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
       withCaptureOfLoggingFrom(Logger(app.injector.instanceOf[BusinessTypeController].getClass)) { logs =>
-        val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
-          .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
+        val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+          HeaderNames.xSessionId -> s"$SessionId",
+          HeaderNames.authorisation -> "authtoken",
+          "Csrf-Token" -> "nocheck"
+        ).withMethod("POST")
+          .post(Map(
+            "isSaAccount" -> Seq("true"),
+            "legalEntity" -> Seq("SOP"),
+            "csrfToken" -> Seq("token")
+          ))
         )
-        resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/status-page?mustShow=false")
         resp.status mustBe 303
+        resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/status-page?mustShow=false")
 
         logs.exists(event => event.getMessage == "[BusinessTypeController][saveAndContinue] Upserted details and enrolments to EACD") mustBe true
 

@@ -38,13 +38,19 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     parallelExecution in Test := false,
-    fork in Test := false
+    fork in Test := false,
+    javaOptions in Test ++= Seq(
+      "-Dconfig.resource=test.application.conf"
+    ),
   )
   .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
   .configs(IntegrationTest)
   .settings(
     Keys.fork in IntegrationTest := false,
+    javaOptions in IntegrationTest ++= Seq(
+      "-Dconfig.resource=test.application.conf"
+    ),
     unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
     addTestReportOption(IntegrationTest, "int-test-reports"),
     parallelExecution in IntegrationTest := false)

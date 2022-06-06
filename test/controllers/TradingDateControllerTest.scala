@@ -108,7 +108,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           .thenReturn(Future.successful(NewApplicationMode))
 
         val res = tradingDateController.saveAndReturn()
-          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
         status(res) mustBe 303
         redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")
@@ -138,7 +138,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
             .thenReturn(Future.successful(NewApplicationMode))
 
           val res = tradingDateController.saveAndReturn()
-            .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+            .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
           status(res) mustBe 303
           redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")
@@ -167,7 +167,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
             .thenReturn(Future.successful(NewApplicationMode))
 
           val res = tradingDateController.saveAndReturn()
-            .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+            .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
           status(res) mustBe 303
           redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")

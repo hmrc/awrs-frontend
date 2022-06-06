@@ -167,7 +167,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusCustomer)))
     setAuthMocks()
-    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
@@ -179,14 +179,14 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusCustomer)))
     setAuthMocks()
-    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
   private def api4User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusinessCustomer)))
     setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
-    val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
@@ -197,7 +197,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
-    val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

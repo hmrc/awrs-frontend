@@ -60,14 +60,14 @@ class ProductsControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks()
-    val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
-    val result = testProductsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testProductsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

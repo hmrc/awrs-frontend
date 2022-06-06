@@ -109,7 +109,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
           .thenReturn(Future.successful(NewApplicationMode))
 
         val res = alreadyStartingTradingController.saveAndReturn()
-          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
         status(res) mustBe 303
         redirectLocation(res).get must include("/alcohol-wholesale-scheme/start-date-trading")

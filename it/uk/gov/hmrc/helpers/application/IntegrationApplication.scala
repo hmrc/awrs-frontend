@@ -33,7 +33,8 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
     "microservice.services.awrs.host" -> wireMockHost,
     "microservice.services.awrs.port" -> wireMockPort,
     "microservice.services.address-lookup.host" -> wireMockHost,
-    "microservice.services.address-lookup.port" -> wireMockPort
+    "microservice.services.address-lookup.port" -> wireMockPort,
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck"
 
   ) ++ extraConfig
 

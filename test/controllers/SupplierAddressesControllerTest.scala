@@ -270,7 +270,7 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   private def deleteWithAuthorisedUser(id: Int = 1, suppliers: Suppliers = testSuppliers)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = suppliers)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
-    val result = testSupplierAddressesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testSupplierAddressesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

@@ -66,7 +66,7 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
-    val result = testGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
