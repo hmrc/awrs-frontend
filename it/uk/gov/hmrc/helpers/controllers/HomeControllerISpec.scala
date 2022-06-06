@@ -14,7 +14,6 @@ import uk.gov.hmrc.crypto.json.JsonEncryptor
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec}
-import uk.gov.hmrc.http.HeaderNames
 
 class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers with S4LStub {
 
@@ -122,7 +121,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
-      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
+      val resp: WSResponse = await(client(controllerUrl).get)
       resp.header("Location") mustBe Some("http://localhost:9923/business-customer/awrs")
       resp.status mustBe 303
     }
@@ -132,7 +131,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
-      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId").get)
+      val resp: WSResponse = await(client(controllerUrl).get)
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
     }
