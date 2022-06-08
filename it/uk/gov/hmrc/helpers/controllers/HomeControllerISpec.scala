@@ -2,7 +2,6 @@
 package uk.gov.hmrc.helpers.controllers
 
 import java.util.UUID
-
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import controllers.routes
@@ -14,6 +13,7 @@ import uk.gov.hmrc.crypto.json.JsonEncryptor
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec}
+import uk.gov.hmrc.http.HeaderNames
 
 class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers with S4LStub {
 
@@ -23,7 +23,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
   val safeId: String = "XE0001234567890"
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
-  val SessionId = s"stubbed-${UUID.randomUUID}"
+  val SessionId = s"mock-sessionid"
 
   implicit lazy val jsonCrypto: CryptoWithKeysFromConfig = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
   implicit lazy val encryptionFormat: JsonEncryptor[JsObject] = new JsonEncryptor[JsObject]()
@@ -121,7 +121,10 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
-      val resp: WSResponse = await(client(controllerUrl).get)
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+        HeaderNames.xSessionId -> s"$SessionId",
+        "Csrf-Token" -> "nocheck"
+      ).get)
       resp.header("Location") mustBe Some("http://localhost:9923/business-customer/awrs")
       resp.status mustBe 303
     }
@@ -131,7 +134,10 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
 
       val controllerUrl = routes.HomeController.showOrRedirect(None).url
 
-      val resp: WSResponse = await(client(controllerUrl).get)
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+        HeaderNames.xSessionId -> s"$SessionId",
+        "Csrf-Token" -> "nocheck"
+      ).get)
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
     }
