@@ -380,7 +380,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   def submits(status: FormBundleStatus, call: Action[AnyContent], data: Seq[(String, String)])(test: Future[Result] => Any) {
     resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
-    val result = call.apply(buildRequestWithSession(userId, status.name).withFormUrlEncodedBody(data: _*))
+    val result = call.apply(buildRequestWithSession(userId, status.name).withMethod("POST").withFormUrlEncodedBody(data: _*))
     test(result)
   }
 

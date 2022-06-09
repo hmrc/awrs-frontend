@@ -38,7 +38,10 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     parallelExecution in Test := false,
-    fork in Test := false
+    fork in Test := false,
+    javaOptions in Test ++= Seq(
+      "-Dconfig.resource=test.application.conf"
+    ),
   )
   .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)

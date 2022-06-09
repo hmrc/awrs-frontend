@@ -192,7 +192,7 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
   private def deleteWithAuthorisedUser(id: Int = 1, members: GroupMembers = testGroupMemberDetails)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = members)
     setAuthMocks()
-    val result = testGroupMemberController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testGroupMemberController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 }

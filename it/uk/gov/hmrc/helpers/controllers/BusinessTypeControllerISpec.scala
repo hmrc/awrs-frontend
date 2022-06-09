@@ -10,10 +10,10 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import controllers.{BusinessTypeController, routes}
 import models._
 import org.scalatest.matchers.must.Matchers
-import play.api.{Logger, Logging}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
+import play.api.{Logger, Logging}
 import uk.gov.hmrc.crypto.json.JsonEncryptor
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.helpers.application.S4LStub
@@ -129,8 +129,10 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 
-      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
-        .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+        HeaderNames.xSessionId -> s"$SessionId",
+        "Csrf-Token" -> "nocheck"
+      ).post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
       )
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/index")
       resp.status mustBe 303
@@ -146,8 +148,10 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 
-      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
-        .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+        HeaderNames.xSessionId -> s"$SessionId",
+        "Csrf-Token" -> "nocheck"
+      ).post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
       )
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/index")
       resp.status mustBe 303
@@ -249,11 +253,17 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
       withCaptureOfLoggingFrom(Logger(app.injector.instanceOf[BusinessTypeController].getClass)) { logs =>
-        val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(HeaderNames.xSessionId -> s"$SessionId")
-          .post(Map("isSaAccount" -> Seq("true"), "legalEntity" -> Seq("SOP")))
+        val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+          HeaderNames.xSessionId -> s"$SessionId",
+          "Csrf-Token" -> "nocheck"
+        ).post(Map(
+            "isSaAccount" -> Seq("true"),
+            "legalEntity" -> Seq("SOP"),
+            "csrfToken" -> Seq("token")
+          ))
         )
-        resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/status-page?mustShow=false")
         resp.status mustBe 303
+        resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/status-page?mustShow=false")
 
         logs.exists(event => event.getMessage == "[BusinessTypeController][saveAndContinue] Upserted details and enrolments to EACD") mustBe true
 

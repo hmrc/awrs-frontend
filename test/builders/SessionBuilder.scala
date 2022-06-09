@@ -40,7 +40,8 @@ object SessionBuilder {
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
       "userId"-> userId,
       "businessType" -> businessType,
-      "businessName" -> "North East Wines")
+      "businessName" -> "North East Wines"
+    ).withHeaders("Authorization" -> "auth-testheader")
   }
 
   def updateRequestWithSessionJSon(fakeRequest: FakeRequest[AnyContentAsJson], userId: String) = {

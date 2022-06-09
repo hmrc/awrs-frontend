@@ -95,7 +95,7 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
   private def deleteWithAuthorisedUser(id: Int = 1, directors: BusinessDirectors = testBusinessDirectors)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = directors)
     setAuthMocks()
-    val result = testBusinessDirectorsController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testBusinessDirectorsController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 }

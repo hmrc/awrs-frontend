@@ -240,7 +240,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     when(mockEmailService.sendWithdrawnEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     setupMockSave4LaterService(fetchAll = cachedData())
     setAuthMocks()
-    val result = testWithdrawalController.submitConfirmWithdrawal.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testWithdrawalController.submitConfirmWithdrawal.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

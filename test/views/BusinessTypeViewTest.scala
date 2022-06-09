@@ -117,7 +117,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
     }
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusCustomer)))
     setAuthMocks()
-    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testBusinessTypeController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

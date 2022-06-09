@@ -217,7 +217,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
   private def deleteWithAuthorisedUser(id: Int = 1, premises: AdditionalBusinessPremisesList = testAdditionalBusinessPremisesList)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = premises)
     setAuthMocks()
-    val result = testAdditionalPremisesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testAdditionalPremisesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 }
