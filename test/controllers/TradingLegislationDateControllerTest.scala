@@ -18,7 +18,6 @@ package controllers
 
 import builders.SessionBuilder
 import forms.TradingLegislationDateForm
-import forms.TradingLegislationDateForm.tradingLegislationForm
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -29,8 +28,8 @@ import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
+import views.html.awrs_legislation_date
 
-import scala.collection.immutable.ListMap
 import scala.concurrent.Future
 
 class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
@@ -41,7 +40,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[String](FakeRequest(), TradingLegislationDateForm.tradingLegislationForm, answer)
 
-  val template = app.injector.instanceOf[views.html.awrs_legislation_date]
+  val template: awrs_legislation_date = app.injector.instanceOf[views.html.awrs_legislation_date]
 
   val tradingLegislationDateController: TradingLegislationDateController =
     new TradingLegislationDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService,

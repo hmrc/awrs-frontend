@@ -35,7 +35,7 @@ private object AppDependencies {
         "uk.gov.hmrc"            %% "bootstrap-test-play-28"   % "5.24.0"                 % scope,
         "org.pegdown"            %  "pegdown"                  % "1.6.0"                  % scope,
         "org.jsoup"              %  "jsoup"                    % "1.15.1"                 % scope,
-        "org.mockito"            %  "mockito-core"             % "4.6.0"                  % scope,
+        "org.mockito"            %  "mockito-core"             % "4.6.1"                  % scope,
         "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"               % scope
       )
     }.test

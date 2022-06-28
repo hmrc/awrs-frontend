@@ -22,20 +22,19 @@ import connectors.AwrsDataCacheConnector
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.TradingLegislationDateForm.tradingLegislationForm
-
-import javax.inject.Inject
 import models.NewAWBusiness
 import play.api.mvc._
 import services.DataCacheKeys.businessDetailsName
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.{WithUrlEncodedAndMultipartFormBinding, WithUrlEncodedOnlyFormBinding}
+import uk.gov.hmrc.play.bootstrap.controller.WithUrlEncodedOnlyFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.Configuration.NewApplicationMode
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComponents,
