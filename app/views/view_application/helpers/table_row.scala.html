@@ -28,7 +28,7 @@
 }
 @anchor = {
     @someHref match {
-        case Some(href) => {<a class="govuk-link" href="@href@someId">@Messages("awrs.view_application.edit")</a>}
+        case Some(href) => {<a class="govuk-link govuk-body" href="@href@someId">@Messages("awrs.view_application.edit")</a>}
         case _ => {}
     }
 }

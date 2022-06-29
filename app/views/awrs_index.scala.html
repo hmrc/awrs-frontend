@@ -59,13 +59,13 @@
                     case Some(status) => {
                         <h2 class="govuk-heading-m" id="application-status">@messages("awrs.index_page.application_status_text") @status.formBundleStatus.name.toLowerCase</h2>
                         <p class="govuk-body">
-                            <a class="govuk-link" id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">
+                            <a class="govuk-link govuk-body" id="status-page_link" href="@routes.ApplicationStatusController.showStatus(false)">
                                 @messages("awrs.index_page.view_application_status_link_text")
                             </a>
                         </p>
                         @if(status.formBundleStatus.name == Pending.name){
                             <p class="govuk-body">
-                                <a class="govuk-link" id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@messages("awrs.index_page.withdraw_link")
+                                <a class="govuk-link govuk-body" id="withdraw_link" href="@routes.WithdrawalController.showWithdrawalReasons">@messages("awrs.index_page.withdraw_link")
                                 </a>
                             </p>
                         }
@@ -87,7 +87,7 @@
                                 case _ => {}
                             }
                             <p class="govuk-body">
-                                <a id="de_reg_page_link" class="govuk-link" href="@routes.DeRegistrationController.showReason">@messages("awrs.index_page.de_registration_link")</a>
+                                <a id="de_reg_page_link" class="govuk-link govuk-body" href="@routes.DeRegistrationController.showReason">@messages("awrs.index_page.de_registration_link")</a>
                             </p>
                         }
                         case _ => {}
@@ -98,7 +98,7 @@
             }
             @if(showOneViewLink) {
                 <p class="govuk-body">
-                    <a class="govuk-link" id="view-application"
+                    <a class="govuk-link govuk-body" id="view-application"
                     href="@controllers.routes.ViewApplicationController.show(false)">
                     @messages("awrs.generic.print_application")
                     </a>
@@ -132,7 +132,7 @@
                             </strong>
                         </td>
                         <td class="govuk-table__cell">
-                            <a class="govuk-link" href="@i.href">
+                            <a class="govuk-link govuk-body" href="@i.href">
                                 @Html(messages({i.status + "_link" +
                                         {
                                             someStatus match {

@@ -37,7 +37,7 @@
                 )
                 <h2 class="govuk-heading-s">@messages("awrs.confirmation.prompt_print_heading")</h2>
                 <div class="print-hidden govuk-body">
-                    <a id="print-confirmation" href="javascript:window.print();" class="print-hidden govuk-link">@messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="print-hidden govuk-link"
+                    <a id="print-confirmation" href="javascript:window.print();" class="print-hidden govuk-link govuk-body">@messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="print-hidden govuk-link"
                         href="@routes.ViewApplicationController.show(printFriendly = false)">
                         @messages("awrs.generic.application")
                     </a>
@@ -46,8 +46,9 @@
                 @paragraphs1
                 @list
 
-                <p class="govuk-body print-hidden" id="detailed-information">@Html(messages("awrs.confirmation.detailed_information","<a class='govuk-link' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
+                <p class="govuk-body print-hidden" id="detailed-information">@Html(messages("awrs.confirmation.detailed_information","<a class='govuk-link govuk-body' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
                 <p class="govuk-body print-only" aria-hidden="true" id="detailed-information-printonly">@messages("awrs.confirmation.detailed_information_print")</p>
+
 
                 <div class="govuk-form-group">
                     <a id="confirmation-page-finish" class="govuk-button print-hidden" role="button" data-module="govuk-button" href="@routes.ApplicationController.logout">@messages("awrs.confirmation.finish")</a>
