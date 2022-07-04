@@ -107,7 +107,7 @@
                     label = Label(
                         content = Text(messages("awrs.supplier-addresses.supplier_address_country"))
                     ),
-                    items = Seq(SelectItem(Some(""), "")) ++ countryList.map {
+                    items = Seq(SelectItem(Some(""), "Select a country")) ++ countryList.map {
                         case (code, country) => SelectItem(
                             value = Some(country),
                             text = country

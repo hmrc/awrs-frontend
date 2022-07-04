@@ -1,7 +1,6 @@
 
 package uk.gov.hmrc.helpers.controllers
 
-import java.util.UUID
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import controllers.routes
