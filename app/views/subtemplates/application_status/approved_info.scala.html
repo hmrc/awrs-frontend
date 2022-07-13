@@ -29,7 +29,7 @@
 <p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line5")</p>
 <h2 class="govuk-heading-m">@Messages(f"awrs.application_status.info.approved.heading2")</h2>
 <p class="govuk-body print-only" aria-hidden="true">@Messages(f"awrs.application_status.info.approved.line6_print")</p>
-<p class="govuk-body print-hidden">@Html(messages("awrs.application_status.info.approved.line6","<a class='govuk-link' href='https://www.tax.service.gov.uk/check-the-awrs-register'>","</a>"))</p>
+<p class="govuk-body print-hidden">@Html(messages("awrs.application_status.info.approved.line6","<a class='govuk-link govuk-body' href='https://www.tax.service.gov.uk/check-the-awrs-register'>","</a>"))</p>
 <p class="govuk-body">@Messages(f"awrs.application_status.info.approved.line7")</p>
 @printFriendly match {
     case false => {@awrsStatusPageSignInPara(messages)}

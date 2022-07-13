@@ -17,7 +17,7 @@
 @(linkText : String = "")(implicit messages: Messages)
 
 
-<a class="govuk-link" id="return-to-summary" href="@controllers.routes.IndexController.showIndex">
+<a class="govuk-link govuk-body" id="return-to-summary" href="@controllers.routes.IndexController.showIndex">
     @Html(
         if(linkText == "") Messages("awrs.generic.return_index")
         else linkText
