@@ -182,7 +182,9 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
                 audit(auditAPI6TxName, Map("awrsRefNo" -> awrsRefNo.toString(), "businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeBadRequest)
                 warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - Bad Request \n API6 Request Json From Frontend ## ")
                 throw new DESValidationException("Validation against schema failed")
-              case _ => throw new BadRequestException(s"[$auditAPI6TxName] - The Submission has not passed validation")
+              case _ =>
+                audit(auditAPI6TxName, Map("awrsRefNo" -> awrsRefNo.toString(), "businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeBadRequest)
+                throw new BadRequestException(s"[$auditAPI6TxName] - The Submission has not passed validation")
             }
           case 500 /*INTERNAL_SERVER_ERROR*/ =>
             audit(auditAPI6TxName, Map("awrsRefNo" -> awrsRefNo.toString(), "businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeInternalServerError)
