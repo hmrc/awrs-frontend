@@ -44,16 +44,16 @@
     <script src='@routes.Assets.versioned("javascripts/accessible-autocomplete.min.js")'></script>
     <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
     <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
 
-      accessibleAutocomplete.enhanceSelectElement({
-        defaultValue: '',
-        selectElement: document.querySelector('#supplierAddress\\.addressCountry')
-      })
+          accessibleAutocomplete.enhanceSelectElement({
+            defaultValue: '',
+            selectElement: document.querySelector('#supplierAddress\\.addressCountry')
+          })
 
-    });
-  </script>
+        });
+    </script>
 }
 
 @actionRoute = @{

@@ -84,10 +84,6 @@ font-size: 24px;
     background: url("/alcohol-wholesale-scheme/assets/images/loading.gif") no-repeat;
 }
 
-.autocomplete__option {
-    font-family: "GDS Transport",arial,sans-serif;
-}
-
 summary .arrow {
     display:inline-block;
     margin-right: 0.5em;
