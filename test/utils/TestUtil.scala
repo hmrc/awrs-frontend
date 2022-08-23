@@ -329,6 +329,21 @@ object TestUtil extends PlaySpec {
       ukSupplier = Yes)
   }
 
+  def testSupplierMismatch: Supplier = {
+    val address = testAddress.copy(
+      addressCountry = "Angola",
+      addressCountryCode = "AO"
+    )
+
+    testSupplierDefault(alcoholSuppliers = Yes,
+      supplierName = Some("Smith and co"),
+      vatRegistered = Yes,
+      vatNumber = testVrn,
+      supplierAddress = Some(address),
+      additionalSupplier = Yes,
+      ukSupplier = Yes)
+  }
+
   def testSupplierOthersYes(isUK: Boolean = true) = {
     val address = isUK match {
       case true => testAddress

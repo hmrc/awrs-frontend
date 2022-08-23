@@ -101,6 +101,33 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
     }
   }
 
+  private[controllers] def processCountryNonUK(supplier: Supplier): Supplier = {
+    val newAddress = supplier.supplierAddress.map { address =>
+      val newCountry = address.addressCountry.flatMap { country =>
+        if (supplier.ukSupplier.contains("Yes")) {
+          None
+        } else {
+          Some(country)
+        }
+      }
+
+      val newCountryCode = address.addressCountryCode.flatMap { code =>
+        if (supplier.ukSupplier.contains("Yes")) {
+          None
+        } else {
+          Some(code)
+        }
+      }
+
+      address.copy(
+        addressCountry = newCountry,
+        addressCountryCode = newCountryCode
+      )
+    }
+
+    supplier.copy(supplierAddress = newAddress)
+  }
+
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
@@ -111,7 +138,8 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
           case _ => Future.successful(BadRequest(template(formWithErrors, 1, isNewRecord, countryList)))
         },
       supplierAddressesData => {
-        val countryCodeSupplierAddressData = supplierAddressesData.copy(supplierAddress = applicationConfig.countryCodes.getSupplierAddressWithCountryCode(supplierAddressesData))
+        val countryValidatedSupplier = processCountryNonUK(supplierAddressesData)
+        val countryCodeSupplierAddressData = countryValidatedSupplier.copy(supplierAddress = applicationConfig.countryCodes.getSupplierAddressWithCountryCode(countryValidatedSupplier))
         countryCodeSupplierAddressData.alcoholSuppliers match {
           case Some("No") =>
             save(authRetrievals, Suppliers(suppliers = List(countryCodeSupplierAddressData))) flatMap {
