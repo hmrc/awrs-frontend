@@ -46,7 +46,29 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   val supplierPageURL: Int => String = (id: Int) => s"/alcohol-wholesale-scheme/supplier-addresses?id=$id"
   val supplierPage2URL: String = supplierPageURL(2)
 
+  val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, mockAppConfig, template) {
+    override val signInUrl: String = "/sign-in"
+    override val countryList: Seq[(String, String)] = Seq()
+  }
+
   val id = "alcoholSupplier"
+  "processCountryNonUK" must {
+    "do nothing with a non-uk supplier with non-uk address" in {
+      val processedSupplier: Supplier = testSupplierAddressesController.processCountryNonUK(testSupplierDefault())
+
+      processedSupplier mustBe testSupplierDefault()
+    }
+
+    "alter a uk supplier with non-uk address (country)" in {
+      val processedSupplier: Supplier = testSupplierAddressesController.processCountryNonUK(testSupplierMismatch)
+
+      processedSupplier.supplierAddress.get.addressLine1 mustBe testSupplierMismatch.supplierAddress.get.addressLine1
+      processedSupplier.supplierAddress.get.addressCountryCode mustBe None
+      processedSupplier.supplierAddress.get.addressCountry mustBe None
+    }
+  }
+
   "Authenticated and authorised users" must {
 
     "validate that first addition of supplier does not throw an exception" in {
@@ -67,6 +89,14 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
       continueWithAuthorisedUserNoSuppliersFirstQuestion(testRequest(testSupplierDefault())) {
         result =>
           redirectLocation(result).get must be("/alcohol-wholesale-scheme/index")
+          verifySave4LaterService(saveSuppliers = 1)
+      }
+    }
+
+    "redirect to index page when 'user has selected No suppliers' and account for a mismatch" in {
+      continueWithAuthorisedUserNoSupplier(testRequest(testSupplierMismatch)) {
+        result =>
+          redirectLocation(result).get must include(supplierPage2URL)
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
@@ -202,13 +232,6 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
           verifySave4LaterService(saveSuppliers = 1)
       }
     }
-  }
-
-
-  val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, mockAppConfig, template) {
-    override val signInUrl: String = "/sign-in"
-    override val countryList: Seq[(String, String)] = Seq()
   }
 
   private def getWithAuthorisedUserSa(id: Int = 1)(test: Future[Result] => Any): Future[Any] = {
