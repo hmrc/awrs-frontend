@@ -101,31 +101,12 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
     }
   }
 
-  private[controllers] def processCountryNonUK(supplier: Supplier): Supplier = {
-    val newAddress = supplier.supplierAddress.map { address =>
-      val newCountry = address.addressCountry.flatMap { country =>
-        if (supplier.ukSupplier.contains("Yes")) {
-          None
-        } else {
-          Some(country)
-        }
-      }
-
-      val newCountryCode = address.addressCountryCode.flatMap { code =>
-        if (supplier.ukSupplier.contains("Yes")) {
-          None
-        } else {
-          Some(code)
-        }
-      }
-
-      address.copy(
-        addressCountry = newCountry,
-        addressCountryCode = newCountryCode
-      )
+  private[controllers] def processCountryNonUK(s: Supplier): Supplier = {
+    if (s.ukSupplier.contains("Yes")) {
+      s.copy(supplierAddress = s.supplierAddress.map(_.copy(addressCountry = None, addressCountryCode = None)))
+    } else {
+      s
     }
-
-    supplier.copy(supplierAddress = newAddress)
   }
 
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
