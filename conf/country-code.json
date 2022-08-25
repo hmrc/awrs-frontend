@@ -109,7 +109,7 @@
   },
   {
     "countryCode": "BN",
-    "country": "Brunei Darussalam"
+    "country": "Brunei"
   },
   {
     "countryCode": "BO",
@@ -125,7 +125,7 @@
   },
   {
     "countryCode": "BS",
-    "country": "Bahamas"
+    "country": "The Bahamas"
   },
   {
     "countryCode": "BT",
@@ -133,7 +133,7 @@
   },
   {
     "countryCode": "BV",
-    "country": "Bouvet Islands"
+    "country": "Bouvet Island"
   },
   {
     "countryCode": "BW",
@@ -153,11 +153,11 @@
   },
   {
     "countryCode": "CC",
-    "country": "Coconut Islands"
+    "country": "Cocos (Keeling) Islands"
   },
   {
     "countryCode": "CD",
-    "country": "Democratic Republic of the Congo"
+    "country": "Congo (Democratic Republic)"
   },
   {
     "countryCode": "CF",
@@ -165,7 +165,7 @@
   },
   {
     "countryCode": "CG",
-    "country": "Republic of the Congo"
+    "country": "Congo"
   },
   {
     "countryCode": "CH",
@@ -173,7 +173,7 @@
   },
   {
     "countryCode": "CI",
-    "country": "Cote d'Ivoire"
+    "country": "Ivory Coast"
   },
   {
     "countryCode": "CK",
@@ -200,10 +200,6 @@
     "country": "Costa Rica"
   },
   {
-    "countryCode": "CS",
-    "country": "Serbia and Montenegro"
-  },
-  {
     "countryCode": "CU",
     "country": "Cuba"
   },
@@ -217,7 +213,7 @@
   },
   {
     "countryCode": "CX",
-    "country": "Christmas Islnd"
+    "country": "Christmas Island"
   },
   {
     "countryCode": "CY",
@@ -265,7 +261,7 @@
   },
   {
     "countryCode": "EH",
-    "country": "West Sahara"
+    "country": "Western Sahara"
   },
   {
     "countryCode": "ER",
@@ -317,7 +313,7 @@
   },
   {
     "countryCode": "GF",
-    "country": "French Guyana"
+    "country": "French Guiana"
   },
   {
     "countryCode": "GG",
@@ -337,7 +333,7 @@
   },
   {
     "countryCode": "GM",
-    "country": "Gambia"
+    "country": "The Gambia"
   },
   {
     "countryCode": "GN",
@@ -357,7 +353,7 @@
   },
   {
     "countryCode": "GS",
-    "country": "South Georgia and the Southern Sandwich Islands"
+    "country": "South Georgia and South Sandwich Islands"
   },
   {
     "countryCode": "GT",
@@ -381,7 +377,7 @@
   },
   {
     "countryCode": "HM",
-    "country": "Heard and McDonald Islands"
+    "country": "Heard Island and McDonald Islands"
   },
   {
     "countryCode": "HN",
@@ -509,7 +505,7 @@
   },
   {
     "countryCode": "LC",
-    "country": "St. Lucia"
+    "country": "St Lucia"
   },
   {
     "countryCode": "LI",
@@ -561,7 +557,7 @@
   },
   {
     "countryCode": "MF",
-    "country": "Saint Martin (French part)"
+    "country": "Saint-Martin (French part)"
   },
   {
     "countryCode": "MG",
@@ -573,7 +569,7 @@
   },
   {
     "countryCode": "MK",
-    "country": "Macedonia"
+    "country": "North Macedonia"
   },
   {
     "countryCode": "ML",
@@ -581,7 +577,7 @@
   },
   {
     "countryCode": "MM",
-    "country": "Burma"
+    "country": "Myanmar (Burma)"
   },
   {
     "countryCode": "MN",
@@ -589,7 +585,7 @@
   },
   {
     "countryCode": "MO",
-    "country": "Macau"
+    "country": "Macao"
   },
   {
     "countryCode": "MP",
@@ -601,7 +597,7 @@
   },
   {
     "countryCode": "MR",
-    "country": "Mauretania"
+    "country": "Mauritania"
   },
   {
     "countryCode": "MS",
@@ -649,7 +645,7 @@
   },
   {
     "countryCode": "NF",
-    "country": "Norfolk Islands"
+    "country": "Norfolk Island"
   },
   {
     "countryCode": "NG",
@@ -717,11 +713,11 @@
   },
   {
     "countryCode": "PM",
-    "country": "St. Pierre and Miquelon"
+    "country": "Saint Pierre and Miquelon"
   },
   {
     "countryCode": "PN",
-    "country": "Pitcairn Islands"
+    "country": "Pitcairn, Henderson, Ducie and Oeno Islands"
   },
   {
     "countryCode": "PR",
@@ -729,7 +725,7 @@
   },
   {
     "countryCode": "PS",
-    "country": "Palestine"
+    "country": "Occupied Palestinian Territories"
   },
   {
     "countryCode": "PT",
@@ -761,7 +757,7 @@
   },
   {
     "countryCode": "RU",
-    "country": "Russian Federation"
+    "country": "Russia"
   },
   {
     "countryCode": "RW",
@@ -801,7 +797,7 @@
   },
   {
     "countryCode": "SJ",
-    "country": "Svalbard"
+    "country": "Svalbard and Jan Mayen"
   },
   {
     "countryCode": "SK",
@@ -849,7 +845,7 @@
   },
   {
     "countryCode": "SZ",
-    "country": "Swaziland"
+    "country": "Eswatini"
   },
   {
     "countryCode": "TC",
@@ -861,7 +857,7 @@
   },
   {
     "countryCode": "TF",
-    "country": "French S.Territ"
+    "country": "French Southern Territories"
   },
   {
     "countryCode": "TG",
@@ -877,7 +873,7 @@
   },
   {
     "countryCode": "TK",
-    "country": "Tokelau Islands"
+    "country": "Tokelau"
   },
   {
     "countryCode": "TL",
@@ -933,7 +929,7 @@
   },
   {
     "countryCode": "US",
-    "country": "United States of America"
+    "country": "United States"
   },
   {
     "countryCode": "UY",
@@ -949,7 +945,7 @@
   },
   {
     "countryCode": "VC",
-    "country": "St. Vincent and the Grenadines"
+    "country": "St Vincent"
   },
   {
     "countryCode": "VE",
@@ -961,7 +957,7 @@
   },
   {
     "countryCode": "VI",
-    "country": "American Virgin Islands"
+    "country": "United States Virgin Islands"
   },
   {
     "countryCode": "VN",
@@ -973,7 +969,7 @@
   },
   {
     "countryCode": "WF",
-    "country": "Wallis and Futuna Islands"
+    "country": "Wallis and Futuna"
   },
   {
     "countryCode": "WS",
