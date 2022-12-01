@@ -31,16 +31,24 @@ class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuit
     "return a string of countries" in new Setup {
       val countries: String = countryCodes.countries
       countries must include("Andorra")
-      countries must include("Germany")
       countries must include("France")
+      countries must include("Germany")
+      countries must include("Åland Islands")
+      countries must include("Curaçao")
+      countries must include("Türkiye")
+      countries must include("British Indian Ocean Territory (the)")
     }
   }
 
   "CountryCode getCountry" must {
     "return a country from a country code" in new Setup {
       countryCodes.getCountry("AD") must be(Some("Andorra"))
-      countryCodes.getCountry("DE") must be(Some("Germany"))
       countryCodes.getCountry("FR") must be(Some("France"))
+      countryCodes.getCountry("DE") must be(Some("Germany"))
+      countryCodes.getCountry("AX") must be(Some("Åland Islands"))
+      countryCodes.getCountry("CW") must be(Some("Curaçao"))
+      countryCodes.getCountry("TR") must be(Some("Türkiye"))
+      countryCodes.getCountry("IO") must be(Some("British Indian Ocean Territory (the)"))
 
       countryCodes.getCountry("ZZ") must be(None)
     }
@@ -51,6 +59,10 @@ class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuit
       countryCodes.getCountryCode("Andorra") must be(Some("AD"))
       countryCodes.getCountryCode("Germany") must be(Some("DE"))
       countryCodes.getCountryCode("France") must be(Some("FR"))
+      countryCodes.getCountryCode("Åland Islands") must be(Some("AX"))
+      countryCodes.getCountryCode("Curaçao") must be(Some("CW"))
+      countryCodes.getCountryCode("Türkiye") must be(Some("TR"))
+      countryCodes.getCountryCode("British Indian Ocean Territory (the)") must be(Some("IO"))
 
       countryCodes.getCountryCode("ZZ") must be(None)
     }
