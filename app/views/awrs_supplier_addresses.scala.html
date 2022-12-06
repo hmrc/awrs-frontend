@@ -41,18 +41,16 @@
 
 
 @pageScripts = {
-    <script src='@routes.Assets.versioned("javascripts/accessible-autocomplete.min.js")'></script>
+
+    <script type="text/javascript" src='@routes.Assets.versioned("javascripts/location-autocomplete.min.js")'></script>
     <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
     <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
-    <script>
-        $(document).ready(function() {
-
-          accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: '',
-            selectElement: document.querySelector('#supplierAddress\\.addressCountry')
-          })
-
-        });
+    <script type="text/javascript">
+      openregisterLocationPicker({
+        defaultValue: '',
+        selectElement: document.getElementById('supplierAddress.addressCountry'),
+        url: '@controllers.routes.Assets.versioned("location-autocomplete-graph.json")'
+      })
     </script>
 }
 

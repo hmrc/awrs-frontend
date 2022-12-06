@@ -20,7 +20,7 @@ lazy val scoverageSettings = {
     ScoverageKeys.coverageMinimumStmtTotal := 80,
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true,
-    parallelExecution in Test := false
+    Test / parallelExecution := false
   )
 }
 
@@ -37,9 +37,9 @@ lazy val microservice = Project(appName, file("."))
     scalaVersion := "2.12.12",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
-    parallelExecution in Test := false,
-    fork in Test := false,
-    javaOptions in Test ++= Seq(
+    Test / parallelExecution := false,
+    Test / fork := false,
+    Test / javaOptions ++= Seq(
       "-Dconfig.resource=test.application.conf"
     ),
   )
@@ -47,10 +47,10 @@ lazy val microservice = Project(appName, file("."))
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
   .configs(IntegrationTest)
   .settings(
-    Keys.fork in IntegrationTest := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
+    IntegrationTest / Keys.fork := false,
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
     addTestReportOption(IntegrationTest, "int-test-reports"),
-    parallelExecution in IntegrationTest := false)
+    IntegrationTest / parallelExecution := false)
   .settings(
     resolvers += Resolver.jcenterRepo,
     scalacOptions += "-P:silencer:pathFilters=views;routes;test/controllers/util;",
