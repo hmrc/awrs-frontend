@@ -13,7 +13,7 @@ private object AppDependencies {
     "uk.gov.hmrc"            %% "domain"                     % "8.1.0-play-28",
     "com.yahoo.platform.yui" %  "yuicompressor"              % "2.4.8",
     "com.mohiva"             %% "play-html-compressor"       % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "3.34.0-play-28",
+    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "4.1.0-play-28",
     "com.typesafe.play"      %% "play-json-joda"             % "2.9.3"
   )
 
@@ -26,10 +26,10 @@ private object AppDependencies {
 
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
-        "uk.gov.hmrc"            %% "bootstrap-test-play-28"   % "5.25.0"                 % scope,
-        "org.jsoup"              %  "jsoup"                    % "1.15.3"                 % scope,
-        "org.mockito"            %  "mockito-core"             % "4.9.0"                  % scope,
-        "org.scalatestplus"      %% "scalatestplus-mockito"    % "1.0.0-M2"               % scope
+        "uk.gov.hmrc"       %% "bootstrap-test-play-28"   % "5.25.0"   % scope,
+        "org.jsoup"         %  "jsoup"                    % "1.15.3"   % scope,
+        "org.mockito"       %  "mockito-core"             % "4.11.0"   % scope,
+        "org.scalatestplus" %% "scalatestplus-mockito"    % "1.0.0-M2" % scope
       )
     }.test
   }
