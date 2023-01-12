@@ -13,7 +13,7 @@ private object AppDependencies {
     "uk.gov.hmrc"            %% "domain"                     % "8.1.0-play-28",
     "com.yahoo.platform.yui" %  "yuicompressor"              % "2.4.8",
     "com.mohiva"             %% "play-html-compressor"       % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "4.1.0-play-28",
+    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "6.0.0-play-28",
     "com.typesafe.play"      %% "play-json-joda"             % "2.9.3"
   )
 
