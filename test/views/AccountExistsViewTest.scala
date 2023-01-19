@@ -25,14 +25,14 @@ import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.DataCacheKeys._
-import services.JourneyConstants
+import services.{JourneyConstants, ServicesUnitTestFixture}
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
 import scala.concurrent.Future
 
-class AccountExistsViewTest extends AwrsUnitTestTraits
+class AccountExistsViewTest extends ServicesUnitTestFixture
   with MockSave4LaterService with MockAuthConnector {
 
   val template = app.injector.instanceOf[views.html.awrs_account_exists]
@@ -44,8 +44,18 @@ class AccountExistsViewTest extends AwrsUnitTestTraits
 
   "Account Exists View" must {
     "display the correct content" in {
-
+      viewAccountExistsPage {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          println(document.getElementsByTag("\n\n\n h1 \n\n\n"))
+          document.getElementsByTag("h1").text() must be(Messages("awrs.wrong_account.headi"))
+      }
     }
+  }
+
+  private def viewAccountExistsPage(test: Future[Result] => Any): Unit = {
+    val result = testWrongAccountController.showWrongAccountPage.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
   }
 
 }
