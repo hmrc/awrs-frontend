@@ -20,12 +20,13 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.BusinessTypeForm.{businessTypeForm, _}
+
 import javax.inject.Inject
-import models.{BusinessType, NewApplicationType}
+import models.{BusinessCustomerDetails, BusinessType, NewApplicationType}
 import play.api.data.Form
 import play.api.mvc._
 import services.apis.AwrsAPI5
-import services.{CheckEtmpService, DeEnrolService, Save4LaterService}
+import services.{CheckEnrolmentStoreService, CheckEtmpService, DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -41,6 +42,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                                        val auditable: Auditable,
                                        val accountUtils: AccountUtils,
                                        val checkEtmpService: CheckEtmpService,
+                                       val checkEnrolmentStore: CheckEnrolmentStoreService,
                                        implicit val applicationConfig: ApplicationConfig,
                                        template: views.html.awrs_business_type
                                       ) extends FrontendController(mcc) with AwrsController {
@@ -63,13 +65,15 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
       }
     }
 
-  private def api4Journey(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
+  private def api4Journey(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] = {
+    println("+++++++++++++++++++++api4 Journey")
     authorisedAction { ar =>
       for {
         Some(bcd) <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
-        _ <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(Some(true)), authRetrievals)
+        _ <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(api4NewApplicatonCheck(bcd,authRetrievals)), authRetrievals) //TODO change value of New Application Type
         businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       } yield {
+        println("+++++++++++++++++++++api4 Journey after yield")
         val display = (form: Form[BusinessType]) => Ok(template(form, bcd.businessName, bcd.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(authRetrievals))) addBusinessNameToSession bcd.businessName
         businessType match {
           case Some(data) => display(businessTypeForm.fill(data)) addBusinessTypeToSession data
@@ -77,6 +81,30 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
         }
       }
     }
+  }
+
+  private def api4NewApplicatonCheck(bcd: BusinessCustomerDetails, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Option[Boolean] = {
+    println("Checking if this a new AWRS Application") //TODO convert to logging statements
+    val safeId = bcd.safeId
+    val credID = authRetrievals.credId
+
+    println("getting ref numbner")
+    val awrsRefNumber = checkEnrolmentStore.getAwrsRefNumber(safeId) match {
+      case _ =>
+        println("getting ref numbner")
+    }
+    println(s"""Finished checking if this is a new AWRS application $awrsRefNumber""")
+
+    println("Entering check enrolment store proxy")
+    val x = checkEnrolmentStore.checkEnrolmentStoreProxy(bcd.utr ,authRetrievals) match {
+      case _ =>
+        println("calling check enrolment store proxy")
+        Some(true)
+    }
+    println(s"""Finshed checking enrolment store proxy $x""")
+
+    Some(true)
+  }
 
   // showBusinessType is added to enable users who had submitted the wrong legal entities to correct them post submission.
   // they will have to manually enter the amendment url in order to access this feature

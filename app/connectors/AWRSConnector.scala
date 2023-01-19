@@ -20,6 +20,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
 import exceptions.{DESValidationException, DuplicateSubscriptionException, GovernmentGatewayException, PendingDeregistrationException}
+
 import javax.inject.Inject
 import models.FormBundleStatus.Approved
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
@@ -31,7 +32,7 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AWRSFeatureSwitches, AccountUtils, LoggingUtils}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import scala.util.matching.Regex
 
 class AWRSConnector @Inject()(http: DefaultHttpClient,
@@ -54,7 +55,7 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     val legalEntityType = (fileData \ subscriptionTypeJSPath \ "legalEntity" \ "legalEntity").as[String]
     val businessName = (fileData \ subscriptionTypeJSPath \ "businessCustomerDetails" \ "businessName").as[String]
 
-    val postURL = s"""$serviceURL/awrs/send-data"""
+    val postURL = s"""$serviceURL/awrs/send-data""" //TODO need to add a call to AWRS backend
 
     http.POST[JsValue, HttpResponse](postURL, fileData, Seq.empty) map {
       response =>
@@ -301,7 +302,6 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
         response.status match {
           case 200 =>
             val statusInfoType = response.json.as[StatusInfoType](StatusInfoType.reader)
-
             statusInfoType.response match {
               case Some(statusResponse) if statusResponse.isInstanceOf[StatusInfoSuccessResponseType] =>
                 val secureCommText: String = statusResponse.asInstanceOf[StatusInfoSuccessResponseType].secureCommText
@@ -447,6 +447,59 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
           None
       }
 
+    }
+  }
+
+  def getAwrsRefNumber(safeId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+    val safeId = "XA0001234567890"
+    val getURL = s"""$serviceURL/awrs/check-awrs-ref/$safeId """
+    println(s"""[AWRSConnector][getAwrsRefNumber]""")
+    println(s"""$getURL""")
+    http.GET(getURL, Seq.empty, Seq.empty) map {
+      response =>
+        response.status match {
+          case 200 =>
+            println(s"""%%%%%%%%%%%%%%%%% ${response}""")
+            response
+          case 404 =>
+            println(s"""AWRSRefNumber not found for $safeId""")
+            response
+        }
+    }
+  }
+
+  def checkEnrolmentStore(utr: Option[String],
+                    authRetrievals: StandardAuthRetrievals)
+                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ES0CallInfo] = {
+    println("MMAKEINS ES0 call")
+    debug("checking enrolement store for pre existing account")
+
+//    val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
+    val awrsRefNo = "XOAW00000110001"
+
+    val getURL = s"""$serviceURL/awrs/status-info/$awrsRefNo"""
+
+    debug(f"check enrolments calling - $getURL")
+
+    http.GET(getURL, Seq.empty, Seq.empty) map {
+      response =>
+        response.status match {
+          case 200 =>
+            val enrolements = response.json.as[ES0CallInfo](ES0CallInfo.reader)
+            enrolements.response match {
+              case Some(ES0SuccessResponse(principalUserIDList, delegatedUserIDList)) =>
+                ES0SuccessResponse(principalUserIDList, delegatedUserIDList)
+              case Some(ES0FailureResponse(code, message)) =>
+                Some(ES0FailureResponse(code, message))
+              case Some(ES0NoContent) =>
+                Some(ES0NoContent)
+              case _ =>
+                throw new ServiceUnavailableException("Some issue")
+            }
+            enrolements
+          case _ =>
+            throw new ServiceUnavailableException("Issue with AWRS when checking enrolment store")
+        }
     }
   }
 }

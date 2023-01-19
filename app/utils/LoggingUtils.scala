@@ -36,6 +36,7 @@ trait LoggingUtils extends Logging {
   final val auditAPI9TxName: String = "API9 - View Application Status"
   final val auditAPI10TxName: String = "API10 - Deregister From AWRS"
   final val auditAPI11TxName: String = "API11 - View Decision Text"
+  final val auditES0xName: String = "ES0 - Query user enrolments"
   final val auditConfirmationEmailTxName: String = "API-Confirmation"
   final val auditCancellationEmailTxName: String = "API-Cancellation"
   final val auditWithdrawnEmailTxtName: String = "API-Withdrawn"
@@ -46,6 +47,7 @@ trait LoggingUtils extends Logging {
   final val auditVerifyEmail: String = "AWRS Verify Email Address"
 
   final val eventTypeSuccess: String = "AwrsSuccess"
+  final val awrsCheckDuplciates: String = "Making ES0 call"
   final val eventTypeFailure: String = "AwrsFailure"
   final val eventTypeBadRequest: String = "BadRequest"
   final val eventTypeNotFound: String = "NotFound"
