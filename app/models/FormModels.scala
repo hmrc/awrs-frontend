@@ -246,7 +246,8 @@ case class SubscriptionTypeFrontEnd(
                                      suppliers: Option[Suppliers],
                                      applicationDeclaration: Option[ApplicationDeclaration],
                                      changeIndicators: Option[ChangeIndicators],
-                                     modelVersion: String = SubscriptionTypeFrontEnd.latestModelVersion
+                                     modelVersion: String = SubscriptionTypeFrontEnd.latestModelVersion,
+                                     awrsRegistrationNumber: Option[String] = None
                                    ) extends ModelVersionControl
 
 /* TODO AWRS-1800 old model to be removed after 28 days */
