@@ -33,7 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
 case class StandardAuthRetrievals(
                                    enrolments: Set[Enrolment],
                                    affinityGroup: Option[AffinityGroup],
-                                   credId: String
+                                   credId: String,
+                                   role: Option[CredentialRole]
                                  )
 
 trait AuthFunctionality extends AuthorisedFunctions with Logging {
@@ -56,9 +57,9 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])
                       (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
     authorised(Enrolment("IR-CT") or Enrolment("IR-SA") or Enrolment("HMRC-AWRS-ORG") or AffinityGroup.Organisation)
-      .retrieve(authorisedEnrolments and affinityGroup and credentials) {
-        case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) =>
-          body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(providerId)))
+      .retrieve(authorisedEnrolments and affinityGroup and credentials and credentialRole) {
+        case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) ~ role =>
+          body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(providerId), role))
         case _ =>
           throw new RuntimeException("[authorisedAction] Unknown retrieval model")
       } recover recoverAuthorisedCalls
