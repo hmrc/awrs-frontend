@@ -37,8 +37,6 @@ object TestConstants {
   lazy val testAWRSUtr = "XNAW" + genRandNumString(11)
   lazy val testCTUtr = genRandNumString(12)
   lazy val testOrg = "testOrg"
-  //  lazy val testNino = new Generator().nextNino.nino
-  //  lazy val testUtr = new SaUtrGenerator().nextSaUtr.utr
   lazy val testPassportNo = "1" * 20
   lazy val testNationalId = "1" * 20
   lazy val testGrpJoinDate = LocalDate.now().toString()

@@ -17,8 +17,11 @@
 package models
 
 import play.api.libs.json.Json
+import utils.AwrsTestJson.api5SoleTraderJson
+import utils.TestConstants._
 import utils.TestUtil._
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
+
 import scala.language.reflectiveCalls
 
 class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
@@ -125,6 +128,48 @@ class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
       override lazy val unorderedWholesalers = List("06", "04", "02")
       tradingActivity mustBe List("02", "04", "06")
       tradingActivity.size mustBe 3
+    }
+  }
+
+  "AWRSFEModel" must {
+
+    "convert JSON to the model correctly" in  {
+      val json = api5SoleTraderJson
+      val model = AWRSFEModel(
+        subscriptionTypeFrontEnd = SubscriptionTypeFrontEnd(
+          legalEntity = BusinessType(legalEntity = Some("SOP"), None, None),
+          businessPartnerName = Some("businessPartnerName"),
+          groupDeclaration = None,
+          businessCustomerDetails = Some(BusinessCustomerDetails(
+            "businessName", Some("Sole Trader"), BCAddress(
+              "1 Example Street","Example View", Some("Example Town"), Some("Exampleshire"), Some(testPostcode), Some("GB")
+            ),
+          "1234567890", "XE0001234567890", false, "JARN1234567", Some("firstName"), Some("lastName"))),
+          businessDetails = Some(BusinessDetails(None, Some("tradingName"), Some(NewAWBusiness("No", None)))),
+          businessRegistrationDetails = Some(BusinessRegistrationDetails(doYouHaveNino = Some("Yes"), nino = Some(testNino), doYouHaveVRN = Some("No"), doYouHaveUTR = Some("No"))),
+          businessContacts = Some(BusinessContacts(Some("contactFirstName"), Some("contactLastName"), Some("012345678901"), Some("email@email.com"), Some("Yes"), None, "1.0")),
+          placeOfBusiness = Some(PlaceOfBusiness(mainPlaceOfBusiness = Some("Yes"), placeOfBusinessLast3Years = Some("Yes"), operatingDuration = Some("5"), modelVersion = "1.0")),
+          partnership = None,
+          groupMembers = None,
+          additionalPremises = Some(AdditionalBusinessPremisesList(premises = List(
+            AdditionalBusinessPremises(additionalPremises = Some("Yes"), additionalAddress = Some(Address(postcode = Some(testPostcode), addressLine1 = "additional line 1", addressLine2 = "additional line 2")), addAnother = Some("Yes")),
+            AdditionalBusinessPremises(additionalPremises = Some("Yes"), additionalAddress = Some(Address(postcode = Some(testPostcode), addressLine1 = "additional line 1", addressLine2 = "additional line 2")), addAnother = Some("No")))
+          )),
+          businessDirectors = None,
+          tradingActivity = Some(TradingActivity(List("05", "01", "04", "02", "03", "99"), Some("otherWholesaler"), List("02", "04"), None, Some("Yes"), Some("No"), None, None)),
+          products = Some(Products(List("03", "04", "06", "08"), None, List("01", "02", "03", "04", "05", "06"), None)),
+          suppliers = Some(Suppliers(List(Supplier(Some("Yes"), Some("supplierName"), None, Some(Address("addressLine1", "addressLine2", postcode = testPostcode)), Some("Yes"), Some(testVrn), Some("Yes")),
+            Supplier(Some("Yes"), Some("supplierName"), None, Some(Address("addressLine1", "addressLine2", postcode = testPostcode)), Some("No"), None, Some("No"))))),
+          applicationDeclaration = Some(ApplicationDeclaration(Some("declarationName"), Some("declarationRole"), None)),
+          changeIndicators = None,
+          modelVersion = "1.0",
+          awrsRegistrationNumber = Some("XZAW0000000000")
+        )
+      )
+
+      println(model.subscriptionTypeFrontEnd.additionalPremises.get.premises(0))
+
+      json.as[AWRSFEModel] mustBe model
     }
   }
 }

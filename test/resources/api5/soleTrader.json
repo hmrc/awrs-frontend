@@ -29,12 +29,10 @@
       }
     },
     "businessRegistrationDetails" : {
-      "identification": {
-        "doYouHaveNino": "Yes",
-        "nino": "$nino",
-        "doYouHaveVRN": "No",
-        "doYouHaveUTR": "No"
-      }
+      "doYouHaveNino": "Yes",
+      "nino": "$nino",
+      "doYouHaveVRN": "No",
+      "doYouHaveUTR": "No"
     },
     "placeOfBusiness": {
       "mainPlaceOfBusiness": "Yes",
@@ -72,8 +70,7 @@
         }]
     },
     "tradingActivity": {
-      "wholesalerType": ["06",
-        "01",
+      "wholesalerType": ["01",
         "02",
         "03",
         "04",
@@ -126,6 +123,7 @@
       "declarationName": "declarationName",
       "declarationRole": "declarationRole"
     },
+    "awrsRegistrationNumber": "XZAW0000000000",
     "modelVersion": "1.0"
   }
 }
