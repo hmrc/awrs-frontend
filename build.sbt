@@ -31,7 +31,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(playSettings ++ scoverageSettings : _*)
   .settings( majorVersion := 3 )
   .settings(scalaSettings: _*)
-  .settings(publishingSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(
     scalaVersion := "2.12.12",
