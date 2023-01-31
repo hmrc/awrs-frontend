@@ -22,12 +22,13 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments, User}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.auth.core.CredentialRole
 
 sealed trait BType
 
@@ -42,25 +43,27 @@ trait MockAuthConnector extends AwrsUnitTestTraits {
     reset(mockAuthConnector)
   }
 
-  val authResultDefault: Enrolments ~ Some[AffinityGroup.Organisation.type] ~ Some[Credentials] =
-    new ~(
-      new ~(
-        Enrolments(TestUtil.defaultEnrolmentSet),
-        Some(AffinityGroup.Organisation)
-      ),
-      Some(Credentials("CredID", "type"))
+  val authResultDefault: Enrolments ~ Some[AffinityGroup.Organisation.type] ~ Some[Credentials] ~ Some[CredentialRole] =
+    new ~(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet),Some(AffinityGroup.Organisation)),
+      Some(Credentials("CredID", "type"))),
+      Some(User)
     )
 
-  def mockAuthNoEnrolment: OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials]]] = {
-    when(mockAuthConnector.authorise[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(new ~(new ~(Enrolments(Set()), Some(AffinityGroup.Organisation)), Some(Credentials("CredID", "type")))))
+  def mockAuthNoEnrolment: OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Some[CredentialRole]]] = {
+    when(mockAuthConnector.authorise[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Some[CredentialRole]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(
+        new ~(new ~(new ~(Enrolments(Set()), Some(AffinityGroup.Organisation)),
+          Some(Credentials("CredID", "type"))),
+          Some(User)
+      )
+      ))
   }
 
   def setAuthMocks(
-                    authResult: Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials]] = Future.successful(authResultDefault),
+                    authResult: Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Some[CredentialRole]] = Future.successful(authResultDefault),
                     mockAccountUtils: Option[AccountUtils] = None
-                  ): OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials]]] = {
-    authResult.foreach{ case Enrolments(e) ~ _ ~ _ =>
+                  ): OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Option[CredentialRole]]] = {
+    authResult.foreach{ case Enrolments(e) ~ _ ~ _ ~ _ =>
       val enrolment: Option[Enrolment] = e.find(_.key == "HMRC-AWRS-ORG")
 
       mockAccountUtils.foreach { utils =>
@@ -72,7 +75,7 @@ trait MockAuthConnector extends AwrsUnitTestTraits {
       }
     }
 
-    when(mockAuthConnector.authorise[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAuthConnector.authorise[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Option[CredentialRole]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(authResult)
   }
 

@@ -235,6 +235,11 @@ awrs.generic.wait_info = You must wait 24 hours after {0} your registration befo
 awrs.generic.wait_info_withdraw=withdrawing
 awrs.generic.wait_info_de-registration=cancelling
 awrs.generic.section_progress=Section {0} of {1} - {2}
+awrs.generic.assistant_kickout.title=You cannot create a new AWRS application
+awrs.generic.assistant_kickout.para=As a standard user, you will need your AWRS administrator to give you access to make this change.
+awrs.generic.assistant_kickout.more_info=Read more about what administrators and standard users can do.
+awrs.generic.assistant_kickout.more_info_link=https://www.gov.uk/guidance/how-to-give-staff-access-to-your-hmrc-online-tax-agent-accounts#giving-staff-access-to-your-agent-services-account
+
 
 #  Business customer
 #============================================================

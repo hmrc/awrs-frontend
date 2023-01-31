@@ -34,13 +34,14 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AwrsTestJson._
 import utils.TestConstants._
 import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch, TestUtil}
+import uk.gov.hmrc.auth.core.User
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
-  val retrievalsWithAwrsEnrolment = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeGGCredID")
+  val retrievalsWithAwrsEnrolment = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeGGCredID", Some(User))
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
   override def beforeEach: Unit = {

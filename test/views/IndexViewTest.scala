@@ -29,7 +29,7 @@ import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments, User}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -296,7 +296,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       showContinueButton = allSectionComplete,
       getStatus = indexStatusModel
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
+    setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
     testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
   }
 

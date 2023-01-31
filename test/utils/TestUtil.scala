@@ -35,7 +35,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
 import TestConstants._
 import controllers.auth.StandardAuthRetrievals
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, User}
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers.stubMessages
 import scala.language.implicitConversions
@@ -902,10 +902,10 @@ object TestUtil extends PlaySpec {
   val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
     Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
 
-  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID")
-  val authRetrievalSAUTR = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID")
-  val authRetrievalEmptySetEnrolments = StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation), "fakeCredID")
+  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID", Some(User))
+  val authRetrievalSAUTR = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID", Some(User))
+  val authRetrievalEmptySetEnrolments = StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation), "fakeCredID", Some(User))
 
-  val emptyAuthRetrieval = StandardAuthRetrievals(Set(), None, "emptyFakeCredID")
+  val emptyAuthRetrieval = StandardAuthRetrievals(Set(), None, "emptyFakeCredID", Some(User))
 
 }

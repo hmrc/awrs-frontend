@@ -103,7 +103,7 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
     "deRegistration must not call ETMP when the user does not have an AWRS reg number" in {
       mocks(awrsNo = false)
 
-      val result = testAwrsAPI10.deRegistration(StandardAuthRetrievals(Set.empty[Enrolment], None, "fakeCredID"))
+      val result = testAwrsAPI10.deRegistration(StandardAuthRetrievals(Set.empty[Enrolment], None, "fakeCredID", None))
       await(result) mustBe None
     }
   }
