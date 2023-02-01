@@ -43,10 +43,10 @@ trait MockAuthConnector extends AwrsUnitTestTraits {
     reset(mockAuthConnector)
   }
 
-  val authResultDefault: Enrolments ~ Some[AffinityGroup.Organisation.type] ~ Some[Credentials] ~ Some[CredentialRole] =
+  def authResultDefault(role: CredentialRole = User): Enrolments ~ Some[AffinityGroup.Organisation.type] ~ Some[Credentials] ~ Some[CredentialRole] =
     new ~(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet),Some(AffinityGroup.Organisation)),
       Some(Credentials("CredID", "type"))),
-      Some(User)
+      Some(role)
     )
 
   def mockAuthNoEnrolment: OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Some[CredentialRole]]] = {
@@ -60,7 +60,7 @@ trait MockAuthConnector extends AwrsUnitTestTraits {
   }
 
   def setAuthMocks(
-                    authResult: Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Some[CredentialRole]] = Future.successful(authResultDefault),
+                    authResult: Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Some[CredentialRole]] = Future.successful(authResultDefault()),
                     mockAccountUtils: Option[AccountUtils] = None
                   ): OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Option[CredentialRole]]] = {
     authResult.foreach{ case Enrolments(e) ~ _ ~ _ ~ _ =>

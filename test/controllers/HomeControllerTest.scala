@@ -88,6 +88,13 @@ class HomeControllerTest extends AwrsUnitTestTraits
       }
     }
 
+    "redirect to the Business Type page if the save4Later review details are present and the user is an Assistant with an AWRS enrolment" in {
+      showWithSave4LaterAndAssistantAwrs() { result =>
+        status(result) mustBe 303
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
+      }
+    }
+
     "redirect to the Business customer matching if the save4Later review details are present WITHOUT SAFEID and the user does not have an AWRS enrolment" in {
       when(mockAppConfig.businessCustomerStartPage)
         .thenReturn("http://localhost:9923/business-customer/awrs")
@@ -230,6 +237,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = None)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+    val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  private def showWithSave4LaterAndAssistantAwrs(callerId: Option[String] = None)(test: Future[Result] => Any) {
+    resetAuthConnector()
+    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = None)
+    setAuthMocks(Future.successful(authResultDefault(Assistant)), Some(mockAccountUtils))
     val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
