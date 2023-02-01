@@ -211,6 +211,8 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       cached <- save4LaterService.mainStore.fetchAll(authRetrievals)
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
       subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
+      //add check here to make sure stored awrsRef is same as enrolled awrsRef
+//      _ <- checkRefForMatch(cachedSubscription, authRetrievals)
       _ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus, authRetrievals) else Future("OK")
       awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))), authRetrievals)
       isNewBusiness <- isNewBusiness(cached)
@@ -483,5 +485,13 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
 
     changeIndicator
   }
+
+  def checkRefForMatch(data: Option[SubscriptionTypeFrontEnd], authRetrievals: StandardAuthRetrievals): Future[Option[EnrolResponse]] = {
+    val isMatch: Boolean = data.forall(_.awrsRegistrationNumber.forall(_ == accountUtils.getAwrsRefNo(authRetrievals.enrolments)))
+
+    if(isMatch) doCorrection else Future.successful(None)
+  }
+
+  def doCorrection: Future[Option[EnrolResponse]] = ???
 
 }
