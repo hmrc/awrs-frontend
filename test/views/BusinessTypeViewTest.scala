@@ -30,24 +30,25 @@ import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments, User}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_business_type
 
 import scala.concurrent.Future
 
 class BusinessTypeViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val template = app.injector.instanceOf[views.html.awrs_business_type]
+  val template: awrs_business_type = app.injector.instanceOf[views.html.awrs_business_type]
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val businessCustomerDetailsFormID = "businessCustomerDetails"
   val formId = "legalEntity"
 
-  lazy val testBusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
-  lazy val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option("Ne4 9hs"), Option("country"))
+  lazy val testBusinessType: BusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
+  lazy val testBCAddress: BCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option("Ne4 9hs"), Option("country"))
 
-  lazy val testBusinessCustomerGroup = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
-  lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
-  lazy val testNewApplicationType = NewApplicationType(Some(true))
+  lazy val testBusinessCustomerGroup: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
+  lazy val testBusinessCustomer: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
+  lazy val testNewApplicationType: NewApplicationType = NewApplicationType(Some(true))
 
   val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
 

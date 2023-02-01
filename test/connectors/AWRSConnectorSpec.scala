@@ -25,7 +25,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json._
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -41,7 +41,7 @@ import scala.concurrent.Future
 
 class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
-  val retrievalsWithAwrsEnrolment = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeGGCredID", Some(User))
+  val retrievalsWithAwrsEnrolment: StandardAuthRetrievals = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeGGCredID", Some(User))
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
   override def beforeEach: Unit = {
@@ -61,10 +61,10 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
   val testAWRSConnector = new AWRSConnector(mockWSHttp, mockAuditable, mockAccountUtils, mockAppConfig)
 
-  val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
-  val subscribeAcceptedResponse = SelfHealSubscriptionResponse("123456")
-  val api6SuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
-  val api3SucecssResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
+  val subscribeSuccessResponse: SuccessfulSubscriptionResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
+  val subscribeAcceptedResponse: SelfHealSubscriptionResponse = SelfHealSubscriptionResponse("123456")
+  val api6SuccessResponse: SuccessfulUpdateSubscriptionResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
+  val api3SucecssResponse: SuccessfulUpdateGroupBusinessPartnerResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
   lazy val updateGrpPartnerSuccessReponseJson: JsValue = Json.toJson(api3SucecssResponse)
   lazy val subscribeApi6SuccessResponseJson: JsValue = Json.toJson(api6SuccessResponse)
   lazy val badRequestResponse: JsValue = Json.parse( """{"reason": "Some other bad request reason"}""")
@@ -319,7 +319,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
   "AWRS withdrawal connector" must {
     import utils.WithdrawalTestUtils._
-    implicit val request = FakeRequest()
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
     "return OK on successful return of data" in {
       when(mockWSHttp.POST[JsValue, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
@@ -369,7 +369,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     lazy val getStatusInfoURI = (awrsRef: String, contactNumber: String) => f"/awrs/status-info/$awrsRef/$contactNumber"
 
     // these values doesn't really matter since the call itself is mocked
-    implicit val request = FakeRequest()
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     val contactNumber = "0123456789"
     val statusInfoResponseSuccess = StatusInfoType(Some(StatusInfoSuccessResponseType("", "")))
     val statusInfoResponseSuccessJson = StatusInfoType.writter.writes(statusInfoResponseSuccess)
@@ -436,7 +436,7 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
     lazy val deRegisterURI = (awrsRef: String) => f"/awrs/de-registration/$awrsRef"
 
     // these values doesn't really matter since the call itself is mocked
-    implicit val request = FakeRequest()
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     val awrsRef = "0123456"
     val deRegistrationResponseSuccess = DeRegistrationType(Some(DeRegistrationSuccessResponseType("")))
     val deRegistrationResponseSuccessJson = DeRegistrationType.writter.writes(deRegistrationResponseSuccess)

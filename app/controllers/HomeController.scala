@@ -132,7 +132,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
       api5Journey(callerId)(request)
     } else if (authRetrievals.role.equals(Some(Assistant))) {
-      logger.warn(s"Assitant attempting to use AWRS without AWRS enrolment")
+      logger.warn(s"Assistant attempting to use AWRS without AWRS enrolment")
       Future.successful(Forbidden(templateAssistantKickout()))
     } else {
       api4Journey(authRetrievals, callerId)
