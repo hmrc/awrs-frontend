@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
-
+import uk.gov.hmrc.auth.core.Assistant
 import scala.concurrent.{ExecutionContext, Future}
 
 class HomeController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,8 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
                                val accountUtils: AccountUtils,
                                implicit val save4LaterService: Save4LaterService,
                                implicit val applicationConfig: ApplicationConfig,
-                               templateTooSoon: views.html.awrs_application_too_soon_error) extends FrontendController(mcc) with AwrsController {
+                               templateTooSoon: views.html.awrs_application_too_soon_error,
+                               templateAssistantKickout: views.html.assistant_kickout) extends FrontendController(mcc) with AwrsController {
 
   private final lazy val MinReturnHours = 24
 
@@ -130,6 +131,9 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
                   (implicit request: Request[AnyContent]): Future[Result] =
     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
       api5Journey(callerId)(request)
+    } else if (authRetrievals.role.equals(Some(Assistant))) {
+      logger.warn(s"Assistant attempting to use AWRS without AWRS enrolment")
+      Future.successful(Forbidden(templateAssistantKickout()))
     } else {
       api4Journey(authRetrievals, callerId)
     }

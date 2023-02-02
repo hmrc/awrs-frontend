@@ -13,8 +13,8 @@ private object AppDependencies {
     "uk.gov.hmrc"            %% "domain"                     % "8.1.0-play-28",
     "com.yahoo.platform.yui" %  "yuicompressor"              % "2.4.8",
     "com.mohiva"             %% "play-html-compressor"       % "0.7.1", // used to pretty print html by stripping out all the whitespaces added by the playframework
-    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "6.0.0-play-28",
-    "com.typesafe.play"      %% "play-json-joda"             % "2.9.3"
+    "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "6.3.0-play-28",
+    "com.typesafe.play"      %% "play-json-joda"             % "2.9.4"
   )
 
   trait TestDependencies {
@@ -43,7 +43,7 @@ private object AppDependencies {
         "uk.gov.hmrc"                  %% "bootstrap-test-play-28"   % "5.25.0"                 % scope,
         "com.typesafe.play"            %% "play-test"                % PlayVersion.current      % scope,
         "com.github.tomakehurst"       %  "wiremock-jre8"            % "2.35.0"                 % scope,
-        "com.fasterxml.jackson.module" %% "jackson-module-scala"     % "2.14.1"                 % scope
+        "com.fasterxml.jackson.module" %% "jackson-module-scala"     % "2.14.2"                 % scope
       )
     }.test
   }

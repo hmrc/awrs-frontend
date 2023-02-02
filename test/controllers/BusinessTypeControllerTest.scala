@@ -20,14 +20,16 @@ import builders.SessionBuilder
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
+import org.scalatest.Assertion
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{CheckEtmpService, ServicesUnitTestFixture}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.auth.core._
 import utils.TestConstants._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_business_type
 
 import scala.concurrent.Future
 
@@ -39,17 +41,17 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
   val businessCustomerDetailsFormID = "businessCustomerDetails"
   val formId = "legalEntity"
 
-  lazy val testBusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
-  lazy val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option(testPostcode), Option("country"))
+  lazy val testBusinessType: BusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
+  lazy val testBCAddress: BCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option(testPostcode), Option("country"))
 
-  lazy val testBusinessCustomerGroup = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
-  lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
-  lazy val testNewApplicationType = NewApplicationType(Some(true))
+  lazy val testBusinessCustomerGroup: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
+  lazy val testBusinessCustomer: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
+  lazy val testNewApplicationType: NewApplicationType = NewApplicationType(Some(true))
 
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd()
 
   val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_type]
+  val mockTemplate: awrs_business_type = app.injector.instanceOf[views.html.awrs_business_type]
 
   val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(
     mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig, mockTemplate) {
@@ -104,10 +106,10 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  def assertBusinessName(expected: String)(implicit result: Future[Result]) =
+  def assertBusinessName(expected: String)(implicit result: Future[Result]): Assertion =
     await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessName, "") mustBe expected
 
-  def assertBusinessType(expected: String)(implicit result: Future[Result]) =
+  def assertBusinessType(expected: String)(implicit result: Future[Result]): Assertion =
     await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessType, "") mustBe expected
 
   "Session management in BusinessTypeController" must {
@@ -124,13 +126,13 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
           // from save4later
           assertBusinessType(testBusinessCustomer.businessType.fold("")(x => x))
       }
-      api4User(invalidSubmission)(testBusinessTypeController.saveAndContinue) {
+      api4User(invalidSubmission)(testBusinessTypeController.saveAndContinue()) {
         implicit result =>
           status(result) mustBe BAD_REQUEST
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType("") // must not have any business type added since the submission was false
       }
-      api4User(validSubmission)(testBusinessTypeController.saveAndContinue) {
+      api4User(validSubmission)(testBusinessTypeController.saveAndContinue()) {
         implicit result =>
           status(result) mustBe SEE_OTHER
           assertBusinessName(testBusinessCustomer.businessName)
@@ -145,13 +147,13 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType(testBusinessCustomer.businessType.fold("")(x => x))
       }
-      api5User(invalidSubmission)(testBusinessTypeController.saveAndContinue) {
+      api5User(invalidSubmission)(testBusinessTypeController.saveAndContinue()) {
         implicit result =>
           status(result) mustBe BAD_REQUEST
           assertBusinessName(testBusinessCustomer.businessName)
           assertBusinessType("") // must not have any business type added since the submission was false
       }
-      api5User(validSubmission)(testBusinessTypeController.saveAndContinue) {
+      api5User(validSubmission)(testBusinessTypeController.saveAndContinue()) {
         implicit result =>
           status(result) mustBe SEE_OTHER
           assertBusinessName(testBusinessCustomer.businessName)
@@ -185,7 +187,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
 
   private def api4User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusinessCustomer)))
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
+    setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }

@@ -48,10 +48,11 @@ import play.api.test.Helpers._
 import services._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments, User}
 import uk.gov.hmrc.play.audit.model.Audit
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
+import views.html.{awrs_application_declaration, awrs_business_directors}
 
 import scala.concurrent.Future
 
@@ -64,18 +65,18 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   val mockEnrolService: EnrolService = mock[EnrolService]
   val mockApplicationService: ApplicationService = mock[ApplicationService]
   val mockAudit: Audit = mock[Audit]
-  val selfHealSuccessResponse = SelfHealSubscriptionResponse("12345")
+  val selfHealSuccessResponse: SelfHealSubscriptionResponse = SelfHealSubscriptionResponse("12345")
 
   val formId = "applicationDeclaration"
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_application_declaration]
+  val mockTemplate: awrs_application_declaration = app.injector.instanceOf[views.html.awrs_application_declaration]
 
-  val mockBusinessDirectorsTemplate = app.injector.instanceOf[views.html.awrs_business_directors]
+  val mockBusinessDirectorsTemplate: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
-  val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
-  val subscribeUpdateSuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
-  val enrolSuccessResponse = EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))
-  val testReviewDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
+  val subscribeSuccessResponse: SuccessfulSubscriptionResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
+  val subscribeUpdateSuccessResponse: SuccessfulUpdateSubscriptionResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
+  val enrolSuccessResponse: EnrolResponse = EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))
+  val testReviewDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
 
   private def testRequest(declaration: ApplicationDeclaration) =
     TestUtil.populateFakeRequest[ApplicationDeclaration](FakeRequest(), ApplicationDeclarationForm.applicationDeclarationValidationForm, declaration)
@@ -149,25 +150,25 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     }
 
     "return true if AWRS user is enrolled and has status of Pending" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Pending.name)
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Pending.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe true
     }
 
     "return true if AWRS user is enrolled and has status of Approved" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Approved.name)
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Approved.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe true
     }
 
     "return true if AWRS user is enrolled and has status of ApprovedWithConditions" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> ApprovedWithConditions.name)
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> ApprovedWithConditions.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe true
     }
 
     "return false if AWRS user is enrolled and has status of Rejected" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Rejected.name)
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Rejected.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe false
     }
@@ -219,7 +220,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"),
       fetchApplicationDeclaration = data
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
+    setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
@@ -234,7 +235,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       fetchAll = MockSave4LaterService.defaultFetchAll,
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP")
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
+    setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
@@ -251,7 +252,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       fetchAll = MockSave4LaterService.defaultFetchAll,
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP")
     )
-    setAuthMocks(Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))))
+    setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Left(selfHealSuccessResponse)))
@@ -276,7 +277,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     exception match {
       case _:DESValidationException => setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
       case _ => setAuthMocks(
-        authResult = Future.successful(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type"))),
+        authResult = Future.successful(new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))),
         mockAccountUtils = Some(mockAccountUtils)
       )
     }

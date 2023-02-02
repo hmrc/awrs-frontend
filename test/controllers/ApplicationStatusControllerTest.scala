@@ -33,6 +33,7 @@ import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import utils.AwrsTestJson.api5LTDJson
 import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_application_status
 
 import scala.concurrent.Future
 
@@ -68,7 +69,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     case false => TestUtil.testBusinessDetails()
   }
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_application_status]
+  val mockTemplate: awrs_application_status = app.injector.instanceOf[views.html.awrs_application_status]
   val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService,
     mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig, mockTemplate)
 
@@ -304,7 +305,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   }
 
   "isNewBusiness" must {
-    val authRetrievals = StandardAuthRetrievals(Set(), None, "")
+    val authRetrievals = StandardAuthRetrievals(Set(), None, "", None)
 
     "report a new business" when {
       "the answer is available in trading start details" in {
