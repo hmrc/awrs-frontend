@@ -2,21 +2,6 @@
 font-size: 24px;
 }
 
-.centered-content {
-    display: block;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 0.78947em 0em 0.78947em;
-    font-size: 19px;
-    line-height: 1.31579;
-    font-weight: 400;
-    text-transform: none;
-}
-
-.content__body {
-    width: 100%;
-}
-
 #changes-banner {
     margin: 0;
     padding: 0.89474em 0 0.78947em 0;
@@ -33,41 +18,19 @@ font-size: 24px;
     background-color: #ECC3C7;
 }
 
-#changes-banner .font-xsmall {
-    top: 2px;
-    position: relative;
-}
-
-.postcode-lookup {
-    top: 20px;
-    display: none;
-    box-shadow: 0 2px 0 #6F777B;
-    color: #000;
-
-}
-
 #postcode-lookup-button-0, #postcode-lookup-button-1, #postcode-lookup-button-2 {
+  top: 20px;
   display: block;
   max-width: 15ex;
   margin-bottom: 10px
 }
 
-
 .address-container .font-small {
     display: none;
 }
 
-.element-inline {
-    float: left;
-    clear: both;
-}
-
 .inline .form-field {
     margin-bottom: 0;
-}
-
-.block-label {
-    padding-left: 53px;
 }
 
 .postcode-lookup:hover, .postcode-lookup:focus, .postcode-lookup-color-change {
@@ -84,27 +47,6 @@ font-size: 24px;
     background: url("/alcohol-wholesale-scheme/assets/images/loading.gif") no-repeat;
 }
 
-summary .arrow {
-    display:inline-block;
-    margin-right: 0.5em;
-}
-
-/* one view */
-.status-banner {
-    background-color: #DEE0E2;
-    height: 46px;
-    position: relative;
-    width: 100%;
-}
-
-.status-banner span {
-    margin: 10px 15px;
-    position: relative;
-    color: #6F777B;
-    font-size: 1.2em;
-    display: inline-block;
-}
-
 table.view-application td {
     vertical-align: top;
     width: 40%;
@@ -119,13 +61,6 @@ table.view-application tr.record-header td {
     font-weight: 700;
 }
 
-table th, table td {font-size:19px; }
-
-td.links {
-    margin: 0;
-    text-align: right;
-}
-
 tr.record-header td.row-data {
     text-align: right;
 }
@@ -133,47 +68,6 @@ tr.record-header td.row-data {
 table.view-application tr.record-header td:last-child p, .links p {
     margin: 0 0 0 1em;
     display: inline;
-}
-
-#back-link {margin-top:10px;}
-
-.back-link::before {
-    border-bottom: 5px solid transparent;
-    border-right: 6px solid #0b0c0c;
-    border-top: 5px solid transparent;
-    content: "";
-    display: block;
-    height: 0;
-    left: 0;
-    margin-top: -6px;
-    position: absolute;
-    padding-right: 0;
-    top: 50%;
-    width: 0;
-}
-
-.back-link:link, .back-link:visited, .back-link:hover, .back-link:active {
-    color: #0b0c0c;
-}
-
-.back-link, .view-application-section a.back-link {
-    border-bottom: 1px solid #0b0c0c;
-    display: inline-block;
-    font-family: "nta",Arial,sans-serif;
-    font-weight: 400;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 14px;
-    position: relative;
-    text-decoration: none;
-    text-transform: none;
-    font-size: 16px;
-    line-height: 1.25;
-}
-
-
-.links p a {
-    margin: 0;
 }
 
 table.view-application tr.record-spacer td, .record-add td {
@@ -212,10 +106,6 @@ a:visited, .link-style:visited, .button--link-style:visited {
     color: #4C2C92;
 }
 
-.summary:hover, a:hover {
-    color: #2B8CC4;
-}
-
 .summary {
     display: block;
     clear: both;
@@ -241,29 +131,11 @@ a:visited, .link-style:visited, .button--link-style:visited {
 #headerLink {float:left; width:20%;}
 
 /* end one view */
-.validation-summary h1 {
-    margin-top: 10px;
-}
-
-.validation-summary {
-    border: 5px solid #d4351c;
-    margin-bottom: 0;
-    margin-top: 30px;
-    padding: 20px 15px 15px;
-}
-
-.validation-summary li {
-    line-height: 1.31579;
-}
-
 .validation-summary-message a, .validation-message a, p.field-error {
     color: #d4351c;
     font-weight: 700;
     font-size: 19px;
 }
-
-.form-date {display: block;}
-
 
 .form-field--error .form-control {
     border: 4px solid #d4351c;
@@ -280,39 +152,6 @@ a:visited, .link-style:visited, .button--link-style:visited {
     padding-bottom: 0;
     padding-top: 0;
     padding: 20px 15px 15px;
-}
-
-
-.form-group legend {
-    font-weight: 700;
-    font-size: 1em;
-}
-
-fieldset.form-group dl, fieldset.form-group dl dt {
-    margin: 0;
-}
-
-fieldset dl dt {
-    font-weight: 700;
-}
-
-fieldset dl dt span.form-hint {
-    font-weight: 100;
-}
-
-#errors ul li a {
-    font-weight: 700;
-}
-
-#errors:focus {outline: 3px solid #ffbf47;}
-
-#deRegistrationConfirmation-yes-content {display:none;}
-
-.highlight {
-    font-style: underline;
-    color: #0076c0;
-    font-weight: 400;
-    cursor: pointer;
 }
 
 .manual-address {
@@ -412,24 +251,6 @@ fieldset dl dt span.form-hint {
     }
 }
 
-select option {
-    background: #fff;
-}
-
-.text-disclaimer {
-    background: url("/alcohol-wholesale-scheme/assets/images/icon-important.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
-    clear: both;
-    font-size: 16px;
-    font-weight: 700;
-    padding-bottom: 10px;
-    padding-left: 45px;
-    width: 90%;
-}
-
-.div-new-line {
-    clear: both;
-}
-
 .div-left {
     display:inline-block;
     float: left;
@@ -440,62 +261,11 @@ select option {
     float: right;
 }
 
-.index-page-links {
-    padding: 0;
-}
-
-.index-page-links li {
-    border-bottom: 1px solid #bfc1c3;
-    color: #2e8aca;
-    list-style-position: inside;
-    padding: 10px 0;
-}
-
-.index-page-links li:first-child {
-    padding-top: 0.6em;
-    border-top: 1px solid #bfc1c3;
-}
-
-#confirmation {
-    color: #fff;
-}
-
 #ConfirmationNoteHeadingText.govuk-heading-m {padding-top: 1.5em;}
-
-.confirmation-description {
-    margin-top: 0.4em;
-    margin-bottom: 0.4em;
-    font-size: 24px;
-    display: inline-block;
-}
-
-div #confirmation-date {
-    font-size: 24px;
-}
 
 #personOrCompany_field {margin-bottom:15px;}
 
-#questionAnswer-trading-HelpLink {clear:both;}
-
 .overseas-alcohol-suppliers, .alcoholSupplierName {margin-bottom:15px;}
-
-.is_supplier_based_in_the_uk {margin-bottom:0;}
-
-#businessTypeQuestionHelper {
-    margin-bottom: 2em;
-}
-
-#application-confirmation-description, #de-registration-confirmation-description {
-    color: #fff;
-    font-size: 36px;
-    font-weight: 700;
-    line-height: 1.21111;
-    margin: 0 auto;
-}
-
-.awrs-application-top-text.form-hint {
-    margin-top: 0;
-}
 
 .awrs-status {
     width: 18%;
@@ -541,10 +311,6 @@ div #confirmation-date {
     display: block;
 }
 
-.comment-box {
-    width: 100%;
-}
-
 .banner {
     padding: 10px 0 10px 13px;
     background-color: #f5f5f5;
@@ -560,19 +326,6 @@ div #confirmation-date {
 }
 
 /*= added for application status page */
-
-
-h1.appstatus-title {
-    color: #fff;
-}
-
-.appstatus-title {
-    font-family: "nta", Arial, sans-serif;
-    line-height: 1.04167;
-    font-weight: 700;
-    text-transform: none;
-    margin-bottom: .625em;
-}
 
 .appstatus-steps {
     list-style-type: none;
@@ -627,11 +380,6 @@ h1.appstatus-title {
     width: 22px;
 }
 
-.alert--important {
-    background-color: #b10e1e;
-    color: white;
-}
-
 .alert {
     clear: both;
     border-left-width: 0.15789em;
@@ -649,14 +397,6 @@ h1.appstatus-title {
     border-color: #bfc1c3;
 }
 
-p.lede, .lede {
-    font-family: "nta", Arial, sans-serif;
-    font-size: 24px;
-    line-height: 1.25;
-    font-weight: 400;
-    text-transform: none;
-}
-
 @media (min-width: 641px) {
     .lede {
         font-size: 24px;
@@ -664,26 +404,14 @@ p.lede, .lede {
     }
 }
 
-#wrapper {
-  text-align: left;
-}
-
 #additional-premises {
     clear: both;
-}
-
-#global-header .header-wrapper .header-proposition .menu.js-hidden {
-  display: block !important;
 }
 
 @media (min-width: 769px) {
   #global-header .header-wrapper .header-proposition .menu.js-hidden {
     display: none !important;
   }
-}
-
-#global-header .header-wrapper .header-proposition #proposition-links li {
-  width: 100%;
 }
 
 #additional-premises table.view-application tr.short-row-title td.row-title {
@@ -710,31 +438,6 @@ hr {
 
 p.print-heading {font-weight:700;}
 #progress-text {margin-top: 1em;}
-.beta-banner {margin-bottom:10px;}
-
-/* Timeout Modal */
-
-
-@media (max-width: 640px){
-    .timeout-dialog {
-        width: 280px !important;
-    }
-}
-
-.timeout-dialog  ~ .ui-widget-overlay {
-
-    top: 0;
-    left: 0;
-    background-color: #000;
-    filter: alpha(opacity=40);
-    -khtml-opacity: 0.4;
-    -moz-opacity: 0.4;
-    opacity: 0.4;
-
-    position: fixed;
-    width: 100%;
-    height: 100%;
-}
 
 .ui-front {
     z-index: 100;
@@ -744,44 +447,8 @@ html.noScroll {
     overflow: hidden;
 }
 
-.timeout-dialog {
-    position: absolute;
-    padding: 40px 30px 40px 30px;
-    border: 1px solid #0b0c0c;
-    background-color: #fff;
-    -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
-}
-
 .ui-dialog-titlebar-close{
     display: none;
-}
-
-.timeout-dialog .ui-dialog-title {
-    display: block;
-    margin-bottom: 1em;
-    font-size: 24px;
-    line-height: 1.25;
-    font-weight: 700;
-}
-
-.timeout-dialog .button{
-    margin-bottom: 1em;
-}
-
-.timeout-dialog .button.button--link{
-    margin: 0;
-    padding: 0;
-}
-
-.timeout-dialog p {
-    font-family: "nta",Arial,sans-serif;
-    font-size: 19px;
-    line-height: 1.31579;
-    font-weight: 400;
-    text-transform: none;
-    margin: .63158em 0;
 }
 
 /* Modal Styles */
@@ -807,29 +474,12 @@ details {display: block;}
     font-size: 19px;}
 .postcode-lookup-results {margin-top: 1em;}
 
-p.heading-secondary, span.heading-secondary {
-    color: #6f777b;
-    display: block;
-    font-family: "GDS Transport",arial,sans-serif;
-    font-size: 27px;
-    font-weight: 100;
-    line-height: 1.11111;
-    margin-bottom: 0.42105em;
-    text-transform: none;
-}
-
 .page-header .heading-secondary {
     display: table-header-group;
 }
 
-
-
 #businessNameChangeConfirmation-bullets {margin-bottom:1.5em;}
 
-
-.form-date .form-group-year {
-    width: 4em;
-}
 
 #applicationInfo {
     margin: 50px 0 40px;
