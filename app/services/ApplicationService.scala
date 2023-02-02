@@ -22,6 +22,7 @@ import connectors.{AWRSConnector, AwrsDataCacheConnector}
 import controllers.auth.StandardAuthRetrievals
 import exceptions.{InvalidStateException, ResubmissionException}
 import forms.AwrsFormFields
+
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
@@ -30,12 +31,15 @@ import services.helper._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.CacheUtil.cacheUtil
-import utils.{AccountUtils, LoggingUtils}
+import utils.SessionUtil.SessionUtilForRequest
+import utils.{AccountUtils, LoggingUtils, SessionUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(awrsConnector: AWRSConnector,
                                    emailService: EmailService,
+                                   enrolService: EnrolService,
+                                   deEnrolService: DeEnrolService,
                                    val save4LaterService: Save4LaterService,
                                    val keyStoreService: KeyStoreService,
                                    val auditable: Auditable,
@@ -212,7 +216,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
       subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
       //add check here to make sure stored awrsRef is same as enrolled awrsRef
-//      _ <- checkRefForMatch(cachedSubscription, authRetrievals)
+      _ <- checkRefForMatch(cachedSubscription, authRetrievals)
       _ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus, authRetrievals) else Future("OK")
       awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))), authRetrievals)
       isNewBusiness <- isNewBusiness(cached)
@@ -486,12 +490,33 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
     changeIndicator
   }
 
-  def checkRefForMatch(data: Option[SubscriptionTypeFrontEnd], authRetrievals: StandardAuthRetrievals): Future[Option[EnrolResponse]] = {
-    val isMatch: Boolean = data.forall(_.awrsRegistrationNumber.forall(_ == accountUtils.getAwrsRefNo(authRetrievals.enrolments)))
+  def checkRefForMatch(data: Option[SubscriptionTypeFrontEnd], authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+    val enrolledRef = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
+    val subscribedRef = data.flatMap(_.awrsRegistrationNumber)
 
-    if(isMatch) doCorrection else Future.successful(None)
+    subscribedRef match {
+      case Some(a) if a != enrolledRef => doCorrection(enrolledRef, a, data.get)
+      case _                           => Future.successful(None)
+    }
   }
 
-  def doCorrection: Future[Option[EnrolResponse]] = ???
+  def doCorrection(enrolledRef: String, subscribedRef: String, data: SubscriptionTypeFrontEnd)(implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+    val businessName = request.getBusinessName.getOrElse("")
+    val businessType = request.getBusinessType.getOrElse("")
+    val utr = data.businessRegistrationDetails.flatMap(_.utr)
+    val model = AWRSFEModel(data)
+
+    for {
+      deEnrol <- deEnrolService.deEnrolAWRS(enrolledRef, businessName, businessType)
+      shouldErnol <- if(deEnrol) awrsConnector.upsertEnrolment(Json.toJson(model)) else Future.successful(false)
+      enrol <- enrolService.enrolAWRS(subscribedRef, model.subscriptionTypeFrontEnd.businessCustomerDetails.get, businessType, utr)
+    } yield {
+      if(shouldErnol) enrol else None
+    }
+//    deEnrolService.deEnrolAWRS(enrolledRef, businessName, businessType) flatMap {
+//      deEnrolMentSuccess => if(deEnrolMentSuccess) awrsConnector.upsertEnrolment(Json.toJson(model)) else Future.successful(false)
+//    }
+
+  }
 
 }

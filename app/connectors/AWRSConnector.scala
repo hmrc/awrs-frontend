@@ -449,4 +449,15 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
     }
   }
+
+  def upsertEnrolment(data: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val putUrl = ""
+    http.PUT[JsValue, HttpResponse](putUrl, data, Seq.empty).map {
+      response =>
+        response.status match {
+          case NO_CONTENT => true
+          case _          => false
+        }
+    }
+  }
 }

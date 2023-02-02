@@ -17,14 +17,25 @@
 package services
 
 import connectors.TaxEnrolmentsConnector
+import uk.gov.hmrc.auth.core.AuthorisedFunctions
+import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.groupIdentifier
+
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeEnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector) {
+class DeEnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector, val authConnector: DefaultAuthConnector) extends AuthorisedFunctions {
 
-  def deEnrolAWRS(awrs: String, businessName: String, businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    taxEnrolmentsConnector.deEnrol(awrs, businessName, businessType)
+  def deEnrolAWRS(awrs: String, businessName: String, businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    authConnector.authorise(EmptyPredicate, groupIdentifier) flatMap  {
+      case Some(groupId) =>
+        taxEnrolmentsConnector.deEnrol(awrs, groupId, businessName, businessType)
+      case _ => Future.successful(false)
+    }
+
+  }
 }

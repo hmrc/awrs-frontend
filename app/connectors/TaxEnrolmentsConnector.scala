@@ -39,8 +39,9 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val EnrolmentIdentifierName = "AWRSRefNumber"
 
-  val deEnrolURI = "tax-enrolments/de-enrol"
+  val deEnrolURI = "tax-enrolments/groups"
   val enrolmentUrl = s"$serviceURL/tax-enrolments"
+  def uri(groupId: String, awrsRef: String): String = s"$enrolmentUrl/groups/$groupId/enrolments/$AWRS_SERVICE_NAME~AWRSRefNumber~$awrsRef"
 
   val emptyResponse: EnrolResponse = EnrolResponse("", "", Seq.empty)
 
@@ -51,7 +52,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
             businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val timer = metrics.startTimer(ApiType.API4Enrolment)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
-    val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
+    val postUrl = uri(groupId, awrsRegistrationNumber)
     val auditMap: Map[String, String] = Map(
       "safeId" -> businessPartnerDetails.safeId,
       "UserDetail" -> businessPartnerDetails.businessName,
@@ -124,20 +125,48 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
       s"Reponse Status: $responseStatus")
   }
 
-  def deEnrol(awrsRef: String, businessName: String, businessType: String)
+//  def deEnrol(awrsRef: String, businessName: String, businessType: String)
+//             (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+//    val timer = metrics.startTimer(ApiType.API10DeEnrolment)
+//    val jsonData = Json.toJson(DeEnrolRequest(keepAgentAllocations))
+//
+//    val auditMap: Map[String, String] = Map("UserDetail" -> businessName, "legal-entity" -> businessType)
+//    val auditSubscribeTxName: String = "AWRS ETMP de-enrol"
+//
+//    val postUrl = s"""$serviceURL/$deEnrolURI/$service"""
+//    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty) map {
+//      response =>
+//        timer.stop()
+//        response.status match {
+//          case OK => warn(s"[TaxEnrolmentsConnector][deEnrol] - Ok")
+//            metrics.incrementSuccessCounter(ApiType.API10DeEnrolment)
+//            audit(transactionName = auditSubscribeTxName, detail = auditMap, eventType = eventTypeSuccess)
+//            true
+//          case status =>
+//            warn(s"[TaxEnrolmentsConnector][API10 De-Enrolment - $businessName, $awrsRef, $status ] - ${response.body} ")
+//            metrics.incrementFailedCounter(ApiType.API10DeEnrolment)
+//            audit(transactionName = auditSubscribeTxName, detail = auditMap ++ Map("Business Name" -> businessName,
+//              "AWRS Ref" -> awrsRef,
+//              "Status" -> status.toString,
+//              "FailureReason" -> response.body), eventType = eventTypeFailure)
+//            false
+//        }
+//    }
+//  }
+
+  def deEnrol(awrsRef: String, groupId: String, businessName: String, businessType: String)
              (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val timer = metrics.startTimer(ApiType.API10DeEnrolment)
-    val jsonData = Json.toJson(DeEnrolRequest(keepAgentAllocations))
 
     val auditMap: Map[String, String] = Map("UserDetail" -> businessName, "legal-entity" -> businessType)
     val auditSubscribeTxName: String = "AWRS ETMP de-enrol"
 
-    val postUrl = s"""$serviceURL/$deEnrolURI/$service"""
-    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty) map {
+    val deleteUrl = s"${uri(groupId, awrsRef)}?keepAgentAllocations=$keepAgentAllocations"
+    http.DELETE(deleteUrl, Seq.empty) map {
       response =>
         timer.stop()
         response.status match {
-          case OK => warn(s"[TaxEnrolmentsConnector][deEnrol] - Ok")
+          case NO_CONTENT => warn(s"[TaxEnrolmentsConnector][deEnrol] - Ok")
             metrics.incrementSuccessCounter(ApiType.API10DeEnrolment)
             audit(transactionName = auditSubscribeTxName, detail = auditMap, eventType = eventTypeSuccess)
             true
