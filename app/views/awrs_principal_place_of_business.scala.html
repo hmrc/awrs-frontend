@@ -45,8 +45,7 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
+    <script src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
 }
 
 @actionRoute = @{
@@ -95,7 +94,6 @@ Messages("awrs.generic.principal.postcode", "Previous principal")
 @awrsMain(
     title = s"${errorPrefix(placeOfBusinessForm)} ${messages("awrs.generic.tab.title", businessTypeHeading)}",
     pageScripts = Some(pageScripts), userLoggedIn = true) {
-    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 
             @backLinkHelper(BackLinkParams(
                 sectionName = placeOfBusinessName

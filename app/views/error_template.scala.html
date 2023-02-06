@@ -32,11 +32,7 @@
      @mainContent
  }
 
- @scriptElement = {
-     <script src='@routes.Assets.versioned("javascripts/jquery.min.js")'></script>
-     <script src='@routes.Assets.versioned("javascripts/jquery-ui.min.js")'></script>
-     <link href='@routes.Assets.versioned("assets/stylesheets/application.css")' media="screen" rel="stylesheet" />
- }
+ @scriptElement = {}
 
  @layout(
      pageTitle = Some(pageTitle).map(_ + " - GOV.UK"),

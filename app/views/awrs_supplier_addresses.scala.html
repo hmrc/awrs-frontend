@@ -42,9 +42,8 @@
 
 @pageScripts = {
 
-    <script type="text/javascript" src='@routes.Assets.versioned("javascripts/location-autocomplete.min.js")'></script>
-    <script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
-    <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.versioned("../assets/javascript/location-autocomplete.min.js")'></script>
+    <script src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
     <script type="text/javascript">
       openregisterLocationPicker({
         defaultValue: '',
@@ -88,8 +87,6 @@
 @awrsMain(
     title = s"${errorPrefix(supplierAddressForm)} ${messages("awrs.generic.tab.title", pageHeading)}",
     pageScripts = Some(pageScripts), userLoggedIn = true){
-<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/jquery-ui.min.css")'/>
-<link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 
         @backLinkHelper(BackLinkParams(
             sectionName = suppliersName
