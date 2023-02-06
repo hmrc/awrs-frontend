@@ -62,6 +62,8 @@ class HomeControllerTest extends AwrsUnitTestTraits
       .thenReturn(mockCountryCodes)
     when(mockAppConfig.templateAppError)
       .thenReturn(mockAppError)
+    when(mockAppConfig.templateUnauthorised)
+      .thenReturn(mockUnauthorised)
     when(mockCountryCodes.countries)
       .thenReturn(
         """[
@@ -85,6 +87,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
         status(result) mustBe 403
         val document = Jsoup.parse(contentAsString(result))
         document.select("#application-error-header").text() must be(Messages("awrs.generic.assistant_kickout.title"))
+      }
+    }
+
+    "redirect to the Unauthorised kickout page if the user is an Individual with no UTR" in {
+      showWithSave4LaterIndividualAndNoUtr() { result =>
+        status(result) mustBe 401
+        val document = Jsoup.parse(contentAsString(result))
+        document.select("#heading").text() must be(Messages("awrs.generic.unauthorised.heading"))
       }
     }
 
@@ -206,6 +216,17 @@ class HomeControllerTest extends AwrsUnitTestTraits
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
     setAuthMocks(Future.successful(
       new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(Assistant))))
+    val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  private def showWithSave4LaterIndividualAndNoUtr(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
+    setAuthMocks(Future.successful(
+      //new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-SA", Seq.empty, "activated"))), Some(AffinityGroup.Individual)), Credentials("fakeCredID", "type")), Some(User))),
+      new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(Assistant))),
+      mockAccountUtils,
+      None)
     val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
