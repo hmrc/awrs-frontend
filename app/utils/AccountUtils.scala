@@ -25,17 +25,21 @@ import uk.gov.hmrc.http.InternalServerException
 @Singleton
 class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
 
-  def getUtr(authRetrievals: StandardAuthRetrievals): String = {
+  def confirmValidUtr(authRetrievals: StandardAuthRetrievals): Option[String] = {
     val firstUtr = (authRetrievals.enrolments flatMap { enrolment =>
       enrolment.identifiers.filter(_.key.toLowerCase == "utr")
     }).headOption
 
     (firstUtr, authRetrievals.affinityGroup) match {
-      case (Some(utr), _) => utr.value
-      case (_, Some(org)) if org equals AffinityGroup.Organisation => authRetrievals.credId
-      case (_, affinityGroup) => throw new RuntimeException(s"[getUtr] No UTR found and affinity group was ${affinityGroup.getOrElse("None")}")
+      case (Some(utr), _) => Some(utr.value)
+      case (_, Some(org)) if org equals AffinityGroup.Organisation => Some(authRetrievals.credId)
+      case (_, affinityGroup) => None
     }
   }
+
+  def getUtr(authRetrievals: StandardAuthRetrievals): String =
+    confirmValidUtr(authRetrievals)
+      .getOrElse(throw new RuntimeException(s"[getUtr] No UTR found and affinity group was ${authRetrievals.affinityGroup.getOrElse("None")}"))
 
   def authLink(authRetrievals: StandardAuthRetrievals): String = {
     (authRetrievals.affinityGroup, authRetrievals.enrolments.find(_.key == "IR-SA")) match {
