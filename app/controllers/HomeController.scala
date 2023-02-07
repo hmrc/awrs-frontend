@@ -91,35 +91,32 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
 
   def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { authRetrievals =>
-      accountUtils.confirmValidUtr(authRetrievals).fold[Future[Result]]{
-        Future.successful(Unauthorized(applicationConfig.templateUnauthorised()))
-      }{ _ =>
-        chooseScenario(callerId, authRetrievals) recoverWith {
-          case _: JsResultException =>
-            if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
-              save4LaterService.mainStore.removeAll(authRetrievals)
-              save4LaterService.api.removeAll(authRetrievals)
-              chooseScenario(callerId, authRetrievals)
-            } else {
-              save4LaterService.mainStore.removeAll(authRetrievals)
-              chooseScenario(callerId, authRetrievals)
-            }
-          case error =>
-            warn("Exception encountered in Home Controller: " + awrsIdentifier(authRetrievals) + " \nERROR: " + error.getMessage)
-            showErrorPage
-        }
+      chooseScenario(callerId, authRetrievals) recoverWith {
+        case _: JsResultException =>
+          if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
+            save4LaterService.mainStore.removeAll(authRetrievals)
+            save4LaterService.api.removeAll(authRetrievals)
+            chooseScenario(callerId, authRetrievals)
+          } else {
+            save4LaterService.mainStore.removeAll(authRetrievals)
+            chooseScenario(callerId, authRetrievals)
+          }
+        case error =>
+          warn("Exception encountered in Home Controller: " + awrsIdentifier(authRetrievals) + " \nERROR: " + error.getMessage)
+          showErrorPage
       }
     }
   }
 
   private def chooseScenario(callerId: Option[String], authRetrievals: StandardAuthRetrievals)
-                            (implicit request: Request[AnyContent]): Future[Result] =
+                            (implicit request: Request[AnyContent]): Future[Result] = {
     save4LaterService.mainStore.fetchApplicationStatus(authRetrievals) flatMap {
       case Some(data) =>
         checkValidApplicationStatus(data, callerId, authRetrievals)
       case _ =>
         startJourney(callerId, authRetrievals)
     }
+  }
 
   def checkValidApplicationStatus(applicationStatus: ApplicationStatus, callerId: Option[String], authRetrievals: StandardAuthRetrievals)
                                  (implicit request: Request[AnyContent]): Future[Result] =
@@ -140,5 +137,4 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     } else {
       api4Journey(authRetrievals, callerId)
     }
-
 }

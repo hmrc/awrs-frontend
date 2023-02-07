@@ -222,11 +222,10 @@ class HomeControllerTest extends AwrsUnitTestTraits
 
   private def showWithSave4LaterIndividualAndNoUtr(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
+    when(mockAccountUtils.getUtr(ArgumentMatchers.any()))
+      .thenThrow(new UnsupportedAffinityGroup(s"[getUtr] No UTR found and affinity group was Individual"))
     setAuthMocks(Future.successful(
-      //new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-SA", Seq.empty, "activated"))), Some(AffinityGroup.Individual)), Credentials("fakeCredID", "type")), Some(User))),
-      new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(Assistant))),
-      mockAccountUtils,
-      None)
+      new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq.empty, "activated"))), Some(AffinityGroup.Individual)), Credentials("fakeCredID", "type")), Some(User))), mockAccountUtils)
     val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
