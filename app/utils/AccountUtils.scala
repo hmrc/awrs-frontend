@@ -19,7 +19,7 @@ package utils
 import audit.Auditable
 import controllers.auth.StandardAuthRetrievals
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, UnsupportedAffinityGroup}
 import uk.gov.hmrc.http.InternalServerException
 
 @Singleton
@@ -33,7 +33,7 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
     (firstUtr, authRetrievals.affinityGroup) match {
       case (Some(utr), _) => utr.value
       case (_, Some(org)) if org equals AffinityGroup.Organisation => authRetrievals.credId
-      case (_, affinityGroup) => throw new RuntimeException(s"[getUtr] No UTR found and affinity group was ${affinityGroup.getOrElse("None")}")
+      case (_, affinityGroup) => throw new UnsupportedAffinityGroup(s"[getUtr] No UTR found and affinity group was ${affinityGroup.getOrElse("None")}")
     }
   }
 
