@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.LoggingUtils
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.address.client.v1.AddressRecord
 
 class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
@@ -42,6 +43,10 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
+  implicit object AddressOrdering extends Ordering[AddressRecord] {
+    def compare(a: AddressRecord, b: AddressRecord): Int = a.id compare b.id
+  }
+
   def addressLookup(postcode: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorisedAction { _ =>
@@ -51,7 +56,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
           addressLookupConnector.lookup(postcode) map {
             case AddressLookupErrorResponse(e: BadRequestException) => BadRequest(e.message)
             case AddressLookupErrorResponse(_) => InternalServerError
-            case AddressLookupSuccessResponse(recordSet) => Ok(writes.writes(recordSet))
+            case AddressLookupSuccessResponse(recordSet) => Ok(writes.writes(RecordSet(recordSet.addresses.sorted)))
           }
         } else {
           Future.successful(BadRequest("missing or badly-formed postcode parameter"))
