@@ -449,4 +449,15 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
 
     }
   }
+
+  def checkUsersEnrolments(safeID: String, credID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
+    val getURL = s"""$serviceURL/awrs/status-info/user/$safeID/:$credID"""
+    http.GET(getURL, Seq.empty, Seq.empty) map {
+      response =>
+        response.status match {
+          case 200 => response.json.as[Boolean]
+          case status@_ => throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] returned status code: $status""")
+        }
+    }
+  }
 }

@@ -117,6 +117,14 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     val validSubmission = FakeRequest().withFormUrlEncodedBody("legalEntity" -> testBusinessType)
     val invalidSubmission = FakeRequest().withFormUrlEncodedBody("legalEntity" -> "")
 
+    "redirect to the wrong account kick out page when the user already has an AWRS account" in {
+      api4User(validSubmission)(testBusinessTypeController.showBusinessType()) {
+        implicit result =>
+          status(result) mustBe SEE_OTHER
+          assertBusinessName(testBusinessCustomer.businessName)
+          assertBusinessType(testBusinessCustomer.businessType.fold("")(x => x))
+      }
+    }
     "add the correct businessType and businessName to the session for API4 user" in {
       api4User(validSubmission)(testBusinessTypeController.showBusinessType()) {
         implicit result =>

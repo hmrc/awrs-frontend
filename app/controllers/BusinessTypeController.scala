@@ -20,8 +20,9 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.BusinessTypeForm.{businessTypeForm, _}
+
 import javax.inject.Inject
-import models.{BusinessType, NewApplicationType}
+import models.{BusinessCustomerDetails, BusinessType, NewApplicationType}
 import play.api.data.Form
 import play.api.mvc._
 import services.apis.AwrsAPI5
@@ -67,16 +68,22 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       for {
         Some(bcd) <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
-        _ <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(Some(true)), authRetrievals)
+        x <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(checkUsersEnrolment(bcd.safeId, authRetrievals.credId)), authRetrievals)
         businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       } yield {
+        println(x)
         val display = (form: Form[BusinessType]) => Ok(template(form, bcd.businessName, bcd.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(authRetrievals))) addBusinessNameToSession bcd.businessName
+
         businessType match {
           case Some(data) => display(businessTypeForm.fill(data)) addBusinessTypeToSession data
           case _ => display(businessTypeForm)
         }
       }
     }
+
+  private def checkUsersEnrolment(safeID: String, credID: String): Option[Boolean] = {
+    checkEtmpService.checkUsersEnrolments(safeID, credID)
+  }
 
   // showBusinessType is added to enable users who had submitted the wrong legal entities to correct them post submission.
   // they will have to manually enter the amendment url in order to access this feature

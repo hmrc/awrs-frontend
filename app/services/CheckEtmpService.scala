@@ -50,4 +50,15 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
         Future.successful(false)
     }
   }
+
+  def checkUsersEnrolments(safeID: String, credID: String)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Option[Boolean] = {
+    logger.info("[CheckEtmpService][checkUsersEnrolments] Validating business details for self-heal")
+
+    awrsConnector.checkUsersEnrolments(safeID, credID) map {
+
+    }
+
+  }
+
 }
