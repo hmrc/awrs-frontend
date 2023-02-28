@@ -79,7 +79,6 @@ class HomeControllerTest extends AwrsUnitTestTraits
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
       when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(false))
-      mockAuthNoEnrolment
       showWithSave4Later() { result =>
         status(result) mustBe 303
         redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")

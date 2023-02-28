@@ -894,6 +894,15 @@ awrs.delete.confirmation_heading=Are you sure you want to delete this {0}?
 awrs.delete.confirmation.error.empty.summary=There is a problem with the question
 awrs.delete.confirmation.error.empty=Confirm if you want to delete this record
 
+# Wrong account Page messages
+#===========================================================
+awrs.wrong_account.heading={0} has already applied for AWRS
+awrs.wrong_account.title={0} has already applied for AWRS
+awrs.wrong_account.paragraph_one.text={0} has an existing AWRS application created using another Government Gateway user ID. You cannot apply again
+awrs.wrong_account.paragraph_two.text=You need to login with the Government Gateway user ID that was used for the existing application
+awrs.wrong_account.link.text=Find the user ID or password that was used to apply for AWRS
+awrs.wrong_account.sign.out.button=Sign Out
+
 # Reapplication confirmation Page messages
 #===========================================================
 awrs.reapplication.confirm_page.heading=Are you sure you want to create a new AWRS application?
