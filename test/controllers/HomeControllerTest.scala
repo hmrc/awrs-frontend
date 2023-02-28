@@ -50,7 +50,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
   val assistantKickoutView: assistant_kickout = app.injector.instanceOf[assistant_kickout]
 
   val testHomeController: HomeController = new HomeController(mockMCC, mockBusinessCustomerService
-    , mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig, tooSoonError, assistantKickoutView) {
+    ,mockDeEnrolService, mockCheckEtmpService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig, tooSoonError, assistantKickoutView) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

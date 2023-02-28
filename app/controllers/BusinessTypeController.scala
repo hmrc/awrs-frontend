@@ -68,10 +68,9 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       for {
         Some(bcd) <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
-        x <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(checkUsersEnrolment(bcd.safeId, authRetrievals.credId)), authRetrievals)
+        _ <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(Some(true)), authRetrievals)
         businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       } yield {
-        println(x)
         val display = (form: Form[BusinessType]) => Ok(template(form, bcd.businessName, bcd.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(authRetrievals))) addBusinessNameToSession bcd.businessName
 
         businessType match {
@@ -80,10 +79,6 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
         }
       }
     }
-
-  private def checkUsersEnrolment(safeID: String, credID: String): Option[Boolean] = {
-    checkEtmpService.checkUsersEnrolments(safeID, credID)
-  }
 
   // showBusinessType is added to enable users who had submitted the wrong legal entities to correct them post submission.
   // they will have to manually enter the amendment url in order to access this feature
@@ -104,7 +99,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       save4LaterService.mainStore.fetchBusinessCustomerDetails(ar) flatMap {
         case Some(businessDetails) =>
-           validateBusinessType(businessTypeForm.bindFromRequest).fold(
+          validateBusinessType(businessTypeForm.bindFromRequest).fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessDetails.businessType.fold("")(x => x), businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
             businessTypeData =>
               save4LaterService.mainStore.saveBusinessType(businessTypeData, ar) flatMap { _ =>

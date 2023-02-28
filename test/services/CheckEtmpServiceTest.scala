@@ -43,9 +43,9 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
   val mockEnrolService: EnrolService = mock[EnrolService]
   val mockSave4LaterConnector: Save4LaterConnector = mock[Save4LaterConnector]
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
-  val testBusinessCustomerDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
-  val testBusinessRegistrationDetails: BusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
-  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockEnrolService)
+  val testBusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
+  val testBusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
+  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockSave4LaterService, mockEnrolService)
 
   override def beforeEach(): Unit = {
     reset(mockAwrsConnector,

@@ -17,6 +17,8 @@
 package services
 
 import connectors.AWRSConnector
+import controllers.auth.StandardAuthRetrievals
+
 import javax.inject.Inject
 import models.BusinessCustomerDetails
 import play.api.Logging
@@ -25,6 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
+                                 save4LaterService: Save4LaterService,
                                  enrolService: EnrolService) extends Logging {
 
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails, legalEntity: String)
@@ -41,7 +44,7 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
           case Some(_) =>
             logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
             true
-          case _       =>
+          case _ =>
             logger.info("[CheckEtmpService][validateBusinessDetails] ES8 failure")
             false
         }
@@ -51,14 +54,15 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
     }
   }
 
-  def checkUsersEnrolments(safeID: String, credID: String)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Option[Boolean] = {
-    logger.info("[CheckEtmpService][checkUsersEnrolments] Validating business details for self-heal")
-
-    awrsConnector.checkUsersEnrolments(safeID, credID) map {
-
+  def checkUsersEnrolments(authRetrievals: StandardAuthRetrievals)
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
+    val credID = authRetrievals.credId
+    logger.info("[CheckEtmpService][checkUsersEnrolments] Checking for existing awrs enrolment")
+    save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
+      case Some(details) => awrsConnector.checkUsersEnrolments(details.safeId, credID)
+      case _ =>
+        logger.info("[CheckEtmpService][checkUsersEnrolments] Save4Later failed to return details")
+        Future.successful(None)
     }
-
   }
-
 }

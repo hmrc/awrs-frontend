@@ -455,8 +455,8 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     http.GET(getURL, Seq.empty, Seq.empty) map {
       response =>
         response.status match {
-          case 200 => response.json.as[Boolean]
-          case status@_ => throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] returned status code: $status""")
+          case OK => Some(response.json.as[Boolean])
+          case status => throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] returned status code: $status""")
         }
     }
   }

@@ -35,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HomeController @Inject()(mcc: MessagesControllerComponents,
                                businessCustomerService: BusinessCustomerService,
                                val deEnrolService: DeEnrolService,
+                               val checkEtmpService: CheckEtmpService,
                                val authConnector: DefaultAuthConnector,
                                val auditable: Auditable,
                                val accountUtils: AccountUtils,
@@ -63,10 +64,10 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def gotoBusinessTypePage(callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
-      callerId match {
-        case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
-        case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
-      }
+    callerId match {
+      case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
+      case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
+    }
   }
 
   def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
@@ -135,6 +136,8 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
       logger.warn(s"Assistant attempting to use AWRS without AWRS enrolment")
       Future.successful(Forbidden(templateAssistantKickout()))
     } else {
-      api4Journey(authRetrievals, callerId)
+      checkEtmpService.checkUsersEnrolments(authRetrievals) flatMap  { result =>
+        result.fold(api4Journey(authRetrievals, callerId))(_ => Future.successful(Forbidden(templateAssistantKickout())))
+      }
     }
 }
