@@ -23,6 +23,7 @@ import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.libs.json.JsResultException
@@ -69,6 +70,8 @@ class HomeControllerTest extends AwrsUnitTestTraits
         """[
           |"United Kingdom"
           |]""".stripMargin)
+    when(mockCheckEtmpService.checkUsersEnrolments(ArgumentMatchers.any())(any(),any()))
+      .thenReturn(Future.successful(None))
   }
 
   "HomeController" must {
@@ -76,6 +79,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
       when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(false))
+      mockAuthNoEnrolment
       showWithSave4Later() { result =>
         status(result) mustBe 303
         redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")
