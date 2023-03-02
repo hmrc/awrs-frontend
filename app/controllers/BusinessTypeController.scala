@@ -20,9 +20,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.BusinessTypeForm.{businessTypeForm, _}
-
-import javax.inject.Inject
-import models.{BusinessCustomerDetails, BusinessType, NewApplicationType}
+import models.{BusinessType, NewApplicationType}
 import play.api.data.Form
 import play.api.mvc._
 import services.apis.AwrsAPI5
@@ -32,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
@@ -111,11 +110,13 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                       standardApi5Journey(updatedRetrievals)
                     }
                   } else {
-                    {if (businessDetails.isAGroup) {
-                      Future.successful(Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration))
-                    } else {
-                      Future.successful(Redirect(controllers.routes.IndexController.showIndex))
-                    }} map { result =>
+                    {
+                      if (businessDetails.isAGroup) {
+                        Future.successful(Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration))
+                      } else {
+                        Future.successful(Redirect(controllers.routes.IndexController.showIndex))
+                      }
+                    } map { result =>
                       result addBusinessTypeToSession legalEntity addBusinessNameToSession businessDetails.businessName
                     }
                   }

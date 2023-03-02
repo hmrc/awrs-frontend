@@ -35,15 +35,14 @@ class WrongAccountController @Inject()(val mcc: MessagesControllerComponents,
                                        val accountUtils: AccountUtils,
                                        val authConnector: DefaultAuthConnector,
                                        val auditable: Auditable,
-                                       val businessName: String,
                                        implicit val applicationConfig: ApplicationConfig,
                                        template: views.html.awrs_account_exists) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showWrongAccountPage : Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    Future.successful(Ok(template(businessName))) //TODO remove this obviously
+  def showWrongAccountPage(businessName: Option[String]) : Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    Future.successful(Ok(template(businessName.getOrElse("Error"))))
   }
 
 }

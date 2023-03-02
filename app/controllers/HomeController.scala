@@ -137,7 +137,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
       Future.successful(Forbidden(templateAssistantKickout()))
     } else {
       checkEtmpService.checkUsersEnrolments(authRetrievals) flatMap  { result =>
-        result.fold(api4Journey(authRetrievals, callerId))(_ => Future.successful(Forbidden(templateAssistantKickout())))
+        result.fold(api4Journey(authRetrievals, callerId))(_ => Future.successful(Redirect(controllers.routes.WrongAccountController.showWrongAccountPage(getBusinessName))))
       }
     }
 }

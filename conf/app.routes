@@ -18,7 +18,7 @@ GET         /index                                          controllers.IndexCon
 GET         /lastLocation                                   controllers.IndexController.showLastLocation
 GET         /logout                                         controllers.ApplicationController.logout
 GET         /keep-alive                                     controllers.ApplicationController.keepAlive
-GET         /wrong-account                                  controllers.WrongAccountController.showWrongAccountPage
+GET         /wrong-account                                  controllers.WrongAccountController.showWrongAccountPage(businessName: Option[String])
 
 GET         /unauthorised                                   controllers.IndexController.unauthorised
 
