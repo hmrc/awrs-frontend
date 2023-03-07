@@ -19,17 +19,18 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
-import javax.inject.Inject
 import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
 import play.api.libs.json.JsResultException
 import play.api.mvc._
 import services._
+import uk.gov.hmrc.auth.core.Assistant
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
-import uk.gov.hmrc.auth.core.Assistant
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HomeController @Inject()(mcc: MessagesControllerComponents,
@@ -136,8 +137,19 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
       logger.warn(s"Assistant attempting to use AWRS without AWRS enrolment")
       Future.successful(Forbidden(templateAssistantKickout()))
     } else {
-      checkEtmpService.checkUsersEnrolments(authRetrievals) flatMap  { result =>
-        result.fold(api4Journey(authRetrievals, callerId))(_ => Future.successful(Redirect(controllers.routes.WrongAccountController.showWrongAccountPage(getBusinessName))))
+      checkEtmpService.checkUsersEnrolments(authRetrievals) flatMap { result =>
+        result match {
+          case Some(true) =>
+            save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
+              case Some(details) =>
+                logger.info(s"User's business already has AWRS enrolment")
+                Future.successful(Redirect(controllers.routes.WrongAccountController.showWrongAccountPage(Some(details.businessName))))
+              case _ =>
+                Future.failed(throw new Exception(s"""Unable to retrieve details from save4Later for CredID:${authRetrievals.credId}"""))
+            }
+          case _ =>
+            api4Journey(authRetrievals, callerId)
+        }
       }
     }
 }
