@@ -71,25 +71,31 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
+  def businessCustomerDetails(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
-      case Some(data) =>
-        if (data.safeId.isEmpty) {
-          Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
-        } else {
-          gotoBusinessTypePage(callerId)
-        }
-      case _ =>
-        businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails] flatMap {
-          case Some(data) =>
-            save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data) flatMap {
-              _ => gotoBusinessTypePage(callerId)
-            }
-          case _ =>
-            Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
+      case Some(data) if data.safeId.isEmpty => Future.successful(None)
+      case Some(data) if !data.safeId.isEmpty => Future.successful(Some(data))
+      case None =>
+        businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails].flatMap {
+          case Some(data) => save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data).map(_ => Some(data))
+          case _ => Future.successful(None)
         }
     }
-  }
+
+  def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] =
+    businessCustomerDetails(authRetrievals, callerId).flatMap {
+      _.fold(Future.successful(Redirect(applicationConfig.businessCustomerStartPage))) { details =>
+        checkEtmpService.checkUsersEnrolments(authRetrievals, details) flatMap { result =>
+          result match {
+            case Some(true) =>
+              logger.info(s"User's business already has AWRS enrolment")
+              Future.successful(Redirect(controllers.routes.WrongAccountController.showWrongAccountPage(Some(details.businessName))))
+            case _ =>
+              gotoBusinessTypePage(callerId)
+          }
+        }
+      }
+    }
 
   def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { authRetrievals =>
@@ -137,19 +143,6 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
       logger.warn(s"Assistant attempting to use AWRS without AWRS enrolment")
       Future.successful(Forbidden(templateAssistantKickout()))
     } else {
-      checkEtmpService.checkUsersEnrolments(authRetrievals) flatMap { result =>
-        result match {
-          case Some(true) =>
-            save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
-              case Some(details) =>
-                logger.info(s"User's business already has AWRS enrolment")
-                Future.successful(Redirect(controllers.routes.WrongAccountController.showWrongAccountPage(Some(details.businessName))))
-              case _ =>
-                Future.failed(throw new Exception(s"""Unable to retrieve details from save4Later for CredID:${authRetrievals.credId}"""))
-            }
-          case _ =>
-            api4Journey(authRetrievals, callerId)
-        }
-      }
+      api4Journey(authRetrievals, callerId)
     }
 }

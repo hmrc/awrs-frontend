@@ -504,12 +504,14 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   "checkUsersEnrolments" must {
     val testCredID = "credID-123"
     val testSafeID = "safeID-123"
+    val mockAwrsUsers = Json.toJson(AwrsUsers(List("principalUserId-One","principalUserId-Two"), List("delegatedUserId-One"))).toString
+    val testAwrsUsers = AwrsUsers(List("principalUserId-One","principalUserId-Two"), List("delegatedUserId-One"))
     implicit val ec = scala.concurrent.ExecutionContext.global
 
     "return OK when the call to awrs is successful" in {
-      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(200,"true")))
+      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(200,mockAwrsUsers)))
       val result = testAWRSConnector.checkUsersEnrolments(testSafeID,testCredID)(hc,ec)
-      await(result) mustBe Some(true)
+      await(result) mustBe Some(testAwrsUsers)
     }
     "return an internal server exception if the call fails" in {
       when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(500,"")))

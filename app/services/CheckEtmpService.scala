@@ -20,9 +20,9 @@ import connectors.AWRSConnector
 import controllers.auth.StandardAuthRetrievals
 
 import javax.inject.Inject
-import models.BusinessCustomerDetails
+import models.{AwrsUsers, BusinessCustomerDetails}
 import play.api.Logging
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -54,15 +54,20 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
     }
   }
 
-  def checkUsersEnrolments(authRetrievals: StandardAuthRetrievals)
+  def checkUsersEnrolments(authRetrievals: StandardAuthRetrievals, details: BusinessCustomerDetails)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
-    val credID = authRetrievals.credId
     logger.info("[CheckEtmpService][checkUsersEnrolments] Checking for existing awrs enrolment")
-    save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
-      case Some(details) => awrsConnector.checkUsersEnrolments(details.safeId, credID)
-      case _ =>
-        logger.info("[CheckEtmpService][checkUsersEnrolments] Save4Later failed to return details")
-        Future.successful(None)
+    awrsConnector.checkUsersEnrolments(details.safeId, authRetrievals.credId) map { users =>
+      users match {
+        case Some(users) =>
+          Some(isCredIdPresent(authRetrievals.credId, users))
+        case _ =>
+          throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] - error when calling awrsConnector checkUsersEnrolments """)
+      }
     }
   }
+
+  def isCredIdPresent(credId: String, awrsUsers: AwrsUsers): Boolean =
+    if (awrsUsers.delegatedUserIds.contains(credId) || awrsUsers.principalUserIds.contains(credId)) true else false
+
 }

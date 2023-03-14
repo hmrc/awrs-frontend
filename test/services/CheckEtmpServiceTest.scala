@@ -56,6 +56,7 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
     super.beforeEach()
   }
 
+
   "validateBusinessDetails" must {
     val enrolSuccessResponse = EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))
 

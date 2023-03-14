@@ -70,7 +70,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
         """[
           |"United Kingdom"
           |]""".stripMargin)
-    when(mockCheckEtmpService.checkUsersEnrolments(ArgumentMatchers.any())(any(),any()))
+    when(mockCheckEtmpService.checkUsersEnrolments(any(), any())(any(),any()))
       .thenReturn(Future.successful(None))
   }
 
@@ -78,7 +78,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     "redirect to the wrong account page when an AWRS enrolment is found for the current cred ID" in {
       when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(false))
-      when(mockCheckEtmpService.checkUsersEnrolments(ArgumentMatchers.any())(any(),any()))
+      when(mockCheckEtmpService.checkUsersEnrolments(any(), any())(any(),any()))
         .thenReturn(Future.successful(Some(true)))
       showWithSave4LaterUserHasWrongAccount() { result =>
         status(result) mustBe 303
