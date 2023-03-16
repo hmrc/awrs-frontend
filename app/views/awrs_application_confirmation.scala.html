@@ -24,9 +24,6 @@
 
 @(submissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false, selfHeal: Boolean = false)(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
-
-@awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
-
 @govWrapper = {
     @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.confirmation.title")), userLoggedIn = true){
 
@@ -43,7 +40,6 @@
                     </a>
                 </div>
                 <hr aria-hidden="true">
-                @paragraphs1
                 @list
 
                 <p class="govuk-body print-hidden" id="detailed-information">@Html(messages("awrs.confirmation.detailed_information","<a class='govuk-link govuk-body' href='https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs'>","</a>"))</p>
@@ -57,19 +53,6 @@
     }
 }
 
-@paragraphs1 = {
-    <p class="govuk-body"  id="confirmation0Text">
-        @if(selfHeal) {
-
-        } else {
-            @if(isNewBusiness) {
-                @messages("awrs.confirmation.newBusiness.information_0", awrsRef)
-            } else {
-                @messages("awrs.confirmation.information_0", awrsRef)
-            }
-        }
-    </p>
-}
 @list = {
     <h2 class="govuk-heading-m" id="ConfirmationNoteHeadingText">@messages("awrs.confirmation.information")</h2>
     <ul id="application-confirmation-list" class="govuk-list govuk-list--bullet">
@@ -97,7 +80,6 @@
         Some(submissionDate)
     )
     @awrsPrintLink()
-    @paragraphs1
     @list
     @backLink()
 }
