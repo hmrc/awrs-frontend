@@ -58,22 +58,21 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
     super.beforeEach()
   }
   "checkUsersEnrolments" must {
-
-    "return true if the users credId is present in the returned AWRS users list" in {
-      val testUsersList: AwrsUsers = AwrsUsers(List("principalCredID", "fakeCredID"), List("delegatedCredID"))
-      when(mockAwrsConnector.checkUsersEnrolments(testBusinessCustomerDetails.safeId,testAuthRetrievals.credId))
+    "return true if there are enrolments returned for the given business" in {
+      val testUsersList: AwrsUsers = AwrsUsers(List("principal-user"), List("delegated-user"))
+      when(mockAwrsConnector.checkUsersEnrolments(testBusinessCustomerDetails.safeId))
         .thenReturn(Future.successful(Some(testUsersList)))
 
-      val result = checkEtmpTest.checkUsersEnrolments(testAuthRetrievals,testBusinessCustomerDetails)
+      val result = checkEtmpTest.checkUsersEnrolments(testBusinessCustomerDetails,"someCredId")
 
       await(result) mustBe Some(true)
     }
-    "return false if the users credId is no present in the AWRS users list" in {
-      val testUsersList: AwrsUsers = AwrsUsers(List("principalCredID"), List("delegatedCredID"))
-      when(mockAwrsConnector.checkUsersEnrolments(testBusinessCustomerDetails.safeId, testAuthRetrievals.credId))
-        .thenReturn(Future.successful(Some(testUsersList)))
+    "return false if there are no credIds returned for the users business" in {
+      val testEmptyUsersList: AwrsUsers = AwrsUsers(Nil, Nil)
+      when(mockAwrsConnector.checkUsersEnrolments(testBusinessCustomerDetails.safeId))
+        .thenReturn(Future.successful(Some(testEmptyUsersList)))
 
-      val result = checkEtmpTest.checkUsersEnrolments(testAuthRetrievals,testBusinessCustomerDetails)
+      val result = checkEtmpTest.checkUsersEnrolments(testBusinessCustomerDetails,"someCredId")
 
       await(result) mustBe Some(false)
     }

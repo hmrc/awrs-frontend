@@ -4,6 +4,7 @@ package uk.gov.hmrc.helpers.controllers
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import controllers.routes
+import models.AwrsUsers
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -23,6 +24,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
   val SessionId = s"mock-sessionid"
+  val testResponse = Json.toJson(AwrsUsers(Nil,Nil)).toString
 
   implicit lazy val jsonCrypto: CryptoWithKeysFromConfig = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
   implicit lazy val encryptionFormat: JsonEncryptor[JsObject] = new JsonEncryptor[JsObject]()
@@ -98,6 +100,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
     )
     stubbedGet(s"""/keystore/business-customer-frontend/$SessionId""", keystoreStatus, businessCustomerDetailsString)
     stubS4LPut("5810451", "businessCustomerDetails", businessCustomerDetailsStringS4L)
+    stubbedGet("/awrs/status-info/users/XE0001234567890", OK, testResponse)
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"""$baseURI$subscriptionURI$safeId""", OK, successResponse.toString)
 

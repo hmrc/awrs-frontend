@@ -17,13 +17,11 @@
 package services
 
 import connectors.AWRSConnector
-import controllers.auth.StandardAuthRetrievals
-
-import javax.inject.Inject
-import models.{AwrsUsers, BusinessCustomerDetails}
+import models.BusinessCustomerDetails
 import play.api.Logging
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
@@ -54,20 +52,23 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
     }
   }
 
-  def checkUsersEnrolments(authRetrievals: StandardAuthRetrievals, details: BusinessCustomerDetails)
+  def checkUsersEnrolments(details: BusinessCustomerDetails, credId: String)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
-    logger.info("[CheckEtmpService][checkUsersEnrolments] Checking for existing awrs enrolment")
-    awrsConnector.checkUsersEnrolments(details.safeId, authRetrievals.credId) map { users =>
+    logger.info("[CheckEtmpService][checkUsersEnrolments] Checking for existing AWRS users")
+    awrsConnector.checkUsersEnrolments(details.safeId) map { users =>
       users match {
+        case Some(users) if users.principalUserIds == Nil && users.delegatedUserIds == Nil =>
+          logger.info(s"""[CheckEtmpService][checkUsersEnrolments] No AWRS users found for ${details.businessName} user $credId""")
+          Some(false)
+        case Some(users) if users.principalUserIds.contains(credId) || users.delegatedUserIds.contains(credId) =>
+          logger.info(s"""[CheckEtmpService][checkUsersEnrolments] Users credId found in list of AWRS users""")
+          Some(false)
         case Some(users) =>
-          Some(isCredIdPresent(authRetrievals.credId, users))
+          logger.info(s"""[CheckEtmpService][checkUsersEnrolments] $users Existing users found for ${details.businessName}""")
+          Some(true)
         case _ =>
-          throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] - error when calling awrsConnector checkUsersEnrolments """)
+          throw new InternalServerException(s"""[CheckEtmpService][checkUsersEnrolments] - error when calling awrsConnector checkUsersEnrolments """)
       }
     }
   }
-
-  def isCredIdPresent(credId: String, awrsUsers: AwrsUsers): Boolean =
-    if (awrsUsers.delegatedUserIds.contains(credId) || awrsUsers.principalUserIds.contains(credId)) true else false
-
 }

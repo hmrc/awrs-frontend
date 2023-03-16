@@ -305,7 +305,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
   }
 
   "isNewBusiness" must {
-    val authRetrievals = StandardAuthRetrievals(Set(), None, "", None)
+    val authRetrievals = StandardAuthRetrievals(Set(), None, "fakePlainTextCredID","", None)
 
     "report a new business" when {
       "the answer is available in trading start details" in {

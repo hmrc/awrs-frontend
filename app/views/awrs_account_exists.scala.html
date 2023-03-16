@@ -38,8 +38,10 @@ govukErrorSummary: GovukErrorSummary)
 <script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
+@titleHeading = {@messages("awrs.wrong_account.title", businessName)}
+
 @awrsMain(
-title = messages("awrs.wrong_account.title"),
+title = messages("awrs.generic.tab.title", titleHeading),
 pageScripts = Some(pageScripts), userLoggedIn = true) {
 <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/dropdowns-enhancement.min.css")'/>
 

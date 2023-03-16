@@ -902,10 +902,10 @@ object TestUtil extends PlaySpec {
   val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
     Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
 
-  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID", Some(User))
-  val authRetrievalSAUTR = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID", Some(User))
-  val authRetrievalEmptySetEnrolments = StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation), "fakeCredID", Some(User))
+  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
+  val authRetrievalSAUTR = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
+  val authRetrievalEmptySetEnrolments = StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
 
-  val emptyAuthRetrieval = StandardAuthRetrievals(Set(), None, "emptyFakeCredID", Some(User))
+  val emptyAuthRetrieval = StandardAuthRetrievals(Set(), None, "fakePlainTextCredID", "emptyFakeCredID", Some(User))
 
 }

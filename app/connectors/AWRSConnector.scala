@@ -450,8 +450,8 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
     }
   }
 
-  def checkUsersEnrolments(safeID: String, credID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsUsers]] = {
-    val getURL = s"""$serviceURL/awrs/status-info/user/$safeID/:$credID"""
+  def checkUsersEnrolments(safeID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsUsers]] = {
+    val getURL = s"""$serviceURL/awrs/status-info/users/$safeID"""
     http.GET(getURL, Seq.empty, Seq.empty) map {
       response =>
         response.status match {

@@ -85,10 +85,10 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
   def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] =
     businessCustomerDetails(authRetrievals, callerId).flatMap {
       _.fold(Future.successful(Redirect(applicationConfig.businessCustomerStartPage))) { details =>
-        checkEtmpService.checkUsersEnrolments(authRetrievals, details) flatMap { result =>
+        checkEtmpService.checkUsersEnrolments(details, authRetrievals.plainTextCredId) flatMap { result =>
           result match {
             case Some(true) =>
-              logger.info(s"User's business already has AWRS enrolment")
+              logger.info(s"User business already has AWRS enrolment")
               Future.successful(Redirect(controllers.routes.WrongAccountController.showWrongAccountPage(Some(details.businessName))))
             case _ =>
               gotoBusinessTypePage(callerId)

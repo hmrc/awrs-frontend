@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
-  val retrievalsWithAwrsEnrolment: StandardAuthRetrievals = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeGGCredID", Some(User))
+  val retrievalsWithAwrsEnrolment: StandardAuthRetrievals = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakePlainTextCredID", "fakeGGCredID", Some(User))
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
   override def beforeEach: Unit = {
@@ -502,20 +502,19 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   }
 
   "checkUsersEnrolments" must {
-    val testCredID = "credID-123"
     val testSafeID = "safeID-123"
-    val mockAwrsUsers = Json.toJson(AwrsUsers(List("principalUserId-One","principalUserId-Two"), List("delegatedUserId-One"))).toString
     val testAwrsUsers = AwrsUsers(List("principalUserId-One","principalUserId-Two"), List("delegatedUserId-One"))
+    val testResponse = Json.toJson(testAwrsUsers).toString
     implicit val ec = scala.concurrent.ExecutionContext.global
 
     "return OK when the call to awrs is successful" in {
-      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(200,mockAwrsUsers)))
-      val result = testAWRSConnector.checkUsersEnrolments(testSafeID,testCredID)(hc,ec)
+      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(200,testResponse)))
+      val result = testAWRSConnector.checkUsersEnrolments(testSafeID)(hc,ec)
       await(result) mustBe Some(testAwrsUsers)
     }
     "return an internal server exception if the call fails" in {
       when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(500,"")))
-      val result = testAWRSConnector.checkUsersEnrolments(testSafeID,testCredID)(hc,ec)
+      val result = testAWRSConnector.checkUsersEnrolments(testSafeID)(hc,ec)
       val thrown = the[InternalServerException] thrownBy await(result)
       thrown.getMessage mustBe "[awrs-frontend][checkUsersEnrolments] returned status code: 500"
     }
