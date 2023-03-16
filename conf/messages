@@ -327,10 +327,12 @@ awrs.application_status.info.approved.line6_print=Now that we have approved you,
 awrs.application_status.info.approved.line7=This service lets your customers check that you are approved as wholesalers of alcohol. To allow your customers to the service, you must give them your AWRS unique reference number (URN) if they ask for it.
 awrs.application_status.info.approved_with_conditions.heading=What this means
 awrs.application_status.info.rejected.heading=What this means
-awrs.application_status.decision_question=If you do not agree with the decision
-awrs.application_status.decision_answer.para_1=If you do not agree with my decision then you can ask for it to be reviewed by another HMRC officer who has previously not been involved in the matter, or appeal to an independent tribunal.  If you opt for a review you can still appeal to the tribunal after the review has finished.
-awrs.application_status.decision_answer.para_2=If you want a review you should write to me at the address above within 30 days of the date of this letter, giving your reasons why you do not agree with my decision.  If you want to appeal to the tribunal you should send them your appeal within 30 days of the date of this letter.
-awrs.application_status.decision_answer.para_3=You can find further information on reviews and appeals in {0}{1}{2}. Please note that you must not carry on this controlled activity and may only do so if you have been approved as part of this scheme.
+awrs.application_status.decision_question=If you do not agree with this decision
+awrs.application_status.decision_answer.para_1=You can ask for this decision to be:
+awrs.application_status.decision_answer.para_2=-reviewed by another HMRC officer who has not previously been involved in your application /n -or appeal to an independent tribunal
+awrs.application_status.decision_answer.para_3=If you want a review or want to appeal to the independent tribunal, you need to contact us within 30 days of this decision giving your reasons.
+awrs.application_status.decision_answer.para_4=You can find further information on reviews and appeals in {0}{1}{2}.
+awrs.application_status.decision_answer.para_5=You must not carry on this controlled activity until you have been approved for the scheme.
 
 # Alert statuses
 #============================================================
