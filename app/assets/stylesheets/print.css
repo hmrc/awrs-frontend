@@ -23,5 +23,8 @@ footer,
     width: 70%;
   }
 
+ .govuk-main-wrapper > .govuk-grid-row > div[class*='govuk-grid-column-'] {
+     width: 100%;
+  }
 
 }
