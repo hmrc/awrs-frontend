@@ -16,7 +16,10 @@
 
 @(implicit  messages: Messages)
 <p class="govuk-body">@Messages("awrs.application_status.decision_answer.para_1")</p>
-<p class="govuk-body">@Messages("awrs.application_status.decision_answer.para_2")</p>
-<p class="govuk-body">@Html(Messages("awrs.application_status.decision_answer.para_3",
+<p class="govuk-body">@Html(Messages("awrs.application_status.decision_answer.para_2_1"))<br>
+ @Html(Messages("awrs.application_status.decision_answer.para_2_2"))</p>
+<p class="govuk-body">@Messages("awrs.application_status.decision_answer.para_3")</p>
+<p class="govuk-body">@Html(Messages("awrs.application_status.decision_answer.para_4",
  "<a target='_blank' class=\"govuk-link\" href=\"https://www.gov.uk/government/publications/excise-notice-2002-alcohol-wholesaler-registration-scheme/excise-notice-2002-alcohol-wholesaler-registration-scheme#reviews-and-appeals\">",
-  "section 19 of Excise Notice 2002 (opens in a new window or tab)", "</a>"))</p>
+  "section 19 of Excise Notice 2002 (opens in new tab)", "</a>"))</p>
+<p class="govuk-body">@Messages("awrs.application_status.decision_answer.para_5")</p>
