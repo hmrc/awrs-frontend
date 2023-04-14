@@ -21,7 +21,10 @@ import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util._
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.BusinessDirectorsForm._
+import forms.BusinessDirectorsForm
+import forms.BusinessDirectorsForm.{businessDirectorsForm, companyNames}
+import forms.submapping.CompanyNamesMapping
+
 import javax.inject.Inject
 import models.{BusinessDirector, BusinessDirectors}
 import play.api.mvc._
@@ -106,14 +109,21 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
                      authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] = {
 
     implicit val viewMode: ViewApplicationType = viewApplicationType
-    businessDirectorsForm.bindFromRequest.fold(
+
+     def processDataPersonOrCompany(data: BusinessDirector): BusinessDirector = data.personOrCompany match {
+       case Some("person") => data.copy(companyNames = None, doYouHaveVRN = None)
+       case Some("company") => data.copy(doTheyHaveNationalInsurance = None)
+       case _ => data
+     }
+
+     businessDirectorsForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),
       businessDirectorsData =>
         saveThenRedirect[BusinessDirectors, BusinessDirector](
           fetchData = fetch(authRetrievals),
           saveData = save,
           id = id,
-          data = businessDirectorsData,
+          data = processDataPersonOrCompany(businessDirectorsData),
           authRetrievals
         )(
           haveAnotherAnswer = (data: BusinessDirector) => data.otherDirectors.get,
