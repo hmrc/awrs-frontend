@@ -37,15 +37,13 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
 
   def enrolAWRS(awrsRef: String,
                 businessPartnerDetails: BusinessCustomerDetails,
-                businessType: String,
-                utr: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
-    val enrolment = createEnrolment(awrsRef, businessPartnerDetails, businessType, utr)
+                businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
       val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
       val verifiers = createVerifiers(businessPartnerDetails.utr, businessType, postCode)
       authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
         case Some(Credentials(ggCred, _)) ~ Some(groupId) =>
           val grpId = groupId
-          val requestPayload = RequestPayload(ggCred, enrolment.friendlyName, enrolmentType, verifiers)
+          val requestPayload = RequestPayload(ggCred, friendly, enrolmentType, verifiers)
           taxEnrolmentsConnector.enrol(requestPayload, grpId, awrsRef, businessPartnerDetails, businessType)
         case _ ~ None =>
           Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
@@ -56,35 +54,19 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
       }
     }
 
+  private[services] def createVerifiers(utr: Option[String], businessType: String, postcode: String) = {
 
-  private def createVerifiers(utr: Option[String], businessType: String, postcode: String) = {
-    val utrVerifier = businessType match {
-      case "SOP" => Verifier("SAUTR", utr.getOrElse(""))
-      case _ => Verifier("CTUTR", utr.getOrElse(""))
-    }
-    List(
-      Verifier("Postcode", postcode)
-    ) :+ utrVerifier
-  }
+    val postCodeVerifier =
+      List(
+        Verifier("Postcode", postcode)
+    )
 
-
-  def createEnrolment(awrsRef: String,
-                      businessPartnerDetails: BusinessCustomerDetails,
-                      businessType: String,
-                      utr: Option[String]): EnrolRequest = {
-
-    val postcode: String = businessPartnerDetails.businessAddress.postcode
-      .fold("")(x => x).replaceAll("\\s+", "")
-
-    val knownFacts = (utr, businessType) match {
-      case (Some(saUtr), "SOP") => Seq(awrsRef, "", saUtr, postcode)
-      case (Some(ctUtr), _) => Seq(awrsRef, ctUtr, "", postcode)
-      case (_, _) => Seq(awrsRef, "", "", postcode)
-    }
-
-    EnrolRequest(portalId = mdtp,
-      serviceName = service,
-      friendlyName = friendly,
-      knownFacts = knownFacts)
+      utr match {
+        case Some(utr) => businessType match {
+          case "SOP" => postCodeVerifier :+ Verifier("SAUTR", utr)
+          case _ => postCodeVerifier :+ Verifier("CTUTR", utr)
+        }
+        case _ => postCodeVerifier
+      }
   }
 }

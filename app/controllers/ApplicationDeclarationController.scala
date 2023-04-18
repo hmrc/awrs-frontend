@@ -109,8 +109,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
               successResponse <- applicationService.sendApplication(ar)
               _ <- enrolService.enrolAWRS(applicationService.getRegistrationReferenceNumber(successResponse),
                 businessPartnerDetails.get,
-                businessType,
-                businessRegDetails.get.utr) // Calls ES8
+                businessType) // Calls ES8
             } yield {
               successResponse match {
                 case Left(_)         =>
@@ -134,6 +133,5 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
       }
     }
   }
-
 
 }
