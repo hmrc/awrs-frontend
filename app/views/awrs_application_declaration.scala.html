@@ -43,11 +43,12 @@
     title = s"${errorPrefix(applicationDeclarationForm)} ${messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading"))}",
     userLoggedIn = true){
 
-@if(applicationDeclarationForm.errors.nonEmpty) {
-    @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(applicationDeclarationForm))
-}
+    @backLink(backUrl = controllers.routes.IndexController.showIndex.url)
 
-        @backLink(backUrl = controllers.routes.IndexController.showIndex.url)
+    @if(applicationDeclarationForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(applicationDeclarationForm))
+    }
+
         <h1 id="application-declaration-heading" class="govuk-heading-xl">@Html(messages("awrs.application_declaration.heading"))</h1>
         <p class="govuk-body-l">@messages("awrs.application_declaration.lede")</p>
         @formWithCSRF(action = controllers.routes.ApplicationDeclarationController.sendApplication){
@@ -83,4 +84,3 @@
             <div class = "govuk-form-group">@returnToIndex()</div>
         }
 }
-
