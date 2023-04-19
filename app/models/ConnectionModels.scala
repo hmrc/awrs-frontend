@@ -29,12 +29,6 @@ object SelfHealSubscriptionResponse {
   implicit val formats: OFormat[SelfHealSubscriptionResponse] = Json.format[SelfHealSubscriptionResponse]
 }
 
-case class EnrolRequest(portalId: String, serviceName: String, friendlyName: String, knownFacts: Seq[String])
-
-object EnrolRequest {
-  implicit val formats: OFormat[EnrolRequest] = Json.format[EnrolRequest]
-}
-
 case class Identifier(`type`: String, value: String)
 
 object Identifier {

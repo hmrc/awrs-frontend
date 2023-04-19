@@ -35,12 +35,7 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   val saUtr: String = testUtr
   val ctUtr: String = testCTUtr
   val postCode: String = testPostcode
-  val enrolRequestSAUTR: EnrolRequest =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG",
-    friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456","",saUtr,"postcode"))
-  val enrolRequestCTUTR: EnrolRequest =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG",
-    friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456",ctUtr,"","postcode"))
-  val enrolRequestNoSACT: EnrolRequest =  EnrolRequest(portalId = "Default", serviceName = "HMRC-AWRS-ORG",
-    friendlyName = "AWRS Enrolment", knownFacts = Seq("XAAW000000123456","","","postcode"))
+
   val successfulEnrolResponse: Option[EnrolResponse] = Some(EnrolResponse(serviceName = "AWRS", state = "Not-activated",
     identifiers = List(Identifier("AWRS","Awrs-ref-no"))))
   val sourceId: String = "AWRS"
