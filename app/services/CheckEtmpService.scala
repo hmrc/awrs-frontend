@@ -36,8 +36,7 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
         enrolService.enrolAWRS(
           successResponse.regimeRefNumber,
           busCusDetails,
-          legalEntity,
-          busCusDetails.utr
+          legalEntity
         ) map {
           case Some(_) =>
             logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")

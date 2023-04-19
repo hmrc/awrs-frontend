@@ -15,7 +15,6 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helper.CSPNonce
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.ReportTechnicalIssue
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
@@ -63,6 +62,5 @@
     serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),
     signOutUrl = Some(signOutUrl),
     beforeContentBlock = Some(beforeContentBlock),
-    additionalScriptsBlock = Some(scriptsBlock),
-    nonce = CSPNonce.get
+    additionalScriptsBlock = Some(scriptsBlock)
 )(content)
