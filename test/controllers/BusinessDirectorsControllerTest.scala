@@ -17,7 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
-import models.BusinessDirectors
+import models.{BusinessDirector, BusinessDirectors, CompanyNames}
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -85,6 +85,29 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
     }
   }
 
+  "processDataPersonOrCompany" when {
+
+    "the director is a person" must {
+      "remove the VRN and CompanyNames fields" in {
+        val person = businessDirector("person")
+        val processedPerson = testBusinessDirectorsController.processDataPersonOrCompany(person)
+        processedPerson.doTheyHaveNationalInsurance mustBe Some("Yes")
+        processedPerson.companyNames mustBe None
+        processedPerson.doYouHaveVRN mustBe None
+      }
+    }
+
+    "the director is a company" must {
+      "remove the do you have NINO field" in {
+        val company = businessDirector("company")
+        val processedCompany = testBusinessDirectorsController.processDataPersonOrCompany(company)
+        processedCompany.doTheyHaveNationalInsurance mustBe None
+        processedCompany.companyNames mustBe Some(CompanyNames(businessName = Some("Test Company"), doYouHaveTradingName = Some("Yes"), tradingName = Some("Trade Name")))
+        processedCompany.doYouHaveVRN mustBe Some("Yes")
+      }
+    }
+  }
+
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = testBusinessDirectors)
     setAuthMocks()
@@ -98,4 +121,10 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
     val result = testBusinessDirectorsController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
+
+  private def businessDirector(entity: String): BusinessDirector =
+    BusinessDirector(personOrCompany = Some(entity),
+      doTheyHaveNationalInsurance = Some("Yes"),
+      companyNames = Some(CompanyNames(businessName = Some("Test Company"), doYouHaveTradingName = Some("Yes"), tradingName = Some("Trade Name"))),
+      doYouHaveVRN = Some("Yes"))
 }

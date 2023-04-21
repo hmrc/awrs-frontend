@@ -21,8 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util._
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.BusinessDirectorsForm._
-import javax.inject.Inject
+import forms.BusinessDirectorsForm.businessDirectorsForm
 import models.{BusinessDirector, BusinessDirectors}
 import play.api.mvc._
 import services.DataCacheKeys._
@@ -33,6 +32,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponents,
@@ -99,6 +99,12 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
     }
   }
 
+  def processDataPersonOrCompany(data: BusinessDirector): BusinessDirector = data.personOrCompany match {
+    case Some("person") => data.copy(companyNames = None, doYouHaveVRN = None)
+    case Some("company") => data.copy(doTheyHaveNationalInsurance = None)
+    case _ => data
+  }
+
    override def save(id: Int,
                      redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
                      viewApplicationType: ViewApplicationType,
@@ -106,14 +112,15 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
                      authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] = {
 
     implicit val viewMode: ViewApplicationType = viewApplicationType
-    businessDirectorsForm.bindFromRequest.fold(
+
+     businessDirectorsForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),
       businessDirectorsData =>
         saveThenRedirect[BusinessDirectors, BusinessDirector](
           fetchData = fetch(authRetrievals),
           saveData = save,
           id = id,
-          data = businessDirectorsData,
+          data = processDataPersonOrCompany(businessDirectorsData),
           authRetrievals
         )(
           haveAnotherAnswer = (data: BusinessDirector) => data.otherDirectors.get,
