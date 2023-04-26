@@ -20,7 +20,6 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.BusinessTypeForm.{businessTypeForm, _}
-import javax.inject.Inject
 import models.{BusinessType, NewApplicationType}
 import play.api.data.Form
 import play.api.mvc._
@@ -31,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
@@ -71,6 +71,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
         businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       } yield {
         val display = (form: Form[BusinessType]) => Ok(template(form, bcd.businessName, bcd.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(authRetrievals))) addBusinessNameToSession bcd.businessName
+
         businessType match {
           case Some(data) => display(businessTypeForm.fill(data)) addBusinessTypeToSession data
           case _ => display(businessTypeForm)
@@ -97,7 +98,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       save4LaterService.mainStore.fetchBusinessCustomerDetails(ar) flatMap {
         case Some(businessDetails) =>
-           validateBusinessType(businessTypeForm.bindFromRequest).fold(
+          validateBusinessType(businessTypeForm.bindFromRequest).fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessDetails.businessType.fold("")(x => x), businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
             businessTypeData =>
               save4LaterService.mainStore.saveBusinessType(businessTypeData, ar) flatMap { _ =>
@@ -109,11 +110,13 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
                       standardApi5Journey(updatedRetrievals)
                     }
                   } else {
-                    {if (businessDetails.isAGroup) {
-                      Future.successful(Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration))
-                    } else {
-                      Future.successful(Redirect(controllers.routes.IndexController.showIndex))
-                    }} map { result =>
+                    {
+                      if (businessDetails.isAGroup) {
+                        Future.successful(Redirect(controllers.routes.GroupDeclarationController.showGroupDeclaration))
+                      } else {
+                        Future.successful(Redirect(controllers.routes.IndexController.showIndex))
+                      }
+                    } map { result =>
                       result addBusinessTypeToSession legalEntity addBusinessNameToSession businessDetails.businessName
                     }
                   }

@@ -17,14 +17,15 @@
 package services
 
 import connectors.AWRSConnector
-import javax.inject.Inject
 import models.BusinessCustomerDetails
 import play.api.Logging
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
+                                 save4LaterService: Save4LaterService,
                                  enrolService: EnrolService) extends Logging {
 
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails, legalEntity: String)
@@ -41,13 +42,33 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
           case Some(_) =>
             logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
             true
-          case _       =>
+          case _ =>
             logger.info("[CheckEtmpService][validateBusinessDetails] ES8 failure")
             false
         }
       case None =>
         logger.info("[CheckEtmpService][validateBusinessDetails] Could not perform ES6")
         Future.successful(false)
+    }
+  }
+
+  def checkUsersEnrolments(details: BusinessCustomerDetails, credId: String)
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
+    logger.info("[CheckEtmpService][checkUsersEnrolments] Checking for existing AWRS users")
+    awrsConnector.checkUsersEnrolments(details.safeId) map { users =>
+      users match {
+        case Some(users) if users.principalUserIds == Nil && users.delegatedUserIds == Nil =>
+          logger.info(s"""[CheckEtmpService][checkUsersEnrolments] No AWRS users found for ${details.businessName} user $credId""")
+          Some(false)
+        case Some(users) if users.principalUserIds.contains(credId) || users.delegatedUserIds.contains(credId) =>
+          logger.info(s"""[CheckEtmpService][checkUsersEnrolments] Users credId found in list of AWRS users""")
+          Some(false)
+        case Some(users) =>
+          logger.info(s"""[CheckEtmpService][checkUsersEnrolments] $users Existing users found for ${details.businessName}""")
+          Some(true)
+        case _ =>
+          throw new InternalServerException(s"""[CheckEtmpService][checkUsersEnrolments] - error when calling awrsConnector checkUsersEnrolments """)
+      }
     }
   }
 }

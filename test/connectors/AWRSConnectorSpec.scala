@@ -37,11 +37,11 @@ import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch, TestUtil}
 import uk.gov.hmrc.auth.core.User
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AWRSConnectorSpec extends AwrsUnitTestTraits {
 
-  val retrievalsWithAwrsEnrolment: StandardAuthRetrievals = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeGGCredID", Some(User))
+  val retrievalsWithAwrsEnrolment: StandardAuthRetrievals = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakePlainTextCredID", "fakeGGCredID", Some(User))
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
   override def beforeEach: Unit = {
@@ -499,6 +499,25 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       the[InternalServerException] thrownBy await(result)
     }
 
+  }
+
+  "checkUsersEnrolments" must {
+    val testSafeID = "safeID-123"
+    val testAwrsUsers = AwrsUsers(List("principalUserId-One","principalUserId-Two"), List("delegatedUserId-One"))
+    val testResponse = Json.toJson(testAwrsUsers).toString
+    implicit val ec = scala.concurrent.ExecutionContext.global
+
+    "return OK when the call to awrs is successful" in {
+      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(200,testResponse)))
+      val result = testAWRSConnector.checkUsersEnrolments(testSafeID)(hc,ec)
+      await(result) mustBe Some(testAwrsUsers)
+    }
+    "return an internal server exception if the call fails" in {
+      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(500,"")))
+      val result = testAWRSConnector.checkUsersEnrolments(testSafeID)(hc,ec)
+      val thrown = the[InternalServerException] thrownBy await(result)
+      thrown.getMessage mustBe "[awrs-frontend][checkUsersEnrolments] returned status code: 500"
+    }
   }
 
   "AWRSConnector update group business partner" must {

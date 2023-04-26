@@ -23,6 +23,7 @@ import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.libs.json.JsResultException
@@ -50,7 +51,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
   val assistantKickoutView: assistant_kickout = app.injector.instanceOf[assistant_kickout]
 
   val testHomeController: HomeController = new HomeController(mockMCC, mockBusinessCustomerService
-    , mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig, tooSoonError, assistantKickoutView) {
+    ,mockDeEnrolService, mockCheckEtmpService, mockAuthConnector, mockAuditable, mockAccountUtils, testSave4LaterService, mockAppConfig, tooSoonError, assistantKickoutView) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -69,9 +70,21 @@ class HomeControllerTest extends AwrsUnitTestTraits
         """[
           |"United Kingdom"
           |]""".stripMargin)
+    when(mockCheckEtmpService.checkUsersEnrolments(any(), any())(any(),any()))
+      .thenReturn(Future.successful(None))
   }
 
   "HomeController" must {
+    "redirect to the wrong account page when an AWRS enrolment is found for the current cred ID" in {
+      when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(false))
+      when(mockCheckEtmpService.checkUsersEnrolments(any(), any())(any(),any()))
+        .thenReturn(Future.successful(Some(true)))
+      showWithSave4LaterUserHasWrongAccount() { result =>
+        status(result) mustBe 303
+        redirectLocation(result).get must include("/alcohol-wholesale-scheme/wrong-account")
+      }
+    }
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
       when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -210,6 +223,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
         redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-type")
       }
     }
+  }
+
+  private def showWithSave4LaterUserHasWrongAccount(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("test-legal-entity"), fetchApplicationStatus = applicationStatus)
+    setAuthMocks(Future.successful(
+      new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
+    val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
   }
 
   private def showWithSave4LaterAndAssistantAndNoAwrs(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {

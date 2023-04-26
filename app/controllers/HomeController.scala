@@ -19,22 +19,24 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
-import javax.inject.Inject
 import models.{ApplicationStatus, BusinessCustomerDetails}
 import org.joda.time.LocalDateTime
 import play.api.libs.json.JsResultException
 import play.api.mvc._
 import services._
+import uk.gov.hmrc.auth.core.Assistant
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
-import uk.gov.hmrc.auth.core.Assistant
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HomeController @Inject()(mcc: MessagesControllerComponents,
                                businessCustomerService: BusinessCustomerService,
                                val deEnrolService: DeEnrolService,
+                               val checkEtmpService: CheckEtmpService,
                                val authConnector: DefaultAuthConnector,
                                val auditable: Auditable,
                                val accountUtils: AccountUtils,
@@ -63,31 +65,37 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def gotoBusinessTypePage(callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
-      callerId match {
-        case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
-        case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
-      }
-  }
-
-  def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] = {
-    save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
-      case Some(data) =>
-        if (data.safeId.isEmpty) {
-          Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
-        } else {
-          gotoBusinessTypePage(callerId)
-        }
-      case _ =>
-        businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails] flatMap {
-          case Some(data) =>
-            save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data) flatMap {
-              _ => gotoBusinessTypePage(callerId)
-            }
-          case _ =>
-            Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
-        }
+    callerId match {
+      case Some(id) => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)).addingToSession(AwrsSessionKeys.sessionCallerId -> id))
+      case _ => Future.successful(Redirect(controllers.routes.BusinessTypeController.showBusinessType(false)))
     }
   }
+
+  def businessCustomerDetails(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
+    save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
+      case Some(data) if data.safeId.isEmpty => Future.successful(None)
+      case Some(data) if !data.safeId.isEmpty => Future.successful(Some(data))
+      case None =>
+        businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails].flatMap {
+          case Some(data) => save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data).map(_ => Some(data))
+          case _ => Future.successful(None)
+        }
+    }
+
+  def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] =
+    businessCustomerDetails(authRetrievals, callerId).flatMap {
+      _.fold(Future.successful(Redirect(applicationConfig.businessCustomerStartPage))) { details =>
+        checkEtmpService.checkUsersEnrolments(details, authRetrievals.plainTextCredId) flatMap { result =>
+          result match {
+            case Some(true) =>
+              logger.info(s"User business already has AWRS enrolment")
+              Future.successful(Redirect(controllers.routes.WrongAccountController.showWrongAccountPage(Some(details.businessName))))
+            case _ =>
+              gotoBusinessTypePage(callerId)
+          }
+        }
+      }
+    }
 
   def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { authRetrievals =>

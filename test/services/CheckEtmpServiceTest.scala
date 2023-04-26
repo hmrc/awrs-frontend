@@ -17,6 +17,7 @@
 package services
 
 import connectors.{AWRSConnector, Save4LaterConnector}
+import controllers.auth.StandardAuthRetrievals
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -28,7 +29,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import utils.AccountUtils
+import utils.{AccountUtils, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -43,9 +44,10 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
   val mockEnrolService: EnrolService = mock[EnrolService]
   val mockSave4LaterConnector: Save4LaterConnector = mock[Save4LaterConnector]
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
-  val testBusinessCustomerDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
-  val testBusinessRegistrationDetails: BusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
-  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockEnrolService)
+  val testAuthRetrievals: StandardAuthRetrievals = TestUtil.defaultAuthRetrieval
+  val testBusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
+  val testBusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
+  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockSave4LaterService, mockEnrolService)
 
   override def beforeEach(): Unit = {
     reset(mockAwrsConnector,
@@ -54,6 +56,26 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
       mockSave4LaterService)
 
     super.beforeEach()
+  }
+  "checkUsersEnrolments" must {
+    "return true if there are enrolments returned for the given business" in {
+      val testUsersList: AwrsUsers = AwrsUsers(List("principal-user"), List("delegated-user"))
+      when(mockAwrsConnector.checkUsersEnrolments(testBusinessCustomerDetails.safeId))
+        .thenReturn(Future.successful(Some(testUsersList)))
+
+      val result = checkEtmpTest.checkUsersEnrolments(testBusinessCustomerDetails,"someCredId")
+
+      await(result) mustBe Some(true)
+    }
+    "return false if there are no credIds returned for the users business" in {
+      val testEmptyUsersList: AwrsUsers = AwrsUsers(Nil, Nil)
+      when(mockAwrsConnector.checkUsersEnrolments(testBusinessCustomerDetails.safeId))
+        .thenReturn(Future.successful(Some(testEmptyUsersList)))
+
+      val result = checkEtmpTest.checkUsersEnrolments(testBusinessCustomerDetails,"someCredId")
+
+      await(result) mustBe Some(false)
+    }
   }
 
   "validateBusinessDetails" must {
