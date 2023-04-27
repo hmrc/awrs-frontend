@@ -165,7 +165,7 @@ object MappingUtilAPI {
   }
 
   object CrossFieldConstraint {
-    def apply(condition: FormQuery, errorMessage: Invalid, booleanValueOfInvalid: Boolean = true) =
+    def apply(condition: FormQuery, errorMessage: Invalid, booleanValueOfInvalid: Boolean = true): CrossFieldConstraint =
       new CrossFieldConstraint(condition, errorMessage, booleanValueOfInvalid)
   }
 
