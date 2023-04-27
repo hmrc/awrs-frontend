@@ -28,16 +28,15 @@ import play.api.libs.json._
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, User}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AwrsTestJson._
 import utils.TestConstants._
 import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch, TestUtil}
-import uk.gov.hmrc.auth.core.User
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class AWRSConnectorSpec extends AwrsUnitTestTraits {
 

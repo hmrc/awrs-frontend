@@ -42,7 +42,9 @@ class WrongAccountController @Inject()(val mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showWrongAccountPage(businessName: Option[String]) : Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    Future.successful(Ok(template(businessName.getOrElse("Error"))))
+    authorisedAction { _ =>
+      Future.successful(Ok(template(businessName.getOrElse("Error"))))
+    }
   }
 
 }
