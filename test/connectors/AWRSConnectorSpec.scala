@@ -511,11 +511,10 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
       val result = testAWRSConnector.checkUsersEnrolments(testSafeID)(hc,ec)
       await(result) mustBe Some(testAwrsUsers)
     }
-    "return an internal server exception if the call fails" in {
+    "return None if the call fails" in {
       when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(500,"")))
       val result = testAWRSConnector.checkUsersEnrolments(testSafeID)(hc,ec)
-      val thrown = the[InternalServerException] thrownBy await(result)
-      thrown.getMessage mustBe "[awrs-frontend][checkUsersEnrolments] returned status code: 500"
+      await(result) mustBe None
     }
   }
 
