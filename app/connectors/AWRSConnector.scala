@@ -20,7 +20,6 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
 import exceptions.{DESValidationException, DuplicateSubscriptionException, GovernmentGatewayException, PendingDeregistrationException}
-import javax.inject.Inject
 import models.FormBundleStatus.Approved
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
@@ -31,6 +30,7 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AWRSFeatureSwitches, AccountUtils, LoggingUtils}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.Regex
 
@@ -456,7 +456,9 @@ class AWRSConnector @Inject()(http: DefaultHttpClient,
       response =>
         response.status match {
           case OK => Some(response.json.as[AwrsUsers])
-          case status => throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] returned status code: $status""")
+          case status =>
+            logger.info(s"""[awrs-frontend][checkUsersEnrolments] returned status code: $status""")
+            None
         }
     }
   }
