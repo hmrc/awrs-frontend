@@ -61,43 +61,58 @@
     @if(showTableHeader) {
         @table_row(
             "",
-            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.business_details_text")}")
+            Some(edit_link_s(href, s"$heading")
         ))(cssClass = Option("record-header"), messages = messages)
     }
-    @table_row(
-        messages("awrs.business_details.name"),
-        Some(businessName)
-    )
 
-    @table_row(
-        messages("awrs.business_details.type_of_business"),
-        Some(businessTypeValue)
-    )
-    @table_row(
-        messages("awrs.generic.trading"),
-        model.tradingName
-    )
-    @table_row(
-        messages("awrs.business_details.new_AWBusiness"),
-        Some(tradingStart.newAWBusiness)
-    )
-    @table_row(
-        messages("awrs.business_details.start_date"),
-        Some(tradingStart.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy")))
-    )
+    <dl class="view-application govuk-table">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.business_details.name")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @Some(businessName)
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.business_details.type_of_business")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @Some(businessTypeValue)
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.generic.trading")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @model.tradingName
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.business_details.new_AWBusiness")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @Some(tradingStart.newAWBusiness)
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.business_details.start_date")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @Some(tradingStart.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy")))
+        </dd>
+      </div>
+    </dl>
 }
 
-@preContent = {
-    <table class="view-application govuk-table">
-}
-
-@postContent = {
-    </table>
-}
 
 @(someModel, someBusinessName) match {
     case (BusinessDetailSummaryModel(Some(businessNameDetails), Some(newAWBusiness)), Some(businessName)) => {
-        @subview_core(heading, wrapperId, sectionName = Some(businessDetailsName))(content(businessNameDetails, newAWBusiness, businessName), preContent = Some(preContent), postContent = Some(postContent))
+        @subview_core(heading, wrapperId, sectionName = Some(businessDetailsName))(content(businessNameDetails, newAWBusiness, businessName))
     }
     case _ => {}
 }
