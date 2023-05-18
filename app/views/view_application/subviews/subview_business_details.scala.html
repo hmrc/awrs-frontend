@@ -59,10 +59,7 @@
 @content(model: models.BusinessNameDetails, tradingStart: models.NewAWBusiness, businessName: String) = {
 
     @if(showTableHeader) {
-        @table_row(
-            "",
-            Some(edit_link_s(href, s"$heading")
-        ))(cssClass = Option("record-header"), messages = messages)
+        <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
 
     <dl class="view-application govuk-table">

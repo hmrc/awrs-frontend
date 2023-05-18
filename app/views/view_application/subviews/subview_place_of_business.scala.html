@@ -36,41 +36,51 @@
 }
 
 @content(model: models.PlaceOfBusiness) = {
+
     @if(showTableHeader) {
-        @table_row(
-            "",
-            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.business_place_of_business_text")}"))
-        )(cssClass = Some("record-header"), messages = messages)
+        <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
-    @address_helper(
-        messages("awrs.view_application.principal_place_business"),
-        model.mainAddress
-    )
-    @table_row(
-        messages("awrs.business_contacts.place_of_business_changed_last_3_years"),
-        model.placeOfBusinessLast3Years
-    )
-    @address_helper(
-        messages("awrs.view_application.previous_address"),
-        model.placeOfBusinessAddressLast3Years
-    )
-    @table_row(
-        messages("awrs.business_contacts.business_operating_from_current_address"),
-        model.operatingDuration
-    )
-}
 
-@preContent = {
-    <table class="view-application govuk-table">
-}
+    <dl class="view-application govuk-table">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.view_application.principal_place_business")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @model.mainAddress
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.business_contacts.place_of_business_changed_last_3_years")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @model.placeOfBusinessLast3Years
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.view_application.previous_address")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @model.placeOfBusinessAddressLast3Years
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.business_contacts.business_operating_from_current_address")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @model.operatingDuration
+        </dd>
+      </div>
+    </dl>
 
-@postContent = {
-    </table>
 }
 
 @someModel match {
     case Some(model) => {
-        @subview_core(heading, wrapperId, href, Some(placeOfBusinessName))(content(model), preContent = Some(preContent), postContent = Some(postContent))
+        @subview_core(heading, wrapperId, href, Some(placeOfBusinessName))(content(model))
     }
     case _ => {}
 }

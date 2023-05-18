@@ -484,3 +484,12 @@ details {display: block;}
 #applicationInfo {
     margin: 50px 0 40px;
 }
+
+.text-align-right {
+    text-align: right;
+}
+
+.govuk-summary-list__key {
+    width: 50%;
+}
+
