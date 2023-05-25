@@ -44,22 +44,18 @@
     }
 
     <dl class="view-application govuk-table">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @messages("awrs.additional_information.wholesaler_type")
-        </dt>
-        <dd class="govuk-summary-list__value">
-
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @messages("awrs.additional_information.orders.orders_question")
-        </dt>
-        <dd class="govuk-summary-list__value">
-
-        </dd>
-      </div>
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.wholesaler_type"),
+            AwrsFormFields.wholesaler.toMap,
+            model.wholesalerType,
+            model.otherWholesaler
+        )
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.orders.orders_question"),
+            AwrsFormFields.orders.toMap,
+            model.typeOfAlcoholOrders,
+            model.otherTypeOfAlcoholOrders
+        )
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
             @messages("awrs.additional_information.alcohol_import")
@@ -76,16 +72,12 @@
             @model.doYouExportAlcohol
         </dd>
       </div>
-
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @messages("awrs.additional_information.export_location")
-        </dt>
-        <dd class="govuk-summary-list__value">
-
-        </dd>
-      </div>
-
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.export_location"),
+            AwrsFormFields.exportAlcohol.toMap,
+            // TODO fix this
+            model.exportLocation.getOrElse(List())
+        )
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
             @messages("awrs.additional_information.third_party_storage")
@@ -96,24 +88,9 @@
       </div>
     </dl>
 
-    @group_checkbox_helper(
-        messages("awrs.additional_information.wholesaler_type"),
-        AwrsFormFields.wholesaler.toMap,
-        model.wholesalerType,
-        model.otherWholesaler
-    )
-    @group_checkbox_helper(
-        messages("awrs.additional_information.orders.orders_question"),
-        AwrsFormFields.orders.toMap,
-        model.typeOfAlcoholOrders,
-        model.otherTypeOfAlcoholOrders
-    )
-    @group_checkbox_helper(
-        messages("awrs.additional_information.export_location"),
-        AwrsFormFields.exportAlcohol.toMap,
-        // TODO fix this
-        model.exportLocation.getOrElse(List())
-    )
+
+
+
 
 }
 

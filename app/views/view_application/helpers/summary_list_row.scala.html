@@ -28,7 +28,10 @@
 }
 @anchor = {
     @someHref match {
-        case Some(href) => {<a class="govuk-link govuk-body" href="@href@someId">@Messages("awrs.view_application.edit")</a>}
+        case Some(href) => {
+            <dd class="edit-link govuk-summary-list__actions">
+                <a class="govuk-link govuk-body" href="@href@someId">@Messages("awrs.view_application.edit")</a>
+            </dd>}
         case _ => {}
     }
 }
@@ -63,6 +66,17 @@
                             }
                          }
                     </dd>
+                    @links match {
+                        case Some(link) => {
+                            <dd class="links govuk-summary-list__actions">
+                                @for(linkRow <- link){
+                                    <p class="govuk-body">@Html(linkRow)</p>
+                                }
+                            </dd>
+                        }
+                        case _ => {}
+                    }
+                    @anchor
                 </div>
             }
         }

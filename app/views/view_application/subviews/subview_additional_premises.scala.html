@@ -52,20 +52,24 @@
         case AdditionalBusinessPremisesList(List(AdditionalBusinessPremises(Some("No"), _, _))) => {
             <p id="no-premises" class="govuk-body-l">@messages("awrs.view_application.no_premises")</p>
         }
+        
         case _ => {
-            @model.premises.zipWithIndex.map { case (premises, id) =>
-                @content_additional_premises(premises, id + 1)(implicitly, cssClass = {isSectionEdit match {
-                    case true => Some("short-row-title")
-                    case false => None
-                }}, implicitly, implicitly)
-            }
+            <dl class="govuk-summary-list three-column">
+                @model.premises.zipWithIndex.map { case (premises, id) =>
+                    @content_additional_premises(premises, id + 1)(implicitly, cssClass = {isSectionEdit match {
+                        case true => Some("govuk-summary-list__row")
+                        case false => None
+                    }}, implicitly, implicitly)
+                }
+            </dl>
         }
+        
     }
 }
 
 @topAdd(model : models.AdditionalBusinessPremisesList) = {
     @if(model.premises.size > 1) {
-        <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.premises"))</div>
+        <p class="govuk-body">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.premises"))</p>
     }
 }
 

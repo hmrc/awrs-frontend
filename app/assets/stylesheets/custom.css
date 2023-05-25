@@ -493,3 +493,7 @@ details {display: block;}
     width: 50%;
 }
 
+.three-column .govuk-summary-list__key {
+    width: 30%;
+}
+
