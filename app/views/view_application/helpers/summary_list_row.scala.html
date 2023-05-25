@@ -61,7 +61,7 @@
                     <dd class="row-data govuk-summary-list__value">
                         @for(rRow <- content) {
                             @rRow match {
-                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@data</p>}
+                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@Html(data)</p>}
                                 case _ => {}
                             }
                          }
