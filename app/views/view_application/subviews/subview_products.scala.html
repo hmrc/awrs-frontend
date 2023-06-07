@@ -38,7 +38,7 @@
         <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
 
-    <dl class="view-application govuk-table">
+    <dl class="govuk-summary-list">
         @group_checkbox_helper_summary_list(
             messages("awrs.additional_information.main_customers"),
             AwrsFormFields.mainCustomerOptions.toMap,

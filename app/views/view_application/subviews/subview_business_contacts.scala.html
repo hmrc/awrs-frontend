@@ -71,7 +71,7 @@
         <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
 
-    <dl class="view-application govuk-table">
+    <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
           @messages("awrs.view_application.contact_name")
@@ -96,14 +96,10 @@
           @model.email
         </dd>
       </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          @messages("awrs.view_application.contact_address")
-        </dt>
-        <dd class="govuk-summary-list__value">
-          @contactAddressToDisplay
-        </dd>
-      </div>
+      @address_helper(
+        messages("awrs.view_application.contact_address"),
+        contactAddressToDisplay
+      )
     </dl>
 }
 

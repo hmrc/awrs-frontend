@@ -1025,9 +1025,9 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
   case class Subview(heading: String, rows: List[Row])
 
-  def getRow(tr: Element): Row = {
-    val row1stCol = tr.getElementsByTag("th")
-    val row = tr.getElementsByTag("td")
+  def getRow(dl: Element): Row = {
+    val row1stCol = dl.getElementsByTag("dt")
+    val row = dl.getElementsByTag("dd")
     // there are 2 tds (heading th | content td), where content may have multiple paragraphs
     Row(row.head.text, row.drop(1).head.getElementsByTag("p").foldLeft(List[String]()){ (list, x) =>
       list :+ x.text
@@ -1042,7 +1042,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
   def getSubview(implicit doc: Document, id: String): Subview = {
     val div = doc.getElementById(id)
     val heading = div.getElementsByTag("h1").head.text()
-    val rows = div.getElementsByTag("tr").foldLeft(List[Row]())((list, x) => list :+ getRow(x))
+    val rows = div.getElementsByTag("dl").foldLeft(List[Row]())((list, x) => list :+ getRow(x))
     Subview(heading, rows)
   }
 

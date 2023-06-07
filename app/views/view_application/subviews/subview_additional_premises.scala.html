@@ -54,7 +54,7 @@
         }
         
         case _ => {
-            <dl class="govuk-summary-list three-column">
+            <dl class="govuk-summary-list three-column premises">
                 @model.premises.zipWithIndex.map { case (premises, id) =>
                     @content_additional_premises(premises, id + 1)(implicitly, cssClass = {isSectionEdit match {
                         case true => Some("govuk-summary-list__row")

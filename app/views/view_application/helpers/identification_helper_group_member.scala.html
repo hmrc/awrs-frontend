@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import views.html.view_application.helpers.table_row
 @(member: GroupMember, businessLegalEntity: String)(implicit messages : Messages)
 
 @* UTR *@
@@ -29,7 +28,7 @@ businessLegalEntity match {
 
 @member.doYouHaveUTR match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             Some(legend).get,
             Some(answer)
         )
@@ -39,7 +38,7 @@ businessLegalEntity match {
 
 @member.utr match {
     case Some(utr) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.UTR_number"),
             Some(utr)
         )
@@ -50,7 +49,7 @@ businessLegalEntity match {
 @* CRN *@
 @member.isBusinessIncorporated match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.do_they_have_company_reg"),
             Some(answer)
         )
@@ -60,11 +59,11 @@ businessLegalEntity match {
 
 @member.companyRegDetails match {
     case Some(data) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.company_reg"),
             Some(data.companyRegistrationNumber)
         )
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.date_of_incorporation"),
             Some(data.dateOfIncorporation.toString("dd MMMM yyyy"))
         )
@@ -75,7 +74,7 @@ businessLegalEntity match {
 @* VRN *@
 @member.doYouHaveVRN match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.do_they_have_VAT"),
             Some(answer)
         )
@@ -85,7 +84,7 @@ businessLegalEntity match {
 
 @member.vrn match {
     case Some(vrn) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.VAT_registration_number"),
             Some(vrn)
         )

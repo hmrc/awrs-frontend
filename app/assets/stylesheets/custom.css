@@ -497,3 +497,18 @@ details {display: block;}
     width: 30%;
 }
 
+.three-column.premises .govuk-summary-list__key {
+    width: 5%;
+}
+
+.three-column.premises .govuk-summary-list__actions {
+    width: 35%;
+}
+
+.three-column .links .govuk-link {
+    margin-right: 30px;
+}
+.three-column .links .govuk-link:last-child {
+    margin-right: 0;
+}
+

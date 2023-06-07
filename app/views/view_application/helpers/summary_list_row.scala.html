@@ -70,7 +70,7 @@
                         case Some(link) => {
                             <dd class="links govuk-summary-list__actions">
                                 @for(linkRow <- link){
-                                    <p class="govuk-body">@Html(linkRow)</p>
+                                    @Html(linkRow)
                                 }
                             </dd>
                         }
