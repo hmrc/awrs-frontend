@@ -27,16 +27,16 @@
 @wrapperId = @{SubviewIds.applicationDeclarationId}
 
 @content(model : models.ApplicationDeclaration) = {
-    <table class="view-application govuk-table">
-    @table_row(
+    <dl class="govuk-summary-list">
+    @summary_list_row(
         messages("awrs.application_declaration.declaration_name_hint", "sending"),
         model.declarationName
     )
-    @table_row(
+    @summary_list_row(
         messages("awrs.application_declaration.declaration_role_hint", "sending"),
         model.declarationRole
     )
-    </table>
+    </dl>
 }
 
 
