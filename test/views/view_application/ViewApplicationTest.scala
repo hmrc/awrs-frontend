@@ -552,7 +552,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
               prepRow(Messages("awrs.generic.VAT_registration_number"), groupMember.vrn)
 
           // company name takes precedence, and at least one must be present
-          prepRow(companyOrTradingName, List[Option[String]]("", None)) ++
+          prepRow(companyOrTradingName, List(Some(""))) ++
             // trading name will only be displayed if it's not already displayed above
             prepRowCustom(Messages("awrs.generic.trading"), testData.companyNames.businessName)(testData.companyNames.tradingName) ++
             addressToExpectation(Messages("awrs.generic.address"), testData.address) ++
@@ -629,8 +629,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       def toExpectation(testData: Partners): List[Row] = {
         def toList(testData: Partner, index: Int): List[Row] = {
           def sectionHeader = index match {
-            case 0 => prepRow(Messages("awrs.business-partner.partner"), List[Option[String]]("", None))
-            case 1 => prepRow(Messages("awrs.business-partner.additional_partners"), List[Option[String]]("", None))
+            case 0 => prepRow(Messages("awrs.business-partner.partner"), List(Some("")))
+            case 1 => prepRow(Messages("awrs.business-partner.additional_partners"), List(Some("")))
             case _ => prepRow("", None)
           }
 
@@ -638,14 +638,14 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
             testData.entityType.get.toLowerCase match {
               case "individual" =>
                 val name = testData.firstName.get + " " + testData.lastName.get
-                Row(name, "")
+                Row(name, List(""))
               case "corporate body" =>
                 val name = testData.companyNames.fold("")(x => x.businessName.fold("")(x => x))
-                Row(name, "") ++
+                Row(name, List("")) ++
                   prepRow(Messages("awrs.generic.trading"), testData.companyNames.tradingName)
               case "sole trader" =>
                 val name = testData.firstName.get + " " + testData.lastName.get
-                Row(name, "") ++
+                Row(name, List("")) ++
                   prepRow(Messages("awrs.generic.trading"), testData.companyNames.tradingName)
             }
 
@@ -793,7 +793,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
       def toExpectation(businessLegalEntity: String, testData: BusinessDirectors): List[Row] = {
         def toList(testData: BusinessDirector): List[Row] =
-          Row(fetchName(testData), "") ++
+          Row(fetchName(testData), List("")) ++
             prepRow(Messages("awrs.generic.trading"), testData.companyNames.tradingName) ++
             prepRow(Messages("awrs.business_directors.role_question.additional"), DirectorAndSecretaryEnum.getMessageKey(testData.directorsAndCompanySecretaries.get)) ++
             prepRow(Messages("awrs.business_directors.personOrCompany_question"), PersonOrCompanyEnum.getMessageKey(testData.personOrCompany.get)) ++
@@ -939,8 +939,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
       def toExpectation(testData: Suppliers): List[Row] = {
         def toList(testData: Supplier): List[Row] =
-          Row(
-            testData.supplierName.get, "") ++
+          Row(testData.supplierName.get, List("")) ++
             prepRow(Messages("awrs.supplier-addresses.uk_supplier"), testData.ukSupplier) ++
             supplierAddressToExpectation(Messages("awrs.generic.address"), testData.supplierAddress, testData.ukSupplier) ++
             prepRow(Messages("awrs.supplier-addresses.vat_registered"), testData.vatRegistered) ++
