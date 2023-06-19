@@ -19,7 +19,7 @@ package services
 import connectors.AWRSConnector
 import models.BusinessCustomerDetails
 import play.api.Logging
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -67,7 +67,8 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
           logger.info(s"""[CheckEtmpService][checkUsersEnrolments] $users Existing users found for ${details.businessName}""")
           Some(true)
         case _ =>
-          throw new InternalServerException(s"""[CheckEtmpService][checkUsersEnrolments] - error when calling awrsConnector checkUsersEnrolments """)
+          logger.info(s"""[CheckEtmpService][checkUsersEnrolments] - No regime number found for ${details.businessName}""")
+          Some(false)
       }
     }
   }
