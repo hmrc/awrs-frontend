@@ -14,72 +14,52 @@
  * limitations under the License.
  *@
 
-@(rowTitle: String,  content: Option[String]*)(implicit cssClass: Option[String] = None, someHref: Option[String] = None,
+@(rowTitle: String,  content: Option[String]*)(implicit cssClass: Option[String] = None,
         someId: Option[Int] = None, links: Option[List[String]] = None, messages: Messages)
 @import views.view_application.ViewApplicationHelper._
 
 
 
 @cssClassAttr = {
-    @cssClass match {
-        case Some(css) => {class="@css"}
-        case _ => {}
-    }
+@cssClass match {
+    case Some(css) => {class="@css"}
+    case _ => {}
 }
-@anchor = {
-    @someHref match {
-        case Some(href) => {
-            <dd class="edit-link govuk-summary-list__actions">
-                <a class="govuk-link govuk-body" href="@href@someId">@Messages("awrs.view_application.edit")</a>
-            </dd>}
-        case _ => {}
-    }
 }
-    
-@countContent(content) match {
-    case count if count > 0 => {
-        @cssClass match {
-            case Some("record-header") => {
-                <div @cssClassAttr class="govuk-summary-list__row">
-                    @rowTitle match {
-                        case data if data != "" => {<dt class="row-title govuk-summary-list__key">@rowTitle</dt>}
-                        case _ => {<dt class="row-title govuk-summary-list__key"></dt>}
-                    }
-                    <dd class="row-data govuk-summary-list__value">
-                        @for(rRow <- content) {
-                            @rRow match {
-                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@Html(data)</p>}
-                                case _ => {}
-                            }
-                        }
-                    </dd>
-                </div>
+
+@(countContent(content), links) match {
+    case (count, links) if count > 0 => {
+        <div @cssClassAttr class="govuk-summary-list__row">
+            <dt class="row-title govuk-summary-list__key">@Html(rowTitle)</dt>
+            <dd class="row-data govuk-summary-list__value">
+            @for(rRow <- content) {
+                @rRow match {
+                    case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@Html(data)</p>}
+                    case _ => {}
+                }
             }
-            case _ => {
-                <div @cssClassAttr class="govuk-summary-list__row">
-                    <dt class="row-title govuk-summary-list__key">@Html(rowTitle)</dt>
-                    <dd class="row-data govuk-summary-list__value">
-                        @for(rRow <- content) {
-                            @rRow match {
-                                case Some(data) if !Some(data).contains(NoneBreakingSpace) => {<p class="govuk-body">@Html(data)</p>}
-                                case _ => {}
-                            }
-                         }
-                    </dd>
-                    @links match {
-                        case Some(link) => {
-                            <dd class="links govuk-summary-list__actions">
-                                @for(linkRow <- link){
-                                    @Html(linkRow)
-                                }
-                            </dd>
-                        }
-                        case _ => {}
+            </dd>
+            @links match {
+                case Some(link) => {
+                    <dd class="links govuk-summary-list__actions">
+                    @for(linkRow <- link){
+                        @Html(linkRow)
                     }
-                    @anchor
-                </div>
+                    </dd>
+                }
+                case _ => {}
             }
-        }
+        </div>
+    }
+    case (_ , Some(links)) => {
+        <div @cssClassAttr class="govuk-summary-list__row">
+            <dt class="row-title govuk-summary-list__key">@Html(rowTitle)</dt>
+                <dd class="links govuk-summary-list__actions">
+                    @for(linkRow <- links){
+                        @Html(linkRow)
+                    }
+                    </dd>
+        </div>
     }
     case _ => {}
 }

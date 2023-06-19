@@ -40,10 +40,8 @@
     <dl class="govuk-summary-list">
     @* Top row with edit delete links *@
     @summary_list_row(
-        directorName(director),
-        Some(edit_link(editUrl, id, directorName(director))),
-        Some(delete_link(deleteUrl, id, directorName(director)))
-    )
+        directorName(director))(links = Some(List(edit_link(editUrl, id, directorName(director)), delete_link(deleteUrl, id, directorName(director)))), messages = messages)
+
     @* table body with the content *@
     @summary_list_row(
         messages("awrs.generic.trading"),

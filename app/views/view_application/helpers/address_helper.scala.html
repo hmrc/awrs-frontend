@@ -38,7 +38,7 @@
                 case _ => None
             },
             applicationConfig.countryCodes.getCountry(address.addressCountryCode.fold("")(x => x))
-        )(cssClass, None, someId, links, messages)
+        )(cssClass, someId, links, messages)
     }
     case _ => {}
 }
