@@ -16,10 +16,8 @@
 
 @(field: Field, fieldErrors: Seq[FormError])(implicit messages: Messages)
 @fieldErrors.filter(_.key == field.name).zipWithIndex.map { case (fieldError, index) =>
-    <span class="error-notification govuk-error-message"
-          role="tooltip"
-          data-journey="search-page:error:@field.name"
-          id="@(field.name)-error-@index">
+    <p class="govuk-error-message" id="@(field.name)-error-@index">
+        <span class="govuk-visually-hidden">Error:</span>
         @messages(fieldError.messages(index), fieldError.args(index))
-    </span>
+    </p>
 }
