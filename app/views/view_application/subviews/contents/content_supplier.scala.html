@@ -30,7 +30,7 @@
     <dl class="govuk-summary-list">
     @* Top record row including edit and delete links *@
     @summary_list_row(
-        tableRowTitle)(links = Some(List(edit_link(editUrl, id, tableRowTitle), delete_link(deleteUrl, id, tableRowTitle))), messages = messages)
+        tableRowTitle)("key-width", links = Some(List(edit_link(editUrl, id, tableRowTitle), delete_link(deleteUrl, id, tableRowTitle))), messages = messages)
 
     @* body of record *@
     @summary_list_row(

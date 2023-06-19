@@ -78,7 +78,7 @@ object ViewApplicationHelper {
       link(
         Some(editUrl(id)),
         "Edit",
-        classAttr = "govuk-link",
+        classAttr = "govuk-link govuk-!-padding-left-9",
         idAttr = Some("edit-" + id),
         visuallyHidden = visuallyHidden
       )
@@ -108,7 +108,7 @@ object ViewApplicationHelper {
       link(
         Some(deleteUrl(id)),
         "Delete",
-        classAttr = "govuk-link",
+        classAttr = "govuk-link govuk-!-padding-left-3",
         idAttr = Some("delete-" + id),
         visuallyHidden = visuallyHidden
       )

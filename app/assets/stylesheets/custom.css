@@ -493,6 +493,10 @@ details {display: block;}
     width: 50%;
 }
 
+.key-width {
+    width: 20%;
+}
+
 .three-column .govuk-summary-list__key {
     width: 30%;
 }
@@ -511,4 +515,3 @@ details {display: block;}
 .three-column .links .govuk-link:last-child {
     margin-right: 0;
 }
-
