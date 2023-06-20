@@ -489,12 +489,26 @@ details {display: block;}
     text-align: right;
 }
 
-.govuk-summary-list__key {
-    width: 50%;
+@media (min-width: 769px) {
+    .govuk-summary-list__key {
+        width: 50%;
+    }
 }
 
-.key-width {
-    width: 20%;
+.govuk-summary-list__actions a.govuk-\!-padding-left-9 {
+    padding-left: 0!important;
+}
+
+@media (min-width: 769px) {
+    .govuk-summary-list__actions a.govuk-\!-padding-left-9 {
+        padding-left: 40px!important;
+    }
+}
+
+@media (min-width: 769px) {
+    .key-width {
+        width: 20%;
+    }
 }
 
 .three-column .govuk-summary-list__key {
