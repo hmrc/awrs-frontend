@@ -507,11 +507,14 @@ details {display: block;}
 
 .three-column.premises .govuk-summary-list__actions {
     width: 35%;
+    text-align: left;
 }
-
+/*
 .three-column .links .govuk-link {
     margin-right: 30px;
 }
+
 .three-column .links .govuk-link:last-child {
     margin-right: 0;
 }
+*/
