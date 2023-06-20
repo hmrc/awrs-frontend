@@ -33,38 +33,32 @@
 @href = @{controllers.routes.ProductsController.showProducts(false).url}
 
 @content(model: models.Products) = {
+
     @if(showTableHeader) {
-        @table_row(
-            "",
-            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.products_text")}"))
-        )(cssClass = Some("record-header"), messages = messages)
+        <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
-    @group_checkbox_helper(
-        messages("awrs.additional_information.main_customers"),
-        AwrsFormFields.mainCustomerOptions.toMap,
-        model.mainCustomers,
-        model.otherMainCustomers
-    )
 
-    @group_checkbox_helper(
-        messages("awrs.additional_information.products"),
-        AwrsFormFields.products.toMap,
-        model.productType,
-        model.otherProductType
-    )
-}
+    <dl class="govuk-summary-list">
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.main_customers"),
+            AwrsFormFields.mainCustomerOptions.toMap,
+            model.mainCustomers,
+            model.otherMainCustomers
+        )
 
-@preContent = {
-    <table class="view-application govuk-table">
-}
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.products"),
+            AwrsFormFields.products.toMap,
+            model.productType,
+            model.otherProductType
+        )
+    </dl>
 
-@postContent = {
-    </table>
 }
 
 @someModel match {
     case Some(model) => {
-        @subview_core(heading, wrapperId, href, Some(productsName))(content(model), preContent = Some(preContent), postContent = Some(postContent))
+        @subview_core(heading, wrapperId, href, Some(productsName))(content(model))
     }
     case _ => {}
 }

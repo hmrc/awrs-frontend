@@ -62,7 +62,7 @@
     @if(isSectionEdit) {
         <p class="govuk-body-l">@messages("awrs.group_member.lead_paragraph")</p>
         @if(model.members.size > 1) {
-            <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.group"))</div>
+            <p class="govuk-body">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.group"))</p>
         }
     }
 }

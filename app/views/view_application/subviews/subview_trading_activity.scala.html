@@ -37,56 +37,67 @@
         controllers.routes.TradingActivityController.showTradingActivity(false).url
     }
 
-    @content(model: models.TradingActivity) = {
+@content(model: models.TradingActivity) = {
+
     @if(showTableHeader) {
-        @table_row(
-                "",
-                Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.trading_activity_text")}"))
-            )(cssClass = Some("record-header"), messages = messages)
-    }
-    @group_checkbox_helper(
-        messages("awrs.additional_information.wholesaler_type"),
-        AwrsFormFields.wholesaler.toMap,
-        model.wholesalerType,
-        model.otherWholesaler
-    )
-    @group_checkbox_helper(
-        messages("awrs.additional_information.orders.orders_question"),
-        AwrsFormFields.orders.toMap,
-        model.typeOfAlcoholOrders,
-        model.otherTypeOfAlcoholOrders
-    )
-    @table_row(
-        messages("awrs.additional_information.alcohol_import"),
-        model.doesBusinessImportAlcohol
-    )
-    @table_row(
-        messages("awrs.additional_information.alcohol_export"),
-        model.doYouExportAlcohol
-    )
-    @group_checkbox_helper(
-        messages("awrs.additional_information.export_location"),
-        AwrsFormFields.exportAlcohol.toMap,
-        // TODO fix this
-        model.exportLocation.getOrElse(List())
-    )
-    @table_row(
-        messages("awrs.additional_information.third_party_storage"),
-        model.thirdPartyStorage
-    )
+        <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
 
-    @preContent = {
-        <table class="view-application govuk-table">
-    }
+    <dl class="govuk-summary-list">
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.wholesaler_type"),
+            AwrsFormFields.wholesaler.toMap,
+            model.wholesalerType,
+            model.otherWholesaler
+        )
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.orders.orders_question"),
+            AwrsFormFields.orders.toMap,
+            model.typeOfAlcoholOrders,
+            model.otherTypeOfAlcoholOrders
+        )
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @messages("awrs.additional_information.alcohol_import")
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @model.doesBusinessImportAlcohol
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @messages("awrs.additional_information.alcohol_export")
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @model.doYouExportAlcohol
+        </dd>
+      </div>
+        @group_checkbox_helper_summary_list(
+            messages("awrs.additional_information.export_location"),
+            AwrsFormFields.exportAlcohol.toMap,
+            // TODO fix this
+            model.exportLocation.getOrElse(List())
+        )
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @messages("awrs.additional_information.third_party_storage")
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @model.thirdPartyStorage
+        </dd>
+      </div>
+    </dl>
 
-    @postContent = {
-        </table>
-    }
 
-    @someModel match {
-        case Some(model) => {
-            @subview_core(heading, wrapperId, href, Some(tradingActivityName))(content(model), preContent = Some(preContent), postContent = Some(postContent))
-        }
-        case _ => {}
+
+
+
+}
+
+
+@someModel match {
+    case Some(model) => {
+        @subview_core(heading, wrapperId, href, Some(tradingActivityName))(content(model))
     }
+    case _ => {}
+}

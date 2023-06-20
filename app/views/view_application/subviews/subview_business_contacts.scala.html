@@ -66,41 +66,46 @@
 }
 
 @content(model: models.BusinessContacts) = {
+
     @if(showTableHeader) {
-        @table_row(
-            "",
-            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.business_contacts_text")}"))
-        )(cssClass = Some("record-header"), messages = messages)
+        <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
-    @table_row(
-        messages("awrs.view_application.contact_name"),
-        Some(model.contactFirstName.getOrElse("") + " " + model.contactLastName.getOrElse(""))
-    )
-    @table_row(
-        messages("awrs.generic.telephone"),
-        model.telephone
-    )
-    @table_row(
-        messages("awrs.generic.email"),
-        model.email
-    )
-    @address_helper(
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.view_application.contact_name")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @Some(model.contactFirstName.getOrElse("") + " " + model.contactLastName.getOrElse(""))
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.generic.telephone")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @model.telephone
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          @messages("awrs.generic.email")
+        </dt>
+        <dd class="govuk-summary-list__value">
+          @model.email
+        </dd>
+      </div>
+      @address_helper(
         messages("awrs.view_application.contact_address"),
         contactAddressToDisplay
-    )
-}
-
-@preContent = {
-    <table class="view-application govuk-table">
-}
-
-@postContent = {
-    </table>
+      )
+    </dl>
 }
 
 @someModel match {
     case Some(model) => {
-        @subview_core(heading, wrapperId, href, Some(businessContactsName))(content(model), preContent = Some(preContent), postContent = Some(postContent))
+        @subview_core(heading, wrapperId, href, Some(businessContactsName))(content(model))
     }
     case _ => {}
 }

@@ -45,28 +45,20 @@
 
 @content(model: models.BusinessRegistrationDetails) = {
     @if(showTableHeader) {
-        @table_row(
-            "",
-            Some(edit_link_s(href, s"$heading ${messages("awrs.index_page.business_registration_details_text")}"))
-        )(cssClass = Some("record-header"), messages = messages)
+        <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
     }
-    @identification_helper(
-        Some(model),
-        legalEntity
-    )
-}
 
-@preContent = {
-    <table class="view-application govuk-table">
-}
-
-@postContent = {
-    </table>
+    <dl class="govuk-summary-list">
+        @identification_helper(
+            Some(model),
+            legalEntity
+        )
+    </dl>
 }
 
 @someModel match {
     case Some(model) => {
-        @subview_core(heading, wrapperId, href, Some(businessRegistrationDetailsName))(content(hideQuestionsInModel(model)), preContent = Some(preContent), postContent = Some(postContent))
+        @subview_core(heading, wrapperId, href, Some(businessRegistrationDetailsName))(content(hideQuestionsInModel(model)))
     }
     case _ => {}
 }

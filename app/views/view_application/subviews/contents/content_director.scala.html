@@ -37,23 +37,21 @@
     }
 }
 @content = {
-    <table class="view-application govuk-table">
+    <dl class="govuk-summary-list">
     @* Top row with edit delete links *@
-    @table_row(
-        directorName(director),
-        Some(edit_link(editUrl, id, directorName(director))),
-        Some(delete_link(deleteUrl, id, directorName(director)))
-    )(cssClass = Some("record-header"), messages = messages)
+    @summary_list_row(
+        directorName(director))("key-width", links = Some(List(edit_link(editUrl, id, directorName(director)), delete_link(deleteUrl, id, directorName(director)))), messages = messages)
+
     @* table body with the content *@
-    @table_row(
+    @summary_list_row(
         messages("awrs.generic.trading"),
         director.companyNames.tradingName
     )
-    @table_row(
+    @summary_list_row(
         messages("awrs.business_directors.role_question.additional"),
         Some(messages(DirectorAndSecretaryEnum.getMessageKey(director.directorsAndCompanySecretaries)))
     )
-    @table_row(
+    @summary_list_row(
         messages("awrs.business_directors.personOrCompany_question"),
         Some(messages(PersonOrCompanyEnum.getMessageKey(director.personOrCompany)))
     )
@@ -61,7 +59,7 @@
         director,
         businessLegalEntity
     )
-    </table>
+    </dl>
 }
 
 @content

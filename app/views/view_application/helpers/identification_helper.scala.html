@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import views.html.view_application.helpers.table_row
+@import views.html.view_application.helpers.summary_list_row
 @(someId : Option[BusinessRegistrationDetails], businessType: Option[String])(implicit messages : Messages)
 
 @* UTR *@
@@ -28,7 +28,7 @@
 
 @someId.get.doYouHaveUTR match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             legend.get,
             Some(answer)
         )
@@ -38,7 +38,7 @@
 
 @someId.get.utr match {
     case Some(utr) => {
-        @table_row(
+        @summary_list_row(
             businessType.map {
                 case "SOP" => { messages("awrs.generic.sa_UTR_number") }
                 case "Partnership" | "LP" | "LLP" | "LLP_GRP" => { messages("awrs.generic.partnership_UTR_number") }
@@ -53,7 +53,7 @@
 @* Nino *@
 @someId.get.doYouHaveNino match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             messages("awrs.generic.do_you_have_NINO"),
             Some(answer)
         )
@@ -63,7 +63,7 @@
 
 @someId.get.nino match {
     case Some(nino) => {
-        @table_row(
+        @summary_list_row(
             messages("awrs.generic.NINO"),
             Some(nino)
         )
@@ -74,7 +74,7 @@
 @* CRN *@
 @someId.get.isBusinessIncorporated match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             messages("awrs.generic.do_you_have_company_reg"),
             Some(answer)
         )
@@ -84,11 +84,11 @@
 
 @someId.get.companyRegDetails match {
     case Some(data) => {
-        @table_row(
+        @summary_list_row(
             messages("awrs.generic.company_reg"),
             Some(data.companyRegistrationNumber)
         )
-        @table_row(
+        @summary_list_row(
             messages("awrs.generic.date_of_incorporation"),
             Some(data.dateOfIncorporation.toString("dd MMMM yyyy"))
         )
@@ -99,7 +99,7 @@
 @* VRN *@
 @someId.get.doYouHaveVRN match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             messages("awrs.generic.do_you_have_VAT"),
             Some(answer)
         )
@@ -109,7 +109,7 @@
 
 @someId.get.vrn match {
     case Some(vrn) => {
-        @table_row(
+        @summary_list_row(
             messages("awrs.generic.VAT_registration_number"),
             Some(vrn)
         )

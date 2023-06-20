@@ -27,7 +27,7 @@
 
 @someAddress match {
     case Some(address) => {
-        @table_row(
+        @summary_list_row(
             legend,
             Some(address.addressLine1),
             Some(address.addressLine2),
@@ -38,7 +38,7 @@
                 case _ => None
             },
             applicationConfig.countryCodes.getCountry(address.addressCountryCode.fold("")(x => x))
-        )(cssClass, None, someId, links, messages)
+        )("", cssClass, someId, links, messages)
     }
     case _ => {}
 }

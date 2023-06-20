@@ -50,7 +50,7 @@
 
 @ledeAndTopAdd(model: models.BusinessDirectors) = {
     @if(model.directors.size > 1) {
-        <div class="add-link-top">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.director"))</div>
+        <p class="govuk-body">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.director"))</p>
     }
 }
 

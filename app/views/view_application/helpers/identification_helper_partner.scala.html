@@ -20,7 +20,7 @@
 @* UTR *@
 @partner.doYouHaveUTR match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.do_they_have_partnership_UTR"),
             Some(answer)
         )
@@ -30,7 +30,7 @@
 
 @partner.utr match {
     case Some(utr) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.UTR_number"),
             Some(utr)
         )
@@ -41,7 +41,7 @@
 @* Nino *@
 @partner.doYouHaveNino match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.do_they_have_NINO"),
             Some(answer)
         )
@@ -51,7 +51,7 @@
 
 @partner.nino match {
     case Some(nino) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.NINO"),
             Some(nino)
         )
@@ -63,7 +63,7 @@
 @* CRN *@
 @partner.isBusinessIncorporated match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.do_they_have_company_reg"),
             Some(answer)
         )
@@ -73,11 +73,11 @@
 
 @partner.companyRegDetails match {
     case Some(data) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.company_reg"),
             Some(data.companyRegistrationNumber)
         )
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.date_of_incorporation"),
             Some(data.dateOfIncorporation.toString("dd MMMM yyyy"))
         )
@@ -88,7 +88,7 @@
 @* VRN *@
 @partner.doYouHaveVRN match {
     case Some(answer) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.do_they_have_VAT"),
             Some(answer)
         )
@@ -98,7 +98,7 @@
 
 @partner.vrn match {
     case Some(vrn) => {
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.VAT_registration_number"),
             Some(vrn)
         )

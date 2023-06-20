@@ -27,16 +27,13 @@
 @tableRowTitle = @{member.companyNames.businessName.getOrElse(member.companyNames.tradingName.get)}
 
 @content = {
-    <table class="view-application govuk-table">
+    <dl class="govuk-summary-list">
     @* Top record row including edit and delete links *@
-    @table_row(
-        tableRowTitle,
-        Some(edit_link(editUrl, id, tableRowTitle)),
-        Some(delete_link(deleteUrl, id, tableRowTitle))
-    )(cssClass = Some("record-header"), messages = messages)
+    @summary_list_row(
+        tableRowTitle)("key-width", links = Some(List(edit_link(editUrl, id, tableRowTitle), delete_link(deleteUrl, id, tableRowTitle))), messages = messages)
 
     @if(member.companyNames.businessName.isDefined){
-        @table_row(
+        @summary_list_row(
             Messages("awrs.generic.trading"),
             member.companyNames.tradingName
         )
@@ -50,7 +47,7 @@
         member,
         businessLegalEntity
     )
-    </table>
+    </dl>
 }
 
 @content

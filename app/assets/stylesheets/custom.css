@@ -484,3 +484,51 @@ details {display: block;}
 #applicationInfo {
     margin: 50px 0 40px;
 }
+
+.text-align-right {
+    text-align: right;
+}
+
+@media (min-width: 769px) {
+    .govuk-summary-list__key {
+        width: 50%;
+    }
+}
+
+.govuk-summary-list__actions a.govuk-\!-padding-left-9 {
+    padding-left: 0!important;
+}
+
+@media (min-width: 769px) {
+    .govuk-summary-list__actions a.govuk-\!-padding-left-9 {
+        padding-left: 40px!important;
+    }
+}
+
+@media (min-width: 769px) {
+    .key-width {
+        width: 20%;
+    }
+}
+
+.three-column .govuk-summary-list__key {
+    width: 30%;
+}
+
+.three-column.premises .govuk-summary-list__key {
+    width: 5%;
+}
+
+.three-column.premises .govuk-summary-list__actions {
+    width: 35%;
+    text-align: left;
+}
+/*
+.three-column .links .govuk-link {
+    margin-right: 30px;
+}
+
+.three-column .links .govuk-link:last-child {
+    margin-right: 0;
+}
+*/
