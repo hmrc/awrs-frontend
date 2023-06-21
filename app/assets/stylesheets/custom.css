@@ -507,7 +507,7 @@ details {display: block;}
 
 @media (min-width: 769px) {
     .key-width {
-        width: 20%;
+        width: 30%;
     }
 }
 
@@ -532,3 +532,7 @@ details {display: block;}
     margin-right: 0;
 }
 */
+
+#deleteConfirmation_field {
+    padding-top: 1.5em!important;
+}
