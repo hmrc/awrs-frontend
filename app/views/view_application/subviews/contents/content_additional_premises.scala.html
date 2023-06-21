@@ -34,9 +34,10 @@
     }
 }
 
-@address_helper(
-    premisesCounter,
-    premises.additionalAddress,
-    links
-)
-
+<dl class="govuk-summary-list three-column premises">
+    @address_helper(
+        premisesCounter,
+        premises.additionalAddress,
+        links
+    )
+</dl>

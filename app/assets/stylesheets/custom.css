@@ -523,16 +523,7 @@ details {display: block;}
     width: 35%;
     text-align: left;
 }
-/*
-.three-column .links .govuk-link {
-    margin-right: 30px;
-}
 
-.three-column .links .govuk-link:last-child {
-    margin-right: 0;
-}
-*/
-
-#deleteConfirmation_field {
-    padding-top: 1.5em!important;
+.three-column.premises:only-of-type .govuk-summary-list__row {
+    border-bottom: 0;
 }
