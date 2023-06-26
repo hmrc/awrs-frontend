@@ -27,7 +27,7 @@
 
 @partnerTypeHeading(text:String) = @{
     if(showSubHeadings) {
-        s"""<h2 class="govuk-heading-s">$text</h2>"""
+        s"""<h2 class="govuk-heading-m">$text</h2>"""
     } else {
         ""
     }
@@ -62,10 +62,7 @@
 
     @* Top record row including edit and delete links *@
     @summary_list_row(
-        tableRowTitle,
-        Some(edit_link(editUrl, id, tableRowTitle)),
-        Some(delete_link(deleteUrl, id, tableRowTitle))
-    )
+        tableRowTitle)("key-width", links = Some(List(edit_link(editUrl, id, tableRowTitle), delete_link(deleteUrl, id, tableRowTitle))), messages = messages)
 
     @partner.entityType.get match {
         case CorporateBodyString | SoleTraderString => {

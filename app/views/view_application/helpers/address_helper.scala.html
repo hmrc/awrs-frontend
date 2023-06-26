@@ -16,7 +16,7 @@
 
 @import config.ApplicationConfig
 @import views.view_application.helpers.{EditSectionOnlyMode, ViewApplicationType}
-@(legend: String, someAddress: Option[Address], links: Option[List[String]] = None)(implicit keyClass: String = "", cssClass: Option[String] = None, someId: Option[Int] = None, viewApplicationType: ViewApplicationType = EditSectionOnlyMode, messages: Messages, applicationConfig: ApplicationConfig)
+@(legend: String, someAddress: Option[Address], links: Option[List[String]] = None)(implicit cssClass: Option[String] = None, someId: Option[Int] = None, viewApplicationType: ViewApplicationType = EditSectionOnlyMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @postcodeHelper(postcode: String) = @{
     val splitPoint = postcode.length - 3
@@ -38,7 +38,7 @@
                 case _ => None
             },
             applicationConfig.countryCodes.getCountry(address.addressCountryCode.fold("")(x => x))
-        )("key-width", cssClass, someId, links, messages)
+        )("", cssClass, someId, links, messages)
     }
     case _ => {}
 }

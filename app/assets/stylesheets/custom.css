@@ -507,12 +507,8 @@ details {display: block;}
 
 @media (min-width: 769px) {
     .key-width {
-        width: 30%;
+        width: 20%;
     }
-}
-
-.three-column .govuk-summary-list__key {
-    width: 30%;
 }
 
 .three-column.premises .govuk-summary-list__key {
