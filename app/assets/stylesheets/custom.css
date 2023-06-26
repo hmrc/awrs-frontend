@@ -511,10 +511,6 @@ details {display: block;}
     }
 }
 
-.three-column .govuk-summary-list__key {
-    width: 30%;
-}
-
 .three-column.premises .govuk-summary-list__key {
     width: 5%;
 }
@@ -523,12 +519,7 @@ details {display: block;}
     width: 35%;
     text-align: left;
 }
-/*
-.three-column .links .govuk-link {
-    margin-right: 30px;
-}
 
-.three-column .links .govuk-link:last-child {
-    margin-right: 0;
+.three-column.premises:only-of-type .govuk-summary-list__row {
+    border-bottom: 0;
 }
-*/

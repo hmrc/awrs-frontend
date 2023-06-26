@@ -113,7 +113,7 @@
         case None => {}
     }
 }
-<div class="@if(fieldErrors.nonEmpty) {form-field--error}">
+<div class="@if(fieldErrors.nonEmpty) {govuk-form-group--error}">
     <label for="@inputId" id="@{inputId}_field" @labelClass @labelDataAttributes>@label@additionalHiddenLabelText</label>
     @formHint
     @fieldErrorHelper(params.field, fieldErrors)
