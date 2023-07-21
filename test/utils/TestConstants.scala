@@ -26,24 +26,24 @@ object TestConstants {
 
   // We only want one test nino and utr throughout, therefore assign a value in the object declaration
   lazy val testNino: String = new Generator().nextNino.nino
-  lazy val testUtr = new SaUtrGenerator().nextSaUtr.utr
-  val prefixedLowerCaseUTR = SaUtr("abc123451235")
-  val prefixedCapsUTR = SaUtr("ABC123451235")
-  lazy val testVrn = genRandNumString(9)
-  lazy val testCrn = 1 + genRandNumString(7)
+  lazy val testUtr: String = new SaUtrGenerator().nextSaUtr.utr
+  val prefixedLowerCaseUTR: SaUtr = SaUtr("abc123451235")
+  val prefixedCapsUTR: SaUtr = SaUtr("ABC123451235")
+  lazy val testVrn: String = genRandNumString(9)
+  lazy val testCrn: String = s"1${genRandNumString(7)}"
   val shortCRN = "2134567"
   val alphaNumCRN = "AB123456"
-  lazy val testNonMatchingUtr = new SaUtrGenerator().nextSaUtr.utr
-  lazy val testAWRSUtr = "XNAW" + genRandNumString(11)
-  lazy val testCTUtr = genRandNumString(12)
+  lazy val testNonMatchingUtr: String = new SaUtrGenerator().nextSaUtr.utr
+  lazy val testAWRSUtr: String = "XNAW" + genRandNumString(11)
+  lazy val testCTUtr: String = genRandNumString(12)
   lazy val testOrg = "testOrg"
   //  lazy val testNino = new Generator().nextNino.nino
   //  lazy val testUtr = new SaUtrGenerator().nextSaUtr.utr
-  lazy val testPassportNo = "1" * 20
-  lazy val testNationalId = "1" * 20
-  lazy val testGrpJoinDate = LocalDate.now().toString()
+  lazy val testPassportNo: String = "1" * 20
+  lazy val testNationalId: String = "1" * 20
+  lazy val testGrpJoinDate: String = LocalDate.now().toString()
   lazy val testRefNo = "DummmyRef"
-  lazy val testPostcode = genPostCode
+  lazy val testPostcode: String = genPostCode
   lazy val testEmail = "email@email.com"
   lazy val testTradingName = "North East Wines"
   lazy val testUserName = "joe bloggs"
@@ -68,6 +68,6 @@ object TestConstants {
     }
   }
 
-  def genRandNumString(length: Int) = Random.nextInt(9).toString * length
+  def genRandNumString(length: Int): String = Random.nextInt(9).toString * length
 
 }

@@ -26,12 +26,13 @@ import services._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.AwrsSessionKeys
 import utils.TestUtil._
+import views.html.awrs_index
 
 import scala.concurrent.Future
 
 class IndexControllerTest extends ServicesUnitTestFixture {
 
-  lazy val cachemap = CacheMap("", Map[String, JsValue]())
+  lazy val cachemap: CacheMap = CacheMap("", Map[String, JsValue]())
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -39,7 +40,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     reset(mockAccountUtils)
   }
 
-  val template = app.injector.instanceOf[views.html.awrs_index]
+  val template: awrs_index = app.injector.instanceOf[views.html.awrs_index]
 
   lazy val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9,
     mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
@@ -128,7 +129,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     }
   }
 
-  private def callShowLastLocationWith(previousLocation: Option[String])(test: Future[Result] => Any) {
+  private def callShowLastLocationWith(previousLocation: Option[String])(test: Future[Result] => Any) : Unit ={
     setAuthMocks()
     val result = testIndexController.showLastLocation().apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
     test(result)

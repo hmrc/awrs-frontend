@@ -73,7 +73,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
   }
 
   private def api5Application(ar: StandardAuthRetrievals)(implicit request: MessagesRequest[AnyContent]) = {
-    applicationDeclarationForm.bindFromRequest.fold(
+    applicationDeclarationForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, isEnrolledApplicant))),
       applicationDeclarationData => {
         for {
@@ -97,7 +97,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
         api5Application(ar)
       } else {
         val businessType = getBusinessType.getOrElse("")
-        applicationDeclarationForm.bindFromRequest.fold(
+        applicationDeclarationForm.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors, isEnrolledApplicant))),
           applicationDeclarationData => {
             for {

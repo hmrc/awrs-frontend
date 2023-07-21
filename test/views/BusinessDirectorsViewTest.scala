@@ -21,6 +21,7 @@ import connectors.mock.MockAuthConnector
 import controllers.BusinessDirectorsController
 import models._
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -29,17 +30,19 @@ import services.JourneyConstants
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
+import views.html.awrs_business_directors
+import scala.language.implicitConversions
 
 import scala.concurrent.Future
 
 class BusinessDirectorsViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  val template = app.injector.instanceOf[views.html.awrs_business_directors]
+  val template: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
   implicit def businessDirectorWrapper(listOfDirectors: List[BusinessDirector]): Option[BusinessDirectors] = Some(BusinessDirectors(listOfDirectors))
 
-  lazy val testList = BusinessDirectors(List(testBusinessDirectorPerson, testBusinessDirectorPerson, testBusinessDirectorCompany, testBusinessDirectorCompany))
+  lazy val testList: BusinessDirectors = BusinessDirectors(List(testBusinessDirectorPerson, testBusinessDirectorPerson, testBusinessDirectorCompany, testBusinessDirectorCompany))
 
   val testBusinessDirectorsController: BusinessDirectorsController =
     new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
@@ -176,7 +179,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc = Jsoup.parse(contentAsString(result))
+                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(businessDirectorsName) + 1
@@ -201,7 +204,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any) {
+  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessDirectors = testBusinessDirectors

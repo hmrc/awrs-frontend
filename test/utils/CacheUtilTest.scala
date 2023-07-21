@@ -35,18 +35,20 @@ class CacheUtilTest extends PlaySpec with GuiceOneAppPerSuite {
         s"Return the correct kind of cache map for business type $legalEntity " in {
           val cache = createCacheMap(legalEntity = legalEntity, businessType = toBusinessType(legalEntity)).copyOfSave4Later
           val shouldAllBeTrue =
-          JourneyConstants.getJourney(legalEntity) map {
-            case `businessDetailsName` => cache.getTradingStartDetails.isDefined
-            case `businessRegistrationDetailsName` => cache.getBusinessRegistrationDetails.isDefined
-            case `businessContactsName` => cache.getBusinessContacts.isDefined
-            case `placeOfBusinessName` => cache.getPlaceOfBusiness.isDefined
-            case `groupMembersName` => cache.getGroupDeclaration.isDefined && cache.getGroupMembers.isDefined
-            case `partnersName` => cache.getPartners.isDefined
-            case `additionalBusinessPremisesName` => cache.getAdditionalBusinessPremises.isDefined
-            case `businessDirectorsName` => cache.getBusinessDirectors.isDefined
-            case `tradingActivityName` => cache.getTradingActivity.isDefined
-            case `productsName` => cache.getProducts.isDefined
-            case `suppliersName` => cache.getSuppliers.isDefined
+          JourneyConstants.getJourney(legalEntity) map { x =>
+            (x: @unchecked) match {
+              case `businessDetailsName` => cache.getTradingStartDetails.isDefined
+              case `businessRegistrationDetailsName` => cache.getBusinessRegistrationDetails.isDefined
+              case `businessContactsName` => cache.getBusinessContacts.isDefined
+              case `placeOfBusinessName` => cache.getPlaceOfBusiness.isDefined
+              case `groupMembersName` => cache.getGroupDeclaration.isDefined && cache.getGroupMembers.isDefined
+              case `partnersName` => cache.getPartners.isDefined
+              case `additionalBusinessPremisesName` => cache.getAdditionalBusinessPremises.isDefined
+              case `businessDirectorsName` => cache.getBusinessDirectors.isDefined
+              case `tradingActivityName` => cache.getTradingActivity.isDefined
+              case `productsName` => cache.getProducts.isDefined
+              case `suppliersName` => cache.getSuppliers.isDefined
+            }
           }
           shouldAllBeTrue.contains(false) mustBe false
         }

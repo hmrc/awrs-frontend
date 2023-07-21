@@ -18,7 +18,6 @@ package controllers
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
-
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
@@ -31,6 +30,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
+import views.html.{awrs_application_confirmation, awrs_application_update_confirmation}
 
 import scala.concurrent.Future
 
@@ -40,8 +40,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService
   with MockKeyStoreService {
 
-  val template = app.injector.instanceOf[views.html.awrs_application_confirmation]
-  val templateUpdate = app.injector.instanceOf[views.html.awrs_application_update_confirmation]
+  val template: awrs_application_confirmation = app.injector.instanceOf[views.html.awrs_application_confirmation]
+  val templateUpdate: awrs_application_update_confirmation = app.injector.instanceOf[views.html.awrs_application_update_confirmation]
 
   val testConfirmationController: ConfirmationController = new ConfirmationController(
     mockMCC, testSave4LaterService, testKeyStoreService, mockDeEnrolService, mockAuthConnector,
@@ -49,7 +49,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     override val signInUrl: String = applicationConfig.signIn
   }
 
-  val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
+  val subscribeSuccessResponse: SuccessfulSubscriptionResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
 
   def validateForBothNewAndOldBusiness(test: (Boolean) => Unit): Unit = {
     Seq(true, false).foreach {
@@ -196,7 +196,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  def getWithAuthorisedUserCt(test: Future[Result] => Any) {
+  def getWithAuthorisedUserCt(test: Future[Result] => Any): Unit = {
     val request = SessionBuilder.buildRequestWithSession(userId)
     val newSession: Map[String, String] = request.session.data.+(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber)
     val requestAmended = request.withSession(newSession.toSeq: _*)
@@ -205,9 +205,9 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def getUpdateWithAuthorisedUserCt(status: FormBundleStatus)(test: Future[Result] => Any) {
+  def getUpdateWithAuthorisedUserCt(status: FormBundleStatus)(test: Future[Result] => Any): Unit = {
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val newSession: Map[String, String] = request.session.data.+(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber, AwrsSessionKeys.sessionStatusType -> status.name)
+    val newSession: Map[String, String] = request.session.data.++(Map(AwrsSessionKeys.sessionAwrsRefNo -> subscribeSuccessResponse.etmpFormBundleNumber, AwrsSessionKeys.sessionStatusType -> status.name))
     val requestAmended = request.withSession(newSession.toSeq: _*)
     setAuthMocks()
     val result = testConfirmationController.showApplicationUpdateConfirmation(false).apply(requestAmended)

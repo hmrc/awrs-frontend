@@ -65,7 +65,7 @@ class ProductsController @Inject()(val mcc: MessagesControllerComponents,
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
-    productsForm.bindFromRequest.fold(
+    productsForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors)))
       ,
       productsData =>

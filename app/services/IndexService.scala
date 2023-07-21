@@ -299,18 +299,20 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
         )
 
         IndexViewModel({
-          JourneyConstants.getJourney(businessType) map {
-            case `businessDetailsName` => businessDetailsSection
-            case `businessRegistrationDetailsName` => businessRegistrationDetailsSection
-            case `businessContactsName` => businessContactsSection
-            case `placeOfBusinessName` => placeOfBusinessSection
-            case `groupMembersName` => groupMemberDetailsSection
-            case `partnersName` => businessPartnersSection
-            case `additionalBusinessPremisesName` => additionalPremisesSection
-            case `businessDirectorsName` => businessDirectorsSection
-            case `tradingActivityName` => tradingActivity
-            case `productsName` => products
-            case `suppliersName` => suppliersSection
+          JourneyConstants.getJourney(businessType) map { x =>
+            (x: @unchecked) match {
+              case `businessDetailsName` => businessDetailsSection
+              case `businessRegistrationDetailsName` => businessRegistrationDetailsSection
+              case `businessContactsName` => businessContactsSection
+              case `placeOfBusinessName` => placeOfBusinessSection
+              case `groupMembersName` => groupMemberDetailsSection
+              case `partnersName` => businessPartnersSection
+              case `additionalBusinessPremisesName` => additionalPremisesSection
+              case `businessDirectorsName` => businessDirectorsSection
+              case `tradingActivityName` => tradingActivity
+              case `productsName` => products
+              case `suppliersName` => suppliersSection
+            }
           }
         }.toList)
     }
@@ -321,7 +323,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
     legalEntity.fold(false)(legal => businessRegistrationDetails.legalEntity.fold(false)(breLegal => isSameEntityIdCategory(breLegal, legal)))
 
   def isNewAWBusinessAnswered(businessDetails: NewAWBusiness): Boolean =
-      businessDetails.newAWBusiness match {
+    (businessDetails.newAWBusiness : @unchecked) match {
         case AWRSEnums.BooleanRadioEnum.NoString => true
         // This is amended to also check the proposed date is present due to a bug by etmp as specified by AWRS-1413
         case AWRSEnums.BooleanRadioEnum.YesString =>

@@ -22,14 +22,16 @@ import controllers.PlaceOfBusinessController
 import forms.PlaceOfBusinessForm
 import models.PlaceOfBusiness
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.i18n.Messages
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.{JourneyConstants, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_principal_place_of_business
 
 import scala.concurrent.Future
 
@@ -40,10 +42,10 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
 
   implicit val mockConfig: ApplicationConfig = mockAppConfig
 
-  def testRequest(premises: PlaceOfBusiness) =
+  def testRequest(premises: PlaceOfBusiness): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm, premises)
 
-  val template = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
+  val template: awrs_principal_place_of_business = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
 
   val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
@@ -79,7 +81,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc = Jsoup.parse(contentAsString(result))
+                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(placeOfBusinessName) + 1
@@ -99,7 +101,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
     }
   }
 
-  private def editJourney(test: Future[Result] => Any) {
+  private def editJourney(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchPlaceOfBusiness = testPlaceOfBusinessDefault()
@@ -109,7 +111,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def linearJourney(test: Future[Result] => Any) {
+  private def linearJourney(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchPlaceOfBusiness = None
@@ -120,7 +122,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any) {
+  def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchPlaceOfBusiness = testPlaceOfBusinessDefault()

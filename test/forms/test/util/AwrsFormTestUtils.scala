@@ -95,7 +95,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
           withClue(s"actual:\n$actualError\n") {
             val messageArgsToWrapped = (value: String) => value.trim.replaceAll(
               "List",
-              "WrappedArray"
+              "ArraySeq"
             )
 
             trimBothAndCompressFunc(actualError.toString()) must equal(messageArgsToWrapped(trimBothAndCompressFunc(expected.toString())))

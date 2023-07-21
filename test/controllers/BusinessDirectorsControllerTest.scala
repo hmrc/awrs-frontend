@@ -26,6 +26,7 @@ import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 import utils.TestUtil._
+import views.html.awrs_business_directors
 
 import scala.concurrent.Future
 
@@ -34,7 +35,7 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_directors]
+  val mockTemplate: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
   val testBusinessDirectorsController: BusinessDirectorsController =
     new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
@@ -108,14 +109,14 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = testBusinessDirectors)
     setAuthMocks()
     val result = testBusinessDirectorsController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
-  private def deleteWithAuthorisedUser(id: Int = 1, directors: BusinessDirectors = testBusinessDirectors)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def deleteWithAuthorisedUser(id: Int = 1, directors: BusinessDirectors = testBusinessDirectors)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = directors)
     setAuthMocks()
     val result = testBusinessDirectorsController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))

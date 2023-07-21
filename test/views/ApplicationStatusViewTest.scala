@@ -31,24 +31,25 @@ import play.api.test.Helpers._
 import services.{CheckEtmpService, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_application_status
 
 import scala.concurrent.Future
 
 class ApplicationStatusViewTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  val template = app.injector.instanceOf[views.html.awrs_application_status]
+  val template: awrs_application_status = app.injector.instanceOf[views.html.awrs_application_status]
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val businessCustomerDetailsFormID = "businessCustomerDetails"
   val formId = "legalEntity"
 
-  lazy val testBusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
-  lazy val testBCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option("Ne4 9hs"), Option("country"))
+  lazy val testBusinessType: BusinessType = BusinessType(legalEntity = Option("LTD_GRP"), isSaAccount = None, isOrgAccount = None)
+  lazy val testBCAddress: BCAddress = BCAddress("addressLine1", "addressLine2", Option("addressLine3"), Option("addressLine4"), Option("Ne4 9hs"), Option("country"))
 
-  lazy val testBusinessCustomerGroup = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
-  lazy val testBusinessCustomer = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
-  lazy val testNewApplicationType = NewApplicationType(Some(true))
+  lazy val testBusinessCustomerGroup: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", true, Some("agent123"))
+  lazy val testBusinessCustomer: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), testBCAddress, "sap123", "safe123", false, Some("agent123"))
+  lazy val testNewApplicationType: NewApplicationType = NewApplicationType(Some(true))
 
   val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
 
@@ -68,7 +69,7 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
     }
   }
 
-  private def viewStatusPage(test: Future[Result] => Any) {
+  private def viewStatusPage(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     setupMockSave4LaterServiceWithOnly(

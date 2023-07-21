@@ -21,6 +21,7 @@ import connectors.mock.MockAuthConnector
 import controllers.AdditionalPremisesController
 import models._
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -29,13 +30,14 @@ import services.JourneyConstants
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
+import views.html.awrs_additional_premises
 
 import scala.concurrent.Future
 
 class AdditionalPremisesViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  val template = app.injector.instanceOf[views.html.awrs_additional_premises]
+  val template: awrs_additional_premises = app.injector.instanceOf[views.html.awrs_additional_premises]
 
   def testPremises(addAnother: Option[String]): AdditionalBusinessPremises = testAdditionalBusinessPremisesDefault(additionalPremises = Some("Yes"),
     additionalAddress = Some(testAddress), addAnother = addAnother)
@@ -131,7 +133,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {
                   val test: Future[Result] => Unit = result => {
-                    implicit val doc = Jsoup.parse(contentAsString(result))
+                    implicit val doc: Document = Jsoup.parse(contentAsString(result))
                     testId(shouldExist = true)(targetFieldId = "progress-text")
                     val journey = JourneyConstants.getJourney(legalEntity)
                     val expectedSectionNumber = journey.indexOf(additionalBusinessPremisesName) + 1
@@ -156,7 +158,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any) {
+  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchAdditionalBusinessPremisesList = testAdditionalPremisesList

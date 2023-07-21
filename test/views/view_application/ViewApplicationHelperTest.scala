@@ -39,7 +39,6 @@ class ViewApplicationHelperTest extends PlaySpec with MockitoSugar with BeforeAn
 
 
     def runTests(testCases: TestCase*): Unit = {
-      val rowTitle = "does not matter"
       testCases.foreach(testCase => countContent(testCase.data) mustBe testCase.expecations.count)
     }
 

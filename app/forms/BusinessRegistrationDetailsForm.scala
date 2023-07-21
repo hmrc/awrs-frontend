@@ -70,7 +70,7 @@ object BusinessRegistrationDetailsForm {
 
     val doYouHaveUtrInferred = inferBasedOn(data.get(utr))
 
-    data. +((doYouHaveNino, doYouhaveNinoInferred), (doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
+    data. ++(Map(doYouHaveNino -> doYouhaveNinoInferred, doYouHaveCrn -> doYouHaveCrnInferred, doYouHaveUtr -> doYouHaveUtrInferred))
   }
 
   /*
@@ -101,7 +101,7 @@ object BusinessRegistrationDetailsForm {
         utr -> (utr_compulsory(utr, entityType) iff noIdIsSupplied(doYouHaveUtr) ||| answeredYesToDoYouHaveUTR),
         doYouHaveNino -> (doYouHaveNino_compulsory(doYouHaveNino) iff ids.contains(doYouHaveNino)),
         nino -> (nino_compulsory(nino) iff noIdIsSupplied(doYouHaveNino) ||| answeredYesToDoYouHaveNino),
-        doYouHaveCrn -> (doYouHaveCRN_compulsory iff ids.contains(doYouHaveCrn)),
+        doYouHaveCrn -> (doYouHaveCRN_compulsory() iff ids.contains(doYouHaveCrn)),
         crnMapping -> (companyReg_compulsory(crnMapping).toOptionalCompanyRegMapping iff noIdIsSupplied(doYouHaveCrn) ||| answeredYesToDoYouHaveCRN),
         doYouHaveVrn -> (doYouHaveVRN_compulsory(doYouHaveVrn) iff ids.contains(doYouHaveVrn)),
         vrn -> (vrn_compulsory(vrn) iff answeredYesToDoYouHaveVRN ||| answeredYesToDoYouHaveVRN)

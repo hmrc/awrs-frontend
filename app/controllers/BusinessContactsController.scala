@@ -80,7 +80,7 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
-    businessContactsForm.bindFromRequest.fold(
+    businessContactsForm.bindFromRequest().fold(
       formWithErrors =>
         save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals).flatMap {
           case Some(businessCustomerDetails) =>

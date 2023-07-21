@@ -32,6 +32,7 @@ import utils.TestConstants._
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
+import views.html.awrs_business_registration_details
 
 import scala.concurrent.Future
 
@@ -43,7 +44,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
   def testRequest(businessRegistrationDetails: BusinessRegistrationDetails, entityType: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegistrationDetails)
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_registration_details]
+  val mockTemplate: awrs_business_registration_details = app.injector.instanceOf[views.html.awrs_business_registration_details]
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
     new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService,
@@ -94,7 +95,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
         }
     }
 
-    def returnWithAuthorisedUser(businessRegistrationDetails: BusinessRegistrationDetails, legalEntity: String)(test: Future[Result] => Any) {
+    def returnWithAuthorisedUser(businessRegistrationDetails: BusinessRegistrationDetails, legalEntity: String)(test: Future[Result] => Any): Unit = {
       val fakeRequest = testRequest(businessRegistrationDetails, legalEntity)
       setupMockSave4LaterServiceWithOnly(
         fetchBusinessRegistrationDetails = businessRegistrationDetails

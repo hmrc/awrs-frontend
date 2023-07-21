@@ -38,13 +38,13 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   val mockDataCacheService: Save4LaterService = mock[Save4LaterService]
   val mockEmailService: EmailService = mock[EmailService]
 
-  val selfHealSuccessResponse = SelfHealSubscriptionResponse(regimeRefNumber = "12345")
-  val subscribeSuccessResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
-  val subscribeUpdateSuccessResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
-  val updateGroupBusinessPartnerResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
+  val selfHealSuccessResponse: SelfHealSubscriptionResponse = SelfHealSubscriptionResponse(regimeRefNumber = "12345")
+  val subscribeSuccessResponse: SuccessfulSubscriptionResponse = SuccessfulSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", awrsRegistrationNumber = "ABCDEabcde12345", etmpFormBundleNumber = "123456789012345")
+  val subscribeUpdateSuccessResponse: SuccessfulUpdateSubscriptionResponse = SuccessfulUpdateSubscriptionResponse(processingDate = "2001-12-17T09:30:47Z", etmpFormBundleNumber = "123456789012345")
+  val updateGroupBusinessPartnerResponse: SuccessfulUpdateGroupBusinessPartnerResponse = SuccessfulUpdateGroupBusinessPartnerResponse(processingDate = "2001-12-17T09:30:47Z")
 
-  val baseAddress = Address("line 1", "line 2", Some("line 3"), Some("line 4"), Some("NE12 2DS"), None, Some("ES"))
-  val baseSupplier = Supplier(alcoholSuppliers = "Yes",
+  val baseAddress: Address = Address("line 1", "line 2", Some("line 3"), Some("line 4"), Some("NE12 2DS"), None, Some("ES"))
+  val baseSupplier: Supplier = Supplier(alcoholSuppliers = "Yes",
     supplierName = Some("Smith and co"),
     vatRegistered = "Yes",
     vatNumber = testVrn,
@@ -52,8 +52,9 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     additionalSupplier = "No",
     ukSupplier = "No")
 
-  override def beforeEach() = {
-    reset(mockAccountUtils, mockKeyStoreConnector)
+  override def beforeEach(): Unit = {
+    reset(mockAccountUtils)
+    reset(mockKeyStoreConnector)
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
       .thenReturn(true)
 
@@ -97,7 +98,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
                                    // testSupplierAddressListOrig is the api 5 data which does not have the country field
                                    suppliers: Option[Suppliers] = Some(testSupplierAddressListOrig),
                                    applicationDeclaration: Option[ApplicationDeclaration] = Some(testApplicationDeclaration),
-                                   changeIndicators: Option[ChangeIndicators] = None) =
+                                   changeIndicators: Option[ChangeIndicators] = None): SubscriptionTypeFrontEnd =
     SubscriptionTypeFrontEnd(
       legalEntity = legalEntity,
       businessPartnerName = businessPartnerName,

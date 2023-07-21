@@ -15,7 +15,7 @@ class AddressLookupConnectorISpec extends IntegrationSpec with Injecting with Ma
   "AddressLookupConnector.lookup" when {
     "address-lookup returns a non empty list of addresses" must {
       "return a AddressLookupSuccessResponse containing a seq of addresses" in {
-        AddressLookupStub.postPostcodePartialSuccessResponse
+        AddressLookupStub.postPostcodePartialSuccessResponse()
         await(connector.lookup("BB000BB")) mustBe
           AddressLookupSuccessResponse(
             RecordSet(Seq(

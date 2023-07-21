@@ -111,7 +111,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
       }
     }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any): Unit = {
     val testBusCustomer = isGroup match {
       case true => testBusinessCustomerGroup
       case false => testBusinessCustomer
@@ -122,7 +122,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def loadDataFromS4LWithAuthorisedUser(test: Future[Result] => Any) {
+  private def loadDataFromS4LWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterService(
       fetchBusinessType = testBusinessType,
       fetchBusinessCustomerDetails = testBusinessCustomerGroup

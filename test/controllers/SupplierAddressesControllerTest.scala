@@ -248,35 +248,35 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = testSuppliers)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
-  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = testSuppliers)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testSupplierAddressesController.saveAndReturn(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
-  private def continueWithAuthorisedUserNoSuppliersFirstQuestion(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserNoSuppliersFirstQuestion(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
-  private def continueWithAuthorisedUserMultipleSuppliersYesAdditionalSuppliers(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserMultipleSuppliersYesAdditionalSuppliers(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) : Unit ={
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = Suppliers(List(testSupplier(), testSupplier(), testSupplier())))
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testSupplierAddressesController.saveAndContinue(2, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
-  private def continueWithAuthorisedUserNoSupplier(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserNoSupplier(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testSupplierAddressesController.saveAndContinue(1, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
@@ -290,14 +290,14 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def deleteWithAuthorisedUser(id: Int = 1, suppliers: Suppliers = testSuppliers)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def deleteWithAuthorisedUser(id: Int = 1, suppliers: Suppliers = testSuppliers)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = suppliers)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testSupplierAddressesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
-  private def continueWithAuthorisedUserFirstTimeSupplier(id: Int, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserFirstTimeSupplier(id: Int, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) : Unit ={
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = testSupplierAddressesController.saveAndContinue(id, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))

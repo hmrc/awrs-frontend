@@ -60,7 +60,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                                            ): Unit = {
 
     def setupFetchNone[T]: Option[Option[T]] =
-      fetchNoneType match {
+      (fetchNoneType: @unchecked) match {
         case NoData => None
         case DeletedData => Some(None)
       }

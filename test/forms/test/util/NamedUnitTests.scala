@@ -341,7 +341,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
                            ignoreCondition: Set[Map[String, String]],
                            idPrefix: IdPrefix,
                            isBusinessNameRequired: Boolean = true
-                          )(implicit form: Form[_]) = {
+                          )(implicit form: Form[_]): Unit = {
 
     val businessName = idPrefix attach CompanyNamesMapping.businessName
     val doYouHaveTradingName = idPrefix attach CompanyNamesMapping.doYouHaveTradingName
@@ -374,7 +374,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
     val asnsweredYesToTradingName: Map[String, String] = Map(doYouHaveTradingName -> BooleanRadioEnum.Yes.toString)
 
-    def assertBusinessNameCompulsory() = {
+    def assertBusinessNameCompulsory(): Unit = {
       val fieldId = businessName
 
       fieldId assertFieldIsCompulsoryWhen(preCondition, businessNameExpectations(fieldId))
@@ -382,7 +382,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
         fieldId assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
     }
 
-    def assertBusinessNameIsIgnored() = {
+    def assertBusinessNameIsIgnored(): Unit = {
       val ignoreCondition = Map[String, String]()
 
       val fieldId = businessName
@@ -390,7 +390,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
       fieldId assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
     }
 
-    def assertDoYouHaveTradingNameCompulsory() = {
+    def assertDoYouHaveTradingNameCompulsory(): Unit = {
       val fieldId = doYouHaveTradingName
 
       fieldId assertEnumFieldIsCompulsoryWhen(preCondition, doYouHaveTradingNameExpectations(fieldId))
@@ -400,7 +400,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
     }
 
 
-    def assertTradingNameCompulsoryYesToDoYouHaveTradingName() = {
+    def assertTradingNameCompulsoryYesToDoYouHaveTradingName(): Unit = {
       val fieldId = tradingName
 
 
@@ -411,11 +411,11 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
     }
 
     isBusinessNameRequired match {
-      case true => assertBusinessNameCompulsory
-      case false => assertBusinessNameIsIgnored
+      case true => assertBusinessNameCompulsory()
+      case false => assertBusinessNameIsIgnored()
     }
-    assertDoYouHaveTradingNameCompulsory
-    assertTradingNameCompulsoryYesToDoYouHaveTradingName
+    assertDoYouHaveTradingNameCompulsory()
+    assertTradingNameCompulsoryYesToDoYouHaveTradingName()
   }
 
 
@@ -470,15 +470,15 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
   object DoYouHaveIdentificationQuestionTypes extends Enumeration {
-    val Nino = Value("doYouHaveNino")
-    val Nino_altr = Value("doTheyHaveNationalInsurance")
-    val VRN = Value("doYouHaveVRN")
-    val CompanyReg = Value("doYouHaveCRN")
-    val CompanyReg_alt = Value("isBusinessIncorporated")
-    val UTR = Value("doYouHaveUTR")
+    val Nino: DoYouHaveIdentificationQuestionTypes.Value = Value("doYouHaveNino")
+    val Nino_altr: DoYouHaveIdentificationQuestionTypes.Value = Value("doTheyHaveNationalInsurance")
+    val VRN: DoYouHaveIdentificationQuestionTypes.Value = Value("doYouHaveVRN")
+    val CompanyReg: DoYouHaveIdentificationQuestionTypes.Value = Value("doYouHaveCRN")
+    val CompanyReg_alt: DoYouHaveIdentificationQuestionTypes.Value = Value("isBusinessIncorporated")
+    val UTR: DoYouHaveIdentificationQuestionTypes.Value = Value("doYouHaveUTR")
   }
 
-  lazy val validIds = DoYouHaveIdentificationQuestionTypes.values.toSeq.map(_.toString)
+  lazy val validIds: Seq[String] = DoYouHaveIdentificationQuestionTypes.values.toSeq.map(_.toString)
 
   def doYouHaveNinoIsAnswered(preCondition: Map[String, String],
                               ignoreCondition: Set[Map[String, String]],

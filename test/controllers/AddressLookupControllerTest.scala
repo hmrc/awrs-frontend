@@ -108,7 +108,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
     }
   }
 
-  def addressLookupValidPostcode(test: Future[Result] => Any) {
+  def addressLookupValidPostcode(test: Future[Result] => Any): Unit = {
     mock[HeaderCarrier]
 
     when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupSuccessResponse(RecordSet(List())))
@@ -117,7 +117,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
     test(result)
   }
 
-  def addressLookupInvalidPostcode(test: Future[Result] => Any) {
+  def addressLookupInvalidPostcode(test: Future[Result] => Any): Unit = {
     mock[HeaderCarrier]
 
     when(testAddressLookupController.addressLookupConnector.lookup(mockEq(invalidPostcode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new BadRequestException("")))
@@ -126,7 +126,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
     test(result)
   }
 
-  def addressLookupInternalServerError(test: Future[Result] => Any) {
+  def addressLookupInternalServerError(test: Future[Result] => Any): Unit = {
     mock[HeaderCarrier]
 
     when(testAddressLookupController.addressLookupConnector.lookup(mockEq(postCode))(any[HeaderCarrier], any())) thenReturn Future.successful(AddressLookupErrorResponse(new Exception("")))

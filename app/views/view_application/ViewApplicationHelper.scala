@@ -17,17 +17,16 @@
 package views.view_application
 
 import services.DataCacheKeys._
+import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.CacheUtil
 import views.view_application.helpers.SubViewTemplateHelper._
 import views.view_application.helpers.ViewApplicationType
-
-import scala.language.implicitConversions
 
 object ViewApplicationHelper {
 
   val NoneBreakingSpace = "\u00A0"
 
-  implicit val cacheUtil = CacheUtil.cacheUtil
+  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
 
   implicit class OptionStringUtil(someStr: Option[String]) {
     def `+`(anotherSomeStr: Option[String]): Option[String] = (someStr, anotherSomeStr) match {
@@ -49,7 +48,7 @@ object ViewApplicationHelper {
     }
   }
 
-  def countContent(rows: Traversable[Option[String]]): Int =
+  def countContent(rows: Iterable[Option[String]]): Int =
     rows.foldLeft(0)(
       (count, r) =>
         count + (r match {
@@ -74,7 +73,7 @@ object ViewApplicationHelper {
 
   def edit_link(editUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
-    if (isSectionEdit) {
+    if (isSectionEdit()) {
       link(
         Some(editUrl(id)),
         "Edit",
@@ -89,7 +88,7 @@ object ViewApplicationHelper {
 
   def edit_link_s(editUrl: String, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
-    if (isRecordEdit) {
+    if (isRecordEdit()) {
       link(
         Some(editUrl),
         "Edit",
@@ -104,7 +103,7 @@ object ViewApplicationHelper {
 
   def delete_link(deleteUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
-    if (isSectionEdit) {
+    if (isSectionEdit()) {
       link(
         Some(deleteUrl(id)),
         "Delete",

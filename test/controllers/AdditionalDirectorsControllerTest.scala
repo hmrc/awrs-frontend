@@ -99,14 +99,14 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
     }
   }
 
-  def getWithAuthorisedUserNoCache(test: Future[Result] => Any) {
+  def getWithAuthorisedUserNoCache(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessDirectors = None)
     setAuthMocks()
     val result = testBusinessDirectorsController.showBusinessDirectors(2, isLinearMode = true, isNewRecord = true).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], id: Int = 1)(test: Future[Result] => Any) {
+  def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], id: Int = 1)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessDirectors = testBusinessDirectors,
       fetchTradingActivity = None

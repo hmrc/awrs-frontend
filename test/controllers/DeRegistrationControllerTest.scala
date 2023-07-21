@@ -70,7 +70,10 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val forbiddenStatusTypes: Set[FormBundleStatus] = FormBundleStatus.allStatus.diff(permittedStatusTypes)
 
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector, mockApi10, mockTaxEnrolmentsConnector, mockAccountUtils)
+    reset(mockAuthConnector)
+    reset(mockApi10)
+    reset(mockTaxEnrolmentsConnector)
+    reset(mockAccountUtils)
     reset(mockMainStoreSave4LaterConnector)
     reset(mockApiSave4LaterConnector)
 
@@ -370,14 +373,14 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
   def testShowConfirmation(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirmation(false))(test)
 
-  def actionWithAuthorisedAgentUser(status: FormBundleStatus, call: Action[AnyContent])(test: Future[Result] => Any) {
+  def actionWithAuthorisedAgentUser(status: FormBundleStatus, call: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = call.apply(buildRequestWithSession(userId, status.name))
     test(result)
   }
 
-  def submits(status: FormBundleStatus, call: Action[AnyContent], data: Seq[(String, String)])(test: Future[Result] => Any) {
+  def submits(status: FormBundleStatus, call: Action[AnyContent], data: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     val result = call.apply(buildRequestWithSession(userId, status.name).withMethod("POST").withFormUrlEncodedBody(data: _*))

@@ -17,7 +17,7 @@
 package config
 
 import javax.inject.Inject
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
@@ -67,12 +67,12 @@ class AwrsAPIDataShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
 
 class AwrsShortLivedCache @Inject()(awrsShortLivedCaching: AwrsShortLivedCaching,
                                     applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
-  override implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
+  override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
   override lazy val shortLiveCache: ShortLivedHttpCaching = awrsShortLivedCaching
 }
 
 class AwrsAPIShortLivedCache @Inject()(awrsAPIDataShortLivedCaching: AwrsAPIDataShortLivedCaching,
                                        applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
-  override implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
+  override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
   override lazy val shortLiveCache: ShortLivedHttpCaching = awrsAPIDataShortLivedCaching
 }

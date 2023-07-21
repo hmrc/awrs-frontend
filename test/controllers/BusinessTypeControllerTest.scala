@@ -162,7 +162,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any): Unit = {
     val testBusCustomer = isGroup match {
       case true => testBusinessCustomerGroup
       case false => testBusinessCustomer
@@ -173,7 +173,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithAuthorisedSaOrgUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any) {
+  private def continueWithAuthorisedSaOrgUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], isGroup: Boolean)(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     val testBusCustomer = isGroup match {
       case true => testBusinessCustomerGroup

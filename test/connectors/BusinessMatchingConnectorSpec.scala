@@ -36,12 +36,12 @@ class BusinessMatchingConnectorSpec extends AwrsUnitTestTraits {
   val MockAuditConnector: AuditConnector = mock[AuditConnector]
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockWSHttp)
   }
 
   val testBusinessMatchingConnector = new BusinessMatchingConnectorImpl(mockServicesConfig, mockAuditable, mockAccountUtils, mockWSHttp)
-  val matchBusinessData = MatchBusinessData("sessionId", testUtr, false, false, None, None)
+  val matchBusinessData: MatchBusinessData = MatchBusinessData("sessionId", testUtr, false, false, None, None)
   val userType = "org"
 
   "Business Matching connector" must {

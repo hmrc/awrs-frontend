@@ -79,7 +79,7 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
 
   def submit(): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
-      reapplicationForm.bindFromRequest.fold(
+      reapplicationForm.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(templateReappConfirm(formWithErrors)))
         ,

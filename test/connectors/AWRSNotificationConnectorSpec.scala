@@ -39,7 +39,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   val dummyAppName = "awrs-frontend"
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockWSHttp)
     reset(MockAuditConnector)
 

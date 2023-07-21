@@ -23,16 +23,17 @@ import forms.validation.util.FieldError
 import models.BusinessRegistrationDetails
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.data.Form
 import play.api.test.FakeRequest
 import utils.TestConstants._
 import utils.TestUtil
 
 class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
-  lazy val forms = (entity: String) => businessRegistrationDetailsForm(entity).form
+  lazy val forms: String => Form[BusinessRegistrationDetails] = (entity: String) => businessRegistrationDetailsForm(entity).form
   val SoleTrader = "SOP"
   val Ltd = "LTD"
   val Partnership = "Partnership"
-  val entities = Seq[String](SoleTrader, Ltd, Partnership)
+  val entities: Seq[String] = Seq[String](SoleTrader, Ltd, Partnership)
 
   //all ids
   Set[String](doYouHaveUtr, doYouHaveNino, doYouHaveCrn, doYouHaveVrn)
@@ -77,9 +78,9 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
 
   "Business registration details form" must {
     entities.foreach { entity =>
-      implicit lazy val form = forms(entity)
+      implicit lazy val form: Form[BusinessRegistrationDetails] = forms(entity)
 
-      lazy val targetIds: Set[String] = entity match {
+      lazy val targetIds: Set[String] = (entity: @unchecked) match {
         case SoleTrader => soleTraderIds
         case Ltd => limitedIds
         case Partnership => partnership
@@ -157,7 +158,7 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
         val testData: TestData = targetIds.map((x: String) => (x, BooleanRadioEnum.NoString)).toMap
         val formWithErrors = forms(entity).bind(testData)
 
-        def mainTest(doYouHaveId: String) = {
+        def mainTest(doYouHaveId: String): Unit = {
 
 
           val fieldId = doYouHaveToTargetField(doYouHaveId)
@@ -258,7 +259,7 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
 
     entities.foreach {
       entityType =>
-        val expectedIds = entityType match {
+        val expectedIds = (entityType: @unchecked) match {
           case SoleTrader => soleTraderIds
           case Ltd => limitedIds
           case Partnership => partnership

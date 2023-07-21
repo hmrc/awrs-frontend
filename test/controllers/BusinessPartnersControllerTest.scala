@@ -32,19 +32,20 @@ import services.mocks.MockSave4LaterService
 import utils.TestConstants._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestUtil._
+import views.html.awrs_partner_member_details
 
 import scala.concurrent.Future
 
 class BusinessPartnersControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  val businessPartnerDetails = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), Some(testNino), None, None, Some("Yes"), None, None, None, None)
+  val businessPartnerDetails: Partner = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), Some(testNino), None, None, Some("Yes"), None, None, None, None)
   implicit val mockConfig: ApplicationConfig = mockAppConfig
 
   private def testRequest(partner: Partner) =
     TestUtil.populateFakeRequest[Partner](FakeRequest(), PartnershipDetailsForm.partnershipDetailsValidationForm, partner)
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_partner_member_details]
+  val mockTemplate: awrs_partner_member_details = app.injector.instanceOf[views.html.awrs_partner_member_details]
 
   val testBusinessPartnersController: BusinessPartnersController =
     new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
@@ -128,14 +129,14 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(partnerId: Int = 1, businessType: String = "LLP")(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(partnerId: Int = 1, businessType: String = "LLP")(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = testPartnerDetails, fetchAdditionalBusinessPremisesList = None)
     setAuthMocks()
     val result = testBusinessPartnersController.saveAndContinue(partnerId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
-  private def returnWithAuthorisedUser(partnerId: Int = 1)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def returnWithAuthorisedUser(partnerId: Int = 1)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = testPartnerDetails)
     setAuthMocks()
     val result = testBusinessPartnersController.saveAndReturn(partnerId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
@@ -149,7 +150,7 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def deleteWithAuthorisedUser(id: Int = 1, partners: Partners = Partners(List(testPartner())))(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def deleteWithAuthorisedUser(id: Int = 1, partners: Partners = Partners(List(testPartner())))(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchPartnerDetails = partners)
     setAuthMocks()
     val result = testBusinessPartnersController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))

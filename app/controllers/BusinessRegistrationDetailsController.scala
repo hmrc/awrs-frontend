@@ -78,7 +78,7 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
     val businessType = request.getBusinessType
-    businessRegistrationDetailsForm(businessType.get).bindFromRequest.fold(
+    businessRegistrationDetailsForm(businessType.get).bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(template(businessType, formWithErrors))),
       success = businessRegistrationDetails =>

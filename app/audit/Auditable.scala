@@ -22,6 +22,8 @@ import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.model.{Audit, DataEvent}
 import uk.gov.hmrc.play.audit.DefaultAuditConnector
 
+import scala.concurrent.ExecutionContext
+
 class Auditable @Inject()(auditConnector: DefaultAuditConnector) {
 
   def appName: String = "awrs-frontend"
@@ -33,7 +35,7 @@ class Auditable @Inject()(auditConnector: DefaultAuditConnector) {
                     tags: Map[String, String] = Map.empty[String, String],
                     detail: Map[String, String],
                     eventType: String)
-                   (implicit hc: HeaderCarrier): Unit =
+                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit =
     audit.sendDataEvent(
       DataEvent(
         appName,

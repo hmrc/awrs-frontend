@@ -22,7 +22,7 @@ import controllers.BusinessContactsController
 import forms.BusinessContactsForm
 import models.BusinessContacts
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import org.jsoup.nodes.{Document, Element}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -127,7 +127,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc = Jsoup.parse(contentAsString(result))
+                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(businessContactsName) + 1
@@ -147,7 +147,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
     }
   }
 
-  private def noPostcodeJourney(test: Future[Result] => Any) {
+  private def noPostcodeJourney(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetailsWithoutPostcode("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
@@ -158,7 +158,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def editJourney(test: Future[Result] => Any) {
+  private def editJourney(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
@@ -169,7 +169,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def linearJourney(test: Future[Result] => Any) {
+  private def linearJourney(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = None
@@ -181,7 +181,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any) {
+  private def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessContacts = testBusinessContactsDefault()

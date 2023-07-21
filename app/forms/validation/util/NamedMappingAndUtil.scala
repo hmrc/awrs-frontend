@@ -129,7 +129,7 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
     data.getOrElse(fieldId, "").equals(answer)
 
   @inline def whenListContainsAnswer(listId: String, answer: String): FormData => Boolean = (data: FormData) =>
-    data.filterKeys((key: String) => key.contains(listId)).values.exists(answer)
+    data.view.filterKeys((key: String) => key.contains(listId)).values.exists(answer)
 
   @inline def whenAnswerToIdTypeIs(doYouHaveIdTypeFieldId: String, answer: BooleanRadioEnum.Value)(data: FormData): Boolean =
     whenAnswerToFieldIs(doYouHaveIdTypeFieldId, answer.toString)(data)

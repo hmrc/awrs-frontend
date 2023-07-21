@@ -23,6 +23,7 @@ import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
+import views.html.awrs_trading_activity
 
 import scala.concurrent.Future
 
@@ -30,7 +31,7 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template = app.injector.instanceOf[views.html.awrs_trading_activity]
+  val template: awrs_trading_activity = app.injector.instanceOf[views.html.awrs_trading_activity]
 
   val testTradingActivityController: TradingActivityController = new TradingActivityController(
     mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
@@ -58,14 +59,14 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
     setAuthMocks()
     val result = testTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
-  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
     val result = testTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))

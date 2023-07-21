@@ -37,7 +37,7 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   val MockAuditConnector: AuditConnector = mock[AuditConnector]
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockWSHttp)
 
     when(mockAppConfig.servicesConfig)

@@ -39,7 +39,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
   val mockAwrsMetrics: AwrsMetrics = mock[AwrsMetrics]
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockWSHttp)
   }
 

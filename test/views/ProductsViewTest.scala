@@ -19,6 +19,7 @@ package views
 import builders.SessionBuilder
 import controllers.ProductsController
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -27,13 +28,14 @@ import services.DataCacheKeys._
 import services.{JourneyConstants, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
+import views.html.awrs_products
 
 import scala.concurrent.Future
 
 class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture with AwrsFieldConfig {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template = app.injector.instanceOf[views.html.awrs_products]
+  val template: awrs_products = app.injector.instanceOf[views.html.awrs_products]
   val testProductsController: ProductsController = new ProductsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl: String = applicationConfig.signIn
   }
@@ -147,7 +149,7 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {
                   val test: Future[Result] => Unit = result => {
-                    implicit val doc = Jsoup.parse(contentAsString(result))
+                    implicit val doc: Document = Jsoup.parse(contentAsString(result))
                     testId(shouldExist = true)(targetFieldId = "progress-text")
                     val journey = JourneyConstants.getJourney(legalEntity)
                     val expectedSectionNumber = journey.indexOf(productsName) + 1
@@ -164,14 +166,14 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
     }
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks()
     val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
-  def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any) {
+  def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchProducts = testProducts()

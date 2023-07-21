@@ -98,7 +98,7 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, ar: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
-    groupMemberForm.bindFromRequest.fold(
+    groupMemberForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord, ar.enrolments, accountUtils))),
       groupMemberData =>
         saveThenRedirect[GroupMembers, GroupMember](

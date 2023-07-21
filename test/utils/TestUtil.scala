@@ -21,7 +21,7 @@ import forms.{AWRSEnums, DeleteConfirmationForm}
 import models.BusinessDetailsEntityTypes._
 import models.FormBundleStatus._
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
-import models._
+import models.{BusinessDetailsEntityTypes, _}
 import org.joda.time.LocalDateTime
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -35,46 +35,47 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
 import TestConstants._
 import controllers.auth.StandardAuthRetrievals
+import org.scalatest.Assertion
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, User}
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers.stubMessages
-import scala.language.implicitConversions
 
+import scala.language.implicitConversions
 import scala.annotation.tailrec
 import scala.io.Source
 
 object TestUtil extends PlaySpec {
 
-  implicit val messages = stubMessages()
+  implicit val messages: Messages = stubMessages()
   implicit def convertToOption[T](value: T): Option[T] = Some(value)
   final lazy val Yes = Some("Yes")
   final lazy val No = Some("No")
   final lazy val EmptyJsVal = None: Option[JsValue]
 
   val legalEntityList = List("SOP", "Partnership", "LTD", "LLP", "LP", "LLP_GRP", "LTD_GRP")
-  val testBCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("NE98 1ZZ"), Option("country"))
-  val testBCAddressNoPostcode = BCAddress("line1", "line2", Option("line3"), Option("line4"), postcode = None , Option("country"))
-  val testBusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
-  val testBusinessCustomerDetailsWithoutPostcode = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddressNoPostcode, "sap123", "safe123", false, Some("agent123"), testUtr)
-  val testBusinessCustomerDetailsWithoutSafeID = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123","", false, Some("agent123"), testUtr)
+  val testBCAddress: BCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("NE98 1ZZ"), Option("country"))
+  val testBCAddressNoPostcode: BCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), postcode = None , Option("country"))
+  val testBusinessCustomerDetails: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
+  val testBusinessCustomerDetailsWithoutPostcode: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddressNoPostcode, "sap123", "safe123", false, Some("agent123"), testUtr)
+  val testBusinessCustomerDetailsWithoutSafeID: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123","", false, Some("agent123"), testUtr)
 
-  val testSoleTraderBusinessRegistrationDetails = testBusinessRegistrationDetails(doYouHaveNino = Yes, nino = testNino, doYouHaveVRN = No, doYouHaveUTR = No)
-  val testIsNewBusiness = newAWBusiness("Yes", Some(TupleDate("10", "10", "2016")))
+  val testSoleTraderBusinessRegistrationDetails: BusinessRegistrationDetails = testBusinessRegistrationDetails(doYouHaveNino = Yes, nino = testNino, doYouHaveVRN = No, doYouHaveUTR = No)
+  val testIsNewBusiness: NewAWBusiness = newAWBusiness("Yes", Some(TupleDate("10", "10", "2016")))
 
-  val testPlaceOfBusinessMainPlaceOfBusinessAddressNoPostcode = testPlaceOfBusinessDefault(mainAddress = Some(testAddress(postcode = None)))
+  val testPlaceOfBusinessMainPlaceOfBusinessAddressNoPostcode: PlaceOfBusiness = testPlaceOfBusinessDefault(mainAddress = Some(testAddress(postcode = None)))
 
-  val testCorporateBodyBusinessDetails = testBusinessDetails()
+  val testCorporateBodyBusinessDetails: BusinessDetails = testBusinessDetails()
 
-  val testPlaceOfBusinessNoOpDuration = testPlaceOfBusinessDefault(operatingDuration = Some(""))
+  val testPlaceOfBusinessNoOpDuration: PlaceOfBusiness = testPlaceOfBusinessDefault(operatingDuration = Some(""))
 
-  val testBusinessDetailsNoNewAWFlag = testBusinessDetails(newBusiness = None)
+  val testBusinessDetailsNoNewAWFlag: BusinessDetails = testBusinessDetails(newBusiness = None)
 
-  val testSoleTraderBusinessDetails = testBusinessDetails()
+  val testSoleTraderBusinessDetails: BusinessDetails = testBusinessDetails()
 
-  val testNewApplicationType = NewApplicationType(Some(true))
+  val testNewApplicationType: NewApplicationType = NewApplicationType(Some(true))
 
-  val testAddress = testAddressDefault(addressLine1 = "line1", addressLine2 = "line2", addressLine3 = Some("line3"), addressLine4 = Some("line4"), postcode = Some("NE3 2NG"))
-  val testAddressInternational = testAddressDefault(addressLine1 = "line1", addressLine2 = "line2", addressLine3 = Some("line3"), addressLine4 = Some("line4"), addressCountryCode = Some("ES"))
+  val testAddress: Address = testAddressDefault(addressLine1 = "line1", addressLine2 = "line2", addressLine3 = Some("line3"), addressLine4 = Some("line4"), postcode = Some("NE3 2NG"))
+  val testAddressInternational: Address = testAddressDefault(addressLine1 = "line1", addressLine2 = "line2", addressLine3 = Some("line3"), addressLine4 = Some("line4"), addressCountryCode = Some("ES"))
 
   def testAddressDefault(addressLine1: String,
                          addressLine2: String,
@@ -82,7 +83,7 @@ object TestUtil extends PlaySpec {
                          addressLine4: Option[String] = None,
                          postcode: Option[String] = None,
                          addressCountry: Option[String] = None,
-                         addressCountryCode: Option[String] = None) = Address(
+                         addressCountryCode: Option[String] = None): Address = Address(
     addressLine1 = addressLine1,
     addressLine2 = addressLine2,
     addressLine3 = addressLine3,
@@ -93,16 +94,16 @@ object TestUtil extends PlaySpec {
 
   def testAdditionalBusinessPremisesDefault(additionalPremises: Option[String] = None,
                                             additionalAddress: Option[Address] = None,
-                                            addAnother: Option[String] = None) = AdditionalBusinessPremises(
+                                            addAnother: Option[String] = None): AdditionalBusinessPremises = AdditionalBusinessPremises(
     additionalPremises = additionalPremises,
     additionalAddress = additionalAddress,
     addAnother = addAnother)
 
-  val testBusinessPremises = testAdditionalBusinessPremisesDefault(additionalPremises = Yes, Some(testAddress), addAnother = Option("No"))
+  val testBusinessPremises: AdditionalBusinessPremises = testAdditionalBusinessPremisesDefault(additionalPremises = Yes, Some(testAddress), addAnother = Option("No"))
 
-  val testAdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Yes, Some(testAddress()), addAnother = Option("No"))
+  val testAdditionalBusinessPremises: AdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Yes, Some(testAddress()), addAnother = Option("No"))
 
-  val testAdditionalPremisesList = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremises))
+  val testAdditionalPremisesList: AdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremises))
 
   def testBusinessDirectorDefault(directorsAndCompanySecretaries: Option[String] = None,
                                   personOrCompany: Option[String] = None,
@@ -152,12 +153,12 @@ object TestUtil extends PlaySpec {
       otherDirectors = otherDirectors)
   }
 
-  val testBusinessDirector = testBusinessDirectorDefault(directorsAndCompanySecretaries = Some("Director and Company Secretary"), personOrCompany = Some("person"), firstName = Some("John"), lastName = Some("Smith"), doTheyHaveNationalInsurance = Option("Yes"), nino = testNino, otherDirectors = No)
+  val testBusinessDirector: BusinessDirector = testBusinessDirectorDefault(directorsAndCompanySecretaries = Some("Director and Company Secretary"), personOrCompany = Some("person"), firstName = Some("John"), lastName = Some("Smith"), doTheyHaveNationalInsurance = Option("Yes"), nino = testNino, otherDirectors = No)
 
-  val testBusinessDirectorPerson = testBusinessDirector
+  val testBusinessDirectorPerson: BusinessDirector = testBusinessDirector
 
-  val testBusinessDirectorCompany = testBusinessDirectorDefault(directorsAndCompanySecretaries = Some("Director and Company Secretary"), personOrCompany = Some("company"), businessName = Some("Acme"), doYouHaveTradingName = Some("No"), doYouHaveUTR = Some("No"), doYouHaveCRN = Some("No"), doYouHaveVRN = Some("Yes"), vrn = testVrn, otherDirectors = No)
-  val testBusinessDirectors = BusinessDirectors(List(testBusinessDirector))
+  val testBusinessDirectorCompany: BusinessDirector = testBusinessDirectorDefault(directorsAndCompanySecretaries = Some("Director and Company Secretary"), personOrCompany = Some("company"), businessName = Some("Acme"), doYouHaveTradingName = Some("No"), doYouHaveUTR = Some("No"), doYouHaveCRN = Some("No"), doYouHaveVRN = Some("Yes"), vrn = testVrn, otherDirectors = No)
+  val testBusinessDirectors: BusinessDirectors = BusinessDirectors(List(testBusinessDirector))
 
   def testTradingActivity(wholesalerType: List[String] = List("05", "02", "99"),
                           otherWholesaler: Option[String] = Option("Supermarket"),
@@ -166,7 +167,7 @@ object TestUtil extends PlaySpec {
                           doesBusinessImportAlcohol: Option[String] = Option("Yes"),
                           thirdPartyStorage: Option[String] = Option("Yes"),
                           doYouExportAlcohol: Option[String] = Some("No"),
-                          exportLocation: Option[List[String]] = None) =
+                          exportLocation: Option[List[String]] = None): TradingActivity =
     TradingActivity(
       wholesalerType = wholesalerType,
       otherWholesaler,
@@ -187,47 +188,47 @@ object TestUtil extends PlaySpec {
       productType,
       otherProductType)
 
-  val testApplicationDeclaration = testApplicationDeclarationDefault(declarationName = Some("Mark Smith"), declarationRole = Some("Owner"), None)
-  val testApplicationDeclarationTrue = testApplicationDeclarationDefault(Option("John Doe"), Option("Senior Manager"), Option(true))
+  val testApplicationDeclaration: ApplicationDeclaration = testApplicationDeclarationDefault(declarationName = Some("Mark Smith"), declarationRole = Some("Owner"), None)
+  val testApplicationDeclarationTrue: ApplicationDeclaration = testApplicationDeclarationDefault(Option("John Doe"), Option("Senior Manager"), Option(true))
 
   def testApplicationDeclarationDefault(declarationName: Option[String] = None,
                                         declarationRole: Option[String] = None,
-                                        confirmation: Option[Boolean] = None) = ApplicationDeclaration(declarationName, declarationRole, confirmation)
+                                        confirmation: Option[Boolean] = None): ApplicationDeclaration = ApplicationDeclaration(declarationName, declarationRole, confirmation)
 
-  val testPartnerDetails = Partners(List(testPartner(), testPartner()))
+  val testPartnerDetails: Partners = Partners(List(testPartner(), testPartner()))
 
-  val testReviewDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
-  val testBusinessNameChanged = BusinessCustomerDetails("NOT ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
+  val testReviewDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
+  val testBusinessNameChanged: BusinessCustomerDetails = BusinessCustomerDetails("NOT ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
 
-  val testSubscriptionStatusTypePending = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, None, false, None, None)
-  val testSubscriptionStatusTypeApproved = SubscriptionStatusType("2001-12-17T09:30:47Z", Approved, Some("2016-04-1T09:30:00Z"), false, None, Some("Safe123"))
-  val testSubscriptionStatusTypeApprovedWithConditions = SubscriptionStatusType("10 December 2014", ApprovedWithConditions, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
-  val testStatusInfoTypeApprovedWithConditions = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "conditions for approval")))
-  val testSubscriptionStatusTypeRejected = SubscriptionStatusType("2001-12-17T09:30:47Z", Rejected, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
-  val testSubscriptionStatusTypeRejectedUnderReviewOrAppeal = SubscriptionStatusType("2001-12-17T09:30:47Z", RejectedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
-  val testSubscriptionStatusTypeRevokedUnderReviewOrAppeal = SubscriptionStatusType("2001-12-17T09:30:47Z", RevokedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
-  val testSubscriptionStatusTypeRevoked = SubscriptionStatusType("2001-12-17T09:30:47Z", Revoked, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
-  val testStatusInfoTypeRejected = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for rejection")))
-  val testStatusInfoTypeRejectedUnderReviewOrAppeal = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for rejection under review")))
-  val testStatusInfoTypeRevoked = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for revoked")))
-  val testStatusInfoTypeRevokedUnderReviewOrAppeal = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for revoked under review")))
+  val testSubscriptionStatusTypePending: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, None, false, None, None)
+  val testSubscriptionStatusTypeApproved: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", Approved, Some("2016-04-1T09:30:00Z"), false, None, Some("Safe123"))
+  val testSubscriptionStatusTypeApprovedWithConditions: SubscriptionStatusType = SubscriptionStatusType("10 December 2014", ApprovedWithConditions, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testStatusInfoTypeApprovedWithConditions: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "conditions for approval")))
+  val testSubscriptionStatusTypeRejected: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", Rejected, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testSubscriptionStatusTypeRejectedUnderReviewOrAppeal: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", RejectedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testSubscriptionStatusTypeRevokedUnderReviewOrAppeal: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", RevokedUnderReviewOrAppeal, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testSubscriptionStatusTypeRevoked: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", Revoked, Some("2016-04-1T09:30:00Z"), false, Some("123456789012"), None)
+  val testStatusInfoTypeRejected: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for rejection")))
+  val testStatusInfoTypeRejectedUnderReviewOrAppeal: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for rejection under review")))
+  val testStatusInfoTypeRevoked: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for revoked")))
+  val testStatusInfoTypeRevokedUnderReviewOrAppeal: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for revoked under review")))
 
-  val testSubscriptionStatusTypePendingGroup = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, Some("2001-12-17T09:30:47Z"), true, None, None)
+  val testSubscriptionStatusTypePendingGroup: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, Some("2001-12-17T09:30:47Z"), true, None, None)
 
   val testStatusNotificationNoAlert: Option[StatusNotification] = None
   val testStatusNotificationMindedToReject: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(MindedToReject), Some(Pending), Some("2017-04-01T0013:07:11")))
-  val testStatusInfoTypeMindedToReject = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for minded to reject")))
-  val testStatusInfoTypeNoLongerMindedToReject = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for no longer minded to reject")))
+  val testStatusInfoTypeMindedToReject: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for minded to reject")))
+  val testStatusInfoTypeNoLongerMindedToReject: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for no longer minded to reject")))
   val testStatusNotificationMindedToRevoke: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(MindedToRevoke), Some(Approved), Some("2017-04-01T0013:07:11")))
   val testStatusNotificationNoLongerMindedToRevoke: Option[StatusNotification] = Some(StatusNotification(Some("XXAW000001234560"), Some("123456789012"), Some(NoLongerMindedToRevoke), Some(Approved), Some("2017-04-01T0013:07:11")))
-  val testStatusInfoTypeMindedToRevoke = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for minded to revoke")))
-  val testStatusInfoTypeNoLongerMindedToRevoke = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for no longer minded to revoke")))
+  val testStatusInfoTypeMindedToRevoke: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for minded to revoke")))
+  val testStatusInfoTypeNoLongerMindedToRevoke: StatusInfoType = StatusInfoType(Some(StatusInfoSuccessResponseType("2001-12-17T09:30:47Z", "reasons for no longer minded to revoke")))
 
-  val testLegalEntity = BusinessType(Some("LTD"), None, Some(true))
+  val testLegalEntity: BusinessType = BusinessType(Some("LTD"), None, Some(true))
 
   val testBusinessPartnerName = "BusinessPartner"
 
-  def cachedData(legalEntity: BusinessType = testLegalEntity) =
+  def cachedData(legalEntity: BusinessType = testLegalEntity): CacheMap =
     CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
       "businessCustomerDetails" -> Json.toJson(testReviewDetails),
       businessDetailsName -> Json.toJson(testBusinessDetails()),
@@ -244,12 +245,12 @@ object TestUtil extends PlaySpec {
       groupMembersName -> Json.toJson(testGroupMemberDetails)
     ))
 
-  def dynamicLegalEntity(legalEntity: String) = legalEntity match {
+  def dynamicLegalEntity(legalEntity: String): BusinessType = legalEntity match {
     case "SOP" => BusinessType(Some(legalEntity), Some(true), None)
     case _ => BusinessType(Some(legalEntity), None, Some(true))
   }
 
-  def defaultTradingCompanyName(id: Int = 1) = CompanyNames(Some("ACME"), Some("Yes"), Some(s"Business$id"))
+  def defaultTradingCompanyName(id: Int = 1): CompanyNames = CompanyNames(Some("ACME"), Some("Yes"), Some(s"Business$id"))
 
   def testGroupMemberDefault(names: CompanyNames = defaultTradingCompanyName(),
                              address: Option[Address] = Some(testAddress),
@@ -260,25 +261,25 @@ object TestUtil extends PlaySpec {
                              isBusinessIncorporated: Option[String] = No,
                              doYouHaveUTR: Option[String] = Yes,
                              utr: Option[String] = testUtr,
-                             addAnotherGrpMember: Option[String] = No) =
+                             addAnotherGrpMember: Option[String] = No): GroupMember =
     GroupMember(companyNames = names, address = address, groupJoiningDate = groupJoiningDate, doYouHaveUTR = doYouHaveUTR, utr = utr, isBusinessIncorporated = isBusinessIncorporated, companyRegDetails = companyRegDetails, doYouHaveVRN = doYouHaveVRN, vrn = vrn, addAnotherGrpMember = addAnotherGrpMember)
 
-  val testGroupMember = testGroupMemberDefault()
-  val testGroupMemberDetails = GroupMembers(List(testGroupMember))
+  val testGroupMember: GroupMember = testGroupMemberDefault()
+  val testGroupMemberDetails: GroupMembers = GroupMembers(List(testGroupMember))
 
-  val testGroupMemberDetailsAddAnother = GroupMembers(List(GroupMember(defaultTradingCompanyName(), Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), None, Yes, testUtr, No, None, No, None, No)))
-  val testGroupMemberDetails2Members = GroupMembers(List(GroupMember(defaultTradingCompanyName(), Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), None, Yes, testUtr, No, None, No, None, Yes),
+  val testGroupMemberDetailsAddAnother: GroupMembers = GroupMembers(List(GroupMember(defaultTradingCompanyName(), Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), None, Yes, testUtr, No, None, No, None, No)))
+  val testGroupMemberDetails2Members: GroupMembers = GroupMembers(List(GroupMember(defaultTradingCompanyName(), Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), None, Yes, testUtr, No, None, No, None, Yes),
     GroupMember(defaultTradingCompanyName(2), Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), None, Yes, testUtr, No, None, No, None, No)))
-  val testGroupDeclaration = GroupDeclaration(true)
-  val testBusinessCustomerDetailsOrig = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", true, Some("agent123"))
+  val testGroupDeclaration: GroupDeclaration = GroupDeclaration(true)
+  val testBusinessCustomerDetailsOrig: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", true, Some("agent123"))
 
-  val testAddressOrig = Address(postcode = Some("postcode"), addressLine1 = "line1", addressLine2 = "line2", addressLine3 = Some("line3"), addressLine4 = Some("line4"), addressCountryCode = None)
-  val testAdditionalBusinessPremisesOrig1 = AdditionalBusinessPremises(additionalPremises = Yes, Some(testAddressOrig), addAnother = Option("No"))
-  val testAdditionalBusinessPremisesOrig2 = AdditionalBusinessPremises(additionalPremises = Yes, Some(testAddress()), addAnother = Option("No"))
-  val testAdditionalPremisesListOrig = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesOrig1, testAdditionalBusinessPremisesOrig2))
-  val testAdditionalPremisesListCache = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesOrig2))
+  val testAddressOrig: Address = Address(postcode = Some("postcode"), addressLine1 = "line1", addressLine2 = "line2", addressLine3 = Some("line3"), addressLine4 = Some("line4"), addressCountryCode = None)
+  val testAdditionalBusinessPremisesOrig1: AdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Yes, Some(testAddressOrig), addAnother = Option("No"))
+  val testAdditionalBusinessPremisesOrig2: AdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Yes, Some(testAddress()), addAnother = Option("No"))
+  val testAdditionalPremisesListOrig: AdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesOrig1, testAdditionalBusinessPremisesOrig2))
+  val testAdditionalPremisesListCache: AdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testAdditionalBusinessPremisesOrig2))
 
-  val testBusinessDirectorOrig =
+  val testBusinessDirectorOrig: BusinessDirector =
     BusinessDirector(Some("Person"),
       firstName = Some("John"),
       lastName = Some("Smith"),
@@ -297,9 +298,9 @@ object TestUtil extends PlaySpec {
       otherDirectors = No
     )
 
-  val testBusinessDirectorsOrig = BusinessDirectors(List(testBusinessDirector))
+  val testBusinessDirectorsOrig: BusinessDirectors = BusinessDirectors(List(testBusinessDirector))
 
-  val testApplicationDeclarationOrig = ApplicationDeclaration(declarationName = Some("Mark Smith"), declarationRole = Some("Owner"), None)
+  val testApplicationDeclarationOrig: ApplicationDeclaration = ApplicationDeclaration(declarationName = Some("Mark Smith"), declarationRole = Some("Owner"), None)
 
   def testSupplierDefault(alcoholSuppliers: Option[String] = No,
                           supplierName: Option[String] = None,
@@ -307,7 +308,7 @@ object TestUtil extends PlaySpec {
                           vatRegistered: Option[String] = None,
                           vatNumber: Option[String] = None,
                           supplierAddress: Option[Address] = None,
-                          additionalSupplier: Option[String] = None) = Supplier(alcoholSuppliers = alcoholSuppliers,
+                          additionalSupplier: Option[String] = None): Supplier = Supplier(alcoholSuppliers = alcoholSuppliers,
     supplierName = supplierName,
     vatRegistered = vatRegistered,
     vatNumber = vatNumber,
@@ -315,7 +316,7 @@ object TestUtil extends PlaySpec {
     additionalSupplier = additionalSupplier,
     ukSupplier = ukSupplier)
 
-  def testSupplier(isUK: Boolean = true) = {
+  def testSupplier(isUK: Boolean = true): Supplier = {
     val address = isUK match {
       case true => testAddress
       case _ => testAddressInternational
@@ -344,7 +345,7 @@ object TestUtil extends PlaySpec {
       ukSupplier = Yes)
   }
 
-  def testSupplierOthersYes(isUK: Boolean = true) = {
+  def testSupplierOthersYes(isUK: Boolean = true): Supplier = {
     val address = isUK match {
       case true => testAddress
       case _ => testAddressInternational
@@ -358,11 +359,11 @@ object TestUtil extends PlaySpec {
       ukSupplier = Yes)
   }
 
-  lazy val testSuppliers = Suppliers(List(testSupplier()))
-  lazy val testSuppliersInternational = Suppliers(List(testSupplier(isUK = false)))
-  lazy val testSupplierAddressList = Suppliers(List(testSupplierOthersYes(isUK = true).copy(supplierAddress = Some(testAddress.copy(addressCountry = Some("United Kingdom")))),
+  lazy val testSuppliers: Suppliers = Suppliers(List(testSupplier()))
+  lazy val testSuppliersInternational: Suppliers = Suppliers(List(testSupplier(isUK = false)))
+  lazy val testSupplierAddressList: Suppliers = Suppliers(List(testSupplierOthersYes(isUK = true).copy(supplierAddress = Some(testAddress.copy(addressCountry = Some("United Kingdom")))),
     testSupplier(isUK = false).copy(supplierAddress = Some(testAddressInternational.copy(addressCountry = Some("Spain"), addressCountryCode = Some("ES"))))))
-  lazy val testSupplierAddressListOrig = Suppliers(List(testSupplierOthersYes(isUK = true), testSupplier(isUK = false)))
+  lazy val testSupplierAddressListOrig: Suppliers = Suppliers(List(testSupplierOthersYes(isUK = true), testSupplier(isUK = false)))
 
   val reviewDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", true, Some("agent123"))
   val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_Business_Details" -> Json.toJson(reviewDetails), "Supplier" -> Json.toJson(testSuppliers)))
@@ -384,7 +385,7 @@ object TestUtil extends PlaySpec {
                            partnerSize: Int = 2,
                            groupSize: Int = 1,
                            directorSize: Int = 1,
-                           supplierSize: Int = 2) = {
+                           supplierSize: Int = 2): IndexViewModel = {
     def addTestData(legalEntity: String, section: String): SectionModel = section match {
       case `businessDetailsName` => getDynamicSectionModel(legalEntity, section, businessDetails)
       case `businessRegistrationDetailsName` => getDynamicSectionModel(legalEntity, section, businessRegistrationDetails)
@@ -406,7 +407,7 @@ object TestUtil extends PlaySpec {
         case "LTD_GRP" | "LLP_GRP" => ("groupBusiness", "group_business")
       }
       val sectionMessage = (page: String) => f"awrs.index_page.${busTypeInMsg}_${page}_text"
-      sectionName match {
+      (sectionName: @unchecked) match {
         case `businessDetailsName` => SectionModel(sectionId + "Details", "/alcohol-wholesale-scheme/view-section/businessDetails", sectionMessage("details"), sectionStatus)
         case `businessRegistrationDetailsName` => SectionModel(sectionId + "RegistrationDetails", "/alcohol-wholesale-scheme/view-section/businessRegistrationDetails", sectionMessage("registration_details"), sectionStatus)
         case `businessContactsName` => SectionModel(sectionId + "Contacts", "/alcohol-wholesale-scheme/view-section/businessContacts", sectionMessage("contacts"), sectionStatus)
@@ -437,7 +438,7 @@ object TestUtil extends PlaySpec {
                      tradingActivity: Option[TradingActivity] = testTradingActivity(),
                      products: Option[Products] = testProducts(),
                      suppliers: Option[Suppliers] = testSupplierAddressList,
-                     businessType: BusinessDetailsEntityTypes.Value = SoleTrader) = {
+                     businessType: BusinessDetailsEntityTypes.Value = SoleTrader): CacheMap = {
     def addTestData(legalEntity: String, section: String): Option[JsValue] = section match {
       case `businessDetailsName` => None
       case `businessNameDetailsName` => businessNameDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
@@ -478,13 +479,13 @@ object TestUtil extends PlaySpec {
         Map(businessTypeName -> Json.toJson(testBusinessDetailsEntityTypes(businessType)), groupDeclarationName -> Json.toJson(x)))))
   }
 
-  lazy val emptyCachemap = CacheMap(testUtr, Map())
+  lazy val emptyCachemap: CacheMap = CacheMap(testUtr, Map())
 
   // this test data is used to simulate a bug from ETMP as specified by AWRS-1413
   // sometimes the proposed start date is not returned from API 5
   // if the date is missing the data is still valid if isNewBusiness is false
   // however the data is incomplete if isNewBusiness is true
-  def testBusinessDetailsWithMissingStartDate(legalEntity: String = "SOP", isNewBusiness: Boolean, propDate: Option[TupleDate] = None) =
+  def testBusinessDetailsWithMissingStartDate(legalEntity: String = "SOP", isNewBusiness: Boolean, propDate: Option[TupleDate] = None): CacheMap =
     createCacheMap(
       legalEntity = legalEntity,
       businessNameDetails = (_F: String) => testBusinessNameDetails(),
@@ -501,9 +502,9 @@ object TestUtil extends PlaySpec {
       tradingStartDetails = None
     )
 
-  def testApplicationStatus(status: AWRSEnums.ApplicationStatusEnum.Value = AWRSEnums.ApplicationStatusEnum.Withdrawn, updatedDate: LocalDateTime = LocalDateTime.now()) = ApplicationStatus(status = status, updatedDate = updatedDate)
+  def testApplicationStatus(status: AWRSEnums.ApplicationStatusEnum.Value = AWRSEnums.ApplicationStatusEnum.Withdrawn, updatedDate: LocalDateTime = LocalDateTime.now()): ApplicationStatus = ApplicationStatus(status = status, updatedDate = updatedDate)
 
-  val testBusinessDetailsEntityTypes = (entityType: BusinessDetailsEntityTypes.Value) => entityType match {
+  val testBusinessDetailsEntityTypes: BusinessDetailsEntityTypes.Value => BusinessType = (entityType: BusinessDetailsEntityTypes.Value) => (entityType: @unchecked) match {
     case SoleTrader => BusinessType(Some("SOP"), Some(true), None)
     case CorporateBody => BusinessType(Some("LTD"), None, Some(true))
     case GroupRep => BusinessType(Some("LTD_GRP"), None, Some(true))
@@ -514,7 +515,7 @@ object TestUtil extends PlaySpec {
 
   def testBusinessDetails(doYouHaveTradingName: Option[String] = Some("Yes"),
                           tradingName: Option[String] = Some("Simple Wines"),
-                          newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())) =
+                          newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())): BusinessDetails =
     BusinessDetails(
       doYouHaveTradingName = doYouHaveTradingName,
       tradingName = tradingName,
@@ -523,7 +524,7 @@ object TestUtil extends PlaySpec {
 
   def testBusinessNameDetails(businessName: Option[String] = Some("Business Name"),
                               doYouHaveTradingName: Option[String] = Some("Yes"),
-                              tradingName: Option[String] = Some("Simple Wines")) =
+                              tradingName: Option[String] = Some("Simple Wines")): BusinessNameDetails =
     BusinessNameDetails(
       doYouHaveTradingName = doYouHaveTradingName,
       tradingName = tradingName,
@@ -533,7 +534,7 @@ object TestUtil extends PlaySpec {
   def testExtendedBusinessDetails(businessName: Option[String] = Some("ACME"),
                                   doYouHaveTradingName: Option[String] = Some("Yes"),
                                   tradingName: Option[String] = Some("Simple Wines"),
-                                  newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())) =
+                                  newBusiness: Option[NewAWBusiness] = Some(newAWBusiness())): ExtendedBusinessDetails =
     ExtendedBusinessDetails(
       businessName = businessName,
       doYouHaveTradingName = doYouHaveTradingName,
@@ -541,7 +542,7 @@ object TestUtil extends PlaySpec {
       newAWBusiness = newBusiness
     )
 
-  def testBusinessRegistrationDetails(legalEntity: String) = legalEntity match {
+  def testBusinessRegistrationDetails(legalEntity: String): BusinessRegistrationDetails = legalEntity match {
     case "Partnership" => defaultBusinessRegistrationDetails(legalEntity = legalEntity)
     case "SOP" => defaultBusinessRegistrationDetails(doYouHaveNino = Yes, nino = testNino)
     case _ => defaultBusinessRegistrationDetails(legalEntity = legalEntity, isBusinessIncorporated = Yes, companyRegDetails = Some(testCompanyRegDetails()))
@@ -552,7 +553,7 @@ object TestUtil extends PlaySpec {
                         addressLine3: Option[String] = Some("Address Line 3"),
                         addressLine4: Option[String] = Some("Address Line 4"),
                         postalCode: Option[String] = Some("NE11AA"),
-                        countryCode: Option[String] = Some("GB")) =
+                        countryCode: Option[String] = Some("GB")): BCAddressApi3 =
     BCAddressApi3(
       addressLine1 = addressLine1,
       addressLine2 = addressLine2,
@@ -570,7 +571,7 @@ object TestUtil extends PlaySpec {
                                          doYouHaveVRN: Option[String] = Yes,
                                          vrn: Option[String] = testVrn,
                                          doYouHaveUTR: Option[String] = Yes,
-                                         utr: Option[String] = testUtr) = BusinessRegistrationDetails(
+                                         utr: Option[String] = testUtr): BusinessRegistrationDetails = BusinessRegistrationDetails(
     legalEntity = legalEntity,
     doYouHaveNino = doYouHaveNino,
     nino = nino,
@@ -590,7 +591,7 @@ object TestUtil extends PlaySpec {
                                       doYouHaveVRN: Option[String] = No,
                                       vrn: Option[String] = None,
                                       doYouHaveUTR: Option[String] = No,
-                                      utr: Option[String] = None) = BusinessRegistrationDetails(
+                                      utr: Option[String] = None): BusinessRegistrationDetails = BusinessRegistrationDetails(
     legalEntity = legalEntity,
     doYouHaveNino = doYouHaveNino,
     nino = nino,
@@ -608,7 +609,7 @@ object TestUtil extends PlaySpec {
                   addressLine4: Option[String] = Some("address Line4"),
                   postcode: Option[String] = Some("NE28 8ER"),
                   addressCountry: Option[String] = None,
-                  addressCountryCode: Option[String] = None) =
+                  addressCountryCode: Option[String] = None): Address =
     Address(addressLine1 = addressLine1.get,
       addressLine2 = addressLine2.get,
       addressLine3 = addressLine3,
@@ -623,7 +624,7 @@ object TestUtil extends PlaySpec {
                   addressLine4: Option[String] = Some("address Line4"),
                   postcode: Option[String] = None,
                   addressCountry: Option[String] = None,
-                  addressCountryCode: Option[String] = None) =
+                  addressCountryCode: Option[String] = None): Address =
     Address(addressLine1 = addressLine1.get,
       addressLine2 = addressLine2.get,
       addressLine3 = addressLine3,
@@ -640,7 +641,7 @@ object TestUtil extends PlaySpec {
                                    contactLastName: Option[String] = Some("Walker"),
                                    email: Option[String] = Some(testEmail),
                                    confirmEmail: Option[String] = Some(testEmail),
-                                   telephone: Option[String] = Some("01123456789")) =
+                                   telephone: Option[String] = Some("01123456789")): BusinessContacts =
     BusinessContacts(
       contactAddressSame = contactAddressSame,
       contactAddress = contactAddress,
@@ -657,7 +658,7 @@ object TestUtil extends PlaySpec {
                                       contactLastName: Option[String] = Some("Walker"),
                                       email: Option[String] = Some(testEmail),
                                       confirmEmail: Option[String] = Some(testEmail),
-                                      telephone: Option[String] = Some("01123456789")) =
+                                      telephone: Option[String] = Some("01123456789")): BusinessContacts =
     BusinessContacts(
       contactAddressSame = contactAddressSame,
       contactAddress = contactAddress,
@@ -671,7 +672,7 @@ object TestUtil extends PlaySpec {
                                  placeOfBusinessLast3Years: Option[String] = No,
                                  placeOfBusinessAddressLast3Years: Option[Address] = Some(testAddress()),
                                  operatingDuration: Option[String] = Some("0 to 2 years")
-                                ) =
+                                ): PlaceOfBusiness =
     PlaceOfBusiness(
       mainPlaceOfBusiness = mainPlaceOfBusiness,
       mainAddress = mainAddress,
@@ -682,8 +683,8 @@ object TestUtil extends PlaySpec {
 
   // used to test business details model conversions, these data are created because the default data set used for other tests have very different business details data
   // between the entities
-  lazy val defaultTestBusinessDetails = testBusinessDetails()
-  lazy val defaultTestBusinessContacts = testBusinessContactsDefault()
+  lazy val defaultTestBusinessDetails: BusinessDetails = testBusinessDetails()
+  lazy val defaultTestBusinessContacts: BusinessContacts = testBusinessContactsDefault()
 
   // used to test business details model conversions, this function is created because the default data set used for other tests have very different business details data
   // between the entities
@@ -703,7 +704,7 @@ object TestUtil extends PlaySpec {
                                    products: Option[Products] = Some(testProducts()),
                                    suppliers: Option[Suppliers] = Some(testSupplierAddressListOrig),
                                    applicationDeclaration: Option[ApplicationDeclaration] = Some(testApplicationDeclarationOrig),
-                                   changeIndicators: Option[ChangeIndicators] = None) =
+                                   changeIndicators: Option[ChangeIndicators] = None): SubscriptionTypeFrontEnd =
   SubscriptionTypeFrontEnd(
     legalEntity = legalEntity,
     businessPartnerName = Some(businessPartnerName),
@@ -724,13 +725,13 @@ object TestUtil extends PlaySpec {
     changeIndicators = changeIndicators
   )
 
-  val defaultTestSubscriptionTypeFrontEnd = testSubscriptionTypeFrontEnd()
+  val defaultTestSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = testSubscriptionTypeFrontEnd()
 
-  val soleTraderSubscriptionTypeFrontEnd = testSubscriptionTypeFrontEnd(groupDeclaration = None, businessPartnerDetails = None, groupMemberDetails = None, businessDirectors = None)
+  val soleTraderSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = testSubscriptionTypeFrontEnd(groupDeclaration = None, businessPartnerDetails = None, groupMemberDetails = None, businessDirectors = None)
 
-  val differentSoleTraderSubscriptionTypeFrontEnd = testSubscriptionTypeFrontEnd(businessDetails = Some(testBusinessDetails(tradingName = Some("Complex Wines"))), groupDeclaration = None, businessPartnerDetails = None, groupMemberDetails = None, businessDirectors = None)
+  val differentSoleTraderSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = testSubscriptionTypeFrontEnd(businessDetails = Some(testBusinessDetails(tradingName = Some("Complex Wines"))), groupDeclaration = None, businessPartnerDetails = None, groupMemberDetails = None, businessDirectors = None)
 
-  val matchingSoleTraderCacheMap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(testBusinessCustomerDetailsOrig),
+  val matchingSoleTraderCacheMap: CacheMap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(testBusinessCustomerDetailsOrig),
     businessNameDetailsName -> Json.toJson(testBusinessNameDetails()),
     tradingStartDetailsName -> Json.toJson(newAWBusiness()),
     "businessRegistrationDetails" -> Json.toJson(testSoleTraderBusinessRegistrationDetails),
@@ -749,11 +750,11 @@ object TestUtil extends PlaySpec {
 
   def newAWBusiness(newAWBusiness: String = "No", proposedStartDate: Option[TupleDate] = None): NewAWBusiness = NewAWBusiness(newAWBusiness, proposedStartDate)
 
-  def testBusinessDetailsSupport(isBugged: Boolean) = BusinessDetailsSupport(isBugged)
+  def testBusinessDetailsSupport(isBugged: Boolean): BusinessDetailsSupport = BusinessDetailsSupport(isBugged)
 
-  def testBusinessDetailsSupport(newAWBusiness: NewAWBusiness) = BusinessDetailsSupport.evaluate(newAWBusiness)
+  def testBusinessDetailsSupport(newAWBusiness: NewAWBusiness): BusinessDetailsSupport = BusinessDetailsSupport.evaluate(newAWBusiness)
 
-  def testBusinessDetailsSupport(subscriptionTypeFrontEnd: SubscriptionTypeFrontEnd) = BusinessDetailsSupport.evaluate(subscriptionTypeFrontEnd)
+  def testBusinessDetailsSupport(subscriptionTypeFrontEnd: SubscriptionTypeFrontEnd): BusinessDetailsSupport = BusinessDetailsSupport.evaluate(subscriptionTypeFrontEnd)
 
 
   def loadAndParseJson(path: String): JsValue = {
@@ -793,7 +794,7 @@ object TestUtil extends PlaySpec {
       premisesChanged, suppliersChanged, groupMembersChanged, declarationChanged)
   }
 
-  def getSectionChangeIndicatorsAllTrue = getSectionChangeIndicators(true, true, true, true, true, true, true, true, true, true, true)
+  def getSectionChangeIndicatorsAllTrue: SectionChangeIndicators = getSectionChangeIndicators(true, true, true, true, true, true, true, true, true, true, true)
 
   def testPartner(entityType: Option[String] = Some("Individual"),
                   firstName: Option[String] = None,
@@ -843,7 +844,7 @@ object TestUtil extends PlaySpec {
     assert(!errorKey.matches("^(.*?)\\{\\d+\\}(.*?)"), ", The %s error key %s associated to the field #%s contains unassigned parameters specified in the Message file".format(caller, expectedErrorKey, id))
   }
 
-  @inline def errorSummaryValidation(document: Document, id: String, expectedErrorKey: String, expectedhref: String, errorArgs: Any*) = {
+  @inline def errorSummaryValidation(document: Document, id: String, expectedErrorKey: String, expectedhref: String, errorArgs: Any*): Assertion = {
     val associatedSummaryErrMsg = document.select(s"""a[href="$expectedhref"]""")
     val errorKey = associatedSummaryErrMsg.text
 
@@ -855,7 +856,7 @@ object TestUtil extends PlaySpec {
     associatedSummaryErrMsg.attr("href") mustBe expectedhref
   }
 
-  @inline def errorNotificationValidation(document: Document, id: String, expectedErrorKey: String, errorArgs: Any*) = {
+  @inline def errorNotificationValidation(document: Document, id: String, expectedErrorKey: String, errorArgs: Any*): Assertion = {
     val associatedErrMsg = document.getElementById(id + "-error")
     assert(associatedErrMsg != null, ", No error message associated to the field #%s can be found in the given document".format(id))
 
@@ -864,18 +865,18 @@ object TestUtil extends PlaySpec {
     messageAssertion("field")(id, errorKey, expectedErrorKey, errorArgs: _*)
   }
 
-  @inline def testErrorMessageValidation(document: Document, id: String, expectedErrorKey: String, errorArgs: Any*) = {
+  @inline def testErrorMessageValidation(document: Document, id: String, expectedErrorKey: String, errorArgs: Any*): Assertion = {
     errorSummaryValidation(document, id, expectedErrorKey, "#" + id, errorArgs: _*)
     errorNotificationValidation(document, id, expectedErrorKey, errorArgs: _*)
   }
 
-  @inline def noValidationErrors(document: Document, id: String) = {
+  @inline def noValidationErrors(document: Document, id: String): Assertion = {
     document.getElementById(id + "_errorLink") mustBe null
     document.getElementById(id + "-error-0") mustBe null
   }
 
 
-  def testReviewDetailsAny(businessType: String) = BusinessCustomerDetails("ACME", Some(businessType), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", businessType.contains("GRP"), Some("agent123"))
+  def testReviewDetailsAny(businessType: String): BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some(businessType), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", businessType.contains("GRP"), Some("agent123"))
 
   def updateMockRequest(requestMap: Map[String, String], listOfUpdates: Seq[(String, String)]): Seq[(String, String)] = {
     listOfUpdates match {
@@ -892,9 +893,9 @@ object TestUtil extends PlaySpec {
   private def testDeleteRequest(delete: DeleteConfirmation) =
     TestUtil.populateFakeRequest[DeleteConfirmation](FakeRequest(), DeleteConfirmationForm.deleteConfirmationForm, delete)
 
-  val deleteConfirmation_No = testDeleteRequest(DeleteConfirmation(No))
-  val deleteConfirmation_Yes = testDeleteRequest(DeleteConfirmation(Yes))
-  val deleteConfirmation_None = testDeleteRequest(DeleteConfirmation(None))
+  val deleteConfirmation_No: FakeRequest[AnyContentAsFormUrlEncoded] = testDeleteRequest(DeleteConfirmation(No))
+  val deleteConfirmation_Yes: FakeRequest[AnyContentAsFormUrlEncoded] = testDeleteRequest(DeleteConfirmation(Yes))
+  val deleteConfirmation_None: FakeRequest[AnyContentAsFormUrlEncoded] = testDeleteRequest(DeleteConfirmation(None))
 
   val defaultEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
     Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "6543210")), "activated"))
@@ -902,10 +903,10 @@ object TestUtil extends PlaySpec {
   val defaultSaEnrolmentSet = Set(Enrolment("HMRC-AWRS-ORG", Seq(EnrolmentIdentifier("AWRSRefNumber", "0123456")), "activated"),
     Enrolment("IR-SA", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))
 
-  val defaultAuthRetrieval = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
-  val authRetrievalSAUTR = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
-  val authRetrievalEmptySetEnrolments = StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
+  val defaultAuthRetrieval: StandardAuthRetrievals = StandardAuthRetrievals(defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
+  val authRetrievalSAUTR: StandardAuthRetrievals = StandardAuthRetrievals(defaultSaEnrolmentSet, Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
+  val authRetrievalEmptySetEnrolments: StandardAuthRetrievals = StandardAuthRetrievals(Set(), Some(AffinityGroup.Organisation), "fakeCredID","fakePLainTextCredId", Some(User))
 
-  val emptyAuthRetrieval = StandardAuthRetrievals(Set(), None, "fakePlainTextCredID", "emptyFakeCredID", Some(User))
+  val emptyAuthRetrieval: StandardAuthRetrievals = StandardAuthRetrievals(Set(), None, "fakePlainTextCredID", "emptyFakeCredID", Some(User))
 
 }

@@ -20,6 +20,7 @@ import connectors.mock.{MockAWRSNotificationConnector, MockAuthConnector}
 import models.{ApiTypes, DeRegistrationDate, EmailRequest}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.MockKeyStoreService.defaultDeRegistrationDateData
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
@@ -42,7 +43,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
   lazy val isNewBusiness = true
   lazy val deRegistrationDateStr = "12-07-2017"
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAccountUtils)
 
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
@@ -51,7 +52,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
 
   "Email Service" must {
     "build the correct request object for the connectors for api4 None user" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName)
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName)
       val expected = GetExpectedOutput(ApiTypes.API4)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
@@ -61,7 +62,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     }
 
     "build the correct request object for the connectors for api6.pending Pending(01) user" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Pending")
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Pending")
       val expected = GetExpectedOutput(ApiTypes.API6Pending)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
@@ -71,7 +72,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     }
 
     "build the correct request object for the connectors for api6.approved Approved(04) user" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved")
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved")
       val expected = GetExpectedOutput(ApiTypes.API6Approved)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
@@ -81,7 +82,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     }
 
     "build the correct request object for the connectors for api6.approved Conditions(05) user" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved with Conditions")
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Approved with Conditions")
       val expected = GetExpectedOutput(ApiTypes.API6Approved)
 
       when(mockAWRSNotificationConnector.sendConfirmationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
@@ -91,7 +92,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     }
 
     "get succesful response when sending withdraw email for API8 user" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Withdrawal")
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "Withdrawal")
       val expected = GetExpectedOutput(ApiTypes.API8,None,None,None)
 
       when(mockAWRSNotificationConnector.sendWithdrawnEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
@@ -101,7 +102,7 @@ class EmailServiceTest extends AwrsUnitTestTraits
     }
 
     "get succesful response when sending cancellation email for API10 user" in {
-      implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "De-Registered")
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> businessName, AwrsSessionKeys.sessionStatusType -> "De-Registered")
       val expected = GetExpectedOutput(ApiTypes.API10,None,None,defaultDeRegistrationDateData)
       when(mockAWRSNotificationConnector.sendCancellationEmail(ArgumentMatchers.eq(expected))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testEmailService.sendCancellationEmail(email = email,defaultDeRegistrationDateData)

@@ -129,7 +129,7 @@ object BusinessDirectorsForm {
 
     val doYouHaveUtrInferred = inferBasedOn(data.get(utr))
 
-    data. +((doYouHaveCrn, doYouHaveCrnInferred), (doYouHaveUtr, doYouHaveUtrInferred))
+    data. ++(Map(doYouHaveCrn -> doYouHaveCrnInferred, doYouHaveUtr -> doYouHaveUtrInferred))
   }
 
   /*
@@ -169,6 +169,6 @@ object BusinessDirectorsForm {
     )(BusinessDirector.apply)(BusinessDirector.unapply))
   }
 
-  val businessDirectorsForm = PreprocessedForm(businessDirectorsValidationForm).addNewPreprocessFunction(inferDoYouHave)
+  val businessDirectorsForm: PrevalidationAPI[BusinessDirector] = PreprocessedForm(businessDirectorsValidationForm).addNewPreprocessFunction(inferDoYouHave)
 
 }

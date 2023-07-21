@@ -95,7 +95,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
       case NewApplicationMode =>
         implicit val viewMode: ViewApplicationType = viewApplicationType
         val businessType = request.getBusinessType
-        alreadyStartedTradingForm.bindFromRequest.fold(
+        alreadyStartedTradingForm.bindFromRequest().fold(
           formWithErrors =>
             Future.successful(BadRequest(template(formWithErrors, businessType))),
           newAWBusiness => {

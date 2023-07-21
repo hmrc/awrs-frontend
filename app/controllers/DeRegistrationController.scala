@@ -90,7 +90,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
 
   def submitReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
-      deRegistrationReasonForm.bindFromRequest.fold(
+      deRegistrationReasonForm.bindFromRequest().fold(
         formWithErrors => {
           Future.successful(BadRequest(templateReason(formWithErrors)))
         },
@@ -121,7 +121,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
 
   def submitDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
-      deRegistrationForm.bindFromRequest.fold(
+      deRegistrationForm.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(template(formWithErrors)))
         ,
@@ -160,7 +160,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { ar =>
       confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
 
-        deRegistrationConfirmationForm.bindFromRequest.fold(
+        deRegistrationConfirmationForm.bindFromRequest().fold(
           formWithErrors =>
             Future.successful(BadRequest(templateConfirm(formWithErrors, proposedEndDate)))
           ,
@@ -204,7 +204,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
                 }
 
                 // call routing
-                callAPI10(() => callDeEnrol(success))
+                callAPI10(() => callDeEnrol(success _))
               case _ => returnToIndexSubroutine
             }
           }

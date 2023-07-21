@@ -43,6 +43,7 @@ import services.DataCacheKeys._
 import services.{EmailVerificationService, ServicesUnitTestFixture}
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_business_contacts
 
 import scala.concurrent.Future
 
@@ -54,7 +55,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
   val businessCustomerDetailsFormId = "businessCustomerDetails"
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_business_contacts]
+  val mockTemplate: awrs_business_contacts = app.injector.instanceOf[views.html.awrs_business_contacts]
 
 
   def testRequest(premises: BusinessContacts): FakeRequest[AnyContentAsFormUrlEncoded] =
@@ -130,7 +131,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(businessType: String = "SOP")(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(businessType: String = "SOP")(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
       fetchBusinessContacts = testBusinessContactsDefault(),
@@ -143,7 +144,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithAuthorisedUserCustomerDetailsMock(businessType: String = "SOP", customerDetails: Boolean = true)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserCustomerDetailsMock(businessType: String = "SOP", customerDetails: Boolean = true)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = if (customerDetails) testBusinessCustomerDetails(businessType) else None
     )
@@ -152,7 +153,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()

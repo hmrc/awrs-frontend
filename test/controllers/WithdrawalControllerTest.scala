@@ -36,6 +36,7 @@ import services.{DeEnrolService, EmailService}
 import utils.TestUtil._
 import utils.WithdrawalTestUtils._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.{awrs_withdrawal_confirmation, awrs_withdrawal_confirmation_status, awrs_withdrawal_reasons}
 
 import scala.concurrent.Future
 
@@ -45,9 +46,9 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with MockSave4LaterService {
 
-  val templateReasons = app.injector.instanceOf[views.html.awrs_withdrawal_reasons]
-  val templateConfirm = app.injector.instanceOf[views.html.awrs_withdrawal_confirmation]
-  val templateStatus = app.injector.instanceOf[views.html.awrs_withdrawal_confirmation_status]
+  val templateReasons: awrs_withdrawal_reasons = app.injector.instanceOf[views.html.awrs_withdrawal_reasons]
+  val templateConfirm: awrs_withdrawal_confirmation = app.injector.instanceOf[views.html.awrs_withdrawal_confirmation]
+  val templateStatus: awrs_withdrawal_confirmation_status = app.injector.instanceOf[views.html.awrs_withdrawal_confirmation_status]
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockAwrsAPI8: AwrsAPI8 = mock[AwrsAPI8]
@@ -198,7 +199,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
 
   }
 
-  private def continueUpdateWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueUpdateWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = true)
     setAuthMocks()
@@ -206,7 +207,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithAuthorisedUserReasons(userStatus: SubscriptionStatusType)(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserReasons(userStatus: SubscriptionStatusType)(test: Future[Result] => Any): Unit = {
     setupMockAwrsAPI9(keyStore = userStatus)
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = true)
     setAuthMocks()
@@ -214,14 +215,14 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithSubmitWithdrawalReasons(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithSubmitWithdrawalReasons(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockKeyStoreServiceOnlySaveFunctions()
     setAuthMocks()
     val result = testWithdrawalController.submitWithdrawalReasons.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
-  private def continueWithAuthorisedUserReasonsNoKeyStore(userStatus: SubscriptionStatusType)(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserReasonsNoKeyStore(userStatus: SubscriptionStatusType)(test: Future[Result] => Any): Unit = {
     setupMockAwrsAPI9(keyStore = userStatus)
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = false)
     setAuthMocks()
@@ -229,7 +230,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithApplicationSubmit(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], deEnrol: Boolean)(test: Future[Result] => Any) {
+  private def continueWithApplicationSubmit(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], deEnrol: Boolean)(test: Future[Result] => Any): Unit = {
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(
       haveWithdrawalReason = false,
       fetchNoneType = FetchNoneType.DeletedData

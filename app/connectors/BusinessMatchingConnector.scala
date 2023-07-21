@@ -90,7 +90,7 @@ trait BusinessMatchingConnector extends RawResponseReads with LoggingUtils {
   }
 
   private def auditMatchCall(input: MatchBusinessData, userType: String, response: HttpResponse)
-                            (implicit hc: HeaderCarrier): Unit = {
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val eventType = response.status match {
       case OK | NOT_FOUND => EventTypes.Succeeded
       case _ => EventTypes.Failed

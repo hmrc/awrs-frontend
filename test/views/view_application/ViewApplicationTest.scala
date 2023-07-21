@@ -49,8 +49,9 @@ import views.view_application.helpers.{OneViewMode, PrintFriendlyMode}
 import views.view_application.subviews.SubviewIds._
 
 import javax.inject.Inject
-import scala.collection.JavaConversions._
+import play.twirl.api.TwirlHelperImports.twirlJavaCollectionToScala
 import scala.concurrent.Future
+import scala.language.implicitConversions
 
 
 class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with MockSave4LaterService {
@@ -273,7 +274,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       case _ => List[Row]()
     }
 
-  def tableHeaderForContainers[T](header: String, container: Traversable[T]) = f"$header (${container.size})"
+  def tableHeaderForContainers[T](header: String, container: Iterable[T]) = f"$header (${container.size})"
 
   "view-application page" must {
 
@@ -354,8 +355,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                   equal.toString + "\t" + {
                     equal match {
                       case true => ""
-                      case false => a.heading.toCharArray.map(_.toInt.toString) + "\t" + b.heading.toCharArray.map(_.toInt.toString) + "\n\t" +
-                        a.content.map(_.toCharArray.map(_.toInt.toString)) + "\t" + b.content.map(_.toCharArray.map(_.toInt.toString)) + "\n"
+                      case false => s"${a.heading.toCharArray.map(_.toInt.toString)}\t${b.heading.toCharArray.map(_.toInt.toString)}\n\t${a.content.map(_.toCharArray.map(_.toInt.toString))}\t${b.content.map(_.toCharArray.map(_.toInt.toString))}\n"
                     }
                   }
               }
@@ -479,7 +479,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
       def toExpectation(testData: BusinessContacts, testBCDetails: BusinessCustomerDetails): List[Row] = {
         val contactAddress =
-          testData.contactAddressSame match {
+          (testData.contactAddressSame: @unchecked) match {
             case Some(BooleanRadioEnum.NoString) => addressToExpectation(Messages("awrs.view_application.contact_address"), testData.contactAddress)
             case Some(BooleanRadioEnum.YesString) => addressToExpectation(Messages("awrs.view_application.contact_address"), testBCDetails.businessAddress)
           }
@@ -562,7 +562,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
         testData.members.tail.flatMap(x => toList(x))
       }
 
-      def test(testData: GroupMembers) {
+      def test(testData: GroupMembers): Unit = {
         implicit val cache: CacheMap =
           getCustomizedMap(groupMembers = testData)
 
@@ -583,6 +583,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     "display partner details correctly" in {
       implicit val divId: String = partnerDetailsId
 
+      @scala.annotation.nowarn
       def partnerDetailOneViewTest(entityType: Option[String] = Some("Individual"),
                                    firstName: Option[String] = "John",
                                    lastName: Option[String] = "Smith",
@@ -670,7 +671,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
         testData.partners.zipWithIndex.flatMap { case (x, index) => toList(x, index) }
       }
 
-      def test(testData: Partners) {
+      def test(testData: Partners): Unit = {
         implicit val cache: CacheMap =
           getCustomizedMap(partnerDetails = testData)
 

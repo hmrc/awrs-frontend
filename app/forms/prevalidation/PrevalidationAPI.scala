@@ -68,7 +68,7 @@ trait PrevalidationAPI[T] {
     preprocessFunctions.foldLeft(data)((data, function) => function(data))
 
   private def preprocess(key: String, value: String): String = {
-    val trimmedField: String = trimRules.getOrElse(removeKeyPrefix(key), TrimOption.bothAndCompress) match {
+    val trimmedField: String = (trimRules.getOrElse(removeKeyPrefix(key), TrimOption.bothAndCompress): @unchecked) match {
       case TrimOption.both => trimBothFunc(value)
       case TrimOption.bothAndCompress => trimBothAndCompressFunc(value)
       case TrimOption.all => trimAllFunc(value)
@@ -76,7 +76,7 @@ trait PrevalidationAPI[T] {
       case TrimOption.utr => trimUTR(value)
       case TrimOption.crn => trimCRN(value)
     }
-   caseRules.getOrElse(removeKeyPrefix(key), CaseOption.none) match {
+    (caseRules.getOrElse(removeKeyPrefix(key), CaseOption.none): @unchecked) match {
       case CaseOption.upper => trimmedField.toUpperCase
       case CaseOption.lower => trimmedField.toLowerCase
       case CaseOption.none => trimmedField

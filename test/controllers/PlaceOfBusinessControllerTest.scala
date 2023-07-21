@@ -26,6 +26,7 @@ import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_principal_place_of_business
 
 import scala.concurrent.Future
 
@@ -35,7 +36,7 @@ class PlaceOfBusinessControllerTest extends AwrsUnitTestTraits
   def testRequest(pob: PlaceOfBusiness): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm(mockAppConfig), pob)
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
+  val mockTemplate: awrs_principal_place_of_business = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
 
   val testPlaceOfBusinessController: PlaceOfBusinessController =
     new PlaceOfBusinessController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
@@ -149,7 +150,7 @@ class PlaceOfBusinessControllerTest extends AwrsUnitTestTraits
       test(result)
     }
 
-    def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], legalEntity: String)(test: Future[Result] => Any) {
+    def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], legalEntity: String)(test: Future[Result] => Any): Unit = {
       setupMockKeyStoreServiceOnlySaveFunctions()
       setupMockSave4LaterServiceWithOnly(
         fetchPlaceOfBusiness = testPlaceOfBusinessDefault(placeOfBusinessAddressLast3Years = testAddress(addressLine1 = Some("address line 21"), postcode = "NE28 8ES"))
@@ -159,7 +160,7 @@ class PlaceOfBusinessControllerTest extends AwrsUnitTestTraits
       test(result)
     }
 
-    def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], legalEntity: String)(test: Future[Result] => Any) {
+    def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], legalEntity: String)(test: Future[Result] => Any): Unit = {
       setupMockKeyStoreServiceOnlySaveFunctions()
       setupMockSave4LaterServiceWithOnly(
         fetchPlaceOfBusiness = testPlaceOfBusinessDefault(placeOfBusinessAddressLast3Years = testAddress(addressLine1 = Some("address line 21"), postcode = "NE28 8ES"))

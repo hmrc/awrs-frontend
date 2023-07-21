@@ -29,6 +29,7 @@ import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 import utils.TestUtil.{testBusinessContactsDefault, testBusinessCustomerDetails}
+import views.html.{awrs_email_verification_error, awrs_email_verification_success}
 
 import scala.concurrent.Future
 
@@ -40,8 +41,8 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
 
   val realMessages: Messages = app.injector.instanceOf[MessagesControllerComponents].messagesApi.preferred(Seq(Lang.defaultLang))
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_email_verification_success]
-  val mockTemplateError = app.injector.instanceOf[views.html.awrs_email_verification_error]
+  val mockTemplate: awrs_email_verification_success = app.injector.instanceOf[views.html.awrs_email_verification_success]
+  val mockTemplateError: awrs_email_verification_error = app.injector.instanceOf[views.html.awrs_email_verification_error]
 
   val testEmailVerificationControllerEmailEnabled: EmailVerificationController =
     new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig,
@@ -131,7 +132,7 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  def checkEmailVerification[T <: EmailVerificationController](testController: T, isVerified: Boolean = true)(test: Future[Result] => Any) {
+  def checkEmailVerification[T <: EmailVerificationController](testController: T, isVerified: Boolean = true)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
@@ -143,7 +144,7 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def resendEmail(isVerified: Boolean = true)(test: Future[Result] => Any) {
+  def resendEmail(isVerified: Boolean = true)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"),
       fetchBusinessContacts = testBusinessContactsDefault()
@@ -155,7 +156,7 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def showSuccess(test: Future[Result] => Any) {
+  def showSuccess(test: Future[Result] => Any): Unit = {
     val request = SessionBuilder.buildRequestWithSession(userId)
     val result = testEmailVerificationControllerEmailEnabled.showSuccess().apply(request)
     test(result)
