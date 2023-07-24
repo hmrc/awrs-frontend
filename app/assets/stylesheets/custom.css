@@ -83,7 +83,10 @@ table.view-application tr.record-spacer td, .record-add td {
 
 .view-application-section h2, .record-add td a {
     position: relative;
-    float: left;
+    display: inline-block;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    width: fit-content;
 }
 
 a.edit-section, a.back-to-top-link {
