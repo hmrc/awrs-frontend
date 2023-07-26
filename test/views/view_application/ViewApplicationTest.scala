@@ -629,11 +629,11 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
       def toExpectation(testData: Partners): List[Row] = {
         def toList(testData: Partner, index: Int): List[Row] = {
-          def sectionHeader = index match {
-            case 0 => prepRow(Messages("awrs.business-partner.partner"), List(Some("")))
-            case 1 => prepRow(Messages("awrs.business-partner.additional_partners"), List(Some("")))
-            case _ => prepRow("", None)
-          }
+//          def sectionHeader = index match {
+//            case 0 => prepRow(Messages("awrs.business-partner.partner"), List(Some("")))
+//            case 1 => prepRow(Messages("awrs.business-partner.additional_partners"), List(Some("")))
+//            case _ => prepRow("", None)
+//          }
 
           def nameOrCompanyOrTradingName: List[Row] =
             testData.entityType.get.toLowerCase match {
@@ -661,7 +661,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
               prepRow(Messages("awrs.generic.do_they_have_VAT"), partner.doYouHaveVRN) ++
               prepRow(Messages("awrs.generic.VAT_registration_number"), partner.vrn)
 
-          sectionHeader ++
+         // sectionHeader ++
             nameOrCompanyOrTradingName ++
             prepRowCustom(Messages("awrs.business-partner.partner_role"), testData.entityType)(EntityTypeEnum.getMessageKey(testData.entityType.get)) ++
             addressToExpectation(Messages("awrs.generic.address"), testData.partnerAddress) ++
@@ -681,8 +681,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
         testSectionExists(partnerDetails = true)
 
         val expectedHeading = tableHeaderForContainers(Messages("awrs.view_application.business_partners_text"), testData.partners)
+        val expectedSubheadingPartner = Messages("awrs.business-partner.partner")
+        val expectedSubheadingAdditionalPartners = Messages("awrs.business-partner.additional_partners")
 
         subview.heading mustBe expectedHeading
+        subview.subheading(0) mustBe Some(expectedSubheadingPartner)
+        subview.subheading(1) mustBe Some(expectedSubheadingAdditionalPartners)
         subview.rows mustBe toExpectation(testData)
       }
 
@@ -1025,7 +1029,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
   case class Row(heading: String, content: List[String])
 
-  case class Subview(heading: String, rows: List[Row])
+  case class Subview(heading: String, subheading: List[String], rows: List[Row])
 
   def getRow(div: Element): Row = {
     val row1stCol = div.getElementsByTag("dt")
@@ -1045,8 +1049,9 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
   def getSubview(implicit doc: Document, id: String): Subview = {
     val div = doc.getElementById(id)
     val heading = div.getElementsByTag("h1").head.text()
+    val subheading = div.getElementsByTag("h2").text()
     val rows = div.getElementsByClass("govuk-summary-list__row").foldLeft(List[Row]())((list, x) => list :+ getRow(x))
-    Subview(heading, rows)
+    Subview(heading, subheading, rows)
   }
 
 }
