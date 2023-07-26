@@ -685,8 +685,8 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
         val expectedSubheadingAdditionalPartners = Messages("awrs.business-partner.additional_partners")
 
         subview.heading mustBe expectedHeading
-        subview.subheading(0) mustBe Some(expectedSubheadingPartner)
-        subview.subheading(1) mustBe Some(expectedSubheadingAdditionalPartners)
+        subview.subheading(0) mustBe expectedSubheadingPartner
+        subview.subheading(1) mustBe expectedSubheadingAdditionalPartners
         subview.rows mustBe toExpectation(testData)
       }
 
@@ -1049,7 +1049,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
   def getSubview(implicit doc: Document, id: String): Subview = {
     val div = doc.getElementById(id)
     val heading = div.getElementsByTag("h1").head.text()
-    val subheading = div.getElementsByTag("h2").text()
+    val subheading = div.getElementsByTag("h2").toList.map(_.text())
     val rows = div.getElementsByClass("govuk-summary-list__row").foldLeft(List[Row]())((list, x) => list :+ getRow(x))
     Subview(heading, subheading, rows)
   }
