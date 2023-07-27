@@ -75,11 +75,13 @@ object CacheUtil extends Logging {
 
     def copyOfSave4Later: CacheMap = {
       val jsonMap: Map[String, JsValue] = {
-        JourneyConstants.getJourney(cache.getBusinessRegistrationDetails.get.legalEntity.get) map {
-          case `businessDetailsName` => Map(
-            businessNameDetailsName -> Json.toJson(cache.getBusinessNameDetails),
-            tradingStartDetailsName -> Json.toJson(cache.getTradingStartDetails)
-          )
+        JourneyConstants.getJourney(cache.getBusinessRegistrationDetails.get.legalEntity.get) map { x =>
+          (x: @unchecked) match {
+          case `businessDetailsName` =>
+            Map(
+              businessNameDetailsName -> Json.toJson(cache.getBusinessNameDetails),
+              tradingStartDetailsName -> Json.toJson(cache.getTradingStartDetails)
+            )
           case `businessRegistrationDetailsName` => Map(businessRegistrationDetailsName -> Json.toJson(cache.getBusinessRegistrationDetails))
           case `businessContactsName` => Map(businessContactsName -> Json.toJson(cache.getBusinessContacts))
           case `placeOfBusinessName` => Map(placeOfBusinessName -> Json.toJson(cache.getPlaceOfBusiness))
@@ -91,8 +93,9 @@ object CacheUtil extends Logging {
           case `productsName` => Map(productsName -> Json.toJson(cache.getProducts))
           case `suppliersName` => Map(suppliersName -> Json.toJson(cache.getSuppliers))
         }
-      }.reduce(_ ++ _) +
-        (businessTypeName -> Json.toJson(cache.getBusinessType),
+      }
+      }.reduce(_ ++ _) ++
+        Map(businessTypeName -> Json.toJson(cache.getBusinessType),
           businessCustomerDetailsName -> Json.toJson(cache.getBusinessCustomerDetails),
           applicationDeclarationName -> Json.toJson(cache.getApplicationDeclaration))
 
@@ -101,5 +104,5 @@ object CacheUtil extends Logging {
 
   }
 
-  implicit val cacheUtil = (cache: CacheMap) => new CacheUtil.CacheHelper(cache)
+  implicit val cacheUtil: CacheMap => CacheHelper = (cache: CacheMap) => new CacheUtil.CacheHelper(cache)
 }

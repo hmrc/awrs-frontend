@@ -10,7 +10,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec}
 import uk.gov.hmrc.http.HeaderNames
@@ -24,9 +24,9 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
   val SessionId = s"mock-sessionid"
-  val testResponse = Json.toJson(AwrsUsers(Nil,Nil)).toString
+  val testResponse: String = Json.toJson(AwrsUsers(Nil,Nil)).toString
 
-  implicit lazy val jsonCrypto: CryptoWithKeysFromConfig = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
+  implicit lazy val jsonCrypto: Encrypter with Decrypter = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
   implicit lazy val encryptionFormat: JsonEncryptor[JsObject] = new JsonEncryptor[JsObject]()
 
   val businessCustomerDetailsString: String = """{
@@ -126,7 +126,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
       val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
         HeaderNames.xSessionId -> s"$SessionId",
         "Csrf-Token" -> "nocheck"
-      ).get)
+      ).get())
       resp.header("Location") mustBe Some("http://localhost:9923/business-customer/awrs")
       resp.status mustBe 303
     }
@@ -139,7 +139,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
       val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
         HeaderNames.xSessionId -> s"$SessionId",
         "Csrf-Token" -> "nocheck"
-      ).get)
+      ).get())
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
     }

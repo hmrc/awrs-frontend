@@ -34,6 +34,7 @@ import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.http.HttpResponse
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.{awrs_application_too_soon_error, awrs_reapplication_confirmation}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -44,8 +45,8 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
   override val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockKeyStoreService: KeyStoreService = mock[KeyStoreService]
   val mockAWRSNotificationConnector: AWRSNotificationConnector = mock[AWRSNotificationConnector]
-  val template = app.injector.instanceOf[views.html.awrs_application_too_soon_error]
-  val templateConfirm = app.injector.instanceOf[views.html.awrs_reapplication_confirmation]
+  val template: awrs_application_too_soon_error = app.injector.instanceOf[views.html.awrs_application_too_soon_error]
+  val templateConfirm: awrs_reapplication_confirmation = app.injector.instanceOf[views.html.awrs_reapplication_confirmation]
 
   lazy val testReapplicationController: ReapplicationController = new ReapplicationController(
     mockMCC, mockAWRSNotificationConnector, mockDeEnrolService, mockKeyStoreService, testSave4LaterService,
@@ -123,14 +124,14 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
 
   }
 
-  private def showWithException(statusNotification: Option[StatusNotification])(test: Future[Result] => Any) {
+  private def showWithException(statusNotification: Option[StatusNotification])(test: Future[Result] => Any): Unit = {
     when(mockAWRSNotificationConnector.fetchNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(statusNotification))
     setAuthMocks()
     val result = testReapplicationController.show().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  def submitAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setupMockSave4LaterService()
     setupMockApiSave4LaterService()

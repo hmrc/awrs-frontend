@@ -59,7 +59,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
     authorisedAction { _ =>
       for {
         successResponse <- api9.getSubscriptionStatusFromCache
-        keyStoreResponse <- keyStoreService.fetchWithdrawalReason
+        keyStoreResponse <- keyStoreService.fetchWithdrawalReason()
       } yield {
         (successResponse.exists(_.formBundleStatus == Pending), keyStoreResponse) match {
           case (true, Some(data)) =>
@@ -75,7 +75,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
 
   def submitWithdrawalReasons: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
-      withdrawalReasonForm.bindFromRequest.fold(
+      withdrawalReasonForm.bindFromRequest().fold(
         formWithErrors => {
           Future.successful(BadRequest(templateWithdrawalReasons(formWithErrors)))
         },
@@ -96,7 +96,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
 
   def submitConfirmWithdrawal: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>
-      withdrawalConfirmation.bindFromRequest.fold(
+      withdrawalConfirmation.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(templateWithdrawalConfirmation(formWithErrors)))
         ,
@@ -110,9 +110,9 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
                 deEnrolService.deEnrolAWRS(awrsRef, businessName, businessType)
               }
               val denrolResult = (for {
-                reason <- keyStoreService.fetchWithdrawalReason
+                reason <- keyStoreService.fetchWithdrawalReason()
                 api8Response <- api8.withdrawApplication(reason, ar)
-                _ <- keyStoreService.deleteWithdrawalReason
+                _ <- keyStoreService.deleteWithdrawalReason()
                 deEnrolSuccess <- deEnrol()
               } yield (deEnrolSuccess, api8Response)).recover {
                 case _: NoSuchElementException => showErrorPageRaw
@@ -131,7 +131,7 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
                   throw DeEnrollException("call to government gateway de-enrol failed")
               }
             case _ =>
-              keyStoreService.deleteWithdrawalReason map {
+              keyStoreService.deleteWithdrawalReason() map {
                 _ => Redirect(controllers.routes.IndexController.showIndex)
               }
           }

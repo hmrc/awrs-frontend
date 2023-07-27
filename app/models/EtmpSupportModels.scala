@@ -38,7 +38,7 @@ object BusinessDetailsSupport {
 
   def evaluate(newAWBusiness: NewAWBusiness): BusinessDetailsSupport = {
     val missing: Boolean =
-      newAWBusiness.newAWBusiness match {
+      (newAWBusiness.newAWBusiness: @unchecked) match {
         case BooleanRadioEnum.YesString =>
           newAWBusiness.proposedStartDate match {
             case None => true

@@ -21,10 +21,11 @@ import controllers.BusinessRegistrationDetailsController
 import forms.BusinessRegistrationDetailsForm
 import models._
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
@@ -32,6 +33,7 @@ import services.{BusinessMatchingService, JourneyConstants, ServicesUnitTestFixt
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
+import views.html.awrs_business_registration_details
 
 import scala.concurrent.Future
 
@@ -40,9 +42,9 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
 
   val mockBusinessMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
 
-  val template = app.injector.instanceOf[views.html.awrs_business_registration_details]
+  val template: awrs_business_registration_details = app.injector.instanceOf[views.html.awrs_business_registration_details]
 
-  def testRequest(businessRegDetails: BusinessRegistrationDetails, entityType: String) =
+  def testRequest(businessRegDetails: BusinessRegistrationDetails, entityType: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegDetails)
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
@@ -103,7 +105,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       s"Display the selection of Ids for $entity" in {
         val ids = getIds(entity)
         val test: Future[Result] => Unit = result => {
-          implicit val doc = Jsoup.parse(contentAsString(result))
+          implicit val doc: Document = Jsoup.parse(contentAsString(result))
           testId(shouldExist = ids.utr)(targetFieldId = "utr")
           testId(shouldExist = ids.crn)(targetFieldId = "companyRegDetails.companyRegistrationNumber")
           testId(shouldExist = ids.nino)(targetFieldId = "NINO")
@@ -152,7 +154,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
 
   }
 
-  def editJourney(entityType: String)(test: Future[Result] => Any) {
+  def editJourney(entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)
     )
@@ -163,7 +165,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def linearJourney(entityType: String)(test: Future[Result] => Any) {
+  def linearJourney(entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType).copy(utr = testUtr),
       fetchBusinessRegistrationDetails = None
@@ -176,7 +178,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any) {
+  def eitherJourney(isLinearJourney: Boolean, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchBusinessRegistrationDetails = testBusinessRegistrationDetails(entityType)

@@ -31,6 +31,7 @@ import services.ServicesUnitTestFixture
 import utils.TestUtil.{testBusinessCustomerDetails, testBusinessDetails, testNewApplicationType}
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
 import views.Configuration.NewApplicationMode
+import views.html.awrs_trading_name
 
 import scala.concurrent.Future
 
@@ -38,7 +39,7 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
 
   trait Setup {
     val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-    val template = app.injector.instanceOf[views.html.awrs_trading_name]
+    val template: awrs_trading_name = app.injector.instanceOf[views.html.awrs_trading_name]
     val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
       override val signInUrl: String = applicationConfig.signIn
     }
@@ -105,7 +106,7 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
         setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
 
         val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
-        val document = Jsoup.parse(contentAsString(result))
+        val document: Document = Jsoup.parse(contentAsString(result))
 
         document.getElementById("back").text() must be(Messages("awrs.generic.back"))
         document.getElementById("back").attr("href") mustBe ("/alcohol-wholesale-scheme/view-section/businessDetails")

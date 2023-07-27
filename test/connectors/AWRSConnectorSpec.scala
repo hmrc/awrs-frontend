@@ -43,8 +43,11 @@ class AWRSConnectorSpec extends AwrsUnitTestTraits {
   val retrievalsWithAwrsEnrolment: StandardAuthRetrievals = StandardAuthRetrievals(TestUtil.defaultEnrolmentSet, Some(AffinityGroup.Organisation), "fakePlainTextCredID", "fakeGGCredID", Some(User))
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 
-  override def beforeEach: Unit = {
-    reset(mockWSHttp, mockAuditable, mockAccountUtils, mockAppConfig)
+  override def beforeEach(): Unit = {
+    reset(mockWSHttp)
+    reset(mockAuditable)
+    reset(mockAccountUtils)
+    reset(mockAppConfig)
 
     when(mockAppConfig.servicesConfig)
       .thenReturn(mockServicesConfig)

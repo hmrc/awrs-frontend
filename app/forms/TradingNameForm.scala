@@ -47,7 +47,7 @@ object TradingNameForm {
     Form(
       mapping(
         businessName -> (companyName_compulsory() iff ids.contains(businessName)),
-        doYouHaveTradingName -> doYouHaveTradingName_compulsory,
+        doYouHaveTradingName -> doYouHaveTradingName_compulsory(),
         tradingName -> (tradingName_compulsory iff whenDoYouHaveTradingNameIsAnsweredYes)
       )(BusinessNameDetails.apply)(BusinessNameDetails.unapply)
     )

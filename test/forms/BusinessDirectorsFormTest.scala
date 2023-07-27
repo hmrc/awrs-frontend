@@ -142,45 +142,45 @@ class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFor
 
         "Valid journeys for when director is %s must pass".format(directorType) in {
           val testDataScen1: Map[String, String] =
-            conditionDirectorIsIndividual +
-              ("firstName" -> "firstName",
+            conditionDirectorIsIndividual ++
+              (Map("firstName" -> "firstName",
                 "lastName" -> "lastName",
                 "doTheyHaveNationalInsurance" -> Yes.toString,
                 "NINO" -> testNino,
                 "otherDirectors" -> Yes.toString
-              )
+              ))
           assertFormIsValid(form, testDataScen1)
 
           val testDataScen2: Map[String, String] =
-            conditionDirectorIsIndividual +
-              ("firstName" -> "firstName",
+            conditionDirectorIsIndividual ++
+              (Map("firstName" -> "firstName",
                 "lastName" -> "lastName",
                 "doTheyHaveNationalInsurance" -> No.toString,
                 "passportNumber" -> generateFieldTestDataInThisFormat(DataFormat("1", 20)),
                 "otherDirectors" -> Yes.toString
-              )
+              ))
           assertFormIsValid(form, testDataScen2)
 
           val testDataScen3: Map[String, String] =
-            conditionDirectorIsIndividual +
-              ("firstName" -> "firstName",
+            conditionDirectorIsIndividual ++
+              (Map("firstName" -> "firstName",
                 "lastName" -> "lastName",
                 "doTheyHaveNationalInsurance" -> No.toString,
                 "nationalID" -> generateFieldTestDataInThisFormat(DataFormat("1", 20)),
                 "otherDirectors" -> No.toString
-              )
+              ))
           assertFormIsValid(form, testDataScen3)
         }
 
         "check Welsh character validations for %s".format(directorType) in {
           val data: Map[String, String] =
-            conditionDirectorIsIndividual +
-              ("firstName" -> testWelshChars,
+            conditionDirectorIsIndividual ++
+              (Map("firstName" -> testWelshChars,
                 "lastName" -> testWelshChars,
                 "doTheyHaveNationalInsurance" -> Yes.toString,
                 "NINO" -> testNino,
                 "otherDirectors" -> Yes.toString
-              )
+              ))
           assertFormIsValid(form, data)
         }
       }
@@ -255,8 +255,8 @@ class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFor
 
         "Valid journeys for when director is %s must pass".format(directorType) in {
           val testDataScen1: Map[String, String] =
-            conditionDirectorIsCompany +
-              ("companyNames.tradingName" -> "tradingName",
+            conditionDirectorIsCompany ++
+              (Map("companyNames.tradingName" -> "tradingName",
                 "companyNames.doYouHaveTradingName" -> "Yes",
                 "companyNames.businessName" -> "companyName",
                 "doYouHaveVRN" -> Yes.toString,
@@ -264,12 +264,12 @@ class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFor
                 "doYouHaveCRN" -> No.toString,
                 "doYouHaveUTR" -> No.toString,
                 "otherDirectors" -> Yes.toString
-              )
+              ))
           assertFormIsValid(form, testDataScen1)
 
           val testDataScen2: Map[String, String] =
-            conditionDirectorIsCompany +
-              ("companyNames.doYouHaveTradingName" -> "No",
+            conditionDirectorIsCompany ++
+              (Map("companyNames.doYouHaveTradingName" -> "No",
                 "companyNames.businessName" -> "companyName",
                 "doYouHaveVRN" -> No.toString,
                 "doYouHaveCRN" -> Yes.toString,
@@ -279,12 +279,12 @@ class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFor
                     DataFormat("1", 7)),
                 "doYouHaveUTR" -> No.toString,
                 "otherDirectors" -> No.toString
-              )
+              ))
           assertFormIsValid(form, testDataScen2)
 
           val testDataScen3: Map[String, String] =
-            conditionDirectorIsCompany +
-              ("companyNames.tradingName" -> "tradingName",
+            conditionDirectorIsCompany ++
+              (Map("companyNames.tradingName" -> "tradingName",
                 "companyNames.doYouHaveTradingName" -> "Yes",
                 "companyNames.businessName" -> "companyName",
                 "doYouHaveVRN" -> No.toString,
@@ -292,14 +292,14 @@ class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFor
                 "doYouHaveUTR" -> Yes.toString,
                 "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
                 "otherDirectors" -> Yes.toString
-              )
+              ))
           assertFormIsValid(form, testDataScen3)
         }
 
         "check Welsh character validations for %s".format(directorType) in {
           val data: Map[String, String] =
-            conditionDirectorIsCompany +
-              ("companyNames.tradingName" -> testWelshChars,
+            conditionDirectorIsCompany ++
+              (Map("companyNames.tradingName" -> testWelshChars,
                 "companyNames.doYouHaveTradingName" -> "Yes",
                 "companyNames.businessName" -> testWelshChars,
                 "doYouHaveVRN" -> Yes.toString,
@@ -307,7 +307,7 @@ class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFor
                 "doYouHaveCRN" -> No.toString,
                 "doYouHaveUTR" -> No.toString,
                 "otherDirectors" -> Yes.toString
-              )
+              ))
           assertFormIsValid(form, data)
         }
       }

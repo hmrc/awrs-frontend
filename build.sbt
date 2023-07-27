@@ -23,8 +23,6 @@ lazy val scoverageSettings = {
   )
 }
 
-val silencerVersion = "1.7.1"
-
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins : _*)
   .settings(playSettings ++ scoverageSettings : _*)
@@ -32,7 +30,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(scalaSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(
-    scalaVersion := "2.12.12",
+    scalaVersion := "2.13.8",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     Test / parallelExecution := false,
@@ -51,12 +49,9 @@ lazy val microservice = Project(appName, file("."))
     IntegrationTest / parallelExecution := false)
   .settings(
     resolvers += Resolver.jcenterRepo,
-    scalacOptions += "-P:silencer:pathFilters=views;routes;test/controllers/util;",
+    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s"),
+    scalacOptions += "-Wconf:cat=lint-multiarg-infix:silent",
     scalacOptions += "-feature",
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
-    ),
     TwirlKeys.templateImports ++= Seq(
       "uk.gov.hmrc.govukfrontend.views.html.components._",
       "uk.gov.hmrc.hmrcfrontend.views.html.components._",

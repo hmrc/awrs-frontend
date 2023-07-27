@@ -91,7 +91,7 @@ object AWRSEnums {
     val CompanySecretary: DirectorAndSecretaryEnum.Value = Value("Company Secretary")
     val DirectorAndSecretary: DirectorAndSecretaryEnum.Value = Value("Director and Company Secretary")
 
-    def getText(enum:DirectorAndSecretaryEnum.Value) : String = enum match {
+    def getText(`enum`:DirectorAndSecretaryEnum.Value) : String = (enum: @unchecked) match {
       case Director => "awrs.generic.status.director"
       case CompanySecretary => "awrs.generic.status.company_secretary"
       case DirectorAndSecretary => "awrs.generic.status.both"
@@ -104,7 +104,7 @@ object AWRSEnums {
     val Person: PersonOrCompanyEnum.Value = Value("person")
     val Company: PersonOrCompanyEnum.Value = Value("company")
 
-    def getText(enum:PersonOrCompanyEnum.Value) :String = enum match {
+    def getText(`enum`:PersonOrCompanyEnum.Value) :String = (enum: @unchecked) match {
       case Person => "awrs.generic.status.person"
       case Company => "awrs.generic.status.company"
     }
@@ -117,7 +117,7 @@ object AWRSEnums {
     val CorporateBody: EntityTypeEnum.Value = Value(CorporateBodyString)
     val SoleTrader: EntityTypeEnum.Value = Value(SoleTraderString)
 
-    def getText(enum:EntityTypeEnum.Value) : String = enum match {
+    def getText(`enum`:EntityTypeEnum.Value) : String = (enum: @unchecked) match {
       case Individual => "awrs.business-partner.entityType_individual"
       case CorporateBody => "awrs.business-partner.entityType_corporate_body"
       case SoleTrader => "awrs.business-partner.entityType_sole_trader"

@@ -69,19 +69,19 @@ class ResetControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def getWithAuthorisedUserSa(test: Future[Result] => Any) {
+  private def getWithAuthorisedUserSa(test: Future[Result] => Any): Unit = {
     setAuthMocks()
     val result = testResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  private def getWithAuthorisedUserCt(test: Future[Result] => Any) {
+  private def getWithAuthorisedUserCt(test: Future[Result] => Any): Unit = {
     setAuthMocks()
     val result = testResetController.resetApplication.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  private def getUpdateWithAuthorisedUserCt(test: Future[Result] => Any) {
+  private def getUpdateWithAuthorisedUserCt(test: Future[Result] => Any): Unit = {
     setAuthMocks()
     val result = testResetController.resetApplicationUpdate.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

@@ -112,7 +112,7 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
-    supplierAddressesForm.bindFromRequest.fold(
+    supplierAddressesForm.bindFromRequest().fold(
       formWithErrors =>
         fetch(authRetrievals) flatMap {
           case Some(_) => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord, countryList)))

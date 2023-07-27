@@ -139,13 +139,13 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           await(testIndexService.getStatus(emptyCachemap, x, TestUtil.defaultAuthRetrieval)).sectionModels)
         case x :: xs => testEachSectionStatusIsNotStarted(
           await(testIndexService.getStatus(emptyCachemap, x, TestUtil.defaultAuthRetrieval)).sectionModels); testForNotStarted(xs)
-        case Nil => Unit
+        case Nil => ()
       }
       @tailrec
       def testEachSectionStatusIsNotStarted(section: List[SectionModel]): Unit = section match {
         case x :: Nil => assert(x.status == SectionNotStarted)
         case x :: xs => assert(x.status == SectionNotStarted); testEachSectionStatusIsNotStarted(xs)
-        case _ => Unit
+        case _ => ()
       }
     }
 

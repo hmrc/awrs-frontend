@@ -19,6 +19,7 @@ package views
 import models.FormBundleStatus.{Approved, ApprovedWithConditions, Revoked, RevokedUnderReviewOrAppeal}
 import play.api.mvc.{AnyContent, Request}
 import utils.SessionUtil._
+import scala.language.postfixOps
 
 
 object Configuration {

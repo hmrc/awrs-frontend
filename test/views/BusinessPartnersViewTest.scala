@@ -22,6 +22,7 @@ import controllers.BusinessPartnersController
 import forms.AWRSEnums.BooleanRadioEnum
 import models._
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
@@ -33,6 +34,7 @@ import services.mocks.MockSave4LaterService
 import utils.TestConstants._
 import utils.TestUtil.testBusinessCustomerDetails
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_partner_member_details
 
 import scala.annotation.tailrec
 import scala.concurrent.Future
@@ -40,9 +42,9 @@ import scala.concurrent.Future
 class BusinessPartnersViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  val template = app.injector.instanceOf[views.html.awrs_partner_member_details]
+  val template: awrs_partner_member_details = app.injector.instanceOf[views.html.awrs_partner_member_details]
 
-  val businessPartnerDetails = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), testNino, None, None, Some("Yes"), None, None, None, None)
+  val businessPartnerDetails: Partner = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), testNino, None, None, Some("Yes"), None, None, None, None)
 
   val testBusinessPartnersController: BusinessPartnersController =
     new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
@@ -258,7 +260,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc = Jsoup.parse(contentAsString(result))
+                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(partnersName) + 1
@@ -319,7 +321,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any) {
+  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchPartnerDetails = testPartnerDetails

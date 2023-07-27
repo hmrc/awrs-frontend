@@ -110,7 +110,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
         keyStoreService.fetchAlreadyTrading flatMap {
           case Some(alreadyTrading) =>
             keyStoreService.fetchIsNewBusiness flatMap {
-              tradingDateForm(alreadyTrading, _).bindFromRequest.fold(
+              tradingDateForm(alreadyTrading, _).bindFromRequest().fold(
                 formWithErrors =>
                   Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading)))
                 ,

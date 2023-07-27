@@ -105,7 +105,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
       case NewApplicationMode =>
         implicit val viewMode: ViewApplicationType = viewApplicationType
         val businessType = request.getBusinessType
-        tradingLegislationForm.bindFromRequest.fold(
+        tradingLegislationForm.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessType))),
           newAWBusiness =>
             save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>

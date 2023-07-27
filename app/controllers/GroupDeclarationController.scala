@@ -54,7 +54,7 @@ class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
 
   def sendConfirmation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>
-      groupDeclarationForm.bindFromRequest.fold(
+      groupDeclarationForm.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
         groupDeclarationData =>
           save4LaterService.mainStore.saveGroupDeclaration(ar, groupDeclarationData) flatMap (_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex)))

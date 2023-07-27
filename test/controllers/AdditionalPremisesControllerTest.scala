@@ -42,15 +42,15 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
 
   val mockTemplate: awrs_additional_premises = app.injector.instanceOf[views.html.awrs_additional_premises]
 
-  lazy val testOneBusinessDetails = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("Yes"))
-  lazy val testTwoBusinessDetails = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("Yes"))
-  lazy val testThreeBusinessDetails = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("No"))
+  lazy val testOneBusinessDetails: AdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("Yes"))
+  lazy val testTwoBusinessDetails: AdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("Yes"))
+  lazy val testThreeBusinessDetails: AdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Some("Yes"), Some(testAddress), addAnother = Option("No"))
 
-  lazy val testAdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testBusinessPremises))
+  lazy val testAdditionalBusinessPremisesList: AdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testBusinessPremises))
 
-  lazy val testThreeAdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testOneBusinessDetails, testTwoBusinessDetails, testThreeBusinessDetails))
-  lazy val testTwoAdditionalBusinessPremisesListNoAddAnother = AdditionalBusinessPremisesList(List(testOneBusinessDetails, testThreeBusinessDetails))
-  lazy val testTwoAdditionalBusinessPremisesListYesAddAnother = AdditionalBusinessPremisesList(List(testOneBusinessDetails, testTwoBusinessDetails))
+  lazy val testThreeAdditionalBusinessPremisesList: AdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testOneBusinessDetails, testTwoBusinessDetails, testThreeBusinessDetails))
+  lazy val testTwoAdditionalBusinessPremisesListNoAddAnother: AdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testOneBusinessDetails, testThreeBusinessDetails))
+  lazy val testTwoAdditionalBusinessPremisesListYesAddAnother: AdditionalBusinessPremisesList = AdditionalBusinessPremisesList(List(testOneBusinessDetails, testTwoBusinessDetails))
 
   private def testRequest(premises: AdditionalBusinessPremises) =
     TestUtil.populateFakeRequest[AdditionalBusinessPremises](FakeRequest(), BusinessPremisesForm.businessPremisesValidationForm, premises)
@@ -181,7 +181,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = testAdditionalBusinessPremisesList,
       fetchBusinessDirectors = None,
       fetchTradingActivity = None)
@@ -190,14 +190,14 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = testAdditionalBusinessPremisesList)
     setAuthMocks()
     val result = testAdditionalPremisesController.saveAndReturn(1, isNewRecord = true).apply(SessionBuilder.updateRequestWithSession(fakeRequest.withSession((AwrsSessionKeys.sessionBusinessType, "LTD")), userId))
     test(result)
   }
 
-  private def continueWithAuthoriedUserEntityType(busType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthoriedUserEntityType(busType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     val businessType = busType
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = testAdditionalBusinessPremisesList,
       fetchBusinessDirectors = None,
@@ -214,7 +214,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def deleteWithAuthorisedUser(id: Int = 1, premises: AdditionalBusinessPremisesList = testAdditionalBusinessPremisesList)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def deleteWithAuthorisedUser(id: Int = 1, premises: AdditionalBusinessPremisesList = testAdditionalBusinessPremisesList)(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = premises)
     setAuthMocks()
     val result = testAdditionalPremisesController.actionDelete(id).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))

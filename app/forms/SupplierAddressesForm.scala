@@ -72,7 +72,7 @@ object SupplierAddressesForm extends AwrsFieldConfig {
       "supplierName" -> (supplierName_compulsory iff whenThereAreAlcoholSuppliers),
       "ukSupplier" -> (isUkSupplier_compulsory iff whenThereAreAlcoholSuppliers),
       addressPrefix -> (ukOrForeignAddressMapping(addressPrefix, addressErrorMessageArg, applicationConfig.countryCodes).toOptionalAddressMapping iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered)),
-      "vatRegistered" -> (vatRegistered_compulsory iff whenThereAreUkAlcoholSuppliers),
+      "vatRegistered" -> (vatRegistered_compulsory() iff whenThereAreUkAlcoholSuppliers),
       vatNumber -> (vatNumber_compulsory iff whenSupplierIsVatRegistered),
       "additionalSupplier" -> (additionalSupplier_compulsory iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered))
     )(Supplier.apply)(Supplier.unapply)

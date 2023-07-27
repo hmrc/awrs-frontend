@@ -5,11 +5,11 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json._
 import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{CryptoWithKeysFromConfig, Protected}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Protected}
 
 trait S4LStub {
 
-  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None)(implicit jsonCrypto: CryptoWithKeysFromConfig,
+  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None)(implicit jsonCrypto: Encrypter with Decrypter,
                                                                   encryptionFormat: JsonEncryptor[JsObject]): StubMapping = {
 
     val keyEncryptor = new JsonEncryptor[String]()

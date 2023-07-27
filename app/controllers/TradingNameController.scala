@@ -99,7 +99,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
     val businessType = request.getBusinessType
-    tradingNameForm(businessType.get, accountUtils.hasAwrs(authRetrievals.enrolments)).bindFromRequest.fold(
+    tradingNameForm(businessType.get, accountUtils.hasAwrs(authRetrievals.enrolments)).bindFromRequest().fold(
       formWithErrors =>
         for {
           businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)

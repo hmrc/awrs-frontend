@@ -105,7 +105,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
            authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
-    partnershipDetailsForm.bindFromRequest.fold(
+    partnershipDetailsForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),
       partnerData => {
         val countryCodePartnerData = partnerData.copy(partnerAddress = applicationConfig.countryCodes.getAddressWithCountryCode(partnerData.partnerAddress))

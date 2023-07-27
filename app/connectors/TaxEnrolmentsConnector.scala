@@ -70,7 +70,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
   }
 
   def processResponse(response: HttpResponse, postUrl: String,
-                      requestPayload: RequestPayload, auditMap: Map[String, String])(implicit hc: HeaderCarrier): HttpResponse = {
+                      requestPayload: RequestPayload, auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): HttpResponse = {
     response.status match {
       case OK | CREATED =>
         metrics.incrementSuccessCounter(ApiType.API4Enrolment)

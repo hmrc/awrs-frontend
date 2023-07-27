@@ -55,7 +55,7 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
 
   def callToAction(): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
-      businessNameChangeConfirmationForm.bindFromRequest.fold(
+      businessNameChangeConfirmationForm.bindFromRequest().fold(
         formWithErrors => {
           val businessType = request.getBusinessType
           Future.successful(BadRequest(template(formWithErrors, businessType)))

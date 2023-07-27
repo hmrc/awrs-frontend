@@ -29,16 +29,17 @@ import services.JourneyConstants
 import services.mocks.MockSave4LaterService
 import utils.TestUtil.testBusinessCustomerDetails
 import utils.{AwrsUnitTestTraits, TestUtil}
+import views.html.awrs_group_member
 
 import scala.concurrent.Future
 
 class GroupMembersViewTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  val template = app.injector.instanceOf[views.html.awrs_group_member]
+  val template: awrs_group_member = app.injector.instanceOf[views.html.awrs_group_member]
 
   lazy val groupMember: GroupMember = TestUtil.testGroupMember
-  lazy val testGroupMembers = GroupMembers(List(groupMember, groupMember, groupMember))
+  lazy val testGroupMembers: GroupMembers = GroupMembers(List(groupMember, groupMember, groupMember))
 
   val testGroupMemberController: GroupMemberController = new GroupMemberController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
 
@@ -133,7 +134,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any) {
+  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
       fetchGroupMemberDetails = testGroupMembers

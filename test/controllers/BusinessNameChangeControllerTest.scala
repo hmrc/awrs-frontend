@@ -28,6 +28,7 @@ import play.api.test.Helpers._
 import services.mocks.{MockIndexService, MockKeyStoreService, MockSave4LaterService}
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
+import views.html.awrs_group_representative_change_confirm
 
 import scala.concurrent.Future
 
@@ -41,9 +42,9 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
 
   val newBusinessName = "Changed"
 
-  val testBusinessNameChange = BusinessNameChangeConfirmation("Yes")
+  val testBusinessNameChange: BusinessNameChangeConfirmation = BusinessNameChangeConfirmation("Yes")
 
-  val mockTemplate = app.injector.instanceOf[views.html.awrs_group_representative_change_confirm]
+  val mockTemplate: awrs_group_representative_change_confirm = app.injector.instanceOf[views.html.awrs_group_representative_change_confirm]
 
   val testBusinessNameChangeController: BusinessNameChangeController =
     new BusinessNameChangeController(mockMCC, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
@@ -82,7 +83,7 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockKeyStoreServiceWithOnly(fetchBusinessNameChange = testBusinessNameDetails(businessName = newBusinessName))
     setupMockSave4LaterService()
     setAuthMocks()

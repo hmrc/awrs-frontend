@@ -595,8 +595,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
 
     val testDataScen1: Map[String, String] =
-      conditionEntityIsIndividual +
-        ("firstName" -> "firstName",
+      conditionEntityIsIndividual ++
+        (Map("firstName" -> "firstName",
           "lastName" -> "lastName",
           "partnerAddress.postcode" -> testPostcode,
           "partnerAddress.addressLine1" -> "addressLine1",
@@ -604,12 +604,12 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
           "doYouHaveNino" -> Yes.toString,
           "nino" -> testNino,
           "otherPartners" -> Yes.toString
-          )
+          ))
     assertFormIsValid(form, testDataScen1)
 
     val testDataScen2: Map[String, String] =
-      conditionEntityIsIndividual +
-        ("firstName" -> "firstName",
+      conditionEntityIsIndividual ++
+        Map("firstName" -> "firstName",
           "lastName" -> "lastName",
           "partnerAddress.postcode" -> testPostcode,
           "partnerAddress.addressLine1" -> "addressLine1",
@@ -626,8 +626,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
 
     val testDataScen1: Map[String, String] =
-      conditionEntityIsIndividual +
-        ("firstName" -> testWelshChars,
+      conditionEntityIsIndividual ++
+        Map("firstName" -> testWelshChars,
           "lastName" -> testWelshChars,
           "partnerAddress.postcode" -> testPostcode,
           "partnerAddress.addressLine1" -> testWelshChars,
@@ -645,8 +645,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
 
     val testDataScen1: Map[String, String] =
-      conditionEntityIsCompany +
-        (
+      conditionEntityIsCompany ++
+        Map(
           "companyNames.businessName" -> "businessName",
           "companyNames.doYouHaveTradingName" -> NoString,
           "partnerAddress.postcode" -> testPostcode,
@@ -669,8 +669,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     assertFormIsValid(form, testDataScen1)
 
     val testDataScen2: Map[String, String] =
-      conditionEntityIsCompany +
-        ("companyNames.businessName" -> "businessName",
+      conditionEntityIsCompany ++
+        Map("companyNames.businessName" -> "businessName",
           "companyNames.doYouHaveTradingName" -> YesString,
           "companyNames.tradingName" -> "Trading",
           "partnerAddress.postcode" -> testPostcode,
@@ -685,8 +685,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     assertFormIsValid(form, testDataScen2)
 
     val testDataScen3: Map[String, String] =
-      conditionEntityIsCompany +
-        ("companyNames.businessName" -> "businessName",
+      conditionEntityIsCompany ++
+        Map("companyNames.businessName" -> "businessName",
           "companyNames.doYouHaveTradingName" -> YesString,
           "companyNames.tradingName" -> "tradingName",
           "partnerAddress.postcode" -> testPostcode,
@@ -706,8 +706,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
 
     val data: Map[String, String] =
-      conditionEntityIsCompany +
-        ("companyNames.businessName" -> testWelshChars,
+      conditionEntityIsCompany ++
+        (Map("companyNames.businessName" -> testWelshChars,
           "companyNames.doYouHaveTradingName" -> YesString,
           "companyNames.tradingName" -> testWelshChars,
           "partnerAddress.postcode" -> testPostcode,
@@ -718,7 +718,7 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
           "doYouHaveUTR" -> Yes.toString,
           "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
           "otherPartners" -> No.toString
-        )
+        ))
     assertFormIsValid(form, data)
   }
 
@@ -726,8 +726,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
 
     val testDataScen1: Map[String, String] =
-      conditionEntityIsSoleTrader +
-        ("firstName" -> "firstName",
+      conditionEntityIsSoleTrader ++
+        (Map("firstName" -> "firstName",
           "lastName" -> "lastName",
           "companyNames.doYouHaveTradingName" -> YesString,
           "companyNames.tradingName" -> "tradingName",
@@ -741,12 +741,12 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
           "doYouHaveUTR" -> Yes.toString,
           "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
           "otherPartners" -> Yes.toString
-          )
+          ))
     assertFormIsValid(form, testDataScen1)
 
     val testDataScen2: Map[String, String] =
-      conditionEntityIsSoleTrader +
-        ("firstName" -> "firstName",
+      conditionEntityIsSoleTrader ++
+        (Map("firstName" -> "firstName",
           "lastName" -> "lastName",
           "companyNames.doYouHaveTradingName" -> NoString,
           "partnerAddress.postcode" -> testPostcode,
@@ -757,12 +757,12 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
           "doYouHaveUTR" -> Yes.toString,
           "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
           "otherPartners" -> Yes.toString
-          )
+          ))
     assertFormIsValid(form, testDataScen2)
 
     val testDataScen3: Map[String, String] =
-      conditionEntityIsSoleTrader +
-        ("firstName" -> "firstName",
+      conditionEntityIsSoleTrader ++
+        (Map("firstName" -> "firstName",
           "lastName" -> "lastName",
           "companyNames.doYouHaveTradingName" -> YesString,
           "companyNames.tradingName" -> "tradingName",
@@ -774,7 +774,7 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
           "doYouHaveVRN" -> No.toString,
           "doYouHaveUTR" -> No.toString,
           "otherPartners" -> No.toString
-          )
+          ))
     assertFormIsValid(form, testDataScen3)
 
   }
@@ -783,8 +783,8 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
     val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
 
     val data: Map[String, String] =
-      conditionEntityIsSoleTrader +
-        ("firstName" -> testWelshChars,
+      conditionEntityIsSoleTrader ++
+        (Map("firstName" -> testWelshChars,
           "lastName" -> testWelshChars,
           "companyNames.doYouHaveTradingName" -> YesString,
           "companyNames.tradingName" -> testWelshChars,
@@ -798,7 +798,7 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
           "doYouHaveUTR" -> Yes.toString,
           "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
           "otherPartners" -> Yes.toString
-        )
+        ))
     assertFormIsValid(form, data)
   }
 }

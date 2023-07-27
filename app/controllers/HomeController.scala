@@ -74,7 +74,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
   def businessCustomerDetails(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
       case Some(data) if data.safeId.isEmpty => Future.successful(None)
-      case Some(data) if !data.safeId.isEmpty => Future.successful(Some(data))
+      case Some(data) => Future.successful(Some(data))
       case None =>
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails].flatMap {
           case Some(data) => save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data).map(_ => Some(data))

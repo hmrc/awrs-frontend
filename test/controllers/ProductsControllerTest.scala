@@ -23,6 +23,7 @@ import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
+import views.html.awrs_products
 
 import scala.concurrent.Future
 
@@ -31,7 +32,7 @@ class ProductsControllerTest extends AwrsUnitTestTraits
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  val template = app.injector.instanceOf[views.html.awrs_products]
+  val template: awrs_products = app.injector.instanceOf[views.html.awrs_products]
 
   val testProductsController: ProductsController = new ProductsController(
     mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
@@ -57,14 +58,14 @@ class ProductsControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks()
     val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
-  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
     val result = testProductsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))

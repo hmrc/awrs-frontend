@@ -20,6 +20,8 @@ import audit.Auditable
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext
+
 // This logging utility must be used to replace any manual logging or Splunk auditing
 // This means that any Splunk audit calls will automatically be logged as DEBUG to aid local debugging but not appear in
 // the production logs. All trace and debug calls will only appear locally so must only be used for local debugging
@@ -62,7 +64,7 @@ trait LoggingUtils extends Logging {
   private def splunkToLogger(transactionName: String, detail: Map[String, String], eventType: String): String =
     s"${if (eventType.nonEmpty) eventType + "\n"}$transactionName\n$detail"
 
-  private def splunkFunction(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier): Unit = {
+  private def splunkFunction(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     logger.debug(splunkString + splunkToLogger(transactionName, detail, eventType))
     auditable.sendDataEvent(
       transactionName = transactionName,
@@ -71,7 +73,7 @@ trait LoggingUtils extends Logging {
     )
   }
 
-  def audit(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier): Unit = splunkFunction(transactionName, detail, eventType)
+  def audit(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = splunkFunction(transactionName, detail, eventType)
 
   @inline def trace(msg: String): Unit = logger.trace(msg)
   @inline def debug(msg: String): Unit = logger.debug(msg)

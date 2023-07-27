@@ -213,7 +213,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def showWithAuthorsiedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], data: Option[ApplicationDeclaration])(test: Future[Result] => Any) {
+  private def showWithAuthorsiedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], data: Option[ApplicationDeclaration])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testReviewDetails,
       fetchAll = MockSave4LaterService.defaultFetchAll,
@@ -229,7 +229,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchBusinessCustomerDetails = testReviewDetails,
       fetchAll = MockSave4LaterService.defaultFetchAll,
@@ -244,7 +244,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithAuthorisedUserSelfHeal(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUserSelfHeal(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     reset(mockAccountUtils)
     setupMockSave4LaterServiceWithOnly(
@@ -261,7 +261,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueUpdateWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueUpdateWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchAll = MockSave4LaterService.defaultFetchAll)
     setupMockKeyStoreServiceOnlySaveFunctions()
@@ -271,7 +271,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def saveWithException(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], exception: Exception)(test: Future[Result] => Any) {
+  private def saveWithException(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], exception: Exception)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchAll = createCacheMap("SOP"), fetchBusinessCustomerDetails = testReviewDetails, fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"))
     setupMockKeyStoreServiceOnlySaveFunctions()
     exception match {
@@ -289,7 +289,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def updateWithException(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], exception: Exception)(test: Future[Result] => Any) {
+  private def updateWithException(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], exception: Exception)(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchAll = createCacheMap("SOP"), fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"))
     setupMockKeyStoreServiceOnlySaveFunctions()

@@ -17,11 +17,11 @@
 package views.view_application
 
 import java.util.UUID
-
 import audit.Auditable
 import config.ApplicationConfig
 import connectors.mock.MockAuthConnector
 import controllers.BusinessDirectorsController
+
 import javax.inject.Inject
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
@@ -30,11 +30,14 @@ import org.scalatestplus.play.PlaySpec
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.twirl.api.TwirlHelperImports.twirlJavaCollectionToScala
 import services.Save4LaterService
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.AccountUtils
+import views.html.awrs_business_directors
+import scala.language.implicitConversions
 
 import scala.concurrent.Future
 
@@ -73,7 +76,7 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
     }
   }
 
-  val mockTemplateDirectors = app.injector.instanceOf[views.html.awrs_business_directors]
+  val mockTemplateDirectors: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
   val testController: TestController =
     new TestController(mockMCC, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplateDirectors){
@@ -82,14 +85,12 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
 
     implicit def conv(str: String): Option[String] = Some(str)
 
-  import scala.collection.JavaConversions._
-
   "row helper" must {
 
     case class Expectations(lines: String*)
     case class TestCase(data: Seq[Option[String]], expecations: Expectations)
 
-    def testExpectations(result: Future[Result], expectations: Expectations) {
+    def testExpectations(result: Future[Result], expectations: Expectations): Unit = {
       val document = Jsoup.parse(contentAsString(result))
       val trs = document.getElementsByTag("tr")
       val trSize = trs.size()

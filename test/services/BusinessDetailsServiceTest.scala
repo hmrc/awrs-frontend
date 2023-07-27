@@ -37,15 +37,14 @@ class BusinessDetailsServiceTest extends PlaySpec with MockitoSugar with BeforeA
   implicit val req: Request[AnyContent] = FakeRequest()
 
   val mockSave4LaterService: Save4LaterService = mock[Save4LaterService]
-  val testBusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
-  val testBusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
+  val testBusinessCustomerDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
+  val testBusinessRegistrationDetails: BusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
   val businessDetailsService = new BusinessDetailsService(testSave4LaterService)
 
   override def beforeEach(): Unit = {
-    reset(
-      mockMainStoreSave4LaterConnector,
-      mockAccountUtils,
-      mockSave4LaterService)
+    reset(mockMainStoreSave4LaterConnector)
+    reset(mockAccountUtils)
+    reset(mockSave4LaterService)
 
     super.beforeEach()
   }

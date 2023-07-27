@@ -31,6 +31,7 @@ import utils.TestConstants._
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
+import views.html.awrs_index
 
 import scala.concurrent.Future
 
@@ -42,7 +43,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     reset(mockIndexService)
   }
 
-  val template = app.injector.instanceOf[views.html.awrs_index]
+  val template: awrs_index = app.injector.instanceOf[views.html.awrs_index]
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9,
@@ -72,11 +73,11 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  lazy val returnedCachemap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(testReviewDetails)))
+  lazy val returnedCachemap: CacheMap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(testReviewDetails)))
 
-  def returnedCachemapAny(details: BusinessCustomerDetails) = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(details)))
+  def returnedCachemapAny(details: BusinessCustomerDetails): CacheMap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(details)))
 
-  lazy val indexViewModelComplete = IndexViewModel(List(
+  lazy val indexViewModelComplete: IndexViewModel = IndexViewModel(List(
     SectionModel("businessDetails", "/alcohol-wholesale-scheme/corporate-body-business-details", "awrs.index_page.business_details_text", SectionComplete),
     SectionModel("additionalPremises", "/alcohol-wholesale-scheme/additional-premises", "awrs.index_page.additional_premises_text", SectionComplete),
     SectionModel("additionalBusinessInformation", "/alcohol-wholesale-scheme/additional-information", "awrs.index_page.additional_business_information_text", SectionComplete),
@@ -84,7 +85,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     SectionModel("directorsAndCompanySecretaries", "/alcohol-wholesale-scheme/business-directors", "awrs.index_page.business_directors.index_text", SectionComplete))
   )
 
-  lazy val invalidSoleTraderCachemap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(testReviewDetails),
+  lazy val invalidSoleTraderCachemap: CacheMap = CacheMap(testUtr, Map("businessCustomerDetails" -> Json.toJson(testReviewDetails),
     "corporateBodyBusinessDetails" -> Json.toJson(testCorporateBodyBusinessDetails),
     "additionalBusinessPremises" -> Json.toJson(testAdditionalPremisesList),
     tradingActivityName -> Json.toJson(testTradingActivity()),
@@ -92,7 +93,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     "suppliers" -> Json.toJson(testSupplierAddressList)
   ))
 
-  def getWithAuthorisedUserCt(test: Future[Result] => Any) {
+  def getWithAuthorisedUserCt(test: Future[Result] => Any) : Unit ={
     setupMockKeyStoreService(subscriptionStatusType = testSubscriptionStatusTypePending)
     setupMockSave4LaterService(
       fetchBusinessCustomerDetails = testReviewDetails,
@@ -100,11 +101,11 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     )
     setupMockIndexService()
     setAuthMocks()
-    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithAuthorisedUserCtWithStatus(testSubscriptionStatusType: SubscriptionStatusType)(test: Future[Result] => Any) {
+  def getWithAuthorisedUserCtWithStatus(testSubscriptionStatusType: SubscriptionStatusType)(test: Future[Result] => Any): Unit ={
     // redirection is based on what is currently stored in the session variable AwrsController.sessionStatusType ("status")
     val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody("" -> "").withSession((AwrsSessionKeys.sessionStatusType, testSubscriptionStatusType.formBundleStatus.name))
 
@@ -116,24 +117,24 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     setupMockIndexService(showContinueButton = false)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
     setAuthMocks()
-    val result = testIndexController.showIndex.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
+    val result = testIndexController.showIndex().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
 
-  def getWithAuthorisedUserCtWithStatusPending =
+  def getWithAuthorisedUserCtWithStatusPending: (Future[Result] => Any) => Unit =
     getWithAuthorisedUserCtWithStatus(testSubscriptionStatusTypePending)(_)
 
-  def getWithAuthorisedUserCtWithStatusApproved =
+  def getWithAuthorisedUserCtWithStatusApproved: (Future[Result] => Any) => Unit =
     getWithAuthorisedUserCtWithStatus(testSubscriptionStatusTypeApproved)(_)
 
-  def getWithAuthorisedUserCtWithStatusApprovedWithConditions =
+  def getWithAuthorisedUserCtWithStatusApprovedWithConditions: (Future[Result] => Any) => Unit =
     getWithAuthorisedUserCtWithStatus(testSubscriptionStatusTypeApprovedWithConditions)(_)
 
-  def getWithAuthorisedUserCtWithStatusRejected =
+  def getWithAuthorisedUserCtWithStatusRejected: (Future[Result] => Any) => Unit =
     getWithAuthorisedUserCtWithStatus(testSubscriptionStatusTypeRejected)(_)
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSessionNoUser())
+  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
+    val result = testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 }

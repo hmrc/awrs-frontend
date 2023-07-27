@@ -2,7 +2,6 @@
 package uk.gov.hmrc.helpers.controllers
 
 import java.util.UUID
-
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, postRequestedFor, stubFor, urlEqualTo, urlMatching, verify, exactly => exactlyTimes}
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
@@ -15,7 +14,7 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.{Logger, Logging}
 import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, JsonUtil, LogCapturing}
 import uk.gov.hmrc.http.HeaderNames
@@ -31,7 +30,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
   val SessionId = s"stubbed-${UUID.randomUUID}"
 
-  implicit lazy val jsonCrypto: CryptoWithKeysFromConfig = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
+  implicit lazy val jsonCrypto: Encrypter with Decrypter = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
   implicit lazy val encryptionFormat: JsonEncryptor[JsObject] = new JsonEncryptor[JsObject]()
 
   val businessCustomerDetailsString: String = """{

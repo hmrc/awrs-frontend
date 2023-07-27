@@ -31,6 +31,8 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 import utils.TestUtil._
+import views.html.awrs_application_error
+import views.html.view_application.awrs_view_application
 
 import scala.concurrent.Future
 
@@ -40,8 +42,8 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with ServicesUnitTestFixture {
 
-  val templateError = app.injector.instanceOf[views.html.awrs_application_error]
-  val templateViewApp = app.injector.instanceOf[views.html.view_application.awrs_view_application]
+  val templateError: awrs_application_error = app.injector.instanceOf[views.html.awrs_application_error]
+  val templateViewApp: awrs_view_application = app.injector.instanceOf[views.html.view_application.awrs_view_application]
 
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
     mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
@@ -59,7 +61,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
                        products: Option[Products] = None,
                        suppliers: Option[Suppliers] = None,
                        applicationDeclaration: Option[ApplicationDeclaration] = None
-                      ) = {
+                      ): CacheMap = {
     val id = testUtr
     val cacheMap = Map[String, JsValue]() ++
       prepMap[BusinessType](businessTypeName, businessType) ++
@@ -78,7 +80,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
     CacheMap(id, cacheMap)
   }
 
-  def prepMap[T](key: String, optionParam: Option[T])(implicit format: Format[T]) =
+  def prepMap[T](key: String, optionParam: Option[T])(implicit format: Format[T]): Map[String, JsValue] =
     optionParam match {
       case Some(param) => Map[String, JsValue](key -> Json.toJson(param))
       case _ => Map[String, JsValue]()
@@ -104,7 +106,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
 
     }
 
-    def showViewApplication(previousLocation: Option[String])(test: Future[Result] => Any) {
+    def showViewApplication(previousLocation: Option[String])(test: Future[Result] => Any): Unit = {
       setupMockSave4LaterService(fetchAll = getCustomizedMap())
       setAuthMocks()
       val result = testViewApplicationController.show(printFriendly = false).apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))

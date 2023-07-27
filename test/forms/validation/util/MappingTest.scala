@@ -41,7 +41,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
   // this test expects valid form data as input
   // it fills the form then tests the fill method of the form.
   // the correctness of the fill method depends on the unbinding method
-  def performFillFormTest[T](form: Form[T], data: FormData) {
+  def performFillFormTest[T](form: Form[T], data: FormData): Unit = {
     val model = form.bind(data).get
     val form2 = form.fill(model).get
     form2 mustBe model
@@ -72,7 +72,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
 
       val alwaysIgnore: Option[FormQuery] = (_: FormData) => false
 
-      implicit val form = Form(
+      implicit val form: Form[Test] = Form(
         mapping(
           "field1" -> defaultCompulsoryMapping("field1"),
           "field1a" -> defaultCompulsoryMapping("field1a").toStringFormatter,
@@ -119,11 +119,11 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
                       field2: Option[String],
                       field3: Option[String]
                      )
-      implicit val form = Form(
+      implicit val form: Form[Test] = Form(
         mapping(
           "field1" -> optional(text),
-          "field2" -> (defaultCompulsoryMapping("field2") iff field1IsEmpty),
-          "field3" -> (defaultOptionalMapping("field3") iff field1IsEmpty)
+          "field2" -> (defaultCompulsoryMapping("field2") iff field1IsEmpty()),
+          "field3" -> (defaultOptionalMapping("field3") iff field1IsEmpty())
         )(Test.apply)(Test.unapply))
 
       "trigger validation errors" in {
@@ -168,7 +168,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
         // therefore all submappings must be configurable functions to allow customisation
         val submap = (prefix: Option[String]) => mapping(
           "field1" -> optional(text),
-          "field2" -> (defaultCompulsoryMapping(attachPrefix(prefix, "field2")) iff field1IsEmpty)
+          "field2" -> (defaultCompulsoryMapping(attachPrefix(prefix, "field2")) iff field1IsEmpty())
         )(SubTest.apply)(SubTest.unapply)
 
         implicit val form = Form(mapping(

@@ -84,7 +84,7 @@ object SubViewTemplateHelper {
     }
 
   def headingPrefix(enter: String = "awrs.generic.enter", edit: String = "awrs.generic.edit", isNewRecord: Boolean = false)(implicit viewType: ViewApplicationType): String =
-    (isEditMode, isNewRecord) match {
+    (isEditMode(), isNewRecord) match {
       case (true, false) => edit
       case (_, _) => enter
     }

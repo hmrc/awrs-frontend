@@ -24,6 +24,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
+import views.html.awrs_group_declaration
 
 import scala.concurrent.Future
 
@@ -31,7 +32,7 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  val template = app.injector.instanceOf[views.html.awrs_group_declaration]
+  val template: awrs_group_declaration = app.injector.instanceOf[views.html.awrs_group_declaration]
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val formId = "groupDeclaration"
@@ -63,14 +64,14 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
     val result = testGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
-  private def showWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+  private def showWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(
       fetchGroupDeclaration = Some(GroupDeclaration(true))
     )

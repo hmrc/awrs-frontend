@@ -113,7 +113,7 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
 
     implicit val viewMode: ViewApplicationType = viewApplicationType
 
-     businessDirectorsForm.bindFromRequest.fold(
+     businessDirectorsForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),
       businessDirectorsData =>
         saveThenRedirect[BusinessDirectors, BusinessDirector](

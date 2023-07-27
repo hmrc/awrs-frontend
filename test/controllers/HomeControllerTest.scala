@@ -57,7 +57,9 @@ class HomeControllerTest extends AwrsUnitTestTraits
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockBusinessCustomerService, mockAppConfig, mockAccountUtils)
+    reset(mockBusinessCustomerService)
+    reset(mockAppConfig)
+    reset(mockAccountUtils)
 
     when(mockAppConfig.countryCodes)
       .thenReturn(mockCountryCodes)
@@ -225,7 +227,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  private def showWithSave4LaterUserHasWrongAccount(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+  private def showWithSave4LaterUserHasWrongAccount(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("test-legal-entity"), fetchApplicationStatus = applicationStatus)
     setAuthMocks(Future.successful(
       new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
@@ -233,7 +235,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithSave4LaterAndAssistantAndNoAwrs(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+  private def showWithSave4LaterAndAssistantAndNoAwrs(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) : Unit ={
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
     setAuthMocks(Future.successful(
       new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(Assistant))))
@@ -241,7 +243,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithSave4LaterIndividualAndNoUtr(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+  private def showWithSave4LaterIndividualAndNoUtr(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
     when(mockAccountUtils.getUtr(ArgumentMatchers.any()))
       .thenThrow(new UnsupportedAffinityGroup(s"[getUtr] No UTR found and affinity group was Individual"))
@@ -251,14 +253,14 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithSave4Later(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+  private def showWithSave4Later(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
     setAuthMocks()
     val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  private def showWithSave4LaterWithoutSafeId(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any) {
+  private def showWithSave4LaterWithoutSafeId(applicationStatus: Option[ApplicationStatus] = None, callerId: Option[String] = None)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetailsWithoutSafeID("SOP"), fetchApplicationStatus = applicationStatus)
     setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
     val result = testHomeController.showOrRedirect(callerId).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -266,7 +268,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
   }
 
 
-  private def showWithKeystore(test: Future[Result] => Any) {
+  private def showWithKeystore(test: Future[Result] => Any) : Unit ={
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = None)
     when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
     setAuthMocks()
@@ -274,7 +276,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithSave4LaterAndAwrs(callerId: Option[String] = None)(test: Future[Result] => Any) {
+  private def showWithSave4LaterAndAwrs(callerId: Option[String] = None)(test: Future[Result] => Any) : Unit ={
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = None)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
@@ -282,7 +284,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithSave4LaterAndAssistantAwrs(callerId: Option[String] = None)(test: Future[Result] => Any) {
+  private def showWithSave4LaterAndAssistantAwrs(callerId: Option[String] = None)(test: Future[Result] => Any) : Unit ={
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = None)
     setAuthMocks(Future.successful(authResultDefault(Assistant)), Some(mockAccountUtils))
@@ -290,7 +292,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithKeystoreAndAwrs(test: Future[Result] => Any) {
+  private def showWithKeystoreAndAwrs(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = None)
     when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
@@ -299,7 +301,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithoutKeystore(test: Future[Result] => Any) {
+  private def showWithoutKeystore(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = None)
     when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     setAuthMocks(Future.successful(
@@ -308,7 +310,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
+  private def showWithException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus = applicationStatus)
     when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new RuntimeException("An error occurred")))
     setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq(EnrolmentIdentifier("utr", "0123456")), "activated"))), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
@@ -316,7 +318,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithJsResultExceptionAndAwrs(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
+  private def showWithJsResultExceptionAndAwrs(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) : Unit ={
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = None, fetchApplicationStatus =  applicationStatus)
     when(mockMainStoreSave4LaterConnector.fetchData4Later[ApplicationStatus](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(None))
@@ -326,7 +328,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def showWithJsResultException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any) {
+  private def showWithJsResultException(applicationStatus: Option[ApplicationStatus] = None)(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = applicationStatus)
     when(mockMainStoreSave4LaterConnector.fetchData4Later[ApplicationStatus](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new JsResultException(Nil)),Future.successful(applicationStatus))

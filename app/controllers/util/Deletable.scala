@@ -76,7 +76,7 @@ trait Deletable[C, T] extends FrontendController with AwrsController {
   def actionDelete(id: Int): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        deleteConfirmationForm.bindFromRequest.fold(
+        deleteConfirmationForm.bindFromRequest().fold(
           formWithErrors =>
             fetchEntry(ar, id) flatMap (data =>
               showDeletePage(BadRequest)(formWithErrors, id, data))
@@ -122,7 +122,7 @@ trait Deletable[C, T] extends FrontendController with AwrsController {
   def removeElement(list: List[T], id: Int): List[T] = {
     require(id > 0 && id <= list.size)
     @tailrec
-    def main(list: List[T], index: Int, out: List[T]): List[T] = list match {
+    def main(list: List[T], index: Int, out: List[T]): List[T] = (list: @unchecked) match {
       case h :: t if index != id => main(t, index + 1, out :+ h)
       case h :: t if index == id => main(t, index + 1, out)
       case Nil => out

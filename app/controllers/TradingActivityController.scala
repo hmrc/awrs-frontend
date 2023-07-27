@@ -66,7 +66,7 @@ class TradingActivityController @Inject()(val mcc: MessagesControllerComponents,
           (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
 
-    tradingActivityForm.bindFromRequest.fold(
+    tradingActivityForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
       tradingActivityData => {
 

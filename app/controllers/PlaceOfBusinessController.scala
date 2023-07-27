@@ -75,8 +75,8 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
 
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode = viewApplicationType
-    placeOfBusinessForm.bindFromRequest.fold(
+    implicit val viewMode: ViewApplicationType = viewApplicationType
+    placeOfBusinessForm.bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(template(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, formWithErrors)))
       ,
