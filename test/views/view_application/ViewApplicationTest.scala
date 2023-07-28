@@ -629,11 +629,6 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
       def toExpectation(testData: Partners): List[Row] = {
         def toList(testData: Partner, index: Int): List[Row] = {
-//          def sectionHeader = index match {
-//            case 0 => prepRow(Messages("awrs.business-partner.partner"), List(Some("")))
-//            case 1 => prepRow(Messages("awrs.business-partner.additional_partners"), List(Some("")))
-//            case _ => prepRow("", None)
-//          }
 
           def nameOrCompanyOrTradingName: List[Row] =
             testData.entityType.get.toLowerCase match {
