@@ -81,10 +81,6 @@ table.view-application tr.record-spacer td, .record-add td {
     font-weight: 500;
 }
 
-.view-application-section h2, .record-add td a {
-    position: relative;
-}
-
 a.edit-section, a.back-to-top-link {
     position: relative;
     float: right;
