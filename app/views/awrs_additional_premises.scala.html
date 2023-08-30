@@ -24,6 +24,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.ViewUtils._
+@import views.html.helper.CSPNonce
 
 @this(
 formWithCSRF: FormWithCSRF,
@@ -40,7 +41,7 @@ govukErrorSummary: GovukErrorSummary)
     }
 
     @pageScripts = {
-        <script src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
+        <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
     }
 
     @actionRoute = @{

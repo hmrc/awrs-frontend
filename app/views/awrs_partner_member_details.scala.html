@@ -27,6 +27,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import views.ViewUtils._
+@import views.html.helper.CSPNonce
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -55,7 +56,7 @@
 }
 
 @pageScripts = {
-    <script src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
+    <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
 }
 
 @actionRoute = @{
