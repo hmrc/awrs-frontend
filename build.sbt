@@ -49,9 +49,7 @@ lazy val microservice = Project(appName, file("."))
     IntegrationTest / parallelExecution := false)
   .settings(
     resolvers += Resolver.jcenterRepo,
-    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s"),
-    scalacOptions += "-Wconf:cat=lint-multiarg-infix:silent",
-    scalacOptions += "-feature",
+    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s", "-feature"),
     TwirlKeys.templateImports ++= Seq(
       "uk.gov.hmrc.govukfrontend.views.html.components._",
       "uk.gov.hmrc.hmrcfrontend.views.html.components._",
