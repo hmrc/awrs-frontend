@@ -18,6 +18,7 @@
 @import models.FormBundleStatus._
 @import play.twirl.api.Html
 @import views.html.helpers._
+@import views.html.helper.CSPNonce
 
 @this(
     awrsMain: main,
@@ -36,10 +37,18 @@
                 )
                 <h2 class="print-heading govuk-heading-s">@messages("awrs.confirmation.prompt_print_heading")</h2>
                 <div class="print-hidden govuk-body">
-                    <a id="print-confirmation" href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="print-hidden govuk-link govuk-body"
+                    <a id="print-confirmation" href="#print-confirmation" class="govuk-link govuk-body print-hidden">@messages("awrs.generic.print_confirmation")</a>&nbsp;or&nbsp;<a id="print-application" class="print-hidden govuk-link govuk-body"
                        href="@routes.ViewApplicationController.show(printFriendly = false)">
                         @messages("awrs.generic.application")
                     </a>
+
+                    <script @CSPNonce.attr>
+                       document.getElementById("print-confirmation").addEventListener("click", function(event) {
+                         event.preventDefault()
+                         window.print()
+                       });
+                    </script>
+
                 </div>
                 <hr aria-hidden="true">
                 @list
