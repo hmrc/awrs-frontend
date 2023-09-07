@@ -44,7 +44,7 @@ private object AppDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc"                  %% "bootstrap-test-play-28" % "7.21.0"            % scope,
         "com.typesafe.play"            %% "play-test"              % PlayVersion.current % scope,
-        "com.github.tomakehurst"       %  "wiremock-jre8"          % "2.35.0"            % scope,
+        "com.github.tomakehurst"       %  "wiremock-jre8"          % "2.35.1"            % scope,
         "com.fasterxml.jackson.module" %% "jackson-module-scala"   % "2.15.2"            % scope
       )
     }.test
