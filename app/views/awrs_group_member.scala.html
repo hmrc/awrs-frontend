@@ -28,6 +28,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import views.ViewUtils._
+@import views.html.helper.CSPNonce
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -45,7 +46,7 @@
 @implicitFormInstance = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 @pageScripts = {
-<script src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
+<script @CSPNonce.attr src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
 }
 
 @actionRoute = @{

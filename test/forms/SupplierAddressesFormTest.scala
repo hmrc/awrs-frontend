@@ -220,10 +220,10 @@ class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFie
       val expecations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
 
       val preCondition = Map("ukSupplier" -> "Yes")
-      fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expecations)
+      fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, expecations)
 
       val ignoreCondition = Map("alcoholSupplier" -> "No")
-      fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expecations.toIgnoreEnumFieldExpectation)
+      fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, expecations.toIgnoreEnumFieldExpectation)
     }
 
     "display the correct validation errors for vatNumber" in {
@@ -237,13 +237,13 @@ class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFie
 
       val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
 
-      fieldId assertFieldIsCompulsoryWhen(theyHaveVRN, expectations)
+      fieldId.assertFieldIsCompulsoryWhen(theyHaveVRN, expectations)
 
       val theyDoNotHaveVRN = Map("vatNumber" -> No.toString)
-      fieldId assertFieldIsIgnoredWhen(theyDoNotHaveVRN, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(theyDoNotHaveVRN, expectations.toFieldToIgnore)
 
       val ignoreCondition = Map("alcoholSupplier" -> "No")
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
     }
 
     "display the correct validation errors for supplierAddress when it is a foreign address" in {
@@ -268,10 +268,10 @@ class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFie
       val expecations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
 
       val preConditions = Set(Map("alcoholSupplier" -> "Yes", "ukSupplier" -> "Yes"), Map("alcoholSupplier" -> "Yes", "ukSupplier" -> "No"))
-      fieldId assertEnumFieldIsCompulsoryWhen(preConditions, expecations)
+      fieldId.assertEnumFieldIsCompulsoryWhen(preConditions, expecations)
 
       val ignoreCondition = Map("alcoholSupplier" -> "No")
-      fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expecations.toIgnoreEnumFieldExpectation)
+      fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, expecations.toIgnoreEnumFieldExpectation)
     }
 
 

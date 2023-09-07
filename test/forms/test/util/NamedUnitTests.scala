@@ -74,7 +74,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
   @inline def companyNamesAreValid(preCondition: Map[String, String] = Map(),
                                    ignoreCondition: Set[Map[String, String]] = Set(),
                                    idPrefix: IdPrefix = None,
-                                   isBusinessNameRequired: Boolean = true)(implicit form: Form[_]) =
+                                   isBusinessNameRequired: Boolean = true)(implicit form: Form[_]): Unit =
     IdentityVerifications.companyNamesAreValid(preCondition, ignoreCondition, idPrefix, isBusinessNameRequired)
 
   def doYouHaveNinoIsAnsweredAndValidIfTheAnswerIsYes(preCondition: Map[String, String] = Map(),
@@ -157,7 +157,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.business_directors.error.other_directors"))
 
     val expectations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
-    fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
+    fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
   }
 
   def ukAddressIsCompulsoryAndValid(preCondition: Map[String, String] = Map(),
@@ -205,17 +205,17 @@ private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConf
 
       val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
 
-      fieldId assertFieldIsCompulsoryWhen(preCondition_safe, expectations)
+      fieldId.assertFieldIsCompulsoryWhen(preCondition_safe, expectations)
       if (ignoreCondition.nonEmpty)
-        fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
     }
 
     if (lineNumber == 3 || lineNumber == 4) {
       val expectations = OptionalFieldValidationExpectations(maxLenError, formatError)
 
-      fieldId assertFieldIsOptionalWhen(preCondition_safe, expectations)
+      fieldId.assertFieldIsOptionalWhen(preCondition_safe, expectations)
       if (ignoreCondition.nonEmpty)
-        fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
     }
   }
 
@@ -263,9 +263,9 @@ private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConf
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
 
-    fieldId assertFieldIsCompulsoryWhen(preCondition_safe, expectations)
+    fieldId.assertFieldIsCompulsoryWhen(preCondition_safe, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
 
   }
 
@@ -286,9 +286,9 @@ private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConf
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
 
-    fieldId assertFieldIsCompulsoryWhen(preCondition_safe, expectations)
+    fieldId.assertFieldIsCompulsoryWhen(preCondition_safe, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
 
   }
 }
@@ -310,9 +310,9 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
 
-    fieldId assertFieldIsCompulsoryWhen(preCondition, expectations)
+    fieldId.assertFieldIsCompulsoryWhen(preCondition, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
   }
 
   def lastNameIsCompulsory(preCondition: Map[String, String],
@@ -331,9 +331,9 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
 
-    fieldId assertFieldIsCompulsoryWhen(preCondition, expectations)
+    fieldId.assertFieldIsCompulsoryWhen(preCondition, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
   }
 
 
@@ -377,9 +377,9 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
     def assertBusinessNameCompulsory(): Unit = {
       val fieldId = businessName
 
-      fieldId assertFieldIsCompulsoryWhen(preCondition, businessNameExpectations(fieldId))
+      fieldId.assertFieldIsCompulsoryWhen(preCondition, businessNameExpectations(fieldId))
       if (ignoreCondition.nonEmpty)
-        fieldId assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
     }
 
     def assertBusinessNameIsIgnored(): Unit = {
@@ -387,16 +387,16 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
       val fieldId = businessName
 
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(ignoreCondition, businessNameExpectations(fieldId).toFieldToIgnore)
     }
 
     def assertDoYouHaveTradingNameCompulsory(): Unit = {
       val fieldId = doYouHaveTradingName
 
-      fieldId assertEnumFieldIsCompulsoryWhen(preCondition, doYouHaveTradingNameExpectations(fieldId))
+      fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, doYouHaveTradingNameExpectations(fieldId))
 
       if (ignoreCondition.nonEmpty)
-        fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, doYouHaveTradingNameExpectations(fieldId).toIgnoreEnumFieldExpectation)
+        fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, doYouHaveTradingNameExpectations(fieldId).toIgnoreEnumFieldExpectation)
     }
 
 
@@ -404,10 +404,10 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
       val fieldId = tradingName
 
 
-      fieldId assertFieldIsCompulsoryWhen(preCondition ++ asnsweredYesToTradingName, tradingNameExpectations(tradingName))
+      fieldId.assertFieldIsCompulsoryWhen(preCondition ++ asnsweredYesToTradingName, tradingNameExpectations(tradingName))
 
       if (ignoreCondition.nonEmpty)
-        fieldId assertFieldIsIgnoredWhen(asnsweredYesToTradingName, tradingNameExpectations(tradingName).toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(asnsweredYesToTradingName, tradingNameExpectations(tradingName).toFieldToIgnore)
     }
 
     isBusinessNameRequired match {
@@ -431,9 +431,9 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
     val formatError = ExpectedFieldFormat(invalidFormats)
 
     val expectations = OptionalFieldValidationExpectations(maxLenError, formatError)
-    fieldId assertFieldIsOptionalWhen(preCondition, expectations)
+    fieldId.assertFieldIsOptionalWhen(preCondition, expectations)
 
-    fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+    fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
   }
 
   def tradingNameIsOptional(preCondition: Map[String, String],
@@ -446,9 +446,9 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
     val formatError = ExpectedFieldFormat(invalidFormats)
 
     val expectations = OptionalFieldValidationExpectations(maxLenError, formatError)
-    fieldId assertFieldIsOptionalWhen(preCondition, expectations)
+    fieldId.assertFieldIsOptionalWhen(preCondition, expectations)
 
-    fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+    fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
   }
 
   def companyOrTradingNameIsAnswered(preCondition: Map[String, String],
@@ -460,9 +460,9 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
     val emptyError = ExpectedFieldIsEmpty(companyNameId, FieldError("awrs.generic.error.company_trading_name"))
 
     val expectations = CrossFieldValidationExpectations(companyNameId, emptyError)
-    fieldIds assertAtLeastOneFieldMustNotBeEmptyWhen(preCondition, expectations)
+    fieldIds.assertAtLeastOneFieldMustNotBeEmptyWhen(preCondition, expectations)
 
-    fieldIds assertAtLeastOneFieldMustNotBeEmptyIsIgnoredWhen(ignoreCondition, expectations)
+    fieldIds.assertAtLeastOneFieldMustNotBeEmptyIsIgnoredWhen(ignoreCondition, expectations)
   }
 
 }
@@ -501,9 +501,9 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
       val expectations =
         CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
 
-      fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
+      fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
       if (ignoreCondition.nonEmpty)
-        fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
+        fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
     }
   }
 
@@ -523,16 +523,16 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
       val formatError = ExpectedFieldFormat(invalidFormats)
 
       val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
-      fieldId assertFieldIsCompulsoryWhen(theyHaveNINO, expectations)
+      fieldId.assertFieldIsCompulsoryWhen(theyHaveNINO, expectations)
 
       alsoTestWhenDoYouHaveNinoIsAnsweredWithNo match {
         case false =>
         case true =>
           val theyDoNotHaveNINO = generateFormTestData(preCondition, questionId, No.toString)
-          fieldId assertFieldIsIgnoredWhen(theyDoNotHaveNINO, expectations.toFieldToIgnore)
+          fieldId.assertFieldIsIgnoredWhen(theyDoNotHaveNINO, expectations.toFieldToIgnore)
 
           if (ignoreCondition.nonEmpty)
-            fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+            fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
       }
     }
   }
@@ -550,14 +550,14 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
       val formatError = ExpectedFieldFormat(invalidFormats)
 
       val expectations = OptionalFieldValidationExpectations(MaxLengthIsHandledByTheRegEx(), formatError)
-      fieldId assertFieldIsOptionalWhen(theyDoNotHaveNINO, expectations)
+      fieldId.assertFieldIsOptionalWhen(theyDoNotHaveNINO, expectations)
 
       // if they answered that they have nino then we must not validate the passport field even if it is populated
       val theyHaveNINO = generateFormTestData(preCondition, doYouHaveNinoNameString, Yes.toString)
-      fieldId assertFieldIsIgnoredWhen(theyHaveNINO, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(theyHaveNINO, expectations.toFieldToIgnore)
 
       if (ignoreCondition.nonEmpty)
-        fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
     }
   }
 
@@ -574,14 +574,14 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
       val formatError = ExpectedFieldFormat(invalidFormats)
 
       val expectations = OptionalFieldValidationExpectations(MaxLengthIsHandledByTheRegEx(), formatError)
-      fieldId assertFieldIsOptionalWhen(theyDoNotHaveNINO, expectations)
+      fieldId.assertFieldIsOptionalWhen(theyDoNotHaveNINO, expectations)
 
       // if they answered that they have nino then we must not validate the national field even if it is populated
       val theyHaveNINO = generateFormTestData(preCondition, doYouHaveNinoNameString, Yes.toString)
-      fieldId assertFieldIsIgnoredWhen(theyHaveNINO, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(theyHaveNINO, expectations.toFieldToIgnore)
 
       if (ignoreCondition.nonEmpty)
-        fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
     }
   }
 
@@ -599,14 +599,14 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
       // Although national ID will have a field error it will not have a summary error anchored to it
       val emptyError = ExpectedFieldIsEmpty("passportNumber", FieldError("awrs.business_directors.error.non_resident.passport_no_and_nationalId_empty"))
       val expectations = CrossFieldValidationExpectations("passportNumber", emptyError)
-      fieldIds assertAtLeastOneFieldMustNotBeEmptyWhen(theyDoNotHaveNINO, expectations)
+      fieldIds.assertAtLeastOneFieldMustNotBeEmptyWhen(theyDoNotHaveNINO, expectations)
 
       // if they answered that they have nino then we must not validate the either passport orn ational id field even if it is populated
       val theyHaveNINO = generateFormTestData(preCondition, doYouHaveNinoNameString, Yes.toString)
-      fieldIds assertAtLeastOneFieldMustNotBeEmptyIsIgnoredWhen(theyHaveNINO, expectations)
+      fieldIds.assertAtLeastOneFieldMustNotBeEmptyIsIgnoredWhen(theyHaveNINO, expectations)
 
       if (ignoreCondition.nonEmpty)
-        fieldIds assertAtLeastOneFieldMustNotBeEmptyIsIgnoredWhen(ignoreCondition, expectations)
+        fieldIds.assertAtLeastOneFieldMustNotBeEmptyIsIgnoredWhen(ignoreCondition, expectations)
     }
   }
 
@@ -618,9 +618,9 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_vat_reg_empty"))
 
     val expectations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
-    fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
+    fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
+      fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
   }
 
   def vrnIsValidWhenDoYouHaveVRNIsAnsweredWithYes(preCondition: Map[String, String],
@@ -638,12 +638,12 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
 
-    fieldId assertFieldIsCompulsoryWhen(theyHaveVRN, expectations)
+    fieldId.assertFieldIsCompulsoryWhen(theyHaveVRN, expectations)
 
     val theyDoNotHaveVRN = generateFormTestData(preCondition, questionId, No.toString)
-    fieldId assertFieldIsIgnoredWhen(theyDoNotHaveVRN, expectations.toFieldToIgnore)
+    fieldId.assertFieldIsIgnoredWhen(theyDoNotHaveVRN, expectations.toFieldToIgnore)
     if (ignoreCondition.nonEmpty)
-      fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+      fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
   }
 
   def doYouHaveCRNIsAnswered(preCondition: Map[String, String],
@@ -655,9 +655,9 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_company_reg_empty"))
 
     val expectations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
-    fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
+    fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
+      fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
   }
 
   def companyRegNumberIsValidWhenDoYouHaveCRNIsAnsweredWithYes(preCondition: Map[String, String],
@@ -684,15 +684,15 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
 
-    fieldId assertFieldIsCompulsoryWhen(theyHaveCRN, expectations)
+    fieldId.assertFieldIsCompulsoryWhen(theyHaveCRN, expectations)
 
     alsoTestWhenDoYouHaveCRNIsAnsweredWithNo match {
       case false =>
       case true =>
         val theyDoNotHaveCRN = preCondition + ("doYouHaveCRN" -> No.toString)
-        fieldId assertFieldIsIgnoredWhen(theyDoNotHaveCRN, expectations.toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(theyDoNotHaveCRN, expectations.toFieldToIgnore)
         if (ignoreCondition.nonEmpty)
-          fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+          fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
     }
   }
 
@@ -711,9 +711,9 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
     val expectations = CompulsoryDateValidationExpectations(emptyError, formatError)
 
-    fieldId assertDateFieldIsCompulsoryWhen(theyHaveCRN, expectations)
+    fieldId.assertDateFieldIsCompulsoryWhen(theyHaveCRN, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertDateFieldIsIgnoredWhen(ignoreCondition, expectations.toDateToIgnore)
+      fieldId.assertDateFieldIsIgnoredWhen(ignoreCondition, expectations.toDateToIgnore)
   }
 
   def doYouHaveUTRIsAnswered(preCondition: Map[String, String],
@@ -724,9 +724,9 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_utr_empty"))
 
     val expectations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
-    fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
+    fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
     if (ignoreCondition.nonEmpty)
-      fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
+      fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
   }
 
   def utrIsValidWhenDoYouHaveUTRIsAnsweredWithYes(preCondition: Map[String, String],
@@ -760,15 +760,15 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
     val expectations = CompulsoryFieldValidationExpectations(emptyError, MaxLengthIsHandledByTheRegEx(), formatError)
 
-    fieldId assertFieldIsCompulsoryWhen(theyHaveUTR, expectations)
+    fieldId.assertFieldIsCompulsoryWhen(theyHaveUTR, expectations)
 
     alsoTestWhenDoYouHaveUtrIsAnsweredWithNo match {
       case false =>
       case true =>
         val theyDoNotHaveUTR = generateFormTestData(preCondition, questionId, No.toString)
-        fieldId assertFieldIsIgnoredWhen(theyDoNotHaveUTR, expectations.toFieldToIgnore)
+        fieldId.assertFieldIsIgnoredWhen(theyDoNotHaveUTR, expectations.toFieldToIgnore)
         if (ignoreCondition.nonEmpty)
-          fieldId assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
+          fieldId.assertFieldIsIgnoredWhen(ignoreCondition, expectations.toFieldToIgnore)
     }
   }
 
@@ -788,8 +788,8 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
     val fieldIdsWithPrefix: Set[String] = idPrefix attachToAll fieldIds
 
     val expectations = CrossFieldValidationExpectations("vrn", expectedError)
-    fieldIdsWithPrefix assertAllFieldsCannotBeAnsweredWithInvalidWhen(preCondition, expectations, No.toString)
+    fieldIdsWithPrefix.assertAllFieldsCannotBeAnsweredWithInvalidWhen(preCondition, expectations, No.toString)
     if (ignoreCondition.nonEmpty)
-      fieldIdsWithPrefix assertAllFieldsCannotBeAnsweredWithInvalidIsIgnoredWhen(ignoreCondition, expectations, No.toString)
+      fieldIdsWithPrefix.assertAllFieldsCannotBeAnsweredWithInvalidIsIgnoredWhen(ignoreCondition, expectations, No.toString)
   }
 }

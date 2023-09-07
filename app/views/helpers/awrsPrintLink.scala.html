@@ -14,7 +14,18 @@
  * limitations under the License.
  *@
 
-@()(implicit messages: Messages)
+@import views.html.helper.CSPNonce
+
+@()(implicit messages: Messages, request: Request[_])
 <div class="govuk-form-group govuk-body">
-    <a id="print"  href="javascript:window.print();" class="govuk-link govuk-body print-hidden">@Messages("awrs.view_application.print")</a>
+    <a id="print"  href="#print" class="govuk-link govuk-body print-hidden">@Messages("awrs.view_application.print")</a>
+
+    <script @CSPNonce.attr>
+       document.getElementById("print").addEventListener("click", function(event) {
+         event.preventDefault()
+         window.print()
+       });
+    </script>
+
+
 </div>

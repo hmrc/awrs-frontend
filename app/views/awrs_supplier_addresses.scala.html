@@ -25,6 +25,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.ViewUtils._
+@import views.html.helper.CSPNonce
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -42,9 +43,9 @@
 
 @pageScripts = {
 
-    <script type="text/javascript" src='@routes.Assets.versioned("../assets/javascript/location-autocomplete.min.js")'></script>
-    <script src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
-    <script type="text/javascript">
+    <script @CSPNonce.attr type="text/javascript" src='@routes.Assets.versioned("../assets/javascript/location-autocomplete.min.js")'></script>
+    <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
+    <script @CSPNonce.attr type="text/javascript">
       openregisterLocationPicker({
         defaultValue: '',
         selectElement: document.getElementById('supplierAddress.addressCountry'),

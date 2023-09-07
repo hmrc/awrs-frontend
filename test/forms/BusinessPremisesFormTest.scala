@@ -121,8 +121,8 @@ class BusinessPremisesFormTest extends PlaySpec with MockitoSugar  with AwrsForm
       val preCondition: Map[String, String] = Map("additionalPremises" -> BooleanRadioEnum.Yes.toString)
       val ignoreCondition: Set[Map[String, String]] = Set(Map("additionalPremises" -> BooleanRadioEnum.No.toString))
 
-      fieldId assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
-      fieldId assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
+      fieldId.assertEnumFieldIsCompulsoryWhen(preCondition, expectations)
+      fieldId.assertEnumFieldIsIgnoredWhen(ignoreCondition, expectations.toIgnoreEnumFieldExpectation)
     }
   }
 

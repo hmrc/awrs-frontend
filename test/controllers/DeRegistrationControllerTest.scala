@@ -23,7 +23,7 @@ import connectors.mock.MockAuthConnector
 import forms.AWRSEnums
 import forms.AWRSEnums.{BooleanRadioEnum, DeRegistrationReasonEnum}
 import forms.DeRegistrationReasonForm.{deRegReasonOtherId, deRegistrationReasonId}
-import models.FormBundleStatus.{DeRegistered, Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal, Withdrawal}
+import models.FormBundleStatus.{DeRegistered, NoStatus, Pending, Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal, Withdrawal}
 import models._
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers
@@ -148,6 +148,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
               // rejected is currently auto redirected
               case Rejected | RejectedUnderReviewOrAppeal | Revoked | RevokedUnderReviewOrAppeal | Withdrawal | DeRegistered =>
                 status(result) mustBe SEE_OTHER
+              case NoStatus | Pending => status(result) mustBe NOT_FOUND
               case _ => status(result) mustBe NOT_FOUND
             }
 

@@ -24,6 +24,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.ViewUtils._
+@import views.html.helper.CSPNonce
 
 @this(
 formWithCSRF: FormWithCSRF,
@@ -34,8 +35,8 @@ govukErrorSummary: GovukErrorSummary)
 @(businessName: String)(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 @pageScripts = {
-<script src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
-<script src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
+<script @CSPNonce.attr src='@routes.Assets.versioned("javascripts/postcodeLookup.js")'></script>
+<script @CSPNonce.attr src='@routes.Assets.versioned("javascripts/dropdowns-enhancement.js")'></script>
 }
 
 @titleHeading = {@messages("awrs.wrong_account.title", businessName)}
