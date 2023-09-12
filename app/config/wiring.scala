@@ -61,8 +61,8 @@ class AwrsAPIDataShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
                                              val http: DefaultHttpClient) extends ShortLivedHttpCaching {
 
   override lazy val defaultSource: String = servicesConfig.getConfString("cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api")
-  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache")
-  override lazy val domain: String = servicesConfig.getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
+  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache-api")
+  override lazy val domain: String = servicesConfig.getConfString("cachable.short-lived-cache-api.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
 }
 
 class AwrsShortLivedCache @Inject()(awrsShortLivedCaching: AwrsShortLivedCaching,
