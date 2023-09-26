@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
-import views.Configuration.NewApplicationMode
+import views.Configuration.{ReturnedApplicationMode, NewApplicationMode}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,7 +56,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
-          case NewApplicationMode =>
+          case NewApplicationMode | ReturnedApplicationMode =>
             implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
               LinearViewMode
             } else {
@@ -79,7 +79,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
                   }
 
                   Ok(template(form, businessType, savedQ))
-                case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails())
+                case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails(false))
               }
             }
           case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))
@@ -104,7 +104,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
            authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
     businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
-      case NewApplicationMode =>
+      case NewApplicationMode | ReturnedApplicationMode =>
         implicit val viewMode: ViewApplicationType = viewApplicationType
         val businessType = request.getBusinessType
         keyStoreService.fetchAlreadyTrading flatMap {

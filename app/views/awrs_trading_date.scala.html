@@ -85,7 +85,7 @@
     title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages(headerTitleName))}",
     userLoggedIn = true) {
 
-@backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails().url)
+@backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails(true).url)
 
     @if(confirmationForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(confirmationForm, mapping = Map("tradingDate" -> "tradingDate.day")))

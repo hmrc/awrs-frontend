@@ -101,6 +101,22 @@ object ViewApplicationHelper {
     }
   }
 
+  def edit_link_sl(editUrl: String, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
+
+    if (isRecordEdit()) {
+      link(
+        Some(editUrl),
+        "Edit",
+        classAttr = "govuk-link",
+        idAttr = Some("edit-link"),
+        visuallyHidden = visuallyHidden
+      )
+    } else {
+      NoneBreakingSpace
+    }
+  }
+
+
   def delete_link(deleteUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
     if (isSectionEdit()) {

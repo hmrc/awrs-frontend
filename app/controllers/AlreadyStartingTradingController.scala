@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
-import views.Configuration.NewApplicationMode
+import views.Configuration.{ReturnedApplicationMode, NewApplicationMode}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,7 +56,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
-          case NewApplicationMode =>
+          case NewApplicationMode | ReturnedApplicationMode =>
             implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
               LinearViewMode
             } else {
@@ -81,7 +81,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
 
   def saveBusinessDetails(alreadyTrading: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
     keyStoreService.saveAlreadyTrading(alreadyTrading) map {
-      _ => Redirect(routes.TradingDateController.showBusinessDetails())
+      _ => Redirect(routes.TradingDateController.showBusinessDetails(false))
     }
   }
 
@@ -92,7 +92,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                     authRetrievals: StandardAuthRetrievals)
                    (implicit request: Request[AnyContent]): Future[Result] = {
     businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
-      case NewApplicationMode =>
+      case NewApplicationMode | ReturnedApplicationMode =>
         implicit val viewMode: ViewApplicationType = viewApplicationType
         val businessType = request.getBusinessType
         alreadyStartedTradingForm.bindFromRequest().fold(
