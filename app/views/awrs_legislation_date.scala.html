@@ -44,7 +44,13 @@
 @awrsMain(
     title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before"))}",
     userLoggedIn = true) {
-    @backLink(controllers.routes.TradingNameController.showTradingName(true).url)
+
+    @if(viewApplicationType == LinearViewMode) {
+        @backLink(controllers.routes.TradingNameController.showTradingName(true).url)    
+    } else {
+        @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
+    }
+    
 
     @if(confirmationForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmationForm))

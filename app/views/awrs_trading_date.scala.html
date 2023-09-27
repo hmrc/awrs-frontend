@@ -85,7 +85,12 @@
     title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages(headerTitleName))}",
     userLoggedIn = true) {
 
-@backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails(true).url)
+    @if(viewApplicationType == LinearViewMode) {
+        @backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails(true).url)
+    } else {
+        @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
+    }
+
 
     @if(confirmationForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(confirmationForm, mapping = Map("tradingDate" -> "tradingDate.day")))
