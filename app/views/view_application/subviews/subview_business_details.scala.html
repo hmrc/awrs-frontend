@@ -74,7 +74,7 @@
         <dd class="govuk-summary-list__value">
           @Some(businessName)
         </dd>
-        @if(showTableHeader && isGroup){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "business name"))</dd>}
+        @if(showTableHeader && isGroup){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "1", "business name"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -91,7 +91,7 @@
         <dd class="govuk-summary-list__value">
           @model.tradingName
         </dd>
-        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "trading name"))</dd>}
+        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "2", "trading name"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -100,7 +100,7 @@
         <dd class="govuk-summary-list__value">
           @Some(tradingStart.newAWBusiness)
         </dd>
-        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editTradingBeforeHref, "start before 31/3/2016"))</dd>}
+        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editTradingBeforeHref, "3", "start before 31/3/2016"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -109,7 +109,7 @@
         <dd class="govuk-summary-list__value">
           @Some(tradingStart.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy")))
         </dd>
-        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editStartDateHref, "start date"))</dd>}
+        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editStartDateHref, "4", "start date"))</dd>}
       </div>
     </dl>
 }
