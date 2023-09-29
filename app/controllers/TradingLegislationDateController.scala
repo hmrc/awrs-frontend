@@ -82,7 +82,8 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
   }
 
   def saveBusinessDetails(businessDetails: NewAWBusiness, authRetrievals: StandardAuthRetrievals)
-                         (implicit hc: HeaderCarrier): Future[Result] = {
+                         (implicit hc: HeaderCarrier, viewApplicationType: ViewApplicationType): Future[Result] = {
+ 
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap {
       case NewAWBusiness(BooleanRadioEnum.YesString, _) =>
         keyStoreService.saveAlreadyTrading(already = true) flatMap { _ =>
@@ -92,7 +93,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
         }
       case res =>
         keyStoreService.saveIsNewBusiness(isNewBusiness = true) flatMap { _ =>
-          Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails()))
+          Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(viewApplicationType == LinearViewMode)))
         }
     }
   }

@@ -127,7 +127,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
               )
             }
 
-          case _ => Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails()))
+          case _ => Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(viewMode == LinearViewMode)))
         }
       case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
     }

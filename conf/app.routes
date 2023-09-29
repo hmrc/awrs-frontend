@@ -73,6 +73,7 @@ POST        /before-2016/saveAndContinue                    controllers.TradingL
 POST        /before-2016/saveAndReturn                      controllers.TradingLegislationDateController.saveAndReturn(id: Int, isNewRecord: Boolean)
 
 GET         /already-trading                                controllers.AlreadyStartingTradingController.showBusinessDetails(isLinearMode: Boolean = true)
+GET         /already-trading/edit                           controllers.AlreadyStartingTradingController.showBusinessDetails(isLinearMode: Boolean = false)
 POST        /already-trading/saveAndContinue                controllers.AlreadyStartingTradingController.saveAndContinue
 POST        /already-trading/saveAndReturn                  controllers.AlreadyStartingTradingController.saveAndReturn(id: Int, isNewRecord: Boolean)
 
