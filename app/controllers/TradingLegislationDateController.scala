@@ -87,7 +87,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
       case NewAWBusiness(BooleanRadioEnum.YesString, _) =>
         keyStoreService.saveAlreadyTrading(already = true) flatMap { _ =>
           keyStoreService.saveIsNewBusiness(isNewBusiness = false) map { _ =>
-            Redirect(routes.TradingDateController.showBusinessDetails(true))
+            Redirect(routes.TradingDateController.showBusinessDetails(false))
           }
         }
       case res =>
