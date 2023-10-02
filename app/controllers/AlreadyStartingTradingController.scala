@@ -56,7 +56,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
-          case NewApplicationMode | ReturnedApplicationMode =>
+          case NewApplicationMode =>
             implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
               LinearViewMode
             } else {
@@ -70,7 +70,25 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                 case Some(data) =>
                   val yesNo = if (data) BooleanRadioEnum.YesString else BooleanRadioEnum.NoString
                   Ok(template(alreadyStartedTradingForm.fill(yesNo), businessType))
-                case _ => Ok(template(alreadyStartedTradingForm, businessType))
+                case res => 
+                  Ok(template(alreadyStartedTradingForm, businessType))
+              }
+            }
+          case ReturnedApplicationMode =>
+            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+              LinearViewMode
+            } else {
+              EditSectionOnlyMode
+            }
+            val businessType = request.getBusinessType
+            for {
+              alreadyTrading <- keyStoreService.fetchAlreadyTrading
+            } yield {
+              alreadyTrading match {
+                case Some(true) =>
+                  Redirect(routes.TradingDateController.showBusinessDetails(isLinearMode))
+                case res => 
+                  Ok(template(alreadyStartedTradingForm, businessType))
               }
             }
           case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))

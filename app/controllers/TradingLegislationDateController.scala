@@ -88,12 +88,14 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
       case NewAWBusiness(BooleanRadioEnum.YesString, _) =>
         keyStoreService.saveAlreadyTrading(already = true) flatMap { _ =>
           keyStoreService.saveIsNewBusiness(isNewBusiness = false) map { _ =>
-            Redirect(routes.TradingDateController.showBusinessDetails(false))
+            Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(false))
           }
         }
       case res =>
-        keyStoreService.saveIsNewBusiness(isNewBusiness = true) flatMap { _ =>
-          Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(viewApplicationType == LinearViewMode)))
+        keyStoreService.saveAlreadyTrading(already = false) flatMap { _ =>
+          keyStoreService.saveIsNewBusiness(isNewBusiness = true) map { _ =>
+            Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(viewApplicationType == LinearViewMode))
+          }
         }
     }
   }
