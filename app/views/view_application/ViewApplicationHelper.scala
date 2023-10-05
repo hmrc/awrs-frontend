@@ -108,7 +108,7 @@ object ViewApplicationHelper {
         Some(editUrl),
         "Edit",
         classAttr = "govuk-link",
-        idAttr = Some(s"edit-link-$idx"),
+        idAttr = Some(s"edit-$idx"),
         visuallyHidden = visuallyHidden
       )
     } else {
