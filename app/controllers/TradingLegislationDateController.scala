@@ -59,11 +59,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
           case NewApplicationMode | ReturnedApplicationMode =>
-            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
-              LinearViewMode
-            } else {
-              EditSectionOnlyMode
-            }
+            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
             val businessType = request.getBusinessType
             for {
               maybeAWBusiness <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
@@ -81,20 +77,31 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
     }
   }
 
-  def saveBusinessDetails(businessDetails: NewAWBusiness, authRetrievals: StandardAuthRetrievals)
+  def saveBusinessDetails(id: Int, businessDetails: NewAWBusiness, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], authRetrievals: StandardAuthRetrievals)
                          (implicit hc: HeaderCarrier, viewApplicationType: ViewApplicationType): Future[Result] = {
  
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap {
       case NewAWBusiness(BooleanRadioEnum.YesString, _) =>
         keyStoreService.saveAlreadyTrading(already = true) flatMap { _ =>
-          keyStoreService.saveIsNewBusiness(isNewBusiness = false) map { _ =>
-            Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(false))
+          keyStoreService.saveIsNewBusiness(isNewBusiness = false) flatMap { _ =>
+            viewApplicationType match {
+              case LinearViewMode =>
+                Future.successful(Redirect(routes.TradingDateController.showBusinessDetails(true)))
+              case _ =>
+                redirectRoute(Some(RedirectParam("No", id)), false)
+            }
           }
         }
-      case res =>
+      case _ =>
         keyStoreService.saveAlreadyTrading(already = false) flatMap { _ =>
-          keyStoreService.saveIsNewBusiness(isNewBusiness = true) map { _ =>
-            Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(viewApplicationType == LinearViewMode))
+          keyStoreService.saveIsNewBusiness(isNewBusiness = true) flatMap { _ =>
+            viewApplicationType match {
+              case LinearViewMode =>
+                Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(true)))
+              case _ =>
+                redirectRoute(Some(RedirectParam("No", id)), false)
+            }
+            
           }
         }
     }
@@ -106,9 +113,9 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                     isNewRecord: Boolean,
                     authRetrievals: StandardAuthRetrievals)
                    (implicit request: Request[AnyContent]): Future[Result] = {
+    implicit val viewMode: ViewApplicationType = viewApplicationType
     businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
       case NewApplicationMode | ReturnedApplicationMode =>
-        implicit val viewMode: ViewApplicationType = viewApplicationType
         val businessType = request.getBusinessType
         tradingLegislationForm.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessType))),
@@ -119,11 +126,11 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                 case _ => NewAWBusiness(newAWBusiness, None)
               }
 
-              saveBusinessDetails(awToSave, authRetrievals)
+              saveBusinessDetails(id, awToSave, redirectRoute, authRetrievals)
             }
         )
-      case res => 
-        Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
+      case _ => 
+        Future.successful(Redirect(routes.TradingNameController.showTradingName(viewMode == LinearViewMode)))
     }
   }
 

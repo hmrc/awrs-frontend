@@ -35,6 +35,7 @@ import views.Configuration.{ReturnedApplicationMode, NewApplicationMode}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
 import scala.concurrent.{ExecutionContext, Future}
+import models.NewAWBusiness
 
 class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComponents,
                                                  val save4LaterService: Save4LaterService,
@@ -54,20 +55,19 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
 
   def showBusinessDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
+      val businessType = request.getBusinessType
+      implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
           case NewApplicationMode =>
-            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
-              LinearViewMode
-            } else {
-              EditSectionOnlyMode
-            }
-            val businessType = request.getBusinessType
             for {
               alreadyTrading <- keyStoreService.fetchAlreadyTrading
+              startTradingDetails <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
             } yield {
-              alreadyTrading match {
-                case Some(data) =>
+              (startTradingDetails, alreadyTrading) match {
+                case (Some(NewAWBusiness("Yes", _)), _) =>
+                  Redirect(routes.TradingDateController.showBusinessDetails(isLinearMode))
+                case (_, Some(data)) =>
                   val yesNo = if (data) BooleanRadioEnum.YesString else BooleanRadioEnum.NoString
                   Ok(template(alreadyStartedTradingForm.fill(yesNo), businessType))
                 case res => 
@@ -75,19 +75,13 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
               }
             }
           case ReturnedApplicationMode =>
-            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
-              LinearViewMode
-            } else {
-              EditSectionOnlyMode
-            }
-            val businessType = request.getBusinessType
             for {
-              alreadyTrading <- keyStoreService.fetchAlreadyTrading
+              startTradingDetails <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
             } yield {
-              alreadyTrading match {
-                case Some(true) =>
+              startTradingDetails match {
+                case Some(NewAWBusiness("Yes", _)) =>
                   Redirect(routes.TradingDateController.showBusinessDetails(isLinearMode))
-                case res => 
+                case _ => 
                   Ok(template(alreadyStartedTradingForm, businessType))
               }
             }
@@ -109,18 +103,17 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                     isNewRecord: Boolean,
                     authRetrievals: StandardAuthRetrievals)
                    (implicit request: Request[AnyContent]): Future[Result] = {
+    implicit val viewMode: ViewApplicationType = viewApplicationType
     businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
       case NewApplicationMode | ReturnedApplicationMode =>
-        implicit val viewMode: ViewApplicationType = viewApplicationType
-        val businessType = request.getBusinessType
         alreadyStartedTradingForm.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(template(formWithErrors, businessType))),
+            Future.successful(BadRequest(template(formWithErrors, request.getBusinessType))),
           newAWBusiness => {
             saveBusinessDetails(newAWBusiness == "Yes")
           }
         )
-      case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
+      case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(viewMode == LinearViewMode)))
     }
   }
 }

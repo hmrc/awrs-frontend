@@ -57,11 +57,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
           case NewApplicationMode | ReturnedApplicationMode =>
-            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
-              LinearViewMode
-            } else {
-              EditSectionOnlyMode
-            }
+            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
             val businessType = request.getBusinessType
             for {
               savedQuestionType <- keyStoreService.fetchAlreadyTrading
@@ -79,7 +75,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
                   }
 
                   Ok(template(form, businessType, savedQ))
-                case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails(false))
+                case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails(isLinearMode))
               }
             }
           case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))

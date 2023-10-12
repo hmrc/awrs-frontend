@@ -55,11 +55,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
   def showTradingName(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
-          LinearViewMode
-        } else {
-          EditSectionOnlyMode
-        }
+        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
         val businessType = request.getBusinessType
         for {
           businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
@@ -82,10 +78,10 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
                           isNewRecord: Boolean,
                           businessDetails: BusinessNameDetails,
                           authRetrievals: StandardAuthRetrievals)
-                         (implicit hc: HeaderCarrier): Future[Result] = {
+                         (implicit hc: HeaderCarrier, viewMode: ViewApplicationType): Future[Result] = {
     save4LaterService.mainStore.saveBusinessNameDetails(authRetrievals, businessDetails) flatMap { _ =>
       businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
-        case NewApplicationMode => Future.successful(Redirect(routes.TradingLegislationDateController.showBusinessDetails(true)))
+        case NewApplicationMode => Future.successful(Redirect(routes.TradingLegislationDateController.showBusinessDetails(viewMode == LinearViewMode)))
         case _ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord)
       }
     }
