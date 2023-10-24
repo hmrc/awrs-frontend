@@ -21,22 +21,18 @@
 @(heading: String, headingId: String, href: String = "#", sectionName: Option[String] = None)(content: Html, preContent: Option[Html] = None, postContent: Option[Html] = None)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent],  messages : Messages)
 
 @headerType = {
-    @for(section <- sectionName) {
-        @viewApplicationType match {
-            case views.view_application.helpers.OneViewMode =>{
-                <div id="headerType-@if(sectionName){@section}"><h2 class="govuk-heading-l">@heading</h2></div>
-            }
-            case _ => {
-                <h1 class="govuk-heading-xl">@heading</h1>
-            }
+    @viewApplicationType match {
+        case views.view_application.helpers.OneViewMode =>{
+            <div id="headerType-@if(sectionName){@sectionName}"><h2 class="govuk-heading-l">@heading</h2></div>
+        }
+        case _ => {
+            <h1 class="govuk-heading-xl">@heading</h1>
         }
     }
 }
 
 @oneViewModeLink = {
-    @for(section <- sectionName) {
-        <div id="headerLink-@if(sectionName){@section}"><a class="govuk-link govuk-body back-to-top-link print-hidden" href="#"><span class="govuk-visually-hidden">@heading</span>@Messages("awrs.view_application.back_to_top")</a></div>
-    }
+    <div id="headerLink-@if(sectionName){@sectionName}"><a class="govuk-link govuk-body back-to-top-link print-hidden" href="#"><span class="govuk-visually-hidden">@heading</span>@Messages("awrs.view_application.back_to_top")</a></div>
 }
 
 @editLinks = {
