@@ -68,7 +68,7 @@
 @content(model: models.BusinessNameDetails, tradingStart: models.NewAWBusiness, businessName: String) = {
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.name")
         </dt>
         <dd class="govuk-summary-list__value">
@@ -77,7 +77,7 @@
         @if(showTableHeader && isGroup){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "1", "business name"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.type_of_business")
         </dt>
         <dd class="govuk-summary-list__value">
@@ -85,7 +85,7 @@
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.generic.trading")
         </dt>
         <dd class="govuk-summary-list__value">
@@ -94,7 +94,7 @@
         @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "2", "trading name"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.new_AWBusiness")
         </dt>
         <dd class="govuk-summary-list__value">
@@ -103,7 +103,7 @@
         @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editTradingBeforeHref, "3", "start before 31/3/2016"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.start_date")
         </dt>
         <dd class="govuk-summary-list__value">

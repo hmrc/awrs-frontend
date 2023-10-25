@@ -67,7 +67,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
               (startTradingDetails, alreadyTrading) match {
                 case (Some(NewAWBusiness("Yes", _)), _) =>
                   Redirect(routes.TradingDateController.showBusinessDetails(isLinearMode))
-                case (_, Some(data)) =>
+                case (Some(NewAWBusiness(_, Some(_))), Some(data)) =>
                   val yesNo = if (data) BooleanRadioEnum.YesString else BooleanRadioEnum.NoString
                   Ok(template(alreadyStartedTradingForm.fill(yesNo), businessType))
                 case res => 
@@ -91,9 +91,9 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
     }
   }
 
-  def saveBusinessDetails(alreadyTrading: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+  def saveBusinessDetails(alreadyTrading: Boolean)(implicit hc: HeaderCarrier, viewMode: ViewApplicationType): Future[Result] = {
     keyStoreService.saveAlreadyTrading(alreadyTrading) map {
-      _ => Redirect(routes.TradingDateController.showBusinessDetails(false))
+      _ => Redirect(routes.TradingDateController.showBusinessDetails(viewMode == LinearViewMode))
     }
   }
 
