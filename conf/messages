@@ -62,7 +62,7 @@ awrs.generic.VAT_registration_number= What is their VAT registration number?
 awrs.generic.UTR_number=Unique Taxpayer Reference number (UTR)
 awrs.generic.sa_UTR_number=Self Assessment Unique Taxpayer Reference number (UTR)
 awrs.generic.partnership_UTR_number=Partnership Self Assessment Unique Taxpayer Reference number (UTR)
-awrs.generic.CT_UTR_number = What is your Corporation Tax Unique Taxpayer Reference (UTR)?
+awrs.generic.CT_UTR_number = What is their Corporation Tax Unique Taxpayer Reference (UTR)?
 awrs.generic.do_you_have_NINO=Do you have a National Insurance number?
 awrs.generic.do_they_have_NINO=Do they have a National Insurance number?
 awrs.generic.do_you_have_NINO_information=Example, QQ123456C
@@ -76,7 +76,7 @@ awrs.generic.do_you_have_company_reg_information=The CRN is 8 characters and is 
 
 awrs.generic.iDoNotKnowMyCRN_question=I do not know my CRN or date of incorporation
 awrs.generic.iDoNotKnowMyCRN_text=<span class="form-hint">Your company registration number is made of 8 characters. If your company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on your certificate of incorporation, or any official company documentation you receive from Companies House.{0}If you are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.</span>
-awrs.generic.iDoNotKnowTheirCRN_question=I do not know their CRN or date of incorporation
+awrs.generic.iDoNotKnowTheirCRN_question=I do not know the CRN or date of incorporation
 
 #awrs.generic.iDoNotKnowTheirCRN_text=Their company registration number is made up of 8 characters. If their company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on their certificate of incorporation, or any official company documentation they receive from Companies House.{0}If they are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.
 awrs.generic.iDoNotKnowTheirCRN_text=The CRN is 8 characters and is made up of one of these combinations:{0}{1}8 numbers{2}7 numbers plus either one letter or a zero{2}6 numbers and 2 letters{2}5 numbers and 3 letters{3}The CRN is on the certificate of incorporation and any documents from Companies House.{4}If a charity or unincorporated association does not have a CRN, or date of incorporation, they can be left blank.
