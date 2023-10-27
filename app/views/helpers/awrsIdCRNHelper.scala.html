@@ -43,7 +43,7 @@ businessEntity : Option[String] = ""
 
 @iDoNotKnowCRNHintAnswer = @{
     youOrThey match {
-        case "they" =>  Html(messages("awrs.generic.iDoNotKnowTheirCRN_text","<br><br>"))
+        case "they" =>  Html(messages("awrs.generic.iDoNotKnowTheirCRN_text","<br>", "<ul><li>", "<li>", "</ul>", "<br><br>"))
         case _ => Html(messages("awrs.generic.iDoNotKnowMyCRN_text","<br><br>"))
     }
 }
@@ -94,7 +94,7 @@ businessEntity : Option[String] = ""
                 classes = "govuk-label--s"
             ),
             hint = Some(Hint(
-                content = Text(messages("awrs.generic.do_you_have_company_reg_information")),
+content = HtmlContent(messages("awrs.generic.do_you_have_company_reg_information", "<br>", "<ul><li>", "<li>", "</ul>")),
                 id = Some("company_reg-information"))),
             attributes = Map("maxlength" -> frontendDefaultLen),
             classes = "govuk-input--width-20"

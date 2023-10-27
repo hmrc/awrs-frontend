@@ -36,7 +36,7 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
 @iDoNotKnowUTRHintAnswer = @{
     youOrThey match {
         case "they" =>  Html(Messages("awrs.generic.iDoNotKnowTheirUTR_text","<br><br>"))
-        case _ => Html(Messages("awrs.generic.iDoNotKnowMyUTR_text","<br><br>"))
+        case _ => Html(Messages("awrs.generic.iDoNotKnowMyUTR_text","<br>"))
     }
 }
 
