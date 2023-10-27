@@ -1020,6 +1020,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     doc.getElementById(productsId) != null mustBe products
     doc.getElementById(suppliersId) != null mustBe suppliers
     doc.getElementById(applicationDeclarationId) != null mustBe applicationDeclaration
+    doc.getElementById(applicationDeclarationId) != null mustBe applicationDeclaration
   }
 
   case class Row(heading: String, content: List[String])
