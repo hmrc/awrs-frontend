@@ -86,8 +86,8 @@
 }
 
 @businessNameSection = @{
-    (isEditMode, accountUtils.hasAwrs(enrolments), businessType.getOrElse("")) match {
-        case (true, true, "LLP_GRP" | "LTD_GRP") => businessNameSectionContent
+    (isEditMode, businessType.getOrElse("")) match {
+        case (true, "LLP_GRP" | "LTD_GRP") => businessNameSectionContent
         case _ =>
     }
 }

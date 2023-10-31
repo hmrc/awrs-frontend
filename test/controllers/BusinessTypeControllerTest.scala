@@ -194,9 +194,9 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
 
   private def api5User(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(methodToTest: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     setupMockSave4LaterService(fetchBusinessCustomerDetails = Future.successful(Some(testBusinessCustomer)))
     setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = Future.successful(Some(testSubscriptionTypeFrontEnd)))
-    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
     val result = methodToTest.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))

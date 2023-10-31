@@ -24,28 +24,37 @@
 @(headingKey: String,
   someModel: BusinessDetailSummaryModel,
   someBusinessName: Option[String],
-  showTableHeader: Boolean = true
+  isGroup: Boolean = false,
+  showTableHeader: Boolean = true,
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages)
 
 @heading = @{messages(headingKey)}
 
 @wrapperId = @{
-    SubviewIds.businessDetailsId
+  SubviewIds.businessDetailsId
 }
 
-@href = @{
-    controllers.routes.TradingNameController.showTradingName(false).url
+@editBusinessTradingNameHref = @{
+  controllers.routes.TradingNameController.showTradingName(false).url
+}
+
+@editTradingBeforeHref = @{
+  controllers.routes.TradingLegislationDateController.showBusinessDetails(false).url
+}
+
+@editStartDateHref = @{
+  controllers.routes.AlreadyStartingTradingController.showBusinessDetails(false).url
 }
 
 @businessTypeValue = @{
-    request.getBusinessType match {
-        case Some("Partnership") => messages("awrs.business_details.business_partnership")
-        case Some("LP") => messages("awrs.business_details.limited_partnership_body")
-        case Some("LLP" | "LLP_GRP") => messages("awrs.business_details.limited_liability_partnership_body")
-        case Some("LTD" | "LTD_GRP") => messages("awrs.business_details.corporate_body")
-        case Some("SOP") => messages("awrs.business_details.sole_trader")
-        case _ => messages("awrs.business_details.unknown_body")
-    }
+  request.getBusinessType match {
+      case Some("Partnership") => messages("awrs.business_details.business_partnership")
+      case Some("LP") => messages("awrs.business_details.limited_partnership_body")
+      case Some("LLP" | "LLP_GRP") => messages("awrs.business_details.limited_liability_partnership_body")
+      case Some("LTD" | "LTD_GRP") => messages("awrs.business_details.corporate_body")
+      case Some("SOP") => messages("awrs.business_details.sole_trader")
+      case _ => messages("awrs.business_details.unknown_body")
+  }
 }
 
 @headerTitleName(pastStart: Boolean) = @{
@@ -57,22 +66,18 @@
 }
 
 @content(model: models.BusinessNameDetails, tradingStart: models.NewAWBusiness, businessName: String) = {
-
-    @if(showTableHeader) {
-        <p class="govuk-body text-align-right">@Html(edit_link_s(href, s"$heading"))</p>
-    }
-
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.name")
         </dt>
         <dd class="govuk-summary-list__value">
           @Some(businessName)
         </dd>
+        @if(showTableHeader && isGroup){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "1", "business name"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.type_of_business")
         </dt>
         <dd class="govuk-summary-list__value">
@@ -80,28 +85,31 @@
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.generic.trading")
         </dt>
         <dd class="govuk-summary-list__value">
           @model.tradingName
         </dd>
+        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editBusinessTradingNameHref, "2", "trading name"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.new_AWBusiness")
         </dt>
         <dd class="govuk-summary-list__value">
           @Some(tradingStart.newAWBusiness)
         </dd>
+        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editTradingBeforeHref, "3", "start before 31/3/2016"))</dd>}
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
+        <dt class="govuk-summary-list__key govuk-!-width-one-third">
           @messages("awrs.business_details.start_date")
         </dt>
         <dd class="govuk-summary-list__value">
           @Some(tradingStart.proposedStartDate.fold("")(x => x.toString("dd MMMM yyyy")))
         </dd>
+        @if(showTableHeader){<dd class="govuk-summary-list__actions">@Html(edit_link_sl(editStartDateHref, "4", "start date"))</dd>}
       </div>
     </dl>
 }
