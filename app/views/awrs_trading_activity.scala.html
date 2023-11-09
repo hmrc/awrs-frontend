@@ -56,6 +56,30 @@
     }
 }
 
+@YesImport = {
+    @messages("awrs.generic.yes") <span class="govuk-visually-hidden">@messages("awrs.import.yes.hiddenContent")</span>
+}
+
+@NoImport = {
+    @messages("awrs.generic.no") <span class="govuk-visually-hidden">@messages("awrs.import.no.hiddenContent")</span>
+}
+
+@YesExport = {
+    @messages("awrs.generic.yes") <span class="govuk-visually-hidden">@messages("awrs.export.yes.hiddenContent")</span>
+}
+
+@NoExport = {
+    @messages("awrs.generic.no") <span class="govuk-visually-hidden">@messages("awrs.export.no.hiddenContent")</span>
+}
+
+@YesThirdParty = {
+    @messages("awrs.generic.yes") <span class="govuk-visually-hidden">@messages("awrs.thirdParty.yes.hiddenContent")</span>
+}
+
+@NoThirdParty = {
+    @messages("awrs.generic.no") <span class="govuk-visually-hidden">@messages("awrs.thirdParty.no.hiddenContent")</span>
+}
+
 @pageHeading = @{
     messages("awrs.additional_information.trading_activity.heading", messages(headingPrefix(enter = "awrs.generic.tell_us_about")))
 }
@@ -210,11 +234,11 @@
                         )),
                         items = Seq(
                             RadioItem(
-                                content = Text(Messages("awrs.generic.yes")),
+                                content =  HtmlContent(YesImport),
                                 value = Some(Messages("awrs.generic.yes"))
                             ),
                             RadioItem(
-                                content = Text(Messages("awrs.generic.no")),
+                                content =  HtmlContent(NoImport),
                                 value = Some(Messages("awrs.generic.no"))
                             )
                         )
@@ -231,12 +255,12 @@
                         )),
                         items = Seq(
                             RadioItem(
-                                content = Text(Messages("awrs.generic.yes")),
+                                content =  HtmlContent(YesExport),
                                 value = Some(Messages("awrs.generic.yes")),
                                 conditionalHtml = Some(conditionalHtmlExport)
                             ),
                             RadioItem(
-                                content = Text(Messages("awrs.generic.no")),
+                                content =  HtmlContent(NoExport),
                                 value = Some(Messages("awrs.generic.no"))
                             )
                         )
@@ -256,11 +280,11 @@
                         )),
                         items = Seq(
                             RadioItem(
-                                content = Text(Messages("awrs.generic.yes")),
+                                content =  HtmlContent(YesThirdParty),
                                 value = Some(Messages("awrs.generic.yes"))
                             ),
                             RadioItem(
-                                content = Text(Messages("awrs.generic.no")),
+                                content =  HtmlContent(NoThirdParty),
                                 value = Some(Messages("awrs.generic.no"))
                             )
                         )
