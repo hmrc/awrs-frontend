@@ -70,7 +70,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                 case _ => Ok(template(tradingLegislationForm, businessType))
               }
             }
-          case _ => 
+          case _ =>
             Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))
         }
       }
@@ -79,7 +79,6 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
 
   def saveBusinessDetails(id: Int, businessDetails: NewAWBusiness, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], authRetrievals: StandardAuthRetrievals)
                          (implicit hc: HeaderCarrier, viewApplicationType: ViewApplicationType): Future[Result] = {
- 
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap {
       case NewAWBusiness(BooleanRadioEnum.YesString, _) =>
         keyStoreService.saveAlreadyTrading(already = true) flatMap { _ =>
@@ -101,7 +100,6 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
               case _ =>
                 redirectRoute(Some(RedirectParam("No", id)), false)
             }
-            
           }
         }
     }
@@ -129,7 +127,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
               saveBusinessDetails(id, awToSave, redirectRoute, authRetrievals)
             }
         )
-      case _ => 
+      case _ =>
         Future.successful(Redirect(routes.TradingNameController.showTradingName(viewMode == LinearViewMode)))
     }
   }
