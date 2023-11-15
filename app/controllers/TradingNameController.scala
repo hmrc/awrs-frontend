@@ -81,7 +81,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
                          (implicit hc: HeaderCarrier, viewMode: ViewApplicationType): Future[Result] = {
     save4LaterService.mainStore.saveBusinessNameDetails(authRetrievals, businessDetails) flatMap { _ =>
       businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
-        case NewApplicationMode => 
+        case NewApplicationMode =>
             viewMode match {
               case LinearViewMode =>
                 Future.successful(Redirect(routes.TradingLegislationDateController.showBusinessDetails(viewMode == LinearViewMode)))
