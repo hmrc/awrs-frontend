@@ -82,6 +82,14 @@
     )
 }
 
+@OtherPlaces = {
+    @messages("awrs.additional_information.other") <span class="govuk-visually-hidden">@messages("awrs.additional_information.other_hidden_places")</span>
+}
+
+@OtherProducts = {
+@messages("awrs.additional_information.other") <span class="govuk-visually-hidden">@messages("awrs.additional_information.other_hidden_products")</span>
+}
+
 @awrsMain(
     title = s"${errorPrefix(productsForm)} ${messages("awrs.generic.tab.title", pageHeading)}",
     userLoggedIn = true){
@@ -156,7 +164,7 @@
                         value = "06"
                     ),
                      CheckboxItem(
-                        content = Text(Messages("awrs.additional_information.other")),
+                        content = HtmlContent(OtherPlaces),
                         value = "99",
                         conditionalHtml = Some(conditionalHtmlOtherMainCustomer),
                     )
@@ -196,7 +204,7 @@
                         value = "02"
                     ),
                      CheckboxItem(
-                        content = Text(Messages("awrs.additional_information.other")),
+                        content = HtmlContent(OtherProducts),
                         value = "99",
                         conditionalHtml = Some(conditionalHtmlOtherProductType),
                     )
