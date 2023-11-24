@@ -88,14 +88,12 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
           }
         }
       case _ =>
-        keyStoreService.saveAlreadyTrading(already = false) flatMap { _ =>
-          keyStoreService.saveIsNewBusiness(isNewBusiness = true) flatMap { _ =>
-            viewApplicationType match {
-              case LinearViewMode =>
-                Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(true)))
-              case _ =>
-                redirectRoute(Some(RedirectParam("No", id)), false)
-            }
+        keyStoreService.saveIsNewBusiness(isNewBusiness = true) flatMap { _ =>
+          viewApplicationType match {
+            case LinearViewMode =>
+              Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(true)))
+            case _ =>
+              redirectRoute(Some(RedirectParam("No", id)), false)
           }
         }
     }

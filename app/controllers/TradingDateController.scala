@@ -61,7 +61,13 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
             savedQuestionType <- keyStoreService.fetchAlreadyTrading
             maybeAWBusiness <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
           } yield {
-            (maybeAWBusiness, savedQuestionType) match {
+            // Already trading is either what is returned by fetchAlreadyTrading (if not None) or NewAWBusiness.alreadyTrading
+            val alreadyTrading: Option[Boolean] = (savedQuestionType, maybeAWBusiness) match {
+              case (None, Some(awb)) => awb.alreadyTrading
+              case (Some(at), _) => Some(at)
+              case (_, _) => None
+            }
+            (maybeAWBusiness, alreadyTrading) match {
               case (Some(nab@NewAWBusiness(_, date)), Some(savedQ)) =>
                 val form = date match {
                   case Some(dt) => {
