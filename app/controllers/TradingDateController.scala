@@ -60,24 +60,11 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
           for {
             savedQuestionType <- keyStoreService.fetchAlreadyTrading
             maybeAWBusiness <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
+            tradingState <- updateTradingStateInDatabaseIfNeeded(savedQuestionType, maybeAWBusiness)
           } yield {
-            // Already trading is either what is returned by fetchAlreadyTrading (if not None) or NewAWBusiness.alreadyTrading
-            val alreadyTrading: Option[Boolean] = (savedQuestionType, maybeAWBusiness) match {
-              case (None, Some(awb)) => awb.alreadyTrading
-              case (Some(at), _) => Some(at)
-              case (_, _) => None
-            }
-            (maybeAWBusiness, alreadyTrading) match {
+            (maybeAWBusiness, tradingState) match {
               case (Some(nab@NewAWBusiness(_, date)), Some(savedQ)) =>
-                val form = date match {
-                  case Some(dt) => {
-                    tradingDateForm(savedQ, Some(nab.isNewAWBusiness)).fill(dt)
-                  }
-                  case None => {
-                    tradingDateForm(savedQ, Some(nab.isNewAWBusiness))
-                  }
-                }
-
+                val form = date.fold(tradingDateForm(savedQ, Some(nab.isNewAWBusiness)))(dt => tradingDateForm(savedQ, Some(nab.isNewAWBusiness)).fill(dt))
                 Ok(template(form, businessType, savedQ))
               case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails(isLinearMode))
             }
@@ -86,6 +73,13 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
       }
     }
   }
+
+  private def updateTradingStateInDatabaseIfNeeded(databaseTradingState: Option[Boolean], newAwBusiness: Option[NewAWBusiness])
+                                                  (implicit hc: HeaderCarrier): Future[Option[Boolean]] =
+    (databaseTradingState, newAwBusiness) match {
+      case (None, Some(NewAWBusiness("Yes", _))) => keyStoreService.saveAlreadyTrading(true).map(_ => Some(true))
+      case _ => Future.successful(databaseTradingState) 
+    }
 
   def saveBusinessDetails(id: Int,
                           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],

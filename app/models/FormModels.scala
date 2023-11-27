@@ -116,12 +116,6 @@ case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleD
     case _                          => NewAWBusiness(BooleanRadioEnum.YesString, proposedStartDate)
   }
 
-  // Either unknown (None return) or Some(true) if started before 2016 date
-  def alreadyTrading: Option[Boolean] = newAWBusiness match {
-    case BooleanRadioEnum.YesString => Some(true)
-    case _ => None
-  }
-
   def isNewAWBusiness: Boolean = (newAWBusiness : @unchecked) match {
     case BooleanRadioEnum.YesString => false
     case BooleanRadioEnum.NoString => true
