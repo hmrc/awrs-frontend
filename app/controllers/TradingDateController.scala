@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
-
+import forms.AWRSEnums.BooleanRadioEnum
 import scala.concurrent.{ExecutionContext, Future}
 
 class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
@@ -64,8 +64,8 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
           } yield {
             (maybeAWBusiness, tradingState) match {
               case (Some(nab@NewAWBusiness(_, date)), Some(savedQ)) =>
-                val form = date.fold(tradingDateForm(savedQ, Some(nab.isNewAWBusiness)))(dt => tradingDateForm(savedQ, Some(nab.isNewAWBusiness)).fill(dt))
-                Ok(template(form, businessType, savedQ))
+                val form = tradingDateForm(savedQ, Some(nab.isNewAWBusiness))
+                Ok(template(date.fold(form)(dt => form.fill(dt)), businessType, savedQ))
               case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails(isLinearMode))
             }
           }
@@ -77,7 +77,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
   private def updateTradingStateInDatabaseIfNeeded(databaseTradingState: Option[Boolean], newAwBusiness: Option[NewAWBusiness])
                                                   (implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     (databaseTradingState, newAwBusiness) match {
-      case (None, Some(NewAWBusiness("Yes", _))) => keyStoreService.saveAlreadyTrading(true).map(_ => Some(true))
+      case (None, Some(NewAWBusiness(BooleanRadioEnum.YesString, _))) => keyStoreService.saveAlreadyTrading(true).map(_ => Some(true))
       case _ => Future.successful(databaseTradingState) 
     }
 
