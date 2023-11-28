@@ -101,21 +101,17 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
       val businessType = request.getBusinessType
       keyStoreService.fetchAlreadyTrading flatMap {
         case Some(alreadyTrading) =>
-          keyStoreService.fetchIsNewBusiness flatMap {
-            tradingDateForm(alreadyTrading, _).bindFromRequest().fold(
-              formWithErrors =>
-                Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading)))
-              ,
-              formData =>
-                save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
-                  val awToSave = fetchedAW match {
-                    case Some(NewAWBusiness(newAWBusiness, _)) => NewAWBusiness(newAWBusiness, Some(formData))
-                    case _ => throw new RuntimeException("Missing already started trading answer")
-                  }
-
-                  saveBusinessDetails(id, redirectRoute, isNewRecord, awToSave, authRetrievals)
+          save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
+            tradingDateForm(alreadyTrading, fetchedAW.map(_.isNewAWBusiness)).bindFromRequest().fold(
+              formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading))),
+              formData => {
+                val awToSave = fetchedAW match {
+                  case Some(NewAWBusiness(newAWBusiness, _)) => NewAWBusiness(newAWBusiness, Some(formData))
+                  case _ => throw new RuntimeException("Missing already started trading answer")
                 }
 
+                saveBusinessDetails(id, redirectRoute, isNewRecord, awToSave, authRetrievals)
+              }
             )
           }
 

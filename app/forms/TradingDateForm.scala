@@ -124,7 +124,6 @@ object TradingDateForm {
 
   def tradingDateForm(past: Boolean,
                       newBusiness: Option[Boolean]): Form[TupleDate] = {
-
     val awMapping = if (newBusiness.getOrElse(false)) {
       didYouStartDate_compulsoryNewBusiness
     } else {
