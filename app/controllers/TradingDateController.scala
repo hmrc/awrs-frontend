@@ -31,9 +31,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
-import views.Configuration.{ReturnedApplicationMode, NewApplicationMode}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
-
+import forms.AWRSEnums.BooleanRadioEnum
 import scala.concurrent.{ExecutionContext, Future}
 
 class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
@@ -55,34 +54,32 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
   def showBusinessDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
-          case NewApplicationMode | ReturnedApplicationMode =>
-            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
-            val businessType = request.getBusinessType
-            for {
-              savedQuestionType <- keyStoreService.fetchAlreadyTrading
-              maybeAWBusiness <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
-            } yield {
-              (maybeAWBusiness, savedQuestionType) match {
-                case (Some(nab@NewAWBusiness(_, date)), Some(savedQ)) =>
-                  val form = date match {
-                    case Some(dt) => {
-                      tradingDateForm(savedQ, Some(nab.isNewAWBusiness)).fill(dt)
-                    }
-                    case None => {
-                      tradingDateForm(savedQ, Some(nab.isNewAWBusiness))
-                    }
-                  }
-
-                  Ok(template(form, businessType, savedQ))
-                case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails(isLinearMode))
-              }
+        businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {_ =>
+          implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
+          val businessType = request.getBusinessType
+          for {
+            savedQuestionType <- keyStoreService.fetchAlreadyTrading
+            maybeAWBusiness <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
+            tradingState <- updateTradingStateInDatabaseIfNeeded(savedQuestionType, maybeAWBusiness)
+          } yield {
+            (maybeAWBusiness, tradingState) match {
+              case (Some(nab@NewAWBusiness(_, date)), Some(savedQ)) =>
+                val form = tradingDateForm(savedQ, Some(nab.isNewAWBusiness))
+                Ok(template(date.fold(form)(dt => form.fill(dt)), businessType, savedQ))
+              case _ => Redirect(routes.TradingLegislationDateController.showBusinessDetails(isLinearMode))
             }
-          case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))
+          }
         }
       }
     }
   }
+
+  private def updateTradingStateInDatabaseIfNeeded(databaseTradingState: Option[Boolean], newAwBusiness: Option[NewAWBusiness])
+                                                  (implicit hc: HeaderCarrier): Future[Option[Boolean]] =
+    (databaseTradingState, newAwBusiness) match {
+      case (None, Some(NewAWBusiness(BooleanRadioEnum.YesString, _))) => keyStoreService.saveAlreadyTrading(true).map(_ => Some(true))
+      case _ => Future.successful(databaseTradingState) 
+    }
 
   def saveBusinessDetails(id: Int,
                           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
@@ -99,33 +96,27 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
            isNewRecord: Boolean,
            authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
-      case NewApplicationMode | ReturnedApplicationMode =>
-        implicit val viewMode: ViewApplicationType = viewApplicationType
-        val businessType = request.getBusinessType
-        keyStoreService.fetchAlreadyTrading flatMap {
-          case Some(alreadyTrading) =>
-            keyStoreService.fetchIsNewBusiness flatMap {
-              tradingDateForm(alreadyTrading, _).bindFromRequest().fold(
-                formWithErrors =>
-                  Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading)))
-                ,
-                formData =>
-                  save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
-                    val awToSave = fetchedAW match {
-                      case Some(NewAWBusiness(newAWBusiness, _)) => NewAWBusiness(newAWBusiness, Some(formData))
-                      case _ => throw new RuntimeException("Missing already started trading answer")
-                    }
+    businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {_ =>
+      implicit val viewMode: ViewApplicationType = viewApplicationType
+      val businessType = request.getBusinessType
+      keyStoreService.fetchAlreadyTrading flatMap {
+        case Some(alreadyTrading) =>
+          save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap { fetchedAW =>
+            tradingDateForm(alreadyTrading, fetchedAW.map(_.isNewAWBusiness)).bindFromRequest().fold(
+              formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessType, alreadyTrading))),
+              formData => {
+                val awToSave = fetchedAW match {
+                  case Some(NewAWBusiness(newAWBusiness, _)) => NewAWBusiness(newAWBusiness, Some(formData))
+                  case _ => throw new RuntimeException("Missing already started trading answer")
+                }
 
-                    saveBusinessDetails(id, redirectRoute, isNewRecord, awToSave, authRetrievals)
-                  }
+                saveBusinessDetails(id, redirectRoute, isNewRecord, awToSave, authRetrievals)
+              }
+            )
+          }
 
-              )
-            }
-
-          case _ => Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(viewMode == LinearViewMode)))
-        }
-      case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
+        case _ => Future.successful(Redirect(routes.AlreadyStartingTradingController.showBusinessDetails(viewMode == LinearViewMode)))
+      }
     }
   }
 }

@@ -90,7 +90,32 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
 
   "save" must {
     "save the trading date" when {
-      "provided with a date for the past" in {
+      "provided with a date for the past before 31 March 2016" in {
+        val businessType = "test"
+        val fakeRequest = testRequest(TupleDate("20", "2", "2016"), true)
+
+        setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+        setupMockSave4LaterServiceWithOnly(
+          fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
+          fetchBusinessDetails = testBusinessDetails(),
+          fetchNewApplicationType = testNewApplicationType
+        )
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
+
+        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(NewApplicationMode))
+
+        val res = tradingDateController.saveAndReturn()
+          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
+
+        status(res) mustBe 303
+        redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")
+      }
+
+
+      "provided with a date for the past after 31 March 2016" in {
         val businessType = "test"
         val fakeRequest = testRequest(TupleDate("20", "12", "2016"), true)
 
@@ -102,7 +127,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
         )
         setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
         when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
+          .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
