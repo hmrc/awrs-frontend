@@ -102,6 +102,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
             } else {
               if (bnd.doYouHaveTradingName.isDefined && isNewAWBusinessAnswered(gtsd.invertedBeforeMarch2016Question) && gtsd.proposedStartDate.isDefined) SectionComplete else SectionIncomplete
             }
+            case (Some(bnd), None) if bnd.doYouHaveTradingName.isDefined => SectionIncomplete
             case _ => SectionNotStarted
           }
         })
