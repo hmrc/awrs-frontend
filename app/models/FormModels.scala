@@ -16,13 +16,8 @@
 
 package models
 
-//import java.text.SimpleDateFormat
-//import java.util.Date
-
 import forms.AWRSEnums.{ApplicationStatusEnum, BooleanRadioEnum}
 import forms.{AWRSEnums, AwrsFormFields}
-// import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-// import org.joda.time.{LocalDate, LocalDateTime}
 import play.api.libs.json._
 import utils.AwrsFieldConfig
 import java.time.{LocalDateTime, LocalDate}

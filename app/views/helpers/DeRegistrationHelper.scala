@@ -16,12 +16,9 @@
 
 package views.helpers
 
-import java.text.SimpleDateFormat
-import java.util.Calendar
-
 import models.TupleDate
-import org.joda.time.LocalDate
-
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object DeRegistrationHelper {
 
@@ -30,13 +27,9 @@ object DeRegistrationHelper {
 
   def enumPair(enumName: String): (String, String) = backendKey(enumName) -> frontendKey(enumName)
 
-  lazy val dateFormat = new SimpleDateFormat("dd MMMM yyyy")
+  lazy val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
 
-  def stringifyDate(date: TupleDate): String = {
-    val localDate = new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate
-    dateFormat.format(localDate)
-  }
-  def today: String = {
-    dateFormat.format(Calendar.getInstance().getTime())
-  }
+  def stringifyDate(date: TupleDate): String = date.localDate.format(formatter)
+  
+  def today: String = LocalDate.now().format(formatter)
 }
