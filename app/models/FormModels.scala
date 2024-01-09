@@ -16,16 +16,17 @@
 
 package models
 
-import java.text.SimpleDateFormat
-import java.util.Date
+//import java.text.SimpleDateFormat
+//import java.util.Date
 
 import forms.AWRSEnums.{ApplicationStatusEnum, BooleanRadioEnum}
 import forms.{AWRSEnums, AwrsFormFields}
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import org.joda.time.{LocalDate, LocalDateTime}
+// import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
+// import org.joda.time.{LocalDate, LocalDateTime}
 import play.api.libs.json._
 import utils.AwrsFieldConfig
-
+import java.time.{LocalDateTime, LocalDate}
+import java.time.format.DateTimeFormatter
 import scala.language.implicitConversions
 
 trait ModelVersionControl {
@@ -123,11 +124,9 @@ case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleD
 }
 
 case class TupleDate(day: String, month: String, year: String) {
-  lazy val localDate = new LocalDate(year.toInt, month.toInt, day.toInt)
+  lazy val localDate: LocalDate = LocalDate.of(year.toInt, month.toInt, day.toInt)
 
-  lazy val date: Date = localDate.toDate
-
-  def toString(format: String): String = new SimpleDateFormat(format).format(date)
+  def toString(format: String): String = localDate.format(DateTimeFormatter.ofPattern(format))
 }
 
 case class AdditionalBusinessPremises(additionalPremises: Option[String], additionalAddress: Option[Address], addAnother: Option[String])
@@ -310,11 +309,11 @@ case class ChangeIndicators(businessDetailsChanged: Boolean = false,
 
 
 object ApplicationStatus {
-  val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ss"
+  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
-  val jodaDateTimeReads: Reads[LocalDateTime] = Reads[LocalDateTime](js =>
+  val dateTimeReads: Reads[LocalDateTime] = Reads[LocalDateTime](js =>
     js.validate[String].map[LocalDateTime](dtString =>
-      LocalDateTime.parse(dtString, DateTimeFormat.forPattern(dateFormat))
+      LocalDateTime.parse(dtString, formatter)
     )
   )
 
@@ -328,7 +327,7 @@ object ApplicationStatus {
     def writes(applicationStatus: ApplicationStatus): JsValue = {
       Json.obj()
         .++(Json.obj("status" -> applicationStatus.status.toString)
-          .++(Json.obj("updatedDate" -> applicationStatus.updatedDate.toString(dateFormat))))
+          .++(Json.obj("updatedDate" -> applicationStatus.updatedDate.format(formatter))))
     }
   }
 
@@ -336,7 +335,7 @@ object ApplicationStatus {
     def reads(js: JsValue): JsResult[ApplicationStatus] = {
       for {
         status <- (js \ "status").validate[ApplicationStatusEnum.Value](enumReads)
-        updatedDate <- (js \ "updatedDate").validate[LocalDateTime](jodaDateTimeReads)
+        updatedDate <- (js \ "updatedDate").validate[LocalDateTime](dateTimeReads)
       } yield {
         ApplicationStatus(status = status, updatedDate = updatedDate)
       }
@@ -363,22 +362,26 @@ object BusinessCustomerDetails {
 object TupleDate {
   implicit val formats: OFormat[TupleDate] = Json.format[TupleDate]
 
-  implicit def convert(date: LocalDate): TupleDate = TupleDate("%02d".format(date.getDayOfMonth), "%02d".format(date.getMonthOfYear), "%04d".format(date.getYear))
+  implicit def convert(date: LocalDate): TupleDate = TupleDate("%02d".format(date.getDayOfMonth), "%02d".format(date.getMonth.getValue()), "%04d".format(date.getYear))
 }
 
 object CompanyRegDetails {
+  private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+  val dateTimeReads: Reads[LocalDate] = Reads[LocalDate](js =>
+    js.validate[String].map[LocalDate](dtString => LocalDate.parse(dtString, formatter))
+  )
 
-  private val pattern = "dd/MM/yyyy"
+  //private val pattern = "dd/MM/yyyy"
   implicit val writer: Writes[CompanyRegDetails] = (companyRegDetails: CompanyRegDetails) => {
     Json.obj()
       .++(Json.obj("companyRegistrationNumber" -> companyRegDetails.companyRegistrationNumber)
-        .++(Json.obj("dateOfIncorporation" -> companyRegDetails.dateOfIncorporation.toString(pattern))))
+        .++(Json.obj("dateOfIncorporation" -> companyRegDetails.dateOfIncorporation.localDate.format(formatter))))
   }
 
   implicit val reader: Reads[CompanyRegDetails] = (js: JsValue) => {
     for {
       companyRegistrationNumber <- (js \ "companyRegistrationNumber").validate[String]
-      date <- (js \ "dateOfIncorporation").validate[LocalDate](JodaReads.jodaLocalDateReads(pattern))
+      date <- (js \ "dateOfIncorporation").validate[LocalDate](dateTimeReads)
     } yield {
       CompanyRegDetails(companyRegistrationNumber = companyRegistrationNumber, dateOfIncorporation = date)
     }
@@ -387,14 +390,14 @@ object CompanyRegDetails {
 
 object NewAWBusiness {
 
-  private val pattern = "dd/MM/yyyy"
-  val dtf: DateTimeFormatter = DateTimeFormat.forPattern(pattern)
+  // private val pattern = "dd/MM/yyyy"
+  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
   implicit val writer: Writes[NewAWBusiness] = new Writes[NewAWBusiness] {
     def writes(newAWBusiness: NewAWBusiness): JsValue =
       Json.obj()
         .++(Json.obj("newAWBusiness" -> newAWBusiness.newAWBusiness)
-          .++(newAWBusiness.proposedStartDate.fold(Json.obj())(x => Json.obj("proposedStartDate" -> newAWBusiness.proposedStartDate.fold(TupleDate("", "", ""))(x => x).toString(pattern)))))
+          .++(newAWBusiness.proposedStartDate.fold(Json.obj())(tupleDate => Json.obj("proposedStartDate" -> tupleDate.localDate.format(formatter)))))
   }
 
   implicit val reader: Reads[NewAWBusiness] = new Reads[NewAWBusiness] {
@@ -406,7 +409,7 @@ object NewAWBusiness {
       } yield {
         val parsedProposedStartDate: Option[TupleDate] =
           proposedStartDate match {
-            case Some(dateString) => Some(dtf.parseLocalDate(dateString))
+            case Some(dateString) => Some(LocalDate.parse(dateString, formatter))
             case None => None
           }
         NewAWBusiness(newAWBusiness = newAWBusiness, proposedStartDate = parsedProposedStartDate)

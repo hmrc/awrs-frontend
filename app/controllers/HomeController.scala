@@ -20,7 +20,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import models.{ApplicationStatus, BusinessCustomerDetails}
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import play.api.libs.json.JsResultException
 import play.api.mvc._
 import services._

@@ -13,7 +13,6 @@ private object AppDependencies {
     "uk.gov.hmrc"            %% "domain"                     % "8.3.0-play-28",
     "com.yahoo.platform.yui" %  "yuicompressor"              % "2.4.8",
     "uk.gov.hmrc"            %% "play-frontend-hmrc"         % "7.19.0-play-28",
-    "com.typesafe.play"      %% "play-json-joda"             % "2.9.4",
     "commons-codec"          % "commons-codec"               % "1.16.0",
     "com.github.fkoehler"    %% "play-html-compressor"       % "2.8.0"
   )
