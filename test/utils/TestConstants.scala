@@ -17,7 +17,7 @@
 package utils
 
 import scala.util.Random
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import uk.gov.hmrc.domain.{Generator, SaUtr, SaUtrGenerator}
 
 import scala.annotation.tailrec
@@ -41,7 +41,7 @@ object TestConstants {
   //  lazy val testUtr = new SaUtrGenerator().nextSaUtr.utr
   lazy val testPassportNo: String = "1" * 20
   lazy val testNationalId: String = "1" * 20
-  lazy val testGrpJoinDate: String = LocalDate.now().toString()
+  lazy val testGrpJoinDate: String = LocalDate.now().toString
   lazy val testRefNo = "DummmyRef"
   lazy val testPostcode: String = genPostCode
   lazy val testEmail = "email@email.com"

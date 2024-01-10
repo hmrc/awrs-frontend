@@ -31,10 +31,6 @@ object TradingDateForm {
 
   private val isInThePast = (fieldKey: String) =>
     (date: TupleDate) => {
-      // val enteredDate = new LocalDate(date.year.trim.toInt,
-      //                                 date.month.trim.toInt,
-      //                                 date.day.trim.toInt).toDate
-
       if (date.localDate.isBefore(LocalDate.now())) {
         Valid
       } else {
@@ -48,10 +44,6 @@ object TradingDateForm {
 
   private val isTooEarly = (fieldKey: String) =>
     (date: TupleDate) => {
-      // val providedDate = new LocalDate(date.year.trim.toInt,
-      //                                  date.month.trim.toInt,
-      //                                  date.day.trim.toInt).toDate
-
       if (isDateAfterOrEqual(cutOffAWBusinessStartDate, date)) {
         Valid
       } else {
@@ -62,10 +54,6 @@ object TradingDateForm {
 
   private val isTooLate = (fieldKey: String) =>
     (date: TupleDate) => {
-      // val providedDate = new LocalDate(date.year.trim.toInt,
-      //                                  date.month.trim.toInt,
-      //                                  date.day.trim.toInt).toDate
-
       if (isDateBefore(cutOffAWBusinessStartDate, date)) {
         Valid
       } else {
@@ -77,9 +65,6 @@ object TradingDateForm {
   private val daysInTheFuture = 45
   private val farEnoughInFuture = (fieldKey: String) =>
     (date: TupleDate) => {
-      // val enteredDate = new LocalDate(date.year.trim.toInt,
-      //                                 date.month.trim.toInt,
-      //                                 date.day.trim.toInt).toDate
       if (!date.localDate.isBefore(LocalDate.now().plusDays(daysInTheFuture))) {
         Valid
       } else {

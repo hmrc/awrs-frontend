@@ -19,7 +19,8 @@ package controllers
 import builders.SessionBuilder
 import forms.TradingDateForm
 import models._
-import org.joda.time.LocalDate
+
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -29,6 +30,7 @@ import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
+import views.html.awrs_trading_date
 
 import scala.concurrent.Future
 
@@ -40,7 +42,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: TupleDate, past: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[TupleDate](FakeRequest(), TradingDateForm.tradingDateForm(past, Some(true)), answer)
 
-  val template = app.injector.instanceOf[views.html.awrs_trading_date]
+  val template: awrs_trading_date = app.injector.instanceOf[views.html.awrs_trading_date]
 
   val tradingDateController: TradingDateController =
     new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService,
@@ -145,7 +147,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           val dateFromNow = LocalDate.now()
           val fakeRequest = testRequest(TupleDate(
             dateFromNow.getDayOfMonth.toString,
-            dateFromNow.getMonthOfYear.toString,
+            dateFromNow.getMonth.getValue.toString,
             dateFromNow.minusYears(1).getYear.toString
           ), false)
 
@@ -174,7 +176,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           val dateFromNow = LocalDate.now().plusMonths(3)
           val fakeRequest = testRequest(TupleDate(
             dateFromNow.getDayOfMonth.toString,
-            dateFromNow.getMonthOfYear.toString,
+            dateFromNow.getMonth.getValue.toString,
             dateFromNow.getYear.toString
           ), false)
 

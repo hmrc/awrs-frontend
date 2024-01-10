@@ -27,9 +27,9 @@ object DeRegistrationHelper {
 
   def enumPair(enumName: String): (String, String) = backendKey(enumName) -> frontendKey(enumName)
 
-  lazy val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+  lazy val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
 
   def stringifyDate(date: TupleDate): String = date.localDate.format(formatter)
-  
+
   def today: String = LocalDate.now().format(formatter)
 }

@@ -366,7 +366,6 @@ object CompanyRegDetails {
     js.validate[String].map[LocalDate](dtString => LocalDate.parse(dtString, formatter))
   )
 
-  //private val pattern = "dd/MM/yyyy"
   implicit val writer: Writes[CompanyRegDetails] = (companyRegDetails: CompanyRegDetails) => {
     Json.obj()
       .++(Json.obj("companyRegistrationNumber" -> companyRegDetails.companyRegistrationNumber)
@@ -385,7 +384,6 @@ object CompanyRegDetails {
 
 object NewAWBusiness {
 
-  // private val pattern = "dd/MM/yyyy"
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
   implicit val writer: Writes[NewAWBusiness] = new Writes[NewAWBusiness] {

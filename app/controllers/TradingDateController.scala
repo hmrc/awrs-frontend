@@ -78,7 +78,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
                                                   (implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     (databaseTradingState, newAwBusiness) match {
       case (None, Some(NewAWBusiness(BooleanRadioEnum.YesString, _))) => keyStoreService.saveAlreadyTrading(true).map(_ => Some(true))
-      case _ => Future.successful(databaseTradingState) 
+      case _ => Future.successful(databaseTradingState)
     }
 
   def saveBusinessDetails(id: Int,

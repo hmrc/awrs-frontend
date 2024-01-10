@@ -31,7 +31,7 @@ object FormHelper {
       case Success(_) => false
     }
 
-  def isDateAfterOrEqual(baseDate: String, date2: TupleDate): Boolean = 
+  def isDateAfterOrEqual(baseDate: String, date2: TupleDate): Boolean =
     date2.localDate.compareTo(LocalDate.parse(baseDate, formatter)) match {
       case x if x >= 0 => true
       case _ => false
@@ -42,23 +42,5 @@ object FormHelper {
       case n if n < 0 => true
       case _ => false
     }
-
-  // def isDateAfterOrEqual(baseDate: String, date2: Date): Boolean = {
-  //   val ddMMyyyyFormat = new SimpleDateFormat("dd/MM/yyyy")
-  //   val date1: Date = ddMMyyyyFormat.parse(baseDate)
-  //   date2.compareTo(date1) match {
-  //     case 0 | 1 => true
-  //     case _ => false
-  //   }
-  // }
-
-  // def isDateBefore(baseDate: String, date2: Date): Boolean = {
-  //   val ddMMyyyyFormat = new SimpleDateFormat("dd/MM/yyyy")
-  //   val date1: Date = ddMMyyyyFormat.parse(baseDate)
-  //   date2.compareTo(date1) match {
-  //     case n if n < 0 => true
-  //     case _ => false
-  //   }
-  // }
 
 }

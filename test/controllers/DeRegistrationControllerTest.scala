@@ -25,7 +25,7 @@ import forms.AWRSEnums.{BooleanRadioEnum, DeRegistrationReasonEnum}
 import forms.DeRegistrationReasonForm.{deRegReasonOtherId, deRegistrationReasonId}
 import models.FormBundleStatus.{DeRegistered, NoStatus, Pending, Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal, Withdrawal}
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, Result}
@@ -360,7 +360,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
   def testShowDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showDate())(test)
 
-  def testSubmitDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", LocalDate.now().getDayOfMonth.toString), ("proposedEndDate.month", LocalDate.now().getMonthOfYear.toString), ("proposedEndDate.year", LocalDate.now().getYear.toString)))(test)
+  def testSubmitDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", LocalDate.now().getDayOfMonth.toString), ("proposedEndDate.month", LocalDate.now().getMonth.getValue.toString), ("proposedEndDate.year", LocalDate.now().getYear.toString)))(test)
 
   def testSubmitDateOldDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", "1"), ("proposedEndDate.month", "1"), ("proposedEndDate.year", "2016")))(test)
 
