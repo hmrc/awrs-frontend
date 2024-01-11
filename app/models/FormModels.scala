@@ -119,6 +119,7 @@ case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleD
 }
 
 case class TupleDate(day: String, month: String, year: String) {
+  // !! Will throw exception first time localDate referenced if day/month/year are not valid !!
   lazy val localDate: LocalDate = LocalDate.of(year.toInt, month.toInt, day.toInt)
 
   def toString(format: String): String = localDate.format(DateTimeFormatter.ofPattern(format))
