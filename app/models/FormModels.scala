@@ -119,6 +119,7 @@ case class NewAWBusiness(newAWBusiness: String, proposedStartDate: Option[TupleD
 }
 
 case class TupleDate(day: String, month: String, year: String) {
+  // !! Will throw exception first time localDate referenced if day/month/year are not valid !!
   lazy val localDate: LocalDate = LocalDate.of(year.toInt, month.toInt, day.toInt)
 
   def toString(format: String): String = localDate.format(DateTimeFormatter.ofPattern(format))
@@ -366,7 +367,6 @@ object CompanyRegDetails {
     js.validate[String].map[LocalDate](dtString => LocalDate.parse(dtString, formatter))
   )
 
-  //private val pattern = "dd/MM/yyyy"
   implicit val writer: Writes[CompanyRegDetails] = (companyRegDetails: CompanyRegDetails) => {
     Json.obj()
       .++(Json.obj("companyRegistrationNumber" -> companyRegDetails.companyRegistrationNumber)
@@ -385,7 +385,6 @@ object CompanyRegDetails {
 
 object NewAWBusiness {
 
-  // private val pattern = "dd/MM/yyyy"
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
   implicit val writer: Writes[NewAWBusiness] = new Writes[NewAWBusiness] {
