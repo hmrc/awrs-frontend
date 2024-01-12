@@ -19,7 +19,8 @@ package controllers
 import builders.SessionBuilder
 import forms.TradingDateForm
 import models._
-import org.joda.time.LocalDate
+
+import java.time.LocalDate
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -29,6 +30,7 @@ import services.ServicesUnitTestFixture
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
+import views.html.awrs_trading_date
 
 import scala.concurrent.Future
 
@@ -40,7 +42,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: TupleDate, past: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[TupleDate](FakeRequest(), TradingDateForm.tradingDateForm(past, Some(true)), answer)
 
-  val template = app.injector.instanceOf[views.html.awrs_trading_date]
+  val template: awrs_trading_date = app.injector.instanceOf[views.html.awrs_trading_date]
 
   val tradingDateController: TradingDateController =
     new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService,
@@ -90,9 +92,9 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
 
   "save" must {
     "save the trading date" when {
-      "provided with a date for the past" in {
+      "provided with a date for the past before 31 March 2016" in {
         val businessType = "test"
-        val fakeRequest = testRequest(TupleDate("20", "12", "2016"), true)
+        val fakeRequest = testRequest(TupleDate("20", "2", "2016"), true)
 
         setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
         setupMockSave4LaterServiceWithOnly(
@@ -114,13 +116,38 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
         redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")
       }
 
+
+      "provided with a date for the past after 31 March 2016" in {
+        val businessType = "test"
+        val fakeRequest = testRequest(TupleDate("20", "12", "2016"), true)
+
+        setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
+        setupMockSave4LaterServiceWithOnly(
+          fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
+          fetchBusinessDetails = testBusinessDetails(),
+          fetchNewApplicationType = testNewApplicationType
+        )
+        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
+
+        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(NewApplicationMode))
+
+        val res = tradingDateController.saveAndReturn()
+          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
+
+        status(res) mustBe 303
+        redirectLocation(res).get must include("/alcohol-wholesale-scheme/view-section/businessDetails")
+      }
+
       "provided with a date for the future" when {
         "when trading has already started" in {
           val businessType = "test"
           val dateFromNow = LocalDate.now()
           val fakeRequest = testRequest(TupleDate(
             dateFromNow.getDayOfMonth.toString,
-            dateFromNow.getMonthOfYear.toString,
+            dateFromNow.getMonth.getValue.toString,
             dateFromNow.minusYears(1).getYear.toString
           ), false)
 
@@ -149,7 +176,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           val dateFromNow = LocalDate.now().plusMonths(3)
           val fakeRequest = testRequest(TupleDate(
             dateFromNow.getDayOfMonth.toString,
-            dateFromNow.getMonthOfYear.toString,
+            dateFromNow.getMonth.getValue.toString,
             dateFromNow.getYear.toString
           ), false)
 

@@ -97,11 +97,12 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
 
         val businessDetailsStatus = sectionStatus(cacheMap, {cache =>
           (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
-            case (Some(bnd), Some(gtsd)) => if (changeIndicators.businessDetailsChanged) {
+            case (Some(bnd), Some(gtsd)) => if (changeIndicators.businessDetailsChanged && gtsd.proposedStartDate.isDefined) {
               SectionEdited
             } else {
-              if (bnd.doYouHaveTradingName.isDefined && isNewAWBusinessAnswered(gtsd.invertedBeforeMarch2016Question)) SectionComplete else SectionIncomplete
+              if (bnd.doYouHaveTradingName.isDefined && isNewAWBusinessAnswered(gtsd.invertedBeforeMarch2016Question) && gtsd.proposedStartDate.isDefined) SectionComplete else SectionIncomplete
             }
+            case (Some(bnd), None) if bnd.doYouHaveTradingName.isDefined => SectionIncomplete
             case _ => SectionNotStarted
           }
         })

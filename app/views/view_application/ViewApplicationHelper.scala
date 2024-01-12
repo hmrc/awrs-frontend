@@ -71,10 +71,40 @@ object ViewApplicationHelper {
     } + "</a>"
   }
 
+  def link_address(href: Option[String], message: String, classAttr: String, idAttr: Option[String] = None, visuallyHidden: String = ""): String = {
+    "<a " + {
+      val ida = idAttr match {
+        case Some(id) => "id=\"" + id + "\""
+        case _ => ""
+      }
+      ida
+    } + " class=\"" + classAttr + "\" href=\"" + href.get + "\">" + message + {
+      visuallyHidden match {
+        case "" => ""
+        case text => "<span class=\"govuk-visually-hidden\">" + "address " + text + "</span>"
+      }
+    } + "</a>"
+  }
+
   def edit_link(editUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
     if (isSectionEdit()) {
       link(
+        Some(editUrl(id)),
+        "Edit",
+        classAttr = "govuk-link govuk-!-padding-left-9",
+        idAttr = Some("edit-" + id),
+        visuallyHidden = visuallyHidden
+      )
+    } else {
+      NoneBreakingSpace
+    }
+  }
+
+  def edit_link_address(editUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
+
+    if (isSectionEdit()) {
+      link_address(
         Some(editUrl(id)),
         "Edit",
         classAttr = "govuk-link govuk-!-padding-left-9",
@@ -101,10 +131,41 @@ object ViewApplicationHelper {
     }
   }
 
+  def edit_link_sl(editUrl: String, idx: String, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
+
+    if (isRecordEdit()) {
+      link(
+        Some(editUrl),
+        "Edit",
+        classAttr = "govuk-link",
+        idAttr = Some(s"edit-$idx"),
+        visuallyHidden = visuallyHidden
+      )
+    } else {
+      NoneBreakingSpace
+    }
+  }
+
+
   def delete_link(deleteUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
 
     if (isSectionEdit()) {
       link(
+        Some(deleteUrl(id)),
+        "Delete",
+        classAttr = "govuk-link govuk-!-padding-left-3",
+        idAttr = Some("delete-" + id),
+        visuallyHidden = visuallyHidden
+      )
+    } else {
+      NoneBreakingSpace
+    }
+  }
+
+  def delete_link_address(deleteUrl: Int => String, id: Int, visuallyHidden: String = "")(implicit viewApplicationType: ViewApplicationType): String = {
+
+    if (isSectionEdit()) {
+      link_address(
         Some(deleteUrl(id)),
         "Delete",
         classAttr = "govuk-link govuk-!-padding-left-3",

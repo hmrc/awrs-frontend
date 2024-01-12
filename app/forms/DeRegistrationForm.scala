@@ -25,7 +25,8 @@ import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.{DeRegistrationConfirmation, DeRegistrationDate, DeRegistrationReason, TupleDate}
-import org.joda.time.LocalDate
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form, Mapping}
@@ -41,8 +42,7 @@ object DeRegistrationForm {
     } else {
       simpleErrorMessage(fieldKey, "awrs.de_registration.error.date_valid")
     }
-    val isTooEarly = if (isDateAfterOrEqual(LocalDate.now().toString("dd/MM/yyyy"),
-      new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate)) {
+    val isTooEarly = if (isDateAfterOrEqual(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), date)) {
       isTooLate
     } else {
       simpleErrorMessage(fieldKey, "awrs.de_registration.error.proposedDate_toEarly")

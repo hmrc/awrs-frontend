@@ -20,7 +20,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import models.{ApplicationStatus, BusinessCustomerDetails}
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import play.api.libs.json.JsResultException
 import play.api.mvc._
 import services._
@@ -73,12 +73,21 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
 
   def businessCustomerDetails(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
-      case Some(data) if data.safeId.isEmpty => Future.successful(None)
-      case Some(data) => Future.successful(Some(data))
+      case Some(data) if data.safeId.isEmpty =>
+        logger.warn("[HomeController][businessCustomerDetails] - no safeID found in BC Details")
+        Future.successful(None)
+      case Some(data) =>
+        logger.info("[HomeController][businessCustomerDetails] - BC Details fetched from save4later")
+        Future.successful(Some(data))
       case None =>
+        logger.warn("[HomeController][businessCustomerDetails] - no BC Details found in save4later, checking Keystore")
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails].flatMap {
-          case Some(data) => save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data).map(_ => Some(data))
-          case _ => Future.successful(None)
+          case Some(data) =>
+            logger.info("[HomeController][businessCustomerDetails] - BC Details fetched from Keystore")
+            save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data).map(_ => Some(data))
+          case _ =>
+            logger.warn("[HomeController][businessCustomerDetails] - no BC Details found in save4later or Keystore")
+            Future.successful(None)
         }
     }
 

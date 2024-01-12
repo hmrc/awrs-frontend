@@ -24,8 +24,8 @@ import forms.AWRSEnums.ApplicationStatusEnum
 import forms.ReapplicationForm._
 import javax.inject.Inject
 import models.ApplicationStatus
-import org.joda.time.LocalDateTime
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -57,7 +57,7 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
       val applicationStatus = ApplicationStatus(ApplicationStatusEnum.blankString, LocalDateTime.now())
       // check that the user has not returned within the specified amount of hours since being revoked or rejected
 
-      val fmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss")
+      val fmt: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
       awrsNotificationConnector.fetchNotificationCache(ar) flatMap {
         case Some(notification) =>
           val storedDateString: String = notification.storageDatetime.getOrElse("")
@@ -65,7 +65,7 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
             Future.successful(Ok(templateReappConfirm(reapplicationForm)))
           }
           else {
-            val storedDate: LocalDateTime = fmt.parseLocalDateTime(storedDateString)
+            val storedDate: LocalDateTime = LocalDateTime.parse(storedDateString, fmt)
             if (storedDate.isBefore(LocalDateTime.now().minusHours(MinReturnHours))) {
               Future.successful(Ok(templateReappConfirm(reapplicationForm)))
             } else {

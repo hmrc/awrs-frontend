@@ -20,7 +20,7 @@ import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums
 import models.{ApplicationStatus, BusinessCustomerDetails}
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any

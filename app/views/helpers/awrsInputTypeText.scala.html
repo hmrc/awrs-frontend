@@ -125,13 +125,7 @@
            @maxLength
            @dataAttributes
            @if(fieldErrors.nonEmpty) {
-               aria-labelledby="@{params.field.name}-error-0@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
-           } else {
-               @if(params.ariaLabelledBy.nonEmpty) {
-                    aria-labelledby="@{params.ariaLabelledBy}@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
-                } else {
-                    aria-labelledby="@{inputId}_field@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
-                }
+               aria-describedby="@{params.field.name}-error-0@if(params.isDate){ @{inputId}_field @{inputId}_reader}"
            }
     >
     @isPostCodeInput

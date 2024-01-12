@@ -21,7 +21,6 @@ import forms.test.util._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.FieldError
 import models.TupleDate
-import org.joda.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Forms._
@@ -35,16 +34,14 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTest
 
   private val earliestDate = "01/04/2016"
 
-  private val isTooEarly = (fieldKey: String) => (date: TupleDate) => isDateAfterOrEqual(earliestDate,
-    new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate) match {
+  private val isTooEarly = (fieldKey: String) => (date: TupleDate) => isDateAfterOrEqual(earliestDate, date) match {
     case true => Valid
     case false => simpleErrorMessage(fieldKey, "testkey.tooEarly")
   }
 
   private val latestDate = "01/04/2016"
 
-  private val isTooLate = (fieldKey: String) => (date: TupleDate) => isDateBefore(latestDate,
-    new LocalDate(date.year.trim.toInt, date.month.trim.toInt, date.day.trim.toInt).toDate) match {
+  private val isTooLate = (fieldKey: String) => (date: TupleDate) => isDateBefore(latestDate, date) match {
     case true => Valid
     case false => simpleErrorMessage(fieldKey, "testkey.tooLate")
   }

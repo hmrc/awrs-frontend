@@ -31,10 +31,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
-import views.Configuration.NewApplicationMode
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
-
 import scala.concurrent.{ExecutionContext, Future}
+import models.NewAWBusiness
 
 class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComponents,
                                                  val save4LaterService: Save4LaterService,
@@ -54,36 +53,41 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
 
   def showBusinessDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
+      val businessType = request.getBusinessType
+      implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
       restrictedAccessCheck {
-        businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {
-          case NewApplicationMode =>
-            implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
-              LinearViewMode
-            } else {
-              EditSectionOnlyMode
+        businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {_ =>
+          for {
+            alreadyTrading <- keyStoreService.fetchAlreadyTrading
+            startTradingDetails <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
+          } yield {
+            (startTradingDetails, alreadyTrading) match {
+              case (Some(NewAWBusiness(BooleanRadioEnum.YesString, _)), _) =>
+                Redirect(routes.TradingDateController.showBusinessDetails(isLinearMode))
+              case (Some(NewAWBusiness(_, Some(_))), Some(data)) =>
+                val yesNo = if (data) BooleanRadioEnum.YesString else BooleanRadioEnum.NoString
+                Ok(template(alreadyStartedTradingForm.fill(yesNo), businessType))
+              case _ =>
+                Ok(template(alreadyStartedTradingForm, businessType))
             }
-            val businessType = request.getBusinessType
-            for {
-              alreadyTrading <- keyStoreService.fetchAlreadyTrading
-            } yield {
-              alreadyTrading match {
-                case Some(data) =>
-                  val yesNo = if (data) BooleanRadioEnum.YesString else BooleanRadioEnum.NoString
-                  Ok(template(alreadyStartedTradingForm.fill(yesNo), businessType))
-                case _ => Ok(template(alreadyStartedTradingForm, businessType))
-              }
-            }
-          case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isLinearMode)))
+          }
         }
       }
     }
   }
 
-  def saveBusinessDetails(alreadyTrading: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-    keyStoreService.saveAlreadyTrading(alreadyTrading) map {
-      _ => Redirect(routes.TradingDateController.showBusinessDetails())
-    }
-  }
+  def saveBusinessDetails(newAlreadyTrading: Boolean,
+                          existingAlreadyTrading: Option[Boolean],
+                          tradingStartDetails: Option[NewAWBusiness],
+                          authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, viewMode: ViewApplicationType): Future[Result] =
+    keyStoreService.saveAlreadyTrading(newAlreadyTrading).flatMap{_ =>
+      (newAlreadyTrading, existingAlreadyTrading, tradingStartDetails) match {
+        case (nat, Some(eat), Some(NewAWBusiness(yOrN,_))) if nat != eat =>
+          // If alreadytrading flag has changed, clear any current start date
+          save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, NewAWBusiness(yOrN, None))
+        case _ => Future.successful(())
+      }
+    }.map(_ => Redirect(routes.TradingDateController.showBusinessDetails(viewMode == LinearViewMode)))
 
   override def save(id: Int,
                     redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
@@ -91,18 +95,18 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                     isNewRecord: Boolean,
                     authRetrievals: StandardAuthRetrievals)
                    (implicit request: Request[AnyContent]): Future[Result] = {
-    businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {
-      case NewApplicationMode =>
-        implicit val viewMode: ViewApplicationType = viewApplicationType
-        val businessType = request.getBusinessType
-        alreadyStartedTradingForm.bindFromRequest().fold(
-          formWithErrors =>
-            Future.successful(BadRequest(template(formWithErrors, businessType))),
-          newAWBusiness => {
-            saveBusinessDetails(newAWBusiness == "Yes")
+    implicit val viewMode: ViewApplicationType = viewApplicationType
+    businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {_ =>
+      alreadyStartedTradingForm.bindFromRequest().fold(
+        formWithErrors =>
+          Future.successful(BadRequest(template(formWithErrors, request.getBusinessType))),
+        newAWBusiness =>
+          keyStoreService.fetchAlreadyTrading.flatMap{currentAlreadyTrading =>
+            save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals).flatMap{tradingStartDetails =>
+              saveBusinessDetails(newAWBusiness ==BooleanRadioEnum.YesString, currentAlreadyTrading, tradingStartDetails, authRetrievals)
+            }
           }
-        )
-      case _ => Future.successful(Redirect(routes.TradingNameController.showTradingName(isNewRecord)))
+      )
     }
   }
 }

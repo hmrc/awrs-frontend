@@ -123,9 +123,10 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
               case None => ""
             }
             val displayNameKey = getSectionDisplayName(sectionName, legalEntity)
+
             sectionName match {
               case `businessDetailsName` => showPage(views.html.view_application.subviews.subview_business_details(
-                displayNameKey, BusinessDetailSummaryModel(cacheMap.getBusinessNameDetails, cacheMap.getTradingStartDetails), Some(businessCustomerDetails.fold("")(x => x.businessName)))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
+                displayNameKey, BusinessDetailSummaryModel(cacheMap.getBusinessNameDetails, cacheMap.getTradingStartDetails), Some(businessCustomerDetails.fold("")(x => x.businessName)), businessCustomerDetails.fold(false)(_.isAGroup))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
               case `businessRegistrationDetailsName` => showPage(views.html.view_application.subviews.subview_business_registration_details(
                 displayNameKey, cacheMap.getBusinessRegistrationDetails, Some(legalEntity))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
               case `placeOfBusinessName` => showPage(views.html.view_application.subviews.subview_place_of_business(

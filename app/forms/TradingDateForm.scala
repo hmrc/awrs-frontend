@@ -20,7 +20,7 @@ import forms.helper.FormHelper.{isDateAfterOrEqual, isDateBefore}
 import forms.submapping.TupleDateMapping.{tupleDate_compulsory, _}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleErrorMessage
 import models.TupleDate
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.Valid
 import play.api.data.{Form, Mapping}
@@ -31,10 +31,7 @@ object TradingDateForm {
 
   private val isInThePast = (fieldKey: String) =>
     (date: TupleDate) => {
-      val enteredDate = new LocalDate(date.year.trim.toInt,
-                                      date.month.trim.toInt,
-                                      date.day.trim.toInt).toDate
-      if (enteredDate.before(LocalDate.now().toDate)) {
+      if (date.localDate.isBefore(LocalDate.now())) {
         Valid
       } else {
         simpleErrorMessage(
@@ -47,11 +44,7 @@ object TradingDateForm {
 
   private val isTooEarly = (fieldKey: String) =>
     (date: TupleDate) => {
-      val providedDate = new LocalDate(date.year.trim.toInt,
-                                       date.month.trim.toInt,
-                                       date.day.trim.toInt).toDate
-
-      if (isDateAfterOrEqual(cutOffAWBusinessStartDate, providedDate)) {
+      if (isDateAfterOrEqual(cutOffAWBusinessStartDate, date)) {
         Valid
       } else {
         simpleErrorMessage(fieldKey,
@@ -61,11 +54,7 @@ object TradingDateForm {
 
   private val isTooLate = (fieldKey: String) =>
     (date: TupleDate) => {
-      val providedDate = new LocalDate(date.year.trim.toInt,
-                                       date.month.trim.toInt,
-                                       date.day.trim.toInt).toDate
-
-      if (isDateBefore(cutOffAWBusinessStartDate, providedDate)) {
+      if (isDateBefore(cutOffAWBusinessStartDate, date)) {
         Valid
       } else {
         simpleErrorMessage(fieldKey,
@@ -76,10 +65,7 @@ object TradingDateForm {
   private val daysInTheFuture = 45
   private val farEnoughInFuture = (fieldKey: String) =>
     (date: TupleDate) => {
-      val enteredDate = new LocalDate(date.year.trim.toInt,
-                                      date.month.trim.toInt,
-                                      date.day.trim.toInt).toDate
-      if (!enteredDate.before(LocalDate.now().plusDays(daysInTheFuture).toDate)) {
+      if (!date.localDate.isBefore(LocalDate.now().plusDays(daysInTheFuture))) {
         Valid
       } else {
         simpleErrorMessage(
@@ -124,7 +110,6 @@ object TradingDateForm {
 
   def tradingDateForm(past: Boolean,
                       newBusiness: Option[Boolean]): Form[TupleDate] = {
-
     val awMapping = if (newBusiness.getOrElse(false)) {
       didYouStartDate_compulsoryNewBusiness
     } else {

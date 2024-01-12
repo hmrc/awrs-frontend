@@ -16,9 +16,8 @@
 
 package views.helpers
 
-import java.text.SimpleDateFormat
-
-import org.joda.time.format.DateTimeFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object WithdrawalHelper {
 
@@ -27,13 +26,9 @@ object WithdrawalHelper {
 
   def enumPair(enumName: String, messageKey: String): (String, String) = backendKey(enumName, messageKey) -> frontendKey(enumName, messageKey)
 
-  private lazy val dateFormat = new SimpleDateFormat("dd MMMM yyyy")
-  private lazy val responseDatePattern = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+  private lazy val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+  private lazy val responseFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
-  def stringifyDate(date: String): String = {
-    val formatter = DateTimeFormat.forPattern(responseDatePattern)
-    val localDate = formatter.parseLocalDate(date).toDate
-    dateFormat.format(localDate)
-  }
+  def stringifyDate(date: String): String = LocalDate.parse(date, responseFormatter).format(formatter)
 
 }
