@@ -67,7 +67,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
               case (Some(NewAWBusiness(_, Some(_))), Some(data)) =>
                 val yesNo = if (data) BooleanRadioEnum.YesString else BooleanRadioEnum.NoString
                 Ok(template(alreadyStartedTradingForm.fill(yesNo), businessType))
-              case _ => 
+              case _ =>
                 Ok(template(alreadyStartedTradingForm, businessType))
             }
           }
@@ -76,13 +76,13 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
     }
   }
 
-  def saveBusinessDetails(newAlreadyTrading: Boolean, 
-                          existingAlreadyTrading: Option[Boolean], 
-                          tradingStartDetails: Option[NewAWBusiness], 
+  def saveBusinessDetails(newAlreadyTrading: Boolean,
+                          existingAlreadyTrading: Option[Boolean],
+                          tradingStartDetails: Option[NewAWBusiness],
                           authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, viewMode: ViewApplicationType): Future[Result] =
-    keyStoreService.saveAlreadyTrading(newAlreadyTrading).flatMap{_ => 
+    keyStoreService.saveAlreadyTrading(newAlreadyTrading).flatMap{_ =>
       (newAlreadyTrading, existingAlreadyTrading, tradingStartDetails) match {
-        case (nat, Some(eat), Some(NewAWBusiness(yOrN,_))) if nat != eat => 
+        case (nat, Some(eat), Some(NewAWBusiness(yOrN,_))) if nat != eat =>
           // If alreadytrading flag has changed, clear any current start date
           save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, NewAWBusiness(yOrN, None))
         case _ => Future.successful(())
@@ -104,7 +104,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
           keyStoreService.fetchAlreadyTrading.flatMap{currentAlreadyTrading =>
             save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals).flatMap{tradingStartDetails =>
               saveBusinessDetails(newAWBusiness ==BooleanRadioEnum.YesString, currentAlreadyTrading, tradingStartDetails, authRetrievals)
-            } 
+            }
           }
       )
     }

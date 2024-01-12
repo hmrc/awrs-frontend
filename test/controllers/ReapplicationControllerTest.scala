@@ -21,8 +21,8 @@ import connectors.AWRSNotificationConnector
 import connectors.mock.MockAuthConnector
 import forms.{AWRSEnums, ReapplicationForm}
 import models.{ReapplicationConfirmation, StatusContactType, StatusNotification}
-import org.joda.time.LocalDateTime
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -115,8 +115,8 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
                              storageDatetime: Option[LocalDateTime] = Some(LocalDateTime.now())): StatusNotification = {
     storageDatetime match {
       case Some(storageDatetime) => {
-        val fmt: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss")
-        val storageDatetimeString = fmt.print(storageDatetime)
+        val fmt: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val storageDatetimeString = storageDatetime.format(fmt)
         StatusNotification(Some("reg"), Some("contact"), Some(contactType), None, Some(storageDatetimeString))
       }
       case _ => StatusNotification(Some("reg"), Some("contact"), Some(contactType), None, None)

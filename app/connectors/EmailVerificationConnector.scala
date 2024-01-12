@@ -20,7 +20,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import javax.inject.Inject
 import models._
-import org.joda.time.Period
+import java.time.Period
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
@@ -39,7 +39,7 @@ class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
   val sendEmail = "/verification-requests"
   val verifyEmail = "/verified-email-check"
   val continueUrl: String = applicationConfig.emailVerificationBaseUrl + controllers.routes.EmailVerificationController.showSuccess.url
-  val defaultEmailExpiryPeriod: String = Period.days(1).toString
+  val defaultEmailExpiryPeriod: String = Period.ofDays(1).toString
   val defaultTemplate = "awrs_email_verification"
 
   def sendVerificationEmail(emailAddress: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {

@@ -20,7 +20,7 @@ import forms.test.util._
 import forms.validation.util.FieldError
 import models.TupleDate
 import models.TupleDate._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 

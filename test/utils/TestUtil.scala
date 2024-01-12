@@ -22,7 +22,7 @@ import models.BusinessDetailsEntityTypes._
 import models.FormBundleStatus._
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import models.{BusinessDetailsEntityTypes, _}
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.i18n.Messages
