@@ -85,7 +85,7 @@ class GroupMembersViewTest extends AwrsUnitTestTraits
         result =>
           status(result) mustBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("crn-HelpLinkAnswer").text must include (Messages("awrs.generic.iDoNotKnowTheirCRN_text"))
+          document.getElementById("crn-theirCrnHelp").text must include (Messages("awrs.generic.iDoNotKnowTheirCRN_text_p1"))
       }
     }
 

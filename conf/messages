@@ -89,6 +89,16 @@ awrs.generic.iDoNotKnowTheirCRN_question=I do not know the CRN or date of incorp
 #awrs.generic.iDoNotKnowTheirCRN_text=Their company registration number is made up of 8 characters. If their company registration number is 7 digits you must include a zero at the start to create an 8 digit number.{0}You will find it and the date of incorporation on their certificate of incorporation, or any official company documentation they receive from Companies House.{0}If they are a charity or an unincorporated association and do not have a company registration number or date of incorporation then leave them blank.
 awrs.generic.iDoNotKnowTheirCRN_text=The CRN is 8 characters and is made up of one of these combinations:{0}{1}8 numbers{2}7 numbers plus either one letter or a zero{2}6 numbers and 2 letters{2}5 numbers and 3 letters{3}The CRN is on the certificate of incorporation and any documents from Companies House.{4}If a charity or unincorporated association does not have a CRN, or date of incorporation, they can be left blank.
 
+awrs.generic.iDoNotKnowTheirCRN_text_p1=The CRN is 8 characters and is made up of one of these combinations:
+awrs.generic.iDoNotKnowTheirCRN_text_bullet_1=8 numbers
+awrs.generic.iDoNotKnowTheirCRN_text_bullet_2=7 numbers plus either one letter or a zero
+awrs.generic.iDoNotKnowTheirCRN_text_bullet_3=6 numbers and 2 letters
+awrs.generic.iDoNotKnowTheirCRN_text_bullet_4=5 numbers and 3 letters
+awrs.generic.iDoNotKnowTheirCRN_text_p2=The CRN is on the certificate of incorporation and any documents from Companies House.
+awrs.generic.iDoNotKnowTheirCRN_text_p3=If a charity or unincorporated association does not have a CRN, or date of incorporation, they can be left blank.
+
+
+
 awrs.generic.date_of_incorporation= What is their date of incorporation?
 awrs.generic.date_hint= For example, 25 1 2016
 awrs.generic.date_hint.corporation= It is on their certificate of incorporation and any documents they get from Companies House. For example, 24 August 2023.

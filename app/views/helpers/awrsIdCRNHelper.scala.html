@@ -41,9 +41,24 @@ businessEntity : Option[String] = ""
     }
 }
 
+@iDoNotKnowTheirCRNText = {
+
+        <p class="govuk-body" id="crn-theirCrnHelp">@messages("awrs.generic.iDoNotKnowTheirCRN_text_p1")</p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>@messages("awrs.generic.iDoNotKnowTheirCRN_text_bullet_1")</li>
+            <li>@messages("awrs.generic.iDoNotKnowTheirCRN_text_bullet_2")</li>
+            <li>@messages("awrs.generic.iDoNotKnowTheirCRN_text_bullet_3")</li>
+            <li>@messages("awrs.generic.iDoNotKnowTheirCRN_text_bullet_4")</li>
+        </ul>
+
+        <p class="govuk-body">@messages("awrs.generic.iDoNotKnowTheirCRN_text_p2")</p>
+        <p class="govuk-body">@messages("awrs.generic.iDoNotKnowTheirCRN_text_p3")</p>
+
+}
+
 @iDoNotKnowCRNHintAnswer = @{
     youOrThey match {
-        case "they" =>  Html(messages("awrs.generic.iDoNotKnowTheirCRN_text","<br>", "<ul><li>", "<li>", "</ul>", "<br><br>"))
+        case "they" => iDoNotKnowTheirCRNText
         case _ => Html(messages("awrs.generic.iDoNotKnowMyCRN_text","<br><br>"))
     }
 }
@@ -131,4 +146,3 @@ businessEntity : Option[String] = ""
     <div class="govuk-form-group">
         @core
     </div>
-
