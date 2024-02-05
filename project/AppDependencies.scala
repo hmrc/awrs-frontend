@@ -8,14 +8,15 @@ private object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     ws,
 
-    "uk.gov.hmrc"            %% "http-caching-client-play-30" % "11.2.0",
-    "uk.gov.hmrc"            %% "bootstrap-frontend-play-30"  % bootstrapPlayVersion,
-    "uk.gov.hmrc"            %% "play-partials-play-30"       % "9.1.0", // includes code for retrieving partials, e.g. the Help with this page form
-    "uk.gov.hmrc"            %% "domain-play-30"              % "9.0.0",
-    "com.yahoo.platform.yui" %  "yuicompressor"               % "2.4.8",
-    "uk.gov.hmrc"            %% "play-frontend-hmrc-play-30"  % "8.4.0",
-    "commons-codec"          %  "commons-codec"               % "1.16.0",
-    "com.github.fkoehler"    %% "play-html-compressor"        % "2.8.0"
+    "uk.gov.hmrc"                   %% "http-caching-client-play-30" % "11.2.0",
+    "uk.gov.hmrc"                   %% "bootstrap-frontend-play-30"  % bootstrapPlayVersion,
+    "uk.gov.hmrc"                   %% "play-partials-play-30"       % "9.1.0", // includes code for retrieving partials, e.g. the Help with this page form
+    "uk.gov.hmrc"                   %% "domain-play-30"              % "9.0.0",
+    "com.yahoo.platform.yui"        %  "yuicompressor"               % "2.4.8",
+    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "8.4.0",
+    "commons-codec"                 %  "commons-codec"               % "1.16.0",
+    "com.googlecode.htmlcompressor" % "htmlcompressor"               % "1.5.2"
+//    "com.github.fkoehler"    %% "play-html-compressor"        % "2.8.0"
   )
 
   trait TestDependencies {

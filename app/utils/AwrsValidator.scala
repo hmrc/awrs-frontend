@@ -22,7 +22,7 @@ object AwrsValidator extends AwrsValidator
 
 trait AwrsValidator {
 
-  val ninoRegex = """^(?i)[ \t]*[A-Z]{1}[ \t]*[ \t]*[A-Z]{1}[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*""" +
+  val ninoRegex: String = """^(?i)[ \t]*[A-Z]{1}[ \t]*[ \t]*[A-Z]{1}[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*""" +
     """[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[A-D]{1}[ \t]*$"""
 
   // match leading spaces + 'GB' + any combination of digits and spaces 8 times, case insensitive
@@ -52,9 +52,9 @@ trait AwrsValidator {
   // for now both passport and national ids are the same but the variables are left seperate in case if they do diverge
   private val passportNatIdRegex = """^(?i)(?:[ \t]*[a-z0-9][ \t]*){1,20}$"""
 
-  val passportRegex = passportNatIdRegex
+  val passportRegex: String = passportNatIdRegex
 
-  val nationalIDRegex = passportNatIdRegex
+  val nationalIDRegex: String = passportNatIdRegex
 
   val telephoneRegex = """^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$"""
 
@@ -85,6 +85,6 @@ trait AwrsValidator {
 
   def validTextRegex(regex: String): (String) => Boolean = (input: String) => input.matches(regex)
 
-  val validAlphaNumeric = validTextRegex(alphaNumericRegex)
+  val validAlphaNumeric: String => Boolean = validTextRegex(alphaNumericRegex)
 
 }

@@ -114,8 +114,8 @@ object SessionUtil {
 
   // cached implicit that can be used elsewhere
   // e.g. implicit val sessionUtil = SessionUtil.sessionUtil
-  implicit val sessionUtilForRequest = (request: Request[AnyContent]) => new SessionUtil.SessionUtilForRequest(request)
-  implicit val sessionUtilForResult = (result: Result) => new SessionUtil.SessionUtilForResult(result)
+  implicit val sessionUtilForRequest: Request[AnyContent] => SessionUtilForRequest = (request: Request[AnyContent]) => new SessionUtil.SessionUtilForRequest(request)
+  implicit val sessionUtilForResult: Result => SessionUtilForResult = (result: Result) => new SessionUtil.SessionUtilForResult(result)
 
   def getUniqueAckNo: String = {
     val length = 32
