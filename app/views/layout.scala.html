@@ -20,10 +20,12 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardHeader, HmrcTrackingConsentSnippet, HmrcHead, HmrcTimeoutDialogHelper,HmrcScripts, HmrcLayout}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import views.html.helper.CSPNonce
 
 @this(
-        hmrcLayout: HmrcLayout,
+        hmrcStandardPage: HmrcStandardPage,
         hmrcHead: HmrcHead,
         govukHeader: HmrcStandardHeader,
         hmrcScripts: HmrcScripts,
@@ -56,11 +58,26 @@
 
 @signOutUrl = @{(routes.ApplicationController.logout.url)}
 
-@hmrcLayout(
-    pageTitle = pageTitle,
-    additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl)),
-    serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),
-    signOutUrl = Some(signOutUrl),
-    beforeContentBlock = Some(beforeContentBlock),
-    additionalScriptsBlock = Some(scriptsBlock)
-)(content)
+@*//@hmrcLayout(*@
+@*//    pageTitle = pageTitle,*@
+@*//    additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl)),*@
+@*//    serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),*@
+@*//    signOutUrl = Some(signOutUrl),*@
+@*//    beforeContentBlock = Some(beforeContentBlock),*@
+@*//    additionalScriptsBlock = Some(scriptsBlock)*@
+@*//)(content)*@
+
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        serviceURLs = ServiceURLs(
+            serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),
+            signOutUrl = Some(signOutUrl)
+        ),
+        templateOverrides = TemplateOverrides(
+            additionalScriptsBlock = Some(scriptsBlock),
+            beforeContentBlock = Some(beforeContentBlock)
+        ),
+        pageTitle = pageTitle,
+        isWelshTranslationAvailable = false /* or false if your service has not been translated */
+    )
+)(contentBlock)
