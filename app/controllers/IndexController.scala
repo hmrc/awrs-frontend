@@ -65,6 +65,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
               val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
               val showOneViewLink = indexService.showOneViewLink(sectionStatus)
               val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
+              val businessName: Option[String] = businessPartnerDetails.map(b => b.businessName)
               Ok(template(
                 awrsRef = {
                   if (accountUtils.hasAwrs(ar.enrolments)) {
@@ -76,7 +77,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                 hasApplicationChanged = applicationChangeFlag,
                 allSectionComplete = allSectionCompletedFlag,
                 showOneViewLink = showOneViewLink,
-                businessPartnerDetails.get.businessName,
+                businessName = businessName,
                 sectionStatus,
                 subscriptionStatus,
                 isHappyPathEnrollment
