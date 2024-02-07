@@ -79,7 +79,7 @@ trait AwrsValidator {
   def validateISO88591(input: String): Boolean = {
     val inputList: List[Char] = input.toList
     inputList.forall { c =>
-      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255) || asciiWelshChars.contains(c)
+      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255) || asciiWelshChars.contains(c.toInt)
     }
   }
 

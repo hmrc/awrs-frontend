@@ -16,9 +16,11 @@
 
 package models
 
+import forms.validation.util.ConstraintUtil.castSingleToSet
 import play.api.libs.json.Json
 import utils.TestUtil._
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
+
 import scala.language.reflectiveCalls
 
 class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
@@ -104,7 +106,7 @@ class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
     trait WholesalersSetup {
       def unorderedWholesalers: List[String]
 
-      val orderedWholesalers = Seq(
+      val orderedWholesalers: Seq[(String, String)] = Seq(
         "01"-> "First wholesaler",
         "02"-> "Second wholesaler",
         "03"-> "Third wholesaler",
@@ -112,17 +114,17 @@ class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
         "05"-> "Fifth wholesaler",
         "06"-> "Sixth wholesaler")
 
-      val tradingActivity = TradingActivity.reader.getOrderedWholesalers(orderedWholesalers, unorderedWholesalers)
+      val tradingActivity: Any = TradingActivity.reader.getOrderedWholesalers(orderedWholesalers, unorderedWholesalers)
     }
 
     "return correct order of wholesalers when passed complete unordered list" in new WholesalersSetup {
-      override lazy val unorderedWholesalers = List("06", "05", "04", "03", "02", "01")
+      override lazy val unorderedWholesalers: List[String] = List("06", "05", "04", "03", "02", "01")
       tradingActivity mustBe List("01", "02", "03", "04", "05", "06")
       tradingActivity.size mustBe 6
     }
 
     "return correct order and number of wholesalers when passed incomplete unordered list" in new WholesalersSetup {
-      override lazy val unorderedWholesalers = List("06", "04", "02")
+      override lazy val unorderedWholesalers: List[String] = List("06", "04", "02")
       tradingActivity mustBe List("02", "04", "06")
       tradingActivity.size mustBe 3
     }

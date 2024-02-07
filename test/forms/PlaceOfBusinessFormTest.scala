@@ -20,13 +20,15 @@ import config.ApplicationConfig
 import forms.AWRSEnums.{BooleanRadioEnum, OperatingDurationEnum}
 import forms.test.util._
 import forms.validation.util.FieldError
+import models.PlaceOfBusiness
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.data.Form
 import utils.AwrsFieldConfig
 
 class PlaceOfBusinessFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils with AwrsFieldConfig {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form = PlaceOfBusinessForm.placeOfBusinessForm.form
+  implicit lazy val form: Form[PlaceOfBusiness] = PlaceOfBusinessForm.placeOfBusinessForm.form
 
   "Business contacts form" must {
 

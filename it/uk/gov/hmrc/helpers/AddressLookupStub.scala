@@ -27,7 +27,7 @@ object AddressLookupStub {
     stubPost("/lookup", Some(s"""{ "postcode": "$postcode" }"""), status, body)
   }
 
-  val partialSuccessResponse =
+  val partialSuccessResponse: String =
     s"""
        |[
        |    {
@@ -81,7 +81,7 @@ object AddressLookupStub {
        |]
        |""".stripMargin
 
-  val fullSuccessResponseJson =
+  val fullSuccessResponseJson: String =
     s"""
        |[
        |    {

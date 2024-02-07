@@ -28,7 +28,7 @@ import play.api.data.validation.Valid
 import play.api.data.{Form, Mapping}
 
 
-class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
+class TupleDateMappingTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils {
 
   import TupleDateMapping._
 
@@ -57,7 +57,7 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar  with AwrsFormTest
       isTooLateCheck = if(!newBusiness) Some(isTooLate) else None
     )
 
-  private implicit val testForm = Form(mapping(
+  private implicit val testForm: Form[TestForm] = Form(mapping(
     "newBusTrue" -> testDate_compulsory(true),
     "newBusFalse" -> testDate_compulsory(false)
   )(TestForm.apply)(TestForm.unapply))

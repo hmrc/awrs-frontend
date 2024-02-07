@@ -20,13 +20,15 @@ import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.test.util._
 import forms.validation.util.FieldError
+import models.GroupMember
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.data.Form
 import utils.AwrsFieldConfig
 
 class GroupMemberDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils with AwrsFieldConfig {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form = GroupMemberDetailsForm.groupMemberForm.form
+  implicit lazy val form: Form[GroupMember] = GroupMemberDetailsForm.groupMemberForm.form
 
   "Form validation" must {
 

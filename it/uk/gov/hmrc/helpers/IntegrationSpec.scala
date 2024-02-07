@@ -1,7 +1,7 @@
 
 package uk.gov.hmrc.helpers
 
-import akka.util.Timeout
+import org.apache.pekko.util.Timeout
 import org.scalatest._
 import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.libs.ws.{WSCookie, WSRequest}
@@ -32,7 +32,7 @@ trait IntegrationSpec
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  def mockSessionCookie = {
+  def mockSessionCookie: WSCookie = {
 
     def makeSessionCookie(session:Session): Cookie = {
       val cookieCrypto = inject[SessionCookieCrypto]
