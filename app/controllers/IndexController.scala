@@ -81,7 +81,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                 sectionStatus,
                 subscriptionStatus,
                 isHappyPathEnrollment
-              )).addBusinessNameToSession(businessPartnerDetails.get.businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
+              )).addIndexBusinessNameToSession(businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
             }
         }
       }

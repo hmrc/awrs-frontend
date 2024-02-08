@@ -79,6 +79,10 @@ object SessionUtil {
     @inline def addBusinessNameToSession(businessName: String)(implicit request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionBusinessName -> businessName)
 
+    @inline def addIndexBusinessNameToSession(businessName: Option[String])(implicit request: Request[AnyContent]): Result =
+      if (businessName.isDefined) result.addingToSession(AwrsSessionKeys.sessionBusinessName -> businessName.get)
+      else throw new RuntimeException("Business name not defined")
+
     @inline def addJourneyStartLocationToSession(startLocation: String)(implicit request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionJouneyStartLocation -> startLocation)
 
