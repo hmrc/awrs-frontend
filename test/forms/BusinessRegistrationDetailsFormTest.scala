@@ -238,15 +238,13 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
       vrn = None
     )
 
-    def testForm(entityType: String)(testData: BusinessRegistrationDetails)(test: (BusinessRegistrationDetails) => Unit) = {
+    def testForm(entityType: String)(testData: BusinessRegistrationDetails)(test: (BusinessRegistrationDetails) => Unit): Unit = {
       val fakeRequest = FakeRequest()
       val preProcessedForm = businessRegistrationDetailsForm(entityType)
       val request = TestUtil.populateFakeRequest(fakeRequest, preProcessedForm.form, testData)
       preProcessedForm.bindFromRequest()(request).fold(
         formWithErrors => {
-          withClue("This form must have been valid") {
-            true mustBe false
-          }
+            fail("This form must have been valid")
         },
         valid => test(valid)
       )

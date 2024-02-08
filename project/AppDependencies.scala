@@ -16,7 +16,6 @@ private object AppDependencies {
     "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "8.4.0",
     "commons-codec"                 %  "commons-codec"               % "1.16.0",
     "com.googlecode.htmlcompressor" % "htmlcompressor"               % "1.5.2"
-//    "com.github.fkoehler"    %% "play-html-compressor"        % "2.8.0"
   )
 
   trait TestDependencies {

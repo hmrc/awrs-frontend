@@ -16,12 +16,9 @@
 
 package models
 
-import forms.validation.util.ConstraintUtil.castSingleToSet
 import play.api.libs.json.Json
 import utils.TestUtil._
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
-
-import scala.language.reflectiveCalls
 
 class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
 
@@ -99,34 +96,22 @@ class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {
         }
       }
     }
-  }
 
-  "TradingActivity.reader.getOrderedWholesalers" must {
+    "return correct order of wholesalers when passed complete unordered list" in {
 
-    trait WholesalersSetup {
-      def unorderedWholesalers: List[String]
+      val tradingActivity = testTradingActivity(wholesalerType = List("01", "02", "03", "04", "05", "99"))
+      val jsonAfterBrokerSelected = Json.toJson(tradingActivity)
 
-      val orderedWholesalers: Seq[(String, String)] = Seq(
-        "01"-> "First wholesaler",
-        "02"-> "Second wholesaler",
-        "03"-> "Third wholesaler",
-        "04"-> "Fourth wholesaler",
-        "05"-> "Fifth wholesaler",
-        "06"-> "Sixth wholesaler")
-
-      val tradingActivity: Any = TradingActivity.reader.getOrderedWholesalers(orderedWholesalers, unorderedWholesalers)
+      jsonAfterBrokerSelected.as[TradingActivity].wholesalerType mustBe List("05", "01", "04", "02", "03", "99")
     }
 
-    "return correct order of wholesalers when passed complete unordered list" in new WholesalersSetup {
-      override lazy val unorderedWholesalers: List[String] = List("06", "05", "04", "03", "02", "01")
-      tradingActivity mustBe List("01", "02", "03", "04", "05", "06")
-      tradingActivity.size mustBe 6
-    }
+    "return correct order and number of wholesalers when passed incomplete unordered list" in {
 
-    "return correct order and number of wholesalers when passed incomplete unordered list" in new WholesalersSetup {
-      override lazy val unorderedWholesalers: List[String] = List("06", "04", "02")
-      tradingActivity mustBe List("02", "04", "06")
-      tradingActivity.size mustBe 3
+      val tradingActivity = testTradingActivity(wholesalerType = List("04", "02", "05"), otherWholesaler = None)
+      val jsonAfterBrokerSelected = Json.toJson(tradingActivity)
+
+      jsonAfterBrokerSelected.as[TradingActivity].wholesalerType mustBe List("05", "04", "02")
     }
   }
+
 }
