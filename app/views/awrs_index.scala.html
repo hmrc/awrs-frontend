@@ -48,7 +48,7 @@
 
 @pageHeading = @{
     if (businessName.isDefined) {
-        messages("awrs.index_page.top_heading", businessName)
+        messages("awrs.index_page.top_heading", businessName.getOrElse())
     }
     else {
         messages("awrs.index_page.application")
