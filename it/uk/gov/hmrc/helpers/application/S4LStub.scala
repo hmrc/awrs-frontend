@@ -4,18 +4,24 @@ package uk.gov.hmrc.helpers.application
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json._
-import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Protected}
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import uk.gov.hmrc.crypto.json.JsonEncryption
+import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter, Sensitive}
+import uk.gov.hmrc.helpers.IntegrationSpec
 
-trait S4LStub {
+trait S4LStub extends IntegrationSpec {
 
-  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None)(implicit jsonCrypto: Encrypter with Decrypter,
-                                                                  encryptionFormat: JsonEncryptor[JsObject]): StubMapping = {
+  case class SensitiveJs(override val decryptedValue: JsObject) extends Sensitive[JsObject]
 
-    val keyEncryptor = new JsonEncryptor[String]()
-    val encKey = keyEncryptor.writes(Protected(key)).as[String]
+  implicit lazy val jsonCrypto: Encrypter with Decrypter = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
+  implicit lazy val encryptionFormat: Writes[SensitiveJs] = JsonEncryption.sensitiveEncrypter[JsObject, SensitiveJs]
 
-    val encData = data.map(dt => encryptionFormat.writes(Protected(dt)).as[JsString])
+  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None): StubMapping = {
+
+    val keyEncryptor = JsonEncryption.sensitiveEncrypter[String, SensitiveString]
+    val encKey = keyEncryptor.writes(SensitiveString(key)).as[String]
+
+    val encData = data.map(dt => encryptionFormat.writes(SensitiveJs(dt)).as[JsString])
 
     val s4LResponse = encData match {
       case Some(s4lEncData) => Json.obj(
@@ -49,10 +55,9 @@ trait S4LStub {
     }
   }
 
-  def stubS4LPut(id: String, key: String, data: JsObject, api: Boolean = false)(implicit encryptionFormat: JsonEncryptor[JsObject]
-                                                          ): StubMapping = {
+  def stubS4LPut(id: String, key: String, data: JsObject, api: Boolean = false): StubMapping = {
 
-    val encData = encryptionFormat.writes(Protected(data))
+    val encData = encryptionFormat.writes(SensitiveJs(data))
 
     val s4LResponse = Json.obj(
       "id" -> key,

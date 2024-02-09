@@ -8,13 +8,15 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
 import uk.gov.hmrc.helpers.wiremock.WireMockConfig
 
+import scala.annotation.nowarn
+
 trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig {
   self: TestSuite =>
 
   val currentAppBaseUrl: String = "awrs-frontend"
   val testAppUrl: String        = s"http://localhost:$port/$currentAppBaseUrl"
 
-
+  @nowarn
   def appConfig(extraConfig: (String,String)*): Map[String, Any] = Map(
     "microservice.services.auth.host"       -> wireMockHost,
     "microservice.services.auth.port"       -> wireMockPort,
