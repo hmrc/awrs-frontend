@@ -18,37 +18,18 @@ private object AppDependencies {
     "com.googlecode.htmlcompressor" % "htmlcompressor"               % "1.5.2"
   )
 
-  trait TestDependencies {
-    lazy val scope: String = "test"
-    lazy val test : Seq[ModuleID] = ???
-  }
+  val test: Seq[ModuleID] = Seq(
+    "uk.gov.hmrc"       %% "bootstrap-test-play-30" % bootstrapPlayVersion % "test",
+    "org.jsoup"         %  "jsoup"                  % "1.17.2"             % "test",
+    "org.mockito"       %  "mockito-core"           % "5.10.0"             % "test",
+    "org.scalatestplus" %% "scalatestplus-mockito"  % "1.0.0-M2"           % "test",
+    "commons-codec"     %  "commons-codec"          % "1.16.0"
+  )
 
-  object Test {
+  val itDependencies: Seq[ModuleID] = Seq(
+    "org.wiremock"                 %  "wiremock"             % "3.3.1"  % Test,
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.16.1" % Test
+  )
 
-    def apply(): Seq[ModuleID] = new TestDependencies {
-      override lazy val test: Seq[sbt.ModuleID] = Seq(
-        "uk.gov.hmrc"       %% "bootstrap-test-play-30" % bootstrapPlayVersion % scope,
-        "org.jsoup"         %  "jsoup"                  % "1.17.2"             % scope,
-        "org.mockito"       %  "mockito-core"           % "5.10.0"             % scope,
-        "org.scalatestplus" %% "scalatestplus-mockito"  % "1.0.0-M2"           % scope,
-        "commons-codec"     %  "commons-codec"          % "1.16.0"
-      )
-    }.test
-  }
-
-  object IntegrationTest {
-    def apply(): Seq[ModuleID] = new TestDependencies {
-
-      override lazy val scope: String = "it"
-
-      override lazy val test: Seq[sbt.ModuleID] = Seq(
-        "uk.gov.hmrc"                  %% "bootstrap-test-play-30" % bootstrapPlayVersion % scope,
-//        "com.typesafe.play"            %% "play-test"              % PlayVersion.current % scope,
-        "org.wiremock"                 %  "wiremock"               % "3.3.1"              % scope,
-        "com.fasterxml.jackson.module" %% "jackson-module-scala"   % "2.16.1"             % scope
-      )
-    }.test
-  }
-
-  def apply(): Seq[ModuleID] = compile ++ Test() ++ IntegrationTest()
+  def apply(): Seq[ModuleID] = compile ++ test
 }
