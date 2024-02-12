@@ -102,6 +102,12 @@ class IndexControllerTest extends ServicesUnitTestFixture {
 
         redirectLocation(result).get mustBe "/alcohol-wholesale-scheme"
       }
+      "business name is missing from session" in {
+        val result = callShowIndex(businessName = None)
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme"
+      }
     }
 
     "clear sessionJourneyStartLocation from session when index is shown" in {
@@ -137,7 +143,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
 
   val testInitSessionJouneyStartLocation = "Some location"
 
-  private def callShowIndex(businessType: Option[String] = "SOP", startSection: Option[String] = None): Future[Result] = {
+  private def callShowIndex(businessName: Option[String] = "ACME", businessType: Option[String] = "SOP", startSection: Option[String] = None): Future[Result] = {
     setupMockSave4LaterService(
       fetchBusinessCustomerDetails = testReviewDetails,
       fetchAll = Future.successful(None)
@@ -148,7 +154,10 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     setAuthMocks()
 
     val request = businessType match {
-      case Some(bt) => SessionBuilder.buildRequestWithSession(userId, bt)
+      case Some(bt) => businessName match {
+        case Some (bn) => SessionBuilder.buildRequestWithSessionBusinessName(userId, bt, bn)
+        case _ => SessionBuilder.buildRequestWithSession(userId, bt)
+      }
       case _ => SessionBuilder.buildRequestWithSession(userId)
     }
     val requestWithStart = startSection match {

@@ -73,6 +73,17 @@ object SessionBuilder {
     )
   }
 
+  def buildRequestWithSessionBusinessName(userId: String, businessType: String, businessName: String) = {
+    val sessionId = s"session-${UUID.randomUUID}"
+    FakeRequest().withSession(
+      "sessionId" -> sessionId,
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
+      "userId"-> userId,
+      "businessType" -> businessType,
+      "businessName" -> businessName
+    )
+  }
+
   def buildRequestWithSession(userId: String, businessType: String, previousLocation: Option[String]) = {
     val sessionId = s"session-${UUID.randomUUID}"
     previousLocation match {
