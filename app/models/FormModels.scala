@@ -530,7 +530,7 @@ object TradingActivity_old extends AwrsFieldConfig {
   val Other = "99"
   val Delimiter = " "
 
-  implicit val writer = new Writes[TradingActivity_old] {
+  implicit val writer: Writes[TradingActivity_old] = new Writes[TradingActivity_old] {
 
     // remove the Producer and Broker wholesaler codes if required as they will be sent via the 'Other' field from now on
     // and add the 'Other' code to the wholesaler type if either Producer or Broker are selected
@@ -567,7 +567,7 @@ object TradingActivity_old extends AwrsFieldConfig {
         .++(Json.obj("doYouExportAlcohol" -> tradingActivity.doYouExportAlcohol))
   }
 
-  implicit val reader = new Reads[TradingActivity_old] {
+  implicit val reader: Reads[TradingActivity_old] = new Reads[TradingActivity_old] {
 
     // remove the 'Other' wholesaler type if it only contained Producer and Broker so it is not selected on the screen
     // add the Producer and Broker wholesaler codes if required so they are selected on the screen
@@ -626,7 +626,7 @@ object TradingActivity extends AwrsFieldConfig {
   val Other = "99"
   val Delimiter = " "
 
-  implicit val writer = new Writes[TradingActivity] {
+  implicit val writer: Writes[TradingActivity] = new Writes[TradingActivity] {
 
     // remove the Producer and Broker wholesaler codes if required as they will be sent via the 'Other' field from now on
     // and add the 'Other' code to the wholesaler type if either Producer or Broker are selected
@@ -664,7 +664,7 @@ object TradingActivity extends AwrsFieldConfig {
         .++(tradingActivity.exportLocation.fold(Json.obj())(x => Json.obj("exportLocation" -> x)))
   }
 
-  implicit val reader = new Reads[TradingActivity] {
+  implicit val reader: Reads[TradingActivity] = new Reads[TradingActivity] {
 
     // remove the 'Other' wholesaler type if it only contained Producer and Broker so it is not selected on the screen
     // add the Producer and Broker wholesaler codes if required so they are selected on the screen
@@ -719,7 +719,7 @@ object TradingActivity extends AwrsFieldConfig {
       }
   }
 
-  implicit val optFormats = Format.optionWithNull[TradingActivity]
+  implicit val optFormats: Format[Option[TradingActivity]] = Format.optionWithNull[TradingActivity]
 }
 
 object Products {

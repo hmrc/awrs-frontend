@@ -28,7 +28,7 @@ import play.api.data.Form
 import utils.AwrsFieldConfig
 import utils.TestConstants._
 
-class BusinessContactFormTest extends PlaySpec with MockitoSugar  with BeforeAndAfterEach with AwrsFormTestUtils with AwrsFieldConfig {
+class BusinessContactFormTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils with AwrsFieldConfig {
   implicit val mockConfig: ApplicationConfig = mockAppConfig
   implicit lazy val form: Form[BusinessContacts] = BusinessContactsForm.businessContactsForm.form
 

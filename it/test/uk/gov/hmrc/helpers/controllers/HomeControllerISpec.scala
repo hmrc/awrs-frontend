@@ -1,3 +1,18 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package uk.gov.hmrc.helpers.controllers
 
@@ -9,8 +24,6 @@ import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec}
 import uk.gov.hmrc.http.HeaderNames
@@ -25,9 +38,6 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
   val SessionId = s"mock-sessionid"
   val testResponse: String = Json.toJson(AwrsUsers(Nil,Nil)).toString
-
-  implicit lazy val jsonCrypto: Encrypter with Decrypter = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
-  implicit lazy val encryptionFormat: JsonEncryptor[JsObject] = new JsonEncryptor[JsObject]()
 
   val businessCustomerDetailsString: String = """{
                                         |"id": "businessCustomerDetails",
@@ -78,7 +88,6 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
     s"""{"processingDate":"2015-12-17T09:30:47Z","etmpFormBundleNumber":"123456789012345","awrsRegistrationNumber": "DummyRef"}"""
   )
 
-
   def stubShowAndRedirectExternalCalls(data : Option[JsObject], keystoreStatus: Int): StubMapping = {
     stubFor(post(urlMatching("/auth/authorise"))
       .willReturn(
@@ -113,8 +122,6 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
           | "utr" : "5810451"
           |}""".stripMargin).as[JsObject]), Some(Tuple3("etmpDetails", "noneGET", "businessRegistration")))
   }
-
-
 
   "redirect to business type page" when {
 

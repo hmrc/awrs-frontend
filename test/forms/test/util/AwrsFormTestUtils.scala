@@ -379,7 +379,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
   }
 
   implicit def singleFieldTestFunctions(fieldIdString: String)(implicit form: Form[_]): ImplicitSingleFieldTestAPI = new ImplicitSingleFieldTestAPI {
-    override implicit val fieldId = fieldIdString
+    override implicit val fieldId: String = fieldIdString
 
     def assertFieldIsCompulsory(config: CompulsoryFieldValidationExpectations): Unit =
       assertFieldIsCompulsoryWhen(Map[String, String](), config)
@@ -454,9 +454,9 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
       conditions.foreach(condition => assertDateFieldIsIgnoredWhen(condition, config))
   }
 
-  implicit def crossFieldTestFunctions(fieldIdsString: Set[String])(implicit form: Form[_]) = new ImplicitCrossFieldTestAPI {
+  implicit def crossFieldTestFunctions(fieldIdsString: Set[String])(implicit form: Form[_]): ImplicitCrossFieldTestAPI = new ImplicitCrossFieldTestAPI {
 
-    override implicit val fieldIds = fieldIdsString
+    override implicit val fieldIds: Set[String] = fieldIdsString
 
     private def commonTestForAnswered(testData: Map[String, String], config: CrossFieldValidationExpectations): Unit = {
       val formWithErrors = form.bind(testData)

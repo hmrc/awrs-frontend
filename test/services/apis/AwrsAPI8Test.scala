@@ -17,12 +17,12 @@
 package services.apis
 
 import java.util.UUID
-
 import connectors.AWRSConnector
 import connectors.mock.MockAuthConnector
 import models.{WithdrawalReason, WithdrawalResponse}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.MockKeyStoreService
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
@@ -42,7 +42,7 @@ class AwrsAPI8Test extends MockKeyStoreService with MockAuthConnector {
     reset(mockAWRSConnector)
   }
 
-  implicit lazy val fakeRequest = {
+  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,

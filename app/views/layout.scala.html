@@ -15,22 +15,14 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.En
-@import uk.gov.hmrc.hmrcfrontend.views.Aliases.ReportTechnicalIssue
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
-@import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardHeader, HmrcTrackingConsentSnippet, HmrcHead, HmrcTimeoutDialogHelper,HmrcScripts, HmrcLayout}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcReportTechnicalIssueHelper, HmrcStandardPage, HmrcTimeoutDialogHelper}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import views.html.helper.CSPNonce
 
 @this(
-        hmrcLayout: HmrcLayout,
-        hmrcHead: HmrcHead,
-        govukHeader: HmrcStandardHeader,
-        hmrcScripts: HmrcScripts,
+        hmrcStandardPage: HmrcStandardPage,
         hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
-        problemLink: HmrcReportTechnicalIssueHelper,
-        accessibilityStatementConfig: AccessibilityStatementConfig,
-        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
+        problemLink: HmrcReportTechnicalIssueHelper
 )
 
 @(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(
@@ -54,13 +46,19 @@
     @scripts
 }
 
-@signOutUrl = @{(routes.ApplicationController.logout.url)}
+@signOutUrl = @{routes.ApplicationController.logout.url}
 
-@hmrcLayout(
-    pageTitle = pageTitle,
-    additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl)),
-    serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),
-    signOutUrl = Some(signOutUrl),
-    beforeContentBlock = Some(beforeContentBlock),
-    additionalScriptsBlock = Some(scriptsBlock)
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        serviceURLs = ServiceURLs(
+            serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),
+            signOutUrl = Some(signOutUrl)
+        ),
+        templateOverrides = TemplateOverrides(
+            additionalScriptsBlock = Some(scriptsBlock),
+            beforeContentBlock = Some(beforeContentBlock),
+            additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl))
+        ),
+        pageTitle = pageTitle
+    )
 )(content)

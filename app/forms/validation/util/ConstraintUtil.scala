@@ -208,16 +208,16 @@ object ConstraintUtil {
       )
     )
 
-  def compulsaryListConstraint[T](errMsgId: => Invalid): Constraint[List[T]] =
-    Constraint[List[T]]({ model: List[T] =>
+  def compulsaryListConstraint(errMsgId: => Invalid): Constraint[List[String]] =
+    Constraint[List[String]]({ model: List[String] =>
       model.nonEmpty && !model.contains("") match {
         case true => Valid
         case false => errMsgId
       }
     })
 
-  def compulsaryOptListConstraint[T](errMsgId: => Invalid): Constraint[Option[List[T]]] =
-    Constraint[Option[List[T]]]({ model: Option[List[T]] =>
+  def compulsaryOptListConstraint(errMsgId: => Invalid): Constraint[Option[List[String]]] =
+    Constraint[Option[List[String]]]({ model: Option[List[String]] =>
       model match {
         case Some(mod) => mod.nonEmpty && !mod.contains("") match {
           case true => Valid

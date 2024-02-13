@@ -1,7 +1,21 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package uk.gov.hmrc.helpers.controllers
 
-import java.util.UUID
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, postRequestedFor, stubFor, urlEqualTo, urlMatching, verify, exactly => exactlyTimes}
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
@@ -13,12 +27,12 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.{Logger, Logging}
-import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, JsonUtil, LogCapturing}
 import uk.gov.hmrc.http.HeaderNames
 import utils.{AWRSFeatureSwitches, FeatureSwitch}
+
+import java.util.UUID
 
 class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers with S4LStub with LogCapturing with Logging {
 
@@ -29,9 +43,6 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
   val SessionId = s"stubbed-${UUID.randomUUID}"
-
-  implicit lazy val jsonCrypto: Encrypter with Decrypter = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
-  implicit lazy val encryptionFormat: JsonEncryptor[JsObject] = new JsonEncryptor[JsObject]()
 
   val businessCustomerDetailsString: String = """{
                                         |"id": "businessCustomerDetails",
@@ -87,7 +98,6 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
   )
 
   val saUtr = "5810451"
-
 
   def stubShowAndRedirectExternalCalls(): StubMapping = {
     stubFor(post(urlMatching("/auth/authorise"))

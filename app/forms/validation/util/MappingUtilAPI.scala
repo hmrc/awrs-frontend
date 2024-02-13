@@ -36,10 +36,10 @@ object MappingUtilAPI {
 
   def compulsoryEnum(config: CompulsoryEnumMappingParameter): FieldMapping[Option[String]] = of(CompulsoryEnumOptionFormatter(config))
 
-  def compulsoryList[T](config: CompulsoryListMappingParameter[T]): Mapping[List[T]] =
+  def compulsoryList(config: CompulsoryListMappingParameter[String]): Mapping[List[String]] =
     list(config.mapping).verifying(compulsaryListConstraint(config.emptyErrorMsg))
 
-  def compulsoryOptList[T](config: CompulsoryListMappingParameter[T]): Mapping[Option[List[T]]] =
+  def compulsoryOptList(config: CompulsoryListMappingParameter[String]): Mapping[Option[List[String]]] =
     optional(list(config.mapping)).verifying(compulsaryOptListConstraint(config.emptyErrorMsg))
 
   implicit class MappingUtil(mapping: Mapping[Option[String]]) {
