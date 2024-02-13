@@ -19,16 +19,17 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
+
 import javax.inject.Inject
 import models.FormBundleStatus._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.apis.AwrsAPI9
 import services.{ApplicationService, DeEnrolService, IndexService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
-import scala.language.postfixOps
 
+import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future}
 
 class IndexController @Inject()(mcc: MessagesControllerComponents,
@@ -67,6 +68,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
               val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
               val businessName: Option[String] = businessPartnerDetails.map(b => b.businessName)
               if (businessName.isDefined) {
+                println(s"\n***\nreturning 200\n***$businessPartnerDetails\n")
                 Ok(template(
                   awrsRef = {
                     if (accountUtils.hasAwrs(ar.enrolments)) {
@@ -84,8 +86,11 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                   isHappyPathEnrollment
                 )).addIndexBusinessNameToSession(businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
               } else {
+
+                println("\n***\nBusiness\n***\n")
                 debug("No business Name found")
-                Future.successful(Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession)
+                //Future.successful(showErrorPage)
+                Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession
                 }
             }
         }

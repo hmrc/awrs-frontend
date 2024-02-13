@@ -17,6 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
+import models.BusinessCustomerDetails
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
@@ -103,7 +104,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
         redirectLocation(result).get mustBe "/alcohol-wholesale-scheme"
       }
       "business name is missing from session" in {
-        val result = callShowIndex(businessName = None)
+        val result = callShowIndex(reviewDetails = None)
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result).get mustBe "/alcohol-wholesale-scheme"
@@ -143,9 +144,9 @@ class IndexControllerTest extends ServicesUnitTestFixture {
 
   val testInitSessionJouneyStartLocation = "Some location"
 
-  private def callShowIndex(businessName: Option[String] = "ACME", businessType: Option[String] = "SOP", startSection: Option[String] = None): Future[Result] = {
+  private def callShowIndex(businessType: Option[String] = "SOP", startSection: Option[String] = None, reviewDetails: Option[BusinessCustomerDetails] = testReviewDetails): Future[Result] = {
     setupMockSave4LaterService(
-      fetchBusinessCustomerDetails = testReviewDetails,
+      fetchBusinessCustomerDetails = Future.successful(reviewDetails),
       fetchAll = Future.successful(None)
     )
     setupMockAwrsAPI9(keyStore = testSubscriptionStatusTypePending, connector = DoNotConfigure)
@@ -154,10 +155,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     setAuthMocks()
 
     val request = businessType match {
-      case Some(bt) => businessName match {
-        case Some (bn) => SessionBuilder.buildRequestWithSessionBusinessName(userId, bt, bn)
-        case _ => SessionBuilder.buildRequestWithSession(userId, bt)
-      }
+      case Some(bt) => SessionBuilder.buildRequestWithSession(userId, bt)
       case _ => SessionBuilder.buildRequestWithSession(userId)
     }
     val requestWithStart = startSection match {
