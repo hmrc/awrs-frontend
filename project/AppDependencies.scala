@@ -13,9 +13,9 @@ private object AppDependencies {
     "uk.gov.hmrc"                   %% "play-partials-play-30"       % "9.1.0", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc"                   %% "domain-play-30"              % "9.0.0",
     "com.yahoo.platform.yui"        %  "yuicompressor"               % "2.4.8",
-    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "8.4.0",
-    "commons-codec"                 %  "commons-codec"               % "1.16.0",
-    "com.googlecode.htmlcompressor" % "htmlcompressor"               % "1.5.2"
+    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "8.5.0",
+    "commons-codec"                 %  "commons-codec"               % "1.16.1",
+    "com.googlecode.htmlcompressor" %  "htmlcompressor"              % "1.5.2"
   )
 
   val test: Seq[ModuleID] = Seq(
