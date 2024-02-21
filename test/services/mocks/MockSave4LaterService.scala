@@ -287,6 +287,7 @@ object MockSave4LaterService {
   val defaultApplicationStatus: ApplicationStatus = testApplicationStatus()
   val defaultBusinessType: BusinessType = testBusinessDetailsEntityTypes(SoleTrader)
   val defaultBusinessCustomerDetails: BusinessCustomerDetails = testBusinessCustomerDetails("SOP")
+  val testNoBusinessName: BusinessCustomerDetailsBusinessNameOptional = testAttempt("ACME")
   val defaultNewApplicationType: NewApplicationType = testNewApplicationType
   val defaultGroupMemberDetails: GroupMembers = testGroupMemberDetails
   val defaultGroupDeclaration: GroupDeclaration = testGroupDeclaration
