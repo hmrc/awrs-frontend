@@ -19,10 +19,9 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-
 import javax.inject.Inject
 import models.FormBundleStatus._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.apis.AwrsAPI9
 import services.{ApplicationService, DeEnrolService, IndexService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector

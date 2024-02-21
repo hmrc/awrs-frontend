@@ -17,7 +17,7 @@
 package services.apis.mocks
 
 import connectors.mock.MockAWRSConnector
-import models.{BusinessCustomerDetails, BusinessCustomerDetailsBusinessNameOptional, FormBundleStatus, SubscriptionStatusType}
+import models.{BusinessCustomerDetails, FormBundleStatus, SubscriptionStatusType}
 import models.FormBundleStatus._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when

@@ -56,7 +56,6 @@ object TestUtil extends PlaySpec {
   val testBCAddress: BCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("NE98 1ZZ"), Option("country"))
   val testBCAddressNoPostcode: BCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), postcode = None , Option("country"))
   val testBusinessCustomerDetails: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
-
   val testBusinessCustomerDetailsWithoutPostcode: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddressNoPostcode, "sap123", "safe123", false, Some("agent123"), testUtr)
   val testBusinessCustomerDetailsWithoutSafeID: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123","", false, Some("agent123"), testUtr)
 
