@@ -278,16 +278,6 @@ case class BusinessCustomerDetails(businessName: String,
                                    firstName: Option[String] = None,
                                    lastName: Option[String] = None,
                                    utr: Option[String] = None)
-case class BusinessCustomerDetailsBusinessNameOptional(businessName: Option[String],
-                                   businessType: Option[String],
-                                   businessAddress: BCAddress,
-                                   sapNumber: String,
-                                   safeId: String,
-                                   isAGroup: Boolean,
-                                   agentReferenceNumber: Option[String],
-                                   firstName: Option[String] = None,
-                                   lastName: Option[String] = None,
-                                   utr: Option[String] = None)
 
 case class SectionChangeIndicators(businessDetailsChanged: Boolean = false,
                                    businessRegistrationDetailsChanged: Boolean = false,

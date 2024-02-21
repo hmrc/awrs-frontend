@@ -40,28 +40,13 @@ trait MockAwrsAPI9 extends AwrsUnitTestTraits with MockKeyStoreService with Mock
     }
     setupMockKeyStoreServiceWithOnly(subscriptionStatusType = keyStore)
     if (reviewDetails) {
-      println("\n***\nreview details is true\n***\n")
       setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = MockAwrsAPI9.defaultBusinessCustomerDetails)
     } else {
-      println("\n***\nreview details is false\n***\n")
-      setupMockSave4LaterService()
+      setupMockSave4LaterServiceWithOnly()
     }
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
       .thenReturn(true)
   }
-
-//  def testSetupMockAwrsAPI9(keyStore: Option[SubscriptionStatusType],
-//                        connector: MockConfiguration[SubscriptionStatusType] = DoNotConfigure): Unit = {
-//    connector match {
-//      case Configure(status) => setupMockAWRSConnectorWithOnly(checkStatus = status)
-//      case _ =>
-//    }
-//    setupMockKeyStoreServiceWithOnly(subscriptionStatusType = keyStore)
-//    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = MockAwrsAPI9.defaultAPI9test)
-//
-//    when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
-//      .thenReturn(true)
-//  }
 
 }
 
@@ -81,6 +66,5 @@ object MockAwrsAPI9 {
     }
 
   val defaultBusinessCustomerDetails: BusinessCustomerDetails = MockSave4LaterService.defaultBusinessCustomerDetails
-  val defaultAPI9test: BusinessCustomerDetailsBusinessNameOptional = MockSave4LaterService.testNoBusinessName
 
 }

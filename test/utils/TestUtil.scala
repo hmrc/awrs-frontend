@@ -56,30 +56,7 @@ object TestUtil extends PlaySpec {
   val testBCAddress: BCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("NE98 1ZZ"), Option("country"))
   val testBCAddressNoPostcode: BCAddress = BCAddress("line1", "line2", Option("line3"), Option("line4"), postcode = None , Option("country"))
   val testBusinessCustomerDetails: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
-  val testAttempt: String => BusinessCustomerDetailsBusinessNameOptional = (legalName: String) => BusinessCustomerDetailsBusinessNameOptional(Some(legalName), "SOP", testBCAddress, "sap123", "safe123", false, Some("agent123"), testUtr)
 
-  def testingBusinessCustomerDetails(businessName: Option[String] = Some("ACME"),
-                                     businessType: Option[String] = Some("SOP"),
-                                     businessAddress: BCAddress = testBCAddress,
-                                     sapNumber: String = "sap123",
-                                     safeId: String = "safe123",
-                                     isAGroup: Boolean = false,
-                                     agentReferenceNumber: Option[String] = Some("agent123"),
-                                     firstName: Option[String] = None,
-                                     lastName: Option[String] = None,
-                                     utr: Option[String] = testUtr): BusinessCustomerDetailsBusinessNameOptional =
-    BusinessCustomerDetailsBusinessNameOptional(
-      businessName = businessName,
-      businessType = businessType,
-      businessAddress = businessAddress,
-      sapNumber = sapNumber,
-      safeId = safeId,
-      isAGroup = isAGroup,
-      agentReferenceNumber = agentReferenceNumber,
-      firstName = firstName,
-      lastName = lastName,
-      utr = utr
-    )
   val testBusinessCustomerDetailsWithoutPostcode: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddressNoPostcode, "sap123", "safe123", false, Some("agent123"), testUtr)
   val testBusinessCustomerDetailsWithoutSafeID: String => BusinessCustomerDetails = (legalEntity: String) => BusinessCustomerDetails("ACME", Some(legalEntity), testBCAddress, "sap123","", false, Some("agent123"), testUtr)
 

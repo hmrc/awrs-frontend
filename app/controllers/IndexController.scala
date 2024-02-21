@@ -68,8 +68,6 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
               val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
               val businessName: Option[String] = businessPartnerDetails.map(b => b.businessName)
               if (businessName.isDefined) {
-                //println(s"\n***\nreturning 200\n***$businessPartnerDetails\n")
-                println(s"\n***\nreturning 200\n***\n$businessName\n***\n")
                 Ok(template(
                   awrsRef = {
                     if (accountUtils.hasAwrs(ar.enrolments)) {
@@ -87,10 +85,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                   isHappyPathEnrollment
                 )).addIndexBusinessNameToSession(businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
               } else {
-
-                println("\n***\nBusiness\n***\n")
                 debug("No business Name found")
-                //Future.successful(showErrorPage)
                 Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession
                 }
             }
