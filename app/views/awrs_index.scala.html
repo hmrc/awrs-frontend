@@ -28,7 +28,7 @@
     hasApplicationChanged: Boolean,
     allSectionComplete: Boolean,
     showOneViewLink: Boolean,
-    businessName: String,
+    businessName: Option[String],
     indexStatusModel: view_models.IndexViewModel,
     someStatus: Option[SubscriptionStatusType],
     isHappyPathEnrollment: Boolean
@@ -47,10 +47,16 @@
 }
 
 @pageHeading = @{
-    messages("awrs.index_page.top_heading", businessName)
+    if (businessName.isDefined) {
+        messages("awrs.index_page.top_heading", businessName.getOrElse())
+    }
+    else {
+        messages("awrs.index_page.application")
+    }
+
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.index_page.application")), nameBusiness = Some(businessName), userLoggedIn = true){
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.index_page.application")), nameBusiness = businessName, userLoggedIn = true){
        <div>
        @changesBanner
             <br>

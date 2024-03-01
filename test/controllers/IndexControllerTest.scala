@@ -17,6 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
+import models.BusinessCustomerDetails
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
@@ -102,6 +103,12 @@ class IndexControllerTest extends ServicesUnitTestFixture {
 
         redirectLocation(result).get mustBe "/alcohol-wholesale-scheme"
       }
+      "business name is missing from session" in {
+        val result = callShowIndex(reviewDetails = None)
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme"
+      }
     }
 
     "clear sessionJourneyStartLocation from session when index is shown" in {
@@ -137,12 +144,13 @@ class IndexControllerTest extends ServicesUnitTestFixture {
 
   val testInitSessionJouneyStartLocation = "Some location"
 
-  private def callShowIndex(businessType: Option[String] = "SOP", startSection: Option[String] = None): Future[Result] = {
+  private def callShowIndex(businessType: Option[String] = "SOP", startSection: Option[String] = None, reviewDetails: Option[BusinessCustomerDetails] = Some(testReviewDetails)): Future[Result] = {
     setupMockSave4LaterService(
-      fetchBusinessCustomerDetails = testReviewDetails,
+      fetchBusinessCustomerDetails = Future.successful(reviewDetails),
       fetchAll = Future.successful(None)
     )
-    setupMockAwrsAPI9(keyStore = testSubscriptionStatusTypePending, connector = DoNotConfigure)
+
+    setupMockAwrsAPI9(keyStore = testSubscriptionStatusTypePending, connector = DoNotConfigure, reviewDetails.isDefined)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
     setupMockIndexService()
     setAuthMocks()

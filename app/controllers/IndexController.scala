@@ -27,8 +27,8 @@ import services.{ApplicationService, DeEnrolService, IndexService, Save4LaterSer
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
-import scala.language.postfixOps
 
+import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future}
 
 class IndexController @Inject()(mcc: MessagesControllerComponents,
@@ -65,22 +65,28 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
               val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
               val showOneViewLink = indexService.showOneViewLink(sectionStatus)
               val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
-              Ok(template(
-                awrsRef = {
-                  if (accountUtils.hasAwrs(ar.enrolments)) {
-                    Some(accountUtils.getAwrsRefNo(ar.enrolments))
-                  } else {
-                    None
-                  }
-                },
-                hasApplicationChanged = applicationChangeFlag,
-                allSectionComplete = allSectionCompletedFlag,
-                showOneViewLink = showOneViewLink,
-                businessPartnerDetails.get.businessName,
-                sectionStatus,
-                subscriptionStatus,
-                isHappyPathEnrollment
-              )).addBusinessNameToSession(businessPartnerDetails.get.businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
+              val businessName: Option[String] = businessPartnerDetails.map(b => b.businessName)
+              if (businessName.isDefined) {
+                Ok(template(
+                  awrsRef = {
+                    if (accountUtils.hasAwrs(ar.enrolments)) {
+                      Some(accountUtils.getAwrsRefNo(ar.enrolments))
+                    } else {
+                      None
+                    }
+                  },
+                  hasApplicationChanged = applicationChangeFlag,
+                  allSectionComplete = allSectionCompletedFlag,
+                  showOneViewLink = showOneViewLink,
+                  businessName = businessName,
+                  sectionStatus,
+                  subscriptionStatus,
+                  isHappyPathEnrollment
+                )).addIndexBusinessNameToSession(businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
+              } else {
+                debug("No business Name found")
+                Redirect(controllers.routes.HomeController.showOrRedirect(request.session.get(AwrsSessionKeys.sessionCallerId))) removeJouneyStartLocationFromSession
+                }
             }
         }
       }

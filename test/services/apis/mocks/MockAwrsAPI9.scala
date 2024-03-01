@@ -32,14 +32,18 @@ trait MockAwrsAPI9 extends AwrsUnitTestTraits with MockKeyStoreService with Mock
   lazy val testAPI9 = new AwrsAPI9(mockAccountUtils, mockAWRSConnector, testKeyStoreService, testSave4LaterService)
 
   def setupMockAwrsAPI9(keyStore: Option[SubscriptionStatusType],
-                        connector: MockConfiguration[SubscriptionStatusType] = DoNotConfigure): Unit = {
+                        connector: MockConfiguration[SubscriptionStatusType] = DoNotConfigure,
+                        reviewDetails: Boolean = true): Unit = {
     connector match {
       case Configure(status) => setupMockAWRSConnectorWithOnly(checkStatus = status)
       case _ =>
     }
     setupMockKeyStoreServiceWithOnly(subscriptionStatusType = keyStore)
-    setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = MockAwrsAPI9.defaultBusinessCustomerDetails)
-
+    if (reviewDetails) {
+      setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = MockAwrsAPI9.defaultBusinessCustomerDetails)
+    } else {
+      setupMockSave4LaterServiceWithOnly()
+    }
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
       .thenReturn(true)
   }
