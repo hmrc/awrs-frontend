@@ -55,7 +55,10 @@
                         addressLine2 = bcAddress.line_2,
                         addressLine3 = bcAddress.line_3,
                         addressLine4 = bcAddress.line_4,
-                        postcode = Some(postcodeHelper(bcAddress.postcode.get)),
+                        postcode = bcAddress.postcode.getOrElse("") match {
+                            case "" => None
+                            case _ => Some(postcodeHelper(bcAddress.postcode.get))
+                        },
                         addressCountry = None,
                         addressCountryCode = bcAddress.country
                     ))
