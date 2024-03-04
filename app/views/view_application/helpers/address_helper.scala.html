@@ -16,14 +16,10 @@
 
 @import config.ApplicationConfig
 @import views.view_application.helpers.{EditSectionOnlyMode, ViewApplicationType}
+@import views.html.view_application.helpers.postcode_helper
 @(legend: String, someAddress: Option[Address], links: Option[List[String]] = None)(implicit cssClass: Option[String] = None, someId: Option[Int] = None, viewApplicationType: ViewApplicationType = EditSectionOnlyMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@postcodeHelper(postcode: String) = @{
-    val splitPoint = postcode.length - 3
-    val startPostCode = postcode.substring(0, splitPoint)
-    val endPostCode = postcode.substring(splitPoint, postcode.length)
-    startPostCode + " " + endPostCode
-}
+@postcodeHelper(postcode: String) = @{postcode_helper}.toString
 
 @someAddress match {
     case Some(address) => {

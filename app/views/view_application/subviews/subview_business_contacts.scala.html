@@ -23,7 +23,7 @@
 @(headingKey: String,
   someModel: Option[models.BusinessContacts],
   someBCDetails:  Option[models.BusinessCustomerDetails],
-  showTableHeader: Boolean = true
+  showTableHeader: Boolean = true,
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
 
 @heading = @{messages(headingKey)}
@@ -36,12 +36,7 @@
     controllers.routes.BusinessContactsController.showBusinessContacts(false).url
 }
 
-@postcodeHelper(postcode: String) = @{
-    val splitPoint = postcode.length - 3
-    val startPostCode = postcode.substring(0, splitPoint)
-    val endPostCode = postcode.substring(splitPoint, postcode.length)
-    startPostCode + " " + endPostCode
-}
+@postcodeHelper(postcode: String) = @{postcode_helper}.toString
 
 @contactAddressToDisplay = @{
     (someModel,someBCDetails) match {
@@ -55,10 +50,7 @@
                         addressLine2 = bcAddress.line_2,
                         addressLine3 = bcAddress.line_3,
                         addressLine4 = bcAddress.line_4,
-                        postcode = bcAddress.postcode.getOrElse("") match {
-                            case "" => None
-                            case _ => Some(postcodeHelper(bcAddress.postcode.get))
-                        },
+                        postcode = bcAddress.postcode.map(postcodeHelper),
                         addressCountry = None,
                         addressCountryCode = bcAddress.country
                     ))
