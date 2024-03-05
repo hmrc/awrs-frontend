@@ -87,7 +87,7 @@
     }
 }
 
-@postcodeHelper(postcode: String) = @{postcode_helper}.toString
+@postcodeHelper(postcode: String) = @{postcode_helper}
 
 
 @awrsMain(
@@ -158,7 +158,7 @@
                     @business.line_2<br>
                     @if(business.line_3.nonEmpty) {@business.line_3<br>}
                     @if(business.line_4.nonEmpty) {@business.line_4<br>}
-                    @(business.postcode.map(postcodeHelper))<br>
+                    @(business.postcode.map(postcodeHelper => postcodeHelper))<br>
                 </div>
                 <div class="govuk-form-group">
 

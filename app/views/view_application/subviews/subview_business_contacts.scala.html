@@ -36,7 +36,7 @@
     controllers.routes.BusinessContactsController.showBusinessContacts(false).url
 }
 
-@postcodeHelper(postcode: String) = @{postcode_helper}.toString
+@postcodeHelper(postcode: String) = @{postcode_helper}
 
 @contactAddressToDisplay = @{
     (someModel,someBCDetails) match {
@@ -50,7 +50,7 @@
                         addressLine2 = bcAddress.line_2,
                         addressLine3 = bcAddress.line_3,
                         addressLine4 = bcAddress.line_4,
-                        postcode = bcAddress.postcode.map(postcodeHelper),
+                        postcode = bcAddress.postcode.map(postcodeHelper => postcodeHelper),
                         addressCountry = None,
                         addressCountryCode = bcAddress.country
                     ))
