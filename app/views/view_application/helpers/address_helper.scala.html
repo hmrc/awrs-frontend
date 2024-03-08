@@ -31,7 +31,7 @@
             address.addressLine3,
             address.addressLine4,
             address.postcode match {
-                case Some(postcode) => Some(postcodeHelper(address.postcode.getOrElse("")))
+                case Some(postcode) => address.postcode.map(postcodeHelper)
                 case _ => None
             },
             applicationConfig.countryCodes.getCountry(address.addressCountryCode.fold("")(x => x))
