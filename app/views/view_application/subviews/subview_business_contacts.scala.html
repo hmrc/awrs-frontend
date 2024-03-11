@@ -25,7 +25,7 @@
 @(headingKey: String,
   someModel: Option[models.BusinessContacts],
   someBCDetails:  Option[models.BusinessCustomerDetails],
-  showTableHeader: Boolean = true,
+  showTableHeader: Boolean = true
 )(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
 
 @heading = @{messages(headingKey)}
