@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@postcodeHelper(postcode: String) = @{
+package views
+
+package object helpers {
+
+  def postcodeHelper(postcode: String): String =
     if (postcode.length < 4) postcode
     else {
         val (start, end) = postcode.splitAt(postcode.length-3)

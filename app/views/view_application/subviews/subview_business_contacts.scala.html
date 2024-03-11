@@ -20,6 +20,8 @@
 @import views.view_application.ViewApplicationHelper._
 @import views.view_application.helpers.ViewApplicationType
 @import views.view_application.subviews.SubviewIds
+@import views.helpers.postcodeHelper
+
 @(headingKey: String,
   someModel: Option[models.BusinessContacts],
   someBCDetails:  Option[models.BusinessCustomerDetails],
@@ -36,7 +38,6 @@
     controllers.routes.BusinessContactsController.showBusinessContacts(false).url
 }
 
-@postcodeHelper(postcode: String) = @{postcode_helper.toString}
 
 @contactAddressToDisplay = @{
     (someModel,someBCDetails) match {
