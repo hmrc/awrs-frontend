@@ -15,15 +15,9 @@
  *@
 
 @import config.ApplicationConfig
+@import views.helpers.postcodeHelper
 @import views.view_application.helpers.{EditSectionOnlyMode, ViewApplicationType}
 @(legend: String, someAddress: Option[Address], links: Option[List[String]] = None)(implicit cssClass: Option[String] = None, someId: Option[Int] = None, viewApplicationType: ViewApplicationType = EditSectionOnlyMode, messages: Messages, applicationConfig: ApplicationConfig)
-
-@postcodeHelper(postcode: String) = @{
-    val splitPoint = postcode.length - 3
-    val startPostCode = postcode.substring(0, splitPoint)
-    val endPostCode = postcode.substring(splitPoint, postcode.length)
-    startPostCode + " " + endPostCode
-}
 
 @someAddress match {
     case Some(address) => {
@@ -33,10 +27,7 @@
             Some(address.addressLine2),
             address.addressLine3,
             address.addressLine4,
-            address.postcode match {
-                case Some(postcode) => Some(postcodeHelper(Some(postcode).get))
-                case _ => None
-            },
+            address.postcode.map(postcodeHelper),
             applicationConfig.countryCodes.getCountry(address.addressCountryCode.fold("")(x => x))
         )("", cssClass, someId, links, messages)
     }

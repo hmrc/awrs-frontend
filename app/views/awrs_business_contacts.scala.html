@@ -86,18 +86,6 @@
     }
 }
 
-@postcodeHelper(postcode: String) = @{
-    val splitPoint = if(postcode.length < 4) {
-        0
-    } else {
-        postcode.length - 3
-    }
-
-    val startPostCode = postcode.substring(0, splitPoint)
-    val endPostCode = postcode.substring(splitPoint, postcode.length)
-    startPostCode + " " + endPostCode
-}
-
 
 @awrsMain(
     title = s"${errorPrefix(businessContactsForm)} ${messages("awrs.generic.tab.title", businessTypeHeading)}",
@@ -167,7 +155,7 @@
                     @business.line_2<br>
                     @if(business.line_3.nonEmpty) {@business.line_3<br>}
                     @if(business.line_4.nonEmpty) {@business.line_4<br>}
-                    @postcodeHelper(business.postcode.getOrElse("   "))<br>
+                    @(business.postcode.map(postcodeHelper))<br>
                 </div>
                 <div class="govuk-form-group">
 
