@@ -79,6 +79,23 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       groupMembersName -> Json.toJson(testGroupMemberDetails)
     ))
 
+  def cachedDataNoSupplier(): CacheMap =
+    CacheMap(testUtr, Map("legalEntity" -> Json.toJson(testLegalEntity),
+      "businessCustomerDetails" -> Json.toJson(testReviewDetails),
+      businessNameDetailsName -> Json.toJson(testBusinessNameDetails()),
+      tradingStartDetailsName -> Json.toJson(newAWBusiness(proposedStartDate = None)),
+      businessRegistrationDetailsName -> Json.toJson(testBusinessRegistrationDetails(legalEntity = testLegalEntity.legalEntity.get)),
+      placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
+      businessContactsName -> Json.toJson(testBusinessContactsDefault()),
+      "partnerDetails" -> Json.toJson(testPartnerDetails),
+      "additionalBusinessPremises" -> Json.toJson(testAdditionalPremisesList),
+      "businessDirectors" -> Json.toJson(testBusinessDirectors),
+      tradingActivityName -> Json.toJson(testTradingActivity()),
+      productsName -> Json.toJson(testProducts()),
+      "applicationDeclaration" -> Json.toJson(testApplicationDeclaration),
+      groupMembersName -> Json.toJson(testGroupMemberDetails)
+    ))
+
   def testSubscriptionTypeFrontEnd(legalEntity: Option[BusinessType] = Some(testLegalEntity),
                                    groupDeclaration: Option[GroupDeclaration] = Some(testGroupDeclaration),
                                    businessPartnerName: String = testBusinessPartnerName,
@@ -235,13 +252,23 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       }
 
       "Suppliers Changed must update the correct flag for Non UK Suppliers" in {
-        val thrown = the[ResubmissionException] thrownBy testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
-        thrown.getMessage mustBe ResubmissionException.resubmissionMessage
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSuppliersInternational))))
+        result.changeIndicators.get mustBe getChangeIndicators(suppliersChanged = true)
       }
 
       "Suppliers Changed must update the correct flag for UK Suppliers" in {
-        val thrown = the[ResubmissionException] thrownBy testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSupplierAddressListOrig))))
-        thrown.getMessage mustBe ResubmissionException.resubmissionMessage
+        val result = testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(suppliers = Some(testSuppliers))))
+        result.changeIndicators.get mustBe getChangeIndicators(suppliersChanged = true)
+      }
+
+      "Suppliers Changed must update the correct flag when no change to suppliers" in {
+        val result =  testApplicationService.getModifiedSubscriptionType(Some(cachedData()), Some(testSubscriptionTypeFrontEnd(businessPartnerDetails = Some(testPartnerDetailsSingle))))
+        result.changeIndicators.get mustBe getChangeIndicators(suppliersChanged = false, partnersChanged = true)
+      }
+
+      "Suppliers Changed must update the correct flag when no suppliers found in user answers" in {
+        val result =  testApplicationService.getModifiedSubscriptionType(Some(cachedDataNoSupplier()), Some(testSubscriptionTypeFrontEnd()))
+        result.changeIndicators.get mustBe getChangeIndicators(suppliersChanged = true)
       }
 
       "Declaration Changed must update the correct flag" in {

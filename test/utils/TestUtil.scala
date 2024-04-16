@@ -196,8 +196,11 @@ object TestUtil extends PlaySpec {
                                         confirmation: Option[Boolean] = None): ApplicationDeclaration = ApplicationDeclaration(declarationName, declarationRole, confirmation)
 
   val testPartnerDetails: Partners = Partners(List(testPartner(), testPartner()))
+  val testPartnerDetailsSingle: Partners = Partners(List(testPartner()))
 
   val testReviewDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
+  val testBusinessCustomerDetailsOrig = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", true, Some("agent123"))
+
   val testBusinessNameChanged: BusinessCustomerDetails = BusinessCustomerDetails("NOT ACME", Some("SOP"), BCAddress("additional line 1", "additional line 2", Option("line3"), Option("line4"), Option("postcode"), None), "sap123", "safe123", false, Some("agent123"))
 
   val testSubscriptionStatusTypePending: SubscriptionStatusType = SubscriptionStatusType("2001-12-17T09:30:47Z", Pending, None, false, None, None)
@@ -271,7 +274,6 @@ object TestUtil extends PlaySpec {
   val testGroupMemberDetails2Members: GroupMembers = GroupMembers(List(GroupMember(defaultTradingCompanyName(), Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), None, Yes, testUtr, No, None, No, None, Yes),
     GroupMember(defaultTradingCompanyName(2), Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), None, Yes, testUtr, No, None, No, None, No)))
   val testGroupDeclaration: GroupDeclaration = GroupDeclaration(true)
-  val testBusinessCustomerDetailsOrig: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", true, Some("agent123"))
 
   val testAddressOrig: Address = Address(postcode = Some("postcode"), addressLine1 = "line1", addressLine2 = "line2", addressLine3 = Some("line3"), addressLine4 = Some("line4"), addressCountryCode = None)
   val testAdditionalBusinessPremisesOrig1: AdditionalBusinessPremises = AdditionalBusinessPremises(additionalPremises = Yes, Some(testAddressOrig), addAnother = Option("No"))
