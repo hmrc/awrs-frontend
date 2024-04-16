@@ -383,8 +383,8 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
         false
       }
 
-      val suppliersChanged: Boolean = data.suppliers.fold(false){_ =>
-        val suppliersLst = cached.getSuppliers.get.suppliers
+      val suppliersChanged: Boolean = data.suppliers.fold(false){suppliers =>
+        val suppliersLst = cached.getSuppliers.fold(List[Supplier]())(_.suppliers)
 
         val formAddressSupplier = suppliersLst match {
           case supplierList :: supplierLst => suppliersLst.zipWithIndex.map {
@@ -394,7 +394,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
           }
           case _ => List()
         }
-        !data.suppliers.get.suppliers.equals(formAddressSupplier)
+        !suppliers.suppliers.equals(formAddressSupplier)
       }
 
       val declarationChanged: Boolean = if (data.applicationDeclaration.isDefined) {
