@@ -224,38 +224,6 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       awrsData
     }
 
-//  def callUpdateGroupBusinessPartner(cached: Option[CacheMap],
-//                                     cachedSubscription: Option[SubscriptionTypeFrontEnd],
-//                                     subscriptionStatus: Option[SubscriptionStatusType],
-//                                     authRetrievals: StandardAuthRetrievals)
-//                                    (implicit hc: HeaderCarrier, ec: ExecutionContext)
-//                                    : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
-//    def createUpdateRegistrationDetailsRequest(businessCustomerAddress: BCAddressApi3): UpdateRegistrationDetailsRequest = {
-//      val businessContacts = cached.get.getBusinessContacts.get
-//      UpdateRegistrationDetailsRequest(
-//        isAnIndividual = false,
-//        organisation = Some(OrganisationName(cached.get.getBusinessCustomerDetails.get.businessName)),
-//        address = businessCustomerAddress,
-//        contactDetails = ContactDetails(phoneNumber = businessContacts.telephone, emailAddress = businessContacts.email),
-//        isAnAgent = false,
-//        isAGroup = true
-//      )
-//    }
-//
-//    keyStoreService.fetchBusinessCustomerAddresss flatMap {
-//      case Some(businessCustomerAddress) =>
-//        awrsConnector.updateGroupBusinessPartner(
-//          cachedSubscription.get.businessPartnerName.get,
-//          cached.get.getBusinessType.get.legalEntity.get,
-//          subscriptionStatus.get.safeId.get,
-//          createUpdateRegistrationDetailsRequest(businessCustomerAddress),
-//          authRetrievals
-//        )
-//      case _ => throw new RuntimeException("[callUpdateGroupBusinessPartner] Could not fetch business customer address")
-//    }
-//
-//  }
-
   def callUpdateGroupBusinessPartner(cached: Option[CacheMap],
                                      cachedSubscription: Option[SubscriptionTypeFrontEnd],
                                      subscriptionStatus: Option[SubscriptionStatusType],
