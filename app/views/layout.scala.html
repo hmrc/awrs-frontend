@@ -26,7 +26,7 @@
 )
 
 @(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(
-        implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+        implicit request: RequestHeader, messages: Messages, appConfig: ApplicationConfig)
 
 
 @beforeContentBlock = {
