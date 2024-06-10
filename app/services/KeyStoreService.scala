@@ -141,5 +141,5 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
   @inline def fetchSave4LaterBackup(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
     keyStoreConnector.fetchDataFromKeystore[CacheMap](save4LaterBackupName)
 
-  @inline def removeAll(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = keyStoreConnector.removeAll()
+  @inline def removeAll(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = keyStoreConnector.removeAll()
 }

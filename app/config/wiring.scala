@@ -19,13 +19,14 @@ package config
 import javax.inject.Inject
 import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 
 import scala.concurrent.duration.{Duration, DurationInt}
 
-class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) extends CachedStaticHtmlPartialRetriever {
+class CachedStaticHtmlPartialProvider @Inject()(val httpClientV2: HttpClientV2) extends CachedStaticHtmlPartialRetriever {
   override def refreshAfter: Duration = 60.seconds
 
   override def expireAfter: Duration = 60.minutes
@@ -34,7 +35,7 @@ class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) 
 }
 
 class BusinessCustomerSessionCache @Inject()(servicesConfig: ServicesConfig,
-                                             val http: DefaultHttpClient) extends SessionCache {
+                                             val httpClientV2: HttpClientV2) extends SessionCache {
   override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.review-details.cache", "business-customer-frontend")
 
   override lazy val baseUri: String = servicesConfig.baseUrl("cachable.session-cache")
@@ -42,7 +43,7 @@ class BusinessCustomerSessionCache @Inject()(servicesConfig: ServicesConfig,
 }
 
 class AwrsSessionCache @Inject()(servicesConfig: ServicesConfig,
-                                 val http: DefaultHttpClient) extends SessionCache {
+                                 val httpClientV2: HttpClientV2) extends SessionCache {
   override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.awrs-frontend.cache", "awrs-frontend")
 
   override lazy val baseUri: String = servicesConfig.baseUrl("cachable.session-cache")
@@ -50,7 +51,7 @@ class AwrsSessionCache @Inject()(servicesConfig: ServicesConfig,
 }
 
 class AwrsShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
-                                      val http: DefaultHttpClient) extends ShortLivedHttpCaching {
+                                      val httpClientV2: HttpClientV2) extends ShortLivedHttpCaching {
 
   override lazy val defaultSource: String = servicesConfig.getConfString("cachable.short-lived-cache.awrs-frontend.cache", "awrs-frontend")
   override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache")
@@ -58,7 +59,7 @@ class AwrsShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
 }
 
 class AwrsAPIDataShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
-                                             val http: DefaultHttpClient) extends ShortLivedHttpCaching {
+                                             val httpClientV2: HttpClientV2) extends ShortLivedHttpCaching {
 
   override lazy val defaultSource: String = servicesConfig.getConfString("cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api")
   override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache-api")

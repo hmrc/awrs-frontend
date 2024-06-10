@@ -42,7 +42,7 @@ trait Save4LaterUtil {
   @inline def fetchAll(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
     save4LaterConnector.fetchAll(accountUtils.getUtr(authRetrievals))
 
-  @inline def removeAll(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+  @inline def removeAll(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     save4LaterConnector.removeAll(accountUtils.getUtr(authRetrievals))
 }
 

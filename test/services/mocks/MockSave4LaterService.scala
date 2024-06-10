@@ -129,7 +129,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                           fetchBusinessContacts: MockConfiguration[Future[Option[BusinessContacts]]] = DoNotConfigure,
                                                           fetchPlaceOfBusiness: MockConfiguration[Future[Option[PlaceOfBusiness]]] = DoNotConfigure,
                                                           fetchAll: MockConfiguration[Future[Option[CacheMap]]] = DoNotConfigure,
-                                                          removeAll: MockConfiguration[Future[HttpResponse]] = DoNotConfigure
+                                                          removeAll: MockConfiguration[Future[Unit]] = DoNotConfigure
                                                         ): Unit = {
     implicit val connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
 
@@ -173,7 +173,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
   protected final def setupMockApiSave4LaterServiceWithOnly(
                                                              fetchSubscriptionTypeFrontEnd: MockConfiguration[Future[Option[SubscriptionTypeFrontEnd]]] = DoNotConfigure,
                                                              fetchBusinessDetailsSupport: MockConfiguration[Future[Option[BusinessDetailsSupport]]] = DoNotConfigure,
-                                                             removeAll: MockConfiguration[Future[HttpResponse]] = DoNotConfigure
+                                                             removeAll: MockConfiguration[Future[Unit]] = DoNotConfigure
                                                            ): Unit = {
     implicit val connector: Save4LaterConnector = mockApiSave4LaterConnector
 
