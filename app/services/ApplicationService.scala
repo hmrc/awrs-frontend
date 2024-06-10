@@ -229,7 +229,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
                                      subscriptionStatus: Option[SubscriptionStatusType],
                                      authRetrievals: StandardAuthRetrievals)
                                     (implicit hc: HeaderCarrier, ec: ExecutionContext)
-                                    : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
+  : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
     def createUpdateRegistrationDetailsRequest(businessCustomerAddress: BCAddressApi3): UpdateRegistrationDetailsRequest = {
       val businessContacts = cached.get.getBusinessContacts.get
       UpdateRegistrationDetailsRequest(
@@ -251,9 +251,21 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
           createUpdateRegistrationDetailsRequest(businessCustomerAddress),
           authRetrievals
         )
-      case _ => throw new RuntimeException("[callUpdateGroupBusinessPartner] Could not fetch business customer address")
+      case _ =>
+        warn("[callUpdateGroupBusinessPartner] - Address not found in keystore, attempting to fetch from save4Later")
+        cached.fold(throw new RuntimeException("[callUpdateGroupBusinessPartner] Could not fetch cached changes")){
+          cache => cache.getPlaceOfBusiness.fold(throw new RuntimeException("[callUpdateGroupBusinessPartner] Could not fetch business customer address")){
+            address =>
+              awrsConnector.updateGroupBusinessPartner(
+                cachedSubscription.get.businessPartnerName.get,
+                cached.get.getBusinessType.get.legalEntity.get,
+                subscriptionStatus.get.safeId.get,
+                createUpdateRegistrationDetailsRequest(BCAddressApi3(address)),
+                authRetrievals
+              )
+          }
+        }
     }
-
   }
 
   def removeCountry(someAddress: Option[Address]): Option[Address] =
