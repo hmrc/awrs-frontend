@@ -19,19 +19,9 @@ package config
 import connectors.{BusinessMatchingConnector, BusinessMatchingConnectorImpl}
 import play.api.inject.{Binding, Module, bind => playBind}
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 class Bindings extends Module{
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
-    bindDeps() ++ bindConnectors()
+    Seq(playBind(classOf[BusinessMatchingConnector]).to(classOf[BusinessMatchingConnectorImpl]))
   }
-
-  private def bindDeps() = Seq(
-    playBind(classOf[HttpClient]).to(classOf[DefaultHttpClient])
-  )
-
-  private def bindConnectors() = Seq(
-    playBind(classOf[BusinessMatchingConnector]).to(classOf[BusinessMatchingConnectorImpl])
-  )
 }
