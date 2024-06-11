@@ -19,20 +19,21 @@ package connectors
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
-import javax.inject.Inject
 import models._
 import play.api.http.Status._
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.{AccountUtils, LoggingUtils}
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
+class AWRSNotificationConnector @Inject()(http: HttpClientV2,
                                           applicationConfig: ApplicationConfig,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils
-                                         ) extends RawResponseReads with LoggingUtils {
+                                         ) extends LoggingUtils {
 
   lazy val serviceURL: String = applicationConfig.servicesConfig.baseUrl("awrs-notification")
 
@@ -45,8 +46,8 @@ class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
 
   def fetchNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusNotification]] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val getURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, http.GET(getURL, Seq.empty, Seq.empty)).map {
+    val getURL = url"$serviceURL$cacheURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.get(getURL).execute[HttpResponse]).map {
       case Some(response: HttpResponse) => Some(response.json.as[StatusNotification])
       case None => None
     }
@@ -54,8 +55,8 @@ class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
 
   def getNotificationViewedStatus(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ViewedStatusResponse]] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, http.GET(getURL, Seq.empty, Seq.empty)).map {
+    val getURL = url"$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.get(getURL).execute[HttpResponse]).map {
       case Some(response: HttpResponse) => Some(response.json.as[ViewedStatusResponse])
       case None => None
     }
@@ -63,8 +64,8 @@ class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
 
   def markNotificationViewedStatusAsViewed(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val getURL = s"""$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, http.PUT(getURL, "", Seq.empty)).map {
+    val putURL = url"$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.put(putURL).withBody("").execute[HttpResponse]).map {
       case Some(_: HttpResponse) => Some(true)
       case None => None
     }
@@ -75,8 +76,8 @@ class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
   // However, this will only ever be called call if a valid status has been found that qualifies for deletion
   def deleteFromNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val deleteURL = s"""$serviceURL$cacheURI/$awrsRefNo"""
-    mapResult("", awrsRefNo, http.DELETE(deleteURL, Seq.empty)).map {
+    val deleteURL = url"$serviceURL$cacheURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.delete(deleteURL).execute[HttpResponse]).map {
       case Some(_) => true
       case _ => false
     }.recover {
@@ -99,7 +100,12 @@ class AWRSNotificationConnector @Inject()(http: DefaultHttpClient,
   }
 
   private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
-    mapResult(auditTxt, emailRequest.reference.fold("")(x => x), http.POST(s"$serviceURL$uri", emailRequest, Seq.empty)).map {
+    mapResult(
+      auditTxt,
+      emailRequest.reference.fold("")(x => x),
+      http.post(url"$serviceURL$uri")
+        .withBody(Json.toJson(emailRequest))
+        .execute[HttpResponse]).map {
       case Some(_) => true
       case _ => false
     }

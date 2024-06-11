@@ -18,21 +18,21 @@ package connectors
 
 import audit.Auditable
 import config.ApplicationConfig
-import javax.inject.Inject
 import models._
-import java.time.Period
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, StringContextOps}
 import utils.LoggingUtils
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import java.time.Period
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
+class EmailVerificationConnector @Inject()(http: HttpClientV2,
                                            val auditable: Auditable,
                                            implicit val applicationConfig: ApplicationConfig
-                                          ) extends RawResponseReads with LoggingUtils {
+                                          ) extends LoggingUtils {
 
   lazy val serviceURL: String = applicationConfig.servicesConfig.baseUrl("email-verification")
   val baseURI = "/email-verification"
@@ -48,8 +48,8 @@ class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
       templateParameters = None,
       linkExpiryDuration = defaultEmailExpiryPeriod,
       continueUrl = continueUrl)
-    val postURL = s"""$serviceURL$baseURI$sendEmail"""
-    http.POST(postURL, verificationRequest, Seq.empty).map {
+    val postURL = url"$serviceURL$baseURI$sendEmail"
+    http.post(postURL).withBody(Json.toJson(verificationRequest)).execute[HttpResponse].map {
       response =>
         response.status match {
           case OK | CREATED =>
@@ -71,9 +71,9 @@ class EmailVerificationConnector @Inject()(http: DefaultHttpClient,
   def isEmailAddressVerified(email: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     email match {
       case Some(emailAddress) =>
-        val verifyURL = s"""$serviceURL$baseURI$verifyEmail"""
+        val verifyURL = url"$serviceURL$baseURI$verifyEmail"
 
-        http.POST(verifyURL, Json.obj("email" -> emailAddress), Seq.empty).map { _ =>
+        http.post(verifyURL).withBody(Json.obj("email" -> emailAddress)).execute[HttpResponse].map { _ =>
           audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
           true
         } recover {

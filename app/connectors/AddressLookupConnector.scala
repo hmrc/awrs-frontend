@@ -17,15 +17,14 @@
 package connectors
 
 import audit.Auditable
-import javax.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.address.client.v1.RecordSet
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits.readJsValue
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.LoggingUtils
-
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait AddressLookupResponse
@@ -34,15 +33,17 @@ case class AddressLookupSuccessResponse(addressList: RecordSet) extends AddressL
 case class AddressLookupErrorResponse(cause: Exception) extends AddressLookupResponse
 
 class AddressLookupConnector @Inject()(servicesConfig: ServicesConfig,
-                                       val http: DefaultHttpClient,
+                                       val http: HttpClientV2,
                                        val auditable: Auditable) extends LoggingUtils {
 
   val addressLookupUrl: String = servicesConfig.baseUrl("address-lookup")
 
   def lookup(postcode: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AddressLookupResponse] = {
-    val headers = Seq("X-Hmrc-Origin" -> "AWRS")
 
-    http.POST[JsValue, JsValue](s"$addressLookupUrl/lookup", Json.obj("postcode" -> postcode), headers) map {
+    http.post(url"$addressLookupUrl/lookup")
+      .withBody(Json.obj("postcode" -> postcode))
+      .setHeader("X-Hmrc-Origin" -> "AWRS")
+      .execute[JsValue] map {
       addressListJson =>
         AddressLookupSuccessResponse(RecordSet.fromJsonAddressLookupService(addressListJson))
     } recover {

@@ -17,22 +17,23 @@
 package connectors
 
 import audit.Auditable
-import javax.inject.Inject
 import metrics.AwrsMetrics
-import models.{RequestPayload, _}
+import models._
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import services.GGConstants._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.LoggingUtils
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
+import java.net.URL
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
-                                       http: DefaultHttpClient,
+                                       http: HttpClientV2,
                                        metrics: AwrsMetrics,
                                        val auditable: Auditable) extends LoggingUtils {
   val serviceURL: String = servicesConfig.baseUrl("tax-enrolments")
@@ -51,7 +52,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
             businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val timer = metrics.startTimer(ApiType.API4Enrolment)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
-    val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
+    val postUrl = url"$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"
     val auditMap: Map[String, String] = Map(
       "safeId" -> businessPartnerDetails.safeId,
       "UserDetail" -> businessPartnerDetails.businessName,
@@ -61,15 +62,15 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     response
   }
 
-  def send(postUrl: String, requestPayload: RequestPayload,
+  def send(postUrl: URL, requestPayload: RequestPayload,
            auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val jsonData: JsValue = Json.toJson(requestPayload)
-    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty).map {
+    http.post(postUrl).withBody(jsonData).execute[HttpResponse].map {
       processResponse(_, postUrl, requestPayload, auditMap)
     }
   }
 
-  def processResponse(response: HttpResponse, postUrl: String,
+  def processResponse(response: HttpResponse, postUrl: URL,
                       requestPayload: RequestPayload, auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): HttpResponse = {
     response.status match {
       case OK | CREATED =>
@@ -109,7 +110,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     }
   }
 
-  private def createWarning(postUrl: String,
+  private def createWarning(postUrl: URL,
                             optionStatus: Option[Int],
                             verifiers: List[Verifier],
                             responseBody: String,
@@ -132,8 +133,8 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     val auditMap: Map[String, String] = Map("UserDetail" -> businessName, "legal-entity" -> businessType)
     val auditSubscribeTxName: String = "AWRS ETMP de-enrol"
 
-    val postUrl = s"""$serviceURL/$deEnrolURI/$service"""
-    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty) map {
+    val postUrl = url"$serviceURL/$deEnrolURI/$service"
+    http.post(postUrl).withBody(jsonData).execute[HttpResponse].map {
       response =>
         timer.stop()
         response.status match {
