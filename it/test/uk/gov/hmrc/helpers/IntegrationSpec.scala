@@ -40,7 +40,6 @@ trait IntegrationSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll
     with IntegrationApplication
-    with WireMockSetup
     with StubbedBasicHttpCalls with Injecting {
 
   override implicit def defaultAwaitTimeout: Timeout = 5.seconds
@@ -79,21 +78,6 @@ trait IntegrationSpec
   def client(path: String): WSRequest = ws.url(s"http://localhost:$port$path")
     .withCookies(mockSessionCookie)
     .withFollowRedirects(false)
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    startWmServer()
-  }
-
-  override protected def beforeEach(): Unit = {
-    super.beforeEach()
-    resetWmServer()
-  }
-
-  override protected def afterAll(): Unit = {
-    super.afterAll()
-    stopWmServer()
-  }
 
   def awaitAndAssert[T](methodUnderTest: => Future[T])(assertions: T => Assertion): Assertion = {
     assertions(await(methodUnderTest))

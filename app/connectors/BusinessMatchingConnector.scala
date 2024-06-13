@@ -50,9 +50,10 @@ trait BusinessMatchingConnector extends LoggingUtils {
 
   def lookup(lookupData: MatchBusinessData, userType: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[JsValue] = {
 
-    val url = url"$serviceUrl/${accountUtils.authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"
+    val url = s"$serviceUrl/${accountUtils.authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"
     debug(s"[BusinessMatchingConnector][lookup] Call $url")
-    http.post(url).withBody(Json.toJson(lookupData)).execute[HttpResponse] map { response =>
+    println(url"$url")
+    http.post(url"$url").withBody(Json.toJson(lookupData)).execute[HttpResponse] map { response =>
       auditMatchCall(lookupData, userType, response)
       response.status match {
         case OK | NOT_FOUND =>
