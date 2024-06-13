@@ -21,37 +21,26 @@ import config.ApplicationConfig
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.{Assertion, BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.{Assertion, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Application
 import play.api.i18n.Messages
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi}
 import services.{BusinessDetailsService, DeEnrolService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.test.Helpers.{defaultAwaitTimeout, await => helperAwait}
-import uk.gov.hmrc.http.test.HttpClientV2Support
 import views.html.helpers.awrsErrorNotFoundTemplate
 import views.html.{awrs_application_error, error_template, unauthorised}
 import views.html.view_application.subviews.subview_delete_confirmation
-import wiremock.WireMockSetup
 
 import scala.language.implicitConversions
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AwrsUnitTestTraits
-  extends PlaySpec
-    with MockitoSugar
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
-    with GuiceOneAppPerSuite
-    with WireMockSetup
-    with HttpClientV2Support {
+trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
 
   private val messagesActionBuilder: MessagesActionBuilder = new DefaultMessagesActionBuilderImpl(stubBodyParser[AnyContent](), stubMessagesApi())
   private val stubCC = stubControllerComponents()
@@ -65,23 +54,6 @@ trait AwrsUnitTestTraits
     stubCC.fileMimeTypes,
     ExecutionContext.global
   )
-
-  override def fakeApplication(): Application =
-    new GuiceApplicationBuilder()
-      .configure(
-        "microservice.services.business-matching.host" -> wireMockHost,
-        "microservice.services.business-matching.port" -> wireMockPort,
-        "microservice.services.address-lookup.host" -> wireMockHost,
-        "microservice.services.address-lookup.port" -> wireMockPort,
-        "microservice.services.awrs.host" -> wireMockHost,
-        "microservice.services.awrs.port" -> wireMockPort,
-        "microservice.services.awrs-notification.host" -> wireMockHost,
-        "microservice.services.awrs-notification.port" -> wireMockPort,
-        "microservice.services.email-verification.host" -> wireMockHost,
-        "microservice.services.email-verification.port" -> wireMockPort,
-        "microservice.services.tax-enrolments.host" -> wireMockHost,
-        "microservice.services.tax-enrolments.port" -> wireMockPort,
-      ).build()
 
   val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
@@ -128,16 +100,6 @@ trait AwrsUnitTestTraits
       .thenReturn(mockNotFound)
     when(mockAppConfig.templateError)
       .thenReturn(mockError)
-
-    resetWmServer()
-  }
-
-  override def beforeAll(): Unit = {
-    startWmServer()
-  }
-
-  override def afterAll(): Unit = {
-    stopWmServer()
   }
 
   lazy val allEntities = List("SOP", "LTD", "Partnership", "LLP", "LTD_GRP", "LLP_GRP")

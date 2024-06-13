@@ -21,7 +21,6 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.helpers.wiremock.WireMockConfig
 import uk.gov.hmrc.http.test.WireMockSupport
 
 import scala.annotation.nowarn

@@ -25,7 +25,6 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits, Injecting}
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.helpers.application.IntegrationApplication
 import uk.gov.hmrc.helpers.http.StubbedBasicHttpCalls
-import uk.gov.hmrc.helpers.wiremock.WireMockSetup
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 
