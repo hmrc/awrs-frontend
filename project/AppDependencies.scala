@@ -18,10 +18,11 @@ private object AppDependencies {
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"       %% "bootstrap-test-play-30" % bootstrapPlayVersion % Test,
-    "org.jsoup"         %  "jsoup"                  % "1.17.2"             % Test,
-    "org.mockito"       %  "mockito-core"           % "5.12.0"             % Test,
-    "org.scalatestplus" %% "scalatestplus-mockito"  % "1.0.0-M2"           % Test
+    "uk.gov.hmrc"       %% "bootstrap-test-play-30"  % bootstrapPlayVersion % Test,
+    "uk.gov.hmrc"       %% "http-verbs-test-play-30" % "15.0.0"             % Test,
+    "org.jsoup"         %  "jsoup"                   % "1.17.2"             % Test,
+    "org.mockito"       %  "mockito-core"            % "5.12.0"             % Test,
+    "org.scalatestplus" %% "scalatestplus-mockito"   % "1.0.0-M2"           % Test
   )
 
   val itDependencies: Seq[ModuleID] = Seq()

@@ -22,12 +22,10 @@ import models.{EnrolResponse, RequestPayload}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.http.Status.{CREATED, BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
-import play.api.libs.json.JsValue
 import play.api.test.Helpers._
-import services.GGConstants._
-import uk.gov.hmrc.http.{BadGatewayException, BadRequestException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{BadGatewayException, BadRequestException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException, StringContextOps}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -37,7 +35,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
   val mockAuditConnector: AuditConnector = mock[AuditConnector]
   val mockAwrsMetrics: AwrsMetrics = mock[AwrsMetrics]
-  val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
+  val mockWSHttp: HttpClientV2 = mock[HttpClientV2]
 
   override def beforeEach(): Unit = {
     reset(mockWSHttp)
@@ -47,7 +45,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
 
   "Tax enrolments connector de-enrolling AWRS" must {
     // used in the mock to check the destination of the connector calls
-    lazy val deEnrolURI = testTaxEnrolmentsConnector.deEnrolURI + "/" + service
+    lazy val deEnrolURI = url"${testTaxEnrolmentsConnector.deEnrolURI}/service"
 
     // these values doesn't really matter since the call itself is mocked
     val awrsRef = ""
@@ -57,7 +55,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     val deEnrolResponseFailure = false
 
     def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
-      when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.endsWith(deEnrolURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(deEnrolURI))(ArgumentMatchers.any()).execute[HttpResponse])
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseString.toString())))
 
     def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
@@ -108,9 +106,7 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
   "Tax enrolments connector enrolling AWRS" must {
 
     def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
-      when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.post(ArgumentMatchers.any())(ArgumentMatchers.any()).execute[HttpResponse])
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseString.toString())))
 
     def testCall(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {

@@ -25,17 +25,18 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 
+import java.net.URL
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   val MockAuditConnector: AuditConnector = mock[AuditConnector]
-  val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
+  val mockWSHttp: HttpClientV2 = mock[HttpClientV2]
 
   override def beforeEach(): Unit = {
     reset(mockWSHttp)
@@ -51,13 +52,13 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
   // these values doesn't really matter since the call itself is mocked
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  lazy val sendEmailURI: String = testEmailVerificationConnector.sendEmail
-  lazy val verifiyEmailURI: String = testEmailVerificationConnector.verifyEmail
+  lazy val sendEmailURI: URL = url"${testEmailVerificationConnector.sendEmail}"
+  lazy val verifiyEmailURI: URL = url"${testEmailVerificationConnector.verifyEmail}"
 
   "sendVerificationEmail" must {
 
     def mockPostResponse(responseStatus: Int, responseData: Option[JsValue] = None): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(sendEmailURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(sendEmailURI))(ArgumentMatchers.any()).execute[HttpResponse])
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.getOrElse(Json.obj()), Map.empty[String, Seq[String]])))
 
     def testPostCall(implicit  hc: HeaderCarrier) = testEmailVerificationConnector.sendVerificationEmail(testEmail)
@@ -93,21 +94,21 @@ class EmailVerificationConnectorTest extends AwrsUnitTestTraits {
     def testGetCall: Future[Boolean] = testEmailVerificationConnector.isEmailAddressVerified(testEmail)
 
     "return success equals true, for successful verification of email" in {
-      when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(verifiyEmailURI))(any()).execute[HttpResponse])
         .thenReturn(Future.successful(HttpResponse.apply(OK, "")))
       val result = testGetCall
       await(result) mustBe true
     }
 
     "return success equals false, if email has not been verified" in {
-      when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(verifiyEmailURI))(any()).execute[HttpResponse])
         .thenReturn(Future.failed(new NotFoundException("404")))
       val result = testGetCall
       await(result) mustBe false
     }
 
     "return success equals true, when an error occurs as we have chosen not to block" in {
-      when(mockWSHttp.POST[JsObject, HttpResponse](endsWith(verifiyEmailURI), any(), any())(any(), any(), any(), any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(verifiyEmailURI))(any()).execute[HttpResponse])
         .thenReturn(Future.failed(UpstreamErrorResponse("503", 503, 503)))
       val result = testGetCall
       await(result) mustBe true

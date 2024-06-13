@@ -26,11 +26,12 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.TestConstants._
 import utils.{AwrsUnitTestTraits, TestUtil}
 
+import java.net.URL
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -38,7 +39,7 @@ import scala.concurrent.Future
 class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   val MockAuditConnector: AuditConnector = mock[AuditConnector]
   val dummyAppName = "awrs-frontend"
-  val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
+  val mockWSHttp: HttpClientV2 = mock[HttpClientV2]
 
   override def beforeEach(): Unit = {
     reset(mockWSHttp)
@@ -66,15 +67,15 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     "0123456"
   }
 
-  lazy val notificationCacheURI: String => String = (awrsRef: String) => s"/$awrsRef"
+  lazy val notificationCacheURI: String => URL = (awrsRef: String) => url"/$awrsRef"
 
-  lazy val notificationViewedStatusURI: String => String = (awrsRef: String) => s"${testAWRSNotificationConnector.markAsViewedURI}/$awrsRef"
+  lazy val notificationViewedStatusURI: String => URL = (awrsRef: String) => url"${testAWRSNotificationConnector.markAsViewedURI}/$awrsRef"
 
-  lazy val confirmationEmailURI: String = testAWRSNotificationConnector.confirmationEmailURI
+  lazy val confirmationEmailURI: URL = url"${testAWRSNotificationConnector.confirmationEmailURI}"
 
-  lazy val cancellationEmailURI: String = testAWRSNotificationConnector.cancellationEmailURI
+  lazy val cancellationEmailURI: URL = url"${testAWRSNotificationConnector.cancellationEmailURI}"
 
-  lazy val withdranEmailURI: String = testAWRSNotificationConnector.withdrawnEmailURI
+  lazy val withdranEmailURI: URL = url"${testAWRSNotificationConnector.withdrawnEmailURI}"
 
 
   "fetchNotificationCache" must {
@@ -83,11 +84,11 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     lazy val mindedToRejectJson = StatusNotification.writer.writes(mindedToReject.get)
 
     def mockFetchResponse(responseStatus: Int, responseData: JsValue): Unit =
-      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)), any(), any())(any(), any(), any()))
+      when(mockWSHttp.get(ArgumentMatchers.eq(notificationCacheURI(awrsRef)))(any()).execute[HttpResponse])
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.toString())))
 
     def mockDeleteResponse(responseStatus: Int): Unit =
-      when(mockWSHttp.DELETE[HttpResponse](ArgumentMatchers.endsWith(notificationCacheURI(awrsRef)), any())(any(), any(), any()))
+      when(mockWSHttp.delete(ArgumentMatchers.eq(notificationCacheURI(awrsRef)))(any()).execute[HttpResponse])
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, "")))
 
     def testFetchCall(implicit  hc: HeaderCarrier): Future[Option[StatusNotification]] = testAWRSNotificationConnector.fetchNotificationCache(TestUtil.defaultAuthRetrieval)
@@ -185,7 +186,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   "getNotificationViewedStatus" must {
 
     def mockGetViewedStatusResponse(responseStatus: Int, responseData: Option[JsValue]): Unit =
-      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), any(), any())(any(), any(), any()))
+      when(mockWSHttp.get(ArgumentMatchers.eq(notificationViewedStatusURI(awrsRef)))(any()).execute[HttpResponse])
         .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseData.getOrElse(Json.obj()), Map.empty[String, Seq[String]])))
 
     def testGetViewedStatusCall(implicit  hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = testAWRSNotificationConnector.getNotificationViewedStatus(TestUtil.defaultAuthRetrieval)
@@ -208,7 +209,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
   "markNotificationViewedStatusAsViewed" must {
 
     def mockMarkViewedStatusResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.PUT[Unit, HttpResponse](ArgumentMatchers.endsWith(notificationViewedStatusURI(awrsRef)), any(), any())(any(), any(), any(), any()))
+      when(mockWSHttp.put(ArgumentMatchers.eq(notificationViewedStatusURI(awrsRef)))(any()).execute[HttpResponse])
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))
@@ -235,7 +236,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API4, "test business", testUtr, "example@example.com", isNewBusiness = true)
 
     def sendConfirmationEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(confirmationEmailURI), any(), any())(any(), any(), any(), any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(confirmationEmailURI))(any()).execute[HttpResponse])
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))
@@ -258,7 +259,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API10, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendCancellationEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(cancellationEmailURI), any(), any())(any(), any(), any(), any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(cancellationEmailURI))(any()).execute[HttpResponse])
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))
@@ -281,7 +282,7 @@ class AWRSNotificationConnectorSpec extends AwrsUnitTestTraits {
     val testEmailRequest = EmailRequest(ApiTypes.API8, "test business", testUtr, "example@example.com", isNewBusiness = false)
 
     def sendWithdrawnEmailResponse(haveResponse: Boolean): Unit =
-      when(mockWSHttp.POST[Unit, HttpResponse](ArgumentMatchers.endsWith(withdranEmailURI), any(), any())(any(), any(), any(), any()))
+      when(mockWSHttp.post(ArgumentMatchers.eq(withdranEmailURI))(any()).execute[HttpResponse])
         .thenReturn(haveResponse match {
           case true => Future.successful(HttpResponse.apply(OK | NO_CONTENT, ""))
           case false => Future.successful(HttpResponse.apply(NOT_FOUND, ""))

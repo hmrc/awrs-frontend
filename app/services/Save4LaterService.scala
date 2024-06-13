@@ -18,14 +18,15 @@ package services
 
 import connectors.{AwrsAPIDataCacheConnector, AwrsDataCacheConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
-import javax.inject.Inject
 import models._
 import services.DataCacheKeys._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AccountUtils
-import scala.language.implicitConversions
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.implicitConversions
 
 trait Save4LaterUtil {
 

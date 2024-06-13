@@ -19,13 +19,13 @@ package services
 import _root_.models._
 import connectors.{AwrsKeyStoreConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
-import javax.inject.Inject
 import services.DataCacheKeys._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 

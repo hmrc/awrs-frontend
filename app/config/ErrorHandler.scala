@@ -16,13 +16,12 @@
 
 package config
 
-import javax.inject.Inject
-import play.api.Configuration
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Request, RequestHeader}
+import play.api.mvc.RequestHeader
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
