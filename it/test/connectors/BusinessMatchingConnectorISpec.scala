@@ -16,8 +16,7 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, postRequestedFor, stubFor, urlEqualTo, urlMatching}
-import connectors.BusinessMatchingConnectorImpl
+import com.github.tomakehurst.wiremock.client.WireMock.{postRequestedFor, urlMatching}
 import models._
 import org.scalatest.matchers.must.Matchers
 import play.api.test.Helpers._
@@ -42,36 +41,21 @@ class BusinessMatchingConnectorISpec extends IntegrationSpec with Injecting with
   "Business Matching connector" must {
 
     "return status as OK, for successful call" in {
-      stubFor(
-        post(urlEqualTo(url))
-          willReturn aResponse()
-          .withStatus(OK)
-          .withBody(matchSuccessResponseJson.toString())
-      )
+      stubbedPost(url, OK, matchSuccessResponseJson.toString())
       val result = connector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       await(result) mustBe matchSuccessResponseJson
       wireMockServer.verify(1, postRequestedFor(urlMatching(url)))
     }
 
     "for unsuccessful match, return error message" in {
-      stubFor(
-        post(urlEqualTo(url))
-          willReturn aResponse()
-          .withStatus(NOT_FOUND)
-          .withBody(matchFailureResponseJson.toString())
-      )
+      stubbedPost(url, NOT_FOUND, matchFailureResponseJson.toString())
       val result = connector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       await(result) mustBe matchFailureResponseJson
       wireMockServer.verify(1, postRequestedFor(urlMatching(url)))
     }
 
     "throw service unavailable exception, if service is unavailable" in {
-      stubFor(
-        post(urlEqualTo(url))
-          willReturn aResponse()
-          .withStatus(SERVICE_UNAVAILABLE)
-          .withBody("")
-      )
+      stubbedPost(url, SERVICE_UNAVAILABLE, "")
       val result = connector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
       thrown.getMessage must include("Service unavailable")
@@ -79,12 +63,7 @@ class BusinessMatchingConnectorISpec extends IntegrationSpec with Injecting with
     }
 
     "throw bad request exception, if bad request is passed" in {
-      stubFor(
-        post(urlEqualTo(url))
-          willReturn aResponse()
-          .withStatus(BAD_REQUEST)
-          .withBody("")
-      )
+      stubbedPost(url, BAD_REQUEST, "")
       val result = connector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[BadRequestException] thrownBy await(result)
       thrown.getMessage must include("Bad Request")
@@ -92,12 +71,7 @@ class BusinessMatchingConnectorISpec extends IntegrationSpec with Injecting with
     }
 
     "throw internal server error, if Internal server error status is returned" in {
-      stubFor(
-        post(urlEqualTo(url))
-          willReturn aResponse()
-          .withStatus(INTERNAL_SERVER_ERROR)
-          .withBody("")
-      )
+      stubbedPost(url, INTERNAL_SERVER_ERROR, "")
       val result = connector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[InternalServerException] thrownBy await(result)
       thrown.getMessage must include("Internal server error")
@@ -105,12 +79,7 @@ class BusinessMatchingConnectorISpec extends IntegrationSpec with Injecting with
     }
 
     "throw runtime exception, unknown status is returned" in {
-      stubFor(
-        post(urlEqualTo(url))
-          willReturn aResponse()
-          .withStatus(BAD_GATEWAY)
-          .withBody("")
-      )
+      stubbedPost(url, BAD_GATEWAY, "")
       val result = connector.lookup(matchBusinessData, userType, TestUtil.defaultAuthRetrieval)
       val thrown = the[RuntimeException] thrownBy await(result)
       thrown.getMessage must include("Unknown response")
