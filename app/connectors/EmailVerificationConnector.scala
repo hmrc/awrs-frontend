@@ -48,8 +48,8 @@ class EmailVerificationConnector @Inject()(http: HttpClientV2,
       templateParameters = None,
       linkExpiryDuration = defaultEmailExpiryPeriod,
       continueUrl = continueUrl)
-    val postURL = url"$serviceURL$baseURI$sendEmail"
-    http.post(postURL).withBody(Json.toJson(verificationRequest)).execute[HttpResponse].map {
+    val postURL = s"$serviceURL$baseURI$sendEmail"
+    http.post(url"$postURL").withBody(Json.toJson(verificationRequest)).execute[HttpResponse].map {
       response =>
         response.status match {
           case OK | CREATED =>
@@ -71,9 +71,9 @@ class EmailVerificationConnector @Inject()(http: HttpClientV2,
   def isEmailAddressVerified(email: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     email match {
       case Some(emailAddress) =>
-        val verifyURL = url"$serviceURL$baseURI$verifyEmail"
+        val verifyURL = s"$serviceURL$baseURI$verifyEmail"
 
-        http.post(verifyURL).withBody(Json.obj("email" -> emailAddress)).execute[HttpResponse].map { _ =>
+        http.post(url"$verifyURL").withBody(Json.obj("email" -> emailAddress)).execute[HttpResponse].map { _ =>
           audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
           true
         } recover {

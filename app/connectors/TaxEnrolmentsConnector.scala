@@ -52,12 +52,12 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
             businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val timer = metrics.startTimer(ApiType.API4Enrolment)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
-    val postUrl = url"$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"
+    val postUrl = s"$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"
     val auditMap: Map[String, String] = Map(
       "safeId" -> businessPartnerDetails.safeId,
       "UserDetail" -> businessPartnerDetails.businessName,
       "legal-entity" -> businessType)
-    val response = send(postUrl, requestPayload, auditMap).map(_ => Option(emptyResponse))
+    val response = send(url"$postUrl", requestPayload, auditMap).map(_ => Option(emptyResponse))
     timer.stop()
     response
   }
@@ -133,8 +133,8 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     val auditMap: Map[String, String] = Map("UserDetail" -> businessName, "legal-entity" -> businessType)
     val auditSubscribeTxName: String = "AWRS ETMP de-enrol"
 
-    val postUrl = url"$serviceURL/$deEnrolURI/$service"
-    http.post(postUrl).withBody(jsonData).execute[HttpResponse].map {
+    val postUrl = s"$serviceURL/$deEnrolURI/$service"
+    http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse].map {
       response =>
         timer.stop()
         response.status match {

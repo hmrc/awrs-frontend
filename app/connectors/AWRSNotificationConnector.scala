@@ -46,8 +46,8 @@ class AWRSNotificationConnector @Inject()(http: HttpClientV2,
 
   def fetchNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusNotification]] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val getURL = url"$serviceURL$cacheURI/$awrsRefNo"
-    mapResult("", awrsRefNo, http.get(getURL).execute[HttpResponse]).map {
+    val getURL = s"$serviceURL$cacheURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.get(url"$getURL").execute[HttpResponse]).map {
       case Some(response: HttpResponse) => Some(response.json.as[StatusNotification])
       case None => None
     }
@@ -55,8 +55,8 @@ class AWRSNotificationConnector @Inject()(http: HttpClientV2,
 
   def getNotificationViewedStatus(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ViewedStatusResponse]] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val getURL = url"$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"
-    mapResult("", awrsRefNo, http.get(getURL).execute[HttpResponse]).map {
+    val getURL = s"$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.get(url"$getURL").execute[HttpResponse]).map {
       case Some(response: HttpResponse) => Some(response.json.as[ViewedStatusResponse])
       case None => None
     }
@@ -64,8 +64,8 @@ class AWRSNotificationConnector @Inject()(http: HttpClientV2,
 
   def markNotificationViewedStatusAsViewed(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val putURL = url"$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"
-    mapResult("", awrsRefNo, http.put(putURL).withBody("").execute[HttpResponse]).map {
+    val putURL = s"$serviceURL$cacheURI$markAsViewedURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.put(url"$putURL").withBody("").execute[HttpResponse]).map {
       case Some(_: HttpResponse) => Some(true)
       case None => None
     }
@@ -76,8 +76,8 @@ class AWRSNotificationConnector @Inject()(http: HttpClientV2,
   // However, this will only ever be called call if a valid status has been found that qualifies for deletion
   def deleteFromNotificationCache(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
-    val deleteURL = url"$serviceURL$cacheURI/$awrsRefNo"
-    mapResult("", awrsRefNo, http.delete(deleteURL).execute[HttpResponse]).map {
+    val deleteURL = s"$serviceURL$cacheURI/$awrsRefNo"
+    mapResult("", awrsRefNo, http.delete(url"$deleteURL").execute[HttpResponse]).map {
       case Some(_) => true
       case _ => false
     }.recover {

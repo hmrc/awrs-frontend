@@ -55,10 +55,9 @@ class AWRSConnector @Inject()(http: HttpClientV2,
     val legalEntityType = (fileData \ subscriptionTypeJSPath \ "legalEntity" \ "legalEntity").as[String]
     val businessName = (fileData \ subscriptionTypeJSPath \ "businessCustomerDetails" \ "businessName").as[String]
 
-    val postURL = url"$serviceURL/awrs/send-data"
+    val postURL = s"$serviceURL/awrs/send-data"
 
-//    http.POST[JsValue, HttpResponse](postURL, fileData, Seq.empty) map {
-    http.post(postURL).withBody(fileData).execute[HttpResponse] map {
+    http.post(url"$postURL").withBody(fileData).execute[HttpResponse] map {
       response =>
         response.status match {
           case 200 =>
@@ -117,9 +116,9 @@ class AWRSConnector @Inject()(http: HttpClientV2,
                                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
     val awrsRefNo = accountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    val putURL = url"$serviceURL/$awrsRefNo/registration-details/$safeId"
+    val putURL = s"$serviceURL/$awrsRefNo/registration-details/$safeId"
     val updateRegistrationDetailsJsonRequest = Json.toJson(updateRegistrationDetailsRequest)
-      http.put(putURL).withBody(Json.toJson(updateRegistrationDetailsJsonRequest)).execute[HttpResponse] map {
+      http.put(url"$putURL").withBody(Json.toJson(updateRegistrationDetailsJsonRequest)).execute[HttpResponse] map {
       response =>
         response.status match {
           case 200 =>
@@ -164,8 +163,8 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
     val awrsRefNo = accountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    val putURL = url"$serviceURL/awrs/update/$awrsRefNo"
-    http.put(putURL).withBody(fileData).execute[HttpResponse] map {
+    val putURL = s"$serviceURL/awrs/update/$awrsRefNo"
+    http.put(url"$putURL").withBody(fileData).execute[HttpResponse] map {
       response =>
         response.status match {
           case 200 =>
@@ -205,9 +204,9 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
     val awrsRefNo = accountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    val getURL = url"$serviceURL/awrs/lookup/$awrsRefNo"
+    val getURL = s"$serviceURL/awrs/lookup/$awrsRefNo"
 
-    http.get(getURL).execute[HttpResponse] map {
+    http.get(url"$getURL").execute[HttpResponse] map {
       response =>
         response.status match {
           case 200 =>
@@ -238,7 +237,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
     val awrsRefNo = accountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    val getURL = url"$serviceURL/awrs/status/$awrsRefNo"
+    val getURL = s"$serviceURL/awrs/status/$awrsRefNo"
 
     lazy val auditFunction = (status: FormBundleStatus) =>
       audit(transactionName = auditAPI9TxName, detail = Map("OrganisationName" -> orgName, "awrsRegistrationNumber" -> awrsRefNo, "formBundleStatus" -> status.name) ++ {
@@ -248,7 +247,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
         }
       }, eventType = eventTypeSuccess)
 
-    http.get(getURL).execute[HttpResponse] map {
+    http.get(url"$getURL").execute[HttpResponse] map {
       response =>
         response.status match {
           case 200 =>
@@ -284,7 +283,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
     val awrsRefNo = accountUtils.getAwrsRefNo(authRetrievals.enrolments)
 
-    val getURL = url"$serviceURL/awrs/status-info/$awrsRefNo/$contactNumber"
+    val getURL = s"$serviceURL/awrs/status-info/$awrsRefNo/$contactNumber"
 
     lazy val auditFunction = (secureCommText: String) =>
       audit(transactionName = auditAPI11TxName, detail = Map("message-details" -> secureCommText, "companyName" -> request.session.get("businessName").getOrElse(""), "awrsRegistrationNumber" -> awrsRefNo, "formBundleStatus" -> formBundleStatus.name)
@@ -298,7 +297,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
 
     debug(f"getStatusInfo calling - $getURL")
-    http.get(getURL).execute[HttpResponse] map {
+    http.get(url"$getURL").execute[HttpResponse] map {
       response =>
         response.status match {
           case 200 =>
@@ -345,10 +344,10 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
     val awrsRefNo = accountUtils.getAwrsRefNo(standardAuthRetrievals.enrolments)
 
-    val postURL = url"$serviceURL/awrs/withdrawal/$awrsRefNo"
+    val postURL = s"$serviceURL/awrs/withdrawal/$awrsRefNo"
     debug(f"withdrawal calling - $postURL")
 
-    http.post(postURL).withBody(withdrawalReason).execute[HttpResponse] map {
+    http.post(url"$postURL").withBody(withdrawalReason).execute[HttpResponse] map {
       response =>
         response.status match {
 
@@ -385,9 +384,9 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
     val body = DeRegistration.formats.writes(deRegistration)
 
-    val postURL = url"$serviceURL/awrs/de-registration/$awrsRefNo"
+    val postURL = s"$serviceURL/awrs/de-registration/$awrsRefNo"
     debug(f"deRegistration calling - $postURL")
-    http.post(postURL).withBody(body).execute[HttpResponse] map {
+    http.post(url"$postURL").withBody(body).execute[HttpResponse] map {
       response =>
         response.status match {
           case 200 =>
@@ -436,9 +435,9 @@ class AWRSConnector @Inject()(http: HttpClientV2,
     } else {
       val regimeModel = CheckRegimeModel(businessCustomerDetails, legalEntity)
       val json = Json.toJson(regimeModel)
-      val postURL = url"$serviceURL/regime-etmp-check"
+      val postURL = s"$serviceURL/regime-etmp-check"
 
-      http.post(postURL).withBody(json).execute[HttpResponse].map {
+      http.post(url"$postURL").withBody(json).execute[HttpResponse].map {
         resp =>
           resp.status match {
             case OK => Some(resp.json.as[SelfHealSubscriptionResponse])
@@ -454,8 +453,8 @@ class AWRSConnector @Inject()(http: HttpClientV2,
   }
 
   def checkUsersEnrolments(safeID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsUsers]] = {
-    val getURL = url"$serviceURL/awrs/status-info/users/$safeID"
-    http.get(getURL).execute[HttpResponse] map {
+    val getURL = s"$serviceURL/awrs/status-info/users/$safeID"
+    http.get(url"$getURL").execute[HttpResponse] map {
       response =>
         response.status match {
           case OK => Some(response.json.as[AwrsUsers])
