@@ -61,16 +61,12 @@ trait StubbedBasicHttpCalls {
     )
   }
 
-  def stubbedPut(url: String, statusCode: Int): StubMapping = {
+  def stubbedPut(url: String, statusCode: Int, responseBody: String = """{"id": "xxx","data": {}}"""): StubMapping = {
     stubFor(put(urlMatching(url))
       .willReturn(
         aResponse()
           .withStatus(statusCode)
-          .withBody(
-            """{
-              |"id": "xxx",
-              |"data": {}
-              |}""".stripMargin)
+          .withBody(responseBody)
       )
     )
   }
