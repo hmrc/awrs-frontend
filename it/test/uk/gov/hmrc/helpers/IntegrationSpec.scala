@@ -36,8 +36,6 @@ trait IntegrationSpec
     with OptionValues
     with FutureAwaits
     with DefaultAwaitTimeout
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
     with IntegrationApplication
     with StubbedBasicHttpCalls with Injecting {
 

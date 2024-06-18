@@ -88,6 +88,7 @@ class AWRSNotificationConnector @Inject()(http: HttpClientV2,
   }
 
   def sendConfirmationEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    println(s"\n***\n$confirmationEmailURI\n***\n")
     doEmailCall(emailRequest, auditConfirmationEmailTxName, confirmationEmailURI)
   }
 
@@ -100,10 +101,11 @@ class AWRSNotificationConnector @Inject()(http: HttpClientV2,
   }
 
   private def doEmailCall(emailRequest: EmailRequest, auditTxt: String, uri: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
+    val url = s"$serviceURL$uri"
     mapResult(
       auditTxt,
       emailRequest.reference.fold("")(x => x),
-      http.post(url"$serviceURL$uri")
+      http.post(url"$url")
         .withBody(Json.toJson(emailRequest))
         .execute[HttpResponse]).map {
       case Some(_) => true
