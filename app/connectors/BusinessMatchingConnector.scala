@@ -52,7 +52,6 @@ trait BusinessMatchingConnector extends LoggingUtils {
 
     val url = s"$serviceUrl/${accountUtils.authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"
     debug(s"[BusinessMatchingConnector][lookup] Call $url")
-    println(url"$url")
     http.post(url"$url").withBody(Json.toJson(lookupData)).execute[HttpResponse] map { response =>
       auditMatchCall(lookupData, userType, response)
       response.status match {
