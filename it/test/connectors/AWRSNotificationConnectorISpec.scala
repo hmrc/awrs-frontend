@@ -40,8 +40,6 @@ class AWRSNotificationConnectorISpec extends IntegrationSpec with Injecting with
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val awrsRef: String = "0123456"
 
-  lazy val notificationCacheURI: String => String = (awrsRef: String) => s"/$awrsRef"
-
   lazy val notificationViewedStatusURI: String => String = (awrsRef: String) => s"${connector.markAsViewedURI}/$awrsRef"
 
   lazy val confirmationEmailURI: String = s"${connector.confirmationEmailURI}"
