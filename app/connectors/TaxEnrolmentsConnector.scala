@@ -22,13 +22,12 @@ import models._
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import services.GGConstants._
-import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.LoggingUtils
 
-import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -57,20 +56,20 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
       "safeId" -> businessPartnerDetails.safeId,
       "UserDetail" -> businessPartnerDetails.businessName,
       "legal-entity" -> businessType)
-    val response = send(url"$postUrl", requestPayload, auditMap).map(_ => Option(emptyResponse))
+    val response = send(postUrl, requestPayload, auditMap).map(_ => Option(emptyResponse))
     timer.stop()
     response
   }
 
-  def send(postUrl: URL, requestPayload: RequestPayload,
+  def send(postUrl: String, requestPayload: RequestPayload,
            auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val jsonData: JsValue = Json.toJson(requestPayload)
-    http.post(postUrl).withBody(jsonData).execute[HttpResponse].map {
+    http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse].map {
       processResponse(_, postUrl, requestPayload, auditMap)
     }
   }
 
-  def processResponse(response: HttpResponse, postUrl: URL,
+  def processResponse(response: HttpResponse, postUrl: String,
                       requestPayload: RequestPayload, auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): HttpResponse = {
     response.status match {
       case OK | CREATED =>
@@ -110,7 +109,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     }
   }
 
-  private def createWarning(postUrl: URL,
+  private def createWarning(postUrl: String,
                             optionStatus: Option[Int],
                             verifiers: List[Verifier],
                             responseBody: String,
