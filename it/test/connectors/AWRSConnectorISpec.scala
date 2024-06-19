@@ -22,21 +22,17 @@ import exceptions.{DESValidationException, DuplicateSubscriptionException, Gover
 import models.FormBundleStatus.Pending
 import models.StatusContactType.MindedToReject
 import models._
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request}
-import play.api.test.{FakeRequest, Injecting}
 import play.api.test.Helpers._
+import play.api.test.{FakeRequest, Injecting}
 import uk.gov.hmrc.auth.core.{AffinityGroup, User}
 import uk.gov.hmrc.helpers.IntegrationSpec
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.client.HttpClientV2
 import utils.AwrsTestJson._
 import utils.TestConstants._
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch, TestUtil}
+import utils.{AWRSFeatureSwitches, FeatureSwitch, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

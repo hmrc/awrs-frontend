@@ -88,7 +88,6 @@ class AWRSNotificationConnector @Inject()(http: HttpClientV2,
   }
 
   def sendConfirmationEmail(emailRequest: EmailRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    println(s"\n***\n$confirmationEmailURI\n***\n")
     doEmailCall(emailRequest, auditConfirmationEmailTxName, confirmationEmailURI)
   }
 

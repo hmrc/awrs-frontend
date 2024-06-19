@@ -21,10 +21,10 @@ import config.ApplicationConfig
 import models._
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, StringContextOps}
-import utils.LoggingUtils
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import utils.LoggingUtils
 import java.time.Period
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
