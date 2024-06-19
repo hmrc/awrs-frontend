@@ -52,7 +52,7 @@ class EmailVerificationConnector @Inject()(http: HttpClientV2,
     http.post(url"$postURL").withBody(Json.toJson(verificationRequest)).execute[HttpResponse].map {
       response =>
         response.status match {
-          case OK | CREATED =>
+          case CREATED =>
             warn(f"[$auditEmailVerification] - Successful return of data")
             audit(transactionName = auditEmailVerification, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
             true
@@ -73,16 +73,25 @@ class EmailVerificationConnector @Inject()(http: HttpClientV2,
       case Some(emailAddress) =>
         val verifyURL = s"$serviceURL$baseURI$verifyEmail"
 
-        http.post(url"$verifyURL").withBody(Json.obj("email" -> emailAddress)).execute[HttpResponse].map { _ =>
-          audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
-          true
+        http.post(url"$verifyURL").withBody(Json.obj("email" -> emailAddress)).execute[HttpResponse].map { response =>
+          response.status match {
+            case OK =>
+              audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+              true
+            case NOT_FOUND =>
+              warn(f"[$auditVerifyEmail] - Successful return of data - email address not verified")
+              audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
+              false
+            case status =>
+              warn(f"[$auditVerifyEmail] - Unsuccessful return of data. Status code: $status")
+              audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeFailure)
+              // if the verification service is unavailable for any reason, the decision has been made not to block the user journey
+              // when they return their email address will be validated before any further submissions
+              true
+          }
         } recover {
-          case _: NotFoundException =>
-            warn(f"[$auditVerifyEmail] - Successful return of data - email address not verified")
-            audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeSuccess)
-            false
-          case status =>
-            warn(f"[$auditVerifyEmail] - Unsuccessful return of data. Status code: $status")
+          case e =>
+            warn(f"[$auditVerifyEmail] - Unsuccessful return of data, error encountered. Error: ${e.getMessage}")
             audit(transactionName = auditVerifyEmail, detail = Map("emailAddress" -> emailAddress), eventType = eventTypeFailure)
             // if the verification service is unavailable for any reason, the decision has been made not to block the user journey
             // when they return their email address will be validated before any further submissions
@@ -91,5 +100,6 @@ class EmailVerificationConnector @Inject()(http: HttpClientV2,
       case _ => Future.successful(false)
     }
   }
-
 }
+
+
