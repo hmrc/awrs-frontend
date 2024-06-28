@@ -19,40 +19,40 @@ package connectors
 import audit.Auditable
 import com.fasterxml.jackson.core.JsonParseException
 import controllers.auth.StandardAuthRetrievals
-import javax.inject.Inject
 import models.MatchBusinessData
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.audit.model.EventTypes
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AccountUtils, LoggingUtils}
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessMatchingConnectorImpl @Inject()(servicesConfig: ServicesConfig,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
-                                          val http: DefaultHttpClient) extends BusinessMatchingConnector {
+                                          val http: HttpClientV2) extends BusinessMatchingConnector {
   val serviceUrl: String = servicesConfig.baseUrl("business-matching")
   val baseUri = "business-matching"
   val lookupUri = "business-lookup"
 }
 
-trait BusinessMatchingConnector extends RawResponseReads with LoggingUtils {
+trait BusinessMatchingConnector extends LoggingUtils {
 
   val baseUri: String
   val serviceUrl: String
   val lookupUri: String
-  val http: DefaultHttpClient
+  val http: HttpClientV2
   val accountUtils: AccountUtils
 
   def lookup(lookupData: MatchBusinessData, userType: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[JsValue] = {
 
-    val url = s"""$serviceUrl/${accountUtils.authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"""
+    val url = s"$serviceUrl/${accountUtils.authLink(authRetrievals)}/$baseUri/$lookupUri/${lookupData.utr}/$userType"
     debug(s"[BusinessMatchingConnector][lookup] Call $url")
-    http.POST[JsValue, HttpResponse](url, Json.toJson(lookupData), Seq.empty) map { response =>
+    http.post(url"$url").withBody(Json.toJson(lookupData)).execute[HttpResponse] map { response =>
       auditMatchCall(lookupData, userType, response)
       response.status match {
         case OK | NOT_FOUND =>

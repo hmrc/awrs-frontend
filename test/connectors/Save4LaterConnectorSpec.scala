@@ -72,7 +72,7 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
 
       val result = testSave4LaterConnector.removeAll("TEST")
 
-      await(result).status mustBe  Status.OK
+      await(result) mustBe ()
       verify(mockShortLivedCache, times(1)).remove(ArgumentMatchers.eq("TEST"))(any(),any())
     }
 

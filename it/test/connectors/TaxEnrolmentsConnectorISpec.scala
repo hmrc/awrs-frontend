@@ -16,38 +16,26 @@
 
 package connectors
 
-import com.codahale.metrics.Timer
-import metrics.AwrsMetrics
 import models.{EnrolResponse, RequestPayload}
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
-import play.api.http.Status.{CREATED, BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
-import play.api.libs.json.JsValue
+import org.scalatest.matchers.must.Matchers
+import play.api.http.Status.{CREATED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE}
 import play.api.test.Helpers._
+import play.api.test.Injecting
 import services.GGConstants._
-import uk.gov.hmrc.http.{BadGatewayException, BadRequestException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import utils.{AwrsUnitTestTraits, TestUtil}
+import uk.gov.hmrc.helpers.IntegrationSpec
+import uk.gov.hmrc.http.{BadGatewayException, BadRequestException, HeaderCarrier, InternalServerException, NotFoundException, ServiceUnavailableException}
+import utils.TestUtil
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
+class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
-  val mockAuditConnector: AuditConnector = mock[AuditConnector]
-  val mockAwrsMetrics: AwrsMetrics = mock[AwrsMetrics]
-  val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
-
-  override def beforeEach(): Unit = {
-    reset(mockWSHttp)
-  }
-
-  val testTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockServicesConfig, mockWSHttp, mockAwrsMetrics, mockAuditable)
+  val connector: TaxEnrolmentsConnector = inject[TaxEnrolmentsConnector]
 
   "Tax enrolments connector de-enrolling AWRS" must {
     // used in the mock to check the destination of the connector calls
-    lazy val deEnrolURI = testTaxEnrolmentsConnector.deEnrolURI + "/" + service
+    lazy val deEnrolURI = s"/${connector.deEnrolURI}/$service"
 
     // these values doesn't really matter since the call itself is mocked
     val awrsRef = ""
@@ -56,13 +44,13 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
     val deEnrolResponseSuccess = true
     val deEnrolResponseFailure = false
 
-    def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
-      when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.endsWith(deEnrolURI), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseString.toString())))
+    def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit = {
+      stubbedPost(deEnrolURI, responseStatus, responseString.getOrElse(""))
+    }
 
     def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
-      when(mockAwrsMetrics.startTimer(ArgumentMatchers.any())).thenReturn(new Timer().time)
-      testTaxEnrolmentsConnector.deEnrol(awrsRef, businessName, businessType)(headerCarrier, implicitly)
+
+      connector.deEnrol(awrsRef, businessName, businessType)(headerCarrier, implicitly)
     }
 
     "return status as OK, for successful de-enrolment" in {
@@ -101,41 +89,34 @@ class TaxEnrolmentsConnectorSpec extends AwrsUnitTestTraits {
       val result = testCall
       await(result) mustBe deEnrolResponseFailure
     }
-
-
   }
 
   "Tax enrolments connector enrolling AWRS" must {
 
-    def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit =
-      when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse.apply(responseStatus, responseString.toString())))
+    def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit = {
+      stubbedPost(s"/tax-enrolments/groups/groupId/enrolments/$service~AWRSRefNumber~1234567", responseStatus, responseString.getOrElse(""))
+    }
 
     def testCall(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
       val requestPayload = RequestPayload.apply("", "", "", List.empty)
-      val groupId = ""
-      val awrsRef = ""
+      val groupId = "groupId"
+      val awrsRef = "1234567"
       val businessType = ""
       val businessPartnerDetails = TestUtil.testBusinessCustomerDetails("LP")
-      when(mockAwrsMetrics.startTimer(ArgumentMatchers.any())).thenReturn(new Timer().time)
-      await(testTaxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRef, businessPartnerDetails, businessType)(headerCarrier, implicitly))
+      await(connector.enrol(requestPayload, groupId, awrsRef, businessPartnerDetails, businessType)(headerCarrier, implicitly))
     }
 
     "return enrol response for successful enrolment" in {
-      mockResponse(OK)
-      testCall.isDefined mustBe true
+      mockResponse(CREATED)
+      testCall match {
+        case Some(response) => response mustBe EnrolResponse("", "", Seq.empty)
+        case _              => fail("Unexpected response from enrolment")
+      }
     }
 
     "return enrol response for unsuccessful enrolment" in {
       mockResponse(BAD_REQUEST)
       intercept[BadRequestException](testCall)
-    }
-
-    "return enrol response for created response" in {
-      mockResponse(CREATED)
-      testCall.isDefined mustBe true
     }
 
     "return enrol response for not found response" in {

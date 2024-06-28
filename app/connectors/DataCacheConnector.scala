@@ -17,11 +17,11 @@
 package connectors
 
 import config.{AwrsAPIShortLivedCache, AwrsSessionCache, AwrsShortLivedCache, BusinessCustomerSessionCache}
-import javax.inject.Inject
 import play.api.libs.json
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -51,7 +51,7 @@ trait KeyStoreConnector {
   @inline def saveDataToKeystore[T](formID: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[CacheMap] =
     sessionCache.cache(formID, data)
 
-  @inline def removeAll()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+  @inline def removeAll()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     sessionCache.remove()
 }
 
@@ -70,6 +70,6 @@ trait Save4LaterConnector {
   @inline def fetchAll(utr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
     shortLivedCache.fetch(utr)
 
-  @inline def removeAll(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+  @inline def removeAll(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
     shortLivedCache.remove(cacheId)
 }

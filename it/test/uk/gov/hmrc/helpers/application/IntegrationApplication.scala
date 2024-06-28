@@ -21,11 +21,11 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.helpers.wiremock.WireMockConfig
+import uk.gov.hmrc.http.test.WireMockSupport
 
 import scala.annotation.nowarn
 
-trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig {
+trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockSupport {
   self: TestSuite =>
 
   val currentAppBaseUrl: String = "awrs-frontend"
@@ -49,10 +49,16 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
     "microservice.services.cachable.session-cache.port" -> wireMockPort,
     "microservice.services.tax-enrolments.host" -> wireMockHost,
     "microservice.services.tax-enrolments.port" -> wireMockPort,
+    "microservice.services.business-matching.host" -> wireMockHost,
+    "microservice.services.business-matching.port" -> wireMockPort,
     "microservice.services.awrs.host" -> wireMockHost,
     "microservice.services.awrs.port" -> wireMockPort,
+    "microservice.services.awrs-notification.host" -> wireMockHost,
+    "microservice.services.awrs-notification.port" -> wireMockPort,
     "microservice.services.address-lookup.host" -> wireMockHost,
     "microservice.services.address-lookup.port" -> wireMockPort,
+    "microservice.services.email-verification.host" -> wireMockHost,
+    "microservice.services.email-verification.port" -> wireMockPort,
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck"
 
   ) ++ extraConfig
