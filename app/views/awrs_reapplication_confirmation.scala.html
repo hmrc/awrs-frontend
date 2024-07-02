@@ -50,7 +50,6 @@
                 @govukRadios(
                     Radios(
                         fieldset = Some(Fieldset(
-                            classes = "govuk-radios--inline",
                             legend = Some(Legend(
                                 classes = "govuk-visually-hidden",
                                 content = Text(messages("awrs.reapplication.confirm_page.heading"))
@@ -65,7 +64,8 @@
                                 content = Text(Messages("awrs.generic.no")),
                                 value = Some("No")
                             )
-                        )
+                        ),
+                        classes = "govuk-radios--inline",
                     ).withFormField(reapplicationForm("answer"))
                 )
             </div>

@@ -172,7 +172,7 @@
                 content = Text(messages("awrs.business_directors.personOrCompany_question")),
                 classes = "govuk-fieldset__legend--s"
             )),
-            classes = "govuk-fieldset govuk-radios--inline" + personOrCompanyClass)),
+        )),
         attributes = Map("id" ->"personOrCompany_field"),
         hint = Some(Hint(id = Some("personOrCompany-hint"), content = Text(messages("awrs.business_directors.personOrCompany_hint_text")))),
         items = Seq(
@@ -184,7 +184,8 @@
                 content = Text(messages("awrs.generic.status.company")),
                 value = Some(messages("awrs.generic.status.company_value")),
             )
-        )
+        ),
+        classes = "govuk-radios--inline" + personOrCompanyClass
     ).withFormField(businessDirectorsForm("personOrCompany"))
 )
     <div id="company">

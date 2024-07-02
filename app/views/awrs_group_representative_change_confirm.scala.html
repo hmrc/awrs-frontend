@@ -63,7 +63,6 @@
                                 classes = "govuk-visually-hidden",
                                 content = Text(Messages("awrs.business_name_change.heading"))
                             )),
-                            classes = "govuk-radios--inline"
                         )),
                         items = Seq(
                             RadioItem(
@@ -74,7 +73,8 @@
                                 content = Text(Messages("awrs.generic.no")),
                                 value = Some("No")
                             )
-                        )
+                        ),
+                        classes = "govuk-radios--inline"
                     ).withFormField(confirmationForm("businessNameChangeConfirmation"))
                 )
                 @awrsSubmitButton(messages("awrs.business_name_change.cta"))(id = "save-and-continue")

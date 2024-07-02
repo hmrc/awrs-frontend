@@ -96,7 +96,6 @@ govukErrorSummary: GovukErrorSummary)
                              @govukRadios(
                                 Radios(
                                     fieldset = Some(Fieldset(
-                                        classes = "govuk-radios--inline",
                                         describedBy = "additional-premises-subtext",
                                         legend = Some(Legend(
                                             content = Text(messages("awrs.additional-premises.top-heading.first")),
@@ -110,11 +109,12 @@ govukErrorSummary: GovukErrorSummary)
                                             id = Some("additionalPremises-yes")
                                         ),
                                         RadioItem(
-                                             content = Text(Messages("awrs.generic.no")),
-                                             value = Some("No"),
-                                             id = Some("additionalPremises-no")
+                                            content = Text(Messages("awrs.generic.no")),
+                                            value = Some("No"),
+                                            id = Some("additionalPremises-no")
                                         )
-                                    )
+                                    ),
+                                    classes = "govuk-radios--inline"
                                 ).withFormField(businessPremisesForm("additionalPremises"))
                             )
                         </div>
@@ -128,12 +128,11 @@ govukErrorSummary: GovukErrorSummary)
                         @if(isEditMode) {
                             <input type="hidden" name="addAnother" value="No">
                         } else {
-                            <div class="govuk-form-group">
+                        <div class="govuk-form-group">
 
-                                @govukRadios(
+                            @govukRadios(
                                 Radios(
                                     fieldset = Some(Fieldset(
-                                        classes = "govuk-radios--inline",
                                         legend = Some(Legend(
                                             content = Text(messages("awrs.additional-premises.do_you_have_additional_addresses")),
                                             classes = "govuk-fieldset__legend--s"
@@ -145,13 +144,14 @@ govukErrorSummary: GovukErrorSummary)
                                             value = Some("Yes")
                                         ),
                                         RadioItem(
-                                             content = Text(Messages("awrs.generic.no")),
-                                             value = Some("No")
+                                            content = Text(Messages("awrs.generic.no")),
+                                            value = Some("No")
                                         )
-                                    )
+                                    ),
+                                    classes = "govuk-radios--inline"
                                 ).withFormField(businessPremisesForm("addAnother"))
                             )
-                            </div>
+                    </div>
                         }
                     </div>
                     @submitButtonAndNavLinks(SubmitAndNavLinkParams(
