@@ -72,7 +72,6 @@
                                 content = Text(Messages("awrs.generic.legislation_before"))
                             ))
                         )),
-                        classes = "govuk-fieldset govuk-radios--inline",
                         items = Seq(
                             RadioItem(
                                 content = Text(Messages("awrs.generic.yes")),
@@ -82,7 +81,8 @@
                                 content = Text(Messages("awrs.generic.no")),
                                 value = Some("No")
                             )
-                        )
+                        ),
+                        classes = "govuk-radios--inline"
                     ).withFormField(confirmationForm("tradingLegislationDate"))
                 )
                 @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")

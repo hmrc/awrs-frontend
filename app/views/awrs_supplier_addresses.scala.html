@@ -111,7 +111,6 @@
                     @govukRadios(
                         Radios(
                             fieldset = Some(Fieldset(
-                                classes = "govuk-radios--inline",
                                 describedBy = "supplier-address-description",
                                 legend = Some(Legend(
                                     content = Text(messages("awrs.supplier-addresses.heading.first")),
@@ -130,7 +129,8 @@
                                     value = Some(messages("awrs.generic.no")),
                                     id = Some("alcoholSupplier-no")
                                 )
-                            )
+                            ),
+                            classes = "govuk-radios--inline",
                         ).withFormField(supplierAddressForm("alcoholSupplier"))
                     )
                 </div>

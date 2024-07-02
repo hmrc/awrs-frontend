@@ -81,7 +81,6 @@
                                 )),
                                 attributes = Map("id" ->"deleteConfirmation_field")
                             )),
-                            classes = "govuk-fieldset govuk-radios--inline",
                             items = Seq(
                                 RadioItem(
                                     content = Text(messages("awrs.generic.yes")),
@@ -91,7 +90,8 @@
                                     content = Text(messages("awrs.generic.no")),
                                     value = Some("No")
                                 )
-                            )
+                            ),
+                            classes = "govuk-radios--inline"
                         ).withFormField(confirmationForm("deleteConfirmation"))
                     )
         </div>
