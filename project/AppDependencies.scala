@@ -7,7 +7,7 @@ private object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"                   %% "http-caching-client-play-30" % "12.0.0",
+    "uk.gov.hmrc"                   %% "http-caching-client-play-30" % "12.1.0",
     "uk.gov.hmrc"                   %% "bootstrap-frontend-play-30"  % bootstrapPlayVersion,
     "uk.gov.hmrc"                   %% "play-partials-play-30"       % "10.0.0", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc"                   %% "domain-play-30"              % "10.0.0",
