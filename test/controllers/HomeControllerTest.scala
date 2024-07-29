@@ -124,7 +124,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
       when(mockAppConfig.businessCustomerStartPage)
         .thenReturn("http://localhost:9923/business-customer/awrs")
 
-      showWithSave4LaterWithoutSafeId() { result =>
+      showWithoutKeystore { result =>
         status(result) mustBe 303
         redirectLocation(result).get must include("http://localhost:9923/business-customer/awrs")
       }
