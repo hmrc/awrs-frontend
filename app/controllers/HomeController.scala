@@ -73,14 +73,11 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
 
   def businessCustomerDetails(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
-      case Some(data) if data.safeId.isEmpty =>
-        logger.warn("[HomeController][businessCustomerDetails] - no safeID found in BC Details")
-        Future.successful(None)
-      case Some(data) =>
+      case Some(data) if data.safeId.nonEmpty =>
         logger.info("[HomeController][businessCustomerDetails] - BC Details fetched from save4later")
         Future.successful(Some(data))
-      case None =>
-        logger.warn("[HomeController][businessCustomerDetails] - no BC Details found in save4later, checking Keystore")
+      case _ =>
+        logger.warn("[HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore")
         businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails].flatMap {
           case Some(data) =>
             logger.info("[HomeController][businessCustomerDetails] - BC Details fetched from Keystore")
