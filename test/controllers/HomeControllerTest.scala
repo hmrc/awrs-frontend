@@ -123,6 +123,8 @@ class HomeControllerTest extends AwrsUnitTestTraits
     "redirect to the Business customer matching if the save4Later review details are present WITHOUT SAFEID and the user does not have an AWRS enrolment" in {
       when(mockAppConfig.businessCustomerStartPage)
         .thenReturn("http://localhost:9923/business-customer/awrs")
+      when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(None))
 
       showWithSave4LaterWithoutSafeId() { result =>
         status(result) mustBe 303
@@ -130,6 +132,17 @@ class HomeControllerTest extends AwrsUnitTestTraits
       }
     }
 
+    "redirect to the Business type page if the save4Later review details are present WITHOUT SAFEID, but details in keystore contain safeID" in {
+      when(mockAppConfig.businessCustomerStartPage)
+        .thenReturn("http://localhost:9923/business-customer/awrs")
+      when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(testBusinessCustomerDetails("SOP"))))
+
+      showWithSave4LaterWithoutSafeId() { result =>
+        status(result) mustBe 303
+        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
+      }
+    }
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment and they came from BTA" in {
       showWithSave4Later(callerId = Some("BTA")) { result =>
