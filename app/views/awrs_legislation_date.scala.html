@@ -41,16 +41,17 @@
     }
 }
 
+@backlinkHtml = {
+  @if(viewApplicationType == LinearViewMode) {
+    @backLink(controllers.routes.TradingNameController.showTradingName(true).url)
+  } else {
+    @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
+  }
+}
+
 @awrsMain(
     title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.legislation_before"))}",
-    userLoggedIn = true) {
-
-    @if(viewApplicationType == LinearViewMode) {
-        @backLink(controllers.routes.TradingNameController.showTradingName(true).url)    
-    } else {
-        @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
-    }
-    
+    backlink=Some(backlinkHtml), userLoggedIn = true) {
 
     @if(confirmationForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmationForm))

@@ -30,12 +30,14 @@
 
 @(reapplicationForm: Form[models.ReapplicationConfirmation])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
+@backlinkHtml = {
+  @backLink()
+}
 
 @awrsMain(
     title = s"${errorPrefix(reapplicationForm)} ${messages("awrs.generic.tab.title", messages("awrs.reapplication.confirm_page.heading"))}",
-    userLoggedIn = true) {
+    backlink=Some(backlinkHtml), userLoggedIn = true) {
 
-        @backLink()
         @if(reapplicationForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(reapplicationForm))
         }

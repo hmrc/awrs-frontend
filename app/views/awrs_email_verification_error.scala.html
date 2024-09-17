@@ -48,14 +48,18 @@
     }
 }
 
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_error.heading"))) {
+@backlinkHtml = {
+  @backLink(backUrl = if(resent) {
+    controllers.routes.EmailVerificationController.checkEmailVerification.url
+  } else {
+    controllers.routes.IndexController.showIndex.url
+  })
+}
 
-            @backLink(backUrl = if(resent) {
-                controllers.routes.EmailVerificationController.checkEmailVerification.url
-            } else {
-                controllers.routes.IndexController.showIndex.url
-            }
-            )
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.email_verification_error.heading")),
+  backlink=Some(backlinkHtml) ) {
+
+
             <div>
                 <h1 id="email-verification-error-header" class="govuk-heading-xl">@Html(messages("awrs.email_verification_error.heading"))</h1>
                 <p id="email-verification-error-lede" class="govuk-body-l">@Html(messages("awrs.email_verification_error.lede"))</p>

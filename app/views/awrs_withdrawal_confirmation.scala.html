@@ -34,11 +34,14 @@
     @awrsWarningHelper(declarationTxt = messages("awrs.generic.wait_info", messages("awrs.generic.wait_info_withdraw")), id = "confirmation-content")
 }
 
-@awrsMain(
-    title = s"${errorPrefix(withdrawalConfirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.withdrawal.confirm_page.heading"))}",
-    userLoggedIn = true) {
+@backlinkHtml = {
+  @backLink(backUrl = controllers.routes.WithdrawalController.showWithdrawalReasons.toString)
+}
 
-    @backLink(backUrl = controllers.routes.WithdrawalController.showWithdrawalReasons.toString)
+@awrsMain(
+title = s"${errorPrefix(withdrawalConfirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.withdrawal.confirm_page.heading"))}",
+backlink=Some(backlinkHtml), userLoggedIn = true) {
+
 
         @if(withdrawalConfirmationForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(withdrawalConfirmationForm))

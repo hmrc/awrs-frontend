@@ -46,11 +46,15 @@
     )
 }
 
+@backlinkHtml = {
+  @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
+}
+
+
 @awrsMain(
     title = s"${errorPrefix(deRegistrationReason)} ${messages("awrs.generic.tab.title", messages("awrs.de_registration_reason.page_heading"))}",
-    userLoggedIn = true) {
+    backlink=Some(backlinkHtml), userLoggedIn = true) {
 
-    @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
     @if(deRegistrationReason.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(deRegistrationReason))
     }
