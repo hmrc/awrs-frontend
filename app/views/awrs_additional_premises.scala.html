@@ -67,14 +67,17 @@ govukErrorSummary: GovukErrorSummary)
     }
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = additionalBusinessPremisesName,
+    sectionEntryId = businessPremisesId
+  ))
+}
+
     @awrsMain(
         title = s"${errorPrefix(businessPremisesForm)} ${messages("awrs.generic.tab.title", businessPremisesIdHeading)}",
-        pageScripts = Some(pageScripts), userLoggedIn = true) {
+        backlink=Some(backlinkHtml), pageScripts = Some(pageScripts), userLoggedIn = true) {
 
-                @backLinkHelper(BackLinkParams(
-                    sectionName = additionalBusinessPremisesName,
-                    sectionEntryId = businessPremisesId
-                ))
                 @if(businessPremisesForm.errors.nonEmpty) {
                     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessPremisesForm, mapping = Map("additionalPremises" -> "additionalPremises-yes")))
                 }

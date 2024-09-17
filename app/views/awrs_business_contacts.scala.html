@@ -86,14 +86,15 @@
     }
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = businessContactsName
+  ))
+}
 
 @awrsMain(
     title = s"${errorPrefix(businessContactsForm)} ${messages("awrs.generic.tab.title", businessTypeHeading)}",
-    pageScripts = Some(pageScripts), userLoggedIn = true) {
-
-            @backLinkHelper(BackLinkParams(
-                sectionName = businessContactsName
-            ))
+    backlink=Some(backlinkHtml), pageScripts = Some(pageScripts), userLoggedIn = true) {
 
             @if(businessContactsForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(businessContactsForm, mapping = Map("contactAddressSame" -> "contactAddressSame-yes")))

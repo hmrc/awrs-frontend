@@ -92,13 +92,16 @@ messages(s"awrs.generic.principal.address_$line", "Previous principal")
 Messages("awrs.generic.principal.postcode", "Previous principal")
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = placeOfBusinessName
+  ))
+}
+
 @awrsMain(
     title = s"${errorPrefix(placeOfBusinessForm)} ${messages("awrs.generic.tab.title", businessTypeHeading)}",
-    pageScripts = Some(pageScripts), userLoggedIn = true) {
+    backlink=Some(backlinkHtml), pageScripts = Some(pageScripts), userLoggedIn = true) {
 
-            @backLinkHelper(BackLinkParams(
-                sectionName = placeOfBusinessName
-            ))
             @if(placeOfBusinessForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(placeOfBusinessForm, mapping = Map("placeOfBusinessLast3Years" -> "placeOfBusinessLast3Years-yes")))
             }

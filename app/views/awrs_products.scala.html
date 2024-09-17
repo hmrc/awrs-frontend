@@ -90,14 +90,16 @@
 @messages("awrs.additional_information.other") <span class="govuk-visually-hidden">@messages("awrs.additional_information.other_hidden_products")</span>
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = productsName
+  ))
+}
+
 @awrsMain(
     title = s"${errorPrefix(productsForm)} ${messages("awrs.generic.tab.title", pageHeading)}",
-    userLoggedIn = true){
+    backlink=Some(backlinkHtml), userLoggedIn = true){
 
-
-        @backLinkHelper(BackLinkParams(
-            sectionName = productsName
-        ))
         @if(productsForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(productsForm))
         }
