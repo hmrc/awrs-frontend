@@ -58,7 +58,6 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             content = Text(messages("awrs.generic.do_you_have_UTR_information")),
             id = Some("utr-information")
         )),
-        attributes = Map("maxlength" -> frontendDefaultLen),
         classes = "govuk-input--width-20"
     ).withFormField(inputField)
     )

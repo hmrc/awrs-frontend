@@ -81,13 +81,19 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
     businessRegistrationDetailsForm(businessType.get).bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(template(businessType, formWithErrors))),
-      success = businessRegistrationDetails =>
+      success = businessRegistrationDetails => {
+        // Manually trim the UTR before saving
+           val trimmedBusinessRegistrationDetails = businessRegistrationDetails.copy(
+             utr = businessRegistrationDetails.utr.map { utrValue =>
+               if (utrValue.length == 13) utrValue.replaceAll("[\\s]", "").substring(3) else utrValue.replaceAll("[\\s]", "")
+             }
+           )
         businessType match {
-          case Some("LTD_GRP" | "LLP_GRP") => businessRegistrationDetails.utr match {
+          case Some("LTD_GRP" | "LLP_GRP") => trimmedBusinessRegistrationDetails.utr match {
             case Some(utr) => {
               businessMatchingService.isValidMatchedGroupUtr(utr, authRetrievals) map {
                 case true =>
-                  save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, businessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
+                  save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, trimmedBusinessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
                 case false =>
                   val errorMsg = "awrs.generic.error.utr_invalid_match"
                   val errorForm = businessRegistrationDetailsForm(businessType.get).form.withError(key = "utr", message = errorMsg).fill(businessRegistrationDetails)
@@ -99,8 +105,9 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
               val errorForm = businessRegistrationDetailsForm(businessType.get).form.withError(key = "utr", message = errorMsg).fill(businessRegistrationDetails)
               Future.successful(BadRequest(template(businessType, errorForm)))
           }
-          case _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, businessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
+          case _ => save4LaterService.mainStore.saveBusinessRegistrationDetails(authRetrievals, trimmedBusinessRegistrationDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
         }
+      }
     )
   }
 }
