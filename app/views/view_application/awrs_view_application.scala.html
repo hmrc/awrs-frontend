@@ -30,7 +30,6 @@
     coreContent(printFriendly)
 }
 
-
 @titleString = @{
     sectionText match {
         case Some(section) => messages("awrs.view_application.section_title", messages(section))
@@ -38,8 +37,12 @@
     }
 }
 
+@backlinkHtml = {
+    @backLink(alwaysShow = true)
+}
+
 @govWrapper(content: Html) = {
-    @awrsMain(title = messages("awrs.generic.tab.title", titleString), userLoggedIn = true) {
+    @awrsMain(title = messages("awrs.generic.tab.title", titleString), backlink=Some(backlinkHtml), userLoggedIn = true) {
         @awrsUnSubmittedBanner(unSubmittedChangesParam, messages("awrs.index_page.modified_application_incomplete.edit"), messages("awrs.index_page.not_submitted_changes.return"))
         @content
     }
