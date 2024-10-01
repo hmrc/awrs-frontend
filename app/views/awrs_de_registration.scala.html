@@ -48,11 +48,13 @@
         )
     }
 
+@backlinkHtml = {
+  @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
+}
+
 @awrsMain(
     title = s"${errorPrefix(deRegistrationForm)} ${messages("awrs.generic.tab.title", messages("awrs.de_registration.heading"))}",
-    userLoggedIn = true) {
-
-@backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
+    backlink=Some(backlinkHtml), userLoggedIn = true) {
 
 @if(deRegistrationForm.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(deRegistrationForm, mapping = Map("proposedEndDate" -> "proposedEndDate.day")))

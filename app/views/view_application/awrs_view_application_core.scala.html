@@ -38,9 +38,6 @@
 }
 
 @getHeading = @{ sectionName: String => messages(getSectionDisplayName(sectionName, businessLegalEntity)) }
-<div id="back-link">
-    @backLink(alwaysShow = true)
-</div>
 <div class="alert alert--info alert--info__light banner" role="alert">
     <p class="govuk-body alert__message">@messages("awrs.view_application.status_colon") @status</p>
 </div>

@@ -41,11 +41,13 @@
     ))
 }
 
+@backlinkHtml = {
+  @backLink(backUrl = controllers.routes.DeRegistrationController.showDate.toString)
+}
+
 @awrsMain(
     title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.de_registration.confirmation_heading"))}",
-    userLoggedIn = true) {
-
-@backLink(backUrl = controllers.routes.DeRegistrationController.showDate.toString)
+    backlink=Some(backlinkHtml), userLoggedIn = true) {
 
 @if(confirmationForm.errors.nonEmpty) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(confirmationForm))

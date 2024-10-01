@@ -62,13 +62,16 @@
     }
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = businessRegistrationDetailsName
+  ))
+}
+
 @awrsMain(
     title = s"${errorPrefix(businessRegistrationDetailsForm)} ${messages("awrs.generic.tab.title", businessTypeHeading)}",
-    userLoggedIn = true) {
+    backlink=Some(backlinkHtml), userLoggedIn = true) {
 
-            @backLinkHelper(BackLinkParams(
-                sectionName = businessRegistrationDetailsName
-            ))
             @if(businessRegistrationDetailsForm.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(businessRegistrationDetailsForm, mapping = Map("companyRegDetails.dateOfIncorporation" -> "companyRegDetails.dateOfIncorporation.day")))
             }

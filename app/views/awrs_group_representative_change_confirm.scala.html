@@ -40,11 +40,13 @@
         </ul>
     }
 
+@backlinkHtml = {
+  @backLink()
+}
+
     @awrsMain(
         title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.business_name_change.heading"))}",
-        userLoggedIn = true) {
-
-        @backLink()
+        backlink=Some(backlinkHtml), userLoggedIn = true) {
 
         @if(confirmationForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(confirmationForm))

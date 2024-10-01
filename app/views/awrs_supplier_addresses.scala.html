@@ -85,13 +85,15 @@
     messages("awrs.generic.tab.title", pageHeading)
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = suppliersName
+  ))
+}
+
 @awrsMain(
     title = s"${errorPrefix(supplierAddressForm)} ${messages("awrs.generic.tab.title", pageHeading)}",
-    pageScripts = Some(pageScripts), userLoggedIn = true){
-
-        @backLinkHelper(BackLinkParams(
-            sectionName = suppliersName
-        ))
+    backlink=Some(backlinkHtml), pageScripts = Some(pageScripts), userLoggedIn = true){
 
         @if(supplierAddressForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(supplierAddressForm, mapping = Map("alcoholSupplier" -> "alcoholSupplier-yes", "ukSupplier" -> "ukSupplier-yes")))

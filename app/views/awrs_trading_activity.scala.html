@@ -133,13 +133,16 @@
     )
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = tradingActivityName
+  ))
+}
+
 @awrsMain(
     title = s"${errorPrefix(tradingActivityForm)} ${messages("awrs.generic.tab.title", pageHeading)}",
-    userLoggedIn = true){
+    backlink=Some(backlinkHtml), userLoggedIn = true){
 
-        @backLinkHelper(BackLinkParams(
-            sectionName = tradingActivityName
-        ))
         @if(tradingActivityForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(tradingActivityForm))
         }

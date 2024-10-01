@@ -21,6 +21,7 @@
 @this(layout: layout)
 @(
     title: String,
+    backlink: Option[Html] = None,
     pageScripts: Option[Html] = None,
     mainContentHeader: Html = HtmlFormat.empty,
     sidebarLinks: Option[Html] = None,
@@ -64,6 +65,11 @@
  }
 }
 
+@beforeContent = {
+    @businessName
+    @backlink
+}
+
 @linkElement = {
     <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/custom.css")'>
     <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/print.css")' type="text/css" media="print">
@@ -73,7 +79,7 @@
 }
 
 @layout(
-    beforeContent = Some(businessName),
+    beforeContent = Some(beforeContent),
     pageTitle = Some(title),
     scripts = Some(linkElement)
 )(mainContent)

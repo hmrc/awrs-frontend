@@ -49,10 +49,13 @@
     )
 }
 
-    @awrsMain(
-        title = s"${errorPrefix(withdrawalReasonForm)} ${messages("awrs.generic.tab.title", messages("awrs.withdrawal.reasons_page.heading"))}",
-        userLoggedIn = true) {
-        @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
+@backlinkHtml = {
+  @backLink(backUrl = controllers.routes.IndexController.showIndex.toString)
+}
+
+@awrsMain(
+title = s"${errorPrefix(withdrawalReasonForm)} ${messages("awrs.generic.tab.title", messages("awrs.withdrawal.reasons_page.heading"))}",
+backlink=Some(backlinkHtml), userLoggedIn = true) {
 
                 @if(withdrawalReasonForm.errors.nonEmpty) {
                     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(withdrawalReasonForm))

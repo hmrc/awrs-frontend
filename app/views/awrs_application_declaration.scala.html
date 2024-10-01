@@ -39,11 +39,13 @@
     }
 }
 
+@backlinkHtml = {
+  @backLink(backUrl = controllers.routes.IndexController.showIndex.url)
+}
+
 @awrsMain(
     title = s"${errorPrefix(applicationDeclarationForm)} ${messages("awrs.generic.tab.title", messages("awrs.application_declaration.heading"))}",
-    userLoggedIn = true){
-
-    @backLink(backUrl = controllers.routes.IndexController.showIndex.url)
+    backlink=Some(backlinkHtml), userLoggedIn = true){
 
     @if(applicationDeclarationForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(applicationDeclarationForm))

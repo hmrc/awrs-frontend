@@ -103,13 +103,16 @@
     )
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = partnersName
+  ))
+}
+
 @awrsMain(
     title = s"${errorPrefix(partnerForm)} ${messages(messages("awrs.generic.tab.title", h1text))}",
-    pageScripts = Some(pageScripts), userLoggedIn = true) {
+    backlink=Some(backlinkHtml), pageScripts = Some(pageScripts), userLoggedIn = true) {
 
-            @backLinkHelper(BackLinkParams(
-                sectionName = partnersName
-            ))
     @if(partnerForm.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(partnerForm,
         mapping = Map(

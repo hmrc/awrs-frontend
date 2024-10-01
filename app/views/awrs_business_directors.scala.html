@@ -233,13 +233,16 @@
 
 }
 
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = businessDirectorsName
+  ))
+}
+
 @awrsMain(
     title = s"${errorPrefix(businessDirectorsForm)} ${messages("awrs.generic.tab.title", h1text)}",
-    userLoggedIn = true){
+    backlink=Some(backlinkHtml), userLoggedIn = true){
 
-        @backLinkHelper(BackLinkParams(
-            sectionName = businessDirectorsName
-        ))
         @if(businessDirectorsForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessDirectorsForm, mapping = Map("companyNames.doYouHaveTradingName" -> "companyNames.doYouHaveTradingName-yes")))
         }

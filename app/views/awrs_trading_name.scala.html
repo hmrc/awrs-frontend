@@ -103,13 +103,16 @@
     )
 }
 
-@awrsMain(
-    title = s"${errorPrefix(businessDetailsForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.do_you_have_trading_name"))}",
-    userLoggedIn = true){
+@backlinkHtml = {
+  @backLinkHelper(BackLinkParams(
+    sectionName = businessDetailsName
+  ))
+}
 
-        @backLinkHelper(BackLinkParams(
-            sectionName = businessDetailsName
-        ))
+@awrsMain(
+title = s"${errorPrefix(businessDetailsForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.do_you_have_trading_name"))}",
+backlink=Some(backlinkHtml), userLoggedIn = true){
+
         @if(businessDetailsForm.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessDetailsForm))
         }
