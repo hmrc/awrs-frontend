@@ -24,11 +24,14 @@ import play.api.test.Helpers._
 import utils.AwrsUnitTestTraits
 
 import scala.concurrent.Future
+import views.html.timed_out
 
 
 class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnector {
 
-  val testApplicationController = new ApplicationController(mockMCC, mockAppConfig)
+  val mockTemplate: timed_out = app.injector.instanceOf[views.html.timed_out]
+
+  val testApplicationController = new ApplicationController(mockMCC, mockTemplate, mockAppConfig)
 
   "Authorised users" must {
     "be redirected to feedback-survey page" in {
@@ -49,8 +52,8 @@ class ApplicationControllerTest extends AwrsUnitTestTraits with MockAuthConnecto
   "timedout users" must {
     "be redirected to signout" in {
       val result = testApplicationController.timedOut().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get must include ("/feedback/AWRS")
+      status(result) mustBe OK
+      contentAsString(result) must include ("/signed-out") 
     }
   }
 

@@ -33,7 +33,8 @@
     nameBusiness: Option[String] = None,
     callerId : Option[String] = None,
     signOutToSurvey: Boolean = true,
-    showSignOutLink: Boolean = true
+    showSignOutLink: Boolean = true,
+    showSessionTimeOut: Boolean  = false,
 )(mainContent: Html)(implicit request : Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @btaLink = {<div class="div-left" id="btaLink"><a id="btaNavHref" href=@appConfig.businessTaxAccountPage>@Messages("awrs.generic.bta_link")</a></div>}
@@ -81,5 +82,6 @@
 @layout(
     beforeContent = Some(beforeContent),
     pageTitle = Some(title),
-    scripts = Some(linkElement)
+    scripts = Some(linkElement),
+    showSessionTimeOutPage = showSessionTimeOut
 )(mainContent)
