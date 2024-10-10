@@ -25,17 +25,21 @@
         problemLink: HmrcReportTechnicalIssueHelper
 )
 
-@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(
+@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html], showSessionTimeOutPage: Boolean  = false)(contentBlock: Html)(
         implicit request: RequestHeader, messages: Messages, appConfig: ApplicationConfig)
 
 
 @beforeContentBlock = {
-    @beforeContent
+     @if(!showSessionTimeOutPage){
+         @beforeContent
+     }
 }
 
 @content = {
     @contentBlock
-    @problemLink()
+    @if(!showSessionTimeOutPage){
+     @problemLink()
+    }
 }
 
 @scriptsBlock = {
@@ -44,18 +48,33 @@
     @scripts
 }
 
-@signOutUrl = @{routes.ApplicationController.logout.url}
+@signOutUrl = @{
+    if(!showSessionTimeOutPage)
+    Some(routes.ApplicationController.logout.url)
+    else
+    None
+    }
+    
+@timeOutUrl = @{routes.ApplicationController.timedOut.url}
+
+@head = @{
+    if(!showSessionTimeOutPage)
+      hmrcTimeoutDialogHelper(signOutUrl = timeOutUrl)
+      else
+        Html("")
+      
+}
 
 @hmrcStandardPage(
     HmrcStandardPageParams(
         serviceURLs = ServiceURLs(
             serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),
-            signOutUrl = Some(signOutUrl)
+            signOutUrl = signOutUrl
         ),
         templateOverrides = TemplateOverrides(
             additionalScriptsBlock = Some(scriptsBlock),
             beforeContentBlock = Some(beforeContentBlock),
-            additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = signOutUrl))
+            additionalHeadBlock = Some(head)
         ),
         pageTitle = pageTitle
     )

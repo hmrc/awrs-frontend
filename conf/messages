@@ -936,3 +936,9 @@ awrs.application_pending_deregistration.title=Your submission has failed
 awrs.application_pending_deregistration.heading=Your submission has failed
 awrs.application_pending_deregistration.message=You cannot submit a new application while your cancelled application is still pending.
 
+# Exception Error Messages
+#===========================
+awrs.application_timeout.title = For your security, we signed you out
+awrs.application_timeout.heading = For your security, we signed you out
+awrs.application_timeout.p = We saved your answers. Sign in using your Government Gateway to return to your application summary page.
+awrs.application_timeout.sign_in_btn = Sign in

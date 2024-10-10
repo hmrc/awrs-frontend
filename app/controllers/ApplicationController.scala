@@ -23,6 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 class ApplicationController @Inject()(mcc: MessagesControllerComponents,
+                                      template: views.html.timed_out,
                                       implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) {
 
   def unauthorised(implicit messages: Messages): Action[AnyContent] = Action { implicit request =>
@@ -33,8 +34,8 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
     Redirect(applicationConfig.signOut).withNewSession
   }
 
-  def timedOut(): Action[AnyContent] = Action { _ =>
-    Redirect(applicationConfig.signOut)
+  def timedOut(): Action[AnyContent] = Action { implicit request =>
+    Ok(template()).withNewSession
   }
 
   def keepAlive: Action[AnyContent] = Action { _ =>
