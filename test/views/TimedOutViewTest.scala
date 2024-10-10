@@ -16,44 +16,16 @@
 
 package views
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.scalatestplus.play.PlaySpec
-import play.api.test.FakeRequest
-import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.twirl.api.HtmlFormat
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import org.mockito.Mockito._
-import org.scalatest.{Assertion, BeforeAndAfterEach}
-import org.scalatestplus.mockito.MockitoSugar
-import config.ApplicationConfig
+import views.html.timed_out
 
-class TimedOutViewTest
-    extends PlaySpec
-    with MockitoSugar
-    with BeforeAndAfterEach
-    with GuiceOneAppPerSuite {
+class TimedOutViewTest extends ViewTestFixture {
 
-  val timedOutView = app.injector.instanceOf[views.html.timed_out]
-  implicit val fakeRequest = FakeRequest("GET", "/")
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
-
-  val htmlContent: HtmlFormat.Appendable =
-    timedOutView.apply()(fakeRequest, messages, mockAppConfig)
-  val htmlString = htmlContent.body
-  val document: Document = Jsoup.parse(htmlString)
+  val view: timed_out = app.injector.instanceOf[views.html.timed_out]
+  override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
 
   "TimedOutView" should {
-
     "render the correct content" in {
-
-      val heading = document.select("h1").text()
-      val bodyText = document.select("p").text()
-      val sign_in_btn = document.select("a.govuk-button").text()
-      val sign_in_href = document.select("a.govuk-button").attr("href")
-
       heading mustBe "For your security, we signed you out"
       bodyText mustBe "We saved your answers. Sign in using your Government Gateway to return to your application summary page."
       sign_in_btn mustBe "Sign in"

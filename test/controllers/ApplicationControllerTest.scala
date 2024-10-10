@@ -18,7 +18,9 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
+import org.jsoup.Jsoup
 import org.mockito.Mockito.when
+import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import utils.AwrsUnitTestTraits
@@ -54,10 +56,12 @@ class ApplicationControllerTest
   }
 
   "timedout users" must {
-    "be redirected to signout" in {
+    "should see timed out page" in {
       val result = testApplicationController
         .timedOut()
         .apply(SessionBuilder.buildRequestWithSession(userId))
+      val document = Jsoup.parse(contentAsString(result))
+      document.getElementsByTag("h1").text must be("awrs.application_timeout.heading")
       status(result) mustBe OK
     }
   }
