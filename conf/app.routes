@@ -16,6 +16,7 @@ POST        /business-type/continue                         controllers.Business
 
 GET         /index                                          controllers.IndexController.showIndex
 GET         /lastLocation                                   controllers.IndexController.showLastLocation
+
 GET         /logout                                         controllers.ApplicationController.logout
 GET         /timedOut                                       controllers.ApplicationController.timedOut
 GET         /keep-alive                                     controllers.ApplicationController.keepAlive
