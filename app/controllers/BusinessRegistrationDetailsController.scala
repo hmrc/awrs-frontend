@@ -71,11 +71,11 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
   }
 
   override def save(id: Int,
-           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
-           viewApplicationType: ViewApplicationType,
-           isNewRecord: Boolean,
-           authRetrievals: StandardAuthRetrievals)
-          (implicit request: Request[AnyContent]): Future[Result] = {
+                    redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
+                    viewApplicationType: ViewApplicationType,
+                    isNewRecord: Boolean,
+                    authRetrievals: StandardAuthRetrievals)
+                   (implicit request: Request[AnyContent]): Future[Result] = {
     implicit val viewMode: ViewApplicationType = viewApplicationType
     val businessType = request.getBusinessType
     businessRegistrationDetailsForm(businessType.get).bindFromRequest().fold(

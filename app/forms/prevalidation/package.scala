@@ -53,7 +53,7 @@ package object prevalidation {
   val trimAllFunc: String => String = (value: String) => value.replaceAll("[\\s]", "")
   val trimBothFunc: String => String = (value: String) => value.trim
   val trimBothAndCompressFunc: String => String = (value: String) => value.trim.replaceAll("[\\s]{2,}", " ")
-  val trimUTR: String => String = (value: String) => if(value.length == 13) value.replaceAll("[\\s]", "").substring(3) else value.replaceAll("[\\s]", "")
+  val trimUTR: String => String = (value: String) =>  value
   val trimCRN: String => String = (value: String) => if(value.length == 7) "0" + value else value
 
   def PreprocessedForm[T](validation: Form[T], trimRules: Map[String, TrimOption] = defaultTrims, caseRules: Map[String, CaseOption] = defaultCases): PrevalidationAPI[T] = {
