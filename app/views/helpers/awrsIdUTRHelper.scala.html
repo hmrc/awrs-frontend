@@ -28,24 +28,23 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
 
 @iDoNotKnowUTRHintQuestion = @{
     youOrThey match {
-        case "they" => Messages("awrs.generic.iDoNotKnowTheirUTR_question")
-        case _ => Messages("awrs.generic.iDoNotKnowMyUTR_question")
-    }
-}
-
-@iDoNotKnowUTRHintAnswer = @{
-    youOrThey match {
-        case "they" =>  Html(Messages("awrs.generic.iDoNotKnowTheirUTR_text","<br><br>"))
-        case _ => Html(Messages("awrs.generic.iDoNotKnowMyUTR_text","<br><br>"))
+        case "they" => Html(s"""<p class="govuk-body govuk-!-margin-top-4"><a id="utr-HelpLink" class="govuk-link" target="_blank" href="https://www.gov.uk/find-utr-number">${Messages("awrs.generic.iDoNotKnowTheirUTR_question")}</a></p>""")
+        case _ => Html(s"""<p class="govuk-body govuk-!-margin-top-4"><a id="utr-HelpLink" class="govuk-link" target="_blank" href="https://www.gov.uk/find-utr-number">${Messages("awrs.generic.iDoNotKnowMyUTR_question")}</a></p>""")
     }
 }
 
 @core = @{
-    val (wrapperClassSetting : Option[String], labelSetting : Option[String]) =
-         (Some("govuk-form-group"), businessType.map {
+    val (wrapperClassSetting : Option[String], labelSetting : Option[String], hintText : Option[String]) =
+         (Some("govuk-form-group"), 
+            businessType.map {
                 case "SOP" => Messages("awrs.generic.sa_UTR_number")
                 case "Partnership" | "LP" | "LLP" | "LLP_GRP" =>  Messages(s"awrs.generic.partnership_UTR_number")
                 case _ =>  Messages(s"awrs.generic.CT_UTR_number")
+            },
+            businessType.map {
+                case "SOP" => Messages("awrs.generic.do_you_have_UTR_information")
+                case "Partnership" | "LP" | "LLP" | "LLP_GRP" =>  Messages(s"awrs.generic.do_you_have_UTR_information")
+                case _ =>  Messages(s"awrs.generic.do_you_have_CT_UTR_information")
             }
         )
 
@@ -55,23 +54,16 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             classes = "govuk-label--s"
         ),
         hint = Some(Hint(
-            content = Text(messages("awrs.generic.do_you_have_UTR_information")),
+            content = Text(messages(hintText.getOrElse(""))),
             id = Some("utr-information")
         )),
         classes = "govuk-input--width-20"
     ).withFormField(inputField)
     )
 
-    val outsideHint = awrsAnswerQuestionHelper(
-        QuestionAnswerParameters(
-            question = iDoNotKnowUTRHintQuestion,
-            questionId = "utr-HelpLink",
-            wrapperClass = "panel-indent",
-            answer = iDoNotKnowUTRHintAnswer
-        )
-    )
+    val find_utr_link = Html(iDoNotKnowUTRHintQuestion.body)
 
-    Seq(mainInput, outsideHint) // this will appened the two appendables when twirl generates the templates
+    Seq(mainInput, find_utr_link) // this will appened the two appendables when twirl generates the templates
 }
 
 <div class="govuk-form-group">
