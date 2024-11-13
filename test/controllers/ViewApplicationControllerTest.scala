@@ -94,14 +94,14 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
         result =>
           val document = Jsoup.parse(contentAsString(result))
           status(result) mustBe OK
-          document.getElementById("back").attr("href") mustBe "/alcohol-wholesale-scheme/lastLocation"
+          document.getElementById("back").attr("href") mustBe "/alcohol-wholesale-scheme/index"
       }
 
       showViewApplication("/alcohol-wholesale-scheme/status-page") {
         result =>
           val document = Jsoup.parse(contentAsString(result))
           status(result) mustBe OK
-          document.getElementById("back").attr("href") mustBe "/alcohol-wholesale-scheme/lastLocation"
+          document.getElementById("back").attr("href") mustBe "/alcohol-wholesale-scheme/index"
       }
 
     }
