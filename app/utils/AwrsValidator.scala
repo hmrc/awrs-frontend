@@ -34,9 +34,7 @@ trait AwrsValidator {
   val crnRegex = """^((?i)[A-Z]{2}[\d]{6})|([\d]{7,8})$"""
 
   // match leading spaces + any 3 letters + any combination of digits and spaces 10 times
-//  val utrRegex = """^(?:[ \t]*(?:[a-zA-Z]{3})?\d[ \t]*){10}$"""
-  val utrRegex =
-    """^(?:[ \t]*K[ \t]*(\d[ \t]*){10}[ \t]*$)|(?:^[ \t]*(\d[ \t]*){10}[ \t]*K[ \t]*$)|(?:^[ \t]*K[ \t]*(\d[ \t]*){13}[ \t]*$)|(?:^[ \t]*(\d[ \t]*){13}[ \t]*K[ \t]*$)|(?:^[ \t]*(\d[ \t]*){10}[ \t]*$)|(?:^[ \t]*(\d[ \t]*){13}[ \t]*$)"""
+  val utrRegex = """^(?:[ \t]*(?:[a-zA-Z]{3})?\d[ \t]*){10}$"""
 
   val emailRegex = """(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"""
 
