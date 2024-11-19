@@ -61,6 +61,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     super.beforeEach()
   }
 
+
   def cachedData(legalEntity: BusinessType = testLegalEntity): CacheMap =
     CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
       "businessCustomerDetails" -> Json.toJson(testReviewDetails),
@@ -95,6 +96,25 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       "applicationDeclaration" -> Json.toJson(testApplicationDeclaration),
       groupMembersName -> Json.toJson(testGroupMemberDetails)
     ))
+
+  def cachedDataWithUtr(legalEntity: BusinessType = testLegalEntity, utr:Option[String] = None): CacheMap =
+    CacheMap(testUtr, Map("legalEntity" -> Json.toJson(legalEntity),
+      "businessCustomerDetails" -> Json.toJson(testReviewDetails),
+      businessNameDetailsName -> Json.toJson(testBusinessNameDetails()),
+      tradingStartDetailsName -> Json.toJson(newAWBusiness(proposedStartDate = None)),
+      businessRegistrationDetailsName -> Json.toJson(testBusinessRegistrationDetails(legalEntity = legalEntity.legalEntity.get, utr = utr)),
+      placeOfBusinessName -> Json.toJson(testPlaceOfBusinessDefault()),
+      businessContactsName -> Json.toJson(testBusinessContactsDefault()),
+      "partnerDetails" -> Json.toJson(testPartnerDetails),
+      "additionalBusinessPremises" -> Json.toJson(testAdditionalPremisesList),
+      "businessDirectors" -> Json.toJson(testBusinessDirectors),
+      tradingActivityName -> Json.toJson(testTradingActivity()),
+      productsName -> Json.toJson(testProducts()),
+      "suppliers" -> Json.toJson(testSupplierAddressList),
+      "applicationDeclaration" -> Json.toJson(testApplicationDeclaration),
+      groupMembersName -> Json.toJson(testGroupMemberDetails)
+    ))
+
 
   def testSubscriptionTypeFrontEnd(legalEntity: Option[BusinessType] = Some(testLegalEntity),
                                    groupDeclaration: Option[GroupDeclaration] = Some(testGroupDeclaration),
@@ -984,6 +1004,16 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     }
 
     "remove the unnecessary attributes from subscription type " must {
+      "return valid AWRSFEModel when business registration details utr has spaces" in {
+        val ltdSection = Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
+        val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedDataWithUtr(utr = Some("11 111 111 11"))), Some(testBusinessCustomerDetails("LTD")), ltdSection)
+
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.utr.isDefined mustBe true
+        outputSubscriptionType.subscriptionTypeFrontEnd.businessRegistrationDetails.get.utr.get mustBe "1111111111"
+
+
+      }
+
       "return valid AWRSFEModel when entity type is LTD" in {
         val ltdSection = Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
         val outputSubscriptionType = testApplicationService.assembleAWRSFEModel(Some(cachedData()), Some(testBusinessCustomerDetails("LTD")), ltdSection)

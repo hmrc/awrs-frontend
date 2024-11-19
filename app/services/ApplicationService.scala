@@ -88,7 +88,9 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
             cached.get.getTradingStartDetails map {_.invertedBeforeMarch2016Question}
           )
         },
-      businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
+      businessRegistrationDetails = cached.get.getBusinessRegistrationDetails.map{regDetails =>
+        regDetails.copy(utr = regDetails.utr.map(_.replaceAll("\\s+", "")))
+      },
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
       groupMembers = if (sections.groupMemberDetails) addGroupRepToGroupMembers(cached) else None,
