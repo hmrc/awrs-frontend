@@ -252,8 +252,8 @@ a:visited, .link-style:visited, .button--link-style:visited {
 }
 
 .div-right {
-    display:inline-block;
-    float: right;
+    display:flex;
+    justify-content: right;
 }
 
 #ConfirmationNoteHeadingText.govuk-heading-m {padding-top: 1.5em;}
