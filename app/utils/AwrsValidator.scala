@@ -22,28 +22,25 @@ object AwrsValidator extends AwrsValidator
 
 trait AwrsValidator {
 
-  val ninoRegex: String =
-    """^(?i)[ \t]*[A-Z]{1}[ \t]*[ \t]*[A-Z]{1}[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*""" +
-      """[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[A-D]{1}[ \t]*$"""
+  val ninoRegex: String = """^(?i)[ \t]*[A-Z]{1}[ \t]*[ \t]*[A-Z]{1}[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*""" +
+    """[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[ \t]*[0-9]{1}[ \t]*[A-D]{1}[ \t]*$"""
 
   // match leading spaces + 'GB' + any combination of digits and spaces 8 times, case insensitive
-  val vatRegex =
-    """^(?i)([ \t]*G[ \t]*B[ \t]*(?:[ \t]*\d[ \t]*){9})|(?:[ \t]*\d[ \t]*){9}$"""
+  val vatRegex = """^(?i)([ \t]*G[ \t]*B[ \t]*(?:[ \t]*\d[ \t]*){9})|(?:[ \t]*\d[ \t]*){9}$"""
 
   // match any combination of alphanumeric characters and spaces 8 times, case insensitive
-  val crnRegex = """^((?i)[A-Z]{2}[\d]{6})|([\d]{7,8})$"""
+  val crnRegex =  """^((?i)[A-Z]{2}[\d]{6})|([\d]{7,8})$"""
 
   // match leading spaces + any 3 letters + any combination of digits and spaces 10 times
   val utrRegex = """^(?:[ \t]*(?:[a-zA-Z]{3})?\d[ \t]*){10}$"""
 
   val emailRegex = """(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"""
 
-  val postcodeRegex =
-    """(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$"""
+  val postcodeRegex = """(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$"""
 
-  val dateRegex = """^\d{2}/\d{2}/\d{4}$"""
+  val dateRegex =  """^\d{2}/\d{2}/\d{4}$"""
 
-  val asciiRegex = """^[\x00-\x7F]*$"""
+  val asciiRegex =  """^[\x00-\x7F]*$"""
 
   val alphaRegex = """^(?i)[A-Z ôéëàŵŷáîïâêûü]+$"""
 
@@ -59,16 +56,14 @@ trait AwrsValidator {
 
   val nationalIDRegex: String = passportNatIdRegex
 
-  val telephoneRegex =
-    """^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$"""
+  val telephoneRegex = """^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$"""
 
   val operatingDurationRegex = """^[0-9]*+"""
 
-  def isValidNino(errorMsg: String): Constraint[String] =
-    Constraint[String]("nino") {
-      case nino if nino.matches(ninoRegex) => Valid
-      case _                               => Invalid(errorMsg)
-    }
+  def isValidNino(errorMsg: String): Constraint[String] = Constraint[String]("nino"){
+    case nino if nino.matches(ninoRegex) => Valid
+    case _ => Invalid(errorMsg)
+  }
 
   val asciiChar32 = 32
   val asciiChar126 = 126
@@ -84,13 +79,11 @@ trait AwrsValidator {
   def validateISO88591(input: String): Boolean = {
     val inputList: List[Char] = input.toList
     inputList.forall { c =>
-      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255) || asciiWelshChars
-        .contains(c.toInt)
+      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255) || asciiWelshChars.contains(c.toInt)
     }
   }
 
-  def validTextRegex(regex: String): (String) => Boolean = (input: String) =>
-    input.matches(regex)
+  def validTextRegex(regex: String): (String) => Boolean = (input: String) => input.matches(regex)
 
   val validAlphaNumeric: String => Boolean = validTextRegex(alphaNumericRegex)
 
