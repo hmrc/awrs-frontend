@@ -113,7 +113,8 @@
                             label = Label(
                                 classes = "govuk-label",
                                 content = Text(Messages("awrs.generic.first_name"))
-                            )
+                            ),
+                            autocomplete = Some("given-name")
                         ).withFormField(businessContactsForm("contactFirstName"))
                     )
 
@@ -122,7 +123,8 @@
                             label = Label(
                                 classes = "govuk-label",
                                 content = Text(Messages("awrs.generic.surname"))
-                            )
+                            ),
+                            autocomplete = Some("family-name")
                         ).withFormField(businessContactsForm("contactLastName"))
                     )
 
@@ -131,7 +133,9 @@
                             label = Label(
                                 classes = "govuk-label",
                                 content = Text(Messages("awrs.generic.telephone"))
-                            )
+                            ),
+                            autocomplete = Some("tel"),
+                            inputmode= "tel"
                         ).withFormField(businessContactsForm("telephone"))
                     )
 
@@ -141,6 +145,8 @@
                                 classes = "govuk-label",
                                 content = Text(Messages("awrs.generic.email"))
                             ),
+                            autocomplete = Some("email"),
+                            inputmode= "email",
                             hint = Some(Hint(
                                 content = HtmlContent(emailMessage)
                             ))

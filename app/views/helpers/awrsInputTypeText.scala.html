@@ -54,6 +54,12 @@
         case _ => ""
     }
 }
+@autoComplete = @{
+    params.autoComplete  match {
+        case Some(autoComplete) => s"autocomplete=$autoComplete"
+        case _ => ""
+    }
+}
 @dataAttributes = @{
     params.dataAttributes match {
         case Some(dataAttributes) => dataAttributes
@@ -123,6 +129,7 @@
            id="@inputId"
            value="@value"
            @maxLength
+           @autoComplete
            @dataAttributes
            @if(fieldErrors.nonEmpty) {
                aria-describedby="@{params.field.name}-error-0@if(params.isDate){ @{inputId}_field @{inputId}_reader}"

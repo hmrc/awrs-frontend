@@ -65,8 +65,7 @@
         label = Label(
             classes = "govuk-label",
             content = Text(messages("awrs.additional_information.other.main_customers"))
-        ),
-        attributes = Map("maxLength" -> frontendDefaultLen)
+        )
     ).withFormField(productsForm("otherMainCustomers"))
     )
 }
@@ -76,8 +75,7 @@
         label = Label(
             classes = "govuk-label",
             content = Text(messages("awrs.additional_information.other.products"))
-        ),
-        attributes = Map("maxLength" -> frontendDefaultLen)
+        )
     ).withFormField(productsForm("otherProductType"))
     )
 }

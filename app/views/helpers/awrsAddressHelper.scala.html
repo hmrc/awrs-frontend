@@ -53,28 +53,28 @@
                 label = Label(
                     content = Text(addressLineMessages("line1"))
                 ),
-                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+                autocomplete = Some("address-line1")
             ).withFormField(field("addressLine1"))
             )
         @govukInput(Input(
                 label = Label(
                     content = Text(addressLineMessages("line2"))
                 ),
-                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+                autocomplete = Some("address-line2")
             ).withFormField(field("addressLine2"))
             )
         @govukInput(Input(
                 label = Label(
                     content = Text(addressLineMessages("line3"))
                 ),
-                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+                autocomplete = Some("address-line3")
             ).withFormField(field("addressLine3"))
             )
         @govukInput(Input(
                 label = Label(
                     content = Text(addressLineMessages("line4"))
                 ),
-                attributes = Map("maxLength" -> applicationConfig.addressLineLen.toString)
+                autocomplete = Some("address-level2")
             ).withFormField(field("addressLine4"))
             )
 
@@ -88,7 +88,7 @@
                 inputClass = "govuk-input govuk-input--width-10",
                 labelClass = "govuk-label",
                 label = postCodeMessage,
-                maxLength = applicationConfig.addressPostcodeLen.toString,
+                autoComplete = Some("postal-code"),
                 wrapperClass = wrapperClass,
                 labelHighlight = true,
                 isPostCode = true,

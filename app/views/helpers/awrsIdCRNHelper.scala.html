@@ -96,7 +96,6 @@ businessEntity : Option[String] = ""
             hint = Some(Hint(
                 content = Text(messages("awrs.generic.do_you_have_company_reg_information")),
                 id = Some("company_reg-information"))),
-            attributes = Map("maxlength" -> frontendDefaultLen),
             classes = "govuk-input--width-20"
         ).withFormField(inputField)
         )

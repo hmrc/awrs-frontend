@@ -50,7 +50,6 @@ formHasErrors: Boolean = false)(implicit messages: Messages, formInstance: Optio
             content = Text(messages("awrs.generic.do_you_have_VAT_information")),
             id = Some("vrn-information"))
         ),
-        attributes = Map("maxlength" -> frontendDefaultLen),
         classes = "govuk-input--width-20"
     ).withFormField(inputField)
     )
