@@ -97,8 +97,7 @@
             label = Label(
                 classes = "govuk-label",
                 content = Text(Messages("awrs.generic.trading"))
-        ),
-        attributes = Map("maxLength" -> applicationConfig.tradingNameLen.toString)
+        )
         ).withFormField(partnerForm("companyNames.tradingName"))
     )
 }
@@ -179,7 +178,7 @@
                                     classes = "govuk-label",
                                     content = Text(Messages("awrs.generic.first_name"))
                                 ),
-                                attributes = Map("maxLength" -> applicationConfig.firstNameLen.toString )
+                                autocomplete = Some("given-name")
                             ).withFormField(partnerForm("firstName"))
                         )
 
@@ -189,7 +188,7 @@
                                     classes = "govuk-label",
                                     content = Text(Messages("awrs.generic.surname"))
                                 ),
-                                attributes = Map("maxLength" -> applicationConfig.lastNameLen.toString)
+                               autocomplete = Some("family-name")
                             ).withFormField(partnerForm("lastName"))
                         )
                     </div>
@@ -202,7 +201,7 @@
                                     classes = "govuk-label--s",
                                     content = Text(Messages("awrs.generic.business_name"))
                                 ),
-                                attributes = Map("maxLength" -> applicationConfig.companyNameLen.toString)
+                                autocomplete = Some("organization")
                             ).withFormField(partnerForm("companyNames.businessName"))
                         )
                     </div>

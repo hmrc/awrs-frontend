@@ -97,8 +97,7 @@
         Input(
             label = Label(
                 content = HtmlContent(tradingNameLabel)
-            ),
-            attributes = Map("maxlength" -> applicationConfig.tradingNameLen.toString)
+            )
         ).withFormField(businessDetailsForm("tradingName"))
     )
 }

@@ -146,7 +146,7 @@
                             classes = "govuk-label--s",
                             content = Text(messages("awrs.supplier-addresses.supplier_name"))
                         ),
-                        attributes = Map("maxlength" -> supplierNameLen.toString)
+                        autocomplete = Some("name")
                     ).withFormField(supplierAddressForm("supplierName"))
                     )
 

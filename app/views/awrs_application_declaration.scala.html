@@ -61,7 +61,7 @@
                         classes = "govuk-label",
                         content = Text(Messages("awrs.generic.full_name"))
                     ),
-                    attributes = Map("maxLength" -> applicationConfig.applicationDeclarationNameLen.toString)
+                    autocomplete = Some("name"),
                 ).withFormField(applicationDeclarationForm("declarationName"))
             )
 
@@ -71,7 +71,6 @@
                         classes = "govuk-label",
                         content = Text(Messages("awrs.application_declaration.declaration_role"))
                     ),
-                    attributes = Map("maxLength" -> applicationConfig.applicationDeclarationRoleLen.toString)
                 ).withFormField(applicationDeclarationForm("declarationRole"))
             )
 
