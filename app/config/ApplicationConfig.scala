@@ -67,4 +67,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy_policy")
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.terms_and_conditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
+
+  lazy val enrolmentJourney: Boolean = servicesConfig.getBoolean("enrolmentJourney")
 }
