@@ -941,3 +941,10 @@ awrs.application_timeout.title = For your security, we signed you out
 awrs.application_timeout.heading = For your security, we signed you out
 awrs.application_timeout.p = We saved your answers. Sign in using your Government Gateway to return to your application summary page.
 awrs.application_timeout.sign_in_btn = Sign in
+
+
+awrs.urn_kickout.title = The Unique Reference Number (URN) you entered is not recognised
+awrs.urn_kickout.heading = The Unique Reference Number (URN) you entered is not recognised
+awrs.urn_kickout.p1 = Check that you''ve entered it correctly and try again 
+awrs.urn_kickout.p2 = If you can''t find your URN, you''ll need to register for AWRS.
+awrs.urn_kickout.register_btn = Register for AWRS
