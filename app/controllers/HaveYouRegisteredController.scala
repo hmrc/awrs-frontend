@@ -23,6 +23,7 @@ import forms.HaveYouRegisteredForm.haveYouRegisteredForm
 import models.HaveYouRegisteredModel
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.{DeEnrolService, KeyStoreService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
@@ -53,15 +54,10 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
     }
   }
 
-  def saveAndContinue(): Future[Result] = {
-
-//      haveYouRegisteredForm.bindFromRequest().fold(
-//        formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-//        newForm => keyStoreService.fetchHaveYouRegistered flatMap { userChoice =>
-//
-//        }
-//      )
-
-    Future.successful(Redirect(routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url))
+  def saveAndContinue: Action[AnyContent] = Action.async {implicit request: Request[AnyContent] =>
+    haveYouRegisteredForm.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+      haveYouRegisteredData => keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap(_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex)))
+    )
   }
 }
