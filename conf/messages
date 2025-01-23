@@ -941,3 +941,8 @@ awrs.application_timeout.title = For your security, we signed you out
 awrs.application_timeout.heading = For your security, we signed you out
 awrs.application_timeout.p = We saved your answers. Sign in using your Government Gateway to return to your application summary page.
 awrs.application_timeout.sign_in_btn = Sign in
+
+# Enrolment Journey Pages
+#===========================
+awrs.enrolment.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
+awrs.enrolment.have_you_registered.error = You must select either Yes or No
