@@ -160,4 +160,4 @@ GET         /re-apply                                       controllers.Reapplic
 POST        /re-apply                                       controllers.ReapplicationController.submit
 
 GET        /have-you-registered                             controllers.HaveYouRegisteredController.showHaveYouRegisteredPage
-POST       /have-you-registered/confirm                     controllers.HaveYouRegisteredController.saveAndContinue()
+POST       /have-you-registered/confirm                     controllers.HaveYouRegisteredController.saveAndContinue

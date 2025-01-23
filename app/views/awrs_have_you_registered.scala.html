@@ -33,11 +33,11 @@
 
 @(haveYouRegisteredForm: Form[HaveYouRegisteredModel])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@actionRoute = @{controllers.routes.HaveYouRegisteredController.saveAndContinue()}
+@actionRoute = @{controllers.routes.ViewApplicationController.viewSection("businessDetails")}
 
 @backlinkHtml = {
     @if(viewApplicationType == LinearViewMode) {
-        @backLink(controllers.routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url)
+        @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
     } else {
         @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
     }
