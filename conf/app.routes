@@ -24,6 +24,10 @@ GET         /wrong-account                                  controllers.WrongAcc
 
 GET         /unauthorised                                   controllers.IndexController.unauthorised
 
+GET         /urn                                            controllers.AwrsUrnController.showArwsUrnPage
+POST        /urn/saveAndReturn                              controllers.AwrsUrnController.saveAndContinue
+
+
 GET         /additional-premises                            controllers.AdditionalPremisesController.showPremisePage(id: Int ?= 1, isLinearMode: Boolean = true, isNewRecord: Boolean = true)
 GET         /additional-premises/delete                     controllers.AdditionalPremisesController.showDelete(id: Int ?= 1)
 GET         /additional-premises/edit                       controllers.AdditionalPremisesController.showPremisePage(id: Int ?= 1, isLinearMode: Boolean = false, isNewRecord: Boolean = false)
