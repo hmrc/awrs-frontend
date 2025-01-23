@@ -160,3 +160,6 @@ GET         /re-apply                                       controllers.Reapplic
 POST        /re-apply                                       controllers.ReapplicationController.submit
 
 
+GET         /urn-kickout                                    controllers.AwrsUrnController.showURNKickOutPage
+
+
