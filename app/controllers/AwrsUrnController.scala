@@ -26,6 +26,7 @@ import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
+import utils.{AWRSFeatureSwitches, AccountUtils}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,30 +42,12 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
                                   template: views.html.awrs_urn
                                       ) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { implicit ar =>
-        keyStoreService.fetchAwrsEnrolmentUrn flatMap {
-          case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
-          case _ =>  Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
-        }
-    }
-  }
-
-  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction {
-      implicit ar =>
-        awrsEnrolmentUrnValidationForm.bindFromRequest.fold(
-          formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-          awrsUrn => {
-            keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) map {
-              _ => Ok
-            }
-          }
-        )
-    }
-  }
-
+  def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
+     if(AWRSFeatureSwitches.enrolmentJourney().enabled)
+        Future.successful(Ok(template()))
+     else
+        Future.successful(NotFound)
+   }
 }
