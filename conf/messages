@@ -954,8 +954,10 @@ awrs.application_timeout.heading = For your security, we signed you out
 awrs.application_timeout.p = We saved your answers. Sign in using your Government Gateway to return to your application summary page.
 awrs.application_timeout.sign_in_btn = Sign in
 
-
-
+# Enrolment Journey Pages
+#===========================
+awrs.enrolment.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
+awrs.enrolment.have_you_registered.error = You must select either Yes or No
 
 # URN Messages
 #===========================
@@ -969,7 +971,6 @@ awrs.register_postcode.error.empty = Enter your postcode
 awrs.register_postcode.error.invalid_postcode = Enter a valid UK postcode, like AA1 1AA
 awrs.register_postcode.hint = For example, SW1A 2AA
 
-
 awrs.urn_kickout.title = Get Help with your AWRS registration
 awrs.urn_kickout.heading = We're unable to locate your details linked with the Unique Reference Number (URN) you entered.
 awrs.urn_kickout.p1 = Contact HMRC
@@ -978,10 +979,9 @@ awrs.urn_kickout.p3 = Textphone: 0300 200 3719
 awrs.urn_kickout.p4 = Outside UK: +44 2920 501 261
 awrs.urn_kickout.p5 = Monday to Friday, 9am to 6pm (except public holidays)
 
-
-
 awrs.successful_enrolment.title = You have added your AWRS to your business tax account
 awrs.successful_enrolment.heading = What happens next
 awrs.successful_enrolment.p1 = You can now view and manage your AWRS registration in your business tax account.
 awrs.successful_enrolment.p2 = More detailed information can be found in the AWRS guidance (opens in a new tab)
 awrs.successful_enrolment.btn = View your business tax account
+

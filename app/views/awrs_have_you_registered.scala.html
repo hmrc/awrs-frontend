@@ -1,0 +1,83 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.ApplicationConfig
+@import services.DataCacheKeys._
+@import views.html.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils._
+
+@this(
+    formWithCSRF: FormWithCSRF,
+    awrsMain: main,
+    govukRadios : GovukRadios,
+    govukErrorSummary: GovukErrorSummary)
+
+@(haveYouRegisteredForm: Form[HaveYouRegisteredModel])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
+
+@actionRoute = @{controllers.routes.HaveYouRegisteredController.saveAndContinue()}
+
+@backlinkHtml = {
+    @if(viewApplicationType == LinearViewMode) {
+        @backLink(controllers.routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url)
+    } else {
+        @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
+    }
+}
+
+@awrsMain(title = s"${errorPrefix(haveYouRegisteredForm)} ${messages("awrs.generic.tab.title", messages("awrs.enrolment.have_you_registered.title"))}",
+backlink = Some(backlinkHtml), userLoggedIn = true){
+
+    @if(haveYouRegisteredForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(haveYouRegisteredForm))
+    }
+
+    <header class = "page-header">
+        <h1 id="group-member-heading" class="govuk-heading-xl">
+            @messages("awrs.enrolment.have_you_registered.title")
+        </h1>
+    </header>
+
+        @formWithCSRF(action = actionRoute) {
+
+            @govukRadios(
+                Radios(
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            classes = "govuk-visually-hidden",
+                            content = Text(Messages("awrs.enrolment.have_you_registered.title"))
+                        ))
+                    )),
+                    items = Seq(
+                        RadioItem(
+                            content = Text(messages("awrs.generic.yes")),
+                            value = Some("Yes")
+                        ),
+                        RadioItem(
+                            content = Text(messages("awrs.generic.no")),
+                            value = Some("No")
+                        )
+                    ),
+                ).withFormField(haveYouRegisteredForm("haveYouRegisteredForm"))
+            )
+            @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
+        }
+}

@@ -163,12 +163,13 @@ GET         /signed-out                                     controllers.Applicat
 GET         /re-apply                                       controllers.ReapplicationController.show
 POST        /re-apply                                       controllers.ReapplicationController.submit
 
+GET        /have-you-registered                             controllers.HaveYouRegisteredController.showHaveYouRegisteredPage
+POST       /have-you-registered/confirm                     controllers.HaveYouRegisteredController.saveAndContinue()
 
 GET         /urn-kickout                                    controllers.AwrsUrnKickoutController.showURNKickOutPage
 
 GET         /registered-postcode                            controllers.AwrsRegisteredPostcodeController.showPostCode
 POST        /registered-postcode                            controllers.AwrsRegisteredPostcodeController.saveAndContinue
-
 
 # DL-14749
 GET         /successful-enrolment                           controllers.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage
