@@ -164,5 +164,6 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
   @inline def saveHaveYouRegistered(haveYouRegisteredModel: HaveYouRegisteredModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[HaveYouRegisteredModel](enrolmentJourneyHaveYouRegistered, haveYouRegisteredModel)
 
-  @inline def fetchHaveYouRegistered(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[HaveYouRegisteredModel]] = keyStoreConnector.fetchDataFromKeystore(enrolmentJourneyHaveYouRegistered)
+  @inline def fetchHaveYouRegistered(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[HaveYouRegisteredModel]] =
+    keyStoreConnector.fetchDataFromKeystore[HaveYouRegisteredModel](enrolmentJourneyHaveYouRegistered)
 }
