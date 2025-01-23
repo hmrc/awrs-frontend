@@ -27,13 +27,13 @@ import views.html.urn_kickout
 
 import scala.concurrent.Future
 
-class URNKickOutControllerTest extends AwrsUnitTestTraits
+class AwrsUrnControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: urn_kickout = app.injector.instanceOf[views.html.urn_kickout]
 
-  val testURNKickOutController: URNKickOutController = new URNKickOutController( mockMCC, mockAppConfig, template)
+  val testURNKickOutController: AwrsUrnController = new AwrsUrnController( mockMCC, mockAppConfig, template)
 
   "URNKickOutController" must {
 

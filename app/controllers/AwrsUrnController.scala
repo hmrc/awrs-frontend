@@ -29,7 +29,7 @@ import utils.AccountUtils
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class URNKickOutController @Inject()(val mcc: MessagesControllerComponents,
+class AwrsUrnController @Inject()(val mcc: MessagesControllerComponents,
                                        implicit val applicationConfig: ApplicationConfig,
                                        template: views.html.urn_kickout) extends FrontendController(mcc) {
 
