@@ -24,7 +24,7 @@ import play.api.mvc.{AnyContent, _}
 import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AccountUtils
+import utils.{AWRSFeatureSwitches, AccountUtils}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,6 +38,9 @@ class AwrsUrnController @Inject()(val mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-       Future.successful(Ok(template()))
+     if(AWRSFeatureSwitches.enrolmentJourney().enabled)
+        Future.successful(Ok(template()))
+     else
+        Future.successful(NotFound)
    }
 }

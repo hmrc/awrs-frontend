@@ -22,7 +22,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
-import utils.AwrsUnitTestTraits
+import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch}
 import views.html.urn_kickout
 
 import scala.concurrent.Future
@@ -37,10 +37,16 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
 
   "URNKickOutController" must {
 
-    "show the Kickout page" in {
+    "show the Kickout page when enrolmentJourney is enable" in {
+            FeatureSwitch.enable(AWRSFeatureSwitches.enrolmentJourney())
             val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
-              status(res) mustBe 200
-        }
+            status(res) mustBe 200
+    }
+    "return 404 the Kickout page when enrolmentJourney is ldisable" in {
+          FeatureSwitch.disable(AWRSFeatureSwitches.enrolmentJourney())
+          val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
+          status(res) mustBe 404
+    }
   }
 
 }
