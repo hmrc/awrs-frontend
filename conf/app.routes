@@ -161,5 +161,7 @@ POST        /re-apply                                       controllers.Reapplic
 
 
 GET         /urn-kickout                                    controllers.AwrsUrnController.showURNKickOutPage
+GET         /no-urn-kickout                                 controllers.AwrsNoUrnController.showNoURNKickOutPage
+
 
 
