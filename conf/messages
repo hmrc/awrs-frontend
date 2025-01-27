@@ -950,7 +950,7 @@ awrs.urn_kickout.p2 = If you can''t find your URN, you''ll need to register for 
 awrs.urn_kickout.register_btn = Register for AWRS
 
 awrs.no_urn_kickout.title = Get Help with your AWRS registration
-awrs.no_urn_kickout.heading = We're unable to locate your details linked with the Unique Reference Number (URN) you entered.
+awrs.no_urn_kickout.heading = We were unable to locate your details linked with the Unique Reference Number (URN) you entered.
 awrs.no_urn_kickout.p1 = Contact HMRC
 awrs.no_urn_kickout.p2 = Phone: 020 7946 0101
 awrs.no_urn_kickout.p3 = Textphone: 020 7946 0102
