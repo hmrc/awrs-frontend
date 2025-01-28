@@ -24,20 +24,20 @@ import utils.AWRSFeatureSwitches
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsNoUrnController @Inject()(val mcc: MessagesControllerComponents,
+class AwrsDeletedUrnController @Inject()(val mcc: MessagesControllerComponents,
                                     implicit val applicationConfig: ApplicationConfig,
-                                    template: views.html.no_urn_kickout) extends FrontendController(mcc) {
+                                    template: views.html.deleted_urn_kickout) extends FrontendController(mcc) {
 
  
   val signInUrl: String = applicationConfig.signIn
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def showNoURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
+  def showDeletedURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
     print("test")
      if(AWRSFeatureSwitches.enrolmentJourney().enabled)
         Future.successful(Ok(template()))
      else
-        Future.successful(NotFound)
+       Future.successful(NotFound)
 
    }
 }

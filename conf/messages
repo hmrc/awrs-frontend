@@ -949,11 +949,11 @@ awrs.urn_kickout.p1 = Check that you''ve entered it correctly and try again
 awrs.urn_kickout.p2 = If you can''t find your URN, you''ll need to register for AWRS.
 awrs.urn_kickout.register_btn = Register for AWRS
 
-awrs.no_urn_kickout.title = Get Help with your AWRS registration
-awrs.no_urn_kickout.heading = We were unable to locate your details linked with the Unique Reference Number (URN) you entered.
-awrs.no_urn_kickout.p1 = Contact HMRC
-awrs.no_urn_kickout.p2 = Phone: 020 7946 0101
-awrs.no_urn_kickout.p3 = Textphone: 020 7946 0102
-awrs.no_urn_kickout.p4 = Monday to Friday, 9am to 5pm (except public holidays)
-awrs.no_urn_kickout.p5 = Welsh language = 020 7946 0103
-awrs.no_urn_kickout.p6 = Monday to Friday, 8:30am to 5pm
+awrs.deleted_urn_kickout.title = Get Help with your AWRS registration
+awrs.deleted_urn_kickout.heading = We were unable to locate your details linked with the Unique Reference Number (URN) you entered.
+awrs.deleted_urn_kickout.p1 = Contact HMRC
+awrs.deleted_urn_kickout.p2 = Phone: 020 7946 0101
+awrs.deleted_urn_kickout.p3 = Textphone: 020 7946 0102
+awrs.deleted_urn_kickout.p4 = Monday to Friday, 9am to 5pm (except public holidays)
+awrs.deleted_urn_kickout.p5 = Welsh language = 020 7946 0103
+awrs.deleted_urn_kickout.p6 = Monday to Friday, 8:30am to 5pm
