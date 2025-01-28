@@ -56,7 +56,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
   def saveAndContinue: Action[AnyContent] = Action.async {implicit request: Request[AnyContent] =>
     haveYouRegisteredForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-      haveYouRegisteredData => keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap(_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex)))
+      haveYouRegisteredData => keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap(_ => Future.successful(Redirect(controllers.routes.ApplicationController.logout)))
     )
   }
 }

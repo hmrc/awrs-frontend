@@ -31,15 +31,19 @@
     govukRadios : GovukRadios,
     govukErrorSummary: GovukErrorSummary)
 
-@(haveYouRegisteredForm: Form[HaveYouRegisteredModel])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
+@(haveYouRegisteredForm: Form[models.HaveYouRegisteredModel])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@actionRoute = @{controllers.routes.ViewApplicationController.viewSection("businessDetails")}
+@actionRoute = @{controllers.routes.HaveYouRegisteredController.saveAndContinue}
+
+@implicitFormInstance = @{
+    Some(haveYouRegisteredForm)
+}
 
 @backlinkHtml = {
     @if(viewApplicationType == LinearViewMode) {
-        @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
+        @backLink(controllers.routes.ApplicationController.logout.url)
     } else {
-        @backLink(controllers.routes.ViewApplicationController.viewSection("businessDetails").url)
+        @backLink(controllers.routes.ApplicationController.logout.url)
     }
 }
 
@@ -76,7 +80,7 @@ backlink = Some(backlinkHtml), userLoggedIn = true){
                             value = Some("No")
                         )
                     ),
-                ).withFormField(haveYouRegisteredForm("haveYouRegisteredForm"))
+                ).withFormField(haveYouRegisteredForm("hasUserRegistered"))
             )
             @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
         }

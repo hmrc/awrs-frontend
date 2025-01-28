@@ -27,14 +27,17 @@ import play.api.data.Forms.mapping
 
 object HaveYouRegisteredForm {
 
+  val bToOb = (bool: Boolean) => Some(bool)
+  val obTob = (bool: Option[Boolean]) => bool.fold(false)(x => x)
+
   val haveYouRegisteredFormCompulsoryBooleanMappingParam = compulsoryBoolean(CompulsoryBooleanMappingParameter(
-    empty = simpleFieldIsEmptyConstraintParameter("haveYouRegistered", "awrs.enrolment.have_you_registered.error"),
+    empty = simpleFieldIsEmptyConstraintParameter("hasUserRegistered", "awrs.enrolment.have_you_registered.error"),
     enumType = BooleanRadioEnum,
     invalidChoices = Set(BooleanCheckboxEnum.False)
-  ))
+  )).transform(obTob, bToOb)
 
   val haveYouRegisteredForm: Form[HaveYouRegisteredModel] =
     Form(mapping(
-      "haveYouRegistered" -> haveYouRegisteredFormCompulsoryBooleanMappingParam
+      "hasUserRegistered" -> haveYouRegisteredFormCompulsoryBooleanMappingParam
     )(HaveYouRegisteredModel.apply)(HaveYouRegisteredModel.unapply))
 }
