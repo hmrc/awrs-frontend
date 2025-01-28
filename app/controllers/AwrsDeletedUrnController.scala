@@ -33,7 +33,6 @@ class AwrsDeletedUrnController @Inject()(val mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showDeletedURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-    print("test")
      if(AWRSFeatureSwitches.enrolmentJourney().enabled)
         Future.successful(Ok(template()))
      else
