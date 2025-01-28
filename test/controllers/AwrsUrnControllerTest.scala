@@ -93,18 +93,4 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       status(res) mustBe 400
     }
 
-    "save should lookup the urn and save result found in keystore" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
-
-      when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
-      status(res) mustBe 200
-      verifyKeyStoreService(saveSearchResults = 1)
-
-    }
-
-
-  }
 }

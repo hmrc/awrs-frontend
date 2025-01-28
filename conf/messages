@@ -965,3 +965,9 @@ awrs.urn_kickout.register_btn = Register for AWRS
 #===========================
 awrs.urn.title = What is your Alcohol Wholesaler Registration Scheme (AWRS) Unique Reference Number (URN)?
 awrs.urn.label = Your URN is 4 letters and 11 numbers, like XXAW00000123456. You can find it printed on the wholesaler or producer’s invoices. If you can’t find it, contact the wholesaler or producer for the URN.
+
+# Awrs registered postcode
+awrs.register_postcode.title = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
+awrs.register_postcode.heading = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
+awrs.register_postcode.error.empty = Enter your postcode
+awrs.register_postcode.hint = For example, SW1A 2AA

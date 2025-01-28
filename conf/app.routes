@@ -166,4 +166,8 @@ POST        /re-apply                                       controllers.Reapplic
 
 GET         /urn-kickout                                    controllers.AwrsUrnKickoutController.showURNKickOutPage
 
+GET         /registered-postcode                            controllers.AwrsRegisteredPostcodeController.showPostCode
+POST        /registered-postcode                            controllers.AwrsRegisteredPostcodeController.saveAndContinue
+
+
 
