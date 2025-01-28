@@ -159,6 +159,11 @@ GET         /signed-out                                     controllers.Applicat
 GET         /re-apply                                       controllers.ReapplicationController.show
 POST        /re-apply                                       controllers.ReapplicationController.submit
 
-#
+# enrolment journey
+
 GET        /have-you-registered                             controllers.HaveYouRegisteredController.showHaveYouRegisteredPage
 POST       /have-you-registered/confirm                     controllers.HaveYouRegisteredController.saveAndContinue
+
+GET         /urn-kickout                                    controllers.AwrsUrnController.showURNKickOutPage
+
+

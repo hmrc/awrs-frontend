@@ -49,4 +49,5 @@ object AWRSFeatureSwitches extends AWRSFeatureSwitches
 
 trait AWRSFeatureSwitches {
   def regimeCheck(): FeatureSwitch = FeatureSwitch.getProperty("regimeCheck")
+  def enrolmentJourney(): FeatureSwitch = FeatureSwitch.getProperty("enrolmentJourney")
 }
