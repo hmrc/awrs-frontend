@@ -3,6 +3,18 @@
 service.name=Register as an alcohol wholesaler or producer
 error.browser.title.prefix = Error:
 
+##### URN FORM ERROR MESSAGES
+awrs.awrsUrn.empty.summary = The search field is empty
+awrs.awrsUrn.empty = Enter a Unique Reference Number
+awrs.awrsUrn.string_length_mismatch = You must enter a 15 character Unique Reference Number
+awrs.awrsUrn.string_length_mismatch.summary = You must enter a 15 character Unique Reference Number
+
+awrs.awrsUrn.zeros_mismatch = A Unique Reference Number must start with 4 alphabetical characters followed by 5 zeros
+awrs.awrsUrn.zeros_mismatch.summary = A Unique Reference Number must start with 4 alphabetical characters followed by 5 zeros
+
+awrs.awrsUrn.default_invalid_urn = You must enter a valid Unique Reference Number
+awrs.awrsUrn.default_invalid_urn.summary = You must enter a valid Unique Reference Number
+
 # Buttons & links
 #============================================================
 awrs.generic.save_continue=Save and continue
@@ -948,3 +960,8 @@ awrs.urn_kickout.heading = The Unique Reference Number (URN) you entered is not 
 awrs.urn_kickout.p1 = Check that you''ve entered it correctly and try again 
 awrs.urn_kickout.p2 = If you can''t find your URN, you''ll need to register for AWRS.
 awrs.urn_kickout.register_btn = Register for AWRS
+
+# URN Messages
+#===========================
+awrs.urn.title = What is your Alcohol Wholesaler Registration Scheme (AWRS) Unique Reference Number (URN)?
+awrs.urn.label = Your URN is 4 letters and 11 numbers, like XXAW00000123456. You can find it printed on the wholesaler or producer’s invoices. If you can’t find it, contact the wholesaler or producer for the URN.

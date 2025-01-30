@@ -1,8 +1,24 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package forms
 
 import forms.AwrsEnrollmentUrnForm.{awrsEnrolmentUrnForm, awrsUrn, maxQueryLength}
 import forms.test.util.NamedUnitTests.{assertFormIsValid, singleFieldTestFunctions}
-import forms.test.util.{CompulsoryFieldValidationExpectations, ExpectedFieldExceedsMaxLength, ExpectedFieldFormat, ExpectedFieldIsEmpty, ExpectedInvalidFieldFormat}
+import forms.test.util.{AwrsFormTestUtils, CompulsoryFieldValidationExpectations, ExpectedFieldExceedsMaxLength, ExpectedFieldFormat, ExpectedFieldIsEmpty, ExpectedInvalidFieldFormat}
 import forms.validation.util.{FieldError, MessageArguments, SummaryError}
 import models.AwrsEnrollmentUrn
 import org.scalatest.BeforeAndAfterEach
@@ -11,33 +27,72 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.Form
 
-class AwrsEnrolmentUrnFormSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
+class AwrsEnrolmentUrnFormSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {
 
   "AwrsEnrolmentUrnForm" should {
     implicit val form: Form[AwrsEnrollmentUrn] = awrsEnrolmentUrnForm.form
+    val fieldId = "awrsUrn"
+    val fieldNameInErrorMessage = "awrsUrn field"
 
-    "validate and generate the correct error messages" in {
-      val fieldId: String = awrsUrn
-      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.search.query.empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "urn field", maxQueryLength)
-      val summaryError = (message: String) => SummaryError(message, MessageArguments("urn field"), fieldId)
-      val invalidFormats = List(
-        ExpectedInvalidFieldFormat("α", fieldId, "search field"),
-        ExpectedInvalidFieldFormat("XAAW000001234567", FieldError("awrs.search.query.string_length_mismatch"), summaryError("awrs.search.query.string_length_mismatch")),
-        ExpectedInvalidFieldFormat("XAAW0000012345", FieldError("awrs.search.query.string_length_mismatch"), summaryError("awrs.search.query.string_length_mismatch")),
-        ExpectedInvalidFieldFormat("XAAW00001123456", FieldError("awrs.search.query.zeros_mismatch"), summaryError("awrs.search.query.zeros_mismatch")),
-        ExpectedInvalidFieldFormat("XAAW0000012345X", FieldError("awrs.search.query.default_invalid_urn"), summaryError("awrs.search.query.default_invalid_urn")),
-        ExpectedInvalidFieldFormat("X0AW00000123456", FieldError("awrs.search.query.default_invalid_urn"), summaryError("awrs.search.query.default_invalid_urn")),
-        ExpectedInvalidFieldFormat("XXA000000123456", FieldError("awrs.search.query.default_invalid_urn"), summaryError("awrs.search.query.default_invalid_urn")),
-        //when name search is reinstated delete line below
-        ExpectedInvalidFieldFormat("Xy company 188555", FieldError("awrs.search.query.default_invalid_urn"), summaryError("awrs.search.query.default_invalid_urn"))
 
+    "field is left blank" in {
+      form.bind(Map(fieldId -> "")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.awrsUrn.empty"
+        },
+        _ => fail("Field should contain errors")
       )
-      val formatError = ExpectedFieldFormat(invalidFormats)
+    }
 
-      val expectations = CompulsoryFieldValidationExpectations(emptyError, maxLenError, formatError)
+    "field is more than max length" in {
+      form.bind(Map(fieldId -> "a" * 141)).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.awrsUrn.maximum_length", fieldNameInErrorMessage, maxQueryLength)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
 
-      fieldId assertFieldIsCompulsory expectations
+    "field is more than length mismatch" in {
+      form.bind(Map(fieldId -> "XAAW000001234567")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.string_length_mismatch", fieldNameInErrorMessage, maxQueryLength)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "field is more than length is less" in {
+      form.bind(Map(fieldId -> "XAAW000001234")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.string_length_mismatch", fieldNameInErrorMessage, maxQueryLength)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "field has zero mismatches" in {
+      form.bind(Map(fieldId -> "XAAW00001123456")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.zeros_mismatch", fieldNameInErrorMessage, maxQueryLength)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "field has invalid urns" in {
+      form.bind(Map(fieldId -> "X0AW00000123456")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.default_invalid_urn", fieldNameInErrorMessage, maxQueryLength)
+        },
+        _ => fail("Field should contain errors")
+      )
     }
 
     "allow valid submissions" in {

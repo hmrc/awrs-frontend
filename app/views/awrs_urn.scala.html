@@ -15,25 +15,18 @@
  *@
 
 @import config.ApplicationConfig
-@import services.DataCacheKeys._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
-
-@import views.html.helpers._
-@import views.view_application.helpers.SubViewTemplateHelper._
-@import views.view_application.helpers._
-@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import views.ViewUtils._
+@import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
-@this(
-        formWithCSRF: FormWithCSRF,
+@this(  formWithCSRF: FormWithCSRF,
         awrsMain: main,
         govukInput: GovukInput,
         govukErrorSummary: GovukErrorSummary)
 
-@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
-@(awrsEnrollmentUrnForm: Form[AwrsEnrollmentUrn])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
-
+@(awrsUrnForm: Form[models.AwrsEnrollmentUrn])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @headerTitleName = @{"awrs.urn.title"}
 
@@ -42,19 +35,19 @@
 }
 
 @awrsMain(
-    title = s"${errorPrefix(awrsEnrollmentUrnForm)} ${messages("awrs.generic.tab.title", messages(headerTitleName))}",
+    title = s"${errorPrefix(awrsUrnForm)} ${messages("awrs.generic.tab.title", messages(headerTitleName))}",
     backlink=Some(backlinkHtml), userLoggedIn = true) {
 
 
-    @if(awrsEnrollmentUrnForm.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(awrsEnrollmentUrnForm, mapping = Map("tradingDate" -> "tradingDate.day")))
+    @if(awrsUrnForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(awrsUrnForm))
     }
 
     <header class="page-header">
         <h1 id="businessNameChangeConfirmation-heading" class="govuk-heading-xl">@messages(headerTitleName)</h1>
     </header>
 
-    @formWithCSRF(action = controllers.routes.IndexController.showIndex) {
+    @formWithCSRF(action = controllers.routes.AwrsUrnController.saveAndContinue) {
 
         @govukInput(
             Input(
@@ -62,7 +55,7 @@
                     classes = "govuk-label",
                     content = Text(Messages("awrs.urn.label"))
                 )
-            ).withFormField(awrsEnrollmentUrnForm("awrsUrn"))
+            ).withFormField(awrsUrnForm("awrsUrn"))
         )
 
         @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")

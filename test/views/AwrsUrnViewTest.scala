@@ -57,37 +57,10 @@ class AwrsUrnViewTest extends ViewTestFixture  {
 
       }
 
-      "display h1 with correct premises number for linear mode when adding a new record" in {
-        val testList2 = List(testPremises(addAnother = Some("Yes")))
-        val nextId = testList2.size + 1
-        showPremises(id = nextId, premises = testList2) {
-          result =>
-            status(result) mustBe OK
-            val document = Jsoup.parse(contentAsString(result))
-            val heading = document.getElementById("additional-premises-title").text()
-            heading must be(Messages("awrs.additional-premises.top-heading", Messages("awrs.generic.tell_us_about"), views.html.helpers.ordinalIntSuffix(nextId)))
-        }
-      }
 
 
 
   }
 
-  private def showPremises(id: Int, isLinearMode: Boolean = true, isNewRecord: Boolean = true, premises: List[AdditionalBusinessPremises] = testList)(test: Future[Result] => Any): Future[Any] = {
-    setupMockSave4LaterServiceWithOnly(fetchAdditionalBusinessPremisesList = AdditionalBusinessPremisesList(premises))
-    setAuthMocks()
-    val result = testAdditionalPremisesController.showPremisePage(id = id, isLinearMode = isLinearMode, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def eitherJourney(id: Int = 1, isLinearJourney: Boolean, isNewRecord: Boolean = true, entityType: String)(test: Future[Result] => Any): Unit = {
-    setupMockSave4LaterServiceWithOnly(
-      fetchBusinessCustomerDetails = testBusinessCustomerDetails(entityType),
-      fetchAdditionalBusinessPremisesList = testAdditionalPremisesList
-    )
-    setAuthMocks()
-    val result = testAdditionalPremisesController.showPremisePage(id = id, isLinearMode = isLinearJourney, isNewRecord = isNewRecord).apply(SessionBuilder.buildRequestWithSession(userId, entityType))
-    test(result)
-  }
 
 }

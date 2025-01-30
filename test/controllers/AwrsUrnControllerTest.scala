@@ -17,36 +17,60 @@
 package controllers
 
 import builders.SessionBuilder
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
+import connectors.mock.MockAuthConnector
+import forms.AwrsEnrollmentUrnForm
+import models.AwrsEnrollmentUrn
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch}
-import views.html.urn_kickout
+import services.mocks.{MockIndexService, MockKeyStoreService}
+import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch, TestUtil}
+import views.html.awrs_urn
 
-import scala.concurrent.Future
 
 class AwrsUrnControllerTest extends AwrsUnitTestTraits
-  with ServicesUnitTestFixture {
+  with ServicesUnitTestFixture with MockAuthConnector
+  with MockKeyStoreService
+  with MockIndexService {
+
+  def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
+    TestUtil.populateFakeRequest[AwrsEnrollmentUrn](FakeRequest(), AwrsEnrollmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrollmentUrn(answer))
+
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: urn_kickout = app.injector.instanceOf[views.html.urn_kickout]
+  val template: awrs_urn = app.injector.instanceOf[views.html.awrs_urn]
 
-  val testURNKickOutController: AwrsUrnController = new AwrsUrnController( mockMCC, mockAppConfig, template)
+  val testAwrsUrnController: AwrsUrnController = new AwrsUrnController(mockMCC,
+    testKeyStoreService, mockDeEnrolService, mockAuthConnector,
+    mockAuditable, mockAccountUtils, mockLookupService, mockAppConfig, template)
 
-  "URNKickOutController" must {
+  "AwrsUrnController" must {
 
-    "show the Kickout page when enrolmentJourney is enable" in {
-            FeatureSwitch.enable(AWRSFeatureSwitches.enrolmentJourney())
-            val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
-            status(res) mustBe 200
+    "show the URN page when enrolmentJourney is enabled" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      FeatureSwitch.enable(AWRSFeatureSwitches.enrollmentJourney())
+      val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      status(res) mustBe 200
     }
-    "return 404 the Kickout page when enrolmentJourney is ldisable" in {
-          FeatureSwitch.disable(AWRSFeatureSwitches.enrolmentJourney())
-          val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
-          status(res) mustBe 404
+
+    "save the URN to keystore if no errors" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+
+      FeatureSwitch.enable(AWRSFeatureSwitches.enrollmentJourney())
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
+      status(res) mustBe 200
+    }
+
+    "save should return 400 if form has errors" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+
+      FeatureSwitch.enable(AWRSFeatureSwitches.enrollmentJourney())
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
+      status(res) mustBe 400
     }
   }
-
-}
+  }

@@ -19,25 +19,23 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AwrsEnrollmentUrnForm.{awrsEnrolmentUrnForm, awrsEnrolmentUrnValidationForm}
+import forms.AwrsEnrollmentUrnForm.awrsEnrolmentUrnForm
 import play.api.mvc._
-import services.apis.AwrsAPI5
-import services.{DeEnrolService, KeyStoreService}
+import services.{DeEnrolService, KeyStoreService, LookupService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AccountUtils
 import utils.{AWRSFeatureSwitches, AccountUtils}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
-                                  api5: AwrsAPI5,
                                   val keyStoreService: KeyStoreService,
                                   val deEnrolService: DeEnrolService,
                                   val authConnector: DefaultAuthConnector,
                                   val auditable: Auditable,
                                   val accountUtils: AccountUtils,
+                                  lookupService: LookupService,
                                   implicit val applicationConfig: ApplicationConfig,
                                   template: views.html.awrs_urn
                                       ) extends FrontendController(mcc) with AwrsController {
@@ -46,32 +44,34 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { implicit ar =>
-      keyStoreService.fetchAwrsEnrolmentUrn flatMap {
-        case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
-        case _ =>  Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
-      }
+    btaAuthorisedAction { implicit ar =>
+      println("********nhere " + AWRSFeatureSwitches.enrollmentJourney().enabled)
+//      if (AWRSFeatureSwitches.enrollmentJourney().enabled) {
+        keyStoreService.fetchAwrsEnrolmentUrn flatMap {
+          case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
+          case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+        }
+//      } else Future.successful(NotFound)
     }
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction {
+    btaAuthorisedAction {
       implicit ar =>
-        awrsEnrolmentUrnValidationForm.bindFromRequest.fold(
+        awrsEnrolmentUrnForm.bindFromRequest.fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
           awrsUrn => {
-            keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) map {
-              _ => Ok
+            keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap  {_=>
+              lookupService.lookup(awrsUrn.awrsUrn).flatMap { result =>
+                result match {
+                  case Some(searchResult) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+                  case None => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+                }
+              }
             }
           }
         )
     }
   }
 
-  def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-     if(AWRSFeatureSwitches.enrolmentJourney().enabled)
-        Future.successful(Ok(template()))
-     else
-        Future.successful(NotFound)
-   }
 }

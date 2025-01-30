@@ -30,6 +30,7 @@ trait LoggingUtils extends Logging {
 
   val auditable: Auditable
 
+  final val auditLookupTxName: String = "AwrsLookup"
   final val auditAPI4TxName: String = "API4"
   final val auditAPI5TxName: String = "API5"
   final val auditAPI6TxName: String = "API6"

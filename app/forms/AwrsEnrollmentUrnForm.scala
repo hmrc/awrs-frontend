@@ -18,10 +18,8 @@ package forms
 
 import forms.prevalidation._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter}
-import forms.validation.util.ErrorMessageFactory.createErrorMessage
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
 import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
-import forms.validation.util.{FieldErrorConfig, MessageArguments, SummaryErrorConfig, TargetFieldIds}
 import models.AwrsEnrollmentUrn
 import play.api.data.Form
 import play.api.data.Forms._
@@ -38,33 +36,29 @@ object AwrsEnrollmentUrnForm {
 
   val maxQueryLength = 140
 
-  private lazy val awrsUrnTargetId = TargetFieldIds(awrsUrn)
-
-  private lazy val invalidFormatSummaryError =
-    (fieldErr: String) => SummaryErrorConfig(fieldErr + ".summary", MessageArguments("urn field"))
-
-  private lazy val invalidQueryFieldError =
-    (fieldErr: String) => createErrorMessage(
-      awrsUrnTargetId,
-      FieldErrorConfig(fieldErr),
-      invalidFormatSummaryError(fieldErr))
+  def validText(input: String): Boolean = {
+    val inputList: List[Char] = input.toList
+    inputList.forall { c =>
+      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255)
+    }
+  }
 
   private lazy val formatRules =
     FieldFormatConstraintParameter(
       (name: String) => {
         trimAllFunc(name) match {
-          case trimmedName@_ if !validText(trimmedName) => invalidQueryFieldError("awrs.generic.error.character_invalid")
+          case trimmedName@_ if !validText(trimmedName) => Invalid("awrs.generic.error.character_invalid")
           case trimmedName@_ if trimmedName.matches(awrsRefRegEx) => Valid
           case trimmedName@_ if trimmedName.matches(leading4CharRegex) => {
             trimmedName match {
-              case trimmedName if (trimmedName.length != 15) => invalidQueryFieldError("awrs.search.query.string_length_mismatch")
-              case trimmedName if (!trimmedName.matches(zerosRegex)) => invalidQueryFieldError("awrs.search.query.zeros_mismatch")
+              case trimmedName if (trimmedName.length != 15) => Invalid("awrs.awrsUrn.string_length_mismatch")
+              case trimmedName if (!trimmedName.matches(zerosRegex)) => Invalid("awrs.awrsUrn.zeros_mismatch")
 
-              case _ => invalidQueryFieldError("awrs.search.query.default_invalid_urn")
+              case _ => Invalid("awrs.awrsUrn.default_invalid_urn")
             }
           }
           case _ => {
-            invalidQueryFieldError("awrs.search.query.default_invalid_urn")
+            Invalid("awrs.awrsUrn.default_invalid_urn")
           }
         }
       }
@@ -75,17 +69,12 @@ object AwrsEnrollmentUrnForm {
   val asciiChar160 = 160
   val asciiChar255 = 255
 
-  def validText(input: String): Boolean = {
-    val inputList: List[Char] = input.toList
-    inputList.forall { c =>
-      (c >= asciiChar32 && c <= asciiChar126) || (c >= asciiChar160 && c <= asciiChar255)
-    }
-  }
+
 
   private lazy val compulsoryQueryField = compulsoryText(
     CompulsoryTextFieldMappingParameter(
-      empty = simpleFieldIsEmptyConstraintParameter(awrsUrn, "awrs.search.query.empty"),
-      maxLengthValidation = FieldMaxLengthConstraintParameter(maxQueryLength, Invalid("awrs.generic.error.urn.maximum_length", "urn field", maxQueryLength)),
+      empty = simpleFieldIsEmptyConstraintParameter(awrsUrn, "awrs.awrsUrn.empty"),
+      maxLengthValidation = FieldMaxLengthConstraintParameter(maxQueryLength, Invalid("awrs.generic.error.awrsUrn.maximum_length", "awrsUrn field", maxQueryLength)),
       formatValidations = Seq(formatRules)
     ))
 
@@ -93,6 +82,10 @@ object AwrsEnrollmentUrnForm {
     awrsUrn -> compulsoryQueryField.toStringFormatter
   )(AwrsEnrollmentUrn.apply)(AwrsEnrollmentUrn.unapply))
 
-  lazy val awrsEnrolmentUrnForm: PrevalidationAPI[AwrsEnrollmentUrn] = PreprocessedForm(awrsEnrolmentUrnValidationForm)
+  lazy val awrsEnrolmentUrnForm: PrevalidationAPI[AwrsEnrollmentUrn] = PreprocessedForm(
+    awrsEnrolmentUrnValidationForm,
+    trimRules = Map(awrsUrn -> TrimOption.bothAndCompress),
+    caseRules = Map())
+
 
 }

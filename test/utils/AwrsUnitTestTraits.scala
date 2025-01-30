@@ -28,7 +28,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc._
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi}
-import services.{BusinessDetailsService, DeEnrolService}
+import services.{BusinessDetailsService, DeEnrolService, LookupService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.test.Helpers.{defaultAwaitTimeout, await => helperAwait}
@@ -63,6 +63,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   val mockCountryCodes: CountryCodes = mock[CountryCodes]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   val mockMessages: Messages = mock[Messages]
+  val mockLookupService:LookupService = mock[LookupService]
   implicit val messages: Messages = stubMessages()
 
   def await[A](result: Future[A]): A = {
