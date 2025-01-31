@@ -26,7 +26,7 @@ import play.api.mvc._
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AccountUtils
+import utils.{AWRSFeatureSwitches, AccountUtils}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,6 +37,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
                                                  val accountUtils: AccountUtils,
                                                  val deEnrolService: DeEnrolService,
                                                  val auditable: Auditable,
+                                                 val awrsFeatureSwitches: AWRSFeatureSwitches,
                                                  template: views.html.awrs_registered_postcode) extends FrontendController(mcc) with AwrsController {
 
  
@@ -45,28 +46,18 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
 
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
-      if (applicationConfig.enrolmentJourney)
-        Future.successful(Ok(template(awrsRegisteredPostcodeForm.fill(AwrsRegisteredPostcode("")))))
+      if(awrsFeatureSwitches.enrolmentJourney().enabled)
+        Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(AwrsRegisteredPostcode("")))))
       else
         Future.successful(NotFound)
     }
    }
-
-  /*def showHaveYouRegisteredPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { implicit ar =>
-      keyStoreService.fetchHaveYouRegistered flatMap {
-        case Some(data) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.fill(data))))
-        case _ => Future.successful(Ok(template(awrsRegisteredPostcodeForm)))
-      }
-    }
-  }*/
 
   def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
     awrsRegisteredPostcodeForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
       data =>  Future.successful(Redirect(controllers.routes.IndexController.showIndex))
 
-     /* awrsRegisteredPostcodeData => keyStoreService.saveHaveYouRegistered(awrsRegisteredPostcodeData) flatMap(_ => Future.successful(Redirect(controllers.routes.IndexController.showIndex)))*/
     )
   }
 

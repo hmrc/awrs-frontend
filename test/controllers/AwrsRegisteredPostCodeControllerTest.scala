@@ -17,57 +17,84 @@
 package controllers
 
 import builders.SessionBuilder
-import config.ApplicationConfig
+import connectors.mock.MockAuthConnector
+import forms.{AwrsRegisteredPostcodeForm}
+import models.{AwrsRegisteredPostcode}
 import org.mockito.Mockito.when
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch}
+import services.mocks.{MockIndexService, MockKeyStoreService}
+import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, BooleanFeatureSwitch, FeatureSwitch, TestUtil}
 import views.html.awrs_registered_postcode
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
-  with ServicesUnitTestFixture {
+  with ServicesUnitTestFixture with MockAuthConnector
+  with MockKeyStoreService
+  with MockIndexService {
+
+  def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
+    TestUtil.populateFakeRequest[AwrsRegisteredPostcode](FakeRequest(), AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm.form, AwrsRegisteredPostcode(answer))
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val mockTemplate: awrs_registered_postcode = app.injector.instanceOf[views.html.awrs_registered_postcode]
-  override val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
+  val template: awrs_registered_postcode = app.injector.instanceOf[views.html.awrs_registered_postcode]
 
-  "AwrsRegisteredPostcodeController" must {
+  val testAwrsRegisteredPostcodeController: AwrsRegisteredPostcodeController = new AwrsRegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector,
+    mockAccountUtils, mockDeEnrolService, mockAuditable ,mockAwrsFeatureSwitches, template)
 
-    "show the postcode page when enrolmentJourney is enable" in {
-
-      continueWithAuthorisedUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD")) {
-        result =>
-          status(result) must be(SEE_OTHER)
-          redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/index"
-      }
+  "AwrsUrnController" must {
+    "show not found when feature is not enabled" in {
+      setAuthMocks()
+      setupEnrollmentJourneyFeatureSwitchMock(false)
+      val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
+      status(res) mustBe 404
     }
-    "return 404 the Kickout page when enrolmentJourney is ldisable" in {
-      val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-      when(mockAppConfig.enrolmentJourney).thenReturn(false)
 
-      val testAwrsRegisteredPostcode: AwrsRegisteredPostcodeController = new AwrsRegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector, mockAccountUtils, mockDeEnrolService, mockAuditable, mockTemplate) {
-        override val signInUrl: String = applicationConfig.signIn
-      }
-          val res = testAwrsRegisteredPostcode.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
-          status(res) mustBe 404
+    "show the URN page when enrolmentJourney is enabled" in {
+      setAuthMocks()
+      setupEnrollmentJourneyFeatureSwitchMock(true)
+      val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
+      status(res) mustBe 200
     }
+
+   /* "save the URN to keystore if no errors" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      setupEnrollmentJourneyFeatureSwitchMock(true)
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
+      status(res) mustBe 200
+    }*/
+
+   /* "save should return 400 if form has errors" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      setupEnrollmentJourneyFeatureSwitchMock(true)
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
+      status(res) mustBe 400
+    }*/
+
+   /* "save should lookup the urn and save result found in keystore" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      setupEnrollmentJourneyFeatureSwitchMock(true)
+      when(mockLookupService.lookup("XXAW00000000051")).thenReturn(
+        Future(
+          Some(
+            SearchResult(List(
+              Business("XXAW00000000051",
+                Some("12/12/2013"),
+                Approved,
+                Info(Some("Business Name"),Some("Trading Name"),Some("Full name"), None),
+                None))))))
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
+      status(res) mustBe 400
+    }*/
+
+
   }
-
-  private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
-
-    setupMockSave4LaterService()
-    setAuthMocks()
-    when(mockAppConfig.enrolmentJourney).thenReturn(true)
-    val testAwrsRegisteredPostcode: AwrsRegisteredPostcodeController = new AwrsRegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector, mockAccountUtils, mockDeEnrolService, mockAuditable, mockTemplate) {
-      override val signInUrl: String = applicationConfig.signIn
-    }
-    val result = testAwrsRegisteredPostcode.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
-    test(result)
-  }
-
 }

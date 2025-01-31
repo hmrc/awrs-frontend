@@ -430,7 +430,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
   def checkEtmp(businessCustomerDetails: BusinessCustomerDetails, legalEntity: String)
                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
-    if (!awrsFeatureSwitches.regimeCheck().enabled) {
+    if (!AWRSFeatureSwitches.regimeCheck().enabled) {
       Future.successful(None)
     } else {
       val regimeModel = CheckRegimeModel(businessCustomerDetails, legalEntity)

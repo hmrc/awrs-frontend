@@ -16,18 +16,47 @@
 
 package forms
 
-import config.ApplicationConfig
-import forms.validation.util.ConstraintUtil._
-import models.{AwrsRegisteredPostcode}
+import forms.prevalidation._
+import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter}
+import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
+import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
+import models.AwrsRegisteredPostcode
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.validation.{Invalid, Valid}
+import utils.AwrsValidator
 
-object AwrsRegisteredPostcodeForm {
+object AwrsRegisteredPostcodeForm extends AwrsValidator{
 
-  val awrsRegisteredPostcodeForm = Form(
-    mapping(
-      "registeredPostcode" -> text
-        .verifying("awrs.register_postcode.error.empty", _.nonEmpty)
-    )(AwrsRegisteredPostcode.apply)(AwrsRegisteredPostcode.unapply)
-  )
+  val registeredPostcode = "registeredPostcode"
+  val maxQueryLength = 140
+
+  private lazy val formatRules =
+    FieldFormatConstraintParameter(
+      (name: String) => {
+        trimAllFunc(name) match {
+          case trimmedName@_ if trimmedName.matches(postcodeRegex) => Valid
+          case _ => {
+            Invalid("awrs.generic.error.postcode_invalid")
+          }
+        }
+      }
+    )
+
+  private lazy val compulsoryQueryField = compulsoryText(
+    CompulsoryTextFieldMappingParameter(
+      empty = simpleFieldIsEmptyConstraintParameter(registeredPostcode, "awrs.register_postcode.error.empty"),
+      maxLengthValidation = FieldMaxLengthConstraintParameter(maxQueryLength, Invalid("awrs.generic.error.awrsUrn.maximum_length", "awrsUrn field", maxQueryLength)),
+      formatValidations = Seq(formatRules)
+    ))
+
+  lazy val awrsRegisteredPostcodeValidationForm: Form[AwrsRegisteredPostcode] = Form(mapping(
+    registeredPostcode -> compulsoryQueryField.toStringFormatter
+  )(AwrsRegisteredPostcode.apply)(AwrsRegisteredPostcode.unapply))
+
+
+  lazy val awrsRegisteredPostcodeForm: PrevalidationAPI[AwrsRegisteredPostcode] = PreprocessedForm(
+    awrsRegisteredPostcodeValidationForm,
+    trimRules = Map(registeredPostcode -> TrimOption.bothAndCompress),
+    caseRules = Map())
 }
