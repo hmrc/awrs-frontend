@@ -55,6 +55,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
     ExecutionContext.global
   )
 
+  val mockAwrsFeatureSwitches:AWRSFeatureSwitches = mock[AWRSFeatureSwitches]
   val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
   val mockBusinessDetailsService: BusinessDetailsService = mock[BusinessDetailsService]
@@ -127,6 +128,10 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
       case Configure(dataToReturn) => action(dataToReturn)
       case _ =>
     }
+  }
+
+  def setupEnrollmentJourneyFeatureSwitchMock(value:Boolean): Unit = {
+    when(mockAwrsFeatureSwitches.enrolmentJourney()).thenReturn(BooleanFeatureSwitch("enrollmentJourney", value))
   }
 
   case class Configure[A](config: A) extends MockConfiguration[A]

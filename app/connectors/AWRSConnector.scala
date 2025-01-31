@@ -38,11 +38,11 @@ import scala.util.matching.Regex
 class AWRSConnector @Inject()(http: HttpClientV2,
                               val auditable: Auditable,
                               val accountUtils: AccountUtils,
+                              val awrsFeatureSwitches: AWRSFeatureSwitches,
                               implicit val applicationConfig: ApplicationConfig) extends LoggingUtils {
 
   private final val subscriptionTypeJSPath = "subscriptionTypeFrontEnd"
   lazy val serviceURL: String = applicationConfig.servicesConfig.baseUrl("awrs")
-
   lazy val approvedInfo = ""
   val validationPattern: Regex = "(^.*submission contains one or more errors.*$)".r
   val ggFailurePattern: Regex = "(^.*government-gateway-admin.*$)".r
@@ -430,7 +430,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
 
   def checkEtmp(businessCustomerDetails: BusinessCustomerDetails, legalEntity: String)
                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
-    if (!AWRSFeatureSwitches.regimeCheck().enabled) {
+    if (!awrsFeatureSwitches.regimeCheck().enabled) {
       Future.successful(None)
     } else {
       val regimeModel = CheckRegimeModel(businessCustomerDetails, legalEntity)

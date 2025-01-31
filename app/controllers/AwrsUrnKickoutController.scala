@@ -25,6 +25,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AwrsUrnKickoutController @Inject()(mcc: MessagesControllerComponents,
+                                         val awrsFeatureSwitches: AWRSFeatureSwitches,
                                          implicit val applicationConfig: ApplicationConfig,
                                          template: views.html.urn_kickout
                                       ) extends FrontendController(mcc)  {
@@ -33,7 +34,7 @@ class AwrsUrnKickoutController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-     if(AWRSFeatureSwitches.enrollmentJourney().enabled) {
+     if(awrsFeatureSwitches.enrolmentJourney().enabled) {
         Future.successful(Ok(template()))
      } else {
         Future.successful(NotFound)

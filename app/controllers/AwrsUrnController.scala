@@ -36,6 +36,7 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
                                   val auditable: Auditable,
                                   val accountUtils: AccountUtils,
                                   lookupService: LookupService,
+                                  val awrsFeatureSwitches: AWRSFeatureSwitches,
                                   implicit val applicationConfig: ApplicationConfig,
                                   template: views.html.awrs_urn
                                       ) extends FrontendController(mcc) with AwrsController {
@@ -45,13 +46,12 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
 
   def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     btaAuthorisedAction { implicit ar =>
-      println("********nhere " + AWRSFeatureSwitches.enrollmentJourney().enabled)
-//      if (AWRSFeatureSwitches.enrollmentJourney().enabled) {
+      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
         keyStoreService.fetchAwrsEnrolmentUrn flatMap {
           case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
           case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
         }
-//      } else Future.successful(NotFound)
+      } else Future.successful(NotFound)
     }
   }
 
@@ -62,10 +62,10 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
           formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
           awrsUrn => {
             keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap  {_=>
-              lookupService.lookup(awrsUrn.awrsUrn).flatMap { result =>
-                result match {
-                  case Some(searchResult) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
-                  case None => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+              lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
+                  case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
+                    Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+                  case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
                 }
               }
             }
