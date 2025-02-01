@@ -18,6 +18,7 @@ package utils
 
 import audit.Auditable
 import config.ApplicationConfig
+import connectors.LookupConnector
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -64,7 +65,8 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   val mockCountryCodes: CountryCodes = mock[CountryCodes]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   val mockMessages: Messages = mock[Messages]
-  val mockLookupService:LookupService = mock[LookupService]
+  val mockLookupConnector:LookupConnector = mock[LookupConnector]
+  val testLookupService:LookupService = new LookupService(mockLookupConnector)
   implicit val messages: Messages = stubMessages()
 
   def await[A](result: Future[A]): A = {

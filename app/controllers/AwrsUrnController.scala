@@ -62,7 +62,8 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
           formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
           awrsUrn => {
             keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap  {_=>
-              lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
+              val x = lookupService.lookup(awrsUrn.awrsUrn)
+              x.flatMap { _ match {
                   case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
                     Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
                   case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))

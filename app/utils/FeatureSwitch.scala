@@ -17,8 +17,16 @@
 package utils
 
 import config.ApplicationConfig
+import controllers.auth.{StandardAuthRetrievals, UrlSafe}
+import play.api.i18n.Messages
+import play.api.mvc.{AnyContent, Request, Result}
+import uk.gov.hmrc.auth.core.Enrolments
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.authorisedEnrolments
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait FeatureSwitch {
   def name: String

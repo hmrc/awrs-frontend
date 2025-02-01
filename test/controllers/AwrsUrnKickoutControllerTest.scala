@@ -40,7 +40,7 @@ class AwrsUrnKickoutControllerTest extends AwrsUnitTestTraits
             status(res) mustBe 200
     }
     "return 404 the Kickout page when enrolmentJourney is ldisable" in {
-          setupEnrollmentJourneyFeatureSwitchMock(true)
+          setupEnrollmentJourneyFeatureSwitchMock(false)
           val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
           status(res) mustBe 404
     }

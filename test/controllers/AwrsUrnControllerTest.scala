@@ -21,17 +21,20 @@ import connectors.mock.MockAuthConnector
 import forms.AwrsEnrollmentUrnForm
 import models.AwrsStatus.Approved
 import models.{AwrsEnrollmentUrn, Business, Info, SearchResult}
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockIndexService, MockKeyStoreService}
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, BooleanFeatureSwitch, FeatureSwitch, TestUtil}
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_urn
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AwrsUrnControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
@@ -41,13 +44,18 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[AwrsEnrollmentUrn](FakeRequest(), AwrsEnrollmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrollmentUrn(answer))
 
-
+  def testSearchResult(ref:String) = SearchResult(List(
+    Business(ref,
+      Some("12/12/2013"),
+      Approved,
+      Info(Some("Business Name"), Some("Trading Name"), Some("Full name"), None),
+      None)))
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_urn = app.injector.instanceOf[views.html.awrs_urn]
 
   val testAwrsUrnController: AwrsUrnController = new AwrsUrnController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
-    mockAuditable, mockAccountUtils, mockLookupService, mockAwrsFeatureSwitches, mockAppConfig, template)
+    mockAuditable, mockAccountUtils, testLookupService, mockAwrsFeatureSwitches, mockAppConfig, template)
 
   "AwrsUrnController" must {
     "show not found when feature is not enabled" in {
@@ -70,6 +78,9 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrollmentJourneyFeatureSwitchMock(true)
+      when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XAAW00000123456"))
+      (any[HeaderCarrier](),any[ExecutionContext]()))
+        .thenReturn(Future.successful(Some(testSearchResult("XAAW00000123456"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
       status(res) mustBe 200
     }
@@ -86,19 +97,12 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrollmentJourneyFeatureSwitchMock(true)
-      when(mockLookupService.lookup("XXAW00000000051")).thenReturn(
-        Future(
-          Some(
-            SearchResult(List(
-              Business("XXAW00000000051",
-                Some("12/12/2013"),
-                Approved, 
-                Info(Some("Business Name"),Some("Trading Name"),Some("Full name"), None),
-                None))))))
+      when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
-      status(res) mustBe 400
+      verifyKeyStoreService(saveAwrsUrn = 1, saveSearchResults = 1)
+      status(res) mustBe 200
     }
 
 
   }
-  }
+}
