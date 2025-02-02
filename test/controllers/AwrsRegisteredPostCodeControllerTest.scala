@@ -45,9 +45,9 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   val template: awrs_registered_postcode = app.injector.instanceOf[views.html.awrs_registered_postcode]
 
   val testAwrsRegisteredPostcodeController: AwrsRegisteredPostcodeController = new AwrsRegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector,
-    mockAccountUtils, mockDeEnrolService, mockAuditable ,mockAwrsFeatureSwitches, template)
+    mockAccountUtils, mockDeEnrolService, mockAuditable ,mockAwrsFeatureSwitches,testKeyStoreService, template)
 
-  "AwrsUrnController" must {
+  "AwrsPostcodeController" must {
     "show not found when feature is not enabled" in {
       setAuthMocks()
       setupEnrollmentJourneyFeatureSwitchMock(false)
@@ -55,20 +55,20 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
       status(res) mustBe 404
     }
 
-    "show the URN page when enrolmentJourney is enabled" in {
+    "show the postcode page when enrolmentJourney is enabled" in {
       setAuthMocks()
       setupEnrollmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
-   /* "save the URN to keystore if no errors" in {
+    "save the postcode to keystore if no errors" in {
       setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
+      setupMockKeystoreServiceForRegisteredPostcode()
       setupEnrollmentJourneyFeatureSwitchMock(true)
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
+      val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest("NE270JZ"))
       status(res) mustBe 200
-    }*/
+    }
 
    /* "save should return 400 if form has errors" in {
       setAuthMocks()
