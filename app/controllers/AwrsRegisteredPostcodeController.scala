@@ -38,6 +38,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
                                                  val deEnrolService: DeEnrolService,
                                                  val auditable: Auditable,
                                                  val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                                 val keyStoreService: KeyStoreService,
                                                  template: views.html.awrs_registered_postcode) extends FrontendController(mcc) with AwrsController {
 
  
@@ -47,7 +48,10 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       if(awrsFeatureSwitches.enrolmentJourney().enabled)
-        Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(AwrsRegisteredPostcode("")))))
+        keyStoreService.fetchAwrsRegisteredPostcode flatMap {
+          case Some(registeredPostcode) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode))))
+          case _ => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form)))
+        }
       else
         Future.successful(NotFound)
     }
@@ -56,10 +60,10 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
   def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
     awrsRegisteredPostcodeForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-      data =>  Future.successful(Redirect(controllers.routes.IndexController.showIndex))
-
-    )
+      postcode =>  {
+        keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
+           _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex))
+        }
+  })
   }
-
-
 }

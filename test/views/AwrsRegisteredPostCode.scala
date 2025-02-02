@@ -16,20 +16,19 @@
 
 package views
 
+import forms.AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm
 import play.twirl.api.HtmlFormat
 import views.html.awrs_registered_postcode
 
 class AwrsRegisteredPostCode extends ViewTestFixture {
 
   val view: awrs_registered_postcode = app.injector.instanceOf[views.html.awrs_registered_postcode]
-  override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
+  override val htmlContent: HtmlFormat.Appendable = view.apply(awrsRegisteredPostcodeForm.form)(fakeRequest, messages, mockAppConfig)
 
   "awrs registered postcode page" should {
     "render the correct content" in {
-      heading mustBe "The Unique Reference Number (URN) you entered is not recognised"
-      bodyText mustBe "Check that you've entered it correctly and try again If you can't find your URN, you'll need to register for AWRS. Register for AWRS"
-      sign_in_btn mustBe "Register for AWRS"
-      sign_in_href mustBe "#"
+      heading mustBe "Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)"
+      buttonText mustBe "Continue"
     }
   }
 }

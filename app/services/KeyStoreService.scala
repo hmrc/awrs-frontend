@@ -154,4 +154,10 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
   @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrollmentSearchResultKeyName, searchResult)
+
+  @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
+
+  @inline def fetchAwrsRegisteredPostcode(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsRegisteredPostcode]] =
+    keyStoreConnector.fetchDataFromKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName)
 }

@@ -35,16 +35,16 @@ govukInput : GovukInput,
 govukButton : GovukButton,
 govukErrorSummary: GovukErrorSummary)
 
-@(awrsRegisteredPostcodeForm: Form[models.AwrsRegisteredPostcode])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+@(postcodeForm: Form[models.AwrsRegisteredPostcode])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @moreInfoLink = {
   @messages("awrs.generic.assistant_kickout.more_info_link")
 }
 
-@awrsMain( title = s"${errorPrefix(awrsRegisteredPostcodeForm)} ${messages("awrs.generic.tab.title", messages("awrs.register_postcode.title"))}") {
+@awrsMain( title = s"${errorPrefix(postcodeForm)} ${messages("awrs.generic.tab.title", messages("awrs.register_postcode.title"))}") {
 
-    @if(awrsRegisteredPostcodeForm.errors.nonEmpty) {
-       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(awrsRegisteredPostcodeForm))
+    @if(postcodeForm.errors.nonEmpty) {
+       @govukErrorSummary(ErrorSummary().withFormErrorsAsText(postcodeForm))
     }
     @formWithCSRF(action = controllers.routes.AwrsRegisteredPostcodeController.saveAndContinue){
 
@@ -59,7 +59,7 @@ govukErrorSummary: GovukErrorSummary)
         content = Text(messages("awrs.register_postcode.hint"))
         )),
         autocomplete = Some("postal-code")
-        ).withFormField(awrsRegisteredPostcodeForm("registeredPostcode")))
+        ).withFormField(postcodeForm("registeredPostcode")))
 
 
         @govukButton(Button(

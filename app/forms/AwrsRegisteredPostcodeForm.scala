@@ -28,7 +28,7 @@ import utils.AwrsValidator
 
 object AwrsRegisteredPostcodeForm extends AwrsValidator{
 
-  val registeredPostcode = "registeredPostcode"
+  val registeredPostcode = "awrsRegisteredPostcode"
   val maxQueryLength = 140
 
   private lazy val formatRules =
@@ -57,6 +57,6 @@ object AwrsRegisteredPostcodeForm extends AwrsValidator{
 
   lazy val awrsRegisteredPostcodeForm: PrevalidationAPI[AwrsRegisteredPostcode] = PreprocessedForm(
     awrsRegisteredPostcodeValidationForm,
-    trimRules = Map(registeredPostcode -> TrimOption.bothAndCompress),
+    trimRules = Map(),
     caseRules = Map())
 }
