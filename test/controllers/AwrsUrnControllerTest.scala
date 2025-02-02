@@ -97,10 +97,12 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrollmentJourneyFeatureSwitchMock(true)
+
       when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
-      verifyKeyStoreService(saveAwrsUrn = 1, saveSearchResults = 1)
       status(res) mustBe 200
+      verifyKeyStoreService(saveSearchResults = 1)
+
     }
 
 
