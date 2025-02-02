@@ -50,6 +50,7 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   "AwrsPostcodeController" must {
     "show not found when feature is not enabled" in {
       setAuthMocks()
+      setupMockKeystoreServiceForRegisteredPostcode()
       setupEnrollmentJourneyFeatureSwitchMock(false)
       val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
@@ -57,6 +58,7 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
 
     "show the postcode page when enrolmentJourney is enabled" in {
       setAuthMocks()
+      setupMockKeystoreServiceForRegisteredPostcode()
       setupEnrollmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
@@ -67,34 +69,15 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForRegisteredPostcode()
       setupEnrollmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest("NE270JZ"))
-      status(res) mustBe 200
+      status(res) mustBe 303
     }
 
-   /* "save should return 400 if form has errors" in {
+    "save should return 400 if form has errors" in {
       setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
+      setupMockKeystoreServiceForRegisteredPostcode()
       setupEnrollmentJourneyFeatureSwitchMock(true)
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
+      val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest(""))
       status(res) mustBe 400
-    }*/
-
-   /* "save should lookup the urn and save result found in keystore" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
-      when(mockLookupService.lookup("XXAW00000000051")).thenReturn(
-        Future(
-          Some(
-            SearchResult(List(
-              Business("XXAW00000000051",
-                Some("12/12/2013"),
-                Approved,
-                Info(Some("Business Name"),Some("Trading Name"),Some("Full name"), None),
-                None))))))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
-      status(res) mustBe 400
-    }*/
-
-
+    }
   }
 }
