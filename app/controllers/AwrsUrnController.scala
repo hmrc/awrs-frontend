@@ -56,22 +56,22 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction {
-      implicit ar =>
-        awrsEnrolmentUrnForm.bindFromRequest.fold(
-          formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-          awrsUrn => {
-            keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap  {_=>
-              val x = lookupService.lookup(awrsUrn.awrsUrn)
-              x.flatMap { _ match {
-                  case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
-                    Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
-                  case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+    btaAuthorisedAction { implicit ar =>
+        if(awrsFeatureSwitches.enrolmentJourney().enabled) {
+          awrsEnrolmentUrnForm.bindFromRequest.fold(
+            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+            awrsUrn => {
+              keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
+                lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
+                    case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
+                      Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+                    case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+                  }
                 }
               }
             }
-          }
-        )
+          )
+        } else Future.successful(NotFound)
     }
   }
 
