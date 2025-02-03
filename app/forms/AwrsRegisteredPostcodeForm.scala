@@ -17,7 +17,7 @@
 package forms
 
 import forms.prevalidation._
-import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter}
+import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
 import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
 import models.AwrsRegisteredPostcode
@@ -29,13 +29,25 @@ import utils.AwrsValidator
 object AwrsRegisteredPostcodeForm extends AwrsValidator{
 
   val registeredPostcode = "registeredPostcode"
-  val maxQueryLength = 140
-  
+
+  val invalidPostcodeErrorMessage = Seq[FieldFormatConstraintParameter](
+    FieldFormatConstraintParameter(
+      (registeredPostcode: String) => {
+        val noSpacesPostcode = registeredPostcode.replaceAll("\\s", "")  // Remove all spaces
+        if (noSpacesPostcode.matches(postcodeRegex)) {
+          Valid
+        } else {
+          Invalid("awrs.register_postcode.error.invalid_postcode")
+        }
+      }
+    )
+  )
+
   private lazy val compulsoryQueryField = compulsoryText(
     CompulsoryTextFieldMappingParameter(
       empty = simpleFieldIsEmptyConstraintParameter(registeredPostcode, "awrs.register_postcode.error.empty"),
-      maxLengthValidation = FieldMaxLengthConstraintParameter(maxQueryLength, Invalid("awrs.generic.error.awrsUrn.maximum_length", registeredPostcode, maxQueryLength)),
-      formatValidations = Seq()
+      maxLengthValidation = null,
+      formatValidations = invalidPostcodeErrorMessage
     ))
 
   lazy val awrsRegisteredPostcodeValidationForm: Form[AwrsRegisteredPostcode] = Form(mapping(
