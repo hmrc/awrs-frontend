@@ -19,6 +19,7 @@ package forms.validation.util
 import forms.AWRSEnums.{AWRSEnumeration, BooleanEnumeration}
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationResult}
+
 import scala.language.implicitConversions
 
 object ConstraintUtil {

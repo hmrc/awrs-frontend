@@ -16,7 +16,7 @@
 
 package utils
 
-import models.{ApplicationDeclaration, Products, Suppliers, _}
+import models._
 import play.api.Logging
 import play.api.libs.json.{JsValue, Json}
 import services.DataCacheKeys._

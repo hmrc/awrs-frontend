@@ -24,8 +24,8 @@ import forms.validation.util.ConstraintUtil._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil.{doYouHaveCRN_compulsory => _, _}
 import models._
-import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
+import play.api.data.{Form, Mapping}
 
 object BusinessRegistrationDetailsForm {
 
