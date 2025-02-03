@@ -53,8 +53,9 @@ class AwrsUrnViewTest extends ViewTestFixture  {
       "Display all fields correctly" in {
         heading mustBe "What is your Alcohol Wholesaler Registration Scheme (AWRS) Unique Reference Number (URN)?"
 
+        document.select("label").text() mustBe "Your URN is 4 letters and 11 numbers, like XXAW00000123456. You can find it printed on the wholesaler or producer’s invoices. If you can’t find it, contact the wholesaler or producer for the URN."
 
-
+        document.select("input").attr("id") mustBe "awrsUrn"
       }
 
 
