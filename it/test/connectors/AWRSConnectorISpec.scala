@@ -23,6 +23,8 @@ import models.FormBundleStatus.Pending
 import models.StatusContactType.MindedToReject
 import models._
 import org.scalatest.matchers.must.Matchers
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request}
 import play.api.test.Helpers._
@@ -66,7 +68,6 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
   def verifyUpdateData(): Unit = wireMockServer.verify(1, putRequestedFor(urlMatching("/awrs/update/0123456")))
   def verifyWithdrawal(): Unit = wireMockServer.verify(1, postRequestedFor(urlMatching("/awrs/withdrawal/0123456")))
   def verifyUpdateGrpPartner(): Unit = wireMockServer.verify(1, putRequestedFor(urlMatching("/0123456/registration-details/XE1234")))
-
 
 
   "AWRSConnector subscribing to AWRS" must {
@@ -557,35 +558,35 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
     val checkRegimeModelResponseSuccessJson = Json.toJson(checkRegimeModelResponseSuccess)
 
     "Return a SelfHealSubscriptionResponse after receiving an OK response" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      FeatureSwitch.enable(connector.awrsFeatureSwitches.regimeCheck())(connector.applicationConfig)
       mockResponse(OK, checkRegimeModelResponseSuccessJson.toString())
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
       result mustBe Some(subscribeAcceptedResponse)
     }
 
     "Return None after receiving a NO CONTENT response" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      FeatureSwitch.enable(connector.awrsFeatureSwitches.regimeCheck())(connector.applicationConfig)
       mockResponse(NO_CONTENT)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
       result mustBe None
     }
 
     "Return None after receiving a BAD REQUEST response" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      FeatureSwitch.enable(connector.awrsFeatureSwitches.regimeCheck())(connector.applicationConfig)
       mockResponse(BAD_REQUEST)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
       result mustBe None
     }
 
     "Return None after an exception has been thrown" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
+      FeatureSwitch.enable(connector.awrsFeatureSwitches.regimeCheck())(connector.applicationConfig)
       stubbedPost("/regime-etmp-check", OK, "invalid")
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
       result mustBe None
     }
 
     "Return None when feature flag is false" in {
-      FeatureSwitch.disable(AWRSFeatureSwitches.regimeCheck())
+      FeatureSwitch.enable(connector.awrsFeatureSwitches.regimeCheck())(connector.applicationConfig)
       mockResponse(OK)
       val result: Option[SelfHealSubscriptionResponse] = await(testCall)
       result mustBe None
