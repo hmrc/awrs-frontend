@@ -46,7 +46,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    authorisedAction { implicit ar =>
+    btaAuthorisedAction { implicit ar =>
       if(awrsFeatureSwitches.enrolmentJourney().enabled)
         keyStoreService.fetchAwrsRegisteredPostcode flatMap {
           case Some(registeredPostcode) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode))))
@@ -58,12 +58,14 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
    }
 
   def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
-    awrsRegisteredPostcodeForm.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-      postcode =>  {
-        keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
-           _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex))
-        }
-  })
+    btaAuthorisedAction { implicit ar =>
+      awrsRegisteredPostcodeForm.bindFromRequest().fold(
+        formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+        postcode => {
+          keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
+            _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex))
+          }
+        })
+    }
   }
 }
