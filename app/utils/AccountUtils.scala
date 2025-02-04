@@ -18,9 +18,10 @@ package utils
 
 import audit.Auditable
 import controllers.auth.StandardAuthRetrievals
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, UnsupportedAffinityGroup}
 import uk.gov.hmrc.http.InternalServerException
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {

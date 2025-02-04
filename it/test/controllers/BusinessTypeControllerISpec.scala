@@ -24,9 +24,10 @@ import controllers.{BusinessTypeController, routes}
 import models._
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
-import play.api.{Logger, Logging}
+import play.api.{Application, Logger, Logging}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, JsonUtil, LogCapturing}
 import uk.gov.hmrc.http.HeaderNames
@@ -43,6 +44,10 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
   val SessionId = s"stubbed-${UUID.randomUUID}"
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(appConfig(("feature.enrolmentJourney", "true")))
+    .build()
 
   val businessCustomerDetailsString: String = """{
                                         |"id": "businessCustomerDetails",
@@ -149,8 +154,9 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
       verify(exactlyTimes(0), postRequestedFor(urlEqualTo("/awrs/regime-etmp-check")))
     }
 
+
+
     "when feature flag is on, but the call fails" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
 
       stubShowAndRedirectExternalCalls()
       stubbedPost("""/regime-etmp-check""", NO_CONTENT, "")
@@ -194,7 +200,6 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
            |  "groupIdentifier" : "GroupId"
            |}""".stripMargin
 
-      FeatureSwitch.enable(AWRSFeatureSwitches.regimeCheck())
       stubShowAndRedirectExternalCalls()
       stubFor(post(urlMatching("/auth/authorise"))
         .inScenario("auth")

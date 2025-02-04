@@ -142,4 +142,16 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
     keyStoreConnector.fetchDataFromKeystore[CacheMap](save4LaterBackupName)
 
   @inline def removeAll(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = keyStoreConnector.removeAll()
+
+  @inline def fetchAwrsEnrolmentUrn(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsEnrollmentUrn]] =
+    keyStoreConnector.fetchDataFromKeystore[AwrsEnrollmentUrn](awrsEnrollmentUrnKeyName)
+
+  @inline def saveAwrsEnrolmentUrn(awrsEnrollmentUrn: AwrsEnrollmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[AwrsEnrollmentUrn](awrsEnrollmentUrnKeyName, awrsEnrollmentUrn)
+
+  @inline def fetchAwrsUrnSearchResult(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SearchResult]] =
+    keyStoreConnector.fetchDataFromKeystore[SearchResult](awrsEnrollmentSearchResultKeyName)
+
+  @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrollmentSearchResultKeyName, searchResult)
 }

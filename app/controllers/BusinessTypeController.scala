@@ -47,7 +47,6 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
-
   private def standardApi5Journey(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
     for {
       _ <- api5.retrieveApplication(authRetrievals)

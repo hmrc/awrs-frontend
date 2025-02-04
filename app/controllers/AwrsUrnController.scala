@@ -16,12 +16,12 @@
 
 package controllers
 
-
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import play.api.mvc.{AnyContent, _}
-import services.{DeEnrolService, Save4LaterService}
+import forms.AwrsEnrollmentUrnForm.awrsEnrolmentUrnForm
+import play.api.mvc._
+import services.{DeEnrolService, KeyStoreService, LookupService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -29,18 +29,50 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsUrnController @Inject()(val mcc: MessagesControllerComponents,
-                                       implicit val applicationConfig: ApplicationConfig,
-                                       template: views.html.urn_kickout) extends FrontendController(mcc) {
+class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
+                                  val keyStoreService: KeyStoreService,
+                                  val deEnrolService: DeEnrolService,
+                                  val authConnector: DefaultAuthConnector,
+                                  val auditable: Auditable,
+                                  val accountUtils: AccountUtils,
+                                  lookupService: LookupService,
+                                  val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                  implicit val applicationConfig: ApplicationConfig,
+                                  template: views.html.awrs_urn
+                                      ) extends FrontendController(mcc) with AwrsController {
 
- 
-  val signInUrl: String = applicationConfig.signIn
   implicit val ec: ExecutionContext = mcc.executionContext
+  val signInUrl: String = applicationConfig.signIn
 
-  def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-     if(AWRSFeatureSwitches.enrolmentJourney().enabled)
-        Future.successful(Ok(template()))
-     else
-        Future.successful(NotFound)
-   }
+  def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    btaAuthorisedAction { implicit ar =>
+      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+        keyStoreService.fetchAwrsEnrolmentUrn flatMap {
+          case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
+          case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+        }
+      } else Future.successful(NotFound)
+    }
+  }
+
+  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    btaAuthorisedAction { implicit ar =>
+        if(awrsFeatureSwitches.enrolmentJourney().enabled) {
+          awrsEnrolmentUrnForm.bindFromRequest.fold(
+            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+            awrsUrn => {
+              keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
+                lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
+                    case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
+                      Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+                    case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+                  }
+                }
+              }
+            }
+          )
+        } else Future.successful(NotFound)
+    }
+  }
+
 }

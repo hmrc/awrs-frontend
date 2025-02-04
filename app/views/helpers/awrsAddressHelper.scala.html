@@ -16,12 +16,10 @@
 
 @import config.ApplicationConfig
 @import play.api.i18n._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.{RichInput, RichSelect}
+@import uk.gov.hmrc.govukfrontend.views.html.components.{GovukFieldset, _}
 @import views.helpers._
 @import views.html.helpers._
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukFieldset
-@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 @this(govukInput: GovukInput, govukFieldset: GovukFieldset, govukSelect: GovukSelect)
 @(field: Field, params: views.helpers.AddressHelperParams, countryList: Seq[(String, String)] = Seq())(implicit messages: Messages, formInstance: Option[Form[_]] = None, applicationConfig: ApplicationConfig)
 

@@ -16,12 +16,11 @@
 
 package audit
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.AuditExtensions
+import uk.gov.hmrc.play.audit.{AuditExtensions, DefaultAuditConnector}
 import uk.gov.hmrc.play.audit.model.{Audit, DataEvent}
-import uk.gov.hmrc.play.audit.DefaultAuditConnector
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class Auditable @Inject()(auditConnector: DefaultAuditConnector) {

@@ -28,6 +28,12 @@ trait ModelVersionControl {
   def modelVersion: String
 }
 
+case class AwrsEnrollmentUrn(awrsUrn: String)
+
+object AwrsEnrollmentUrn {
+  implicit val format: OFormat[AwrsEnrollmentUrn] = Json.format[AwrsEnrollmentUrn]
+}
+
 case class ApplicationStatus(status: ApplicationStatusEnum.Value, updatedDate: LocalDateTime)
 
 case class BusinessDirector(personOrCompany: Option[String] = None,
@@ -192,6 +198,10 @@ case class Address(
 
   override def hashCode(): Int =
     (addressLine1, addressLine2, addressLine3, addressLine4, postcode, addressCountry).hashCode()
+
+  def toStringSeq: Seq[String] = {
+    Seq[Option[String]](Some(addressLine1), Some(addressLine2), addressLine3, addressLine4, postcode, addressCountry).flatten
+  }
 }
 
 case class IndexStatus(soleTraderBusinessDetailsStatus: String,
@@ -414,6 +424,10 @@ object NewAWBusiness {
 
 object Address {
   implicit val formats: OFormat[Address] = Json.format[Address]
+
+  implicit class AddressUtil(address: Option[Address]) {
+    def toStringSeq: Seq[String] = address.fold(Seq[String]())(x => x.toStringSeq)
+  }
 }
 
 object CompanyNames {
