@@ -172,7 +172,6 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              saveBusinessCustomerAddress: Option[Int] = None,
                                              saveSearchResults: Option[Int] = None,
                                              saveAwrsUrn: Option[Int] = None,
-                                             saveBusinessCustomerAddress: Option[Int] = None,
                                              saveRegisteredPostcode:  Option[Int] = None,
                                            ): Unit = {
     def verifyDeleteSupportFetch[T](key: String, someCount: Option[Int]): Unit =
