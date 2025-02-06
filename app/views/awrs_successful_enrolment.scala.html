@@ -1,0 +1,39 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.ApplicationConfig
+@import play.twirl.api.HtmlFormat
+@import views.html.layout
+
+@this(awrsMain: main)
+
+@()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+
+@awrsMain(title = messages("awrs.successful_enrolment.title", messages("awrs.successful_enrolment.title"))) {
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">@Messages("awrs.successful_enrolment.title")
+    </h1>
+</div>
+<h2 class="govuk-body govuk-!-font-weight-bold">@messages("awrs.successful_enrolment.heading")</h2>
+<p class="govuk-body" id="paragraph-1">@messages("awrs.successful_enrolment.p1")</p>
+<p class="govuk-body" id="paragraph-2" >More detailed information can be found in the <a href="https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs">AWRS guidance (opens in a new tab)</a></p>
+<br>
+<br>
+<a href=@applicationConfig.businessTaxAccountPage role="button" class="govuk-button" data-module="govuk-button">
+   @messages("awrs.successful_enrolment.btn")
+</a>
+<br>
+}

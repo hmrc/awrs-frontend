@@ -170,4 +170,7 @@ GET         /registered-postcode                            controllers.AwrsRegi
 POST        /registered-postcode                            controllers.AwrsRegisteredPostcodeController.saveAndContinue
 
 
+GET         /deleted-urn-kickout                            controllers.AwrsDeletedUrnController.showDeletedURNKickOutPage
 
+# DL-14749
+GET         /successful-enrolment                           controllers.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage
