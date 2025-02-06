@@ -48,7 +48,7 @@ class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
       if (awrsFeatureSwitches.enrolmentJourney().enabled) {
         Future.successful(Ok(template()))
       } else {
-        Future.successful(Ok(template()))
+        Future.successful(NotFound)
       }
     }
     }
