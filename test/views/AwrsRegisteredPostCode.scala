@@ -29,6 +29,8 @@ class AwrsRegisteredPostCode extends ViewTestFixture {
     "render the correct content" in {
       heading mustBe "Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)"
       buttonText mustBe "Continue"
+      input_field_label mustBe "Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)"
+      input_field must not be empty
     }
   }
 }

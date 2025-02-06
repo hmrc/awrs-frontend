@@ -52,4 +52,10 @@ abstract class ViewTestFixture extends PlaySpec
   lazy val buttonText = document.select(".govuk-button").text()
 
   lazy val sign_in_href = document.select("a.govuk-button").attr("href")
+
+  lazy val input_field = document.select("input.govuk-input")
+
+  lazy val input_field_label = document.select("label.govuk-label").text()
+
+
 }
