@@ -79,7 +79,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrollmentJourneyFeatureSwitchMock(true)
       when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XAAW00000123456"))
-      (any[HeaderCarrier](),any[ExecutionContext]()))
+      (any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testSearchResult("XAAW00000123456"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
       status(res) mustBe 200
@@ -92,8 +92,8 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
       status(res) mustBe 400
     }
-
-    "save should lookup the urn and save result found in keystore" in {
+    
+     "save should lookup the urn and save result found in keystore" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrollmentJourneyFeatureSwitchMock(true)
@@ -104,7 +104,6 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       verifyKeyStoreService(saveSearchResults = 1)
 
     }
-
-
   }
+
 }

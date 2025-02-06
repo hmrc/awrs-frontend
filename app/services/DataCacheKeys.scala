@@ -77,6 +77,8 @@ object DataCacheKeys {
 
   val awrsEnrollmentSearchResultKeyName = "awrsEnrollmentSearchResult"
 
+  val registeredPostcodeKeyName = "awrsRegisteredPostcode"
+
   //TODO centralise the rest of the keys
 
 }

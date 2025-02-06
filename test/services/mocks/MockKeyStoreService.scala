@@ -95,6 +95,10 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
 
   }
+  def setupMockKeystoreServiceForRegisteredPostcode(postcode: Option[AwrsRegisteredPostcode] = None ): Unit = {
+    mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
+    setupMockKeyStoreServiceOnlySaveFunctions()
+  }
 
   def setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress: Boolean = false): Unit =
     if (noAddress) {
@@ -167,7 +171,8 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              fetchBusinessCustomerAddress: Option[Int] = None,
                                              saveBusinessCustomerAddress: Option[Int] = None,
                                              saveSearchResults: Option[Int] = None,
-                                             saveAwrsUrn: Option[Int] = None
+                                             saveAwrsUrn: Option[Int] = None,
+                                             saveRegisteredPostcode:  Option[Int] = None,
                                            ): Unit = {
     def verifyDeleteSupportFetch[T](key: String, someCount: Option[Int]): Unit =
       someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[Option[T]](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -212,6 +217,8 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     verifySave(awrsEnrollmentUrnKeyName, saveAwrsUrn)
 
     verifySave(awrsEnrollmentSearchResultKeyName, saveSearchResults)
+
+    verifySave(registeredPostcodeKeyName, saveRegisteredPostcode)
   }
 
 }
