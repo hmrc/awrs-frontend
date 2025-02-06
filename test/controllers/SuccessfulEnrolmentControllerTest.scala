@@ -21,27 +21,39 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch}
+import utils.AwrsUnitTestTraits
 import views.html.awrs_successful_enrolment
 
-class SuccesfulEnrolmentControllerTest extends AwrsUnitTestTraits
+class SuccessfulEnrolmentControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_successful_enrolment = app.injector.instanceOf[views.html.awrs_successful_enrolment]
-  val testSuccessfulEnrolmentController: SuccessfulEnrolmentController = new SuccessfulEnrolmentController( mockMCC, mockAppConfig, template)
+  val testSuccessfulEnrolmentController: SuccessfulEnrolmentController = new SuccessfulEnrolmentController(
+    mockMCC,
+    mockAppConfig,
+    mockDeEnrolService,
+    mockAuthConnector,
+    mockAuditable,
+    mockAwrsFeatureSwitches,
+    mockAccountUtils,
+    template
+  )
 
   "SuccessfulEnrolmentController" must {
 
     "show the Successful Enrolment page when enrolmentJourney is enable" in {
-      FeatureSwitch.enable(AWRSFeatureSwitches.enrolmentJourney())
+      setAuthMocks()
+      setupEnrollmentJourneyFeatureSwitchMock(true)
       val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
-    "return 404 the Kickout page when enrolmentJourney is ldisable" in {
-      FeatureSwitch.disable(AWRSFeatureSwitches.enrolmentJourney())
+    "return 404 the Kickout page when enrolmentJourney is disabled" in {
+      setAuthMocks()
+      setupEnrollmentJourneyFeatureSwitchMock(false)
       val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }
+
   }
 
 }
