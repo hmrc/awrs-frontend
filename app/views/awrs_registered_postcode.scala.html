@@ -36,12 +36,11 @@ govukButton : GovukButton,
 govukErrorSummary: GovukErrorSummary)
 
 @(postcodeForm: Form[models.AwrsRegisteredPostcode])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
-
-@moreInfoLink = {
-  @messages("awrs.generic.assistant_kickout.more_info_link")
+@backlinkHtml = {
+    @backLink()
 }
 
-@awrsMain( title = s"${errorPrefix(postcodeForm)} ${messages("awrs.generic.tab.title", messages("awrs.register_postcode.title"))}") {
+@awrsMain( title = s"${errorPrefix(postcodeForm)} ${messages("awrs.generic.tab.title", messages("awrs.register_postcode.title"))}", backlink = Some(backlinkHtml)) {
 
     @if(postcodeForm.errors.nonEmpty) {
        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(postcodeForm))
