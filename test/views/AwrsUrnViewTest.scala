@@ -16,7 +16,7 @@
 
 package views
 
-import forms.AwrsEnrollmentUrnForm.awrsEnrolmentUrnForm
+import forms.AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm
 import play.twirl.api.HtmlFormat
 import views.html.awrs_urn
 

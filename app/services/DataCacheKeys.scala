@@ -75,6 +75,8 @@ object DataCacheKeys {
 
   val awrsEnrollmentUrnKeyName = "awrsEnrollmentDetailsUrn"
 
+  val awrsEnrollmentUtrKeyName = "awrsEnrollmentDetailsUtr"
+
   val awrsEnrollmentSearchResultKeyName = "awrsEnrollmentSearchResult"
 
   val registeredPostcodeKeyName = "awrsRegisteredPostcode"

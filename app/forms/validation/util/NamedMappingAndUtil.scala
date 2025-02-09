@@ -213,6 +213,7 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
       isInvalidErrMessage =  getEntityMessage(businessType,"awrs.generic.error.utr_invalid")
     )
   }
+
   def email_compulsory(fieldId: String = "email"): Mapping[Option[String]] = {
     val fieldNameInErrorMessage = "email"
 

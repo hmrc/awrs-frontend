@@ -19,9 +19,7 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AwrsRegisteredPostcodeForm
 import forms.AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm
-import models.AwrsRegisteredPostcode
 import play.api.mvc._
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -46,7 +44,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { implicit ar =>
+    btaAuthorisedAction { _ =>
       if(awrsFeatureSwitches.enrolmentJourney().enabled)
         keyStoreService.fetchAwrsRegisteredPostcode flatMap {
           case Some(registeredPostcode) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode))))
@@ -58,7 +56,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
    }
 
   def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { implicit ar =>
+    btaAuthorisedAction { _ =>
       awrsRegisteredPostcodeForm.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
         postcode => {

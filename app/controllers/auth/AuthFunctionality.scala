@@ -24,6 +24,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -57,7 +58,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
 
   def btaAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
                       (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
-    authorised()
+    authorised(EmptyPredicate or Enrolment("IR-CT") or Enrolment("IR-SA"))
       .retrieve(authorisedEnrolments and affinityGroup and credentials and credentialRole) {
         case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) ~ role =>
           body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(providerId), providerId, role))
@@ -65,6 +66,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
           throw new RuntimeException("[authorisedAction] Unknown retrieval model")
       } recover recoverAuthorisedCalls
   }
+
 
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])
                       (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
