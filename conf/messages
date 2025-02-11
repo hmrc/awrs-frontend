@@ -954,10 +954,15 @@ awrs.application_timeout.heading = For your security, we signed you out
 awrs.application_timeout.p = We saved your answers. Sign in using your Government Gateway to return to your application summary page.
 awrs.application_timeout.sign_in_btn = Sign in
 
+# Enrolment Journey Pages
+#===========================
+awrs.enrolment.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
+awrs.enrolment.have_you_registered.error = You must select either Yes or No
+
 
 awrs.urn_kickout.title = The Unique Reference Number (URN) you entered is not recognised
 awrs.urn_kickout.heading = The Unique Reference Number (URN) you entered is not recognised
-awrs.urn_kickout.p1 = Check that you''ve entered it correctly and try again 
+awrs.urn_kickout.p1 = Check that you''ve entered it correctly and try again
 awrs.urn_kickout.p2 = If you can''t find your URN, you''ll need to register for AWRS.
 awrs.urn_kickout.register_btn = Register for AWRS
 
