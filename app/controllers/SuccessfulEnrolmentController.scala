@@ -44,7 +44,7 @@ class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
 
 
   def showSuccessfulEnrolmentPage() : Action[AnyContent] = Action.async { implicit request =>
-    btaAuthorisedAction { implicit ar =>
+    btaAuthorisedAction { _ =>
       if (awrsFeatureSwitches.enrolmentJourney().enabled) {
         Future.successful(Ok(template()))
       } else {
