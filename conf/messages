@@ -972,3 +972,20 @@ awrs.register_postcode.heading = Enter the postcode you registered with Alcohol 
 awrs.register_postcode.error.empty = Enter your postcode
 awrs.register_postcode.error.invalid_postcode = Enter a valid UK postcode, like AA1 1AA
 awrs.register_postcode.hint = For example, SW1A 2AA
+
+
+awrs.deleted_urn_kickout.title = Get Help with your AWRS registration
+awrs.deleted_urn_kickout.heading = We were unable to locate your details linked with the Unique Reference Number (URN) you entered.
+awrs.deleted_urn_kickout.p1 = Contact HMRC
+awrs.deleted_urn_kickout.p2 = Phone: 020 7946 0101
+awrs.deleted_urn_kickout.p3 = Textphone: 020 7946 0102
+awrs.deleted_urn_kickout.p4 = Monday to Friday, 9am to 5pm (except public holidays)
+awrs.deleted_urn_kickout.p5 = Welsh language = 020 7946 0103
+awrs.deleted_urn_kickout.p6 = Monday to Friday, 8:30am to 5pm
+
+
+awrs.successful_enrolment.title = You have added your AWRS to your business tax account
+awrs.successful_enrolment.heading = What happens next
+awrs.successful_enrolment.p1 = You can now view and manage your AWRS registration in your business tax account.
+awrs.successful_enrolment.p2 = More detailed information can be found in the AWRS guidance (opens in a new tab)
+awrs.successful_enrolment.btn = View your business tax account
