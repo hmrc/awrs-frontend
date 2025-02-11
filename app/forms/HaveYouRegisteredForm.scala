@@ -16,28 +16,31 @@
 
 package forms
 
-import forms.AWRSEnums.{BooleanCheckboxEnum, BooleanRadioEnum}
-import forms.validation.util.MappingUtilAPI.compulsoryBoolean
+import forms.AWRSEnums.BooleanCheckboxEnum
+import forms.prevalidation.{PreprocessedForm, PrevalidationAPI, TrimOption}
 import forms.validation.util.ConstraintUtil.CompulsoryBooleanMappingParameter
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
-import play.api.data.Form
+import forms.validation.util.MappingUtilAPI.compulsoryBoolean
 import models.HaveYouRegisteredModel
+import play.api.data.Form
 import play.api.data.Forms.mapping
-
 
 object HaveYouRegisteredForm {
 
-  val bToOb = (bool: Boolean) => Some(bool)
-  val obTob = (bool: Option[Boolean]) => bool.fold(false)(x => x)
+  val hasUserRegistered = "hasUserRegistered"
 
-  val haveYouRegisteredFormCompulsoryBooleanMappingParam = compulsoryBoolean(CompulsoryBooleanMappingParameter(
-    empty = simpleFieldIsEmptyConstraintParameter("hasUserRegistered", "awrs.enrolment.have_you_registered.error"),
-    enumType = BooleanRadioEnum,
-    invalidChoices = Set(BooleanCheckboxEnum.False)
-  )).transform(obTob, bToOb)
+  val haveYouRegisteredFormCompulsoryBooleanMappingParam= compulsoryBoolean(CompulsoryBooleanMappingParameter(
+    empty = simpleFieldIsEmptyConstraintParameter(hasUserRegistered, "awrs.enrolment.have_you_registered.error"),
+    enumType = BooleanCheckboxEnum
+  ))
 
-  val haveYouRegisteredForm: Form[HaveYouRegisteredModel] =
+  val haveYouRegisteredFormValidation: Form[HaveYouRegisteredModel] =
     Form(mapping(
       "hasUserRegistered" -> haveYouRegisteredFormCompulsoryBooleanMappingParam
     )(HaveYouRegisteredModel.apply)(HaveYouRegisteredModel.unapply))
+
+  lazy val haveYouRegisteredForm: PrevalidationAPI[HaveYouRegisteredModel] = PreprocessedForm(
+    haveYouRegisteredFormValidation,
+    trimRules = Map(hasUserRegistered -> TrimOption.bothAndCompress),
+    caseRules = Map())
 }

@@ -36,7 +36,10 @@ class AwrsUrnViewTest extends ViewTestFixture  {
         document.select("input").attr("id") mustBe "awrsUrn"
       }
 
-
+    "contain a backlink pointing to the correct controller (haveYouRegistered)" in {
+      val backlink = document.getElementById("back")
+      backlink.attr("href") mustBe controllers.routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url
+    }
 
 
   }
