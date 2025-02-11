@@ -25,13 +25,14 @@ import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
 import models.{DeRegistrationConfirmation, DeRegistrationDate, DeRegistrationReason, TupleDate}
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form, Mapping}
 import utils.AwrsFieldConfig
 import utils.AwrsValidator._
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object DeRegistrationForm {
 

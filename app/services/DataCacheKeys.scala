@@ -73,6 +73,12 @@ object DataCacheKeys {
   // this key is used by the keystore service to backup save4later data in order to allow print application post submission
   val save4LaterBackupName = "awrs-frontend-backup"
 
+  val awrsEnrollmentUrnKeyName = "awrsEnrollmentDetailsUrn"
+
+  val awrsEnrollmentSearchResultKeyName = "awrsEnrollmentSearchResult"
+
+  val registeredPostcodeKeyName = "awrsRegisteredPostcode"
+
   val enrolmentJourneyHaveYouRegistered = "haveYouRegistered"
 
   //TODO centralise the rest of the keys

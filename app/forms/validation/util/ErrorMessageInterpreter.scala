@@ -184,7 +184,6 @@ object ErrorMessageInterpreter extends ErrorMessageInterpreter {
     }
 
   // current string manipulation error extraction functions
-  import ErrorDelimiterConstants._
 
   def defaultSummaryId(fieldId: String): String = fieldId
 

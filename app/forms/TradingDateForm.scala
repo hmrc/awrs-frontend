@@ -20,10 +20,11 @@ import forms.helper.FormHelper.{isDateAfterOrEqual, isDateBefore}
 import forms.submapping.TupleDateMapping.{tupleDate_compulsory, _}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleErrorMessage
 import models.TupleDate
-import java.time.LocalDate
 import play.api.data.Forms._
 import play.api.data.validation.Valid
 import play.api.data.{Form, Mapping}
+
+import java.time.LocalDate
 
 object TradingDateForm {
 

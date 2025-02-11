@@ -143,6 +143,24 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
   @inline def removeAll(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = keyStoreConnector.removeAll()
 
+  @inline def fetchAwrsEnrolmentUrn(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsEnrollmentUrn]] =
+    keyStoreConnector.fetchDataFromKeystore[AwrsEnrollmentUrn](awrsEnrollmentUrnKeyName)
+
+  @inline def saveAwrsEnrolmentUrn(awrsEnrollmentUrn: AwrsEnrollmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[AwrsEnrollmentUrn](awrsEnrollmentUrnKeyName, awrsEnrollmentUrn)
+
+  @inline def fetchAwrsUrnSearchResult(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SearchResult]] =
+    keyStoreConnector.fetchDataFromKeystore[SearchResult](awrsEnrollmentSearchResultKeyName)
+
+  @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrollmentSearchResultKeyName, searchResult)
+
+  @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
+
+  @inline def fetchAwrsRegisteredPostcode(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsRegisteredPostcode]] =
+    keyStoreConnector.fetchDataFromKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName)
+
   @inline def saveHaveYouRegistered(haveYouRegisteredModel: HaveYouRegisteredModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[HaveYouRegisteredModel](enrolmentJourneyHaveYouRegistered, haveYouRegisteredModel)
 

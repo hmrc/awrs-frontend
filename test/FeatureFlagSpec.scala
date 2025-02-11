@@ -22,7 +22,7 @@ class FeatureFlagSpec extends PlaySpec {
 
   "Enrolment journey feature flag should be off by default" in {
     val applicationConfFileContents = Using.resource(Source.fromFile("conf/application.conf")) { source => source.getLines().mkString("") }
-    val enrolmentJourneyFlagSetToFalse = applicationConfFileContents.toLowerCase().contains("enrolmentjourney = false")
+    val enrolmentJourneyFlagSetToFalse = applicationConfFileContents.toLowerCase().contains("feature.enrolmentjourney = false")
 
     withClue("Enrolment journey feature flag should be off by default in application.conf:") {
       enrolmentJourneyFlagSetToFalse mustBe true

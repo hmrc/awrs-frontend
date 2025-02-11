@@ -17,6 +17,7 @@
 package config
 
 import audit.Auditable
+
 import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{AwrsFieldConfig, CountryCodes}
@@ -24,6 +25,8 @@ import views.html.{awrs_application_error, unauthorised}
 import views.html.view_application.subviews.subview_delete_confirmation
 import views.html.helpers.awrsErrorNotFoundTemplate
 import views.html.error_template
+
+import scala.util.Try
 
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
                                   val countryCodes: CountryCodes,
@@ -68,5 +71,5 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.terms_and_conditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
 
-  lazy val enrolmentJourney: Boolean = servicesConfig.getBoolean("enrolmentJourney")
+  def feature(name:String): Boolean = Try(servicesConfig.getBoolean("feature.enrolmentJourney")).getOrElse(false)
 }

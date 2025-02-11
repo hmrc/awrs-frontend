@@ -18,6 +18,7 @@ package utils
 
 import audit.Auditable
 import config.ApplicationConfig
+import connectors.LookupConnector
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -28,7 +29,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc._
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi}
-import services.{BusinessDetailsService, DeEnrolService}
+import services.{BusinessDetailsService, DeEnrolService, LookupService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.test.Helpers.{defaultAwaitTimeout, await => helperAwait}
@@ -55,6 +56,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
     ExecutionContext.global
   )
 
+  val mockAwrsFeatureSwitches:AWRSFeatureSwitches = mock[AWRSFeatureSwitches]
   val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
   val mockBusinessDetailsService: BusinessDetailsService = mock[BusinessDetailsService]
@@ -63,6 +65,8 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   val mockCountryCodes: CountryCodes = mock[CountryCodes]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   val mockMessages: Messages = mock[Messages]
+  val mockLookupConnector:LookupConnector = mock[LookupConnector]
+  val testLookupService:LookupService = new LookupService(mockLookupConnector)
   implicit val messages: Messages = stubMessages()
 
   def await[A](result: Future[A]): A = {
@@ -126,6 +130,10 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
       case Configure(dataToReturn) => action(dataToReturn)
       case _ =>
     }
+  }
+
+  def setupEnrollmentJourneyFeatureSwitchMock(value:Boolean): Unit = {
+    when(mockAwrsFeatureSwitches.enrolmentJourney()).thenReturn(BooleanFeatureSwitch("enrollmentJourney", value))
   }
 
   case class Configure[A](config: A) extends MockConfiguration[A]

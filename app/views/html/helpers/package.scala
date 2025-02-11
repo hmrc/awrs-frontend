@@ -17,8 +17,8 @@
 package views.html
 
 import play.api.mvc.{AnyContent, Request}
-import utils.SessionUtil
-import utils.AwrsFieldConfig
+import utils.{AwrsFieldConfig, SessionUtil}
+
 import scala.language.implicitConversions
 
 package object helpers extends AwrsFieldConfig {

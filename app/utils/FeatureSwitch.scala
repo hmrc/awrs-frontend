@@ -16,6 +16,10 @@
 
 package utils
 
+import config.ApplicationConfig
+
+import javax.inject.Inject
+
 sealed trait FeatureSwitch {
   def name: String
   def enabled: Boolean
@@ -25,29 +29,27 @@ case class BooleanFeatureSwitch(name: String, enabled: Boolean) extends FeatureS
 
 object FeatureSwitch {
 
-  private[utils] def getProperty(name: String): FeatureSwitch = {
+  private[utils] def getProperty(name: String)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = {
     val value = sys.props.get(systemPropertyName(name))
-
     value match {
       case Some("true") => BooleanFeatureSwitch(name, enabled = true)
-      case _ => BooleanFeatureSwitch(name, enabled = false)
+      case _ => BooleanFeatureSwitch(name, applicationConfig.feature(systemPropertyName(name)))
     }
   }
 
-  private[utils] def setProperty(name: String, value: String): FeatureSwitch = {
+  private[utils] def setProperty(name: String, value: String)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = {
     sys.props += ((systemPropertyName(name), value))
     getProperty(name)
   }
 
   private[utils] def systemPropertyName(name: String) = s"feature.$name"
 
-  def enable(fs: FeatureSwitch): FeatureSwitch = setProperty(fs.name, "true")
-  def disable(fs: FeatureSwitch): FeatureSwitch = setProperty(fs.name, "false")
+  def enable(fs: FeatureSwitch)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = setProperty(fs.name, "true")
+  def disable(fs: FeatureSwitch)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = setProperty(fs.name, "false")
 }
 
-object AWRSFeatureSwitches extends AWRSFeatureSwitches
 
-trait AWRSFeatureSwitches {
+class AWRSFeatureSwitches @Inject() (implicit val applicationConfig: ApplicationConfig) {
   def regimeCheck(): FeatureSwitch = FeatureSwitch.getProperty("regimeCheck")
   def enrolmentJourney(): FeatureSwitch = FeatureSwitch.getProperty("enrolmentJourney")
 }

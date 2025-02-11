@@ -16,8 +16,8 @@
 
 package utils
 
-import models.{BusinessType, FormBundleStatus, SubscriptionStatusType}
 import models.FormBundleStatus._
+import models.{BusinessType, FormBundleStatus, SubscriptionStatusType}
 import org.apache.commons.lang3.RandomStringUtils
 import play.api.mvc.{AnyContent, Request, Result}
 import view_models.IndexViewModel

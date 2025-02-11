@@ -16,11 +16,11 @@
 
 package utils
 
-import javax.inject.Inject
 import models.{Address, Supplier}
 import play.api.Environment
 import play.api.libs.json.{JsValue, Json, OFormat}
 
+import javax.inject.Inject
 import scala.io.Source
 
 class CountryCodes @Inject()(val environment: Environment) {

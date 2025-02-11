@@ -90,6 +90,15 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
 
+  def setupMockKeystoreServiceForAwrsUrn(urn:Option[AwrsEnrollmentUrn] = None): Unit = {
+    mockFetchFromKeyStore[AwrsEnrollmentUrn](awrsEnrollmentUrnKeyName, urn)
+    setupMockKeyStoreServiceOnlySaveFunctions()
+
+  }
+  def setupMockKeystoreServiceForRegisteredPostcode(postcode: Option[AwrsRegisteredPostcode] = None ): Unit = {
+    mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
+    setupMockKeyStoreServiceOnlySaveFunctions()
+  }
 
   def setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress: Boolean = false): Unit =
     if (noAddress) {
@@ -160,7 +169,10 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              fetchViewedStatus: Option[Int] = None,
                                              saveViewedStatus: Option[Int] = None,
                                              fetchBusinessCustomerAddress: Option[Int] = None,
-                                             saveBusinessCustomerAddress: Option[Int] = None
+                                             saveBusinessCustomerAddress: Option[Int] = None,
+                                             saveSearchResults: Option[Int] = None,
+                                             saveAwrsUrn: Option[Int] = None,
+                                             saveRegisteredPostcode:  Option[Int] = None,
                                            ): Unit = {
     def verifyDeleteSupportFetch[T](key: String, someCount: Option[Int]): Unit =
       someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[Option[T]](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -201,6 +213,12 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
     verifyFetch(businessCustomerAddressName, fetchBusinessCustomerAddress)
     verifySave(businessCustomerAddressName, saveBusinessCustomerAddress)
+
+    verifySave(awrsEnrollmentUrnKeyName, saveAwrsUrn)
+
+    verifySave(awrsEnrollmentSearchResultKeyName, saveSearchResults)
+
+    verifySave(registeredPostcodeKeyName, saveRegisteredPostcode)
   }
 
 }
