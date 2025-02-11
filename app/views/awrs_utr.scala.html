@@ -26,36 +26,42 @@
         govukInput: GovukInput,
         govukErrorSummary: GovukErrorSummary)
 
-@(awrsUrnForm: Form[models.AwrsEnrolmentUrn])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+@(awrsUtrForm: Form[models.AwrsEnrolmentUtr], isSA: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
-@headerTitleName = @{"awrs.urn.title"}
+@headerTitleName =  @{
+    if(isSA) {
+        "awrs.utr.title.sa"
+    } else {
+        "awrs.utr.title.ct"
+    }
+}
 
 @backlinkHtml = {
     @backLink()
 }
 
 @awrsMain(
-    title = s"${errorPrefix(awrsUrnForm)} ${messages("awrs.generic.tab.title", messages(headerTitleName))}",
+    title = s"${errorPrefix(awrsUtrForm)} ${messages("awrs.generic.tab.title", messages(headerTitleName))}",
     backlink=Some(backlinkHtml), userLoggedIn = true) {
 
 
-    @if(awrsUrnForm.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(awrsUrnForm))
+    @if(awrsUtrForm.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsHtml(awrsUtrForm))
     }
 
     <header class="page-header">
-        <h1 id="awrsUrn-heading" class="govuk-heading-xl">@messages(headerTitleName)</h1>
+        <h1 id="awrsUtr-heading" class="govuk-heading-xl">@messages(headerTitleName)</h1>
     </header>
 
-    @formWithCSRF(action = controllers.routes.AwrsUrnController.saveAndContinue) {
+    @formWithCSRF(action = controllers.routes.AwrsUtrController.saveAndContinue) {
 
         @govukInput(
             Input(
                 label = Label(
                     classes = "govuk-label",
-                    content = Text(Messages("awrs.urn.label"))
+                    content = Text(Messages("awrs.utr.label"))
                 )
-            ).withFormField(awrsUrnForm("awrsUrn"))
+            ).withFormField(awrsUtrForm("utr"))
         )
 
         @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")

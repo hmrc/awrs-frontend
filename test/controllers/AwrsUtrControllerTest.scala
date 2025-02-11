@@ -18,31 +18,24 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.AwrsEnrolmentUrnForm
+import forms.AwrsEnrolmentUtrForm
 import models.AwrsStatus.Approved
-import models.{AwrsEnrolmentUrn, Business, Info, SearchResult}
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import models.{AwrsEnrolmentUtr, Business, Info, SearchResult}
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockIndexService, MockKeyStoreService}
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AwrsUnitTestTraits, TestUtil}
-import views.html.awrs_urn
+import views.html.awrs_utr
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
-
-class AwrsUrnControllerTest extends AwrsUnitTestTraits
+class AwrsUtrControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
   with MockKeyStoreService
   with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
+    TestUtil.populateFakeRequest[AwrsEnrolmentUtr](FakeRequest(), AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm.form, AwrsEnrolmentUtr(answer))
 
   def testSearchResult(ref:String) = SearchResult(List(
     Business(ref,
@@ -51,57 +44,52 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       Info(Some("Business Name"), Some("Trading Name"), Some("Full name"), None),
       None)))
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: awrs_urn = app.injector.instanceOf[views.html.awrs_urn]
+  val template: awrs_utr = app.injector.instanceOf[views.html.awrs_utr]
 
-  val testAwrsUrnController: AwrsUrnController = new AwrsUrnController(mockMCC,
+  val testAwrsUtrController: AwrsUtrController = new AwrsUtrController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
     mockAuditable, mockAccountUtils, testLookupService, mockAwrsFeatureSwitches, mockAppConfig, template)
 
-  "AwrsUrnController" must {
+  "AwrsUtrController" must {
     "show not found when feature is not enabled" in {
       setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
+      setupMockKeystoreServiceForAwrsUtr()
       setupEnrollmentJourneyFeatureSwitchMock(false)
-      val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testAwrsUtrController.showArwsUtrPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }
 
-    "show the URN page when enrolmentJourney is enabled" in {
+    "show the UTR page when enrolmentJourney is enabled" in {
       setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
+      setupMockKeystoreServiceForAwrsUtr()
       setupEnrollmentJourneyFeatureSwitchMock(true)
-      val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testAwrsUtrController.showArwsUtrPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
-    "save the URN to keystore if no errors" in {
+    "save the UTR to keystore if no errors" in {
       setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
+      setupMockKeystoreServiceForAwrsUtr()
       setupEnrollmentJourneyFeatureSwitchMock(true)
-      when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XAAW00000123456"))
-      (any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(testSearchResult("XAAW00000123456"))))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
+      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       status(res) mustBe 200
     }
 
     "save should return 400 if form has errors" in {
       setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
+      setupMockKeystoreServiceForAwrsUtr()
       setupEnrollmentJourneyFeatureSwitchMock(true)
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
+      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("SomthingWithError"))
       status(res) mustBe 400
     }
     
      "save should lookup the urn and save result found in keystore" in {
       setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
+      setupMockKeystoreServiceForAwrsUtr()
       setupEnrollmentJourneyFeatureSwitchMock(true)
 
-      when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
+      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       status(res) mustBe 200
-      verifyKeyStoreService(saveSearchResults = 1)
 
     }
   }

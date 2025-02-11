@@ -20,12 +20,12 @@ import forms.prevalidation._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
 import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
-import models.AwrsEnrollmentUrn
+import models.AwrsEnrolmentUrn
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
 
-object AwrsEnrollmentUrnForm {
+object AwrsEnrolmentUrnForm {
 
   val awrsUrn = "awrsUrn"
 
@@ -78,11 +78,11 @@ object AwrsEnrollmentUrnForm {
       formatValidations = Seq(formatRules)
     ))
 
-  lazy val awrsEnrolmentUrnValidationForm: Form[AwrsEnrollmentUrn] = Form(mapping(
+  lazy val awrsEnrolmentUrnValidationForm: Form[AwrsEnrolmentUrn] = Form(mapping(
     awrsUrn -> compulsoryQueryField.toStringFormatter
-  )(AwrsEnrollmentUrn.apply)(AwrsEnrollmentUrn.unapply))
+  )(AwrsEnrolmentUrn.apply)(AwrsEnrolmentUrn.unapply))
 
-  lazy val awrsEnrolmentUrnForm: PrevalidationAPI[AwrsEnrollmentUrn] = PreprocessedForm(
+  lazy val awrsEnrolmentUrnForm: PrevalidationAPI[AwrsEnrolmentUrn] = PreprocessedForm(
     awrsEnrolmentUrnValidationForm,
     trimRules = Map(awrsUrn -> TrimOption.bothAndCompress),
     caseRules = Map())

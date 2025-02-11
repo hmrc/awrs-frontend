@@ -41,7 +41,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                                 val auditable: Auditable,
                                 val accountUtils: AccountUtils,
                                 implicit val applicationConfig: ApplicationConfig,
-                                template: views.html.awrs_index) extends FrontendController(mcc) with AwrsController {
+                                 template: views.html.awrs_index) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn

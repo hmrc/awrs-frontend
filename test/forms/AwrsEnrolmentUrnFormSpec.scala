@@ -16,11 +16,11 @@
 
 package forms
 
-import forms.AwrsEnrollmentUrnForm.{awrsEnrolmentUrnForm, awrsUrn, maxQueryLength}
+import forms.AwrsEnrolmentUrnForm.{awrsEnrolmentUrnForm, awrsUrn, maxQueryLength}
 import forms.test.util.NamedUnitTests.{assertFormIsValid, singleFieldTestFunctions}
 import forms.test.util.{AwrsFormTestUtils, CompulsoryFieldValidationExpectations, ExpectedFieldExceedsMaxLength, ExpectedFieldFormat, ExpectedFieldIsEmpty, ExpectedInvalidFieldFormat}
 import forms.validation.util.{FieldError, MessageArguments, SummaryError}
-import models.AwrsEnrollmentUrn
+import models.AwrsEnrolmentUrn
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -30,7 +30,7 @@ import play.api.data.Form
 class AwrsEnrolmentUrnFormSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {
 
   "AwrsEnrolmentUrnForm" should {
-    implicit val form: Form[AwrsEnrollmentUrn] = awrsEnrolmentUrnForm.form
+    implicit val form: Form[AwrsEnrolmentUrn] = awrsEnrolmentUrnForm.form
     val fieldId = "awrsUrn"
     val fieldNameInErrorMessage = "awrsUrn field"
 
