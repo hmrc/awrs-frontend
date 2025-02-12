@@ -955,11 +955,7 @@ awrs.application_timeout.p = We saved your answers. Sign in using your Governmen
 awrs.application_timeout.sign_in_btn = Sign in
 
 
-awrs.urn_kickout.title = The Unique Reference Number (URN) you entered is not recognised
-awrs.urn_kickout.heading = The Unique Reference Number (URN) you entered is not recognised
-awrs.urn_kickout.p1 = Check that you''ve entered it correctly and try again 
-awrs.urn_kickout.p2 = If you can''t find your URN, you''ll need to register for AWRS.
-awrs.urn_kickout.register_btn = Register for AWRS
+
 
 # URN Messages
 #===========================
@@ -974,14 +970,14 @@ awrs.register_postcode.error.invalid_postcode = Enter a valid UK postcode, like 
 awrs.register_postcode.hint = For example, SW1A 2AA
 
 
-awrs.deleted_urn_kickout.title = Get Help with your AWRS registration
-awrs.deleted_urn_kickout.heading = We were unable to locate your details linked with the Unique Reference Number (URN) you entered.
-awrs.deleted_urn_kickout.p1 = Contact HMRC
-awrs.deleted_urn_kickout.p2 = Phone: 020 7946 0101
-awrs.deleted_urn_kickout.p3 = Textphone: 020 7946 0102
-awrs.deleted_urn_kickout.p4 = Monday to Friday, 9am to 5pm (except public holidays)
-awrs.deleted_urn_kickout.p5 = Welsh language = 020 7946 0103
-awrs.deleted_urn_kickout.p6 = Monday to Friday, 8:30am to 5pm
+awrs.urn_kickout.title = Get Help with your AWRS registration
+awrs.urn_kickout.heading = We're unable to locate your details linked with the Unique Reference Number (URN) you entered.
+awrs.urn_kickout.p1 = Contact HMRC
+awrs.urn_kickout.p2 = Phone: 0300 200 3700
+awrs.urn_kickout.p3 = Textphone: 0300 200 3719
+awrs.urn_kickout.p4 = Outside UK: +44 2920 501 261
+awrs.urn_kickout.p5 = Monday to Friday, 9am to 6pm (except public holidays)
+
 
 
 awrs.successful_enrolment.title = You have added your AWRS to your business tax account
