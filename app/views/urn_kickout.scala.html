@@ -23,13 +23,27 @@
 @moreInfoLink = {
   @messages("awrs.generic.assistant_kickout.more_info_link")
 }
-
+@backlinkHtml = {
+  @backLink(controllers.routes.HaveYouRegisteredController.showLastLocation.url)
+}
 @awrsMain(title = messages("awrs.urn_kickout.title", messages("awrs.urn_kickout.title"))) {
 
-  <h1 id="application-error-header" class="govuk-heading-xl">@messages("awrs.urn_kickout.heading")</h1>
+backlink = Some(backlinkHtml), userLoggedIn = true){
+<a href="#" class="govuk-back-link">Back</a>
+<h1 id="application-error-header" class="govuk-heading-xl">@messages("awrs.urn_kickout.title")</h1>
+<h2 class="govuk-body">@messages("awrs.urn_kickout.heading")</h2>
+<br>
+<p class="govuk-body govuk-!-font-weight-bold">@messages("awrs.urn_kickout.p1")</p>
+<br>
+<p class="govuk-body" id="paragraph-2" >@messages("awrs.urn_kickout.p2")</p>
+<p class="govuk-body" id="paragraph-3" >@messages("awrs.urn_kickout.p3")</p>
+<p class="govuk-body" id="paragraph-4" >@messages("awrs.urn_kickout.p4")</p>
+<p class="govuk-body" id="paragraph-5" >@messages("awrs.urn_kickout.p5")</p>
+<br>
+<a class="govuk-link govuk-body" id="call-charges" href="https://www.gov.uk/call-charges">Find out about call charges</a>
+<br>
+<br>
+<br>
+<br>
 
-  <p class="govuk-body">@messages("awrs.urn_kickout.p1")</p>
-  <p class="govuk-body" id="paragraph-2" >@messages("awrs.urn_kickout.p2")</p>
-
-  <p class="govuk-body  govuk-!-margin-top-6"><a class="govuk-button" data-module="govuk-button" href="#">@messages("awrs.urn_kickout.register_btn")</a></p>
 }
