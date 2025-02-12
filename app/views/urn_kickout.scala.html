@@ -23,9 +23,7 @@
 @moreInfoLink = {
   @messages("awrs.generic.assistant_kickout.more_info_link")
 }
-@backlinkHtml = {
-  @backLink(controllers.routes.HaveYouRegisteredController.showLastLocation.url)
-}
+
 @awrsMain(title = messages("awrs.urn_kickout.title", messages("awrs.urn_kickout.title"))) {
 
 backlink = Some(backlinkHtml), userLoggedIn = true){
