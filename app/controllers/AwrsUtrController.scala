@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
 import play.api.mvc._
-import services.{DeEnrolService, KeyStoreService, LookupService}
+import services.{BusinessMatchingService, DeEnrolService, KeyStoreService, LookupService}
 import uk.gov.hmrc.auth.core.{Enrolment, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.authorisedEnrolments
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -37,7 +37,8 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                                   val authConnector: DefaultAuthConnector,
                                   val auditable: Auditable,
                                   val accountUtils: AccountUtils,
-                                  lookupService: LookupService,
+                                  businessMatchingService: BusinessMatchingService,
+
                                   val awrsFeatureSwitches: AWRSFeatureSwitches,
                                   implicit val applicationConfig: ApplicationConfig,
                                   template: views.html.awrs_utr
@@ -53,7 +54,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
 //          case Enrolments(enrolments) if enrolments.exists(_.key == "IR-SA")) => true
 //          case _ => false
 //        }
-        val isSA = ar.enrolments.exists(_.key == "IR-SA")
+        val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
         keyStoreService.fetchAwrsEnrolmentUtr flatMap {
           case Some(utr) => Future.successful(Ok(template(awrsEnrolmentUtrForm.form.fill(utr), isSA)))
           case _ => Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
@@ -65,6 +66,8 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     btaAuthorisedAction { implicit ar =>
         if(awrsFeatureSwitches.enrolmentJourney().enabled) {
+          val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
+
           awrsEnrolmentUtrForm.bindFromRequest.fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             utr => {Future.successful(Ok(template(awrsEnrolmentUtrForm.form)))
