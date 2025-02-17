@@ -26,10 +26,8 @@ class URN_KickOutTest extends ViewTestFixture {
 
   "urn kickout page" should {
     "render the correct content" in {
-      heading mustBe "The Unique Reference Number (URN) you entered is not recognised"
-      bodyText mustBe "Check that you've entered it correctly and try again If you can't find your URN, you'll need to register for AWRS. Register for AWRS"
-      sign_in_btn mustBe "Register for AWRS"
-      sign_in_href mustBe "#"
+      heading mustBe "Get Help with your AWRS registration"
+      bodyText mustBe "Contact HMRC Phone: 0300 200 3700 Textphone: 0300 200 3719 Outside UK: +44 2920 501 261 Monday to Friday, 9am to 6pm (except public holidays)"
     }
   }
 }
