@@ -12,7 +12,7 @@ private object AppDependencies {
     "uk.gov.hmrc"                   %% "play-partials-play-30"       % "10.0.0", // includes code for retrieving partials, e.g. the Help with this page form
     "uk.gov.hmrc"                   %% "domain-play-30"              % "10.0.0",
     "com.yahoo.platform.yui"        %  "yuicompressor"               % "2.4.8",
-    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "11.11.0",
+    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "10.3.0",
     "commons-codec"                 %  "commons-codec"               % "1.18.0",
     "com.googlecode.htmlcompressor" %  "htmlcompressor"              % "1.5.2"
   )
