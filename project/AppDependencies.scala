@@ -3,7 +3,7 @@ import play.sbt.PlayImport.*
 
 private object AppDependencies {
 
-  private val bootstrapPlayVersion = "9.6.0"
+  private val bootstrapPlayVersion = "9.9.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
@@ -21,7 +21,7 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "bootstrap-test-play-30"  % bootstrapPlayVersion % Test,
     "org.jsoup"         %  "jsoup"                   % "1.18.3"             % Test,
     "org.mockito"       %  "mockito-core"            % "5.15.2"             % Test,
-    "org.scalatestplus" %% "scalatestplus-mockito"   % "1.0.0-M2"           % Test
+    "org.scalatestplus" %% "mockito-5-12"   % "3.2.19.0"           % Test
   )
 
   val itDependencies: Seq[ModuleID] = Seq()
