@@ -70,16 +70,27 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
 
           awrsEnrolmentUtrForm.bindFromRequest.fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            utr => {Future.successful(Ok(template(awrsEnrolmentUtrForm.form)))
-//                lookupService.lookup(utr.utr).flatMap { _ match {
+            utr => {
+              keyStoreService.fet.flatMap {
+                _ match {
+                  case Some(postCode) => businessMatchingService.isValidUTRandPostCode(utr.utr, postCode, ar, isSA).flatMap {
+                    ???
+                  }
+                  case None => ???
+                }
+
+              }
+
+            }
+//              businessMatchingService.isValidUTRandPostCode(utr.utr).flatMap { _ match {
 //                    case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
 //                      Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
 //                    case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
 //                  }
 //                }
 
-            }
-          )
+
+
         } else Future.successful(NotFound)
     }
   }

@@ -20,13 +20,16 @@ import audit.Auditable
 import connectors.BusinessMatchingConnector
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
+
 import javax.inject.Inject
 import models._
-import play.api.libs.json.{JsSuccess, JsValue}
+import play.api.libs.json.{JsResult, JsSuccess, JsValue}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
 
+import scala.concurrent.impl.Promise
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
                                         businessMatchingConnector: BusinessMatchingConnector,
@@ -69,6 +72,30 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     }
   }
 
+  def isValidUTRandPostCode(utr: String, postCode: String, authRetrievals: StandardAuthRetrievals, isSA:Boolean)
+                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val searchData = MatchBusinessData(acknowledgementReference = SessionUtil.getUniqueAckNo,
+      utr = utr, individual = None, organisation = None)
+    businessMatchingConnector.lookup(searchData, if (isSA) "sa" else "org", authRetrievals) map {dataReturned =>
+      validatePostCode(postCode, dataReturned)
+    }
+  }
+
+
+  private def validatePostCode(postcode: String, dataReturned: JsValue): Boolean = {
+    val address = (dataReturned \ "address").validate[BCAddressApi3]
+    address match {
+      case s: JsSuccess[BCAddressApi3] => s.get.postalCode.fold(false) { pc: String =>
+        normalisePostCode(pc) == normalisePostCode(postcode)
+      }
+      case _ => false
+    }
+  }
+
+  private def normalisePostCode(pc: String) = {
+    pc.toLowerCase().replaceAll("\\s+", "")
+  }
+
   private def storeBCAddressApi3(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val address = (dataReturned \ "address").validate[BCAddressApi3]
     address match {
@@ -76,6 +103,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
       case _ => {}
     }
   }
+
 
   private def isSuccessfulMatch(dataReturned: JsValue): Future[Boolean] = {
     val isSuccessResponse = dataReturned.validate[MatchSuccessResponse].isSuccess

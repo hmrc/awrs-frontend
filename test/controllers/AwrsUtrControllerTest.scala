@@ -48,7 +48,7 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
 
   val testAwrsUtrController: AwrsUtrController = new AwrsUtrController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
-    mockAuditable, mockAccountUtils, testLookupService, mockAwrsFeatureSwitches, mockAppConfig, template)
+    mockAuditable, mockAccountUtils, testMatchingService, mockAwrsFeatureSwitches, mockAppConfig, template)
 
   "AwrsUtrController" must {
     "show not found when feature is not enabled" in {
