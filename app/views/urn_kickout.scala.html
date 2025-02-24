@@ -15,21 +15,55 @@
  *@
 
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.ViewUtils._
+@import views.html.helpers._
 
 @this(awrsMain: main)
 
 @()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @moreInfoLink = {
-  @messages("awrs.generic.assistant_kickout.more_info_link")
+	@messages("awrs.generic.assistant_kickout.more_info_link")
 }
 
-@awrsMain(title = messages("awrs.urn_kickout.title", messages("awrs.urn_kickout.title"))) {
-
-  <h1 id="application-error-header" class="govuk-heading-xl">@messages("awrs.urn_kickout.heading")</h1>
-
-  <p class="govuk-body">@messages("awrs.urn_kickout.p1")</p>
-  <p class="govuk-body" id="paragraph-2" >@messages("awrs.urn_kickout.p2")</p>
-
-  <p class="govuk-body  govuk-!-margin-top-6"><a class="govuk-button" data-module="govuk-button" href="#">@messages("awrs.urn_kickout.register_btn")</a></p>
+@backlinkHtml = {
+	@backLink()
 }
+
+@awrsMain(
+	title = messages("awrs.urn_kickout.title", messages("awrs.urn_kickout.title")),
+	backlink = Some(backlinkHtml),
+	userLoggedIn = true) {
+	<div>
+		<h1
+			id="awrs-kickout-title" class="govuk-heading-xl">
+			@messages("awrs.urn_kickout.title")
+		</h1>
+		<h2 class="govuk-body">
+			@messages("awrs.urn_kickout.heading")
+		</h2>
+	
+		<p class="govuk-heading-s">
+			@messages("awrs.urn_kickout.p1")
+		</p>
+		<ul class="govuk-list govuk-list govuk-list">
+			<li>@messages("awrs.urn_kickout.p2")</li>
+			
+			<li>@messages("awrs.urn_kickout.p3")</li>
+			
+			<li>@messages("awrs.urn_kickout.p4")</li>
+			
+			<li>@messages("awrs.urn_kickout.p5")</li>
+		</ul>
+		
+		<hr class="govuk-section-break govuk-section-break--s govuk-section-break">
+		
+		<a class="govuk-link govuk-body" id="call-charges" href="https://www.gov.uk/call-charges">
+                  Find out about call charges
+		</a>
+		
+		<hr class="govuk-section-break govuk-section-break--l govuk-section-break">
+	</div>
+}
+

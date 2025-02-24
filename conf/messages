@@ -955,11 +955,7 @@ awrs.application_timeout.p = We saved your answers. Sign in using your Governmen
 awrs.application_timeout.sign_in_btn = Sign in
 
 
-awrs.urn_kickout.title = The Unique Reference Number (URN) you entered is not recognised
-awrs.urn_kickout.heading = The Unique Reference Number (URN) you entered is not recognised
-awrs.urn_kickout.p1 = Check that you''ve entered it correctly and try again 
-awrs.urn_kickout.p2 = If you can''t find your URN, you''ll need to register for AWRS.
-awrs.urn_kickout.register_btn = Register for AWRS
+
 
 # URN Messages
 #===========================
@@ -981,3 +977,20 @@ awrs.register_postcode.heading = Enter the postcode you registered with Alcohol 
 awrs.register_postcode.error.empty = Enter your postcode
 awrs.register_postcode.error.invalid_postcode = Enter a valid UK postcode, like AA1 1AA
 awrs.register_postcode.hint = For example, SW1A 2AA
+
+
+awrs.urn_kickout.title = Get Help with your AWRS registration
+awrs.urn_kickout.heading = We're unable to locate your details linked with the Unique Reference Number (URN) you entered.
+awrs.urn_kickout.p1 = Contact HMRC
+awrs.urn_kickout.p2 = Phone: 0300 200 3700
+awrs.urn_kickout.p3 = Textphone: 0300 200 3719
+awrs.urn_kickout.p4 = Outside UK: +44 2920 501 261
+awrs.urn_kickout.p5 = Monday to Friday, 9am to 6pm (except public holidays)
+
+
+
+awrs.successful_enrolment.title = You have added your AWRS to your business tax account
+awrs.successful_enrolment.heading = What happens next
+awrs.successful_enrolment.p1 = You can now view and manage your AWRS registration in your business tax account.
+awrs.successful_enrolment.p2 = More detailed information can be found in the AWRS guidance (opens in a new tab)
+awrs.successful_enrolment.btn = View your business tax account

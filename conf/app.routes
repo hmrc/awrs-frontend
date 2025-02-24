@@ -171,4 +171,5 @@ GET         /registered-postcode                            controllers.AwrsRegi
 POST        /registered-postcode                            controllers.AwrsRegisteredPostcodeController.saveAndContinue
 
 
-
+# DL-14749
+GET         /successful-enrolment                           controllers.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage

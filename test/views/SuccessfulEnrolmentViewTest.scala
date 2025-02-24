@@ -17,17 +17,24 @@
 package views
 
 import play.twirl.api.HtmlFormat
-import views.html.urn_kickout
+import views.html.awrs_successful_enrolment
 
-class URN_KickOutTest extends ViewTestFixture {
+class SuccessfulEnrolmentViewTest extends ViewTestFixture {
 
-  val view: urn_kickout = app.injector.instanceOf[views.html.urn_kickout]
+  val view: awrs_successful_enrolment =
+    app.injector.instanceOf[views.html.awrs_successful_enrolment]
   override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
-
-  "urn kickout page" should {
+  "successful_enrolment page" should {
     "render the correct content" in {
-      heading mustBe "Get Help with your AWRS registration"
-      bodyText mustBe "Contact HMRC"
+      heading mustBe "You have added your AWRS to your business tax account"
+      bodyText mustBe "You can now view and manage your AWRS registration in your business tax account. More detailed information can be found in the AWRS guidance (opens in a new tab)"
     }
+
+    "contain a button to access the Business Tax Account page" in{
+      val link = document.getElementById("bta-redirect-button")
+      link.attr("role") mustBe "button"
+    }
+
   }
+
 }
