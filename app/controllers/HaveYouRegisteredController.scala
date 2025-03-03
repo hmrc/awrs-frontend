@@ -80,8 +80,10 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
   }
 
   def showLastLocation(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { _ =>
-      Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/have-you-registered")(x => x)))
+    btaAuthorisedAction { implicit standardAuthRetrievals =>
+      restrictedAccessCheck {
+        Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/have-you-registered")(x => x)))
+      }
     }
   }
 }
