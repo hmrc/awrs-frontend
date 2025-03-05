@@ -47,23 +47,27 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
 
   def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     btaAuthorisedAction { implicit ar =>
-      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-        keyStoreService.fetchAwrsEnrolmentUrn flatMap {
-          case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
-          case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
-        }
-      } else Future.successful(NotFound)
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+          keyStoreService.fetchAwrsEnrolmentUrn flatMap {
+            case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
+            case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+          }
+        } else Future.successful(NotFound)
+      }
     }
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     btaAuthorisedAction { implicit ar =>
-        if(awrsFeatureSwitches.enrolmentJourney().enabled) {
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           awrsEnrolmentUrnForm.bindFromRequest.fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             awrsUrn => {
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
+                lookupService.lookup(awrsUrn.awrsUrn).flatMap {
+                  _ match {
                     case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
                       Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
                     case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
@@ -73,6 +77,7 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
             }
           )
         } else Future.successful(NotFound)
+      }
     }
   }
 

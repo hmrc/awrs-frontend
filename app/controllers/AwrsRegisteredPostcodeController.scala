@@ -44,26 +44,30 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { _ =>
-      if(awrsFeatureSwitches.enrolmentJourney().enabled)
-        keyStoreService.fetchAwrsRegisteredPostcode flatMap {
-          case Some(registeredPostcode) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode))))
-          case _ => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form)))
-        }
-      else
-        Future.successful(NotFound)
+    btaAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled)
+          keyStoreService.fetchAwrsRegisteredPostcode flatMap {
+            case Some(registeredPostcode) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode))))
+            case _ => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form)))
+          }
+        else
+          Future.successful(NotFound)
+      }
     }
    }
 
   def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { _ =>
-      awrsRegisteredPostcodeForm.bindFromRequest().fold(
-        formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-        postcode => {
-          keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
-            _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex))
-          }
-        })
+    btaAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        awrsRegisteredPostcodeForm.bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+          postcode => {
+            keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
+              _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex))
+            }
+          })
+      }
     }
   }
 }

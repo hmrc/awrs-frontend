@@ -20,8 +20,9 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
+import models.{AwrsRegisteredPostcode, BusinessCustomerDetails}
 import play.api.mvc._
-import services.{BusinessMatchingService, DeEnrolService, KeyStoreService, LookupService}
+import services.{BusinessMatchingService, DeEnrolService, EnrolService, KeyStoreService, LookupService}
 import uk.gov.hmrc.auth.core.{Enrolment, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.authorisedEnrolments
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -37,8 +38,8 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                                   val authConnector: DefaultAuthConnector,
                                   val auditable: Auditable,
                                   val accountUtils: AccountUtils,
-                                  businessMatchingService: BusinessMatchingService,
-
+                                  val businessMatchingService: BusinessMatchingService,
+                                  val enrolService: EnrolService,
                                   val awrsFeatureSwitches: AWRSFeatureSwitches,
                                   implicit val applicationConfig: ApplicationConfig,
                                   template: views.html.awrs_utr
@@ -49,49 +50,51 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
 
   def showArwsUtrPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     btaAuthorisedAction { implicit ar =>
-      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-//        val isSA = authorised(Enrolment("IR-CT") or Enrolment("IR-SA")).retrieve(authorisedEnrolments) {
-//          case Enrolments(enrolments) if enrolments.exists(_.key == "IR-SA")) => true
-//          case _ => false
-//        }
-        val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
-        keyStoreService.fetchAwrsEnrolmentUtr flatMap {
-          case Some(utr) => Future.successful(Ok(template(awrsEnrolmentUtrForm.form.fill(utr), isSA)))
-          case _ => Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
-        }
-      } else Future.successful(NotFound)
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+          val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
+          keyStoreService.fetchAwrsEnrolmentUtr flatMap {
+            case Some(utr) => Future.successful(Ok(template(awrsEnrolmentUtrForm.form.fill(utr), isSA)))
+            case _ => Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
+          }
+        } else Future.successful(NotFound)
+      }
     }
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     btaAuthorisedAction { implicit ar =>
-        if(awrsFeatureSwitches.enrolmentJourney().enabled) {
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
-
           awrsEnrolmentUtrForm.bindFromRequest.fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            utr => {
-              keyStoreService.fet.flatMap {
-                _ match {
-                  case Some(postCode) => businessMatchingService.isValidUTRandPostCode(utr.utr, postCode, ar, isSA).flatMap {
-                    ???
-                  }
-                  case None => ???
+            utr => for {
+              sr <- keyStoreService.fetchAwrsUrnSearchResult
+              pc <- keyStoreService.fetchAwrsRegisteredPostcode
+            } yield {
+              (sr, pc) match {
+                case (Some(result), Some(registeredPostcode)) =>
+                  businessMatchingService.isValidUTRandPostCode(utr.utr, registeredPostcode, ar, isSA).flatMap { matched =>
+                  if (matched) {
+                    //Deenrollment??
+                    val businessType = if(isSA) "SOP" else "CT"
+                    enrolService.enrolAWRS(result.results.head.awrsRef, registeredPostcode, utr, businessType) flatMap { re
+
+                    }
+
+                    //                        enrolService.enrolAWRS()
+                    Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
+                  } else Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+
                 }
 
+                case _ => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
               }
 
-            }
-//              businessMatchingService.isValidUTRandPostCode(utr.utr).flatMap { _ match {
-//                    case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
-//                      Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
-//                    case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
-//                  }
-//                }
-
-
-
+            })
         } else Future.successful(NotFound)
+      }
     }
   }
 
