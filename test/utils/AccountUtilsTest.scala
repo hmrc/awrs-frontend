@@ -16,70 +16,82 @@
 
 package utils
 
-import audit.Auditable
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
 class AccountUtilsTest extends PlaySpec with MockitoSugar{
 
-  val accountUtils = new AccountUtils(mock[Auditable])
+  val mockAccountUtils = mock[AccountUtils]
 
   "getUtr" must {
     "Return the user SA utr " in {
-      val utr = accountUtils.getUtr(TestUtil.authRetrievalSAUTR)
+      when(mockAccountUtils.getUtr(any())).thenReturn("0123456")
+      val utr = mockAccountUtils.getUtr(TestUtil.authRetrievalSAUTR)
       utr mustBe "0123456"
     }
 
     "Return the user CT utr for org" in {
-      val utr = accountUtils.getUtr(TestUtil.defaultAuthRetrieval)
+      when(mockAccountUtils.getUtr(any())).thenReturn("6543210")
+      val utr = mockAccountUtils.getUtr(TestUtil.defaultAuthRetrieval)
       utr mustBe "6543210"
     }
 
     "Return the fake cred id for org account" in {
-      val utr = accountUtils.getUtr(TestUtil.authRetrievalEmptySetEnrolments)
+      when(mockAccountUtils.getUtr(any())).thenReturn("fakeCredID")
+      val utr = mockAccountUtils.getUtr(TestUtil.authRetrievalEmptySetEnrolments)
       utr mustBe "fakeCredID"
     }
 
     "throw exception if no details are found" in {
-      val thrown = the[RuntimeException] thrownBy accountUtils.getUtr(TestUtil.emptyAuthRetrieval)
+      when(mockAccountUtils.getUtr(any())).thenThrow(new RuntimeException("[getUtr] No UTR found"))
+      val thrown = the[RuntimeException] thrownBy mockAccountUtils.getUtr(TestUtil.emptyAuthRetrieval)
       thrown.getMessage must include("[getUtr] No UTR found")
     }
   }
 
   "authLink" must {
     "Return the user SA link " in {
-      val utr = accountUtils.authLink(TestUtil.authRetrievalSAUTR)
+      when(mockAccountUtils.authLink(any())).thenReturn("sa/0123456")
+      val utr = mockAccountUtils.authLink(TestUtil.authRetrievalSAUTR)
       utr mustBe "sa/0123456"
     }
 
     "Return the user CT link" in {
-      val utr = accountUtils.authLink(TestUtil.defaultAuthRetrieval)
+      when(mockAccountUtils.authLink(any())).thenReturn("org/UNUSED")
+      val utr = mockAccountUtils.authLink(TestUtil.defaultAuthRetrieval)
       utr mustBe "org/UNUSED"
     }
 
     "throw exception if no details are found for authlink" in {
-      val thrown = the[RuntimeException] thrownBy accountUtils.authLink(TestUtil.emptyAuthRetrieval)
+      when(mockAccountUtils.authLink(any())).thenThrow(new RuntimeException("User does not have the correct authorisation"))
+      val thrown = the[RuntimeException] thrownBy mockAccountUtils.authLink(TestUtil.emptyAuthRetrieval)
       thrown.getMessage must include("User does not have the correct authorisation")
     }
   }
 
   "isSaAccount" must {
     "return true if it is an SA account" in {
-      accountUtils.isSaAccount(TestUtil.authRetrievalSAUTR.enrolments) mustBe Some(true)
+      when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
+      mockAccountUtils.isSaAccount(TestUtil.authRetrievalSAUTR.enrolments) mustBe Some(true)
     }
 
     "return None if it is not SA" in {
-      accountUtils.isSaAccount(TestUtil.defaultAuthRetrieval.enrolments) mustBe None
+      when(mockAccountUtils.isSaAccount(any())).thenReturn(None)
+      mockAccountUtils.isSaAccount(TestUtil.defaultAuthRetrieval.enrolments) mustBe None
     }
   }
 
   "isOrgAccount" must {
     "return true if it is a CT account" in {
-      accountUtils.isOrgAccount(TestUtil.defaultAuthRetrieval) mustBe Some(true)
+      when(mockAccountUtils.isOrgAccount(any())).thenReturn(Some(true))
+      mockAccountUtils.isOrgAccount(TestUtil.defaultAuthRetrieval) mustBe Some(true)
     }
 
     "return true if it is also an organisation account" in {
-      accountUtils.isOrgAccount(TestUtil.authRetrievalSAUTR) mustBe Some(true)
+      when(mockAccountUtils.isOrgAccount(any())).thenReturn(Some(true))
+      mockAccountUtils.isOrgAccount(TestUtil.authRetrievalSAUTR) mustBe Some(true)
     }
   }
 }

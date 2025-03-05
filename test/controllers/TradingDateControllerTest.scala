@@ -52,7 +52,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
 
   override def beforeEach(): Unit = {
     reset(mockAccountUtils)
-
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     super.beforeEach()
   }
 

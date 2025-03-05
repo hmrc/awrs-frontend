@@ -76,7 +76,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
     reset(mockAccountUtils)
     reset(mockMainStoreSave4LaterConnector)
     reset(mockApiSave4LaterConnector)
-
+    setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     super.beforeEach()
   }
 
@@ -141,7 +141,6 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
     for (fStatusType <- forbiddenStatusTypes) {
       f"disallow usage if type is $fStatusType" in {
         mocks()
-
         val verifyForbidden =
           (result: Future[Result]) =>
             fStatusType match {

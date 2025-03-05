@@ -89,6 +89,13 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
   val testApplicationBusinessDirectorsController: BusinessDirectorsController =
     new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockBusinessDirectorsTemplate)
 
+  override def beforeEach(): Unit = {
+    reset(mockAccountUtils)
+    reset(mockEnrolService)
+    reset(mockApplicationService)
+    super.beforeEach()
+  }
+
   "ApplicationDeclarationController" must {
     "show application declaration page without preloaded data" in {
       showWithAuthorsiedUser(testRequest(testApplicationDeclarationTrue), None) { result =>
@@ -291,7 +298,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
 
   private def updateWithException(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], exception: Exception)(test: Future[Result] => Any): Unit = {
     resetAuthConnector()
-    setupMockSave4LaterServiceWithOnly(fetchAll = createCacheMap("SOP"), fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"))
+    setupMockSave4LaterServiceWithOnly(fetchAll = createCacheMap("SOP"), fetchBusinessRegistrationDetails = testBusinessRegistrationDetails("SOP"), fetchBusinessCustomerDetails = testReviewDetails)
     setupMockKeyStoreServiceOnlySaveFunctions()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(exception))
