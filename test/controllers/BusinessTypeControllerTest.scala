@@ -19,7 +19,7 @@ package controllers
 import builders.SessionBuilder
 import models._
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.Assertion
 import play.api.mvc._
 import play.api.test.FakeRequest
@@ -50,12 +50,17 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
 
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd()
 
-  val testEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
+  val mockEtmpCheckService: CheckEtmpService = mock[CheckEtmpService]
   val mockTemplate: awrs_business_type = app.injector.instanceOf[views.html.awrs_business_type]
 
   val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(
-    mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig, mockTemplate) {
+    mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockEtmpCheckService, mockAppConfig, mockTemplate) {
     override val signInUrl: String = applicationConfig.signIn
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockEtmpCheckService)
   }
 
   "Submitting the Business Type form with " must {
@@ -63,7 +68,7 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     "redirect to index page when User with Organisation and Sa GGW account selects 'Business Type' as Corporate Body" in {
       continueWithAuthorisedSaOrgUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD", "isSaAccount" -> "true", "isOrgAccount" -> "true"), isGroup = false) {
         result =>
-          when(testEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(false))
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/index"
