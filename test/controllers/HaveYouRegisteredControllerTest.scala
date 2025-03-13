@@ -51,21 +51,30 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
   def testRequest(answer: Option[Boolean]): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[HaveYouRegisteredModel](FakeRequest(), HaveYouRegisteredForm.haveYouRegisteredForm.form, HaveYouRegisteredModel(answer)).withSession("previousLocation" -> "/previous-page")
 
+  def setUpMocksFeatureFlagOn(): Unit = {
+    setAuthMocks()
+    setupMockKeystoreServiceForHaveYouRegistered()
+    setupEnrollmentJourneyFeatureSwitchMock(true)
+  }
+
+  def setUpMocksFeatureFlagOff(): Unit = {
+    setAuthMocks()
+    setupMockKeystoreServiceForHaveYouRegistered()
+    setupEnrollmentJourneyFeatureSwitchMock(false)
+  }
+
   "HaveYouRegisteredController" should {
 
     "show the HaveYouRegistered page when feature is enabled" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForHaveYouRegistered()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setUpMocksFeatureFlagOn()
 
       val result = mockHaveYouRegisteredController.showHaveYouRegisteredPage().apply(SessionBuilder.buildRequestWithSession(userId))
+
       status(result) mustBe 200
     }
 
     "show not found page when feature is not enabled" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForHaveYouRegistered()
-      setupEnrollmentJourneyFeatureSwitchMock(false)
+      setUpMocksFeatureFlagOff()
 
       val result = mockHaveYouRegisteredController.showHaveYouRegisteredPage().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -73,9 +82,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
     }
 
     "return a 400 when the form has errors on submission" in {
-      setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
-      setupMockKeystoreServiceForHaveYouRegistered()
+      setUpMocksFeatureFlagOn()
 
       val result = mockHaveYouRegisteredController.saveAndContinue().apply(testRequest(None))
 
@@ -83,9 +90,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
     }
 
     "redirect to awrs urn page after successfully saving data" in {
-      setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
-      setupMockKeystoreServiceForHaveYouRegistered()
+      setUpMocksFeatureFlagOn()
 
       val result: Future[Result] = mockHaveYouRegisteredController.saveAndContinue().apply(testRequest(Some(true)))
 
@@ -95,9 +100,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
   }
 
   "redirect to business customer start page if user selects No" in {
-    setAuthMocks()
-    setupEnrollmentJourneyFeatureSwitchMock(true)
-    setupMockKeystoreServiceForHaveYouRegistered()
+    setUpMocksFeatureFlagOn()
     when(mockAppConfig.businessCustomerStartPage).thenReturn("/business-customer-start")
 
     val result = mockHaveYouRegisteredController.saveAndContinue().apply(testRequest(Some(false)))
@@ -107,7 +110,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
   }
 
   "redirect to last visited location if stored in session" in {
-    setAuthMocks()
+    setUpMocksFeatureFlagOn()
 
     val result = mockHaveYouRegisteredController.showLastLocation().apply(testRequest(Some(true)))
 
