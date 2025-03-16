@@ -17,14 +17,11 @@
 package forms
 
 import forms.AwrsEnrolmentUrnForm.{awrsEnrolmentUrnForm, awrsUrn, maxQueryLength}
-import forms.test.util.NamedUnitTests.{assertFormIsValid, singleFieldTestFunctions}
-import forms.test.util.{AwrsFormTestUtils, CompulsoryFieldValidationExpectations, ExpectedFieldExceedsMaxLength, ExpectedFieldFormat, ExpectedFieldIsEmpty, ExpectedInvalidFieldFormat}
-import forms.validation.util.{FieldError, MessageArguments, SummaryError}
+import forms.test.util.AwrsFormTestUtils
 import models.AwrsEnrolmentUrn
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.Form
 
 class AwrsEnrolmentUrnFormSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {

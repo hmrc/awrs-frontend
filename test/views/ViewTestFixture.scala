@@ -24,6 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 
@@ -33,7 +34,7 @@ abstract class ViewTestFixture extends PlaySpec
   with GuiceOneAppPerSuite {
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  implicit val fakeRequest = FakeRequest("GET", "/")
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
   implicit val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
   val htmlContent:HtmlFormat.Appendable

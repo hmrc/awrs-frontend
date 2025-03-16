@@ -16,15 +16,12 @@
 
 package forms
 
-import forms.AWRSEnums._
 import forms.test.util._
-import forms.validation.util.FieldError
-import models.{ApplicationDeclaration, AwrsRegisteredPostcode}
+import models.AwrsRegisteredPostcode
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 import utils.AwrsFieldConfig
-import utils.TestConstants._
 
 class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 

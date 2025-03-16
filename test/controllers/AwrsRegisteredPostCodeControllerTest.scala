@@ -18,19 +18,15 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.{AwrsRegisteredPostcodeForm}
-import models.{AwrsRegisteredPostcode}
-import org.mockito.Mockito.when
+import forms.AwrsRegisteredPostcodeForm
+import models.AwrsRegisteredPostcode
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockIndexService, MockKeyStoreService}
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, BooleanFeatureSwitch, FeatureSwitch, TestUtil}
+import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_registered_postcode
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
