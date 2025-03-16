@@ -19,6 +19,7 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
+import exceptions.{DESValidationException, DuplicateSubscriptionException, GovernmentGatewayException, PendingDeregistrationException}
 import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
 import models.{AwrsRegisteredPostcode, BusinessCustomerDetails}
 import play.api.mvc._
@@ -31,6 +32,20 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import _root_.models.FormBundleStatus._
+import audit.Auditable
+import config.ApplicationConfig
+import connectors.AwrsDataCacheConnector
+import controllers.auth.{AwrsController, StandardAuthRetrievals}
+import exceptions._
+import forms.ApplicationDeclarationForm._
+import javax.inject.Inject
+import models.FormBundleStatus
+import play.api.mvc._
+import services._
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.AccountUtils
 
 class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                                   val keyStoreService: KeyStoreService,
@@ -43,7 +58,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                                   val awrsFeatureSwitches: AWRSFeatureSwitches,
                                   implicit val applicationConfig: ApplicationConfig,
                                   template: views.html.awrs_utr
-                                      ) extends FrontendController(mcc) with AwrsController {
+                                 ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -69,30 +84,21 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
           val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
           awrsEnrolmentUtrForm.bindFromRequest.fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            utr => for {
-              sr <- keyStoreService.fetchAwrsUrnSearchResult
-              pc <- keyStoreService.fetchAwrsRegisteredPostcode
-            } yield {
-              (sr, pc) match {
-                case (Some(result), Some(registeredPostcode)) =>
-                  businessMatchingService.isValidUTRandPostCode(utr.utr, registeredPostcode, ar, isSA).flatMap { matched =>
-                  if (matched) {
-                    //Deenrollment??
-                    val businessType = if(isSA) "SOP" else "CT"
-                    enrolService.enrolAWRS(result.results.head.awrsRef, registeredPostcode, utr, businessType) flatMap { re
-
+            utr => {
+              keyStoreService.saveAwrsEnrolmentUtr(utr)
+              keyStoreService.fetchAwrsUrnSearchResult.flatMap {sr =>
+                keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
+                  businessMatchingService.isValidUTRandPostCode(utr.utr, pc.get, ar, isSA).flatMap {utrPostCodeMatch: Boolean =>
+                    if(utrPostCodeMatch) {
+                      enrolService.enrolAWRS(sr.get.results.head.awrsRef, pc.get, utr, if (isSA) "SOP" else "CT").map { resp =>
+                        Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
+                      }
+                    } else {
+                      Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
                     }
-
-                    //                        enrolService.enrolAWRS()
-                    Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
-                  } else Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
-
+                  }
                 }
-
-                case _ => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
-              }
-
-            })
+              }})
         } else Future.successful(NotFound)
       }
     }

@@ -72,12 +72,12 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     }
   }
 
-  def isValidUTRandPostCode(utr: String, postCode: AwrsRegisteredPostcode, authRetrievals: StandardAuthRetrievals, isSA:Boolean)
-                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  def isValidUTRandPostCode(utr: String, postCode: AwrsRegisteredPostcode, authRetrievals: StandardAuthRetrievals, isSA: Boolean)
+                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val searchData = MatchBusinessData(acknowledgementReference = SessionUtil.getUniqueAckNo,
       utr = utr, individual = None, organisation = None)
-    businessMatchingConnector.lookup(searchData, if (isSA) "sa" else "org", authRetrievals) map {dataReturned =>
-      validatePostCode(postCode.registeredPostcode, dataReturned)
+    businessMatchingConnector.lookup(searchData, if (isSA) "sa" else "org", authRetrievals) map {
+      validatePostCode(postCode.registeredPostcode, _)
     }
   }
 

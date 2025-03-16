@@ -69,7 +69,7 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
                 lookupService.lookup(awrsUrn.awrsUrn).flatMap {
                   _ match {
                     case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
-                      Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+                      Future.successful(Redirect(routes.AwrsRegisteredPostcodeController.showPostCode))
                     case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
                   }
                 }

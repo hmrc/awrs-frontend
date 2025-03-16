@@ -58,7 +58,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
 
   def btaAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
                       (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
-    authorised(EmptyPredicate or Enrolment("IR-CT") or Enrolment("IR-SA"))
+    authorised(Enrolment("IR-CT") or Enrolment("IR-SA"))
       .retrieve(authorisedEnrolments and affinityGroup and credentials and credentialRole) {
         case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) ~ role =>
           body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(providerId), providerId, role))

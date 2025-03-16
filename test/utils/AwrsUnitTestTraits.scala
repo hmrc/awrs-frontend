@@ -67,7 +67,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   val mockMessages: Messages = mock[Messages]
   val mockLookupConnector:LookupConnector = mock[LookupConnector]
   val testLookupService:LookupService = new LookupService(mockLookupConnector)
-  val testMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
+  val mockMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
   implicit val messages: Messages = stubMessages()
 
   def await[A](result: Future[A]): A = {

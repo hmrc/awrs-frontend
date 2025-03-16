@@ -64,7 +64,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
           formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
           postcode => {
             keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
-              _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex))
+              _ => Future.successful(Redirect(controllers.routes.AwrsUtrController.showArwsUtrPage))
             }
           })
       }
