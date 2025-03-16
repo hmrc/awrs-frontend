@@ -22,7 +22,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm
 import play.api.mvc._
-import services.{DeEnrolService, KeyStoreService, LookupService, Save4LaterService}
+import services.{DeEnrolService, KeyStoreService, LookupService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -66,8 +66,7 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             awrsUrn => {
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                lookupService.lookup(awrsUrn.awrsUrn).flatMap {
-                  _ match {
+                lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
                     case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
                       Future.successful(Redirect(routes.AwrsRegisteredPostcodeController.showPostCode))
                     case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))

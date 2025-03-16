@@ -56,7 +56,7 @@ class AccountUtils @Inject()(val auditable: Auditable) extends LoggingUtils {
   }
 
   def hasAwrs(enrolments: Set[Enrolment]): Boolean = {
-    enrolments.exists(_.key == "HMRC-AWRS-ORG")
+    enrolments.exists {_.key == "HMRC-AWRS-ORG"}
   }
 
   def lookupAwrsRefNo(enrolments: Set[Enrolment]): Option[String] =

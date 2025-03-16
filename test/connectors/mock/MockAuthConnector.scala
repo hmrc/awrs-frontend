@@ -70,6 +70,9 @@ trait MockAuthConnector extends AwrsUnitTestTraits {
         when(utils.hasAwrs(ArgumentMatchers.any()))
           .thenReturn(enrolment.isDefined)
 
+        when(utils.getUtr(ArgumentMatchers.any()))
+          .thenReturn("TestUTR")
+
         when(utils.getAwrsRefNo(ArgumentMatchers.any()))
           .thenReturn("0123456")
       }

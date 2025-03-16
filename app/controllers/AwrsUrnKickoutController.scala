@@ -17,29 +17,38 @@
 package controllers
 
 import config.ApplicationConfig
+import controllers.auth.AwrsController
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AWRSFeatureSwitches
-
+import utils.{AWRSFeatureSwitches,AccountUtils}
+import play.api.mvc.AnyContent
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import services.DeEnrolService
+import audit.Auditable
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AwrsUrnKickoutController @Inject()(mcc: MessagesControllerComponents,
-                                         val awrsFeatureSwitches: AWRSFeatureSwitches,
                                          implicit val applicationConfig: ApplicationConfig,
+                                         val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                         val deEnrolService: DeEnrolService,
+                                         val authConnector: DefaultAuthConnector,
+
+                                         val accountUtils: AccountUtils,
+                                         val auditable: Auditable,
                                          template: views.html.urn_kickout
-                                      ) extends FrontendController(mcc)  {
+                                            ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-
-    //authorisation??
-     if(awrsFeatureSwitches.enrolmentJourney().enabled) {
+    btaAuthorisedAction {_ =>
+      if(awrsFeatureSwitches.enrolmentJourney().enabled) {
         Future.successful(Ok(template()))
-     } else {
+      } else {
         Future.successful(NotFound)
-     }
+      }
+    }
   }
 }

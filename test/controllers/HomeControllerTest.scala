@@ -60,6 +60,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     reset(mockBusinessCustomerService)
     reset(mockAppConfig)
     reset(mockAccountUtils)
+    reset(mockCheckEtmpService)
 
     when(mockAppConfig.countryCodes)
       .thenReturn(mockCountryCodes)

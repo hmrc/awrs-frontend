@@ -109,6 +109,11 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
 
+  def setupMockKeystoreServiceForHaveYouRegistered(haveYouRegistered: Option[HaveYouRegisteredModel] = None): Unit = {
+    mockFetchFromKeyStore[HaveYouRegisteredModel](enrolmentJourneyHaveYouRegisteredKeyName, haveYouRegistered)
+    setupMockKeyStoreServiceOnlySaveFunctions()
+  }
+
   def setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress: Boolean = false): Unit =
     if (noAddress) {
       setupMockKeyStoreServiceWithOnly(fetchBusinessCustomerAddress = None)

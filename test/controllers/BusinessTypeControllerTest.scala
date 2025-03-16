@@ -61,6 +61,8 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockEtmpCheckService)
+    when(mockEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(false))
   }
 
   "Submitting the Business Type form with " must {
@@ -68,8 +70,6 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     "redirect to index page when User with Organisation and Sa GGW account selects 'Business Type' as Corporate Body" in {
       continueWithAuthorisedSaOrgUser(FakeRequest().withFormUrlEncodedBody("legalEntity" -> "LTD", "isSaAccount" -> "true", "isOrgAccount" -> "true"), isGroup = false) {
         result =>
-          when(mockEtmpCheckService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenReturn(Future.successful(false))
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/index"
       }
