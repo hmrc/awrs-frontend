@@ -20,7 +20,6 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
-import javax.inject.Inject
 import models.FormBundleStatus._
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import models._
@@ -32,9 +31,10 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.subtemplates.application_status._
-import scala.language.postfixOps
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                                             statusManagementService: StatusManagementService,

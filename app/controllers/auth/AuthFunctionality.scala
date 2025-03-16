@@ -24,7 +24,6 @@ import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -56,8 +55,8 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
       Unauthorized(applicationConfig.templateUnauthorised())
   }
 
-  def btaAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
-                      (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
+  def enrollmentEligibleAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
+                                        (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
     authorised(Enrolment("IR-CT") or Enrolment("IR-SA"))
       .retrieve(authorisedEnrolments and affinityGroup and credentials and credentialRole) {
         case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) ~ role =>

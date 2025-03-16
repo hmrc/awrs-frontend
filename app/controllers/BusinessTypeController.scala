@@ -19,7 +19,7 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
-import forms.BusinessTypeForm.{businessTypeForm, _}
+import forms.BusinessTypeForm._
 import models.{BusinessType, NewApplicationType}
 import play.api.data.Form
 import play.api.mvc._

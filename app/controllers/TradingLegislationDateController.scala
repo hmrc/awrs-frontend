@@ -21,8 +21,8 @@ import config.ApplicationConfig
 import connectors.AwrsDataCacheConnector
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
-import forms.TradingLegislationDateForm.tradingLegislationForm
 import forms.AWRSEnums.BooleanRadioEnum
+import forms.TradingLegislationDateForm.tradingLegislationForm
 import models.NewAWBusiness
 import play.api.mvc._
 import services.DataCacheKeys.businessDetailsName

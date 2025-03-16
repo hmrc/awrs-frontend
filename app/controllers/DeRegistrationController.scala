@@ -25,10 +25,8 @@ import forms.AWRSEnums._
 import forms.DeRegistrationConfirmationForm._
 import forms.DeRegistrationForm._
 import forms.DeRegistrationReasonForm._
-import javax.inject.Inject
 import models.FormBundleStatus._
 import models._
-import java.time.LocalDateTime
 import play.api.mvc._
 import services.apis.AwrsAPI10
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
@@ -38,6 +36,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 
+import java.time.LocalDateTime
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,

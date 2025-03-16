@@ -22,7 +22,6 @@ import connectors.AwrsDataCacheConnector
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.TradingNameForm._
-import javax.inject.Inject
 import models._
 import play.api.mvc._
 import services.DataCacheKeys._
@@ -34,6 +33,7 @@ import utils.AccountUtils
 import views.Configuration.NewApplicationMode
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TradingNameController @Inject()(val mcc: MessagesControllerComponents,

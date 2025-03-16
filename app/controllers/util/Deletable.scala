@@ -27,9 +27,10 @@ import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.view_application.helpers.EditSectionOnlyMode
-import scala.language.postfixOps
+
 import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 
 trait Deletable[C, T] extends FrontendController with AwrsController {

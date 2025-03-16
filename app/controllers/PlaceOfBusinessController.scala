@@ -21,7 +21,6 @@ import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable, convertBCAddressToAddress}
 import forms.PlaceOfBusinessForm._
-import javax.inject.Inject
 import models.{BCAddressApi3, PlaceOfBusiness}
 import play.api.mvc._
 import services.DataCacheKeys._
@@ -31,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,

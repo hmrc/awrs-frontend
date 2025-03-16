@@ -23,7 +23,7 @@ import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.AlreadyStartingTradingForm._
-import javax.inject.Inject
+import models.NewAWBusiness
 import play.api.mvc._
 import services.DataCacheKeys._
 import services._
@@ -32,8 +32,9 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import models.NewAWBusiness
 
 class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComponents,
                                                  val save4LaterService: Save4LaterService,

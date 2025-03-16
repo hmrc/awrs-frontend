@@ -21,7 +21,6 @@ import config.ApplicationConfig
 import connectors.AwrsDataCacheConnector
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util.UnSubmittedBannerUtil
-import javax.inject.Inject
 import models.BusinessDetailSummaryModel
 import play.api.i18n.Messages
 import play.api.mvc._
@@ -37,9 +36,10 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, CacheUtil}
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
-import scala.language.postfixOps
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
                                           val applicationService: ApplicationService,

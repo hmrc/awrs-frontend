@@ -29,8 +29,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils, SessionUtil}
 import views.html._
 import views.html.helpers.awrsErrorNotFoundTemplate
-import scala.language.postfixOps
+
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSupport with Results {
 

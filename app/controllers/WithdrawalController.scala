@@ -23,10 +23,8 @@ import exceptions.DeEnrollException
 import forms.AWRSEnums.ApplicationStatusEnum
 import forms.WithdrawalConfirmationForm._
 import forms.WithdrawalReasonForm._
-import javax.inject.Inject
 import models.FormBundleStatus.Pending
 import models.{ApplicationStatus, WithdrawalResponse}
-import java.time.LocalDateTime
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.apis.{AwrsAPI8, AwrsAPI9}
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
@@ -35,6 +33,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.CacheUtil.cacheUtil
 import utils.{AccountUtils, LoggingUtils}
 
+import java.time.LocalDateTime
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WithdrawalController @Inject()(mcc: MessagesControllerComponents,

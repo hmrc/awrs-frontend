@@ -19,33 +19,15 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import exceptions.{DESValidationException, DuplicateSubscriptionException, GovernmentGatewayException, PendingDeregistrationException}
 import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
-import models.{AwrsRegisteredPostcode, BusinessCustomerDetails}
 import play.api.mvc._
-import services.{BusinessMatchingService, DeEnrolService, EnrolService, KeyStoreService, LookupService}
-import uk.gov.hmrc.auth.core.{Enrolment, Enrolments}
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.authorisedEnrolments
+import services.{BusinessMatchingService, DeEnrolService, EnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import _root_.models.FormBundleStatus._
-import audit.Auditable
-import config.ApplicationConfig
-import connectors.AwrsDataCacheConnector
-import controllers.auth.{AwrsController, StandardAuthRetrievals}
-import exceptions._
-import forms.ApplicationDeclarationForm._
-import javax.inject.Inject
-import models.FormBundleStatus
-import play.api.mvc._
-import services._
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AccountUtils
 
 class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                                   val keyStoreService: KeyStoreService,
@@ -64,7 +46,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showArwsUtrPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { implicit ar =>
+    enrollmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
@@ -78,7 +60,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { implicit ar =>
+    enrollmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)

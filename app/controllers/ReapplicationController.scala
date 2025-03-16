@@ -22,10 +22,7 @@ import connectors.AWRSNotificationConnector
 import controllers.auth.AwrsController
 import forms.AWRSEnums.ApplicationStatusEnum
 import forms.ReapplicationForm._
-import javax.inject.Inject
 import models.ApplicationStatus
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -34,6 +31,9 @@ import utils.AwrsSessionKeys._
 import utils.{AccountUtils, LoggingUtils}
 import views.html.{awrs_application_too_soon_error, awrs_reapplication_confirmation}
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReapplicationController @Inject()(mcc: MessagesControllerComponents,

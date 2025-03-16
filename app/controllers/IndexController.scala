@@ -19,7 +19,6 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import javax.inject.Inject
 import models.FormBundleStatus._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.apis.AwrsAPI9
@@ -28,8 +27,9 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
 
-import scala.language.postfixOps
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 class IndexController @Inject()(mcc: MessagesControllerComponents,
                                 indexService: IndexService,
