@@ -19,6 +19,7 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
+import javax.inject.Inject
 import models.FormBundleStatus._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.apis.AwrsAPI9
@@ -27,9 +28,8 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
 
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
+import scala.concurrent.{ExecutionContext, Future}
 
 class IndexController @Inject()(mcc: MessagesControllerComponents,
                                 indexService: IndexService,
@@ -41,7 +41,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                                 val auditable: Auditable,
                                 val accountUtils: AccountUtils,
                                 implicit val applicationConfig: ApplicationConfig,
-                                 template: views.html.awrs_index) extends FrontendController(mcc) with AwrsController {
+                                template: views.html.awrs_index) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn

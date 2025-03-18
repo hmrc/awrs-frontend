@@ -19,13 +19,13 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ResetController @Inject()(mcc: MessagesControllerComponents,

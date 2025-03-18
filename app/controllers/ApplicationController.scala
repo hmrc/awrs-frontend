@@ -17,11 +17,10 @@
 package controllers
 
 import config.ApplicationConfig
+import javax.inject.Inject
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
-import javax.inject.Inject
 
 class ApplicationController @Inject()(mcc: MessagesControllerComponents,
                                       template: views.html.timed_out,

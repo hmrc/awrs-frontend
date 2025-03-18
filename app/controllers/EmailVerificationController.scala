@@ -19,6 +19,7 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services._
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -26,7 +27,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.html.{awrs_email_verification_error, awrs_email_verification_success}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,

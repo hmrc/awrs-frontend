@@ -16,10 +16,14 @@
 
 package controllers
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
+
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
+import javax.inject.Inject
 import models.NewAWBusiness
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
@@ -28,12 +32,9 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.html.awrs_application_update_confirmation
-
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                        save4LaterService: Save4LaterService,

@@ -20,6 +20,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import models.{ApplicationStatus, BusinessCustomerDetails}
+import java.time.LocalDateTime
 import play.api.libs.json.JsResultException
 import play.api.mvc._
 import services._
@@ -29,7 +30,6 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
 
-import java.time.LocalDateTime
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 

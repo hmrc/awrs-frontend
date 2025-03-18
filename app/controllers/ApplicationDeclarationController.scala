@@ -23,6 +23,7 @@ import connectors.AwrsDataCacheConnector
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import exceptions._
 import forms.ApplicationDeclarationForm._
+import javax.inject.Inject
 import models.FormBundleStatus
 import play.api.mvc._
 import services._
@@ -30,7 +31,6 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationDeclarationController @Inject()(enrolService: EnrolService,

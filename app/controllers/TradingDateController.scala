@@ -21,8 +21,8 @@ import config.ApplicationConfig
 import connectors.AwrsDataCacheConnector
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
-import forms.AWRSEnums.BooleanRadioEnum
 import forms.TradingDateForm._
+import javax.inject.Inject
 import models._
 import play.api.mvc._
 import services.DataCacheKeys._
@@ -32,8 +32,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
-
-import javax.inject.Inject
+import forms.AWRSEnums.BooleanRadioEnum
 import scala.concurrent.{ExecutionContext, Future}
 
 class TradingDateController @Inject()(val mcc: MessagesControllerComponents,

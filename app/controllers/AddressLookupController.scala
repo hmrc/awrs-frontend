@@ -20,18 +20,19 @@ import audit.Auditable
 import config.ApplicationConfig
 import connectors.{AddressLookupConnector, AddressLookupErrorResponse, AddressLookupSuccessResponse, HasAddressLookupConnector}
 import controllers.auth.AuthFunctionality
+import javax.inject.Inject
 import models.{Address, AddressAudit, AddressAudits}
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.helper.AddressComparator
-import uk.gov.hmrc.address.client.v1.{AddressRecord, RecordSet}
+import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.LoggingUtils
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.address.client.v1.AddressRecord
 
 class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,

@@ -21,6 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessRegistrationDetailsForm._
+import javax.inject.Inject
 import models._
 import play.api.mvc._
 import services.DataCacheKeys._
@@ -30,7 +31,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControllerComponents,

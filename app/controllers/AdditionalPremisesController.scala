@@ -22,6 +22,7 @@ import controllers.auth.StandardAuthRetrievals
 import controllers.util._
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.BusinessPremisesForm._
+import javax.inject.Inject
 import models.{AdditionalBusinessPremises, AdditionalBusinessPremisesList, Address}
 import play.api.mvc._
 import services.DataCacheKeys._
@@ -32,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 

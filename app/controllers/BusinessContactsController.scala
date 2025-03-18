@@ -21,6 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.BusinessContactsForm._
+import javax.inject.Inject
 import play.api.mvc._
 import services.DataCacheKeys._
 import services.{DeEnrolService, EmailVerificationService, Save4LaterService}
@@ -29,7 +30,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents,
