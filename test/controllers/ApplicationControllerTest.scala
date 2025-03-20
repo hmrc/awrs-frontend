@@ -20,13 +20,12 @@ import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import org.jsoup.Jsoup
 import org.mockito.Mockito.when
-import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import utils.AwrsUnitTestTraits
+import views.html.timed_out
 
 import scala.concurrent.Future
-import views.html.timed_out
 
 class ApplicationControllerTest
     extends AwrsUnitTestTraits

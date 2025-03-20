@@ -18,9 +18,9 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.AwrsEnrollmentUrnForm
+import forms.AwrsEnrolmentUrnForm
 import models.AwrsStatus.Approved
-import models.{AwrsEnrollmentUrn, Business, Info, SearchResult}
+import models.{AwrsEnrolmentUrn, Business, Info, SearchResult}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -42,7 +42,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
   with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[AwrsEnrollmentUrn](FakeRequest(), AwrsEnrollmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrollmentUrn(answer))
+    TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
 
   def testSearchResult(ref:String) = SearchResult(List(
     Business(ref,
@@ -82,7 +82,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       (any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testSearchResult("XAAW00000123456"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
-      status(res) mustBe 200
+      status(res) mustBe 303
     }
 
     "save should return 400 if form has errors" in {
@@ -100,7 +100,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
 
       when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
-      status(res) mustBe 200
+      status(res) mustBe 303
       verifyKeyStoreService(saveSearchResults = 1)
 
     }

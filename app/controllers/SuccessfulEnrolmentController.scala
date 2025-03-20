@@ -15,44 +15,44 @@
  */
 
 package controllers
-import config.ApplicationConfig
-import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import utils.{AWRSFeatureSwitches, AccountUtils}
-import controllers.auth.AwrsController
-import services.DeEnrolService
+
 import audit.Auditable
+import config.ApplicationConfig
+import controllers.auth.AwrsController
+import play.api.mvc._
+import services.DeEnrolService
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.{AWRSFeatureSwitches, AccountUtils}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
-                                         implicit val applicationConfig: ApplicationConfig,
+                                              implicit val applicationConfig: ApplicationConfig,
                                               val deEnrolService: DeEnrolService,
                                               val authConnector: DefaultAuthConnector,
                                               val auditable: Auditable,
                                               val awrsFeatureSwitches: AWRSFeatureSwitches,
                                               val accountUtils: AccountUtils,
-                                         template: views.html.awrs_successful_enrolment
+                                              template: views.html.awrs_successful_enrolment
                                              ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
 
-
-
-  def showSuccessfulEnrolmentPage() : Action[AnyContent] = Action.async { implicit request =>
-    btaAuthorisedAction { _ =>
-      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-        Future.successful(Ok(template()))
-      } else {
-        Future.successful(NotFound)
+  def showSuccessfulEnrolmentPage(): Action[AnyContent] = Action.async { implicit request =>
+    enrollmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+          Future.successful(Ok(template()))
+        } else {
+          Future.successful(NotFound)
+        }
       }
     }
-    }
-
+  }
 
 
 }

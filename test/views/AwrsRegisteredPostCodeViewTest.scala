@@ -20,7 +20,7 @@ import forms.AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm
 import play.twirl.api.HtmlFormat
 import views.html.awrs_registered_postcode
 
-class AwrsRegisteredPostCode extends ViewTestFixture {
+class AwrsRegisteredPostCodeViewTest extends ViewTestFixture {
 
   val view: awrs_registered_postcode = app.injector.instanceOf[views.html.awrs_registered_postcode]
   override val htmlContent: HtmlFormat.Appendable = view.apply(awrsRegisteredPostcodeForm.form)(fakeRequest, messages, mockAppConfig)
@@ -32,7 +32,7 @@ class AwrsRegisteredPostCode extends ViewTestFixture {
       input_field_label mustBe "Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)"
       input_field must not be empty
       back_link mustBe "Back"
-      back_link_href mustBe "/alcohol-wholesale-scheme/lastLocation"
+      back_link_href mustBe "/alcohol-wholesale-scheme/urn"
     }
   }
 }

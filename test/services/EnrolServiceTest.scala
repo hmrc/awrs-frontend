@@ -99,6 +99,14 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
         Verifier("Postcode", postCode)
       )
     }
+
+    "call enrolment connector" in {
+      mockAuthorise(EmptyPredicate)(new~(Some(Credentials(testCredId, enrolService.GGProviderId)), Some(testGroupId)))
+      when(mockTaxEnrolmentsConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(successfulEnrolResponse))
+      val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber, AwrsRegisteredPostcode("ZZ1 2ZZ"), AwrsEnrolmentUtr(saUtr), "SOP")
+      await(result) mustBe successfulEnrolResponse
+    }
   }
 
 }

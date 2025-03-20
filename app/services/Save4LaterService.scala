@@ -53,6 +53,13 @@ class Save4LaterService @Inject()(mainStoreSave4LaterConnector: AwrsDataCacheCon
 
   implicit def convertUtil[T](f: Option[T]): T = f.get
 
+  val mainStore: MainStore = new MainStore(accUtils, mainStoreSave4LaterConnector)
+
+  lazy val api: APIStore = new APIStore {
+    override val accountUtils: AccountUtils = accUtils
+    override val save4LaterConnector: Save4LaterConnector = apiSave4LaterConnector
+  }
+
   trait APIStore extends Save4LaterUtil {
     // this trait defines named save4later calls for data fetched from api 5 or issues in relation to the data retrieved from api5
 
@@ -93,12 +100,6 @@ class Save4LaterService @Inject()(mainStoreSave4LaterConnector: AwrsDataCacheCon
       }
   }
 
-  lazy val api: APIStore = new APIStore {
-    override val accountUtils: AccountUtils = accUtils
-    override val save4LaterConnector: Save4LaterConnector = apiSave4LaterConnector
-  }
-
-  lazy val mainStore: MainStore = new MainStore(accUtils, mainStoreSave4LaterConnector)
 }
 
 class MainStore @Inject()(val accountUtils: AccountUtils,

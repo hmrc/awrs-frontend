@@ -90,11 +90,20 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
 
-  def setupMockKeystoreServiceForAwrsUrn(urn:Option[AwrsEnrollmentUrn] = None): Unit = {
-    mockFetchFromKeyStore[AwrsEnrollmentUrn](awrsEnrollmentUrnKeyName, urn)
+  def setupMockKeystoreServiceForAwrsUrn(urn:Option[AwrsEnrolmentUrn] = None): Unit = {
+    mockFetchFromKeyStore[AwrsEnrolmentUrn](awrsEnrollmentUrnKeyName, urn)
     setupMockKeyStoreServiceOnlySaveFunctions()
 
   }
+
+  def setupMockKeystoreServiceForAwrsUtr(utr:Option[AwrsEnrolmentUtr] = None, searchResult: Option[SearchResult] = None, registeredPostcode: Option[AwrsRegisteredPostcode]=None): Unit = {
+    mockFetchFromKeyStore[AwrsEnrolmentUtr](awrsEnrollmentUtrKeyName, utr)
+    mockFetchFromKeyStore[SearchResult](awrsEnrollmentSearchResultKeyName, searchResult)
+    mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, registeredPostcode)
+    setupMockKeyStoreServiceOnlySaveFunctions()
+
+  }
+
   def setupMockKeystoreServiceForRegisteredPostcode(postcode: Option[AwrsRegisteredPostcode] = None ): Unit = {
     mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
     setupMockKeyStoreServiceOnlySaveFunctions()

@@ -16,15 +16,15 @@
 
 package controllers
 
+import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
 import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches,AccountUtils}
-import play.api.mvc.AnyContent
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import services.DeEnrolService
-import audit.Auditable
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.{AWRSFeatureSwitches, AccountUtils}
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,11 +43,13 @@ class AwrsUrnKickoutController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-    btaAuthorisedAction {_ =>
-      if(awrsFeatureSwitches.enrolmentJourney().enabled) {
-        Future.successful(Ok(template()))
-      } else {
-        Future.successful(NotFound)
+    enrollmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+          Future.successful(Ok(template()))
+        } else {
+          Future.successful(NotFound)
+        }
       }
     }
   }

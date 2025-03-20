@@ -55,9 +55,9 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
       Unauthorized(applicationConfig.templateUnauthorised())
   }
 
-  def btaAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
-                      (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
-    authorised()
+  def enrollmentEligibleAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
+                                        (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
+    authorised(Enrolment("IR-CT") or Enrolment("IR-SA") or AffinityGroup.Organisation or AffinityGroup.Individual)
       .retrieve(authorisedEnrolments and affinityGroup and credentials and credentialRole) {
         case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) ~ role =>
           body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(providerId), providerId, role))
@@ -65,6 +65,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
           throw new RuntimeException("[authorisedAction] Unknown retrieval model")
       } recover recoverAuthorisedCalls
   }
+
 
   def authorisedAction(body: StandardAuthRetrievals => Future[Result])
                       (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {

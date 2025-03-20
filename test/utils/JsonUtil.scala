@@ -41,6 +41,10 @@ trait JsonUtil {
     Json.parse(loadAndReplace(path, dummyDataMap))
   }
 
+  def loadAndParseJsonWithDummyData(path: String, postCode:String): JsValue = {
+    Json.parse(loadAndReplace(path, dummyDataMap.updated("postcode", postCode)))
+  }
+
   def loadAndReplace(path: String, replaceMap: Map[String, String]): String = {
     var jsonString = Source.fromURL(getClass.getResource(path)).mkString
     for ((key, value) <- replaceMap) {

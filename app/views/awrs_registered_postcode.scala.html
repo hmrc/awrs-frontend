@@ -37,7 +37,7 @@ govukErrorSummary: GovukErrorSummary)
 
 @(postcodeForm: Form[models.AwrsRegisteredPostcode])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @backlinkHtml = {
-    @backLink()
+    @backLink(controllers.routes.AwrsUrnController.showArwsUrnPage.url)
 }
 
 @awrsMain( title = s"${errorPrefix(postcodeForm)} ${messages("awrs.generic.tab.title", messages("awrs.register_postcode.title"))}", backlink = Some(backlinkHtml)) {

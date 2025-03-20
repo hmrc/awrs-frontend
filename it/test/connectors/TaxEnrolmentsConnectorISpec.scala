@@ -106,9 +106,25 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
       await(connector.enrol(requestPayload, groupId, awrsRef, businessPartnerDetails, businessType)(headerCarrier, implicitly))
     }
 
+    def testCallEnrolWithAuditMap(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
+      val requestPayload = RequestPayload.apply("", "", "", List.empty)
+      val groupId = "groupId"
+      val awrsRef = "1234567"
+
+      await(connector.enrol(requestPayload, groupId, awrsRef, auditMap = Map.empty)(headerCarrier, implicitly))
+    }
+
     "return enrol response for successful enrolment" in {
       mockResponse(CREATED)
       testCall match {
+        case Some(response) => response mustBe EnrolResponse("", "", Seq.empty)
+        case _              => fail("Unexpected response from enrolment")
+      }
+    }
+
+    "return enrol response for successful enrolment with audit map" in {
+      mockResponse(CREATED)
+      testCallEnrolWithAuditMap match {
         case Some(response) => response mustBe EnrolResponse("", "", Seq.empty)
         case _              => fail("Unexpected response from enrolment")
       }

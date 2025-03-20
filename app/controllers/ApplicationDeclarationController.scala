@@ -105,7 +105,6 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
               _ <- backUpSave4LaterInKeyStore(ar)
 
               businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
-              businessRegDetails <- save4LaterService.mainStore.fetchBusinessRegistrationDetails(ar)
               successResponse <- applicationService.sendApplication(ar)
               _ <- enrolService.enrolAWRS(applicationService.getRegistrationReferenceNumber(successResponse),
                 businessPartnerDetails.get,
