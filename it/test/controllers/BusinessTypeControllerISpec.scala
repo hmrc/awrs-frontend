@@ -20,7 +20,6 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, post, postRequestedFor, stubFor, urlEqualTo, urlMatching, verify, exactly => exactlyTimes}
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import controllers.{BusinessTypeController, routes}
 import models._
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
@@ -31,7 +30,6 @@ import play.api.{Application, Logger, Logging}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, JsonUtil, LogCapturing}
 import uk.gov.hmrc.http.HeaderNames
-import utils.{AWRSFeatureSwitches, FeatureSwitch}
 
 import java.util.UUID
 
