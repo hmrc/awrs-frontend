@@ -20,16 +20,13 @@ import audit.Auditable
 import connectors.BusinessMatchingConnector
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
-
-import javax.inject.Inject
 import models._
-import play.api.libs.json.{JsResult, JsSuccess, JsValue}
+import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
 
-import scala.concurrent.impl.Promise
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
 class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
                                         businessMatchingConnector: BusinessMatchingConnector,

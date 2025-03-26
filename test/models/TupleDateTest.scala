@@ -28,7 +28,7 @@ class TupleDateTest extends PlaySpec with MockitoSugar {
       val year = "2017"
       val date: TupleDate = TupleDate(day, month, year)
 
-      date.toString("YYYY-MM-dd") mustBe f"$year-$month-$day"
+      date.toString("yyyy-MM-dd") mustBe f"$year-$month-$day"
       date.toString("dd-MM-YYYY") mustBe f"$day-$month-$year"
     }
   }
