@@ -84,7 +84,7 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
     "return true if all details are provided" in {
       when(mockAwrsConnector.checkEtmp(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("123456"))))
-      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(enrolSuccessResponse)))
 
       val result = checkEtmpTest.validateBusinessDetails(testBusinessCustomerDetails, "SOP")
@@ -95,7 +95,7 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
     "return false if enrol AWRS ES8 fails" in {
       when(mockAwrsConnector.checkEtmp(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("123456"))))
-      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(None))
 
       val result = checkEtmpTest.validateBusinessDetails(testBusinessCustomerDetails, "SOP")

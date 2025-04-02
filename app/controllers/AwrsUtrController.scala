@@ -46,7 +46,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showArwsUtrPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrollmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
@@ -60,7 +60,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrollmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
@@ -72,7 +72,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                 keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
                   businessMatchingService.isValidUTRandPostCode(utr.utr, pc.get, ar, isSA).flatMap {utrPostCodeMatch: Boolean =>
                     if(utrPostCodeMatch) {
-                      enrolService.enrolAWRS(sr.get.results.head.awrsRef, pc.get, utr, if (isSA) "SOP" else "CT").map { resp =>
+                      enrolService.enrolAWRS(sr.get.results.head.awrsRef, pc.get.registeredPostcode, Some(utr.utr), if (isSA) "SOP" else "CT").map { resp =>
                         Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
                       }
                     } else {

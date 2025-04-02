@@ -133,8 +133,8 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
     }
   }
 
-  def setupEnrollmentJourneyFeatureSwitchMock(value:Boolean): Unit = {
-    when(mockAwrsFeatureSwitches.enrolmentJourney()).thenReturn(BooleanFeatureSwitch("enrollmentJourney", value))
+  def setupEnrolmentJourneyFeatureSwitchMock(value:Boolean): Unit = {
+    when(mockAwrsFeatureSwitches.enrolmentJourney()).thenReturn(BooleanFeatureSwitch("enrolmentJourney", value))
   }
 
   case class Configure[A](config: A) extends MockConfiguration[A]

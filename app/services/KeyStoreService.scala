@@ -144,22 +144,22 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
   @inline def removeAll(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = keyStoreConnector.removeAll()
 
   @inline def fetchAwrsEnrolmentUrn(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsEnrolmentUrn]] =
-    keyStoreConnector.fetchDataFromKeystore[AwrsEnrolmentUrn](awrsEnrollmentUrnKeyName)
+    keyStoreConnector.fetchDataFromKeystore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName)
 
-  @inline def saveAwrsEnrolmentUrn(awrsEnrollmentUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUrn](awrsEnrollmentUrnKeyName, awrsEnrollmentUrn)
+  @inline def saveAwrsEnrolmentUrn(awrsEnrolmentUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName, awrsEnrolmentUrn)
 
   @inline def fetchAwrsEnrolmentUtr(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsEnrolmentUtr]] =
-    keyStoreConnector.fetchDataFromKeystore[AwrsEnrolmentUtr](awrsEnrollmentUtrKeyName)
+    keyStoreConnector.fetchDataFromKeystore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName)
 
-  @inline def saveAwrsEnrolmentUtr(awrsEnrollmentUtr: AwrsEnrolmentUtr)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUtr](awrsEnrollmentUtrKeyName, awrsEnrollmentUtr)
+  @inline def saveAwrsEnrolmentUtr(awrsEnrolmentUtr: AwrsEnrolmentUtr)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, awrsEnrolmentUtr)
 
   @inline def fetchAwrsUrnSearchResult(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SearchResult]] =
-    keyStoreConnector.fetchDataFromKeystore[SearchResult](awrsEnrollmentSearchResultKeyName)
+    keyStoreConnector.fetchDataFromKeystore[SearchResult](awrsEnrolmentSearchResultKeyName)
 
   @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrollmentSearchResultKeyName, searchResult)
+    keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrolmentSearchResultKeyName, searchResult)
 
   @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)

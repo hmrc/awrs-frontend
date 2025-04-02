@@ -44,7 +44,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrollmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled)
           keyStoreService.fetchAwrsRegisteredPostcode flatMap {
@@ -58,7 +58,7 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
    }
 
   def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
-    enrollmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         awrsRegisteredPostcodeForm.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors))),

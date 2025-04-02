@@ -54,13 +54,13 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
   def setUpMocksFeatureFlagOn(): Unit = {
     setAuthMocks()
     setupMockKeystoreServiceForHaveYouRegistered()
-    setupEnrollmentJourneyFeatureSwitchMock(true)
+    setupEnrolmentJourneyFeatureSwitchMock(true)
   }
 
   def setUpMocksFeatureFlagOff(): Unit = {
     setAuthMocks()
     setupMockKeystoreServiceForHaveYouRegistered()
-    setupEnrollmentJourneyFeatureSwitchMock(false)
+    setupEnrolmentJourneyFeatureSwitchMock(false)
   }
 
   "HaveYouRegisteredController" should {

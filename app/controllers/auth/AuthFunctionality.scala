@@ -55,8 +55,8 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
       Unauthorized(applicationConfig.templateUnauthorised())
   }
 
-  def enrollmentEligibleAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
-                                        (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
+  def enrolmentEligibleAuthorisedAction(body: StandardAuthRetrievals => Future[Result])
+                                       (implicit req: Request[AnyContent], ec: ExecutionContext, hc: HeaderCarrier, messages: Messages): Future[Result] = {
     authorised(Enrolment("IR-CT") or Enrolment("IR-SA") or AffinityGroup.Organisation or AffinityGroup.Individual)
       .retrieve(authorisedEnrolments and affinityGroup and credentials and credentialRole) {
         case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) ~ role =>

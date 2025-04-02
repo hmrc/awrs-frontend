@@ -72,10 +72,17 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
   def enrolService(enrolService: EnrolService): Unit = {
     "fetch data if found in save4later" in {
       mockAuthorise(EmptyPredicate)(new ~(Some(Credentials(testCredId, enrolService.GGProviderId)), Some(testGroupId)))
-      when(mockTaxEnrolmentsConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockTaxEnrolmentsConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(successfulEnrolResponse))
       val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber,
-        testBusinessCustomerDetails, businessType)
+        testBusinessCustomerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", ""),
+        testBusinessCustomerDetails.utr,
+        businessType,
+        Map(
+          "safeId" -> testBusinessCustomerDetails.safeId,
+          "UserDetail" -> testBusinessCustomerDetails.businessName,
+          "legal-entity" -> businessType)
+      )
       await(result) mustBe successfulEnrolResponse
     }
 
@@ -104,7 +111,7 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
       mockAuthorise(EmptyPredicate)(new~(Some(Credentials(testCredId, enrolService.GGProviderId)), Some(testGroupId)))
       when(mockTaxEnrolmentsConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(successfulEnrolResponse))
-      val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber, AwrsRegisteredPostcode("ZZ1 2ZZ"), AwrsEnrolmentUtr(saUtr), "SOP")
+      val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber, "ZZ1 2ZZ", Some(saUtr), "SOP", Map.empty)
       await(result) mustBe successfulEnrolResponse
     }
   }

@@ -45,7 +45,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
 
 
   def showHaveYouRegisteredPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrollmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           keyStoreService.fetchHaveYouRegistered flatMap {
@@ -60,7 +60,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrollmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           haveYouRegisteredForm.bindFromRequest().fold(
@@ -84,7 +84,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
   }
 
   def showLastLocation(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrollmentEligibleAuthorisedAction { implicit standardAuthRetrievals =>
+    enrolmentEligibleAuthorisedAction { implicit standardAuthRetrievals =>
       restrictedAccessCheck {
         Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/have-you-registered")(x => x)))
       }

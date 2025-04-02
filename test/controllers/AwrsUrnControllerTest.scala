@@ -61,7 +61,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
     "show not found when feature is not enabled" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(false)
+      setupEnrolmentJourneyFeatureSwitchMock(false)
       val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }
@@ -69,7 +69,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
     "show the URN page when enrolmentJourney is enabled" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
@@ -77,7 +77,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
     "save the URN to keystore if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XAAW00000123456"))
       (any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testSearchResult("XAAW00000123456"))))
@@ -88,7 +88,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
       status(res) mustBe 400
     }
@@ -96,7 +96,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
      "save should lookup the urn and save result found in keystore" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
 
       when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))

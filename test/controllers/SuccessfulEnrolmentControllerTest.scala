@@ -43,19 +43,19 @@ class SuccessfulEnrolmentControllerTest extends AwrsUnitTestTraits
 
     "show the Successful Enrolment page when enrolmentJourney is enable" in {
       setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
     "return 404 the Kickout page when enrolmentJourney is disabled" in {
       setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(false)
+      setupEnrolmentJourneyFeatureSwitchMock(false)
       val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }
     "contain a button linking to the Business Tax Account page" in {
       setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
 
       val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
       val content = contentAsString(res)
@@ -64,7 +64,7 @@ class SuccessfulEnrolmentControllerTest extends AwrsUnitTestTraits
     }
     "redirect to Business Tax Account Page when button is clicked" in {
       setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
 
       val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
@@ -72,7 +72,7 @@ class SuccessfulEnrolmentControllerTest extends AwrsUnitTestTraits
 
     "contain a hyperlink to the correct AWRS guidance page" in {
       setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
 
       val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
       val content = contentAsString(res)

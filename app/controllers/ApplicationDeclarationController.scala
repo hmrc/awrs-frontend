@@ -104,11 +104,17 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
               _ <- save4LaterService.mainStore.saveApplicationDeclaration(ar, applicationDeclarationData)
               _ <- backUpSave4LaterInKeyStore(ar)
 
-              businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
+              businessPartnerDetailsOpt <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
+              businessPartnerDetails = businessPartnerDetailsOpt.get
               successResponse <- applicationService.sendApplication(ar)
               _ <- enrolService.enrolAWRS(applicationService.getRegistrationReferenceNumber(successResponse),
-                businessPartnerDetails.get,
-                businessType) // Calls ES8
+                businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", ""),
+                businessPartnerDetails.utr,
+                businessType,
+                Map(
+                  "safeId" -> businessPartnerDetails.safeId,
+                  "UserDetail" -> businessPartnerDetails.businessName,
+                  "legal-entity" -> businessType)) // Calls ES8
             } yield {
               successResponse match {
                 case Left(_)         =>

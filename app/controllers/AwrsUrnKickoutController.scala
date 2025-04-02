@@ -43,7 +43,7 @@ class AwrsUrnKickoutController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
-    enrollmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           Future.successful(Ok(template()))

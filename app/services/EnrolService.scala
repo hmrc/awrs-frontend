@@ -35,34 +35,34 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
   val enrolmentType = "principal"
   val GGProviderId = "GovernmentGateway"
 
-  def enrolAWRS(awrsRef: String,
-                businessPartnerDetails: BusinessCustomerDetails,
-                businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
-      val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
-      val verifiers = createVerifiers(businessPartnerDetails.utr, businessType, postCode)
-      authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
-        case Some(Credentials(ggCred, _)) ~ Some(groupId) =>
-          val requestPayload = RequestPayload(ggCred, friendly, enrolmentType, verifiers)
-          taxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRef, businessPartnerDetails, businessType)
-        case _ ~ None =>
-          Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
-        case Some(Credentials(_, _)) ~ _ =>
-          Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
-        case _ =>
-          Future.failed(new InternalServerException("Failed to enrol - user had unknown credentials"))
-      }
-    }
+//  def enrolAWRS(awrsRef: String,
+//                businessPartnerDetails: BusinessCustomerDetails,
+//                businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+//      val postCode = businessPartnerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", "")
+//      val verifiers = createVerifiers(businessPartnerDetails.utr, businessType, postCode)
+//      authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
+//        case Some(Credentials(ggCred, _)) ~ Some(groupId) =>
+//          val requestPayload = RequestPayload(ggCred, friendly, enrolmentType, verifiers)
+//          taxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRef, businessPartnerDetails, businessType)
+//        case _ ~ None =>
+//          Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
+//        case Some(Credentials(_, _)) ~ _ =>
+//          Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
+//        case _ =>
+//          Future.failed(new InternalServerException("Failed to enrol - user had unknown credentials"))
+//      }
+//    }
 
   def enrolAWRS(awrsRef: String,
-                registeredPostcode: AwrsRegisteredPostcode,
-                enrolmentUtr: AwrsEnrolmentUtr,
-                businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
-    val postCode = registeredPostcode.registeredPostcode.replaceAll("\\s+", "")
-    val verifiers = createVerifiers(Some(enrolmentUtr.utr), businessType, postCode)
+                registeredPostcode: String,
+                utr: Option[String],
+                businessType: String, auditMap: Map[String, String] = Map.empty)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+    val postCode = registeredPostcode.replaceAll("\\s+", "")
+    val verifiers = createVerifiers(utr, businessType, postCode)
     authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
       case Some(Credentials(ggCred, _)) ~ Some(groupId) =>
         val requestPayload = RequestPayload(ggCred, friendly, enrolmentType, verifiers)
-        taxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRef, Map.empty)
+        taxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRef, auditMap)
       case _ ~ None =>
         Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
       case Some(Credentials(_, _)) ~ _ =>

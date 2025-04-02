@@ -103,7 +103,13 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
       val awrsRef = "1234567"
       val businessType = ""
       val businessPartnerDetails = TestUtil.testBusinessCustomerDetails("LP")
-      await(connector.enrol(requestPayload, groupId, awrsRef, businessPartnerDetails, businessType)(headerCarrier, implicitly))
+      await(connector.enrol(requestPayload,
+        groupId,
+        awrsRef,
+        Map(
+          "safeId" -> businessPartnerDetails.safeId,
+          "UserDetail" -> businessPartnerDetails.businessName,
+          "legal-entity" -> businessType))(headerCarrier, implicitly))
     }
 
     def testCallEnrolWithAuditMap(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {

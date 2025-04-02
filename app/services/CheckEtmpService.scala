@@ -36,8 +36,13 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
       case Some(successResponse) =>
         enrolService.enrolAWRS(
           successResponse.regimeRefNumber,
-          busCusDetails,
-          legalEntity
+          busCusDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", ""),
+          busCusDetails.utr,
+          legalEntity,
+          Map(
+            "safeId" -> busCusDetails.safeId,
+            "UserDetail" -> busCusDetails.businessName,
+            "legal-entity" -> legalEntity)
         ) map {
           case Some(_) =>
             logger.info("[CheckEtmpService][validateBusinessDetails] ES8 success")
