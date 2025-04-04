@@ -59,6 +59,8 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
+  private def safeGet[T](x: Option[T]): T = x.fold(throw new RuntimeException(s"No value found for ${x.getClass.getName} fron keystore"))(identity)
+
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
@@ -72,10 +74,10 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                 keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
                   businessMatchingService.verifyUTRandPostCode(utr.utr, pc.get, ar, isSA).flatMap { utrPostCodeMatch: Boolean =>
                     if(utrPostCodeMatch) {
-                      enrolService.enrolAWRS(sr.get.results.head.awrsRef,
-                        pc.get.registeredPostcode, Some(utr.utr),
+                      enrolService.enrolAWRS(safeGet(sr).results.head.awrsRef,
+                        safeGet(pc).registeredPostcode, Some(utr.utr),
                         if (isSA) "SOP" else "CT",
-                        Map.empty).map { resp =>
+                        Map.empty).map { _ =>
                         Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
                       }
                     } else {
