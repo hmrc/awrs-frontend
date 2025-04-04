@@ -62,7 +62,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
         case Enrolments(enrolments) ~ affGroup ~ Some(Credentials(providerId, _)) ~ role =>
           body(StandardAuthRetrievals(enrolments, affGroup, UrlSafe.hash(providerId), providerId, role))
         case _ =>
-          throw new RuntimeException("[authorisedAction] Unknown retrieval model")
+          throw new RuntimeException("[enrolmentEligibleAuthorisedAction] Unknown retrieval model")
       } recover recoverAuthorisedCalls
   }
 

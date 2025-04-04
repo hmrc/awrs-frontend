@@ -44,27 +44,10 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
 
   val emptyResponse: EnrolResponse = EnrolResponse("", "", Seq.empty)
 
-//  def enrol(requestPayload: RequestPayload,
-//            groupId: String,
-//            awrsRegistrationNumber: String,
-//            businessPartnerDetails: BusinessCustomerDetails,
-//            businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
-//    val timer = metrics.startTimer(ApiType.API4Enrolment)
-//    val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
-//    val postUrl = s"$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"
-//    val auditMap: Map[String, String] = Map(
-//      "safeId" -> businessPartnerDetails.safeId,
-//      "UserDetail" -> businessPartnerDetails.businessName,
-//      "legal-entity" -> businessType)
-//    val response = send(postUrl, requestPayload, auditMap).map(_ => Option(emptyResponse))
-//    timer.stop()
-//    response
-//  }
-
   def enrol(requestPayload: RequestPayload,
             groupId: String,
             awrsRegistrationNumber: String,
-            auditMap:Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
+            auditMap:Map[String, String] = Map.empty)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolResponse]] = {
     val timer = metrics.startTimer(ApiType.API4Enrolment)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
     val postUrl = s"$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"

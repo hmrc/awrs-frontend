@@ -17,6 +17,7 @@
 package forms
 
 import forms.prevalidation._
+import forms.validation.util.UTRValidator
 import models.AwrsEnrolmentUtr
 import play.api.data.Form
 import play.api.data.Forms._
@@ -24,27 +25,6 @@ import play.api.data.Forms._
 object AwrsEnrolmentUtrForm {
 
   val utr = "utr"
-  val (zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven) = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-
-  private def isValidUtr(remainder: Int, checkDigit: Int): Boolean = {
-    val mapOfRemainders = Map(
-      zero -> two, one -> one, two -> nine, three -> eight, four -> seven, five -> six,
-      six -> five, seven -> four, eight -> three, nine -> two, ten -> one)
-    mapOfRemainders.get(remainder).contains(checkDigit)
-  }
-
-  def validateUTR(utr: String): Boolean = {
-    (utr.trim.length == 10 || utr.trim.length == 13) && utr.trim.forall(_.isDigit) && {
-      val actualUtr = utr.trim.takeRight(10).toList
-      val checkDigit = actualUtr.head.asDigit
-      val restOfUtr = actualUtr.tail
-      val weights = List(six, seven, eight, nine, ten, five, four, three, two)
-      val weightedUtr = for ((w1, u1) <- weights zip restOfUtr) yield w1 * u1.asDigit
-      val total = weightedUtr.sum
-      val remainder = total % eleven
-      isValidUtr(remainder, checkDigit)
-    }
-  }
 
   lazy val awrsEnrolmentUtrValidationForm: Form[AwrsEnrolmentUtr] = Form(mapping(
     utr ->  text
@@ -57,7 +37,7 @@ object AwrsEnrolmentUtrForm {
         trimmedString.isEmpty || (trimmedString.nonEmpty && (trimmedString.matches("""^[0-9]{10}$""") || trimmedString.matches("""^[0-9]{13}$""")))})
       .verifying("awrs.utr.invalidUTR", x => {
         val trimmedString = x.replaceAll(" ", "")
-        trimmedString.isEmpty || !(trimmedString.matches("""^[0-9]{10}$""") || trimmedString.matches("""^[0-9]{13}$""")) || validateUTR(trimmedString)
+        trimmedString.isEmpty || !(trimmedString.matches("""^[0-9]{10}$""") || trimmedString.matches("""^[0-9]{13}$""")) || UTRValidator.validateUTR(trimmedString)
       })
   )(AwrsEnrolmentUtr.apply)(AwrsEnrolmentUtr.unapply))
 

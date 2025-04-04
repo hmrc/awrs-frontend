@@ -70,9 +70,12 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
               keyStoreService.saveAwrsEnrolmentUtr(utr)
               keyStoreService.fetchAwrsUrnSearchResult.flatMap {sr =>
                 keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
-                  businessMatchingService.isValidUTRandPostCode(utr.utr, pc.get, ar, isSA).flatMap {utrPostCodeMatch: Boolean =>
+                  businessMatchingService.verifyUTRandPostCode(utr.utr, pc.get, ar, isSA).flatMap { utrPostCodeMatch: Boolean =>
                     if(utrPostCodeMatch) {
-                      enrolService.enrolAWRS(sr.get.results.head.awrsRef, pc.get.registeredPostcode, Some(utr.utr), if (isSA) "SOP" else "CT").map { resp =>
+                      enrolService.enrolAWRS(sr.get.results.head.awrsRef,
+                        pc.get.registeredPostcode, Some(utr.utr),
+                        if (isSA) "SOP" else "CT",
+                        Map.empty).map { resp =>
                         Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
                       }
                     } else {

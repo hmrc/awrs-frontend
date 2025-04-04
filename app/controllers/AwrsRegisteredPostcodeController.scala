@@ -47,9 +47,9 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled)
-          keyStoreService.fetchAwrsRegisteredPostcode flatMap {
-            case Some(registeredPostcode) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode))))
-            case _ => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form)))
+          keyStoreService.fetchAwrsRegisteredPostcode map {
+            case Some(registeredPostcode) => Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode)))
+            case _ => Ok(template(awrsRegisteredPostcodeForm.form))
           }
         else
           Future.successful(NotFound)

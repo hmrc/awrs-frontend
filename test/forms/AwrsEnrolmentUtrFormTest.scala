@@ -16,7 +16,6 @@
 
 package forms
 
-import forms.AwrsEnrolmentUrnForm.maxQueryLength
 import forms.AwrsEnrolmentUtrForm.{awrsEnrolmentUtrForm, utr}
 import forms.test.util.AwrsFormTestUtils
 import models.AwrsEnrolmentUtr
@@ -25,7 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 
-class AwrsEnrolmentUtrFormSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {
+class AwrsEnrolmentUtrFormTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {
 
   "AwrsEnrolmentUtrForm" should {
     implicit val form: Form[AwrsEnrolmentUtr] = awrsEnrolmentUtrForm.form
@@ -47,7 +46,7 @@ class AwrsEnrolmentUtrFormSpec extends PlaySpec with MockitoSugar with BeforeAnd
       form.bind(Map(fieldId -> "a" * 141)).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.length", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.length", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -57,7 +56,7 @@ class AwrsEnrolmentUtrFormSpec extends PlaySpec with MockitoSugar with BeforeAnd
       form.bind(Map(fieldId -> "6232113818073")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.invalidUTR", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.invalidUTR", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -67,7 +66,7 @@ class AwrsEnrolmentUtrFormSpec extends PlaySpec with MockitoSugar with BeforeAnd
       form.bind(Map(fieldId -> "623211")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.length", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.length", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -75,11 +74,11 @@ class AwrsEnrolmentUtrFormSpec extends PlaySpec with MockitoSugar with BeforeAnd
 
 
 
-    "field has invalid urns" in {
+    "field has invalid utr" in {
       form.bind(Map(fieldId -> "6232113818073")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.invalidUTR", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.invalidUTR", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )

@@ -20,7 +20,7 @@ import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.AwrsEnrolmentUtrForm
 import models.AwrsStatus.Approved
-import models.{AwrsEnrolmentUtr, AwrsRegisteredPostcode, Business, Info, SearchResult}
+import models.{AwrsEnrolmentUtr, AwrsRegisteredPostcode, Business, EnrolResponse, Identifier, Info, SearchResult}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{verify, when}
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
@@ -79,19 +79,26 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
         searchResult = Some(testSearchResult("TestAWRSRef")))
+
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
-      when(mockMatchingService.isValidUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
+      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())
-      (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
+        ArgumentMatchers.eq("NE98 1ZZ"),
+        ArgumentMatchers.eq(Some("6232113818078")),
+        ArgumentMatchers.eq("SOP"),
+        ArgumentMatchers.eq(Map.empty))
+      (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
+
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       status(res) mustBe 303
       verify(mockEnrolService).enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
         ArgumentMatchers.eq("NE98 1ZZ"),
         ArgumentMatchers.eq(Some("6232113818078")),
-        ArgumentMatchers.eq("SOP"))(ArgumentMatchers.any(), ArgumentMatchers.any())
+        ArgumentMatchers.eq("SOP"),
+        ArgumentMatchers.eq(Map.empty))(ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
     "enroll CT UTR for AWRS  if no errors" in {
@@ -101,17 +108,18 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
         searchResult = Some(testSearchResult("TestAWRSRef")))
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
-      when(mockMatchingService.isValidUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
+      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       status(res) mustBe 303
       verify(mockEnrolService).enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
         ArgumentMatchers.eq("NE98 1ZZ"),
         ArgumentMatchers.eq(Some("6232113818078")),
-        ArgumentMatchers.eq("CT"))(ArgumentMatchers.any(), ArgumentMatchers.any())
+        ArgumentMatchers.eq("CT"),
+        ArgumentMatchers.eq(Map.empty))(ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
     "save should return 400 if form has errors" in {

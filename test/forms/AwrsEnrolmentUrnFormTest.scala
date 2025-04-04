@@ -19,12 +19,10 @@ package forms
 import forms.AwrsEnrolmentUrnForm.{awrsEnrolmentUrnForm, awrsUrn, maxQueryLength}
 import forms.test.util.AwrsFormTestUtils
 import models.AwrsEnrolmentUrn
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 
-class AwrsEnrolmentUrnFormSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {
+class AwrsEnrolmentUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
 
   "AwrsEnrolmentUrnForm" should {
     implicit val form: Form[AwrsEnrolmentUrn] = awrsEnrolmentUrnForm.form
