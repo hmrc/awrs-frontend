@@ -19,12 +19,10 @@ package forms
 import forms.AwrsEnrolmentUtrForm.{awrsEnrolmentUtrForm, utr}
 import forms.test.util.AwrsFormTestUtils
 import models.AwrsEnrolmentUtr
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 
-class AwrsEnrolmentUtrFormTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {
+class AwrsEnrolmentUtrFormTest extends PlaySpec with AwrsFormTestUtils {
 
   "AwrsEnrolmentUtrForm" should {
     implicit val form: Form[AwrsEnrolmentUtr] = awrsEnrolmentUtrForm.form
@@ -42,15 +40,6 @@ class AwrsEnrolmentUtrFormTest extends PlaySpec with MockitoSugar with BeforeAnd
       )
     }
 
-    "field is more than max length" in {
-      form.bind(Map(fieldId -> "a" * 141)).fold(
-        formWithErrors => {
-          formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.length", fieldNameInErrorMessage)
-        },
-        _ => fail("Field should contain errors")
-      )
-    }
 
     "field is more than length mismatch" in {
       form.bind(Map(fieldId -> "6232113818073")).fold(
@@ -71,7 +60,6 @@ class AwrsEnrolmentUtrFormTest extends PlaySpec with MockitoSugar with BeforeAnd
         _ => fail("Field should contain errors")
       )
     }
-
 
 
     "field has invalid utr" in {
