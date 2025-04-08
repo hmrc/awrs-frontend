@@ -441,7 +441,7 @@
     $manualAddressLink.show();
     $('.postcode-lookup').show();
 
-    // load state
+// load state
     $('.address-container').each(function() {
         var id = this.id,
             num = id.substr(id.length - 1),
@@ -450,13 +450,22 @@
             $manualLookupSpan = $($this).find('#manual-address-span-' + num),
             $postcodeLookupButton = $($this).find('#postcode-lookup-button-' + num);
 
+
+        // Check if all input fields are either missing the value attribute or have an empty value
+        var allInputsEmpty = $addressLines.find('input').filter(function() {
+            return !$(this).val().trim();
+        }).length === $addressLines.find('input').length;
+        if (allInputsEmpty && $addressLines.find('div.form-field--error').length == 0) {
+            $addressLines.show();
+            $manualLookupSpan.text('Look up address');
+            $postcodeLookupButton.hide();
+        }
         // if address lines pull back data, show them and set lookup accordingly
-        if ($addressLines.find('input').length == $addressLines.find('input[value=""]').length && $addressLines.find('div.form-field--error').length == 0) {
+        else if ($addressLines.find('input').length == $addressLines.find('input[value=""]').length && $addressLines.find('div.form-field--error').length == 0) {
             $addressLines.hide();
             $manualLookupSpan.text('Enter address manually');
             $postcodeLookupButton.show();
-        }
-        else {
+        } else {
             $addressLines.show();
             $manualLookupSpan.text('Look up address');
             $postcodeLookupButton.hide();

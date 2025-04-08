@@ -101,7 +101,6 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     }
   }
 
-
   private def isSuccessfulMatch(dataReturned: JsValue): Future[Boolean] = {
     val isSuccessResponse = dataReturned.validate[MatchSuccessResponse].isSuccess
     debug(s"[BusinessMatchingService][matchBusinessWithUTR]dataReturned = $dataReturned, isSuccessResponse = $isSuccessResponse")
