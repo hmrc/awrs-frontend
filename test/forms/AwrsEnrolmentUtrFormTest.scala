@@ -42,10 +42,20 @@ class AwrsEnrolmentUtrFormTest extends PlaySpec with AwrsFormTestUtils {
 
 
     "field is more than length mismatch" in {
-      form.bind(Map(fieldId -> "6232113818073")).fold(
+      form.bind(Map(fieldId -> "623211381456")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.invalidUTR", fieldNameInErrorMessage)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.length", fieldNameInErrorMessage)
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "field has utr with lots of spaces" in {
+      form.bind(Map(fieldId -> "       ")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.utr.empty", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -76,6 +86,8 @@ class AwrsEnrolmentUtrFormTest extends PlaySpec with AwrsFormTestUtils {
       assertFormIsValid(form, Map(utr -> "8951309411"))
       assertFormIsValid(form, Map(utr -> "6238951309411"))
       assertFormIsValid(form, Map(utr -> "6232113818078"))
+      assertFormIsValid(form, Map(utr -> "623211381 8078"))
+      assertFormIsValid(form, Map(utr -> "62321  1381 8078"))
 
     }
 

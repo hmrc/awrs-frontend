@@ -90,6 +90,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     }
 
     "redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment" in {
+      setAuthMocks()
       when(mockCheckEtmpService.validateBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(false))
       showWithSave4Later() { result =>

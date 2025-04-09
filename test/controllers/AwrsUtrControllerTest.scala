@@ -23,7 +23,8 @@ import models.AwrsStatus.Approved
 import models.{AwrsEnrolmentUtr, AwrsRegisteredPostcode, Business, EnrolResponse, Identifier, Info, SearchResult}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{verify, when}
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
+import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{EnrolService, ServicesUnitTestFixture}
@@ -31,7 +32,7 @@ import services.mocks.{MockIndexService, MockKeyStoreService}
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_utr
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
 class AwrsUtrControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
@@ -72,6 +73,26 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
       val res = testAwrsUtrController.showArwsUtrPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
+    }
+
+    "redirect to kickout if UTR/postcode do not match" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
+        registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
+        searchResult = Some(testSearchResult("TestAWRSRef")))
+
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+      when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
+      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
+        ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
+
+
+      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
+      val result: Result = Await.result(res, 5.seconds)
+      result.header.status mustBe 303
+      result.header.headers("Location") mustBe controllers.routes.AwrsUrnKickoutController.showURNKickOutPage.url
+
     }
 
     "enroll SA UTR for AWRS  if no errors" in {
