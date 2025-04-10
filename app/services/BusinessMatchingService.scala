@@ -20,12 +20,12 @@ import audit.Auditable
 import connectors.BusinessMatchingConnector
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
-import javax.inject.Inject
 import models._
 import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
@@ -67,6 +67,30 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
       storeBCAddressApi3(dataReturned)
       isSuccessfulMatch(dataReturned = dataReturned)
     }
+  }
+
+  def verifyUTRandPostCode(enrolmentUtr: String, postCode: AwrsRegisteredPostcode, authRetrievals: StandardAuthRetrievals, isSA: Boolean)
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val searchData = MatchBusinessData(acknowledgementReference = SessionUtil.getUniqueAckNo,
+      utr = enrolmentUtr, individual = None, organisation = None)
+    businessMatchingConnector.lookup(searchData, if (isSA) "sa" else "org", authRetrievals) map {
+      verifyPostCodeMatches(postCode.registeredPostcode, _)
+    }
+  }
+
+
+  private def verifyPostCodeMatches(postcode: String, dataReturned: JsValue): Boolean = {
+    val address = (dataReturned \ "address").validate[BCAddressApi3]
+    address match {
+      case s: JsSuccess[BCAddressApi3] => s.get.postalCode.fold(false) { pc: String =>
+        normalisePostCode(pc) == normalisePostCode(postcode)
+      }
+      case _ => false
+    }
+  }
+
+  private def normalisePostCode(pc: String) = {
+    pc.toLowerCase().replaceAll("\\s+", "")
   }
 
   private def storeBCAddressApi3(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {

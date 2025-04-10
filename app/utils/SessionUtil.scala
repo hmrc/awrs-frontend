@@ -124,7 +124,7 @@ object SessionUtil {
     val length = 32
     val nanoTime = System.nanoTime()
     val restChars = length - nanoTime.toString.length
-    val randomChars = RandomStringUtils.randomAlphanumeric(restChars)
+    val randomChars = RandomStringUtils.secure().nextAlphanumeric(restChars)
     randomChars + nanoTime
   }
 

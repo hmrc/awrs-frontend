@@ -21,7 +21,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, FeatureSwitch}
+import utils.AwrsUnitTestTraits
 import views.html.urn_kickout
 
 class AwrsUrnKickoutControllerTest extends AwrsUnitTestTraits
@@ -45,13 +45,13 @@ class AwrsUrnKickoutControllerTest extends AwrsUnitTestTraits
 
     "show the Kickout page when enrolmentJourney is enable" in {
       setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
     "return 404 the Kickout page when enrolmentJourney is ldisable" in {
       setAuthMocks()
-      setupEnrollmentJourneyFeatureSwitchMock(false)
+      setupEnrolmentJourneyFeatureSwitchMock(false)
       val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }

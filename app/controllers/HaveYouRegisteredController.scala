@@ -45,42 +45,46 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
 
 
   def showHaveYouRegisteredPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { _ =>
-      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-        keyStoreService.fetchHaveYouRegistered flatMap {
-          case Some(hasUserRegistered) => Future.successful(Ok(template(haveYouRegisteredForm.form.fill(hasUserRegistered))))
-          case _ => Future.successful(Ok(template(haveYouRegisteredForm.form)))
+    enrolmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+          keyStoreService.fetchHaveYouRegistered flatMap {
+            case Some(hasUserRegistered) => Future.successful(Ok(template(haveYouRegisteredForm.form.fill(hasUserRegistered))))
+            case _ => Future.successful(Ok(template(haveYouRegisteredForm.form)))
+          }
+        } else {
+          Future.successful(NotFound)
         }
-      } else {
-        Future.successful(NotFound)
       }
     }
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { _ =>
-      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-        haveYouRegisteredForm.bindFromRequest().fold(
-          formWithErrors =>
-            Future.successful(BadRequest(template(formWithErrors))),
-          haveYouRegisteredData =>
-            keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap { _ =>
-              if (haveYouRegisteredData.hasUserRegistered.getOrElse(false)) {
-                Future.successful(Redirect(controllers.routes.AwrsUrnController.showArwsUrnPage))
+    enrolmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+          haveYouRegisteredForm.bindFromRequest().fold(
+            formWithErrors =>
+              Future.successful(BadRequest(template(formWithErrors))),
+            haveYouRegisteredData =>
+              keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap { _ =>
+                if (haveYouRegisteredData.hasUserRegistered.getOrElse(false)) {
+                  Future.successful(Redirect(controllers.routes.AwrsUrnController.showArwsUrnPage))
+                }
+                else {
+                  Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
+                }
               }
-              else {
-                Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
-              }
-            }
-        )
-      } else {
-        Future.successful(NotFound)
+          )
+        } else {
+          Future.successful(NotFound)
+        }
       }
     }
   }
 
   def showLastLocation(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { implicit standardAuthRetrievals =>
+    enrolmentEligibleAuthorisedAction { implicit standardAuthRetrievals =>
       restrictedAccessCheck {
         Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/have-you-registered")(x => x)))
       }

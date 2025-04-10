@@ -90,11 +90,20 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
 
-  def setupMockKeystoreServiceForAwrsUrn(urn:Option[AwrsEnrollmentUrn] = None): Unit = {
-    mockFetchFromKeyStore[AwrsEnrollmentUrn](awrsEnrollmentUrnKeyName, urn)
+  def setupMockKeystoreServiceForAwrsUrn(urn:Option[AwrsEnrolmentUrn] = None): Unit = {
+    mockFetchFromKeyStore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName, urn)
     setupMockKeyStoreServiceOnlySaveFunctions()
 
   }
+
+  def setupMockKeystoreServiceForAwrsUtr(utr:Option[AwrsEnrolmentUtr] = None, searchResult: Option[SearchResult] = None, registeredPostcode: Option[AwrsRegisteredPostcode]=None): Unit = {
+    mockFetchFromKeyStore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, utr)
+    mockFetchFromKeyStore[SearchResult](awrsEnrolmentSearchResultKeyName, searchResult)
+    mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, registeredPostcode)
+    setupMockKeyStoreServiceOnlySaveFunctions()
+
+  }
+
   def setupMockKeystoreServiceForRegisteredPostcode(postcode: Option[AwrsRegisteredPostcode] = None ): Unit = {
     mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
     setupMockKeyStoreServiceOnlySaveFunctions()
@@ -219,9 +228,9 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     verifyFetch(businessCustomerAddressName, fetchBusinessCustomerAddress)
     verifySave(businessCustomerAddressName, saveBusinessCustomerAddress)
 
-    verifySave(awrsEnrollmentUrnKeyName, saveAwrsUrn)
+    verifySave(awrsEnrolmentUrnKeyName, saveAwrsUrn)
 
-    verifySave(awrsEnrollmentSearchResultKeyName, saveSearchResults)
+    verifySave(awrsEnrolmentSearchResultKeyName, saveSearchResults)
 
     verifySave(registeredPostcodeKeyName, saveRegisteredPostcode)
   }

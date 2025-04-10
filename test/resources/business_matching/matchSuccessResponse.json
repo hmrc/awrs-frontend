@@ -11,7 +11,7 @@
     "addressLine2": "addressLine2",
     "addressLine3": "addressLine3",
     "addressLine4": "addressLine4",
-    "postalCode" : "$postcode",
+    "postalCode" : "postcode",
     "countryCode" : "GB"
   }
 }

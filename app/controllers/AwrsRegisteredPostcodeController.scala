@@ -19,9 +19,7 @@ package controllers
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AwrsRegisteredPostcodeForm
 import forms.AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm
-import models.AwrsRegisteredPostcode
 import play.api.mvc._
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -46,26 +44,30 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { implicit ar =>
-      if(awrsFeatureSwitches.enrolmentJourney().enabled)
-        keyStoreService.fetchAwrsRegisteredPostcode flatMap {
-          case Some(registeredPostcode) => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode))))
-          case _ => Future.successful(Ok(template(awrsRegisteredPostcodeForm.form)))
-        }
-      else
-        Future.successful(NotFound)
+    enrolmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        if (awrsFeatureSwitches.enrolmentJourney().enabled)
+          keyStoreService.fetchAwrsRegisteredPostcode map {
+            case Some(registeredPostcode) => Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode)))
+            case _ => Ok(template(awrsRegisteredPostcodeForm.form))
+          }
+        else
+          Future.successful(NotFound)
+      }
     }
    }
 
   def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
-    btaAuthorisedAction { implicit ar =>
-      awrsRegisteredPostcodeForm.bindFromRequest().fold(
-        formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-        postcode => {
-          keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
-            _ => Future.successful(Redirect(controllers.routes.IndexController.showIndex))
-          }
-        })
+    enrolmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        awrsRegisteredPostcodeForm.bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+          postcode => {
+            keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
+              _ => Future.successful(Redirect(controllers.routes.AwrsUtrController.showArwsUtrPage))
+            }
+          })
+      }
     }
   }
 }

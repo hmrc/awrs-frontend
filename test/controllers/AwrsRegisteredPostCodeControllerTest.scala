@@ -18,19 +18,15 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.{AwrsRegisteredPostcodeForm}
-import models.{AwrsRegisteredPostcode}
-import org.mockito.Mockito.when
+import forms.AwrsRegisteredPostcodeForm
+import models.AwrsRegisteredPostcode
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockIndexService, MockKeyStoreService}
-import utils.{AWRSFeatureSwitches, AwrsUnitTestTraits, BooleanFeatureSwitch, FeatureSwitch, TestUtil}
+import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_registered_postcode
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
@@ -51,7 +47,7 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
     "show not found when feature is not enabled" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrollmentJourneyFeatureSwitchMock(false)
+      setupEnrolmentJourneyFeatureSwitchMock(false)
       val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }
@@ -59,7 +55,7 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
     "show the postcode page when enrolmentJourney is enabled" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
@@ -67,7 +63,7 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
     "save the postcode to keystore if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest("NE270JZ"))
       status(res) mustBe 303
     }
@@ -75,7 +71,7 @@ class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest(""))
       status(res) mustBe 400
     }

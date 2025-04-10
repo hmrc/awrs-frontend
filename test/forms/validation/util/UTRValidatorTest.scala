@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms.validation.util
 
-import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
+import org.scalatest.verbs.MustVerb
+import org.scalatest.wordspec.AnyWordSpecLike
+import utils.TestUtil.convertToAnyMustWrapper
 
-
-class TupleDateTest extends PlaySpec with MockitoSugar {
-  "TupleDate" must {
-    "transform the date into the correct format" in {
-      val day = "31"
-      val month = "03"
-      val year = "2017"
-      val date: TupleDate = TupleDate(day, month, year)
-
-      date.toString("yyyy-MM-dd") mustBe f"$year-$month-$day"
-      date.toString("dd-MM-YYYY") mustBe f"$day-$month-$year"
+class UTRValidatorTest extends AnyWordSpecLike with MustVerb {
+  "UTRValidator" should {
+    "validate UTR" in {
+      val utr = "8951309411"
+      UTRValidator.validateUTR(utr) mustBe (true)
+    }
+    "does not validate UTR" in {
+      val utr = "123456789"
+      UTRValidator.validateUTR(utr) mustBe  false
     }
   }
 }

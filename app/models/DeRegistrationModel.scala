@@ -61,7 +61,7 @@ object DeRegistrationConfirmation {
 object DeRegistration {
   implicit val formats: Format[DeRegistration] = Json.format[DeRegistration]
   implicit val optionFormats: Format[Option[DeRegistration]] = Format.optionWithNull[DeRegistration]
-  val dateFormat = "YYYY-MM-dd"
+  val dateFormat = "yyyy-MM-dd"
 
   // N.B. for the sake of simplicity this is not made into an overload of apply because it would break the above Json.format call
   def toDeRegistration(someDate: Option[DeRegistrationDate], someReason: Option[DeRegistrationReason]): Option[DeRegistration] =

@@ -28,10 +28,16 @@ trait ModelVersionControl {
   def modelVersion: String
 }
 
-case class AwrsEnrollmentUrn(awrsUrn: String)
+case class AwrsEnrolmentUrn(awrsUrn: String)
 
-object AwrsEnrollmentUrn {
-  implicit val format: OFormat[AwrsEnrollmentUrn] = Json.format[AwrsEnrollmentUrn]
+object AwrsEnrolmentUrn {
+  implicit val format: OFormat[AwrsEnrolmentUrn] = Json.format[AwrsEnrolmentUrn]
+}
+
+case class AwrsEnrolmentUtr(utr: String)
+
+object AwrsEnrolmentUtr {
+  implicit val format: OFormat[AwrsEnrolmentUtr] = Json.format[AwrsEnrolmentUtr]
 }
 
 case class ApplicationStatus(status: ApplicationStatusEnum.Value, updatedDate: LocalDateTime)

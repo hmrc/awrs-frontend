@@ -18,9 +18,9 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.AwrsEnrollmentUrnForm
+import forms.AwrsEnrolmentUrnForm
 import models.AwrsStatus.Approved
-import models.{AwrsEnrollmentUrn, Business, Info, SearchResult}
+import models.{AwrsEnrolmentUrn, Business, Info, SearchResult}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -42,7 +42,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
   with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[AwrsEnrollmentUrn](FakeRequest(), AwrsEnrollmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrollmentUrn(answer))
+    TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
 
   def testSearchResult(ref:String) = SearchResult(List(
     Business(ref,
@@ -61,7 +61,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
     "show not found when feature is not enabled" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(false)
+      setupEnrolmentJourneyFeatureSwitchMock(false)
       val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }
@@ -69,7 +69,7 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
     "show the URN page when enrolmentJourney is enabled" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
@@ -77,18 +77,18 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
     "save the URN to keystore if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XAAW00000123456"))
       (any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testSearchResult("XAAW00000123456"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
-      status(res) mustBe 200
+      status(res) mustBe 303
     }
 
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
       status(res) mustBe 400
     }
@@ -96,11 +96,11 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
      "save should lookup the urn and save result found in keystore" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrollmentJourneyFeatureSwitchMock(true)
+      setupEnrolmentJourneyFeatureSwitchMock(true)
 
       when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
-      status(res) mustBe 200
+      status(res) mustBe 303
       verifyKeyStoreService(saveSearchResults = 1)
 
     }

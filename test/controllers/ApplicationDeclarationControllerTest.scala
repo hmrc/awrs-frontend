@@ -231,7 +231,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
-    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
+    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
     val result = testApplicationDeclarationController.showApplicationDeclaration().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
@@ -246,7 +246,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Right(subscribeSuccessResponse)))
-    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
+    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
     val result = testApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
@@ -263,7 +263,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeUpdateSuccessResponse))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Left(selfHealSuccessResponse)))
-    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
+    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
     val result = testApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
@@ -290,7 +290,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     }
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(exception))
     when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(exception))
-    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
+    when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(enrolSuccessResponse)))
 
     val result = testApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)

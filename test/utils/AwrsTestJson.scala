@@ -41,4 +41,6 @@ trait AwrsTestJson extends AwrsPathConstants {
   lazy val matchSuccessResponseJson: JsValue = loadAndParseJsonWithDummyData(matchSuccessResponse)
   lazy val matchFailureResponseJson: JsValue = loadAndParseJsonWithDummyData(matchFailureResponse)
 
+  def matchSuccessResponseJsonWithPostCode(postCode:String):JsValue = loadAndParseJsonWithDummyData(matchSuccessResponse, postCode)
+
 }

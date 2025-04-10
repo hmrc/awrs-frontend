@@ -16,13 +16,12 @@
 
 package controllers
 
-
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm
+import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
 import play.api.mvc._
-import services.{DeEnrolService, KeyStoreService, LookupService}
+import services.{BusinessMatchingService, DeEnrolService, EnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -30,51 +29,62 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
+class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                                   val keyStoreService: KeyStoreService,
                                   val deEnrolService: DeEnrolService,
                                   val authConnector: DefaultAuthConnector,
                                   val auditable: Auditable,
                                   val accountUtils: AccountUtils,
-                                  lookupService: LookupService,
+                                  val businessMatchingService: BusinessMatchingService,
+                                  val enrolService: EnrolService,
                                   val awrsFeatureSwitches: AWRSFeatureSwitches,
                                   implicit val applicationConfig: ApplicationConfig,
-                                  template: views.html.awrs_urn
-                                      ) extends FrontendController(mcc) with AwrsController {
+                                  template: views.html.awrs_utr
+                                 ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showArwsUtrPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          keyStoreService.fetchAwrsEnrolmentUrn flatMap {
-            case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
-            case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+          val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
+          keyStoreService.fetchAwrsEnrolmentUtr flatMap {
+            case Some(utr) => Future.successful(Ok(template(awrsEnrolmentUtrForm.form.fill(utr), isSA)))
+            case _ => Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
           }
         } else Future.successful(NotFound)
       }
     }
   }
 
+  private def safeGet[T](x: Option[T]): T = x.fold(throw new RuntimeException(s"No value found for ${x.getClass.getName} from keystore"))(identity)
+
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          awrsEnrolmentUrnForm.bindFromRequest.fold(
+          val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
+          awrsEnrolmentUtrForm.bindFromRequest.fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            awrsUrn => {
-              keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
-                    case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
-                      Future.successful(Redirect(routes.AwrsRegisteredPostcodeController.showPostCode))
-                    case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+            utr => {
+              keyStoreService.saveAwrsEnrolmentUtr(utr)
+              keyStoreService.fetchAwrsUrnSearchResult.flatMap {sr =>
+                keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
+                  businessMatchingService.verifyUTRandPostCode(utr.utr, safeGet(pc), ar, isSA).flatMap { utrPostCodeMatch: Boolean =>
+                    if(utrPostCodeMatch) {
+                      enrolService.enrolAWRS(safeGet(sr).results.head.awrsRef,
+                        safeGet(pc).registeredPostcode, Some(utr.utr),
+                        if (isSA) "SOP" else "CT", Map.empty).map { _ =>
+                        Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
+                      }
+                    } else {
+                      Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+                    }
                   }
                 }
-              }
-            }
-          )
+              }})
         } else Future.successful(NotFound)
       }
     }

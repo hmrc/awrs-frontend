@@ -16,23 +16,21 @@
 
 package connectors
 
-import java.util.UUID
+import exceptions.LookupExceptions
+import models.SearchResult
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import exceptions.LookupExceptions
-import models.SearchResult
-import utils.{AwrsUnitTestTraits, LoggingUtils}
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.SessionId
+import uk.gov.hmrc.http.{SessionId, _}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
-
-import scala.concurrent.{ExecutionContext, Future}
-import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import utils.AwrsUnitTestTraits
 import utils.TestUtil.{testAwrsRef, testBusinessSearchResult}
 
 import java.net.URL
+import java.util.UUID
+import scala.concurrent.{ExecutionContext, Future}
 
 class LookupConnectorSpec extends AwrsUnitTestTraits {
   val servicesConfig: ServicesConfig = app.injector.instanceOf[ServicesConfig]
