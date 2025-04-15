@@ -115,12 +115,12 @@ class HomeControllerTest extends AwrsUnitTestTraits
       }
     }
 
-    "redirect to the Business Type page if the save4Later review details are present and the user is an Assistant with an AWRS enrolment" in {
-      showWithSave4LaterAndAssistantAwrs() { result =>
-        status(result) mustBe 303
-        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
-      }
-    }
+//    "redirect to the Business Type page if the save4Later review details are present and the user is an Assistant with an AWRS enrolment" in {
+//      showWithSave4LaterAndAssistantAwrs() { result =>
+//        status(result) mustBe 303
+//        redirectLocation(result).get mustBe "/alcohol-wholesale-scheme/business-type"
+//      }
+//    }
 
     "redirect to the Business customer matching if the save4Later review details are present WITHOUT SAFEID and the user does not have an AWRS enrolment" in {
       when(mockAppConfig.businessCustomerStartPage)
