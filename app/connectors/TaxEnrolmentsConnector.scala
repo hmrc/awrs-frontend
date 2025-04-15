@@ -69,6 +69,9 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     response.status match {
       case OK | CREATED =>
         metrics.incrementSuccessCounter(ApiType.API4Enrolment)
+        audit(transactionName = auditEMACTxName,
+          detail = auditMap ++ Map("verifiers" -> requestPayload.verifiers.toString, "Response body" -> response.body),
+          eventType = eventTypeSuccess)
         response
       case BAD_REQUEST =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
