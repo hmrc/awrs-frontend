@@ -61,7 +61,7 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val signIn: String = s"$basGatewayHost/bas-gateway/$loginPath?continue_url=$loginCallback"
   lazy val loginURL: String = s"$basGatewayHost/bas-gateway/$loginPath"
   lazy val logoutCallbackUrl: String = loadConfig("auth.logout-callback.url")
-  lazy val signOut: String = servicesConfig.getString("service-signout.url")
+  lazy val signOut: String = s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=${servicesConfig.getString("service-signout.url")}"""
   lazy val businessCustomerStartPage: String = loadConfig("business-customer.serviceRedirectUrl")
   lazy val businessTaxAccountPage: String = loadConfig("business-tax-account.serviceRedirectUrl")
 
