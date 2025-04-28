@@ -968,10 +968,10 @@ awrs.urn.label = Your URN is 4 letters and 11 numbers, like XXAW00000123456. You
 #===========================
 awrs.utr.title.ct = Enter your Corporation Tax Unique Taxpayer Reference (UTR)
 awrs.utr.title.sa = Enter your Self Assessment Tax Unique Taxpayer Reference (UTR)
-awrs.utr.label = Your UTR is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’.
-awrs.utr.empty = Enter a Unique Taxpayer Reference (UTR)
-awrs.utr.length = Unique Taxpayer Reference must be 10 or 13 digits long
-awrs.utr.invalidUTR =The Self Assessment Unique Taxpayer Reference is not valid
+awrs.utr.label = Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’.
+awrs.utr.empty = Enter your 10 or 13 digit Unique Taxpayer Reference (UTR)
+awrs.utr.length = The Unique Taxpayer Reference (UTR) must be 10 or 13 digits long
+awrs.utr.invalidUTR = The Unique Taxpayer Reference (UTR) is not valid
 
 # Awrs registered postcode
 awrs.register_postcode.title = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)

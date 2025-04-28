@@ -31,7 +31,6 @@ import services.{EnrolService, ServicesUnitTestFixture}
 import services.mocks.{MockIndexService, MockKeyStoreService}
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_utr
-
 import scala.concurrent.{Await, Future}
 
 class AwrsUtrControllerTest extends AwrsUnitTestTraits
@@ -92,10 +91,9 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       val result: Result = Await.result(res, 5.seconds)
       result.header.status mustBe 303
       result.header.headers("Location") mustBe controllers.routes.AwrsUrnKickoutController.showURNKickOutPage.url
-
     }
 
-    "enroll SA UTR for AWRS  if no errors" in {
+    "enrol SA UTR for AWRS if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
@@ -111,7 +109,7 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
         ArgumentMatchers.eq(Some("6232113818078")),
         ArgumentMatchers.eq("SOP"),
         ArgumentMatchers.eq(Map.empty))
-      (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
+      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
 
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       status(res) mustBe 303
@@ -122,7 +120,7 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
         ArgumentMatchers.eq(Map.empty))(ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
-    "enroll CT UTR for AWRS  if no errors" in {
+    "enrol CT UTR for AWRS  if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
@@ -132,8 +130,8 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(None))
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       status(res) mustBe 303
       verify(mockEnrolService).enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
@@ -152,6 +150,22 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       status(res) mustBe 400
     }
 
-  }
+    "reflect Corporation Tax in title if user has CT UTR and form has errors" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+      when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
 
+      val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomthingWithError")))
+      res must include ("awrs.utr.title.ct")
+    }
+
+    "reflect Self Assessment in title if logged-in user has SA UTR and form has errors" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+      when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
+
+      val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomthingWithError")))
+      res must include ("awrs.utr.title.sa")
+    }
+  }
 }

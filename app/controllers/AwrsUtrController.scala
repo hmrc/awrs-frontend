@@ -66,8 +66,8 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
-          awrsEnrolmentUtrForm.bindFromRequest.fold(
-            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+          awrsEnrolmentUtrForm.bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(template(formWithErrors, isSA))),
             utr => {
               keyStoreService.saveAwrsEnrolmentUtr(utr)
               keyStoreService.fetchAwrsUrnSearchResult.flatMap {sr =>

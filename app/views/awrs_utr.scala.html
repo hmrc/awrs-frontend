@@ -26,7 +26,7 @@
         govukInput: GovukInput,
         govukErrorSummary: GovukErrorSummary)
 
-@(awrsUtrForm: Form[models.AwrsEnrolmentUtr], isSA: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+@(awrsUtrForm: Form[models.AwrsEnrolmentUtr], isSA: Boolean)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @headerTitleName =  @{
     if(isSA) {
