@@ -62,7 +62,7 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          awrsEnrolmentUrnForm.bindFromRequest.fold(
+          awrsEnrolmentUrnForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             awrsUrn => {
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
