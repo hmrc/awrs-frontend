@@ -27,11 +27,11 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
 
   implicit lazy val form: Form[AwrsRegisteredPostcode] = AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm.form
 
-  "Declaration form validation" must {
+  "Postcode form validation" must {
 
     val fieldId = "registeredPostcode"
 
-    "the postcode field is left empty" in {
+    "contain an error if the postcode field is left empty" in {
       form.bind(Map(fieldId -> "")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
@@ -41,7 +41,7 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
       )
     }
 
-    "the postcode field has invalid uk postcode format-test " in {
+    "contain an error if the postcode field has invalid uk postcode - test" in {
       form.bind(Map(fieldId -> "test")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
@@ -51,7 +51,7 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
       )
     }
 
-    "the postcode field has invalid uk postcode format - 1111ne" in {
+    "contain an error if the postcode field has invalid uk postcode - 1111ne" in {
       form.bind(Map(fieldId -> "1111ne")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
@@ -61,18 +61,42 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
       )
     }
 
-    "the postcode field has valid uk postcode format ne270jz" in {
+    "be valid if the postcode field has valid uk postcode format ne270jz" in {
       val data: Map[String, String] =
         Map("registeredPostcode" -> "ne270jz"
         )
       assertFormIsValid(form, data)
     }
 
-    "the postcode field has valid uk postcode format n e2 7 0 jz with spaces" in {
+    "be valid if the postcode field has valid uk postcode with upper and lower cases" in {
       val data: Map[String, String] =
-        Map("registeredPostcode" -> "n e2 7 0 jz"
+        Map("registeredPostcode" -> "Ne270jZ"
         )
       assertFormIsValid(form, data)
+    }
+
+    "be valid if the postcode field has valid uk postcode format n e2 7 0 jz with spaces" in {
+      val data: Map[String, String] =
+        Map(fieldId -> "n e2 7 0 jz"
+        )
+      assertFormIsValid(form, data)
+    }
+
+    "be valid if the postcode field contains a valid uk postcode and punctuation, brackets or blanks for NE270JZ" in {
+      val data: Map[String, String] =
+        Map(fieldId -> "(Ne 2_7) - [0 jZ{ *}]"
+        )
+      assertFormIsValid(form, data)
+    }
+
+    "contain an error if the postcode field contains invalid not allowed character &" in {
+      form.bind(Map(fieldId -> "NE27&0JZ")).fold(
+        formWithErrors => {
+          formWithErrors(fieldId).errors.size mustBe 1
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.register_postcode.error.invalid_postcode"
+        },
+        _ => fail("Field should contain errors")
+      )
     }
   }
 }

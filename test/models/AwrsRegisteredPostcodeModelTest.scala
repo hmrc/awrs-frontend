@@ -16,16 +16,20 @@
 
 package models
 
-import play.api.libs.json._
+import org.scalatestplus.play.PlaySpec
 
-case class AwrsRegisteredPostcode(registeredPostcode: String)
+class AwrsRegisteredPostcodeModelTest extends PlaySpec {
 
-object AwrsRegisteredPostcode {
-  implicit val format: OFormat[AwrsRegisteredPostcode] = Json.format[AwrsRegisteredPostcode]
+  "AwrsRegisteredPostcode sanitisation" must {
 
-  private val awrsRegisteredPostcodePattern: String = "[\\s, +, ., :, _, ,, ;, =, (, ), {, }, \\[, \\], \\-, \\^, \\*]"
+    "ensure differently structured versions of the same postcode are equal after sanitisation" in {
 
-  def sanitise(postcode: String): String = {
-    postcode.toLowerCase().replaceAll(awrsRegisteredPostcodePattern, "")
+      val sanitisedPostcodeVersion = "ne270jz"
+      val postcodeVersion1 = "N E 27 0JZ"
+      val postcodeVersion2 = "(nE)_27-0[*]jZ"
+
+      AwrsRegisteredPostcode.sanitise(postcodeVersion1) mustBe AwrsRegisteredPostcode.sanitise(postcodeVersion2)
+      AwrsRegisteredPostcode.sanitise(postcodeVersion1) mustBe sanitisedPostcodeVersion
+    }
   }
 }

@@ -33,8 +33,7 @@ object AwrsRegisteredPostcodeForm extends AwrsValidator{
   val invalidPostcodeErrorMessage = Seq[FieldFormatConstraintParameter](
     FieldFormatConstraintParameter(
       (registeredPostcode: String) => {
-        val noSpacesPostcode = registeredPostcode.replaceAll("\\s", "")  // Remove all spaces
-        if (noSpacesPostcode.matches(postcodeRegex)) {
+        if (AwrsRegisteredPostcode.sanitise(registeredPostcode).matches(postcodeRegex)) {
           Valid
         } else {
           Invalid("awrs.register_postcode.error.invalid_postcode")
