@@ -83,14 +83,10 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     val address = (dataReturned \ "address").validate[BCAddressApi3]
     address match {
       case s: JsSuccess[BCAddressApi3] => s.get.postalCode.fold(false) { pc: String =>
-        normalisePostCode(pc) == normalisePostCode(postcode)
+        AwrsRegisteredPostcode.sanitise(pc) == AwrsRegisteredPostcode.sanitise(postcode)
       }
       case _ => false
     }
-  }
-
-  private def normalisePostCode(pc: String) = {
-    pc.toLowerCase().replaceAll("\\s+", "")
   }
 
   private def storeBCAddressApi3(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {

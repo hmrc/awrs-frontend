@@ -977,7 +977,7 @@ awrs.utr.invalidUTR = The Unique Taxpayer Reference (UTR) is not valid
 awrs.register_postcode.title = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
 awrs.register_postcode.heading = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
 awrs.register_postcode.error.empty = Enter your postcode
-awrs.register_postcode.error.invalid_postcode = Enter a valid UK postcode, like AA1 1AA
+awrs.register_postcode.error.invalid_postcode = Enter a valid UK postcode
 awrs.register_postcode.hint = For example, SW1A 2AA
 
 awrs.urn_kickout.title = Get Help with your AWRS registration
