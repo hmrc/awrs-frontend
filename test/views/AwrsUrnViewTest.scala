@@ -40,9 +40,5 @@ class AwrsUrnViewTest extends ViewTestFixture  {
       val backlink = document.getElementById("back")
       backlink.attr("href") mustBe controllers.routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url
     }
-
-
   }
-
-
 }

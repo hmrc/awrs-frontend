@@ -19,7 +19,6 @@ package views
 import config.ApplicationConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -30,7 +29,6 @@ import play.twirl.api.HtmlFormat
 
 abstract class ViewTestFixture extends PlaySpec
   with MockitoSugar
-  with BeforeAndAfterEach
   with GuiceOneAppPerSuite {
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

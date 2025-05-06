@@ -20,22 +20,21 @@ import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
 import play.twirl.api.HtmlFormat
 import views.html.awrs_utr
 
-class AwrsUtrCTViewTest extends ViewTestFixture  {
+class AwrsUtrCTViewTest extends ViewTestFixture {
 
   val template: awrs_utr = app.injector.instanceOf[views.html.awrs_utr]
-
-  override val htmlContent: HtmlFormat.Appendable = template.apply(awrsEnrolmentUtrForm.form)(fakeRequest, messages, mockAppConfig)
+  // indicating logged-in user has IR-CT enrolment
+  val isSa = false
+  override val htmlContent: HtmlFormat.Appendable = template.apply(awrsEnrolmentUtrForm.form, isSa)(fakeRequest, messages, mockAppConfig)
 
   "Awrs Utr Template" must {
 
-      "Display all fields correctly for Corp Tax Enrolment" in {
-        heading mustBe "Enter your Corporation Tax Unique Taxpayer Reference (UTR)"
+    "Display all fields correctly for IR-CT Tax Enrolment" in {
+      heading mustBe "Enter your Corporation Tax Unique Taxpayer Reference (UTR)"
 
-        document.select("label").text() mustBe "Your UTR is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’."
+      document.select("label").text() mustBe "Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’."
 
-        document.select("input").attr("id") mustBe "utr"
-      }
-
+      document.select("input").attr("id") mustBe "utr"
+    }
   }
-
 }

@@ -23,23 +23,18 @@ import views.html.awrs_utr
 class AwrsUtrSAViewTest extends ViewTestFixture  {
 
   val template: awrs_utr = app.injector.instanceOf[views.html.awrs_utr]
-
-  override val htmlContent: HtmlFormat.Appendable = template.apply(awrsEnrolmentUtrForm.form, true)(fakeRequest, messages, mockAppConfig)
+  // indicating logged-in user has IR-SA enrolment
+  val isSA = true
+  override val htmlContent: HtmlFormat.Appendable = template.apply(awrsEnrolmentUtrForm.form, isSA)(fakeRequest, messages, mockAppConfig)
 
   "Awrs Utr Template" must {
 
-    "Display all fields correctly for Corp Tax Enrolment" in {
+    "Display all fields correctly for IR-AS Tax Enrolment" in {
       heading mustBe "Enter your Self Assessment Tax Unique Taxpayer Reference (UTR)"
 
-      document.select("label").text() mustBe "Your UTR is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’."
+      document.select("label").text() mustBe "Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’."
 
       document.select("input").attr("id") mustBe "utr"
     }
-
-
-
-
   }
-
-
 }
