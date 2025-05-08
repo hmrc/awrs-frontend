@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms
+package forms.reenrolment
 
 import forms.prevalidation._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter}
@@ -25,7 +25,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
 
-object AwrsEnrolmentUrnForm {
+object RegisteredUrnForm {
 
   val awrsUrn = "awrsUrn"
 

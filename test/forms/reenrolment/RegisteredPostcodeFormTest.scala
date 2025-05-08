@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package forms.reenrolment
 
 import forms.test.util._
-import models.AwrsRegisteredPostcode
+import models.reenrolment.AwrsRegisteredPostcode
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 import utils.AwrsFieldConfig
 
-class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
+class RegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
-  implicit lazy val form: Form[AwrsRegisteredPostcode] = AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm.form
+  implicit lazy val form: Form[AwrsRegisteredPostcode] = RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form
 
   "Postcode form validation" must {
 
@@ -35,7 +35,7 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
       form.bind(Map(fieldId -> "")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.register_postcode.error.empty"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.empty"
         },
         _ => fail("Field should contain errors")
       )
@@ -45,7 +45,7 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
       form.bind(Map(fieldId -> "test")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.register_postcode.error.invalid_postcode"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.invalid_postcode"
         },
         _ => fail("Field should contain errors")
       )
@@ -55,7 +55,7 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
       form.bind(Map(fieldId -> "1111ne")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.register_postcode.error.invalid_postcode"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.invalid_postcode"
         },
         _ => fail("Field should contain errors")
       )
@@ -93,7 +93,7 @@ class AwrsRegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with Aw
       form.bind(Map(fieldId -> "NE27&0JZ")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.register_postcode.error.invalid_postcode"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.invalid_postcode"
         },
         _ => fail("Field should contain errors")
       )

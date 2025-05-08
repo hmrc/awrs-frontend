@@ -19,6 +19,7 @@ package services
 import _root_.models._
 import connectors.{AwrsKeyStoreConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
+import models.reenrolment.AwrsRegisteredPostcode
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap

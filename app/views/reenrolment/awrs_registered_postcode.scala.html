@@ -35,27 +35,27 @@ govukInput : GovukInput,
 govukButton : GovukButton,
 govukErrorSummary: GovukErrorSummary)
 
-@(postcodeForm: Form[models.AwrsRegisteredPostcode])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+@(postcodeForm: Form[models.reenrolment.AwrsRegisteredPostcode])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @backlinkHtml = {
-    @backLink(controllers.routes.AwrsUrnController.showArwsUrnPage.url)
+    @backLink(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage.url)
 }
 
-@awrsMain( title = s"${errorPrefix(postcodeForm)} ${messages("awrs.generic.tab.title", messages("awrs.register_postcode.title"))}", backlink = Some(backlinkHtml)) {
+@awrsMain( title = s"${errorPrefix(postcodeForm)} ${messages("awrs.generic.tab.title", messages("awrs.reenrolment.registered_postcode.title"))}", backlink = Some(backlinkHtml)) {
 
     @if(postcodeForm.errors.nonEmpty) {
        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(postcodeForm))
     }
-    @formWithCSRF(action = controllers.routes.AwrsRegisteredPostcodeController.saveAndContinue){
+    @formWithCSRF(action = controllers.reenrolment.routes.RegisteredPostcodeController.saveAndContinue){
 
 
         @govukInput(Input(
         label = Label(
         isPageHeading = true,
         classes = "govuk-label--xl",
-        content = Text(messages("awrs.register_postcode.heading")),
+        content = Text(messages("awrs.reenrolment.registered_postcode.heading")),
         ),
         hint = Some(Hint(
-        content = Text(messages("awrs.register_postcode.hint"))
+        content = Text(messages("awrs.reenrolment.registered_postcode.hint"))
         )),
         autocomplete = Some("postal-code")
         ).withFormField(postcodeForm("registeredPostcode")))

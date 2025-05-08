@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import builders.SessionBuilder
 import play.api.mvc.AnyContentAsEmpty
@@ -22,12 +22,12 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
-import views.html.awrs_successful_enrolment
+import views.html.reenrolment.awrs_successful_enrolment
 
 class SuccessfulEnrolmentControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: awrs_successful_enrolment = app.injector.instanceOf[views.html.awrs_successful_enrolment]
+  val template: awrs_successful_enrolment = app.injector.instanceOf[views.html.reenrolment.awrs_successful_enrolment]
   val testSuccessfulEnrolmentController: SuccessfulEnrolmentController = new SuccessfulEnrolmentController(
     mockMCC,
     mockAppConfig,

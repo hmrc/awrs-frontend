@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package views
+package views.reenrolment
 
-import forms.AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm
+import forms.reenrolment.RegisteredPostcodeForm.awrsRegisteredPostcodeForm
 import play.twirl.api.HtmlFormat
-import views.html.awrs_registered_postcode
+import views.ViewTestFixture
+import views.html.reenrolment.awrs_registered_postcode
 
-class AwrsRegisteredPostCodeViewTest extends ViewTestFixture {
+class RegisteredPostCodeViewTest extends ViewTestFixture {
 
-  val view: awrs_registered_postcode = app.injector.instanceOf[views.html.awrs_registered_postcode]
+  val view: awrs_registered_postcode = app.injector.instanceOf[views.html.reenrolment.awrs_registered_postcode]
   override val htmlContent: HtmlFormat.Appendable = view.apply(awrsRegisteredPostcodeForm.form)(fakeRequest, messages, mockAppConfig)
 
-  "awrs registered postcode page" should {
+  "awrs registered postcode page" must {
     "render the correct content" in {
-      heading mustBe "Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)"
-      buttonText mustBe "Continue"
-      input_field_label mustBe "Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)"
+      heading mustBe messages("awrs.reenrolment.registered_postcode.title")
+      buttonText mustBe messages("awrs.generic.continue")
+      input_field_label mustBe messages("awrs.reenrolment.registered_postcode.heading")
       input_field must not be empty
-      back_link mustBe "Back"
-      back_link_href mustBe "/alcohol-wholesale-scheme/urn"
+      back_link mustBe messages("awrs.generic.back")
+      back_link_href mustBe controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage.url
     }
   }
 }

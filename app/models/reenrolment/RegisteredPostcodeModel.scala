@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models
+package models.reenrolment
 
 import play.api.libs.json._
 

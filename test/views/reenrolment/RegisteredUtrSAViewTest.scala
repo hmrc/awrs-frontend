@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package views
+package views.reenrolment
 
-import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
+import forms.reenrolment.RegisteredUtrForm.awrsEnrolmentUtrForm
 import play.twirl.api.HtmlFormat
-import views.html.awrs_utr
+import views.ViewTestFixture
+import views.html.reenrolment.awrs_registered_utr
 
-class AwrsUtrSAViewTest extends ViewTestFixture  {
+class RegisteredUtrSAViewTest extends ViewTestFixture  {
 
-  val template: awrs_utr = app.injector.instanceOf[views.html.awrs_utr]
+  val template: awrs_registered_utr = app.injector.instanceOf[views.html.reenrolment.awrs_registered_utr]
   // indicating logged-in user has IR-SA enrolment
   val isSA = true
   override val htmlContent: HtmlFormat.Appendable = template.apply(awrsEnrolmentUtrForm.form, isSA)(fakeRequest, messages, mockAppConfig)

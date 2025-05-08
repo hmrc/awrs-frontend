@@ -35,7 +35,7 @@ class HaveYouRegisteredFormTest extends PlaySpec with MockitoSugar with BeforeAn
       form.bind(Map(fieldId -> "")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.enrolment.have_you_registered.error"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.have_you_registered.error"
         },
         _ => fail("Field should contain errors")
       )

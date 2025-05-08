@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package views
+package views.reenrolment
 
-import forms.AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm
+import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
 import play.twirl.api.HtmlFormat
-import views.html.awrs_urn
+import views.ViewTestFixture
+import views.html.reenrolment.awrs_registered_urn
 
-class AwrsUrnViewTest extends ViewTestFixture  {
+class RegisteredUrnViewTest extends ViewTestFixture  {
 
-  val template: awrs_urn = app.injector.instanceOf[views.html.awrs_urn]
+  val template: awrs_registered_urn = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
   override val htmlContent: HtmlFormat.Appendable = template.apply(awrsEnrolmentUrnForm.form)(fakeRequest, messages, mockAppConfig)
 

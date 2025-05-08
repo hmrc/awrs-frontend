@@ -30,14 +30,14 @@
 
 @headerTitleName =  @{
     if(isSA) {
-        "awrs.utr.title.sa"
+        "awrs.reenrolment.registered_utr.title.sa"
     } else {
-        "awrs.utr.title.ct"
+        "awrs.reenrolment.registered_utr.title.ct"
     }
 }
 
 @backlinkHtml = {
-    @backLink(controllers.routes.AwrsRegisteredPostcodeController.showPostCode.url)
+    @backLink(controllers.reenrolment.routes.RegisteredPostcodeController.showPostCode.url)
 }
 
 @awrsMain(
@@ -53,13 +53,13 @@
         <h1 id="awrsUtr-heading" class="govuk-heading-xl">@messages(headerTitleName)</h1>
     </header>
 
-    @formWithCSRF(action = controllers.routes.AwrsUtrController.saveAndContinue) {
+    @formWithCSRF(action = controllers.reenrolment.routes.RegisteredUtrController.saveAndContinue) {
 
         @govukInput(
             Input(
                 label = Label(
                     classes = "govuk-label",
-                    content = Text(Messages("awrs.utr.label"))
+                    content = Text(Messages("awrs.reenrolment.registered_utr.label"))
                 )
             ).withFormField(awrsUtrForm("utr"))
         )

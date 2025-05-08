@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.AwrsRegisteredPostcodeForm
-import models.AwrsRegisteredPostcode
+import forms.reenrolment.RegisteredPostcodeForm
+import models.reenrolment.AwrsRegisteredPostcode
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockIndexService, MockKeyStoreService}
 import utils.{AwrsUnitTestTraits, TestUtil}
-import views.html.awrs_registered_postcode
+import views.html.reenrolment.awrs_registered_postcode
 
-class AwrsRegisteredPostCodeControllerTest extends AwrsUnitTestTraits
+class RegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
   with MockKeyStoreService
   with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[AwrsRegisteredPostcode](FakeRequest(), AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm.form, AwrsRegisteredPostcode(answer))
+    TestUtil.populateFakeRequest[AwrsRegisteredPostcode](FakeRequest(), RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form, AwrsRegisteredPostcode(answer))
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  val template: awrs_registered_postcode = app.injector.instanceOf[views.html.awrs_registered_postcode]
+  val template: awrs_registered_postcode = app.injector.instanceOf[views.html.reenrolment.awrs_registered_postcode]
 
-  val testAwrsRegisteredPostcodeController: AwrsRegisteredPostcodeController = new AwrsRegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector,
+  val testAwrsRegisteredPostcodeController: RegisteredPostcodeController = new RegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector,
     mockAccountUtils, mockDeEnrolService, mockAuditable ,mockAwrsFeatureSwitches,testKeyStoreService, template)
 
   "AwrsPostcodeController" must {
