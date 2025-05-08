@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package views
+package views.reenrolment
 
 import play.twirl.api.HtmlFormat
-import views.html.awrs_successful_enrolment
+import views.ViewTestFixture
+import views.html.reenrolment.awrs_successful_enrolment
 
 class SuccessfulEnrolmentViewTest extends ViewTestFixture {
 
   val view: awrs_successful_enrolment =
-    app.injector.instanceOf[views.html.awrs_successful_enrolment]
+    app.injector.instanceOf[views.html.reenrolment.awrs_successful_enrolment]
   override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
   "successful_enrolment page" should {
     "render the correct content" in {

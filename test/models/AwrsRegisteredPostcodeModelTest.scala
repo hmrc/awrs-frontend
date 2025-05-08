@@ -16,6 +16,7 @@
 
 package models
 
+import models.reenrolment.AwrsRegisteredPostcode
 import org.scalatestplus.play.PlaySpec
 
 class AwrsRegisteredPostcodeModelTest extends PlaySpec {

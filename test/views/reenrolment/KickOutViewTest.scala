@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package views
+package views.reenrolment
 
 import play.twirl.api.HtmlFormat
-import views.html.urn_kickout
+import views.ViewTestFixture
+import views.html.reenrolment.awrs_reenrolment_kickout
 
-class URN_KickOutTest extends ViewTestFixture {
+class KickOutViewTest extends ViewTestFixture {
 
-  val view: urn_kickout = app.injector.instanceOf[views.html.urn_kickout]
+  val view: awrs_reenrolment_kickout = app.injector.instanceOf[views.html.reenrolment.awrs_reenrolment_kickout]
   override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
 
-  "urn kickout page" should {
+  "kickout page" should {
     "render the correct content" in {
       heading mustBe "Get Help with your AWRS registration"
       bodyText mustBe "Contact HMRC"

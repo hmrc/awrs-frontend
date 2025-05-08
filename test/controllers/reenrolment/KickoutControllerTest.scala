@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import builders.SessionBuilder
 import play.api.mvc.AnyContentAsEmpty
@@ -22,15 +22,15 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
-import views.html.urn_kickout
+import views.html.reenrolment.awrs_reenrolment_kickout
 
-class AwrsUrnKickoutControllerTest extends AwrsUnitTestTraits
+class KickoutControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: urn_kickout = app.injector.instanceOf[views.html.urn_kickout]
+  val template: awrs_reenrolment_kickout = app.injector.instanceOf[views.html.reenrolment.awrs_reenrolment_kickout]
 
-  val testURNKickOutController: AwrsUrnKickoutController = new AwrsUrnKickoutController(
+  val testURNKickOutController: KickoutController = new KickoutController(
     mockMCC,
     mockAppConfig,
     mockAwrsFeatureSwitches,
@@ -41,20 +41,19 @@ class AwrsUrnKickoutControllerTest extends AwrsUnitTestTraits
     template
   )
 
-  "URNKickOutController" must {
+  "KickOutController" must {
 
-    "show the Kickout page when enrolmentJourney is enable" in {
+    "show the Kickout page when enrolmentJourney is enabled" in {
       setAuthMocks()
       setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
-    "return 404 the Kickout page when enrolmentJourney is ldisable" in {
+    "return 404 when enrolmentJourney is disabled" in {
       setAuthMocks()
       setupEnrolmentJourneyFeatureSwitchMock(false)
       val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 404
     }
   }
-
 }

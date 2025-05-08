@@ -95,7 +95,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
       val result: Future[Result] = mockHaveYouRegisteredController.saveAndContinue().apply(testRequest(Some(true)))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.AwrsUrnController.showArwsUrnPage.url)
+      redirectLocation(result) mustBe Some(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage.url)
     }
   }
 

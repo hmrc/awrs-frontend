@@ -17,6 +17,7 @@
 package services.mocks
 
 import connectors.mock.MockKeyStoreConnector
+import models.reenrolment.AwrsRegisteredPostcode
 import models.{StatusNotification, _}
 import org.mockito.Mockito._
 import org.mockito.{AdditionalMatchers, ArgumentMatchers}

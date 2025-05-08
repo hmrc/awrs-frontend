@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import audit.Auditable
 import config.ApplicationConfig
@@ -28,15 +28,14 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsUrnKickoutController @Inject()(mcc: MessagesControllerComponents,
-                                         implicit val applicationConfig: ApplicationConfig,
-                                         val awrsFeatureSwitches: AWRSFeatureSwitches,
-                                         val deEnrolService: DeEnrolService,
-                                         val authConnector: DefaultAuthConnector,
-
-                                         val accountUtils: AccountUtils,
-                                         val auditable: Auditable,
-                                         template: views.html.urn_kickout
+class KickoutController @Inject()(mcc: MessagesControllerComponents,
+                                  implicit val applicationConfig: ApplicationConfig,
+                                  val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                  val deEnrolService: DeEnrolService,
+                                  val authConnector: DefaultAuthConnector,
+                                  val accountUtils: AccountUtils,
+                                  val auditable: Auditable,
+                                  template: views.html.reenrolment.awrs_reenrolment_kickout
                                             ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext

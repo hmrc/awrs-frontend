@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm
+import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
 import play.api.mvc._
 import services.{DeEnrolService, KeyStoreService, LookupService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -30,16 +30,16 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
-                                  val keyStoreService: KeyStoreService,
-                                  val deEnrolService: DeEnrolService,
-                                  val authConnector: DefaultAuthConnector,
-                                  val auditable: Auditable,
-                                  val accountUtils: AccountUtils,
-                                  lookupService: LookupService,
-                                  val awrsFeatureSwitches: AWRSFeatureSwitches,
-                                  implicit val applicationConfig: ApplicationConfig,
-                                  template: views.html.awrs_urn
+class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
+                                        val keyStoreService: KeyStoreService,
+                                        val deEnrolService: DeEnrolService,
+                                        val authConnector: DefaultAuthConnector,
+                                        val auditable: Auditable,
+                                        val accountUtils: AccountUtils,
+                                        lookupService: LookupService,
+                                        val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                        implicit val applicationConfig: ApplicationConfig,
+                                        template: views.html.reenrolment.awrs_registered_urn
                                       ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -68,8 +68,8 @@ class AwrsUrnController @Inject()(mcc: MessagesControllerComponents,
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
                 lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
                     case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
-                      Future.successful(Redirect(routes.AwrsRegisteredPostcodeController.showPostCode))
-                    case None => Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+                      Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
+                    case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                   }
                 }
               }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.AwrsEnrolmentUrnForm
+import forms.reenrolment.RegisteredUrnForm
 import models.AwrsStatus.Approved
 import models.{AwrsEnrolmentUrn, Business, Info, SearchResult}
 import org.mockito.ArgumentMatchers
@@ -31,18 +31,18 @@ import services.ServicesUnitTestFixture
 import services.mocks.{MockIndexService, MockKeyStoreService}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AwrsUnitTestTraits, TestUtil}
-import views.html.awrs_urn
+import views.html.reenrolment.awrs_registered_urn
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsUrnControllerTest extends AwrsUnitTestTraits
+class RegisteredUrnControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
   with MockKeyStoreService
   with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
+    TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), RegisteredUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
 
   def testSearchResult(ref:String) = SearchResult(List(
     Business(ref,
@@ -51,9 +51,9 @@ class AwrsUrnControllerTest extends AwrsUnitTestTraits
       Info(Some("Business Name"), Some("Trading Name"), Some("Full name"), None),
       None)))
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: awrs_urn = app.injector.instanceOf[views.html.awrs_urn]
+  val template: awrs_registered_urn = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
-  val testAwrsUrnController: AwrsUrnController = new AwrsUrnController(mockMCC,
+  val testAwrsUrnController: RegisteredUrnController = new RegisteredUrnController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
     mockAuditable, mockAccountUtils, testLookupService, mockAwrsFeatureSwitches, mockAppConfig, template)
 

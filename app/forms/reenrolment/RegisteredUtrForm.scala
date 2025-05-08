@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms
+package forms.reenrolment
 
 import forms.prevalidation._
 import forms.validation.util.UTRValidator
@@ -22,20 +22,20 @@ import models.AwrsEnrolmentUtr
 import play.api.data.Form
 import play.api.data.Forms._
 
-object AwrsEnrolmentUtrForm {
+object RegisteredUtrForm {
 
   val utr = "utr"
 
   lazy val awrsEnrolmentUtrValidationForm: Form[AwrsEnrolmentUtr] = Form(mapping(
     utr ->  text
-      .verifying("awrs.utr.empty", x => {
+      .verifying("awrs.reenrolment.registered_utr.error.empty", x => {
         val trimmedString = x.replaceAll(" ", "")
         trimmedString.length > 0
       })
-      .verifying("awrs.utr.length", x => {
+      .verifying("awrs.reenrolment.registered_utr.error.length", x => {
         val trimmedString = x.replaceAll(" ", "")
         trimmedString.isEmpty || (trimmedString.nonEmpty && (trimmedString.matches("""^[0-9]{10}$""") || trimmedString.matches("""^[0-9]{13}$""")))})
-      .verifying("awrs.utr.invalidUTR", x => {
+      .verifying("awrs.reenrolment.registered_utr.error.invalidUTR", x => {
         val trimmedString = x.replaceAll(" ", "")
         trimmedString.isEmpty || !(trimmedString.matches("""^[0-9]{10}$""") || trimmedString.matches("""^[0-9]{13}$""")) || UTRValidator.validateUTR(trimmedString)
       })

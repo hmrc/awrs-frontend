@@ -28,7 +28,7 @@
 
 @(awrsUrnForm: Form[models.AwrsEnrolmentUrn])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
-@headerTitleName = @{"awrs.urn.title"}
+@headerTitleName = @{"awrs.reenrolment.registered_urn.title"}
 
 @backlinkHtml = {
     @backLink(controllers.routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url)
@@ -47,13 +47,13 @@
         <h1 id="awrsUrn-heading" class="govuk-heading-xl">@messages(headerTitleName)</h1>
     </header>
 
-    @formWithCSRF(action = controllers.routes.AwrsUrnController.saveAndContinue) {
+    @formWithCSRF(action = controllers.reenrolment.routes.RegisteredUrnController.saveAndContinue) {
 
         @govukInput(
             Input(
                 label = Label(
                     classes = "govuk-label",
-                    content = Text(Messages("awrs.urn.label"))
+                    content = Text(Messages("awrs.reenrolment.registered_urn.label"))
                 )
             ).withFormField(awrsUrnForm("awrsUrn"))
         )

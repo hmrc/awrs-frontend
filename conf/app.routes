@@ -3,7 +3,6 @@
 
 GET         /assets/*file                                   controllers.Assets.versioned(path="/public", file: Asset)
 
-
 GET         /                                               controllers.HomeController.showOrRedirect(callerId: Option[String])
 # Leaving in landing-page route in case people have it bookmarked
 GET         /landing-page                                   controllers.HomeController.showOrRedirect(callerId: Option[String])
@@ -23,11 +22,6 @@ GET         /keep-alive                                     controllers.Applicat
 GET         /wrong-account                                  controllers.WrongAccountController.showWrongAccountPage(businessName: Option[String])
 
 GET         /unauthorised                                   controllers.IndexController.unauthorised
-
-GET         /urn                                            controllers.AwrsUrnController.showArwsUrnPage
-POST        /urn/saveAndReturn                              controllers.AwrsUrnController.saveAndContinue
-GET         /utr                                            controllers.AwrsUtrController.showArwsUtrPage
-POST        /utr/saveAndReturn                              controllers.AwrsUtrController.saveAndContinue
 
 GET         /additional-premises                            controllers.AdditionalPremisesController.showPremisePage(id: Int ?= 1, isLinearMode: Boolean = true, isNewRecord: Boolean = true)
 GET         /additional-premises/delete                     controllers.AdditionalPremisesController.showDelete(id: Int ?= 1)
@@ -164,15 +158,20 @@ GET         /signed-out                                     controllers.Applicat
 GET         /re-apply                                       controllers.ReapplicationController.show
 POST        /re-apply                                       controllers.ReapplicationController.submit
 
-#
 GET        /have-you-registered                             controllers.HaveYouRegisteredController.showHaveYouRegisteredPage
 POST       /have-you-registered/confirm                     controllers.HaveYouRegisteredController.saveAndContinue
 GET        /have-you-registered/lastLocation                controllers.HaveYouRegisteredController.showLastLocation
 
-GET         /urn-kickout                                    controllers.AwrsUrnKickoutController.showURNKickOutPage
+# Reenrolment journey
+GET         /reenrolment/registered-urn                     controllers.reenrolment.RegisteredUrnController.showArwsUrnPage
+POST        /reenrolment/registered-urn/saveAndReturn       controllers.reenrolment.RegisteredUrnController.saveAndContinue
 
-GET         /registered-postcode                            controllers.AwrsRegisteredPostcodeController.showPostCode
-POST        /registered-postcode                            controllers.AwrsRegisteredPostcodeController.saveAndContinue
+GET         /reenrolment/registered-postcode                controllers.reenrolment.RegisteredPostcodeController.showPostCode
+POST        /reenrolment/registered-postcode                controllers.reenrolment.RegisteredPostcodeController.saveAndContinue
 
-# DL-14749
-GET         /successful-enrolment                           controllers.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage
+GET         /reenrolment/registered-utr                     controllers.reenrolment.RegisteredUtrController.showArwsUtrPage
+POST        /registered-utr/saveAndReturn                   controllers.reenrolment.RegisteredUtrController.saveAndContinue
+
+GET         /reenrolment/kickout                            controllers.reenrolment.KickoutController.showURNKickOutPage
+
+GET         /reenrolment/successful-enrolment               controllers.reenrolment.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage

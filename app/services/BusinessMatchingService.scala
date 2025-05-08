@@ -21,6 +21,7 @@ import connectors.BusinessMatchingConnector
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
 import models._
+import models.reenrolment.AwrsRegisteredPostcode
 import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
@@ -77,7 +78,6 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
       verifyPostCodeMatches(postCode.registeredPostcode, _)
     }
   }
-
 
   private def verifyPostCodeMatches(postcode: String, dataReturned: JsValue): Boolean = {
     val address = (dataReturned \ "address").validate[BCAddressApi3]

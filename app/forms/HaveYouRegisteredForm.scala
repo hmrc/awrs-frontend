@@ -30,7 +30,7 @@ object HaveYouRegisteredForm {
   val hasUserRegistered = "hasUserRegistered"
 
   val haveYouRegisteredFormCompulsoryBooleanMappingParam= compulsoryBoolean(CompulsoryBooleanMappingParameter(
-    empty = simpleFieldIsEmptyConstraintParameter(hasUserRegistered, "awrs.enrolment.have_you_registered.error"),
+    empty = simpleFieldIsEmptyConstraintParameter(hasUserRegistered, "awrs.have_you_registered.error"),
     enumType = BooleanCheckboxEnum
   ))
 
