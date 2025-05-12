@@ -30,14 +30,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
-                                        val keyStoreService: KeyStoreService,
+                                        keyStoreService: KeyStoreService,
                                         val deEnrolService: DeEnrolService,
                                         val authConnector: DefaultAuthConnector,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
-                                        val businessMatchingService: BusinessMatchingService,
+                                        businessMatchingService: BusinessMatchingService,
                                         val enrolService: EnrolService,
-                                        val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                        awrsFeatureSwitches: AWRSFeatureSwitches,
                                         implicit val applicationConfig: ApplicationConfig,
                                         template: views.html.reenrolment.awrs_registered_utr
                                  ) extends FrontendController(mcc) with AwrsController {

@@ -31,13 +31,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
-                                        val keyStoreService: KeyStoreService,
+                                        keyStoreService: KeyStoreService,
                                         val deEnrolService: DeEnrolService,
                                         val authConnector: DefaultAuthConnector,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
                                         lookupService: LookupService,
-                                        val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                        awrsFeatureSwitches: AWRSFeatureSwitches,
                                         implicit val applicationConfig: ApplicationConfig,
                                         template: views.html.reenrolment.awrs_registered_urn
                                       ) extends FrontendController(mcc) with AwrsController {
