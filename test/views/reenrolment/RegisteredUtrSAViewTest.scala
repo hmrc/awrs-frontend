@@ -31,10 +31,9 @@ class RegisteredUtrSAViewTest extends ViewTestFixture  {
   "Awrs Utr Template" must {
 
     "Display all fields correctly for IR-AS Tax Enrolment" in {
-      heading mustBe "Enter your Self Assessment Tax Unique Taxpayer Reference (UTR)"
 
-      document.select("label").text() mustBe "Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’."
-
+      heading mustBe messages("awrs.reenrolment.registered_utr.title.sa")
+      document.select("label").text() mustBe messages("awrs.reenrolment.registered_utr.label")
       document.select("input").attr("id") mustBe "utr"
     }
   }

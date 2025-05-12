@@ -30,14 +30,14 @@ class RegisteredUrnViewTest extends ViewTestFixture  {
   "Awrs Urn Template" must {
 
       "Display all fields correctly" in {
-        heading mustBe "What is your Alcohol Wholesaler Registration Scheme (AWRS) Unique Reference Number (URN)?"
 
-        document.select("label").text() mustBe "Your URN is 4 letters and 11 numbers, like XXAW00000123456. You can find it printed on the wholesaler or producer’s invoices. If you can’t find it, contact the wholesaler or producer for the URN."
-
+        heading mustBe messages("awrs.reenrolment.registered_urn.title")
+        document.select("label").text() mustBe messages("awrs.reenrolment.registered_urn.label")
         document.select("input").attr("id") mustBe "awrsUrn"
       }
 
     "contain a backlink pointing to the correct controller (haveYouRegistered)" in {
+
       val backlink = document.getElementById("back")
       backlink.attr("href") mustBe controllers.routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url
     }
