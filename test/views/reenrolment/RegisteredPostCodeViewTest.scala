@@ -28,6 +28,7 @@ class RegisteredPostCodeViewTest extends ViewTestFixture {
 
   "awrs registered postcode page" must {
     "render the correct content" in {
+
       heading mustBe messages("awrs.reenrolment.registered_postcode.title")
       buttonText mustBe messages("awrs.generic.continue")
       input_field_label mustBe messages("awrs.reenrolment.registered_postcode.heading")

@@ -25,10 +25,11 @@ class KickOutViewTest extends ViewTestFixture {
   val view: awrs_reenrolment_kickout = app.injector.instanceOf[views.html.reenrolment.awrs_reenrolment_kickout]
   override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
 
-  "kickout page" should {
-    "render the correct content" in {
-      heading mustBe "Get Help with your AWRS registration"
-      bodyText mustBe "Contact HMRC"
+  "The kickout page" should {
+    "render the content correctly" in {
+
+      heading mustBe messages("awrs.reenrolment.kickout.title")
+      bodyText mustBe messages("awrs.reenrolment.kickout.p1")
     }
   }
 }
