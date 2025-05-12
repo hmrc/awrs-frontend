@@ -432,7 +432,6 @@ object Address {
   implicit val formats: OFormat[Address] = Json.format[Address]
 
   implicit class AddressUtil(address: Option[Address]) {
-    def toStringSeq: Seq[String] = address.fold(Seq[String]())(x => x.toStringSeq)
   }
 }
 
