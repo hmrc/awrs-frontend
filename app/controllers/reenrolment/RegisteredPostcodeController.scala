@@ -29,14 +29,14 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegisteredPostcodeController @Inject()(val mcc: MessagesControllerComponents,
+class RegisteredPostcodeController @Inject()(mcc: MessagesControllerComponents,
                                              implicit val applicationConfig: ApplicationConfig,
                                              val authConnector: DefaultAuthConnector,
                                              val accountUtils: AccountUtils,
                                              val deEnrolService: DeEnrolService,
                                              val auditable: Auditable,
-                                             val awrsFeatureSwitches: AWRSFeatureSwitches,
-                                             val keyStoreService: KeyStoreService,
+                                             awrsFeatureSwitches: AWRSFeatureSwitches,
+                                             keyStoreService: KeyStoreService,
                                              template: views.html.reenrolment.awrs_registered_postcode) extends FrontendController(mcc) with AwrsController {
 
 
