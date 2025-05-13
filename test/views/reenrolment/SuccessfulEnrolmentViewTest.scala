@@ -14,27 +14,32 @@
  * limitations under the License.
  */
 
-package views
+package views.reenrolment
 
 import play.twirl.api.HtmlFormat
-import views.html.awrs_successful_enrolment
+import views.ViewTestFixture
+import views.html.reenrolment.awrs_successful_enrolment
 
 class SuccessfulEnrolmentViewTest extends ViewTestFixture {
 
   val view: awrs_successful_enrolment =
-    app.injector.instanceOf[views.html.awrs_successful_enrolment]
+    app.injector.instanceOf[views.html.reenrolment.awrs_successful_enrolment]
   override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
+
   "successful_enrolment page" should {
+
     "render the correct content" in {
-      heading mustBe "You have added your AWRS to your business tax account"
-      bodyText mustBe "You can now view and manage your AWRS registration in your business tax account. More detailed information can be found in the AWRS guidance (opens in a new tab)"
+      heading mustBe messages("awrs.reenrolment.successful_enrolment.title")
+      bodyText mustBe (
+        messages("awrs.reenrolment.successful_enrolment.p1") + " " +
+        messages("awrs.reenrolment.successful_enrolment.p2")
+        )
     }
 
-    "contain a button to access the Business Tax Account page" in{
+    "contain a button to access the Business Tax Account page" in {
+
       val link = document.getElementById("bta-redirect-button")
       link.attr("role") mustBe "button"
     }
-
   }
-
 }

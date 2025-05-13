@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AwrsRegisteredPostcodeForm.awrsRegisteredPostcodeForm
+import forms.reenrolment.RegisteredPostcodeForm.awrsRegisteredPostcodeForm
 import play.api.mvc._
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -29,18 +29,18 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComponents,
-                                                 implicit val applicationConfig: ApplicationConfig,
-                                                 val authConnector: DefaultAuthConnector,
-                                                 val accountUtils: AccountUtils,
-                                                 val deEnrolService: DeEnrolService,
-                                                 val auditable: Auditable,
-                                                 val awrsFeatureSwitches: AWRSFeatureSwitches,
-                                                 val keyStoreService: KeyStoreService,
-                                                 template: views.html.awrs_registered_postcode) extends FrontendController(mcc) with AwrsController {
+class RegisteredPostcodeController @Inject()(mcc: MessagesControllerComponents,
+                                             implicit val applicationConfig: ApplicationConfig,
+                                             val authConnector: DefaultAuthConnector,
+                                             val accountUtils: AccountUtils,
+                                             val deEnrolService: DeEnrolService,
+                                             val auditable: Auditable,
+                                             awrsFeatureSwitches: AWRSFeatureSwitches,
+                                             keyStoreService: KeyStoreService,
+                                             template: views.html.reenrolment.awrs_registered_postcode) extends FrontendController(mcc) with AwrsController {
 
- 
-  val signInUrl = applicationConfig.signIn
+
+  val signInUrl: String = applicationConfig.signIn
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
@@ -51,20 +51,19 @@ class AwrsRegisteredPostcodeController @Inject()(val mcc: MessagesControllerComp
             case Some(registeredPostcode) => Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode)))
             case _ => Ok(template(awrsRegisteredPostcodeForm.form))
           }
-        else
-          Future.successful(NotFound)
+        else Future.successful(NotFound)
       }
     }
-   }
+  }
 
-  def saveAndContinue = Action.async { implicit request: Request[AnyContent] =>
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         awrsRegisteredPostcodeForm.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
           postcode => {
             keyStoreService.saveAwrsRegisteredPostcode(postcode) flatMap {
-              _ => Future.successful(Redirect(controllers.routes.AwrsUtrController.showArwsUtrPage))
+              _ => Future.successful(Redirect(controllers.reenrolment.routes.RegisteredUtrController.showArwsUtrPage))
             }
           })
       }

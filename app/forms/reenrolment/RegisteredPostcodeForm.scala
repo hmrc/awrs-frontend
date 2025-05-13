@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package forms
+package forms.reenrolment
 
 import forms.prevalidation._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
 import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
-import models.AwrsRegisteredPostcode
+import models.reenrolment.AwrsRegisteredPostcode
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
 import utils.AwrsValidator
 
-object AwrsRegisteredPostcodeForm extends AwrsValidator{
+object RegisteredPostcodeForm extends AwrsValidator{
 
   val registeredPostcode = "registeredPostcode"
 
@@ -36,7 +36,7 @@ object AwrsRegisteredPostcodeForm extends AwrsValidator{
         if (AwrsRegisteredPostcode.sanitise(registeredPostcode).matches(postcodeRegex)) {
           Valid
         } else {
-          Invalid("awrs.register_postcode.error.invalid_postcode")
+          Invalid("awrs.reenrolment.registered_postcode.error.invalid_postcode")
         }
       }
     )
@@ -44,7 +44,7 @@ object AwrsRegisteredPostcodeForm extends AwrsValidator{
 
   private lazy val compulsoryQueryField = compulsoryText(
     CompulsoryTextFieldMappingParameter(
-      empty = simpleFieldIsEmptyConstraintParameter(registeredPostcode, "awrs.register_postcode.error.empty"),
+      empty = simpleFieldIsEmptyConstraintParameter(registeredPostcode, "awrs.reenrolment.registered_postcode.error.empty"),
       maxLengthValidation = null,
       formatValidations = invalidPostcodeErrorMessage
     ))

@@ -19,6 +19,7 @@ package services
 import connectors._
 import forms.AWRSEnums
 import models._
+import models.reenrolment.AwrsRegisteredPostcode
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

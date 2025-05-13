@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package views
+package models.reenrolment
 
-import play.twirl.api.HtmlFormat
-import views.html.urn_kickout
+import play.api.libs.json._
 
-class URN_KickOutTest extends ViewTestFixture {
+case class AwrsRegisteredPostcode(registeredPostcode: String)
 
-  val view: urn_kickout = app.injector.instanceOf[views.html.urn_kickout]
-  override val htmlContent: HtmlFormat.Appendable = view.apply()(fakeRequest, messages, mockAppConfig)
+object AwrsRegisteredPostcode {
+  implicit val format: OFormat[AwrsRegisteredPostcode] = Json.format[AwrsRegisteredPostcode]
 
-  "urn kickout page" should {
-    "render the correct content" in {
-      heading mustBe "Get Help with your AWRS registration"
-      bodyText mustBe "Contact HMRC"
-    }
+  private val awrsRegisteredPostcodePattern: String = "[\\s, +, ., :, _, ,, ;, =, (, ), {, }, \\[, \\], \\-, \\^, \\*]"
+
+  def sanitise(postcode: String): String = {
+    postcode.toLowerCase().replaceAll(awrsRegisteredPostcodePattern, "")
   }
 }

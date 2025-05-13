@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm
+import forms.reenrolment.RegisteredUtrForm.awrsEnrolmentUtrForm
 import play.api.mvc._
 import services.{BusinessMatchingService, DeEnrolService, EnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -29,17 +29,17 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
-                                  val keyStoreService: KeyStoreService,
-                                  val deEnrolService: DeEnrolService,
-                                  val authConnector: DefaultAuthConnector,
-                                  val auditable: Auditable,
-                                  val accountUtils: AccountUtils,
-                                  val businessMatchingService: BusinessMatchingService,
-                                  val enrolService: EnrolService,
-                                  val awrsFeatureSwitches: AWRSFeatureSwitches,
-                                  implicit val applicationConfig: ApplicationConfig,
-                                  template: views.html.awrs_utr
+class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
+                                        keyStoreService: KeyStoreService,
+                                        val deEnrolService: DeEnrolService,
+                                        val authConnector: DefaultAuthConnector,
+                                        val auditable: Auditable,
+                                        val accountUtils: AccountUtils,
+                                        businessMatchingService: BusinessMatchingService,
+                                        val enrolService: EnrolService,
+                                        awrsFeatureSwitches: AWRSFeatureSwitches,
+                                        implicit val applicationConfig: ApplicationConfig,
+                                        template: views.html.reenrolment.awrs_registered_utr
                                  ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -80,7 +80,7 @@ class AwrsUtrController @Inject()(mcc: MessagesControllerComponents,
                         Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
                       }
                     } else {
-                      Future.successful(Redirect(routes.AwrsUrnKickoutController.showURNKickOutPage))
+                      Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                     }
                   }
                 }

@@ -956,41 +956,41 @@ awrs.application_timeout.sign_in_btn = Sign in
 
 # Enrolment Journey Pages
 #===========================
-awrs.enrolment.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
-awrs.enrolment.have_you_registered.error = You must select either Yes or No
+awrs.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
+awrs.have_you_registered.error = You must select either Yes or No
 
 # URN Messages
 #===========================
-awrs.urn.title = What is your Alcohol Wholesaler Registration Scheme (AWRS) Unique Reference Number (URN)?
-awrs.urn.label = Your URN is 4 letters and 11 numbers, like XXAW00000123456. You can find it printed on the wholesaler or producer’s invoices. If you can’t find it, contact the wholesaler or producer for the URN.
+awrs.reenrolment.registered_urn.title = What is your Alcohol Wholesaler Registration Scheme (AWRS) Unique Reference Number (URN)?
+awrs.reenrolment.registered_urn.label = Your URN is 4 letters and 11 numbers, like XXAW00000123456. You can find it printed on the wholesaler or producer’s invoices. If you can’t find it, contact the wholesaler or producer for the URN.
 
 # UTR Messages
 #===========================
-awrs.utr.title.ct = Enter your Corporation Tax Unique Taxpayer Reference (UTR)
-awrs.utr.title.sa = Enter your Self Assessment Tax Unique Taxpayer Reference (UTR)
-awrs.utr.label = Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’.
-awrs.utr.empty = Enter your 10 or 13 digit Unique Taxpayer Reference (UTR)
-awrs.utr.length = The Unique Taxpayer Reference (UTR) must be 10 or 13 digits long
-awrs.utr.invalidUTR = The Unique Taxpayer Reference (UTR) is not valid
+awrs.reenrolment.registered_utr.title.ct = Enter your Corporation Tax Unique Taxpayer Reference (UTR)
+awrs.reenrolment.registered_utr.title.sa = Enter your Self Assessment Tax Unique Taxpayer Reference (UTR)
+awrs.reenrolment.registered_utr.label = Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’.
+awrs.reenrolment.registered_utr.error.empty = Enter your 10 or 13 digit Unique Taxpayer Reference (UTR)
+awrs.reenrolment.registered_utr.error.length = The Unique Taxpayer Reference (UTR) must be 10 or 13 digits long
+awrs.reenrolment.registered_utr.error.invalidUTR = The Unique Taxpayer Reference (UTR) is not valid
 
 # Awrs registered postcode
-awrs.register_postcode.title = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
-awrs.register_postcode.heading = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
-awrs.register_postcode.error.empty = Enter your postcode
-awrs.register_postcode.error.invalid_postcode = Enter a valid UK postcode
-awrs.register_postcode.hint = For example, SW1A 2AA
+#===========================
+awrs.reenrolment.registered_postcode.title = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
+awrs.reenrolment.registered_postcode.heading = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
+awrs.reenrolment.registered_postcode.hint = For example, SW1A 2AA
+awrs.reenrolment.registered_postcode.error.empty = Enter your postcode
+awrs.reenrolment.registered_postcode.error.invalid_postcode = Enter a valid UK postcode
 
-awrs.urn_kickout.title = Get Help with your AWRS registration
-awrs.urn_kickout.heading = We're unable to locate your details linked with the Unique Reference Number (URN) you entered.
-awrs.urn_kickout.p1 = Contact HMRC
-awrs.urn_kickout.p2 = Phone: 0300 200 3700
-awrs.urn_kickout.p3 = Textphone: 0300 200 3719
-awrs.urn_kickout.p4 = Outside UK: +44 2920 501 261
-awrs.urn_kickout.p5 = Monday to Friday, 9am to 6pm (except public holidays)
+awrs.reenrolment.kickout.title = Get Help with your AWRS registration
+awrs.reenrolment.kickout.heading = We're unable to locate your details linked with the Unique Reference Number (URN) you entered.
+awrs.reenrolment.kickout.p1 = Contact HMRC
+awrs.reenrolment.kickout.p2 = Phone: 0300 200 3700
+awrs.reenrolment.kickout.p3 = Textphone: 0300 200 3719
+awrs.reenrolment.kickout.p4 = Outside UK: +44 2920 501 261
+awrs.reenrolment.kickout.p5 = Monday to Friday, 9am to 6pm (except public holidays)
 
-awrs.successful_enrolment.title = You have added your AWRS to your business tax account
-awrs.successful_enrolment.heading = What happens next
-awrs.successful_enrolment.p1 = You can now view and manage your AWRS registration in your business tax account.
-awrs.successful_enrolment.p2 = More detailed information can be found in the AWRS guidance (opens in a new tab)
-awrs.successful_enrolment.btn = View your business tax account
-
+awrs.reenrolment.successful_enrolment.title = You have added your AWRS to your business tax account
+awrs.reenrolment.successful_enrolment.heading = What happens next
+awrs.reenrolment.successful_enrolment.p1 = You can now view and manage your AWRS registration in your business tax account.
+awrs.reenrolment.successful_enrolment.p2 = More detailed information can be found in the AWRS guidance (opens in a new tab)
+awrs.reenrolment.successful_enrolment.btn = View your business tax account

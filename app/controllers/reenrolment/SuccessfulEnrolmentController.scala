@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import audit.Auditable
 import config.ApplicationConfig
@@ -33,22 +33,19 @@ class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
                                               val deEnrolService: DeEnrolService,
                                               val authConnector: DefaultAuthConnector,
                                               val auditable: Auditable,
-                                              val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                              awrsFeatureSwitches: AWRSFeatureSwitches,
                                               val accountUtils: AccountUtils,
-                                              template: views.html.awrs_successful_enrolment
+                                              template: views.html.reenrolment.awrs_successful_enrolment
                                              ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-
   def showSuccessfulEnrolmentPage(): Action[AnyContent] = Action.async { implicit request =>
-      if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-        Future.successful(Ok(template()))
-      } else {
-        Future.successful(NotFound)
-      }
+    if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+      Future.successful(Ok(template()))
+    } else {
+      Future.successful(NotFound)
+    }
   }
-
-
 }

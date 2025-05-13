@@ -69,7 +69,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
             haveYouRegisteredData =>
               keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap { _ =>
                 if (haveYouRegisteredData.hasUserRegistered.getOrElse(false)) {
-                  Future.successful(Redirect(controllers.routes.AwrsUrnController.showArwsUrnPage))
+                  Future.successful(Redirect(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage))
                 }
                 else {
                   Future.successful(Redirect(applicationConfig.businessCustomerStartPage))

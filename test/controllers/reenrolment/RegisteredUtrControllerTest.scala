@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.reenrolment
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import forms.AwrsEnrolmentUtrForm
+import forms.reenrolment.RegisteredUtrForm
 import models.AwrsStatus.Approved
-import models.{AwrsEnrolmentUtr, AwrsRegisteredPostcode, Business, EnrolResponse, Identifier, Info, SearchResult}
+import models.reenrolment.AwrsRegisteredPostcode
+import models.{AwrsEnrolmentUtr, Business, EnrolResponse, Identifier, Info, SearchResult}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
@@ -30,16 +31,17 @@ import play.api.test.Helpers._
 import services.{EnrolService, ServicesUnitTestFixture}
 import services.mocks.{MockIndexService, MockKeyStoreService}
 import utils.{AwrsUnitTestTraits, TestUtil}
-import views.html.awrs_utr
+import views.html.reenrolment.awrs_registered_utr
+
 import scala.concurrent.{Await, Future}
 
-class AwrsUtrControllerTest extends AwrsUnitTestTraits
+class RegisteredUtrControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture with MockAuthConnector
   with MockKeyStoreService
   with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[AwrsEnrolmentUtr](FakeRequest(), AwrsEnrolmentUtrForm.awrsEnrolmentUtrForm.form, AwrsEnrolmentUtr(answer))
+    TestUtil.populateFakeRequest[AwrsEnrolmentUtr](FakeRequest(), RegisteredUtrForm.awrsEnrolmentUtrForm.form, AwrsEnrolmentUtr(answer))
 
   def testSearchResult(ref:String) = SearchResult(List(
     Business(ref,
@@ -48,10 +50,10 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       Info(Some("Business Name"), Some("Trading Name"), Some("Full name"), None),
       None)))
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: awrs_utr = app.injector.instanceOf[views.html.awrs_utr]
+  val template: awrs_registered_utr = app.injector.instanceOf[views.html.reenrolment.awrs_registered_utr]
   val mockEnrolService: EnrolService = mock[EnrolService]
 
-  val testAwrsUtrController: AwrsUtrController = new AwrsUtrController(mockMCC,
+  val testAwrsUtrController: RegisteredUtrController = new RegisteredUtrController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
     mockAuditable, mockAccountUtils, mockMatchingService,
     mockEnrolService, mockAwrsFeatureSwitches, mockAppConfig, template)
@@ -90,7 +92,7 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       val result: Result = Await.result(res, 5.seconds)
       result.header.status mustBe 303
-      result.header.headers("Location") mustBe controllers.routes.AwrsUrnKickoutController.showURNKickOutPage.url
+      result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url
     }
 
     "enrol SA UTR for AWRS if no errors" in {
@@ -146,7 +148,7 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForAwrsUtr()
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
-      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("SomthingWithError"))
+      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("SomethingWithError"))
       status(res) mustBe 400
     }
 
@@ -155,8 +157,8 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
 
-      val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomthingWithError")))
-      res must include ("awrs.utr.title.ct")
+      val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomethingWithError")))
+      res must include ("awrs.reenrolment.registered_utr.title.ct")
     }
 
     "reflect Self Assessment in title if logged-in user has SA UTR and form has errors" in {
@@ -164,8 +166,8 @@ class AwrsUtrControllerTest extends AwrsUnitTestTraits
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
 
-      val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomthingWithError")))
-      res must include ("awrs.utr.title.sa")
+      val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomethingWithError")))
+      res must include ("awrs.reenrolment.registered_utr.title.sa")
     }
   }
 }

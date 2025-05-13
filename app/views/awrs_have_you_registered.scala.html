@@ -39,7 +39,7 @@
     @backLink(controllers.routes.HaveYouRegisteredController.showLastLocation.url)
 }
 
-@awrsMain(title = s"${errorPrefix(haveYouRegisteredForm)} ${messages("awrs.generic.tab.title", messages("awrs.enrolment.have_you_registered.title"))}",
+@awrsMain(title = s"${errorPrefix(haveYouRegisteredForm)} ${messages("awrs.generic.tab.title", messages("awrs.have_you_registered.title"))}",
 backlink = Some(backlinkHtml), userLoggedIn = true){
 
     @if(haveYouRegisteredForm.errors.nonEmpty) {
@@ -48,7 +48,7 @@ backlink = Some(backlinkHtml), userLoggedIn = true){
 
     <header class = "page-header">
         <h1 id="have-you-registered-heading" class="govuk-heading-xl">
-            @messages("awrs.enrolment.have_you_registered.title")
+            @messages("awrs.have_you_registered.title")
         </h1>
     </header>
 
@@ -59,7 +59,7 @@ backlink = Some(backlinkHtml), userLoggedIn = true){
                     fieldset = Some(Fieldset(
                         legend = Some(Legend(
                             classes = "govuk-visually-hidden",
-                            content = Text(Messages("awrs.enrolment.have_you_registered.title"))
+                            content = Text(Messages("awrs.have_you_registered.title"))
                         ))
                     )),
                     items = Seq(

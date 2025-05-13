@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package views
+package views.reenrolment
 
-import forms.AwrsEnrolmentUrnForm.awrsEnrolmentUrnForm
+import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
 import play.twirl.api.HtmlFormat
-import views.html.awrs_urn
+import views.ViewTestFixture
+import views.html.reenrolment.awrs_registered_urn
 
-class AwrsUrnViewTest extends ViewTestFixture  {
+class RegisteredUrnViewTest extends ViewTestFixture  {
 
-  val template: awrs_urn = app.injector.instanceOf[views.html.awrs_urn]
+  val template: awrs_registered_urn = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
   override val htmlContent: HtmlFormat.Appendable = template.apply(awrsEnrolmentUrnForm.form)(fakeRequest, messages, mockAppConfig)
 
   "Awrs Urn Template" must {
 
       "Display all fields correctly" in {
-        heading mustBe "What is your Alcohol Wholesaler Registration Scheme (AWRS) Unique Reference Number (URN)?"
 
-        document.select("label").text() mustBe "Your URN is 4 letters and 11 numbers, like XXAW00000123456. You can find it printed on the wholesaler or producer’s invoices. If you can’t find it, contact the wholesaler or producer for the URN."
-
+        heading mustBe messages("awrs.reenrolment.registered_urn.title")
+        document.select("label").text() mustBe messages("awrs.reenrolment.registered_urn.label")
         document.select("input").attr("id") mustBe "awrsUrn"
       }
 
     "contain a backlink pointing to the correct controller (haveYouRegistered)" in {
+
       val backlink = document.getElementById("back")
       backlink.attr("href") mustBe controllers.routes.HaveYouRegisteredController.showHaveYouRegisteredPage.url
     }

@@ -22,17 +22,17 @@
 
 @()(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
-@awrsMain(title = messages("awrs.successful_enrolment.title", messages("awrs.successful_enrolment.title"))) {
+@awrsMain(title = messages("awrs.reenrolment.successful_enrolment.title", messages("awrs.reenrolment.successful_enrolment.title"))) {
 <div class="govuk-panel govuk-panel--confirmation">
 	<h1 class="govuk-panel__title">
-		@Messages("awrs.successful_enrolment.title")
+		@Messages("awrs.reenrolment.successful_enrolment.title")
 	</h1>
 </div>
 	<h2 class="govuk-body govuk-!-font-weight-bold">
-		@messages("awrs.successful_enrolment.heading")
+		@messages("awrs.reenrolment.successful_enrolment.heading")
 	</h2>
 <p class="govuk-body" id="paragraph-1">
-	@messages("awrs.successful_enrolment.p1")
+	@messages("awrs.reenrolment.successful_enrolment.p1")
 </p>
 <p class="govuk-body" id="paragraph-2">
 	More detailed information can be found in the
@@ -43,7 +43,7 @@
 <br>
 <br>
 	<a href="@applicationConfig.businessTaxAccountPage" role="button" class="govuk-button" id = "bta-redirect-button" data-module="govuk-button">
-		@messages("awrs.successful_enrolment.btn")
+		@messages("awrs.reenrolment.successful_enrolment.btn")
 	</a>
 <br>
 }
