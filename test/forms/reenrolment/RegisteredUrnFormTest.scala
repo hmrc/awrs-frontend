@@ -34,7 +34,7 @@ class RegisteredUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.awrsUrn.empty"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.awrsUrn.generic.error"
         },
         _ => fail("Field should contain errors")
       )
@@ -44,7 +44,7 @@ class RegisteredUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "a" * 141)).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.awrsUrn.maximum_length", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.generic.error", fieldNameInErrorMessage, maxQueryLength)
         },
         _ => fail("Field should contain errors")
       )
@@ -54,7 +54,7 @@ class RegisteredUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "XAAW000001234567")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.string_length_mismatch", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.generic.error", fieldNameInErrorMessage, maxQueryLength)
         },
         _ => fail("Field should contain errors")
       )
@@ -64,7 +64,7 @@ class RegisteredUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "XAAW000001234")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.string_length_mismatch", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.generic.error", fieldNameInErrorMessage, maxQueryLength)
         },
         _ => fail("Field should contain errors")
       )
@@ -74,7 +74,7 @@ class RegisteredUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "XAAW00001123456")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.zeros_mismatch", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.generic.error", fieldNameInErrorMessage, maxQueryLength)
         },
         _ => fail("Field should contain errors")
       )
@@ -84,7 +84,7 @@ class RegisteredUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "X0AW00000123456")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.default_invalid_urn", fieldNameInErrorMessage, maxQueryLength)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.awrsUrn.generic.error", fieldNameInErrorMessage, maxQueryLength)
         },
         _ => fail("Field should contain errors")
       )
