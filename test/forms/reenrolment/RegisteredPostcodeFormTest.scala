@@ -35,7 +35,7 @@ class RegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFi
       form.bind(Map(fieldId -> "")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.empty"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error"
         },
         _ => fail("Field should contain errors")
       )
@@ -45,7 +45,7 @@ class RegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFi
       form.bind(Map(fieldId -> "test")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.invalid_postcode"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error"
         },
         _ => fail("Field should contain errors")
       )
@@ -55,7 +55,7 @@ class RegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFi
       form.bind(Map(fieldId -> "1111ne")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.invalid_postcode"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error"
         },
         _ => fail("Field should contain errors")
       )
@@ -93,7 +93,7 @@ class RegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFi
       form.bind(Map(fieldId -> "NE27&0JZ")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error.invalid_postcode"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_postcode.error"
         },
         _ => fail("Field should contain errors")
       )

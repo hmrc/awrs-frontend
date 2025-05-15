@@ -36,7 +36,7 @@ object RegisteredPostcodeForm extends AwrsValidator{
         if (AwrsRegisteredPostcode.sanitise(registeredPostcode).matches(postcodeRegex)) {
           Valid
         } else {
-          Invalid("awrs.reenrolment.registered_postcode.error.invalid_postcode")
+          Invalid("awrs.reenrolment.registered_postcode.error")
         }
       }
     )
@@ -44,7 +44,7 @@ object RegisteredPostcodeForm extends AwrsValidator{
 
   private lazy val compulsoryQueryField = compulsoryText(
     CompulsoryTextFieldMappingParameter(
-      empty = simpleFieldIsEmptyConstraintParameter(registeredPostcode, "awrs.reenrolment.registered_postcode.error.empty"),
+      empty = simpleFieldIsEmptyConstraintParameter(registeredPostcode, "awrs.reenrolment.registered_postcode.error"),
       maxLengthValidation = null,
       formatValidations = invalidPostcodeErrorMessage
     ))
