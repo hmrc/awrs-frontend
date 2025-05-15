@@ -53,7 +53,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
             case _ => Future.successful(Ok(template(haveYouRegisteredForm.form)))
           }
         } else {
-          Future.successful(NotFound)
+          Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
         }
       }
     }
