@@ -16,6 +16,7 @@
 
 package views
 
+import config.ApplicationConfig
 import forms.HaveYouRegisteredForm.haveYouRegisteredForm
 import play.twirl.api.HtmlFormat
 import views.html.awrs_have_you_registered
@@ -25,7 +26,9 @@ class HaveYouRegisteredViewTest extends ViewTestFixture {
 
   val template: awrs_have_you_registered = app.injector.instanceOf[views.html.awrs_have_you_registered]
 
-  override val htmlContent: HtmlFormat.Appendable = template.apply(haveYouRegisteredForm.form)(fakeRequest, LinearViewMode, messages, mockAppConfig)
+  implicit val appConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+
+  override val htmlContent: HtmlFormat.Appendable = template.apply(haveYouRegisteredForm.form)(fakeRequest, LinearViewMode, messages, appConfig)
 
 
   "Have you registered template" must {
@@ -55,7 +58,7 @@ class HaveYouRegisteredViewTest extends ViewTestFixture {
 
     "contain a backlink pointing to the correct controller" in {
       val backlink = document.getElementById("back")
-      backlink.attr("href") mustBe "/alcohol-wholesale-scheme/have-you-registered/lastLocation"
+      backlink.attr("href") mustBe "http://localhost:9730/business-account/add-tax/other/alcohol"
     }
   }
 }
