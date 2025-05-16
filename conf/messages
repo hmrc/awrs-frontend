@@ -978,8 +978,7 @@ awrs.reenrolment.registered_utr.error.invalidUTR = The Unique Taxpayer Reference
 awrs.reenrolment.registered_postcode.title = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
 awrs.reenrolment.registered_postcode.heading = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)
 awrs.reenrolment.registered_postcode.hint = For example, SW1A 2AA
-awrs.reenrolment.registered_postcode.error.empty = Enter your postcode
-awrs.reenrolment.registered_postcode.error.invalid_postcode = Enter a valid UK postcode
+awrs.reenrolment.registered_postcode.error = Enter a valid UK postcode
 
 awrs.reenrolment.kickout.title = Get Help with your AWRS registration
 awrs.reenrolment.kickout.heading = We're unable to locate your details linked with the Unique Reference Number (URN) you entered.
