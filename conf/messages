@@ -962,7 +962,6 @@ awrs.reenrolment.registered_utr.title.sa = Enter your Self Assessment Tax Unique
 awrs.reenrolment.registered_utr.label = Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’.
 awrs.reenrolment.registered_utr.error = Enter your valid 10 or 13 digit Unique Taxpayer Reference (UTR)
 
-
 # Awrs registered postcode
 #===========================
 awrs.reenrolment.registered_postcode.title = Enter the postcode you registered with Alcohol Wholesaler Registration Scheme (AWRS)

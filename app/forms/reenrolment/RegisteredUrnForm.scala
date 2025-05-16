@@ -47,19 +47,8 @@ object RegisteredUrnForm {
     FieldFormatConstraintParameter(
       (name: String) => {
         trimAllFunc(name) match {
-          case trimmedName@_ if !validText(trimmedName) => Invalid("awrs.awrsUrn.generic.error")
-          case trimmedName@_ if trimmedName.matches(awrsRefRegEx) => Valid
-          case trimmedName@_ if trimmedName.matches(leading4CharRegex) => {
-            trimmedName match {
-              case trimmedName if (trimmedName.length != 15) => Invalid("awrs.awrsUrn.generic.error")
-              case trimmedName if (!trimmedName.matches(zerosRegex)) => Invalid("awrs.awrsUrn.generic.error")
-
-              case _ => Invalid("awrs.awrsUrn.generic.error")
-            }
-          }
-          case _ => {
-            Invalid("awrs.awrsUrn.generic.error")
-          }
+          case trimmedName@_ if validText(trimmedName) && trimmedName.matches(awrsRefRegEx) => Valid
+          case _ => Invalid("awrs.awrsUrn.generic.error")
         }
       }
     )
