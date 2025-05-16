@@ -4,16 +4,7 @@ service.name=Register as an alcohol wholesaler or producer
 error.browser.title.prefix = Error:
 
 ##### URN FORM ERROR MESSAGES
-awrs.awrsUrn.empty.summary = The search field is empty
-awrs.awrsUrn.empty = Enter a Unique Reference Number
-awrs.awrsUrn.string_length_mismatch = You must enter a 15 character Unique Reference Number
-awrs.awrsUrn.string_length_mismatch.summary = You must enter a 15 character Unique Reference Number
-
-awrs.awrsUrn.zeros_mismatch = A Unique Reference Number must start with 4 alphabetical characters followed by 5 zeros
-awrs.awrsUrn.zeros_mismatch.summary = A Unique Reference Number must start with 4 alphabetical characters followed by 5 zeros
-
-awrs.awrsUrn.default_invalid_urn = You must enter a valid Unique Reference Number
-awrs.awrsUrn.default_invalid_urn.summary = You must enter a valid Unique Reference Number
+awrs.awrsUrn.generic.error = Enter your valid Unique Reference Number (URN)
 
 # Buttons & links
 #============================================================
@@ -969,9 +960,7 @@ awrs.reenrolment.registered_urn.label = Your URN is 4 letters and 11 numbers, li
 awrs.reenrolment.registered_utr.title.ct = Enter your Corporation Tax Unique Taxpayer Reference (UTR)
 awrs.reenrolment.registered_utr.title.sa = Enter your Self Assessment Tax Unique Taxpayer Reference (UTR)
 awrs.reenrolment.registered_utr.label = Your Unique Taxpayer Reference (UTR) is 10 or 13 digits long. You can find it in your Personal Tax Account, the HMRC app, or on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’, or ‘official use’.
-awrs.reenrolment.registered_utr.error.empty = Enter your 10 or 13 digit Unique Taxpayer Reference (UTR)
-awrs.reenrolment.registered_utr.error.length = The Unique Taxpayer Reference (UTR) must be 10 or 13 digits long
-awrs.reenrolment.registered_utr.error.invalidUTR = The Unique Taxpayer Reference (UTR) is not valid
+awrs.reenrolment.registered_utr.error = Enter your valid 10 or 13 digit Unique Taxpayer Reference (UTR)
 
 # Awrs registered postcode
 #===========================

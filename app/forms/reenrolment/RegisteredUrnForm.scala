@@ -47,19 +47,8 @@ object RegisteredUrnForm {
     FieldFormatConstraintParameter(
       (name: String) => {
         trimAllFunc(name) match {
-          case trimmedName@_ if !validText(trimmedName) => Invalid("awrs.generic.error.character_invalid")
-          case trimmedName@_ if trimmedName.matches(awrsRefRegEx) => Valid
-          case trimmedName@_ if trimmedName.matches(leading4CharRegex) => {
-            trimmedName match {
-              case trimmedName if (trimmedName.length != 15) => Invalid("awrs.awrsUrn.string_length_mismatch")
-              case trimmedName if (!trimmedName.matches(zerosRegex)) => Invalid("awrs.awrsUrn.zeros_mismatch")
-
-              case _ => Invalid("awrs.awrsUrn.default_invalid_urn")
-            }
-          }
-          case _ => {
-            Invalid("awrs.awrsUrn.default_invalid_urn")
-          }
+          case trimmedName@_ if validText(trimmedName) && trimmedName.matches(awrsRefRegEx) => Valid
+          case _ => Invalid("awrs.awrsUrn.generic.error")
         }
       }
     )
@@ -73,8 +62,8 @@ object RegisteredUrnForm {
 
   private lazy val compulsoryQueryField = compulsoryText(
     CompulsoryTextFieldMappingParameter(
-      empty = simpleFieldIsEmptyConstraintParameter(awrsUrn, "awrs.awrsUrn.empty"),
-      maxLengthValidation = FieldMaxLengthConstraintParameter(maxQueryLength, Invalid("awrs.generic.error.awrsUrn.maximum_length", "awrsUrn field", maxQueryLength)),
+      empty = simpleFieldIsEmptyConstraintParameter(awrsUrn, "awrs.awrsUrn.generic.error"),
+      maxLengthValidation = FieldMaxLengthConstraintParameter(maxQueryLength, Invalid("awrs.awrsUrn.generic.error", "awrsUrn field", maxQueryLength)),
       formatValidations = Seq(formatRules)
     ))
 
