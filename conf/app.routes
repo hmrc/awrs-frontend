@@ -160,7 +160,6 @@ POST        /re-apply                                       controllers.Reapplic
 
 GET        /have-you-registered                             controllers.HaveYouRegisteredController.showHaveYouRegisteredPage
 POST       /have-you-registered/confirm                     controllers.HaveYouRegisteredController.saveAndContinue
-GET        /have-you-registered/lastLocation                controllers.HaveYouRegisteredController.showLastLocation
 
 # Reenrolment journey
 GET         /reenrolment/registered-urn                     controllers.reenrolment.RegisteredUrnController.showArwsUrnPage

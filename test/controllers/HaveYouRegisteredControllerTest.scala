@@ -109,13 +109,4 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
     redirectLocation(result) mustBe Some(mockAppConfig.businessCustomerStartPage)
   }
 
-  "redirect to last visited location if stored in session" in {
-    setUpMocksFeatureFlagOn()
-
-    val result = mockHaveYouRegisteredController.showLastLocation().apply(testRequest(Some(true)))
-
-    status(result) mustBe SEE_OTHER
-    redirectLocation(result) mustBe Some("/previous-page")
-  }
-
 }
