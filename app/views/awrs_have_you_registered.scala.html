@@ -36,7 +36,7 @@
 @actionRoute = @{controllers.routes.HaveYouRegisteredController.saveAndContinue}
 
 @backlinkHtml = {
-    @backLink(controllers.routes.HaveYouRegisteredController.showLastLocation.url)
+    @backLink(applicationConfig.addTaxesFrontEndUrl)
 }
 
 @awrsMain(title = s"${errorPrefix(haveYouRegisteredForm)} ${messages("awrs.generic.tab.title", messages("awrs.have_you_registered.title"))}",
