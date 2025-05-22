@@ -84,6 +84,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
     def testPageIsSkipped(result: Future[Result]) = status(result) mustBe SEE_OTHER
 
     "Display the status page on an inital visit when routed from home controller or the link" in {
+      when(mockAccountUtils.getUtr(ArgumentMatchers.any[StandardAuthRetrievals]())).thenReturn("TestUTR")
       returningTestUser(initialVisit = true, FromHomeController)(testPageIsDisplayed)
       returningTestUser(initialVisit = true, FromStatusPageLink)(testPageIsDisplayed)
     }
