@@ -28,16 +28,11 @@ object RegisteredUtrForm {
 
   lazy val awrsEnrolmentUtrValidationForm: Form[AwrsEnrolmentUtr] = Form(mapping(
     utr ->  text
-      .verifying("awrs.reenrolment.registered_utr.error.empty", x => {
+      .verifying("awrs.reenrolment.registered_utr.error", x => {
         val trimmedString = x.replaceAll(" ", "")
-        trimmedString.length > 0
-      })
-      .verifying("awrs.reenrolment.registered_utr.error.length", x => {
-        val trimmedString = x.replaceAll(" ", "")
-        trimmedString.isEmpty || (trimmedString.nonEmpty && (trimmedString.matches("""^[0-9]{10}$""") || trimmedString.matches("""^[0-9]{13}$""")))})
-      .verifying("awrs.reenrolment.registered_utr.error.invalidUTR", x => {
-        val trimmedString = x.replaceAll(" ", "")
-        trimmedString.isEmpty || !(trimmedString.matches("""^[0-9]{10}$""") || trimmedString.matches("""^[0-9]{13}$""")) || UTRValidator.validateUTR(trimmedString)
+        (trimmedString.matches("""^[0-9]{10}$""") ||
+          trimmedString.matches("""^[0-9]{13}$""")) &&
+          UTRValidator.validateUTR(trimmedString)
       })
   )(AwrsEnrolmentUtr.apply)(AwrsEnrolmentUtr.unapply))
 
