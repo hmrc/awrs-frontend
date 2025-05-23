@@ -29,23 +29,21 @@ class RegisteredUtrFormTest extends PlaySpec with AwrsFormTestUtils {
     val fieldId = "utr"
     val fieldNameInErrorMessage = "utr field"
 
-
     "field is left blank" in {
       form.bind(Map(fieldId -> "")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_utr.error.empty"
+          formWithErrors(fieldId).errors.head.message mustBe "awrs.reenrolment.registered_utr.error"
         },
         _ => fail("Field should contain errors")
       )
     }
 
-
     "field is more than length mismatch" in {
       form.bind(Map(fieldId -> "623211381456")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error.length", fieldNameInErrorMessage)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -55,7 +53,7 @@ class RegisteredUtrFormTest extends PlaySpec with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "       ")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error.empty", fieldNameInErrorMessage)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -65,7 +63,7 @@ class RegisteredUtrFormTest extends PlaySpec with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "623211")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error.length", fieldNameInErrorMessage)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -76,7 +74,7 @@ class RegisteredUtrFormTest extends PlaySpec with AwrsFormTestUtils {
       form.bind(Map(fieldId -> "6232113818073")).fold(
         formWithErrors => {
           formWithErrors(fieldId).errors.size mustBe 1
-          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error.invalidUTR", fieldNameInErrorMessage)
+          messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.reenrolment.registered_utr.error", fieldNameInErrorMessage)
         },
         _ => fail("Field should contain errors")
       )
@@ -88,10 +86,6 @@ class RegisteredUtrFormTest extends PlaySpec with AwrsFormTestUtils {
       assertFormIsValid(form, Map(utr -> "6232113818078"))
       assertFormIsValid(form, Map(utr -> "623211381 8078"))
       assertFormIsValid(form, Map(utr -> "62321  1381 8078"))
-
     }
-
   }
-
-
 }
