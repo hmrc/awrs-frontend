@@ -302,6 +302,7 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
     setupMockKeyStoreServiceOnlySaveFunctions()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     when(mockApplicationService.updateApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(exception))
+    when(mockApplicationService.sendApplication(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(exception))
 
     val result = testApplicationDeclarationController.sendApplication().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
