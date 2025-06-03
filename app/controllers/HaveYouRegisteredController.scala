@@ -45,17 +45,18 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
 
 
   def showHaveYouRegisteredPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrolmentEligibleAuthorisedAction { implicit ar =>
-      restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+    if (awrsFeatureSwitches.enrolmentJourney().enabled) {
+      enrolmentEligibleAuthorisedAction { implicit ar =>
+        restrictedAccessCheck {
           keyStoreService.fetchHaveYouRegistered flatMap {
             case Some(hasUserRegistered) => Future.successful(Ok(template(haveYouRegisteredForm.form.fill(hasUserRegistered))))
             case _ => Future.successful(Ok(template(haveYouRegisteredForm.form)))
           }
-        } else {
-          Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
         }
       }
+    }
+    else {
+      Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
     }
   }
 
