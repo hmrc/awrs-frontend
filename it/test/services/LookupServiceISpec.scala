@@ -36,23 +36,36 @@ class LookupServiceISpec extends IntegrationSpec with Injecting with Matchers {
   "lookup" must {
 
     "return a SearchResult when the response is 200 OK" in {
-      val validResponseJson = Json.obj(
-        "results" -> Json.arr(
-          Json.obj(
-            "awrsRef" -> testUrn,
-            "status" -> "Approved",
-            "registrationDate" -> "01-01-2023",
-            "registrationEndDate" -> "01-01-2024",
-            "info" -> Json.obj(
-              "businessName" -> "Test Business",
-              "address" -> Json.obj(
-                "line1" -> "123 Test Street",
-                "line2" -> "Test Town",
-                "postcode" -> "AB12 3CD"
-              )
-            )
-          )
-        )
+      val validResponseJson = Json.parse(
+        s"""
+           {
+             "results": [
+               {
+                 "class": "Business",
+                 "data": {
+                   "awrsRef": "$testUrn",
+                   "status": "Approved",
+                   "registrationDate": "01-01-2023",
+                   "registrationEndDate": "01-01-2024",
+                   "info": {
+                     "businessName": "Test Business",
+                      "tradingName": "Test Trading",
+                      "fullName": "Test Full Name",
+                     "address" : {
+                        "addressLine1": "Test Street 1",
+                        "addressLine2": "Test Line 2",
+                        "addressLine3": "Test City",
+                        "addressLine4": "Test County",
+                        "postcode": "TE1 2ST",
+                        "addressCountry": "United Kingdom",
+                        "addressCountryCode": "GB"
+                     }
+                   }
+                 }
+               }
+             ]
+           }
+         """
       )
       stubFor(WireMock.get(urlEqualTo(s"/awrs-lookup/query/urn/$testUrn"))
         .willReturn(aResponse().withStatus(OK).withBody(validResponseJson.toString())))
