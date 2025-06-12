@@ -27,7 +27,6 @@ import javax.inject.Inject
 import play.api.mvc._
 import services.DataCacheKeys._
 import services._
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
@@ -79,7 +78,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
   def saveBusinessDetails(newAlreadyTrading: Boolean,
                           existingAlreadyTrading: Option[Boolean],
                           tradingStartDetails: Option[NewAWBusiness],
-                          authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, viewMode: ViewApplicationType): Future[Result] =
+                          authRetrievals: StandardAuthRetrievals)(implicit requestHeader: RequestHeader, viewMode: ViewApplicationType): Future[Result] =
     keyStoreService.saveAlreadyTrading(newAlreadyTrading).flatMap{_ =>
       (newAlreadyTrading, existingAlreadyTrading, tradingStartDetails) match {
         case (nat, Some(eat), Some(NewAWBusiness(yOrN,_))) if nat != eat =>

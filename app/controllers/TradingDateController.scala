@@ -27,7 +27,6 @@ import models._
 import play.api.mvc._
 import services.DataCacheKeys._
 import services._
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
@@ -75,7 +74,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
   }
 
   private def updateTradingStateInDatabaseIfNeeded(databaseTradingState: Option[Boolean], newAwBusiness: Option[NewAWBusiness])
-                                                  (implicit hc: HeaderCarrier): Future[Option[Boolean]] =
+                                                  (implicit requestHeader: RequestHeader): Future[Option[Boolean]] =
     (databaseTradingState, newAwBusiness) match {
       case (None, Some(NewAWBusiness(BooleanRadioEnum.YesString, _))) => keyStoreService.saveAlreadyTrading(true).map(_ => Some(true))
       case _ => Future.successful(databaseTradingState)
@@ -85,8 +84,7 @@ class TradingDateController @Inject()(val mcc: MessagesControllerComponents,
                           redirectRoute: (Option[RedirectParam], Boolean) => Future[Result],
                           isNewRecord: Boolean,
                           businessDetails: NewAWBusiness,
-                          authRetrievals: StandardAuthRetrievals)
-                         (implicit hc: HeaderCarrier): Future[Result] = {
+                          authRetrievals: StandardAuthRetrievals):Future[Result] = {
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap (_ => redirectRoute(Some(RedirectParam("No", id)), isNewRecord))
   }
 

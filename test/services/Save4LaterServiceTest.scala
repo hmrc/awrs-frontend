@@ -181,9 +181,9 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
 
     "business name details" in {
       val data = testBusinessNameDetails()
-      when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](any(), ArgumentMatchers.eq("businessNameDetails"))(any(), any(), any()))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](any(), ArgumentMatchers.eq("businessNameDetails"))(any(), any()))
         .thenReturn(Future.successful(Option(data)))
-      when(mockMainStoreSave4LaterConnector.saveData4Later[BusinessNameDetails](any(), ArgumentMatchers.eq("businessNameDetails"), any())(any(), any(), any()))
+      when(mockMainStoreSave4LaterConnector.saveData4Later[BusinessNameDetails](any(), ArgumentMatchers.eq("businessNameDetails"), any())(any(), any()))
         .thenReturn(Future.successful(Option(data)))
 
       val saveResult = testSave4LaterService.mainStore.saveBusinessNameDetails(TestUtil.defaultAuthRetrieval, data)
@@ -195,9 +195,9 @@ class Save4LaterServiceTest extends AwrsUnitTestTraits
 
     "trading date details" in {
       val data = newAWBusiness()
-      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](any(), ArgumentMatchers.eq("tradingStartDetails"))(any(), any(), any()))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](any(), ArgumentMatchers.eq("tradingStartDetails"))(any(), any()))
         .thenReturn(Future.successful(Option(data)))
-      when(mockMainStoreSave4LaterConnector.saveData4Later[NewAWBusiness](any(), ArgumentMatchers.eq("tradingStartDetails"), any())(any(), any(), any()))
+      when(mockMainStoreSave4LaterConnector.saveData4Later[NewAWBusiness](any(), ArgumentMatchers.eq("tradingStartDetails"), any())(any(), any()))
         .thenReturn(Future.successful(Option(data)))
 
       val saveResult = testSave4LaterService.mainStore.saveTradingStartDetails(TestUtil.defaultAuthRetrieval, data)

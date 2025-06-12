@@ -137,7 +137,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     setupMockApiSave4LaterService()
     setAuthMocks()
     when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-    when(mockKeyStoreService.removeAll(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
+    when(mockKeyStoreService.removeAll(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
     val result = testReapplicationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD").withMethod("POST"))
     test(result)
   }

@@ -16,9 +16,9 @@
 
 package utils
 
+import caching.CacheMap
 import models.{WithdrawalReason, WithdrawalResponse}
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.cache.client.CacheMap
 import services.DataCacheKeys._
 
 object WithdrawalTestUtils {

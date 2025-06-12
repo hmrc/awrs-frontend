@@ -19,11 +19,12 @@ package services.apis
 import audit.Auditable
 import connectors.AWRSConnector
 import controllers.auth.StandardAuthRetrievals
+
 import javax.inject.Inject
 import models.FormBundleStatus._
 import models.StatusContactType.MindedToReject
 import models._
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{AnyContent, Request, RequestHeader}
 import services.KeyStoreService
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.LoggingUtils
@@ -70,7 +71,7 @@ class AwrsAPI11 @Inject()(val awrsConnector: AWRSConnector,
     }
   }
 
-  @inline def getStatusInfoFromCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusInfoType]] =
+  @inline def getStatusInfoFromCache(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[StatusInfoType]] =
     keyStoreService.fetchStatusInfo
 
   private def getStatusInfoFromEtmp(contactNumber: String,

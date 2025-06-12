@@ -22,7 +22,6 @@ import connectors.mock.MockKeyStoreConnector
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -35,7 +34,7 @@ class BusinessCustomerServiceTest extends AwrsUnitTestTraits
   val businessCustomerTest = new BusinessCustomerService(mockBusCusCacheConnector)
 
   "fetch review details, if found from Business Customer Keystore" in {
-    when(mockBusCusCacheConnector.fetchDataFromKeystore[BusinessCustomerDetails](any())(any(), any(), any()))
+    when(mockBusCusCacheConnector.fetchDataFromKeystore[BusinessCustomerDetails](any())(any(), any()))
       .thenReturn(Future.successful(Some(testReviewBusinessDetails)))
 
     val result = businessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]
@@ -43,7 +42,7 @@ class BusinessCustomerServiceTest extends AwrsUnitTestTraits
   }
 
   "return None, if no details are found in BC keystore" in {
-    when(mockBusCusCacheConnector.fetchDataFromKeystore[BusinessCustomerDetails](any())(any(), any(), any()))
+    when(mockBusCusCacheConnector.fetchDataFromKeystore[BusinessCustomerDetails](any())(any(), any()))
       .thenReturn(Future.successful(None))
 
     val result = businessCustomerTest.getReviewBusinessDetails[BusinessCustomerDetails]

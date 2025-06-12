@@ -51,7 +51,7 @@ class BusinessDetailsServiceTest extends PlaySpec with MockitoSugar with BeforeA
 
   "validateBusinessDetails" must {
     "return NewApplicationMode when new app type is true" in {
-      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewApplicationType](any(), ArgumentMatchers.eq("newApplicationType"))(any(), any(), any()))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewApplicationType](any(), ArgumentMatchers.eq("newApplicationType"))(any(), any()))
         .thenReturn(Future.successful(Option(NewApplicationType(Some(true)))))
 
       val result = businessDetailsService.businessDetailsPageRenderMode(TestUtil.defaultAuthRetrieval)
@@ -60,9 +60,9 @@ class BusinessDetailsServiceTest extends PlaySpec with MockitoSugar with BeforeA
     }
 
     "return ReturnedApplicationEditMode if the new app type is empty but proposed start date is true" in {
-      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewApplicationType](any(), ArgumentMatchers.eq("newApplicationType"))(any(), any(), any()))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewApplicationType](any(), ArgumentMatchers.eq("newApplicationType"))(any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockApiSave4LaterConnector.fetchData4Later[BusinessDetailsSupport](any(), ArgumentMatchers.eq("businessDetailsSupport"))(any(), any(), any()))
+      when(mockApiSave4LaterConnector.fetchData4Later[BusinessDetailsSupport](any(), ArgumentMatchers.eq("businessDetailsSupport"))(any(), any()))
         .thenReturn(Future.successful(Option(BusinessDetailsSupport(true))))
 
       val result = businessDetailsService.businessDetailsPageRenderMode(TestUtil.defaultAuthRetrieval)
@@ -71,9 +71,9 @@ class BusinessDetailsServiceTest extends PlaySpec with MockitoSugar with BeforeA
     }
 
     "return ReturnedApplicationMode if the new app type is false and proposed start date is false" in {
-      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewApplicationType](any(), ArgumentMatchers.eq("newApplicationType"))(any(), any(), any()))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewApplicationType](any(), ArgumentMatchers.eq("newApplicationType"))(any(), any()))
         .thenReturn(Future.successful(Option(NewApplicationType(Some(false)))))
-      when(mockApiSave4LaterConnector.fetchData4Later[BusinessDetailsSupport](any(), ArgumentMatchers.eq("businessDetailsSupport"))(any(), any(), any()))
+      when(mockApiSave4LaterConnector.fetchData4Later[BusinessDetailsSupport](any(), ArgumentMatchers.eq("businessDetailsSupport"))(any(), any()))
         .thenReturn(Future.successful(Option(BusinessDetailsSupport(false))))
 
       val result = businessDetailsService.businessDetailsPageRenderMode(TestUtil.defaultAuthRetrieval)

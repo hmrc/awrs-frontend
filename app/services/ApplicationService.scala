@@ -18,16 +18,17 @@ package services
 
 import _root_.models._
 import audit.Auditable
+import caching.CacheMap
 import connectors.{AWRSConnector, AwrsDataCacheConnector}
 import controllers.auth.StandardAuthRetrievals
 import exceptions.{InvalidStateException, ResubmissionException}
 import forms.AwrsFormFields
+
 import javax.inject.Inject
 import java.time.LocalDate
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{AnyContent, Request, RequestHeader}
 import services.helper._
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.CacheUtil.cacheUtil
 import utils.{AccountUtils, LoggingUtils}
@@ -59,7 +60,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       case _ => suppliers
     }
 
-  def getSections(cacheID: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Sections] =
+  def getSections(cacheID: String, authRetrievals: StandardAuthRetrievals)(implicit ec: ExecutionContext): Future[Sections] =
     save4LaterService.mainStore.fetchAll(authRetrievals).map {
       res => res.get.getEntry[BusinessType]("legalEntity") match {
         case Some(BusinessType(Some("SOP"), _, _)) => Sections(soleTraderBusinessDetails = true)
@@ -194,7 +195,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
   }
 
   def hasAPI5ApplicationChanged(cacheID: String, authRetrievals: StandardAuthRetrievals)
-                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+                               (implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Boolean] =
     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
       for {
         cached <- fetchMainStore(authRetrievals)
@@ -230,7 +231,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
                                      cachedSubscription: Option[SubscriptionTypeFrontEnd],
                                      subscriptionStatus: Option[SubscriptionStatusType],
                                      authRetrievals: StandardAuthRetrievals)
-                                    (implicit hc: HeaderCarrier, ec: ExecutionContext)
+                                    (implicit hc: HeaderCarrier, requestHeader: RequestHeader, ec: ExecutionContext)
   : Future[SuccessfulUpdateGroupBusinessPartnerResponse] = {
     def createUpdateRegistrationDetailsRequest(businessCustomerAddress: BCAddressApi3): UpdateRegistrationDetailsRequest = {
       val businessContacts = cached.get.getBusinessContacts.get
@@ -351,7 +352,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
     }
   }
 
-  def getApi5ChangeIndicators(cached: Option[CacheMap], authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SectionChangeIndicators] = {
+  def getApi5ChangeIndicators(cached: Option[CacheMap], authRetrievals: StandardAuthRetrievals)(implicit ec: ExecutionContext): Future[SectionChangeIndicators] = {
     if (accountUtils.hasAwrs(authRetrievals.enrolments) && cached.isDefined) {
       for {
         cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)

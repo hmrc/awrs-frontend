@@ -40,7 +40,7 @@ trait MockIndexService extends AwrsUnitTestTraits {
                                             getStatus: IndexViewModel = defaultindexViewModelComplete): Unit = {
     when(mockIndexService.showOneViewLink(ArgumentMatchers.any())).thenReturn(showOneViewLink)
     when(mockIndexService.showContinueButton(ArgumentMatchers.any())).thenReturn(showContinueButton)
-    when(mockIndexService.getStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getStatus))
+    when(mockIndexService.getStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(getStatus))
   }
 }
 

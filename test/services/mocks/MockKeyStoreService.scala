@@ -44,12 +44,12 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
   // children must not override this method, update here when KeyStoreService changes
   protected final def mockFetchFromKeyStore[T](key: String, config: MockConfiguration[Future[Option[T]]]): Unit =
-  config ifConfiguredThen (dataToReturn => when(mockKeyStoreConnector.fetchDataFromKeystore[T](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(dataToReturn))
+  config ifConfiguredThen (dataToReturn => when(mockKeyStoreConnector.fetchDataFromKeystore[T](ArgumentMatchers.eq(key))(ArgumentMatchers.any(),  ArgumentMatchers.any())).thenReturn(dataToReturn))
 
   // children must not override this method, update here when KeyStoreService changes
   final def setupMockKeyStoreServiceOnlySaveFunctions(): Unit = {
-    when(mockKeyStoreConnector.saveDataToKeystore(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(returnedCacheMap))
+    when(mockKeyStoreConnector.saveDataToKeystore(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(returnFromSave))
   }
 
   // children can override in order to customise their default settings
@@ -190,19 +190,19 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              saveRegisteredPostcode:  Option[Int] = None,
                                            ): Unit = {
     def verifyDeleteSupportFetch[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[Option[T]](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[Option[T]](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifyDeleteSupportSave[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](ArgumentMatchers.eq(key), AdditionalMatchers.not(ArgumentMatchers.eq(None)))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](ArgumentMatchers.eq(key), AdditionalMatchers.not(ArgumentMatchers.eq(None)))(ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifyDelete[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](ArgumentMatchers.eq(key), ArgumentMatchers.eq(None))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[Option[T]](ArgumentMatchers.eq(key), ArgumentMatchers.eq(None))(ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifyFetch[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[T](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).fetchDataFromKeystore[T](ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     def verifySave[T](key: String, someCount: Option[Int]): Unit =
-      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[T](ArgumentMatchers.eq(key), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      someCount ifDefinedThen (count => verify(mockKeyStoreConnector, times(count)).saveDataToKeystore[T](ArgumentMatchers.eq(key), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
 
     verifyDeleteSupportFetch(deRegistrationDateName, fetchDeRegistrationDate)
     verifyDeleteSupportSave(deRegistrationDateName, saveDeRegistrationDate)

@@ -17,14 +17,15 @@
 package services
 
 import _root_.models._
+import caching.CacheMap
 import play.api.mvc.Call
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
 import forms.AWRSEnums.BooleanRadioEnum
+
 import javax.inject.Inject
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.{AccountUtils, CacheUtil}
 import view_models._
 
@@ -86,7 +87,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
   def isContactFirstNameNone(cache: Option[BusinessContacts]): Boolean = cache.fold(false)(_.contactFirstName.isEmpty)
 
   def getStatus(cacheMap: Option[CacheMap], businessType: String, authRetrievals: StandardAuthRetrievals)
-               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IndexViewModel] = {
+               (implicit ec: ExecutionContext): Future[IndexViewModel] = {
 
     val sectionStatus = foldOverOptionWithDefault[CacheMap, view_models.IndexStatus](SectionNotStarted) _
     def sectionHref(cm: Option[CacheMap], noData: Call, block: CacheMap => Call): String = (cm.fold(noData)(block)).url

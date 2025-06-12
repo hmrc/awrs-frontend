@@ -17,121 +17,119 @@
 package services
 
 import _root_.models._
+import caching.CacheMap
 import connectors.{AwrsKeyStoreConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
 import models.reenrolment.AwrsRegisteredPostcode
 import services.DataCacheKeys._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
-
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-
+import play.api.mvc.RequestHeader
 
 class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
-  @inline def saveDeRegistrationDate(deRegistration: DeRegistrationDate)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveDeRegistrationDate(deRegistration: DeRegistrationDate)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     saveDeRegistrationDate(Some(deRegistration))
 
-  @inline def saveDeRegistrationDate(deRegistration: Option[DeRegistrationDate])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveDeRegistrationDate(deRegistration: Option[DeRegistrationDate])(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[Option[DeRegistrationDate]](deRegistrationDateName, deRegistration)
 
-  @inline def fetchDeRegistrationDate(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[DeRegistrationDate]] =
+  @inline def fetchDeRegistrationDate()(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[DeRegistrationDate]] =
     keyStoreConnector.fetchDataFromKeystore[Option[DeRegistrationDate]](deRegistrationDateName) flatMap {
       case Some(someData@Some(data)) => Future.successful(someData)
       case _ => Future.successful(None)
     }
 
-  @inline def deleteDeRegistrationDate(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def deleteDeRegistrationDate(implicit requestHeader: RequestHeader): Future[(String, String)] =
     saveDeRegistrationDate(None)
 
-  @inline def saveWithdrawalReason(withdrawal: Option[WithdrawalReason])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveWithdrawalReason(withdrawal: Option[WithdrawalReason])(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[Option[WithdrawalReason]](withdrawalReasonName, withdrawal)
 
-  @inline def saveWithdrawalReason(withdrawal: WithdrawalReason)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveWithdrawalReason(withdrawal: WithdrawalReason)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     saveWithdrawalReason(Some(withdrawal))
 
-  @inline def fetchWithdrawalReason()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[WithdrawalReason]] =
+  @inline def fetchWithdrawalReason()(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[WithdrawalReason]] =
     keyStoreConnector.fetchDataFromKeystore[Option[WithdrawalReason]](withdrawalReasonName) flatMap {
       case Some(someData@Some(data)) => Future.successful(someData)
       case _ => Future.successful(None)
     }
 
-  @inline def deleteWithdrawalReason()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def deleteWithdrawalReason()(implicit requestHeader: RequestHeader): Future[(String, String)] =
     saveWithdrawalReason(None)
 
-  @inline def saveDeRegistrationReason(deRegistration: DeRegistrationReason)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveDeRegistrationReason(deRegistration: DeRegistrationReason)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     saveDeRegistrationReason(Some(deRegistration))
 
-  @inline def saveDeRegistrationReason(deRegistration: Option[DeRegistrationReason])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveDeRegistrationReason(deRegistration: Option[DeRegistrationReason])(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[Option[DeRegistrationReason]](deRegistrationReasonName, deRegistration)
 
-  @inline def fetchDeRegistrationReason(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[DeRegistrationReason]] =
+  @inline def fetchDeRegistrationReason(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[DeRegistrationReason]] =
     keyStoreConnector.fetchDataFromKeystore[Option[DeRegistrationReason]](deRegistrationReasonName) flatMap {
       case Some(someData@Some(data)) if data.deregistrationReason.isDefined => Future.successful(someData)
       case _ => Future.successful(None)
     }
 
-  @inline def deleteDeRegistrationReason(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def deleteDeRegistrationReason(implicit requestHeader: RequestHeader): Future[(String, String)] =
     saveDeRegistrationReason(None)
 
-  @inline def saveSubscriptionStatus(subscriptionStatusType: SubscriptionStatusType)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveSubscriptionStatus(subscriptionStatusType: SubscriptionStatusType)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[SubscriptionStatusType](subscriptionStatusTypeName, subscriptionStatusType)
 
-  @inline def fetchSubscriptionStatus(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
+  @inline def fetchSubscriptionStatus(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
     keyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](subscriptionStatusTypeName) flatMap {
       successData: Option[SubscriptionStatusType] => Future.successful(successData)
     }
 
-  @inline def saveStatusInfo(statusInfoType: StatusInfoType)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveStatusInfo(statusInfoType: StatusInfoType)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[StatusInfoType](statusInfoTypeName, statusInfoType)
 
-  @inline def fetchStatusInfo(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusInfoType]] =
+  @inline def fetchStatusInfo(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[StatusInfoType]] =
     keyStoreConnector.fetchDataFromKeystore[StatusInfoType](statusInfoTypeName) flatMap {
       successData: Option[StatusInfoType] => Future.successful(successData)
     }
 
-  @inline def saveStatusNotification(notificationStatus: StatusNotification)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveStatusNotification(notificationStatus: StatusNotification)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[StatusNotification](statusNotificationName, notificationStatus)
 
-  @inline def fetchStatusNotification(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusNotification]] =
+  @inline def fetchStatusNotification(implicit requestHeader: RequestHeader): Future[Option[StatusNotification]] =
     keyStoreConnector.fetchDataFromKeystore[StatusNotification](statusNotificationName)
 
-  @inline def saveIsNewBusiness(isNewBusiness: Boolean)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveIsNewBusiness(isNewBusiness: Boolean)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[Boolean](isNewBusinessName, isNewBusiness)
 
-  @inline def fetchIsNewBusiness(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
+  @inline def fetchIsNewBusiness(implicit requestHeader: RequestHeader): Future[Option[Boolean]] =
     keyStoreConnector.fetchDataFromKeystore[Boolean](isNewBusinessName)
 
-  @inline def saveViewedStatus(wasViewed: Boolean)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveViewedStatus(wasViewed: Boolean)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[Boolean](viewedStatusName, wasViewed)
 
-  @inline def fetchViewedStatus(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
+  @inline def fetchViewedStatus(implicit requestHeader: RequestHeader): Future[Option[Boolean]] =
     keyStoreConnector.fetchDataFromKeystore[Boolean](viewedStatusName)
 
-  @inline def saveBusinessNameChange(newName: BusinessNameDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveBusinessNameChange(newName: BusinessNameDetails)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[BusinessNameDetails](businessNameChangeName, newName)
 
-  @inline def fetchBusinessNameChange(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessNameDetails]] =
+  @inline def fetchBusinessNameChange(implicit requestHeader: RequestHeader): Future[Option[BusinessNameDetails]] =
     keyStoreConnector.fetchDataFromKeystore[BusinessNameDetails](businessNameChangeName)
 
-  @inline def saveAlreadyTrading(already: Boolean)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveAlreadyTrading(already: Boolean)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[Boolean](alreadyTradingName, already)
 
-  @inline def fetchAlreadyTrading(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
+  @inline def fetchAlreadyTrading(implicit requestHeader: RequestHeader): Future[Option[Boolean]] =
     keyStoreConnector.fetchDataFromKeystore[Boolean](alreadyTradingName)
 
-  @inline def saveBusinessCustomerAddress(businessCustomerAddress: BCAddressApi3)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveBusinessCustomerAddress(businessCustomerAddress: BCAddressApi3)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[BCAddressApi3](businessCustomerAddressName, businessCustomerAddress)
 
-  @inline def fetchBusinessCustomerAddresss(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BCAddressApi3]] =
+  @inline def fetchBusinessCustomerAddresss(implicit requestHeader: RequestHeader): Future[Option[BCAddressApi3]] =
     keyStoreConnector.fetchDataFromKeystore[BCAddressApi3](businessCustomerAddressName)
 
 
   @inline def saveSave4LaterBackup(save4LaterConnector: Save4LaterConnector, authRetrievals: StandardAuthRetrievals, accountUtils: AccountUtils)
-                                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = {
+                                  (implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[(String, String)] = {
     save4LaterConnector
       .fetchAll(accountUtils.getUtr(authRetrievals)).flatMap {
       case Some(cacheMap) => keyStoreConnector.saveDataToKeystore(save4LaterBackupName, cacheMap.copyOfSave4Later)
@@ -139,39 +137,40 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
     }
   }
 
-  @inline def fetchSave4LaterBackup(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
+
+  @inline def fetchSave4LaterBackup(implicit requestHeader: RequestHeader): Future[Option[CacheMap]] =
     keyStoreConnector.fetchDataFromKeystore[CacheMap](save4LaterBackupName)
 
-  @inline def removeAll(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = keyStoreConnector.removeAll()
+  @inline def removeAll(implicit requestHeader: RequestHeader): Future[Unit] = keyStoreConnector.removeAll()
 
-  @inline def fetchAwrsEnrolmentUrn(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsEnrolmentUrn]] =
+  @inline def fetchAwrsEnrolmentUrn(implicit requestHeader: RequestHeader): Future[Option[AwrsEnrolmentUrn]] =
     keyStoreConnector.fetchDataFromKeystore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName)
 
-  @inline def saveAwrsEnrolmentUrn(awrsEnrolmentUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveAwrsEnrolmentUrn(awrsEnrolmentUrn: AwrsEnrolmentUrn)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName, awrsEnrolmentUrn)
 
-  @inline def fetchAwrsEnrolmentUtr(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsEnrolmentUtr]] =
+  @inline def fetchAwrsEnrolmentUtr(implicit requestHeader: RequestHeader): Future[Option[AwrsEnrolmentUtr]] =
     keyStoreConnector.fetchDataFromKeystore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName)
 
-  @inline def saveAwrsEnrolmentUtr(awrsEnrolmentUtr: AwrsEnrolmentUtr)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveAwrsEnrolmentUtr(awrsEnrolmentUtr: AwrsEnrolmentUtr)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, awrsEnrolmentUtr)
 
-  @inline def fetchAwrsUrnSearchResult(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SearchResult]] =
+  @inline def fetchAwrsUrnSearchResult(implicit requestHeader: RequestHeader): Future[Option[SearchResult]] =
     keyStoreConnector.fetchDataFromKeystore[SearchResult](awrsEnrolmentSearchResultKeyName)
 
-  @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrolmentSearchResultKeyName, searchResult)
 
-  @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
 
-  @inline def fetchAwrsRegisteredPostcode(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsRegisteredPostcode]] =
+  @inline def fetchAwrsRegisteredPostcode(implicit requestHeader: RequestHeader): Future[Option[AwrsRegisteredPostcode]] =
     keyStoreConnector.fetchDataFromKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName)
 
-  @inline def fetchHaveYouRegistered(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[HaveYouRegisteredModel]] = {
+  @inline def fetchHaveYouRegistered(implicit requestHeader: RequestHeader): Future[Option[HaveYouRegisteredModel]] = {
     keyStoreConnector.fetchDataFromKeystore[HaveYouRegisteredModel](enrolmentJourneyHaveYouRegisteredKeyName)
   }
 
-  @inline def saveHaveYouRegistered(haveYouRegisteredModel: HaveYouRegisteredModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  @inline def saveHaveYouRegistered(haveYouRegisteredModel: HaveYouRegisteredModel)(implicit requestHeader: RequestHeader): Future[(String, String)] =
     keyStoreConnector.saveDataToKeystore[HaveYouRegisteredModel](enrolmentJourneyHaveYouRegisteredKeyName, haveYouRegisteredModel)
 }

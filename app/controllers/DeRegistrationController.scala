@@ -66,7 +66,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
       showNotFoundPage
     }
 
-  private def returnToIndexSubroutine(implicit hc: HeaderCarrier) =
+  private def returnToIndexSubroutine(implicit hc: HeaderCarrier, requestHeader: RequestHeader) =
     keyStoreService.deleteDeRegistrationDate flatMap {
       _ =>
         keyStoreService.deleteDeRegistrationReason flatMap {

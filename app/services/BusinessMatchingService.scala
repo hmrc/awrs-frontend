@@ -23,6 +23,7 @@ import forms.AWRSEnums
 import models._
 import models.reenrolment.AwrsRegisteredPostcode
 import play.api.libs.json.{JsSuccess, JsValue}
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
 
@@ -34,7 +35,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
                                         save4LaterService: Save4LaterService,
                                         val auditable: Auditable) extends LoggingUtils {
 
-  def isValidMatchedGroupUtr(utr: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  def isValidMatchedGroupUtr(utr: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, requestHeader: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
     for {
       bcd <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
       businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
@@ -60,7 +61,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
   }
 
   def matchBusinessWithUTR(utr: String, organisation: Option[Organisation], authRetrievals: StandardAuthRetrievals)
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+                          (implicit hc: HeaderCarrier, requestHeader: RequestHeader, ec: ExecutionContext): Future[Boolean] = {
     val searchData = MatchBusinessData(acknowledgementReference = SessionUtil.getUniqueAckNo,
       utr = utr, requiresNameMatch = true, individual = None, organisation = organisation)
     // set the user type to ORG as long as this is only ever used for groups as individuals cannot be group members
@@ -89,7 +90,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     }
   }
 
-  private def storeBCAddressApi3(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  private def storeBCAddressApi3(dataReturned: JsValue)(implicit requestHeader: RequestHeader): Unit = {
     val address = (dataReturned \ "address").validate[BCAddressApi3]
     address match {
       case s: JsSuccess[BCAddressApi3] => keyStoreService.saveBusinessCustomerAddress(s.get)

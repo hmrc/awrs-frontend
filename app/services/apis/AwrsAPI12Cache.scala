@@ -18,10 +18,12 @@ package services.apis
 
 import connectors.AWRSNotificationConnector
 import controllers.auth.StandardAuthRetrievals
+
 import javax.inject.Inject
 import models.FormBundleStatus.{Pending, Revoked}
 import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models.{FormBundleStatus, StatusContactType, StatusNotification, ViewedStatusResponse}
+import play.api.mvc.RequestHeader
 import services.KeyStoreService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -33,7 +35,7 @@ class AwrsAPI12Cache @Inject()(val awrsNotificationConnector: AWRSNotificationCo
                               ){
 
   def getNotificationCache(status: FormBundleStatus, authRetrievals: StandardAuthRetrievals)
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusNotification]] =
+                          (implicit hc: HeaderCarrier, requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[StatusNotification]] =
     keyStoreService.fetchStatusNotification flatMap {
       case None => awrsNotificationConnector.fetchNotificationCache(authRetrievals) flatMap {
         case notification@Some(notificationStatus) =>
@@ -64,7 +66,7 @@ class AwrsAPI12Cache @Inject()(val awrsNotificationConnector: AWRSNotificationCo
     }
 
 
-  @inline def getAlertFromCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusNotification]] =
+  @inline def getAlertFromCache(implicit requestHeader: RequestHeader): Future[Option[StatusNotification]] =
     keyStoreService.fetchStatusNotification
 
   @inline def deleteNotificationFromCache(authRetrievals: StandardAuthRetrievals)

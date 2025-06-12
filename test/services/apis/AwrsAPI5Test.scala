@@ -48,7 +48,7 @@ class AwrsAPI5Test extends AwrsUnitTestTraits
       setupMockSave4LaterServiceWithOnly(fetchBusinessType = businessType)
       setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd)
 
-      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
       await(testAPI5.retrieveApplication(TestUtil.defaultAuthRetrieval))

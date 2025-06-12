@@ -19,9 +19,10 @@ package services
 import _root_.models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending}
 import audit.Auditable
 import controllers.auth.StandardAuthRetrievals
+
 import javax.inject.Inject
 import models._
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{AnyContent, Request, RequestHeader}
 import services.apis.{AwrsAPI11, AwrsAPI12Cache, AwrsAPI9}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.LoggingUtils
@@ -94,7 +95,7 @@ class StatusManagementService @Inject()(api9: AwrsAPI9,
     }
   }
 
-  private def localFetch(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[StatusReturnType] =
+  private def localFetch(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[StatusReturnType] =
     for {
       subscriptionStatus <- api9.getSubscriptionStatusFromCache
       alertStatus <- api12.getAlertFromCache

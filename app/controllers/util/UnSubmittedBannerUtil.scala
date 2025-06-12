@@ -16,11 +16,11 @@
 
 package controllers.util
 
+import caching.CacheMap
 import controllers.auth.StandardAuthRetrievals
 import play.api.mvc.{AnyContent, Request}
 import services.{ApplicationService, IndexService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.{AccountUtils, AwrsSessionKeys}
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -18,8 +18,10 @@ package services.apis
 
 import connectors.AWRSConnector
 import controllers.auth.StandardAuthRetrievals
+
 import javax.inject.Inject
 import models.SubscriptionStatusType
+import play.api.mvc.RequestHeader
 import services.{KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.AccountUtils
@@ -36,17 +38,17 @@ class AwrsAPI9 @Inject()(
                         ){
 
   def getSubscriptionStatus(authRetrievals: StandardAuthRetrievals)
-                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
+                           (implicit hc: HeaderCarrier, requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
     getSubscriptionStatusFromCache flatMap {
       case None => getSubscriptionStatusFromEtmp(authRetrievals)
       case successData: Option[SubscriptionStatusType] => Future.successful(successData)
     }
 
-  @inline def getSubscriptionStatusFromCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
+  @inline def getSubscriptionStatusFromCache(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
     keyStoreService.fetchSubscriptionStatus
 
   private def getSubscriptionStatusFromEtmp(authRetrievals: StandardAuthRetrievals)
-                                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
+                                           (implicit hc: HeaderCarrier, requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
 
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
       businessDetails =>

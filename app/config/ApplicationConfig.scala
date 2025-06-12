@@ -26,6 +26,7 @@ import views.html.view_application.subviews.subview_delete_confirmation
 import views.html.helpers.awrsErrorNotFoundTemplate
 import views.html.error_template
 
+import scala.concurrent.duration.Duration
 import scala.util.Try
 
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
@@ -52,6 +53,9 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val timeoutCountdown: Int = servicesConfig.getInt("timeoutCountdown")
   lazy val emailVerificationEnabled: Boolean = servicesConfig.getBoolean("email-verification.enabled")
   lazy val emailVerificationBaseUrl: String = servicesConfig.getString("email-verification.continue.baseUrl")
+
+  lazy val mongoDbExpireAfterMinutes: Duration = servicesConfig.getDuration("mongodb.session.expireAfter")
+  lazy val mongoUri: String = servicesConfig.getString("mongodb.uri")
 
   //From ExternalUrls
   private lazy val basGatewayHost: String = loadConfig("auth.bas-gateway-frontend.host")

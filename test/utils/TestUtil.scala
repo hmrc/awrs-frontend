@@ -22,6 +22,7 @@ import models.BusinessDetailsEntityTypes._
 import models.FormBundleStatus._
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import models.{BusinessDetailsEntityTypes, _}
+
 import java.time.LocalDateTime
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -31,9 +32,9 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.DataCacheKeys._
 import services.JourneyConstants
-import uk.gov.hmrc.http.cache.client.CacheMap
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
 import TestConstants._
+import caching.CacheMap
 import controllers.auth.StandardAuthRetrievals
 import org.scalatest.Assertion
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, User}
@@ -369,7 +370,8 @@ object TestUtil extends PlaySpec {
 
   val reviewDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", true, Some("agent123"))
   val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_Business_Details" -> Json.toJson(reviewDetails), "Supplier" -> Json.toJson(testSuppliers)))
-  val returnedKeystoreCacheMap: CacheMap = CacheMap("data", Map("1097172564" -> Json.toJson(testSubscriptionStatusTypePendingGroup)))
+  val returnFromSave: (String, String) = "BC_Business_Details" -> Json.toJson(reviewDetails).toString()
+  val returnedKeystoreCacheMap:(String, String) = ("1097172564" -> Json.toJson(testSubscriptionStatusTypePendingGroup).toString())
 
   def createIndexViewModel(legalEntity: String,
                            businessDetails: view_models.IndexStatus = SectionComplete,

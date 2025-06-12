@@ -17,6 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
+import caching.CacheMap
 import models.BusinessCustomerDetails
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
@@ -24,7 +25,6 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services._
-import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.AwrsSessionKeys
 import utils.TestUtil._
 import views.html.awrs_index

@@ -17,10 +17,12 @@
 package controllers
 
 import audit.Auditable
+import caching.CacheMap
 import config.ApplicationConfig
 import connectors.AwrsDataCacheConnector
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util.UnSubmittedBannerUtil
+
 import javax.inject.Inject
 import models.BusinessDetailSummaryModel
 import play.api.i18n.Messages
@@ -31,14 +33,13 @@ import services.JourneyConstants._
 import services._
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, CacheUtil}
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
-import scala.language.postfixOps
 
+import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,

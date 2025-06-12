@@ -103,8 +103,8 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
       when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(NewApplicationMode))
       setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
-      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
-      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
+      when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val result = testBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
       test(result)
     }

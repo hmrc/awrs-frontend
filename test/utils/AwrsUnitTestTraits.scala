@@ -113,6 +113,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   lazy val groupEntities = List("LTD_GRP", "LLP_GRP")
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val requestHeader: RequestHeader = mock[RequestHeader]
 
   implicit def convertToOption[T](value: T): Option[T] = Some(value)
 

@@ -39,7 +39,7 @@ trait MockApplicationService extends AwrsUnitTestTraits {
   protected final def setupMockApplicationService(hasAPI5ApplicationChanged: Boolean = defaultTrueBoolean,
                                                   getApi5ChangeIndicators: SectionChangeIndicators = defaultSectionChangeIndicators): Unit = {
     when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(hasAPI5ApplicationChanged))
-    when(mockApplicationService.getApi5ChangeIndicators(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getApi5ChangeIndicators))
+    when(mockApplicationService.getApi5ChangeIndicators(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(getApi5ChangeIndicators))
   }
 }
 

@@ -17,6 +17,7 @@
 package views
 
 import builders.SessionBuilder
+import caching.CacheMap
 import controllers.{IndexController, routes}
 import models.FormBundleStatus._
 import models.SubscriptionStatusType
@@ -30,7 +31,6 @@ import services.DataCacheKeys._
 import services._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments, User}
-import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.TestUtil._
 import utils.{AwrsUnitTestTraits, TestUtil}
 import view_models._

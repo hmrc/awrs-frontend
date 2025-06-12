@@ -16,12 +16,12 @@
 
 package utils
 
+import caching.CacheMap
 import models._
 import play.api.Logging
 import play.api.libs.json.{JsValue, Json}
 import services.DataCacheKeys._
 import services.JourneyConstants
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}

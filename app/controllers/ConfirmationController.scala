@@ -18,22 +18,22 @@ package controllers
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
-
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
+
 import javax.inject.Inject
 import models.NewAWBusiness
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, RequestHeader}
 import services.{DeEnrolService, KeyStoreService, Save4LaterService}
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.html.awrs_application_update_confirmation
-import scala.language.postfixOps
 
+import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
@@ -53,7 +53,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
   // because the nature of visiting this page deletes all data in save4later
   // this method caches the result of isNewBusiness into the keystore so that when this page is loaded within the session
   // it wouldn't error out
-  def isNewBusiness(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def isNewBusiness(authRetrievals: StandardAuthRetrievals)(implicit requestHeader: RequestHeader): Future[Boolean] = {
 
     val err = () => throw new InternalServerException("Unexpected error when evaluating if the application is a new business")
 

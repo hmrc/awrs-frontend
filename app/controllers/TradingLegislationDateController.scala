@@ -74,7 +74,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
   }
 
   def saveBusinessDetails(id: Int, businessDetails: NewAWBusiness, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], authRetrievals: StandardAuthRetrievals)
-                         (implicit hc: HeaderCarrier, viewApplicationType: ViewApplicationType): Future[Result] = {
+                         (implicit hc: HeaderCarrier, requestHeader: RequestHeader, viewApplicationType: ViewApplicationType): Future[Result] = {
     save4LaterService.mainStore.saveTradingStartDetails(authRetrievals, businessDetails) flatMap {
       case NewAWBusiness(BooleanRadioEnum.YesString, _) =>
         keyStoreService.saveAlreadyTrading(already = true) flatMap { _ =>

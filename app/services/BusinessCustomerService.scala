@@ -17,9 +17,10 @@
 package services
 
 import connectors.BusinessCustomerDataCacheConnector
+
 import javax.inject.Inject
 import play.api.libs.json
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.mvc.RequestHeader
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -29,6 +30,6 @@ class BusinessCustomerService @Inject()(businessCustomerConnector: BusinessCusto
 
   // N.B. this keystore is populated when we call the business customer front end, we do not populate this database
   // in our application
-  def getReviewBusinessDetails[T](implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
+  def getReviewBusinessDetails[T](implicit requestHeader: RequestHeader, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
     businessCustomerConnector.fetchDataFromKeystore[T](bcSourceId)
 }

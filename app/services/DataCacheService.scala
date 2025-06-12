@@ -16,10 +16,10 @@
 
 package services
 
+import caching.CacheMap
 import connectors.AwrsDataCacheConnector
 import controllers.auth.StandardAuthRetrievals
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
+import play.api.mvc.RequestHeader
 import utils.AccountUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,10 +31,10 @@ trait DataCacheService {
   val save4LaterService: Save4LaterService
   val mainStoreSave4LaterConnector: AwrsDataCacheConnector
 
-  def backUpSave4LaterInKeyStore(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  def backUpSave4LaterInKeyStore(authRetrievals: StandardAuthRetrievals)(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[(String, String)] =
     keyStoreService.saveSave4LaterBackup(save4LaterConnector = mainStoreSave4LaterConnector, authRetrievals, accountUtils)
 
-  def fetchMainStore(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
+  def fetchMainStore(authRetrievals: StandardAuthRetrievals)(implicit requestHeader: RequestHeader, ec: ExecutionContext): Future[Option[CacheMap]] =
     save4LaterService.mainStore.fetchAll(authRetrievals) flatMap {
       case None => keyStoreService.fetchSave4LaterBackup
       case found@Some(_) => Future.successful(found)

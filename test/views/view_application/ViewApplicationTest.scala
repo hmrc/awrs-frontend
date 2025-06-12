@@ -17,6 +17,7 @@
 package views.view_application
 
 import audit.Auditable
+import caching.CacheMap
 import config.ApplicationConfig
 import connectors.mock.MockAuthConnector
 import controllers.BusinessDirectorsController
@@ -38,7 +39,6 @@ import play.twirl.api.HtmlFormat
 import services.DataCacheKeys._
 import services.Save4LaterService
 import services.mocks.MockSave4LaterService
-import uk.gov.hmrc.http.cache.client._
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.TestConstants._
 import utils.TestUtil._
@@ -50,6 +50,7 @@ import views.view_application.subviews.SubviewIds._
 
 import javax.inject.Inject
 import play.twirl.api.TwirlHelperImports.twirlJavaCollectionToScala
+
 import scala.concurrent.Future
 import scala.language.implicitConversions
 

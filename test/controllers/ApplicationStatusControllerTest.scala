@@ -310,7 +310,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
 
     "report a new business" when {
       "the answer is available in trading start details" in {
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(),ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
         val isNew = testApplicationStatusController.isNewBusiness(authRetrievals)
@@ -320,7 +320,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
 
       "the answer is not available in trading start details, instead in fe model" in {
         val feModel = api5LTDJson.as[AWRSFEModel]
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd)
 
@@ -335,7 +335,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
         val feModel = api5LTDJson.as[AWRSFEModel]
         val subType = feModel.subscriptionTypeFrontEnd.copy(businessDetails = None)
 
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(None))
         setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = subType)
 
@@ -441,7 +441,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = testBusinessCustomerDetails,
       fetchBusinessDetails = testBusinessDetails(isNewBusiness)
     )
-    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
     setupMockTestStatusManagementService(
       status = status.formBundleStatus,
@@ -480,7 +480,7 @@ class ApplicationStatusControllerTest extends AwrsUnitTestTraits
       fetchBusinessType = testBusinessType,
       fetchBusinessCustomerDetails = testBusinessCustomerDetails
     )
-    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
     setupMockTestStatusManagementService(
       status = Pending,

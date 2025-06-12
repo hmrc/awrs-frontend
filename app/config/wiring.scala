@@ -16,63 +16,59 @@
 
 package config
 
+import caching.ShortLivedCache
 import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
-import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.mongo.cache.SessionCacheRepository
+import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.Duration
 
-class CachedStaticHtmlPartialProvider @Inject()(val httpClientV2: HttpClientV2) extends CachedStaticHtmlPartialRetriever {
-  override def refreshAfter: Duration = 60.seconds
-
-  override def expireAfter: Duration = 60.minutes
-
-  override def maximumEntries: Int = 1000
-}
 
 class BusinessCustomerSessionCache @Inject()(servicesConfig: ServicesConfig,
-                                             val httpClientV2: HttpClientV2) extends SessionCache {
-  override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.review-details.cache", "business-customer-frontend")
-
-  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.session-cache")
-  override lazy val domain: String = servicesConfig.getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
+                                             mongoComponent: MongoComponent,
+                                             timestampSupport: TimestampSupport)(implicit ec: ExecutionContext)
+  extends SessionCacheRepository(
+    mongoComponent = mongoComponent,
+    collectionName = servicesConfig.getConfString("microservice.services.cachable.session-cache.review-details.cache", "business-customer-frontend"),
+    ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
+    timestampSupport = timestampSupport, sessionIdKey = SessionKeys.sessionId) {
 }
 
 class AwrsSessionCache @Inject()(servicesConfig: ServicesConfig,
-                                 val httpClientV2: HttpClientV2) extends SessionCache {
-  override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.awrs-frontend.cache", "awrs-frontend")
-
-  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.session-cache")
-  override lazy val domain: String = servicesConfig.getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
+                                 mongoComponent: MongoComponent,
+                                 timestampSupport: TimestampSupport)(implicit ec: ExecutionContext) extends SessionCacheRepository(
+  mongoComponent = mongoComponent,
+  collectionName = servicesConfig.getConfString("microservice.services.cachable.session-cache.awrs-frontend.cache", "awrs-frontend"),
+  ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
+  timestampSupport = timestampSupport, sessionIdKey = SessionKeys.sessionId) {
 }
 
-class AwrsShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
-                                      val httpClientV2: HttpClientV2) extends ShortLivedHttpCaching {
 
-  override lazy val defaultSource: String = servicesConfig.getConfString("cachable.short-lived-cache.awrs-frontend.cache", "awrs-frontend")
-  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache")
-  override lazy val domain: String = servicesConfig.getConfString("cachable.short-lived-cache.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
-}
-
-class AwrsAPIDataShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
-                                             val httpClientV2: HttpClientV2) extends ShortLivedHttpCaching {
-
-  override lazy val defaultSource: String = servicesConfig.getConfString("cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api")
-  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.short-lived-cache-api")
-  override lazy val domain: String = servicesConfig.getConfString("cachable.short-lived-cache-api.domain", throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
-}
-
-class AwrsShortLivedCache @Inject()(awrsShortLivedCaching: AwrsShortLivedCaching,
-                                    applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
+class AwrsShortLivedCache @Inject()(servicesConfig: ServicesConfig,
+                                    applicationCrypto: ApplicationCrypto,
+                                    mongoComponent: MongoComponent,
+                                    timestampSupport: TimestampSupport) (implicit ec: ExecutionContext) extends ShortLivedCache(
+  mongoComponent = mongoComponent,
+  collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api"),
+  ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
+  timestampSupport = timestampSupport
+) {
   override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
-  override lazy val shortLiveCache: ShortLivedHttpCaching = awrsShortLivedCaching
 }
 
-class AwrsAPIShortLivedCache @Inject()(awrsAPIDataShortLivedCaching: AwrsAPIDataShortLivedCaching,
-                                       applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
+class AwrsAPIShortLivedCache @Inject()(servicesConfig: ServicesConfig,
+                                       applicationCrypto: ApplicationCrypto,
+                                       mongoComponent: MongoComponent,
+                                       timestampSupport: TimestampSupport) (implicit ec: ExecutionContext) extends ShortLivedCache(
+  mongoComponent = mongoComponent,
+  collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api"),
+  ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
+  timestampSupport = timestampSupport
+) {
   override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
-  override lazy val shortLiveCache: ShortLivedHttpCaching = awrsAPIDataShortLivedCaching
 }

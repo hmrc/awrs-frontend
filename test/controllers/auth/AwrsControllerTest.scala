@@ -17,6 +17,7 @@
 package controllers.auth
 
 import builders.SessionBuilder
+import caching.CacheMap
 import controllers.IndexController
 import models._
 import org.mockito.Mockito._
@@ -26,7 +27,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
-import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.TestConstants._
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
