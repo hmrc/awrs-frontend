@@ -38,8 +38,9 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "bootstrap-test-play-30"  % bootstrapPlayVersion % Test,
     "org.jsoup"         %  "jsoup"                   % "1.20.1"             % Test,
     "org.mockito"       %  "mockito-core"            % "5.18.0"             % Test,
-    "org.scalatestplus" %% "mockito-5-12"            % "3.2.19.0"           % Test,
-    "uk.gov.hmrc"       %% "domain-play-30"          % "11.0.0"             % Test
+    "uk.gov.hmrc"       %% "domain-play-30"          % "11.0.0"             % Test,
+  "org.scalatestplus" %% "mockito-5-18"            % "3.2.19.0"           % Test,
+  "org.mockito"       %% "mockito-scala"           % "2.0.0"            % Test
   )
 
   val itDependencies: Seq[ModuleID] = Seq()

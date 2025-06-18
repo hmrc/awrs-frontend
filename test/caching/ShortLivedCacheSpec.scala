@@ -1,44 +1,72 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package caching
 
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
-import play.api.libs.json.{JsObject, JsValue, Json}
-import play.api.libs.json._
+import org.mockito.ArgumentMatchersSugar.eqTo
+import org.mockito.Mockito.doReturn
+import play.api.libs.json.Writes.StringWrites
+import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.crypto.{Crypted, Decrypter, Encrypter, PlainBytes, PlainContent, PlainText}
 import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey, MongoCacheRepository}
-import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 import utils.AwrsUnitTestTraits
 
 import java.time.Instant
-import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration.Duration
 
 class ShortLivedCacheSpec extends AwrsUnitTestTraits {
 
-  val mockCacheRepo = mock[MongoCacheRepository[String]]
-  val testCacheItem = CacheItem("TestCacheId", JsObject.apply(Seq("FormId" -> Json.parse("""{"value": "Data"}"""))),Instant.now(),Instant.now())
-  val shortLivedCache = new ShortLivedCache(mongoComponent = mock[MongoComponent],
-    collectionName = "test-cache",
-    ttl = Duration(1, TimeUnit.SECONDS),
-    timestampSupport = mock[TimestampSupport]) {
+  val mockMongoCacheRepository: MongoCacheRepository[String] = mock[MongoCacheRepository[String]]
+
+
+  val quotedData = Json.stringify(Json.toJson("Data"))
+
+  val testCacheItem = CacheItem(
+    id = "TestCacheId",
+    data = Json.obj(
+      "FormId" -> JsString(quotedData)
+    ),
+    createdAt = Instant.now(),
+    modifiedAt = Instant.now()
+  )
+
+  val shortLivedCache = new ShortLivedCache(mockMongoCacheRepository,
+    "test-collection-name") {
     override implicit val crypto: Decrypter with Encrypter = TestCrypto
-    override lazy val cacheRepo: MongoCacheRepository[String] = mockCacheRepo
   }
 
   "ShortLivedCache" must {
     "save to cache correctly" in {
-      when(mockCacheRepo.put[String]("TestCacheId")(DataKey("FormId"), "Data"))
-        .thenReturn(Future.successful(testCacheItem))
+      doReturn(Future.successful(testCacheItem))
+        .when(mockMongoCacheRepository)
+        .put[String](ArgumentMatchers.eq("TestCacheId"))(eqTo(DataKey("FormId")), ArgumentMatchers.any)(ArgumentMatchers.any)
       val result: CacheMap = await(shortLivedCache.cache[String]("TestCacheId", "FormId", "Data"))
+
 
       result.getEntry[String]("FormId") mustBe Some("Data")
     }
 
 
 
+
   }
+
+
 }
 
 object TestCrypto extends Encrypter with Decrypter {
@@ -46,7 +74,7 @@ object TestCrypto extends Encrypter with Decrypter {
   override def encrypt(value: PlainContent): Crypted =
     value match {
       case PlainText(text) => Crypted(text)
-      case _               => throw new RuntimeException(s"Unable to encrypt unknown message type: $value")
+      case _ => throw new RuntimeException(s"Unable to encrypt unknown message type: $value")
     }
 
   override def decrypt(crypted: Crypted): PlainText =

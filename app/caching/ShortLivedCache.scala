@@ -23,34 +23,16 @@ import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
 import uk.gov.hmrc.mongo.cache.{CacheIdType, CacheItem, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, MongoDatabaseCollection, TimestampSupport}
+
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
-import CachingImplicits._
 
 abstract class ShortLivedCache (
-                        mongoComponent  : MongoComponent,
-                        override val collectionName: String,
-                        replaceIndexes  : Boolean = true,
-                        ttl             : Duration,
-                        timestampSupport: TimestampSupport,
-                        extraIndexes    : Seq[IndexModel] = Seq.empty,
-                        extraCodecs     : Seq[Codec[_]]   = Seq.empty
-                      )(implicit
-                        ec: ExecutionContext
-                      ) extends MongoDatabaseCollection  {
+                                 cacheRepo: MongoCacheRepository[String],
+                                 override val collectionName: String
+                      )(implicit ec: ExecutionContext) extends MongoDatabaseCollection  {
 
   implicit val crypto: Decrypter with Encrypter
-
-  lazy val cacheRepo = new MongoCacheRepository[String](
-    mongoComponent   = mongoComponent,
-    collectionName   = collectionName,
-    replaceIndexes   = replaceIndexes,
-    ttl              = ttl,
-    extraIndexes     = extraIndexes,
-    extraCodecs      = extraCodecs,
-    timestampSupport = timestampSupport,
-    cacheIdType      = CacheIdType.SimpleCacheId
-  )
 
   def cache[A](
                 cacheId: String,
@@ -64,7 +46,6 @@ abstract class ShortLivedCache (
     val encryptionFormat = JsonEncryption.sensitiveEncrypter[A, SensitiveA[A]]
     cacheRepo.put(cacheId)(DataKey(formId), sensitive)(encryptionFormat)
       .map((cm: CacheItem) => {
-        println("blak")
         new CryptoCacheMap(cm)
       })
   }
@@ -94,8 +75,6 @@ abstract class ShortLivedCache (
 
   def fetch[A](cacheId: String)(implicit ec: ExecutionContext): Future[Option[CacheMap]] =
     cacheRepo.findById(cacheId).map(_.map(ci => CacheMap(ci.id, scala.collection.immutable.Map(ci.data.value.toSeq: _*))))
-
-  private case class SensitiveA[A](override val decryptedValue: A) extends Sensitive[A]
 
   override def indexes: Seq[IndexModel] = cacheRepo.indexes
 

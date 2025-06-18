@@ -19,7 +19,7 @@ package config
 import caching.ShortLivedCache
 import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
 import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.mongo.cache.SessionCacheRepository
+import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository, SessionCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -52,23 +52,32 @@ class AwrsSessionCache @Inject()(servicesConfig: ServicesConfig,
 class AwrsShortLivedCache @Inject()(servicesConfig: ServicesConfig,
                                     applicationCrypto: ApplicationCrypto,
                                     mongoComponent: MongoComponent,
-                                    timestampSupport: TimestampSupport) (implicit ec: ExecutionContext) extends ShortLivedCache(
-  mongoComponent = mongoComponent,
-  collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api"),
-  ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
-  timestampSupport = timestampSupport
-) {
+                                    timestampSupport: TimestampSupport)(implicit ec: ExecutionContext)
+  extends ShortLivedCache(
+    cacheRepo = new MongoCacheRepository[String](
+      mongoComponent = mongoComponent,
+      collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache.awrs-frontend.cache", "awrs-frontend"),
+      ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
+      timestampSupport = timestampSupport,
+      cacheIdType = CacheIdType.SimpleCacheId
+    ),
+    collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache.awrs-frontend.cache", "awrs-frontend"),
+  ) {
   override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
 }
 
 class AwrsAPIShortLivedCache @Inject()(servicesConfig: ServicesConfig,
                                        applicationCrypto: ApplicationCrypto,
                                        mongoComponent: MongoComponent,
-                                       timestampSupport: TimestampSupport) (implicit ec: ExecutionContext) extends ShortLivedCache(
-  mongoComponent = mongoComponent,
-  collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api"),
-  ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
-  timestampSupport = timestampSupport
+                                       timestampSupport: TimestampSupport)(implicit ec: ExecutionContext) extends ShortLivedCache(
+  cacheRepo = new MongoCacheRepository[String](
+    mongoComponent = mongoComponent,
+    collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api"),
+    ttl = Duration(servicesConfig.getInt("microservice.services.cachable.session-cache.timeToLiveInSeconds"), TimeUnit.SECONDS),
+    timestampSupport = timestampSupport,
+    cacheIdType = CacheIdType.SimpleCacheId
+  ),
+  collectionName = servicesConfig.getConfString("microservice.services.cachable.short-lived-cache-api.awrs-frontend.cache", "awrs-frontend-api")
 ) {
   override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
 }
