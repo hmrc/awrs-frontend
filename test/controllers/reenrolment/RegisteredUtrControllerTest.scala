@@ -43,7 +43,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
   override def beforeEach(): Unit = {
     reset(mockDeEnrolService, mockAuthConnector,
-      mockAuditable, mockAccountUtils, mockMatchingService,
+      mockAuditable, mockAccountUtils,
       mockEnrolService, mockAwrsFeatureSwitches, mockAppConfig)
     super.beforeEach()
   }
@@ -63,7 +63,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
   val testAwrsUtrController: RegisteredUtrController = new RegisteredUtrController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
-    mockAuditable, mockAccountUtils, mockMatchingService,
+    mockAuditable, mockAccountUtils,
     mockEnrolService, mockAwrsFeatureSwitches, mockAppConfig, template)
 
   "AwrsUtrController" must {
@@ -84,44 +84,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       status(res) mustBe 200
     }
 
-    "redirect to kickout if UTR/postcode do not match" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
-        registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
-        searchResult = Some(testSearchResult("TestAWRSRef")))
-
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
-      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
-
-
-      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
-      val result: Result = Await.result(res, 5.seconds)
-      result.header.status mustBe 303
-      result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url
-    }
-
-    "redirect to kickout if call to verify UTR/Postcode fails" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
-        registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
-        searchResult = Some(testSearchResult("TestAWRSRef")))
-
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
-      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.failed(new RuntimeException()))
-
-
-      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
-      val result: Result = Await.result(res, 5.seconds)
-      result.header.status mustBe 303
-      result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url
-    }
-
     "redirect to kickout if searchResults are not in cache" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
@@ -130,11 +92,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
-      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-
-
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       val result: Result = Await.result(res, 5.seconds)
       result.header.status mustBe 303
@@ -149,9 +106,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
-      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       when(mockEnrolService.enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
         ArgumentMatchers.eq("NE98 1ZZ"),
         ArgumentMatchers.eq(Some("6232113818078")),
@@ -174,9 +128,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
-      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       when(mockEnrolService.enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
         ArgumentMatchers.eq("NE98 1ZZ"),
         ArgumentMatchers.eq(Some("6232113818078")),
@@ -198,9 +149,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         searchResult = Some(testSearchResult("TestAWRSRef")))
       setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
-      when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
       when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))

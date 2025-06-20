@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUtrForm.awrsEnrolmentUtrForm
 import play.api.mvc._
-import services.{BusinessMatchingService, DeEnrolService, EnrolService, KeyStoreService}
+import services.{DeEnrolService, EnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -35,7 +35,6 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
-                                        businessMatchingService: BusinessMatchingService,
                                         val enrolService: EnrolService,
                                         awrsFeatureSwitches: AWRSFeatureSwitches,
                                         implicit val applicationConfig: ApplicationConfig,
@@ -70,12 +69,10 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => Future.successful(BadRequest(template(formWithErrors, isSA))),
             utr => {
               keyStoreService.saveAwrsEnrolmentUtr(utr)
-              val safeJourney = for {
+              val result = for {
                 sr <- keyStoreService.fetchAwrsUrnSearchResult
                 pc <- keyStoreService.fetchAwrsRegisteredPostcode
-                utrPostCodeMatch <- businessMatchingService.verifyUTRandPostCode(utr.utr, getOrThrow(pc), ar, isSA)
-                result <- if (utrPostCodeMatch) {
-                  enrolService.enrolAWRS(
+                result <- enrolService.enrolAWRS(
                     getOrThrow(sr).results.head.awrsRef,
                     getOrThrow(pc).registeredPostcode,
                     Some(utr.utr),
@@ -85,12 +82,9 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
                     case Some(_) => Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
                     case None    => Redirect(routes.KickoutController.showURNKickOutPage)
                   }
-                } else {
-                  Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                }
               } yield result
 
-              safeJourney.recover {
+              result.recover {
                 case ex =>
                   logger.error("Exception occurred during saveAndContinue journey", ex)
                   Redirect(routes.KickoutController.showURNKickOutPage)
