@@ -77,43 +77,42 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
                   eventType = eventTypeFailure)
         logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"enrolment url:$postUrl, " +
-          s"Bad Request Exception account Ref:${requestPayload.verifiers}, " +
+          s"Bad Request Exception :${response.body}, " +
           s"Service: $AWRS_SERVICE_NAME")
         throw new BadRequestException(response.body)
       case NOT_FOUND =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
         logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
-          s"Not Found Exception account Ref:${requestPayload.verifiers}, " +
+          s"Not Found Exception :${response.body}, " +
           s"Service: $AWRS_SERVICE_NAME}")
         throw new NotFoundException(response.body)
       case SERVICE_UNAVAILABLE =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
         logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"enrolment url:$postUrl, " +
-          s"Service Unavailable Exception account Ref:${requestPayload.verifiers}, " +
+          s"Service Unavailable Exception:${response.body}, " +
           s"Service: $AWRS_SERVICE_NAME}")
         throw new ServiceUnavailableException(response.body)
       case BAD_GATEWAY =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        createWarning(postUrl, None, requestPayload.verifiers, response.body, response.status, Some("BAD_GATEWAY"))
+        createWarning(postUrl, None, response.body, response.status, Some("BAD_GATEWAY"))
         throw new BadGatewayException(response.body)
       case status =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        createWarning(postUrl, Some(status), requestPayload.verifiers, response.body, response.status)
+        createWarning(postUrl, Some(status), response.body, response.status)
         throw new InternalServerException(response.body)
     }
   }
 
   private def createWarning(postUrl: String,
                             optionStatus: Option[Int],
-                            verifiers: List[Verifier],
                             responseBody: String,
                             responseStatus: Int,
                             optionErrorStatus: Option[String] = None): Unit = {
     val errorStatus = optionErrorStatus.fold("")(status => " - " + status)
     logger.warn(s"[TaxEnrolmentsConnector][enrol]$errorStatus" +
       s"enrolment url:$postUrl, " +
-      optionStatus.map(status => s"status:$status Exception account Ref:$verifiers, ") +
+      optionStatus.map(status => s"status:$status Exception") +
       s"Service: $AWRS_SERVICE_NAME" +
       s"Reponse Body: $responseBody," +
       s"Reponse Status: $responseStatus")
