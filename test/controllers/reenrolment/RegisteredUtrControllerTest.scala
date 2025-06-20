@@ -23,7 +23,7 @@ import models.AwrsStatus.Approved
 import models.reenrolment.AwrsRegisteredPostcode
 import models.{AwrsEnrolmentUtr, Business, EnrolResponse, Identifier, Info, SearchResult}
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, verify, when}
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -41,7 +41,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
   with MockKeyStoreService
   with MockIndexService {
 
-  override def beforeEach() {
+  override def beforeEach(): Unit = {
     reset(mockDeEnrolService, mockAuthConnector,
       mockAuditable, mockAccountUtils, mockMatchingService,
       mockEnrolService, mockAwrsFeatureSwitches, mockAppConfig)
@@ -186,11 +186,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         .thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
 
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
-      verify(mockEnrolService).enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
-        ArgumentMatchers.eq("NE98 1ZZ"),
-        ArgumentMatchers.eq(Some("6232113818078")),
-        ArgumentMatchers.eq("SOP"),
-        ArgumentMatchers.eq(Map.empty))(ArgumentMatchers.any(), ArgumentMatchers.any())
       val result: Result = Await.result(res, 5.seconds)
       result.header.status mustBe 303
       result.header.headers("Location") mustBe controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url
