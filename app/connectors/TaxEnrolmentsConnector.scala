@@ -51,21 +51,22 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
     val timer = metrics.startTimer(ApiType.API4Enrolment)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRegistrationNumber"
     val postUrl = s"$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"
-    val response = send(postUrl, requestPayload, auditMap).map(_ => Option(emptyResponse))
+    val response = send(postUrl, requestPayload, auditMap, awrsRegistrationNumber).map(_ => Option(emptyResponse))
     timer.stop()
     response
   }
 
   def send(postUrl: String, requestPayload: RequestPayload,
-           auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+           auditMap: Map[String, String],
+           awrsRegistrationNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val jsonData: JsValue = Json.toJson(requestPayload)
     http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse].map {
-      processResponse(_, postUrl, requestPayload, auditMap)
+      processResponse(_, postUrl, requestPayload, auditMap, awrsRegistrationNumber)
     }
   }
 
   def processResponse(response: HttpResponse, postUrl: String,
-                      requestPayload: RequestPayload, auditMap: Map[String, String])(implicit hc: HeaderCarrier, ec: ExecutionContext): HttpResponse = {
+                      requestPayload: RequestPayload, auditMap: Map[String, String], awrsRegistrationNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): HttpResponse = {
     response.status match {
       case OK | CREATED =>
         metrics.incrementSuccessCounter(ApiType.API4Enrolment)
@@ -77,6 +78,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
                   eventType = eventTypeFailure)
         logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"enrolment url:$postUrl, " +
+          s"AWRS Ref:$awrsRegistrationNumber, " +
           s"Bad Request Exception :${response.body}, " +
           s"Service: $AWRS_SERVICE_NAME")
         throw new BadRequestException(response.body)
@@ -84,22 +86,24 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
         logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"Not Found Exception :${response.body}, " +
+          s"AWRS Ref:$awrsRegistrationNumber, " +
           s"Service: $AWRS_SERVICE_NAME}")
         throw new NotFoundException(response.body)
       case SERVICE_UNAVAILABLE =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
         logger.warn(s"[TaxEnrolmentsConnector][enrol] - " +
           s"enrolment url:$postUrl, " +
+          s"AWRS Ref:$awrsRegistrationNumber, " +
           s"Service Unavailable Exception:${response.body}, " +
           s"Service: $AWRS_SERVICE_NAME}")
         throw new ServiceUnavailableException(response.body)
       case BAD_GATEWAY =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        createWarning(postUrl, None, response.body, response.status, Some("BAD_GATEWAY"))
+        createWarning(postUrl, None, response.body, response.status, awrsRegistrationNumber, Some("BAD_GATEWAY"))
         throw new BadGatewayException(response.body)
       case status =>
         metrics.incrementFailedCounter(ApiType.API4Enrolment)
-        createWarning(postUrl, Some(status), response.body, response.status)
+        createWarning(postUrl, Some(status), response.body, response.status, awrsRegistrationNumber)
         throw new InternalServerException(response.body)
     }
   }
@@ -108,10 +112,12 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
                             optionStatus: Option[Int],
                             responseBody: String,
                             responseStatus: Int,
+                            awrsRegistrationNumber: String,
                             optionErrorStatus: Option[String] = None): Unit = {
     val errorStatus = optionErrorStatus.fold("")(status => " - " + status)
     logger.warn(s"[TaxEnrolmentsConnector][enrol]$errorStatus" +
       s"enrolment url:$postUrl, " +
+      s"AWRS Ref:$awrsRegistrationNumber, " +
       optionStatus.map(status => s"status:$status Exception") +
       s"Service: $AWRS_SERVICE_NAME" +
       s"Reponse Body: $responseBody," +
