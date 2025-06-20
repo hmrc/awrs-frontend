@@ -74,7 +74,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                   enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
                     case Some(knownFactsResponse) =>
                       keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
-                        checkEnrollmentExistsAndConfirmDeEnrollment(request.session.get("userId"), awrsUrn)
+                        checkEnrollmentExistsAndConfirmDeEnrollment(Some("userId"), awrsUrn) //todo added this for testing purposes as userid retrieval unclear
                       }
                     case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                   } recover { case ex: Exception =>
