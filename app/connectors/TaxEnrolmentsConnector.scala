@@ -35,6 +35,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
                                        http: HttpClientV2,
                                        metrics: AwrsMetrics,
                                        val auditable: Auditable) extends LoggingUtils {
+
   val serviceURL: String = servicesConfig.baseUrl("tax-enrolments")
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val EnrolmentIdentifierName = "AWRSRefNumber"
@@ -122,6 +123,25 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
       s"Service: $AWRS_SERVICE_NAME" +
       s"Reponse Body: $responseBody," +
       s"Reponse Status: $responseStatus")
+  }
+
+  def deEnrol(awrsRef: String, groupId: String)
+             (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext):Future[Boolean] = {
+    val timer = metrics.startTimer(ApiType.ES9DeEnrolment)
+    val postUrl = s"$enrolmentUrl/groups/$groupId/enrolments/$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRef"
+    http.delete(url"$postUrl").execute[HttpResponse].map {
+      response =>
+        timer.stop()
+        response.status match {
+          case OK => warn(s"[TaxEnrolmentsConnector][ES9 deEnrol] - Ok")
+            metrics.incrementSuccessCounter(ApiType.ES9DeEnrolment)
+            true
+          case status =>
+            warn(s"[TaxEnrolmentsConnector][ES9 De-Enrolment - $awrsRef, $status ] - ${response.body} ")
+            metrics.incrementFailedCounter(ApiType.ES9DeEnrolment)
+            false
+        }
+    }
   }
 
   def deEnrol(awrsRef: String, businessName: String, businessType: String)

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package models
+package services
 
-object ApiType extends Enumeration {
-  type ApiType = Value
+import connectors.{ESConnector, TaxEnrolmentsConnector}
+import uk.gov.hmrc.http.HeaderCarrier
 
-  val API4Enrolment: models.ApiType.Value = Value
-  val API10DeEnrolment: models.ApiType.Value = Value
-  val ES9DeEnrolment: models.ApiType.Value = Value
-  val ES1Query: models.ApiType.Value = Value
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+
+@Singleton
+class EnrolmentStoreService @Inject()(esConnector: ESConnector) {
+  def query(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    esConnector.query(awrs)
 }
