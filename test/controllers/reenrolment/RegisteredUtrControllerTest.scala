@@ -23,12 +23,12 @@ import models.AwrsStatus.Approved
 import models.reenrolment.AwrsRegisteredPostcode
 import models.{AwrsEnrolmentUtr, Business, EnrolResponse, Identifier, Info, SearchResult}
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, verify, verifyNoInteractions, when}
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{EnrolService, ServicesUnitTestFixture}
+import services.{EnrolService, EnrolmentStoreService, ServicesUnitTestFixture}
 import services.mocks.{MockIndexService, MockKeyStoreService}
 import uk.gov.hmrc.http.BadRequestException
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -60,11 +60,12 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_registered_utr = app.injector.instanceOf[views.html.reenrolment.awrs_registered_utr]
   val mockEnrolService: EnrolService = mock[EnrolService]
-
+  val mockEnrolmentStoreService: EnrolmentStoreService = mock[EnrolmentStoreService]
   val testAwrsUtrController: RegisteredUtrController = new RegisteredUtrController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
     mockAuditable, mockAccountUtils,
-    mockEnrolService, mockAwrsFeatureSwitches, mockAppConfig, template)
+    mockEnrolService, mockEnrolmentStoreService,
+    mockAwrsFeatureSwitches, mockAppConfig, template)
 
   "AwrsUtrController" must {
     "show not found when feature is not enabled" in {
@@ -120,7 +121,8 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
     }
 
-    "enrol SA UTR for AWRS if no errors" in {
+
+    "Redirect to Successful Enrolment Page if enrolment is successful and de-enrolment fails" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
@@ -136,13 +138,68 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       (ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
 
+      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+      (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some("TestGroupId")))
+      when(mockDeEnrolService.deEnrolAwrsGroup(ArgumentMatchers.eq("TestAwrsRef"),
+        ArgumentMatchers.eq("TestGroupId"))(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(false))
+
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       val result: Result = Await.result(res, 5.seconds)
       result.header.status mustBe 303
       result.header.headers("Location") mustBe controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url
     }
 
-    "enrol CT UTR for AWRS  if no errors" in {
+    "Redirect to Successful Enrolment Page if enrolment is successful and no existing groupId found with same enrolment" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
+        registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
+        searchResult = Some(testSearchResult("TestAWRSRef")))
+
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+      when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
+        ArgumentMatchers.eq("NE98 1ZZ"),
+        ArgumentMatchers.eq(Some("6232113818078")),
+        ArgumentMatchers.eq("SOP"),
+        ArgumentMatchers.eq(Map.empty))
+      (ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
+      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+      (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(None))
+
+      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
+      val result: Result = Await.result(res, 5.seconds)
+      result.header.status mustBe 303
+      result.header.headers("Location") mustBe controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url
+      verifyNoInteractions(mockDeEnrolService)
+    }
+
+    "enrol SA UTR for AWRS if no errors with de-enrolment" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
+        registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
+        searchResult = Some(testSearchResult("TestAWRSRef")))
+
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+      when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
+      when(mockEnrolService.enrolAWRS(ArgumentMatchers.eq("TestAWRSRef"),
+        ArgumentMatchers.eq("NE98 1ZZ"),
+        ArgumentMatchers.eq(Some("6232113818078")),
+        ArgumentMatchers.eq("SOP"),
+        ArgumentMatchers.eq(Map.empty))
+      (ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
+      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+        (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some("TestGroupId")))
+      when(mockDeEnrolService.deEnrolAwrsGroup(ArgumentMatchers.eq("TestAwrsRef"),
+        ArgumentMatchers.eq("TestGroupId"))(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
+      val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
+      val result: Result = Await.result(res, 5.seconds)
+      result.header.status mustBe 303
+      result.header.headers("Location") mustBe controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url
+    }
+
+    "enrol CT UTR for AWRS  if no errors with de-enrolment" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
@@ -151,6 +208,10 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
       when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
+      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+      (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some("TestGroupId")))
+      when(mockDeEnrolService.deEnrolAwrsGroup(ArgumentMatchers.eq("TestAwrsRef"),
+        ArgumentMatchers.eq("TestGroupId"))(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       val result: Result = Await.result(res, 5.seconds)
       result.header.status mustBe 303
