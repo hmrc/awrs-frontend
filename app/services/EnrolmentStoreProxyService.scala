@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{EnrolmentStoreProxyConnector, TaxEnrolmentsConnector}
+import connectors.EnrolmentStoreProxyConnector
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
