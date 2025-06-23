@@ -16,14 +16,14 @@
 
 package services
 
-import connectors.{ESConnector, TaxEnrolmentsConnector}
+import connectors.{EnrolmentStoreProxyConnector, TaxEnrolmentsConnector}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EnrolmentStoreService @Inject()(esConnector: ESConnector) {
-  def query(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+class EnrolmentStoreProxyService @Inject()(esConnector: EnrolmentStoreProxyConnector) {
+  def queryGroupIdForEnrolment(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     esConnector.query(awrs)
 }

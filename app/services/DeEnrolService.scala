@@ -28,6 +28,6 @@ class DeEnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector) {
   def deEnrolAWRS(awrs: String, businessName: String, businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     taxEnrolmentsConnector.deEnrol(awrs, businessName, businessType)
 
-  def deEnrolAwrsGroup(awrs:String, groupId:String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+  def deEnrolAwrs(awrs:String, groupId:String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     taxEnrolmentsConnector.deEnrol(awrs, groupId)
 }

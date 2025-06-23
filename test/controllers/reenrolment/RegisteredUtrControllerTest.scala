@@ -23,12 +23,12 @@ import models.AwrsStatus.Approved
 import models.reenrolment.AwrsRegisteredPostcode
 import models.{AwrsEnrolmentUtr, Business, EnrolResponse, Identifier, Info, SearchResult}
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, verify, verifyNoInteractions, when}
+import org.mockito.Mockito.{reset, verifyNoInteractions, when}
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{EnrolService, EnrolmentStoreService, ServicesUnitTestFixture}
+import services.{EnrolService, EnrolmentStoreProxyService, ServicesUnitTestFixture}
 import services.mocks.{MockIndexService, MockKeyStoreService}
 import uk.gov.hmrc.http.BadRequestException
 import utils.{AwrsUnitTestTraits, TestUtil}
@@ -60,7 +60,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_registered_utr = app.injector.instanceOf[views.html.reenrolment.awrs_registered_utr]
   val mockEnrolService: EnrolService = mock[EnrolService]
-  val mockEnrolmentStoreService: EnrolmentStoreService = mock[EnrolmentStoreService]
+  val mockEnrolmentStoreService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
   val testAwrsUtrController: RegisteredUtrController = new RegisteredUtrController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
     mockAuditable, mockAccountUtils,
@@ -138,9 +138,9 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       (ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
 
-      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+      when(mockEnrolmentStoreService.queryGroupIdForEnrolment(ArgumentMatchers.eq("TestAWRSRef"))
       (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some("TestGroupId")))
-      when(mockDeEnrolService.deEnrolAwrsGroup(ArgumentMatchers.eq("TestAwrsRef"),
+      when(mockDeEnrolService.deEnrolAwrs(ArgumentMatchers.eq("TestAwrsRef"),
         ArgumentMatchers.eq("TestGroupId"))(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(false))
 
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
@@ -164,7 +164,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         ArgumentMatchers.eq(Map.empty))
       (ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
-      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+      when(mockEnrolmentStoreService.queryGroupIdForEnrolment(ArgumentMatchers.eq("TestAWRSRef"))
       (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
@@ -189,9 +189,9 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         ArgumentMatchers.eq(Map.empty))
       (ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
-      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+      when(mockEnrolmentStoreService.queryGroupIdForEnrolment(ArgumentMatchers.eq("TestAWRSRef"))
         (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some("TestGroupId")))
-      when(mockDeEnrolService.deEnrolAwrsGroup(ArgumentMatchers.eq("TestAwrsRef"),
+      when(mockDeEnrolService.deEnrolAwrs(ArgumentMatchers.eq("TestAwrsRef"),
         ArgumentMatchers.eq("TestGroupId"))(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       val result: Result = Await.result(res, 5.seconds)
@@ -208,9 +208,9 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
       when(mockEnrolService.enrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(EnrolResponse("serviceName", "state", identifiers = List(Identifier("AWRS", "AWRS_Ref_No")))))
-      when(mockEnrolmentStoreService.query(ArgumentMatchers.eq("TestAWRSRef"))
+      when(mockEnrolmentStoreService.queryGroupIdForEnrolment(ArgumentMatchers.eq("TestAWRSRef"))
       (ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(Some("TestGroupId")))
-      when(mockDeEnrolService.deEnrolAwrsGroup(ArgumentMatchers.eq("TestAwrsRef"),
+      when(mockDeEnrolService.deEnrolAwrs(ArgumentMatchers.eq("TestAwrsRef"),
         ArgumentMatchers.eq("TestGroupId"))(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("6232113818078"))
       val result: Result = Await.result(res, 5.seconds)

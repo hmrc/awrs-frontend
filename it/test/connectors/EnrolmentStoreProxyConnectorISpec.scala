@@ -26,9 +26,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ESConnectorISpec extends IntegrationSpec with Injecting with Matchers {
+class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
-  val connector: ESConnector = inject[ESConnector]
+  val connector: EnrolmentStoreProxyConnector = inject[EnrolmentStoreProxyConnector]
   val awrsRef = "TestAwrsRef"
   val es1ResponseWithGroupId = Some("""{"principalGroupIds": ["TestPrincipalGroupId"], "delegatedGroupIds": []}""")
   val es1ResponseWithoutGroupId = Some("""{"principalGroupIds": [], "delegatedGroupIds": []}""")

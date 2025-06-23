@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package connectors
 
 import audit.Auditable
@@ -14,10 +30,10 @@ import utils.LoggingUtils
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ESConnector @Inject()(servicesConfig: ServicesConfig,
-                            http: HttpClientV2,
-                            metrics: AwrsMetrics,
-                            val auditable: Auditable) extends LoggingUtils {
+class EnrolmentStoreProxyConnector @Inject()(servicesConfig: ServicesConfig,
+                                             http: HttpClientV2,
+                                             metrics: AwrsMetrics,
+                                             val auditable: Auditable) extends LoggingUtils {
 
   val serviceURL: String = servicesConfig.baseUrl("enrolment-store-proxy")
   val enrolmentStoreProxyServiceUrl: String = s"${serviceURL}/enrolment-store-proxy"
@@ -25,7 +41,7 @@ class ESConnector @Inject()(servicesConfig: ServicesConfig,
   val EnrolmentIdentifierName = "AWRSRefNumber"
 
   def query(awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
-    val timer = metrics.startTimer(ApiType.API4Enrolment)
+    val timer = metrics.startTimer(ApiType.ES1Query)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsReferenceNumber"
 
     val result = http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/${enrolmentKey}/groups").execute[HttpResponse].map {
@@ -38,14 +54,16 @@ class ESConnector @Inject()(servicesConfig: ServicesConfig,
   private def processResponse(response: HttpResponse, awrsRef:String): Option[String] = {
     response.status match {
       case OK =>
-        metrics.incrementSuccessCounter(ApiType.ES9DeEnrolment)
+        info(s"[ESConnector][ES1 Query- $awrsRef, OK ] - ${response.body} ")
+        metrics.incrementSuccessCounter(ApiType.ES1Query)
         Json.parse(response.body).as[Groups].principalGroupIds.headOption
       case NO_CONTENT =>
-        metrics.incrementSuccessCounter(ApiType.ES9DeEnrolment)
+        info(s"[ESConnector][ES1 Query- $awrsRef, NO_CONTENT ] - ${response.body} ")
+        metrics.incrementSuccessCounter(ApiType.ES1Query)
         None
       case status =>
         warn(s"[ESConnector][ES1 Query- $awrsRef, $status ] - ${response.body} ")
-        metrics.incrementFailedCounter(ApiType.ES9DeEnrolment)
+        metrics.incrementFailedCounter(ApiType.ES1Query)
         None
     }
 

@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUtrForm.awrsEnrolmentUtrForm
 import play.api.mvc._
-import services.{DeEnrolService, EnrolService, EnrolmentStoreService, KeyStoreService}
+import services.{DeEnrolService, EnrolService, EnrolmentStoreProxyService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -36,7 +36,7 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
                                         val enrolService: EnrolService,
-                                        val enrolmentStoreService: EnrolmentStoreService,
+                                        val enrolmentStoreService: EnrolmentStoreProxyService,
                                         awrsFeatureSwitches: AWRSFeatureSwitches,
                                         implicit val applicationConfig: ApplicationConfig,
                                         template: views.html.reenrolment.awrs_registered_utr
@@ -74,8 +74,8 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
                 sr <- keyStoreService.fetchAwrsUrnSearchResult
                 pc <- keyStoreService.fetchAwrsRegisteredPostcode
                 awrsRef = getOrThrow(sr).results.head.awrsRef
-                groupId <- enrolmentStoreService.query(awrsRef)
-                _ = groupId.fold(Future.successful[Boolean](true))(groupId => deEnrolService.deEnrolAwrsGroup(awrsRef, groupId))
+                groupId <- enrolmentStoreService.queryGroupIdForEnrolment(awrsRef)
+                _ = groupId.fold(Future.successful[Boolean](true))(groupId => deEnrolService.deEnrolAwrs(awrsRef, groupId))
                 result <- enrolService.enrolAWRS(
                     awrsRef,
                     getOrThrow(pc).registeredPostcode,
