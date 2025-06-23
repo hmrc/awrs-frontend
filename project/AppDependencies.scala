@@ -23,11 +23,11 @@ private object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"                   %% "http-caching-client-play-30" % "12.1.0",
+    "uk.gov.hmrc"                   %% "http-caching-client-play-30" % "12.2.0",
     "uk.gov.hmrc"                   %% "bootstrap-frontend-play-30"  % bootstrapPlayVersion,
-    "uk.gov.hmrc"                   %% "play-partials-play-30"       % "10.0.0", // includes code for retrieving partials, e.g. the Help with this page form
+    "uk.gov.hmrc"                   %% "play-partials-play-30"       % "10.1.0", // includes code for retrieving partials, e.g. the Help with this page form
     "com.yahoo.platform.yui"        %  "yuicompressor"               % "2.4.8",
-    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "12.5.0",
+    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "12.6.0",
     "commons-codec"                 %  "commons-codec"               % "1.18.0",
     "com.googlecode.htmlcompressor" %  "htmlcompressor"              % "1.5.2"
   )
