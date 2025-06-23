@@ -35,7 +35,6 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
                                        http: HttpClientV2,
                                        metrics: AwrsMetrics,
                                        val auditable: Auditable) extends LoggingUtils {
-
   val serviceURL: String = servicesConfig.baseUrl("tax-enrolments")
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val EnrolmentIdentifierName = "AWRSRefNumber"
