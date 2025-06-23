@@ -25,5 +25,5 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class EnrolmentStoreProxyService @Inject()(esConnector: EnrolmentStoreProxyConnector) {
   def queryGroupIdForEnrolment(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
-    esConnector.query(awrs)
+    esConnector.queryGroupIdForEnrolment(awrs)
 }

@@ -40,7 +40,7 @@ class EnrolmentStoreProxyConnector @Inject()(servicesConfig: ServicesConfig,
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val EnrolmentIdentifierName = "AWRSRefNumber"
 
-  def query(awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+  def queryGroupIdForEnrolment(awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     val timer = metrics.startTimer(ApiType.ES1Query)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsReferenceNumber"
 

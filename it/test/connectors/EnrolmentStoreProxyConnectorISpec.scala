@@ -44,7 +44,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
     }
 
     def testCall(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
-      connector.query(awrsRef)(headerCarrier, implicitly)
+      connector.queryGroupIdForEnrolment(awrsRef)(headerCarrier, implicitly)
     }
 
     "return status as OK, for successful query which returns group id" in {
