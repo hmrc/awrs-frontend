@@ -48,12 +48,10 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
   def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          keyStoreService.fetchAwrsEnrolmentUrn flatMap {
-            case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
-            case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
-          }
-        } else Future.successful(NotFound)
+        keyStoreService.fetchAwrsEnrolmentUrn flatMap {
+          case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
+          case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+        }
       }
     }
   }
@@ -61,21 +59,19 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          awrsEnrolmentUrnForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            awrsUrn => {
-              keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
-                    case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
-                      Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
-                    case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                  }
+        awrsEnrolmentUrnForm.bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+          awrsUrn => {
+            keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
+              lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
+                  case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
+                    Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
+                  case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                 }
               }
             }
-          )
-        } else Future.successful(NotFound)
+          }
+        )
       }
     }
   }

@@ -48,13 +48,11 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
   def showArwsUtrPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
-          keyStoreService.fetchAwrsEnrolmentUtr flatMap {
-            case Some(utr) => Future.successful(Ok(template(awrsEnrolmentUtrForm.form.fill(utr), isSA)))
-            case _ => Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
-          }
-        } else Future.successful(NotFound)
+        val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
+        keyStoreService.fetchAwrsEnrolmentUtr flatMap {
+          case Some(utr) => Future.successful(Ok(template(awrsEnrolmentUtrForm.form.fill(utr), isSA)))
+          case _ => Future.successful(Ok(template(awrsEnrolmentUtrForm.form, isSA)))
+        }
       }
     }
   }
@@ -64,28 +62,28 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
-          awrsEnrolmentUtrForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(template(formWithErrors, isSA))),
-            utr => {
-              keyStoreService.saveAwrsEnrolmentUtr(utr)
-              keyStoreService.fetchAwrsUrnSearchResult.flatMap {sr =>
-                keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
-                  businessMatchingService.verifyUTRandPostCode(utr.utr, getOrThrow(pc), ar, isSA).flatMap { utrPostCodeMatch: Boolean =>
-                    if(utrPostCodeMatch) {
-                      enrolService.enrolAWRS(getOrThrow(sr).results.head.awrsRef,
-                        getOrThrow(pc).registeredPostcode, Some(utr.utr),
-                        if (isSA) "SOP" else "CT", Map.empty).map { _ =>
-                        Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
-                      }
-                    } else {
-                      Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+        val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
+        awrsEnrolmentUtrForm.bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(template(formWithErrors, isSA))),
+          utr => {
+            keyStoreService.saveAwrsEnrolmentUtr(utr)
+            keyStoreService.fetchAwrsUrnSearchResult.flatMap {sr =>
+              keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
+                businessMatchingService.verifyUTRandPostCode(utr.utr, getOrThrow(pc), ar, isSA).flatMap { utrPostCodeMatch: Boolean =>
+                  if(utrPostCodeMatch) {
+                    enrolService.enrolAWRS(getOrThrow(sr).results.head.awrsRef,
+                      getOrThrow(pc).registeredPostcode, Some(utr.utr),
+                      if (isSA) "SOP" else "CT", Map.empty).map { _ =>
+                      Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
                     }
+                  } else {
+                    Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                   }
                 }
-              }})
-        } else Future.successful(NotFound)
+              }
+            }
+          }
+        )
       }
     }
   }

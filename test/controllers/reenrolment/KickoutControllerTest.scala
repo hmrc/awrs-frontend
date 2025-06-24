@@ -43,17 +43,10 @@ class KickoutControllerTest extends AwrsUnitTestTraits
 
   "KickOutController" must {
 
-    "show the Kickout page when enrolmentJourney is enabled" in {
+    "show the Kickout page" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
-    }
-    "return 404 when enrolmentJourney is disabled" in {
-      setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(false)
-      val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(res) mustBe 404
     }
   }
 }

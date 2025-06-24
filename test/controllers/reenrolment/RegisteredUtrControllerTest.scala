@@ -59,18 +59,10 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
     mockEnrolService, mockAwrsFeatureSwitches, mockAppConfig, template)
 
   "AwrsUtrController" must {
-    "show not found when feature is not enabled" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUtr()
-      setupEnrolmentJourneyFeatureSwitchMock(false)
-      val res = testAwrsUtrController.showArwsUtrPage().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(res) mustBe 404
-    }
 
-    "show the UTR page when enrolmentJourney is enabled" in {
+    "show the UTR page" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUtr()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
       val res = testAwrsUtrController.showArwsUtrPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
@@ -82,7 +74,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
         searchResult = Some(testSearchResult("TestAWRSRef")))
 
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
       when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -101,7 +92,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
         searchResult = Some(testSearchResult("TestAWRSRef")))
 
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
       when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -127,7 +117,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForAwrsUtr(utr = Some(AwrsEnrolmentUtr("6232113818078")),
         registeredPostcode = Some(AwrsRegisteredPostcode("NE98 1ZZ")),
         searchResult = Some(testSearchResult("TestAWRSRef")))
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
       when(mockMatchingService.verifyUTRandPostCode(ArgumentMatchers.any(), ArgumentMatchers.any(),
         ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -146,7 +135,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUtr()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
       val res = testAwrsUtrController.saveAndContinue().apply(testRequest("SomethingWithError"))
       status(res) mustBe 400
@@ -154,7 +142,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
     "reflect Corporation Tax in title if user has CT UTR and form has errors" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(false)
 
       val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomethingWithError")))
@@ -163,7 +150,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
     "reflect Self Assessment in title if logged-in user has SA UTR and form has errors" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(mockAccountUtils.isSaAccount(ArgumentMatchers.any())).thenReturn(true)
 
       val res = contentAsString(testAwrsUtrController.saveAndContinue().apply(testRequest("SomethingWithError")))
