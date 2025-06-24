@@ -47,20 +47,38 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
       connector.queryGroupIdForEnrolment(awrsRef)(headerCarrier, implicitly)
     }
 
-    "return status as OK, for successful query which returns group id" in {
+    "return PrincipalGorupId if found in response" in {
       mockResponse(OK, es1ResponseWithGroupId)
       val result = testCall
       await(result) mustBe Some("TestPrincipalGroupId")
     }
 
-    "return status as OK, but no group ids" in {
+    "return None if no PrincipalGroupId found in response" in {
       mockResponse(OK, es1ResponseWithoutGroupId)
       val result = testCall
       await(result) mustBe None
     }
 
-    "return status NO_CONTENT" in {
+    "return None  if response status is NO_CONTENT  " in {
       mockResponse(NO_CONTENT)
+      val result = testCall
+      await(result) mustBe None
+    }
+
+    "return None  if response status is BAD_REQUEST  " in {
+      mockResponse(BAD_REQUEST)
+      val result = testCall
+      await(result) mustBe None
+    }
+
+    "return None  if response status is BAD_GATEWAY  " in {
+      mockResponse(BAD_REQUEST)
+      val result = testCall
+      await(result) mustBe None
+    }
+
+    "return None  if response status is NOT_FOUND  " in {
+      mockResponse(NOT_FOUND)
       val result = testCall
       await(result) mustBe None
     }

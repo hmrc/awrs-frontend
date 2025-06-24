@@ -52,37 +52,37 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
       connector.deEnrol(awrsRef, businessName, businessType)(headerCarrier, implicitly)
     }
 
-    "return status as OK, for successful de-enrolment" in {
+    "return successful de-enrolment response if de-enrolment succeeds" in {
       mockResponse(OK)
       val result = testCall
       await(result) mustBe deEnrolResponseSuccess
     }
 
-    "return status as BAD_REQUEST, for unsuccessful de-enrolment" in {
+    "return false, for unsuccessful de-enrolment due to BAD_REQUEST response" in {
       mockResponse(BAD_REQUEST)
       val result = testCall
       await(result) mustBe deEnrolResponseFailure
     }
 
-    "return status as NOT_FOUND, for unsuccessful de-enrolment" in {
+    "return false, for unsuccessful de-enrolment due to NOT_FOUND response" in {
       mockResponse(NOT_FOUND)
       val result = testCall
       await(result) mustBe deEnrolResponseFailure
     }
 
-    "return status as SERVICE_UNAVAILABLE, for unsuccessful de-enrolment" in {
+    "return false, for unsuccessful de-enrolment due to SERVICE_UNAVAILABLE response" in {
       mockResponse(SERVICE_UNAVAILABLE)
       val result = testCall
       await(result) mustBe deEnrolResponseFailure
     }
 
-    "return status as INTERNAL_SERVER_ERROR, for unsuccessful de-enrolment" in {
+    "return false, for unsuccessful de-enrolment due to INTERNAL_SERVER_ERROR response" in {
       mockResponse(INTERNAL_SERVER_ERROR, Some("error in de-enrol service end point error"))
       val result = testCall
       await(result) mustBe deEnrolResponseFailure
     }
 
-    "return status as unexpected status, for unsuccessful de-enrolment" in {
+    "return false, for unsuccessful de-enrolment due to unknown response" in {
       val otherStatus = 999
       mockResponse(otherStatus)
       val result = testCall

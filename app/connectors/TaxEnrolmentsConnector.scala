@@ -127,8 +127,8 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
   def deEnrol(awrsRef: String, groupId: String)
              (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext):Future[Boolean] = {
     val timer = metrics.startTimer(ApiType.ES9DeEnrolment)
-    val postUrl = s"$enrolmentUrl/groups/$groupId/enrolments/$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRef"
-    http.delete(url"$postUrl").execute[HttpResponse].map {
+    val deleteUrl = s"$enrolmentUrl/groups/$groupId/enrolments/$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsRef"
+    http.delete(url"$deleteUrl").execute[HttpResponse].map {
       response =>
         timer.stop()
         response.status match {
