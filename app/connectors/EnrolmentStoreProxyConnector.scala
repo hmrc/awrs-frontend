@@ -45,7 +45,7 @@ class EnrolmentStoreProxyConnector @Inject()(servicesConfig: ServicesConfig,
     val timer = metrics.startTimer(ApiType.ES1Query)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsReferenceNumber"
 
-    val result = http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/${enrolmentKey}/groups").execute[HttpResponse].map {
+    val result = http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/${enrolmentKey}/groups?type=principal&ignore-assignments=true").execute[HttpResponse].map {
       processResponse(_, awrsReferenceNumber)
     }
     timer.stop()

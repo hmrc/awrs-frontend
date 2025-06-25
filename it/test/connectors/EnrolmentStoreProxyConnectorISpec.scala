@@ -30,8 +30,8 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
 
   val connector: EnrolmentStoreProxyConnector = inject[EnrolmentStoreProxyConnector]
   val awrsRef = "TestAwrsRef"
-  val es1ResponseWithGroupId = Some("""{"principalGroupIds": ["TestPrincipalGroupId"], "delegatedGroupIds": []}""")
-  val es1ResponseWithoutGroupId = Some("""{"principalGroupIds": [], "delegatedGroupIds": []}""")
+  val es1ResponseWithGroupId = Some("""{"principalGroupIds": ["TestPrincipalGroupId"]}""")
+  val es1ResponseWithoutGroupId = Some("""{"principalGroupIds": []}""")
 
   "Enrolment Store Connector" must {
     // used in the mock to check the destination of the connector calls
