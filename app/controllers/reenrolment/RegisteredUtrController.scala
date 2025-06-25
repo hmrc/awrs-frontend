@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUtrForm.awrsEnrolmentUtrForm
 import play.api.mvc._
-import services.{BusinessMatchingService, DeEnrolService, EnrolService, KeyStoreService}
+import services.{DeEnrolService, EnrolService, EnrolmentStoreProxyService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -35,8 +35,8 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
-                                        businessMatchingService: BusinessMatchingService,
                                         val enrolService: EnrolService,
+                                        val enrolmentStoreService: EnrolmentStoreProxyService,
                                         awrsFeatureSwitches: AWRSFeatureSwitches,
                                         implicit val applicationConfig: ApplicationConfig,
                                         template: views.html.reenrolment.awrs_registered_utr
@@ -70,22 +70,34 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => Future.successful(BadRequest(template(formWithErrors, isSA))),
             utr => {
               keyStoreService.saveAwrsEnrolmentUtr(utr)
-              keyStoreService.fetchAwrsUrnSearchResult.flatMap {sr =>
-                keyStoreService.fetchAwrsRegisteredPostcode.flatMap { pc =>
-                  businessMatchingService.verifyUTRandPostCode(utr.utr, getOrThrow(pc), ar, isSA).flatMap { utrPostCodeMatch: Boolean =>
-                    if(utrPostCodeMatch) {
-                      enrolService.enrolAWRS(getOrThrow(sr).results.head.awrsRef,
-                        getOrThrow(pc).registeredPostcode, Some(utr.utr),
-                        if (isSA) "SOP" else "CT", Map.empty).map { _ =>
-                        Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
-                      }
-                    } else {
-                      Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                    }
+              val result = for {
+                sr <- keyStoreService.fetchAwrsUrnSearchResult
+                pc <- keyStoreService.fetchAwrsRegisteredPostcode
+                awrsRef = getOrThrow(sr).results.head.awrsRef
+                groupId <- enrolmentStoreService.queryGroupIdForEnrolment(awrsRef)
+                _ = groupId.fold(Future.successful[Boolean](true))(groupId => deEnrolService.deEnrolAwrs(awrsRef, groupId))
+                result <- enrolService.enrolAWRS(
+                    awrsRef,
+                    getOrThrow(pc).registeredPostcode,
+                    Some(utr.utr),
+                    if (isSA) "SOP" else "CT",
+                    Map.empty
+                  ).map {
+                    case Some(_) => Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
+                    case None    => Redirect(routes.KickoutController.showURNKickOutPage)
                   }
-                }
-              }})
-        } else Future.successful(NotFound)
+              } yield result
+
+              result.recover {
+                case ex =>
+                  logger.error("Exception occurred during saveAndContinue journey", ex)
+                  Redirect(routes.KickoutController.showURNKickOutPage)
+              }
+            }
+          )
+        } else {
+          Future.successful(NotFound)
+        }
       }
     }
   }
