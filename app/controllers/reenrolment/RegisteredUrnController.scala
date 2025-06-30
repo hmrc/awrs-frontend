@@ -22,7 +22,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
 import play.api.mvc._
-import services.{DeEnrolService, KeyStoreService, LookupService}
+import services.{DeEnrolService, EnrolmentStoreProxyService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -36,8 +36,8 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
-                                        lookupService: LookupService,
                                         awrsFeatureSwitches: AWRSFeatureSwitches,
+                                        val enrolmentStoreService: EnrolmentStoreProxyService,
                                         implicit val applicationConfig: ApplicationConfig,
                                         template: views.html.reenrolment.awrs_registered_urn
                                       ) extends FrontendController(mcc) with AwrsController {
@@ -66,8 +66,8 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             awrsUrn => {
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                lookupService.lookup(awrsUrn.awrsUrn).flatMap { _ match {
-                    case Some(searchResult) => keyStoreService.saveAwrsUrnSearchResult(searchResult)
+                enrolmentStoreService.queryGroupIdForEnrolment(awrsUrn.awrsUrn).flatMap { _ match {
+                    case Some(groupId) => keyStoreService.saveGroupId(groupId)
                       Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
                     case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                   }

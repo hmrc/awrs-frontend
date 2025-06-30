@@ -156,11 +156,11 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
   @inline def saveAwrsEnrolmentUtr(awrsEnrolmentUtr: AwrsEnrolmentUtr)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, awrsEnrolmentUtr)
 
-  @inline def fetchAwrsUrnSearchResult(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SearchResult]] =
-    keyStoreConnector.fetchDataFromKeystore[SearchResult](awrsEnrolmentSearchResultKeyName)
+  @inline def fetchGroupId(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    keyStoreConnector.fetchDataFromKeystore[String](awrsEnrolmentGroupIdKeyName)
 
-  @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrolmentSearchResultKeyName, searchResult)
+  @inline def saveGroupId(groupId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[String](awrsEnrolmentGroupIdKeyName, groupId)
 
   @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)

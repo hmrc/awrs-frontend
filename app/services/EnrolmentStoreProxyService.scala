@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package models
+package services
 
-import play.api.libs.json._
+import connectors.EnrolmentStoreProxyConnector
+import uk.gov.hmrc.http.HeaderCarrier
 
-case class Info(businessName: Option[String] = None,
-                tradingName: Option[String] = None,
-                fullName: Option[String] = None,
-                address: Option[Address] = None
-               )
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
-object Info {
-  implicit val formatter: OFormat[Info] = Json.format[Info]
+@Singleton
+class EnrolmentStoreProxyService @Inject()(esConnector: EnrolmentStoreProxyConnector) {
+  def queryGroupIdForEnrolment(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    esConnector.queryGroupIdForEnrolment(awrs)
 }
