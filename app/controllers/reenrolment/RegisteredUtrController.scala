@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUtrForm.awrsEnrolmentUtrForm
 import play.api.mvc._
-import services.{DeEnrolService, EnrolService, EnrolmentStoreProxyService, KeyStoreService}
+import services.{DeEnrolService, EnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -36,7 +36,6 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
                                         val enrolService: EnrolService,
-                                        val enrolmentStoreService: EnrolmentStoreProxyService,
                                         awrsFeatureSwitches: AWRSFeatureSwitches,
                                         implicit val applicationConfig: ApplicationConfig,
                                         template: views.html.reenrolment.awrs_registered_utr
@@ -71,10 +70,10 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
             utr => {
               keyStoreService.saveAwrsEnrolmentUtr(utr)
               val result = for {
-                sr <- keyStoreService.fetchAwrsUrnSearchResult
+                awrsUrnOpt <- keyStoreService.fetchAwrsEnrolmentUrn
+                groupId <- keyStoreService.fetchGroupId
                 pc <- keyStoreService.fetchAwrsRegisteredPostcode
-                awrsRef = getOrThrow(sr).results.head.awrsRef
-                groupId <- enrolmentStoreService.queryGroupIdForEnrolment(awrsRef)
+                awrsRef = getOrThrow(awrsUrnOpt).awrsUrn
                 _ = groupId.fold(Future.successful[Boolean](true))(groupId => deEnrolService.deEnrolAwrs(awrsRef, groupId))
                 result <- enrolService.enrolAWRS(
                     awrsRef,

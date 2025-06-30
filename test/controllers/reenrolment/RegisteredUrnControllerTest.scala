@@ -19,8 +19,7 @@ package controllers.reenrolment
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.reenrolment.RegisteredUrnForm
-import models.AwrsStatus.Approved
-import models.{AwrsEnrolmentUrn, Business, Info, SearchResult}
+import models.AwrsEnrolmentUrn
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -44,18 +43,14 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), RegisteredUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
 
-  def testSearchResult(ref:String) = SearchResult(List(
-    Business(ref,
-      Some("12/12/2013"),
-      Approved,
-      Info(Some("Business Name"), Some("Trading Name"), Some("Full name"), None),
-      None)))
+  val testGroupId = "TestGroupId"
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_registered_urn = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
   val testAwrsUrnController: RegisteredUrnController = new RegisteredUrnController(mockMCC,
     testKeyStoreService, mockDeEnrolService, mockAuthConnector,
-    mockAuditable, mockAccountUtils, testLookupService, mockAwrsFeatureSwitches, mockAppConfig, template)
+    mockAuditable, mockAccountUtils, mockAwrsFeatureSwitches,
+    testEnrolmentStoreProxyService, mockAppConfig, template)
 
   "AwrsUrnController" must {
     "show not found when feature is not enabled" in {
@@ -78,9 +73,9 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XAAW00000123456"))
+      when(mockEnrolmentStoreProxyConnector.queryGroupIdForEnrolment(ArgumentMatchers.eq("XAAW00000123456"))
       (any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(testSearchResult("XAAW00000123456"))))
+        .thenReturn(Future.successful(Some(testGroupId)))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
       status(res) mustBe 303
     }
@@ -98,10 +93,25 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
 
-      when(mockLookupConnector.queryByUrn(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]())).thenReturn(Future(Some(testSearchResult("XXAW00000000051"))))
+      when(mockEnrolmentStoreProxyConnector.queryGroupIdForEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
+        .thenReturn(Future(Some(testGroupId)))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
       status(res) mustBe 303
-      verifyKeyStoreService(saveSearchResults = 1)
+      verifyKeyStoreService(saveGroupId = 1)
+    }
+
+    "save should redirect to kickout page if ES1 does not return a groupId" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+      when(mockEnrolmentStoreProxyConnector.queryGroupIdForEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
+        .thenReturn(Future(None))
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
+
+      val result = await(res)
+      result.header.status mustBe 303
+      result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url
+      verifyKeyStoreService(saveGroupId = 0)
 
     }
   }

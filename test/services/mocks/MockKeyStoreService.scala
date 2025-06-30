@@ -97,9 +97,13 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
   }
 
-  def setupMockKeystoreServiceForAwrsUtr(utr:Option[AwrsEnrolmentUtr] = None, searchResult: Option[SearchResult] = None, registeredPostcode: Option[AwrsRegisteredPostcode]=None): Unit = {
+  def setupMockKeystoreServiceForAwrsUtr(utr:Option[AwrsEnrolmentUtr] = None,
+                                         groupId: Option[String] = None,
+                                         registeredPostcode: Option[AwrsRegisteredPostcode]=None,
+                                         urn: Option[AwrsEnrolmentUrn] = None): Unit = {
+    mockFetchFromKeyStore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName, urn)
     mockFetchFromKeyStore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, utr)
-    mockFetchFromKeyStore[SearchResult](awrsEnrolmentSearchResultKeyName, searchResult)
+    mockFetchFromKeyStore[String](awrsEnrolmentGroupIdKeyName, groupId)
     mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, registeredPostcode)
     setupMockKeyStoreServiceOnlySaveFunctions()
 
@@ -185,7 +189,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              saveViewedStatus: Option[Int] = None,
                                              fetchBusinessCustomerAddress: Option[Int] = None,
                                              saveBusinessCustomerAddress: Option[Int] = None,
-                                             saveSearchResults: Option[Int] = None,
+                                             saveGroupId: Option[Int] = None,
                                              saveAwrsUrn: Option[Int] = None,
                                              saveRegisteredPostcode:  Option[Int] = None,
                                            ): Unit = {
@@ -231,7 +235,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
     verifySave(awrsEnrolmentUrnKeyName, saveAwrsUrn)
 
-    verifySave(awrsEnrolmentSearchResultKeyName, saveSearchResults)
+    verifySave(awrsEnrolmentGroupIdKeyName, saveGroupId)
 
     verifySave(registeredPostcodeKeyName, saveRegisteredPostcode)
   }
