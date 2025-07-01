@@ -16,7 +16,6 @@
 
 package connectors
 
-import connectors.{AddressLookupConnector, AddressLookupErrorResponse, AddressLookupSuccessResponse}
 import org.scalatest.matchers.must.Matchers
 import play.api.test.Injecting
 import uk.gov.hmrc.address.client.v1.{Address, AddressRecord, Country, RecordSet}
