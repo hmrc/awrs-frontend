@@ -17,9 +17,8 @@
 package models
 
 import play.api.libs.json.{Json, Writes}
-import uk.gov.hmrc.auth.core.retrieve.PostCode
 
-case class KnownFacts(postCode: PostCode, utr: String)
+case class KnownFacts(urn: String)
 
 object KnownFacts {
 
@@ -28,12 +27,8 @@ object KnownFacts {
       "service" -> Json.toJson("IR-SA"),
       "knownFacts" -> Json.arr(
         Json.obj(
-          "key"   -> Json.toJson("UTR"),
-          "value" -> Json.toJson(knownFacts.utr)
-        ),
-        Json.obj(
-          "key"   -> Json.toJson("Postcode"),
-          "value" -> Json.toJson(knownFacts.postCode.value)
+          "key"   -> Json.toJson("urn"),
+          "value" -> Json.toJson(knownFacts.urn)
         )
       )
     )
