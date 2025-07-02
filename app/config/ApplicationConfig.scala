@@ -52,8 +52,8 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val timeoutCountdown: Int = servicesConfig.getInt("timeoutCountdown")
   lazy val emailVerificationEnabled: Boolean = servicesConfig.getBoolean("email-verification.enabled")
   lazy val emailVerificationBaseUrl: String = servicesConfig.getString("email-verification.continue.baseUrl")
-  private lazy val enrolmentsServiceHost: String = servicesConfig.getString("enrolment-store-proxy.host")
-  private lazy val enrolmentsServicePort: String = servicesConfig.getString("enrolment-store-proxy.port")
+  private lazy val enrolmentsServiceHost: String = servicesConfig.getConfString("enrolment-store-proxy.host", "enrolment-store-proxy.protected.mdtp")
+  private lazy val enrolmentsServicePort: String = servicesConfig.getConfString("enrolment-store-proxy.port", "443")
   lazy val enrolmentsServiceUrl: String = s"$enrolmentsServiceHost/$enrolmentsServicePort/enrolments"
 
   //From ExternalUrls
