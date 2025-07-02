@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.{KnownFacts, enrolment}
+import models.KnownFacts
 import models.enrolment.{Enrolment, EnrolmentSuccessResponse, Identifier, Verifier}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper

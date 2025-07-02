@@ -59,6 +59,8 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockSupport
     "microservice.services.address-lookup.port" -> wireMockPort,
     "microservice.services.email-verification.host" -> wireMockHost,
     "microservice.services.email-verification.port" -> wireMockPort,
+    "microservice.services.enrolment-store-proxy.host" -> wireMockHost,
+    "microservice.services.enrolment-store-proxy.port" -> wireMockPort,
     "microservice.services.awrs-lookup.host" -> wireMockHost,
     "microservice.services.awrs-lookup.port" -> wireMockPort,
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck"
