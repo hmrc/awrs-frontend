@@ -24,17 +24,20 @@ import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.LoggingUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EnrolmentsConnector @Inject() (val applicationConfig: ApplicationConfig, val http: HttpClientV2, val auditable: Auditable)
+class EnrolmentsConnector @Inject() (val servicesConfig: ServicesConfig, val http: HttpClientV2, val auditable: Auditable)
     extends LoggingUtils {
+
+  private val enrolmentsServiceUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
 
   def lookupEnrolments(knownFacts: KnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EnrolmentResponse] = {
     http
-      .post(url"${applicationConfig.enrolmentsServiceUrl}")
+      .post(url"$enrolmentsServiceUrl/enrolments")
       .withBody(Json.toJson(knownFacts))
       .setHeader("X-Hmrc-Origin" -> "AWRS")
       .execute[JsValue]

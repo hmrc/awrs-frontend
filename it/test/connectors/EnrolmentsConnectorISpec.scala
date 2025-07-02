@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.KnownFacts
+import models.{KnownFacts, enrolment}
 import models.enrolment.{Enrolment, EnrolmentSuccessResponse, Identifier, Verifier}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -31,20 +31,21 @@ class EnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Match
   private val connector: EnrolmentsConnector = inject[EnrolmentsConnector]
 
   "lookupEnrolments" when {
-    "return EnrolmentSuccessResponse when service returns valid JSON" ignore { //TODO unignore once ES20 done
-      val utr = "1234567890"
+    "return EnrolmentSuccessResponse when service returns valid JSON" in {
+      val urn = "1234567890"
       val postcode = "SW1A 2AA"
 
-      EnrolmentsLookupStub.stubEnrolmentSuccessResponse(utr, postcode)(status = 200)
+      EnrolmentsLookupStub.stubEnrolmentSuccessResponse(urn)(status = 200)
 
       val successResponse = EnrolmentSuccessResponse(
         service = "IR-SA",
         enrolments = Seq(
           Enrolment(
             identifiers = Seq(
-              Identifier(key = "UTR",    value = "1234567890")
+              Identifier(key = "UTR", value = "1234567890")
             ),
             verifiers = Seq(
+              Verifier(key = "NINO", value = "AB112233D"),
               Verifier(key = "Postcode", value = postcode)
             )
           )
@@ -52,7 +53,7 @@ class EnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Match
       )
 
 
-      val knownFacts = KnownFacts(urn = utr)
+      val knownFacts = KnownFacts(urn = urn)
 
       await(connector.lookupEnrolments(knownFacts)) shouldBe successResponse
 

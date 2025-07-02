@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.helpers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson, post, stubFor, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import uk.gov.hmrc.helpers.AddressLookupStub.stubPost
 
 object EnrolmentsLookupStub {
 
@@ -49,18 +48,14 @@ object EnrolmentsLookupStub {
        |}
        |""".stripMargin
 
-  private def enrolmentRequest(utr: String, postcode: String): String =
+  private def enrolmentRequest(urn: String): String =
     s"""
        |{
        |  "service": "IR-SA",
        |  "knownFacts": [
        |    {
-       |      "key": "UTR",
-       |      "value": "$utr"
-       |    },
-       |    {
-       |      "key": "Postcode",
-       |      "value": "$postcode"
+       |      "key": "urn",
+       |      "value": "$urn"
        |    }
        |  ]
        |}
@@ -76,8 +71,8 @@ object EnrolmentsLookupStub {
             .withBody(responseBody)
         ))
 
-  def stubEnrolmentSuccessResponse(utr: String, postcode: String)(status: Int, responseBody: String = enrolmentLookupSuccessResponse): Unit = {
-    stubPost("/enrolments", Some(enrolmentRequest(utr, postcode)), status, responseBody)
+  def stubEnrolmentSuccessResponse(urn: String)(status: Int, responseBody: String = enrolmentLookupSuccessResponse): Unit = {
+    stubPost("/enrolments", Some(enrolmentRequest(urn)), status, responseBody)
   }
 
 }
