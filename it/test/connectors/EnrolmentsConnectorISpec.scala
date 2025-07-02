@@ -57,8 +57,6 @@ class EnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Match
 
       await(connector.lookupEnrolments(knownFacts)) shouldBe successResponse
 
-
-
     }
   }
 }
