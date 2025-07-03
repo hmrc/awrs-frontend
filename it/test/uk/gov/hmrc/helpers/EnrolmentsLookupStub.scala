@@ -51,10 +51,10 @@ object EnrolmentsLookupStub {
   private def enrolmentRequest(urn: String): String =
     s"""
        |{
-       |  "service": "IR-SA",
+       |  "service": "HMRC-AWRS-ORG",
        |  "knownFacts": [
        |    {
-       |      "key": "urn",
+       |      "key": "AWRSRefNumber",
        |      "value": "$urn"
        |    }
        |  ]
@@ -72,7 +72,7 @@ object EnrolmentsLookupStub {
         ))
 
   def stubEnrolmentSuccessResponse(urn: String)(status: Int, responseBody: String = enrolmentLookupSuccessResponse): Unit = {
-    stubPost("/enrolments", Some(enrolmentRequest(urn)), status, responseBody)
+    stubPost("/enrolment-store/enrolments", Some(enrolmentRequest(urn)), status, responseBody)
   }
 
 }
