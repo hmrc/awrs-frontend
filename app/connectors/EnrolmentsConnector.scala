@@ -37,7 +37,7 @@ class EnrolmentsConnector @Inject() (val servicesConfig: ServicesConfig, val htt
 
   def lookupEnrolments(knownFacts: KnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EnrolmentResponse] = {
     http
-      .post(url"$enrolmentsServiceUrl/enrolments")
+      .post(url"$enrolmentsServiceUrl/enrolment-store/enrolments")
       .withBody(Json.toJson(knownFacts))
       .setHeader("X-Hmrc-Origin" -> "AWRS")
       .execute[JsValue]

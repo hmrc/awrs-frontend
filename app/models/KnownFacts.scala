@@ -24,10 +24,10 @@ object KnownFacts {
 
   implicit val writes: Writes[KnownFacts] = Writes { knownFacts =>
     Json.obj(
-      "service" -> Json.toJson("IR-SA"),
+      "service" -> Json.toJson("HMRC-AWRS-ORG"),
       "knownFacts" -> Json.arr(
         Json.obj(
-          "key"   -> Json.toJson("urn"),
+          "key"   -> Json.toJson("AWRSRefNumber"),
           "value" -> Json.toJson(knownFacts.urn)
         )
       )
