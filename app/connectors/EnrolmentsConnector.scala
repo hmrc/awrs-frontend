@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EnrolmentsConnector @Inject() (val servicesConfig: ServicesConfig, val http: HttpClientV2, val auditable: Auditable)
     extends LoggingUtils {
 
-  private val enrolmentsServiceUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
+  private val enrolmentsServiceUrl: String = s"${servicesConfig.baseUrl("enrolment-store-proxy")}/enrolment-store-proxy"
 
   def lookupEnrolments(knownFacts: KnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EnrolmentResponse] = {
     http

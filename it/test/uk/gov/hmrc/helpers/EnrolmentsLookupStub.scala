@@ -72,7 +72,7 @@ object EnrolmentsLookupStub {
         ))
 
   def stubEnrolmentSuccessResponse(urn: String)(status: Int, responseBody: String = enrolmentLookupSuccessResponse): Unit = {
-    stubPost("/enrolment-store/enrolments", Some(enrolmentRequest(urn)), status, responseBody)
+    stubPost("/enrolment-store-proxy/enrolment-store/enrolments", Some(enrolmentRequest(urn)), status, responseBody)
   }
 
 }
