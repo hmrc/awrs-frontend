@@ -22,6 +22,7 @@ import connectors.EnrolmentsConnector
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
 import models.KnownFacts
+import models.enrolment.EnrolmentResponse
 import play.api.mvc._
 import services.{DeEnrolService, KeyStoreService, LookupService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -71,11 +72,15 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
               formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
               awrsUrn => {
                 val es20Response = enrolmentsConnector.lookupEnrolments(KnownFacts(urn = awrsUrn.awrsUrn))
-                logger.info(s"es20 response $es20Response")
+                es20Response.foreach { resp =>
+                  logger.info(s"es20 response $resp")
+                }
                 Future.successful(Ok(es20Response.toString))
               }
             )
-        } else Future.successful(NotFound)
+        } else {
+          Future.successful(NotFound)
+        }
       }
     }
   }
