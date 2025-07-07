@@ -18,8 +18,8 @@ package models.reenrolment
 
 import play.api.libs.json.{Json, Reads}
 
-case class Groups(principalGroupIds: Seq[String])
+case class PrincipalGroups(principalGroupIds: Seq[String])
 
-object Groups {
-  implicit val reads: Reads[Groups] = Json.reads[Groups]
+object PrincipalGroups {
+  implicit val reads: Reads[PrincipalGroups] = Json.reads[PrincipalGroups]
 }

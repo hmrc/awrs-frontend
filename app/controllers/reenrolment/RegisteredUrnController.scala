@@ -66,11 +66,10 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             awrsUrn => {
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                enrolmentStoreService.queryGroupIdForEnrolment(awrsUrn.awrsUrn).flatMap { _ match {
-                    case Some(groupId) => keyStoreService.saveGroupId(groupId)
-                      Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
-                    case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                  }
+                enrolmentStoreService.queryGroupIdForEnrolment(awrsUrn.awrsUrn).flatMap {
+                  case Some(groupId) => keyStoreService.saveGroupId(groupId)
+                    Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
+                  case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                 }
               }
             }

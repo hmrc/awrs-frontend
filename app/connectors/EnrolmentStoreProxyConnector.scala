@@ -21,7 +21,7 @@ import metrics.AwrsMetrics
 import models.ApiType
 import models.ApiType.ApiType
 import models.reenrolment.EnrolmentSuccessResponse._
-import models.reenrolment.{EnrolmentSuccessResponse, Groups, KnownFacts}
+import models.reenrolment.{EnrolmentSuccessResponse, PrincipalGroups, KnownFacts}
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -61,29 +61,29 @@ class EnrolmentStoreProxyConnector @Inject()(servicesConfig: ServicesConfig,
   }
 
   //ES1
-  def queryGroupIdForEnrolment(awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+  def queryForPrincipalGroupIdOfAWRSEnrolment(awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     val timer = metrics.startTimer(ApiType.ES1Query)
     val enrolmentKey = s"$AWRS_SERVICE_NAME~$EnrolmentIdentifierName~$awrsReferenceNumber"
 
     val result = http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/$enrolmentKey/groups?type=principal&ignore-assignments=true").execute[HttpResponse].map {
-      processResponse(_, r=>Json.parse(r.body).as[Groups].principalGroupIds.headOption, awrsReferenceNumber, ApiType.ES1Query)
+      processResponse(_, r=>Json.parse(r.body).as[PrincipalGroups].principalGroupIds.headOption, awrsReferenceNumber, ApiType.ES1Query)
     }
     timer.stop()
     result
   }
 
-  private def processResponse[T](response: HttpResponse,f:HttpResponse => Option[T], awrsRef: String, apiType: ApiType): Option[T] = {
+  private def processResponse[T](response: HttpResponse,extractFromResponse:HttpResponse => Option[T], awrsRef: String, apiType: ApiType): Option[T] = {
     response.status match {
       case OK =>
-        info(s"[ESConnector][ES1 Query- $awrsRef, OK ] - ${response.body} ")
+        info(s"[ESConnector][$apiType - $awrsRef, OK ] - ${response.body} ")
         metrics.incrementSuccessCounter(apiType)
-        f(response)
+        extractFromResponse(response)
       case NO_CONTENT =>
-        info(s"[ESConnector][ES1 Query- $awrsRef, NO_CONTENT ] - ${response.body} ")
+        info(s"[ESConnector][$apiType- $awrsRef, NO_CONTENT ] - ${response.body} ")
         metrics.incrementSuccessCounter(apiType)
         None
       case status =>
-        warn(s"[ESConnector][ES1 Query- $awrsRef, $status ] - ${response.body} ")
+        warn(s"[ESConnector][$apiType- $awrsRef, $status ] - ${response.body} ")
         metrics.incrementFailedCounter(apiType)
         None
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,14 @@
 
 package services
 
-import connectors.EnrolmentStoreProxyConnector
 import models.AwrsEnrolmentUtr
-import models.reenrolment.{AwrsRegisteredPostcode, Enrolment, EnrolmentSuccessResponse, Identifier, KnownFact, KnownFacts, Verifier}
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
+import models.reenrolment._
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
-import services.mocks.MockSave4LaterService
-import utils.{AwrsUnitTestTraits, TestUtil}
-import views.Configuration.{NewApplicationMode, ReturnedApplicationEditMode, ReturnedApplicationMode}
+import utils.AwrsUnitTestTraits
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -106,7 +100,7 @@ class EnrolmentStroeProxyServiceTest extends AwrsUnitTestTraits with BeforeAndAf
       await(result) mustBe false
     }
 
-    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG but no AwrsRefNumber identifier" in {
+    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG but no AWRSRefNumber identifier" in {
       when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
         .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
           Enrolment(
@@ -120,11 +114,11 @@ class EnrolmentStroeProxyServiceTest extends AwrsUnitTestTraits with BeforeAndAf
       await(result) mustBe false
     }
 
-    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG but no match for AwrsRefNumber identifier" in {
+    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG but no match for AWRSRefNumber identifier" in {
       when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
         .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
           Enrolment(
-            identifiers = Seq(Identifier(key = "AwrsRefNumber", value = "NotTheSame")),
+            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = "NotTheSame")),
             verifiers = Seq(Verifier(key = "CTUTR", value = testUtr.utr))
           )
         )))))
@@ -135,11 +129,11 @@ class EnrolmentStroeProxyServiceTest extends AwrsUnitTestTraits with BeforeAndAf
     }
 
 
-    "return true when ES20 api return Enrolments for service HMRC-AWRS-ORG and finds AwrsRefNumber identifier and CTUTR and Postcode " in {
+    "return true when ES20 api return Enrolments for service HMRC-AWRS-ORG and finds AWRSRefNumber identifier and CTUTR and Postcode " in {
       when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
         .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
           Enrolment(
-            identifiers = Seq(Identifier(key = "AwrsRefNumber", value = testUrn)),
+            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = testUrn)),
             verifiers = Seq(Verifier(key = "CTUTR", value = testUtr.utr), Verifier(key = "Postcode", value = testPostcode.registeredPostcode))
           )
         )))))
@@ -149,11 +143,11 @@ class EnrolmentStroeProxyServiceTest extends AwrsUnitTestTraits with BeforeAndAf
       await(result) mustBe true
     }
 
-    "return true when ES20 api return Enrolments for service HMRC-AWRS-ORG and finds AwrsRefNumber identifier and SAUTR and Postcode " in {
+    "return true when ES20 api return Enrolments for service HMRC-AWRS-ORG and finds AWRSRefNumber identifier and SAUTR and Postcode " in {
       when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
         .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
           Enrolment(
-            identifiers = Seq(Identifier(key = "AwrsRefNumber", value = testUrn)),
+            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = testUrn)),
             verifiers = Seq(Verifier(key = "SAUTR", value = testUtr.utr), Verifier(key = "Postcode", value = testPostcode.registeredPostcode))
           )
         )))))

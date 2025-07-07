@@ -52,7 +52,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
     }
 
     def testCall(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
-      connector.queryGroupIdForEnrolment(awrsRef)(headerCarrier, implicitly)
+      connector.queryForPrincipalGroupIdOfAWRSEnrolment(awrsRef)(headerCarrier, implicitly)
     }
 
     "return EnrolmentSuccessResponse when ES20 returns successful response" in {

@@ -17,14 +17,13 @@
 package models.reenrolment
 
 import models.SuccessfulSubscriptionResponse
-import play.api.libs.json.{Json, OFormat, Reads}
+import play.api.libs.json.{Json, OFormat}
 
-sealed trait EnrolmentResponse
 
 case class Identifier(key: String, value: String)
 case class Verifier(key: String, value: String)
 case class Enrolment(identifiers: Seq[Identifier], verifiers: Seq[Verifier])
-case class EnrolmentSuccessResponse(service: String, enrolments: Seq[Enrolment]) extends EnrolmentResponse
+case class EnrolmentSuccessResponse(service: String, enrolments: Seq[Enrolment])
 
 object EnrolmentSuccessResponse {
   implicit val formats: OFormat[SuccessfulSubscriptionResponse] = Json.format[SuccessfulSubscriptionResponse]
@@ -33,5 +32,3 @@ object EnrolmentSuccessResponse {
   implicit val enrolmentReads: OFormat[Enrolment] = Json.format[Enrolment]
   implicit val responseReads: OFormat[EnrolmentSuccessResponse] = Json.format[EnrolmentSuccessResponse]
 }
-
-case class EnrolmentsErrorResponse(cause: Exception) extends EnrolmentResponse

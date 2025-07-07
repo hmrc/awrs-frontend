@@ -73,7 +73,7 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockEnrolmentStoreProxyConnector.queryGroupIdForEnrolment(ArgumentMatchers.eq("XAAW00000123456"))
+      when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(ArgumentMatchers.eq("XAAW00000123456"))
       (any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testGroupId)))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
@@ -93,7 +93,7 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
 
-      when(mockEnrolmentStoreProxyConnector.queryGroupIdForEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
+      when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
         .thenReturn(Future(Some(testGroupId)))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
       status(res) mustBe 303
@@ -104,7 +104,7 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockEnrolmentStoreProxyConnector.queryGroupIdForEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
+      when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
         .thenReturn(Future(None))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
 
