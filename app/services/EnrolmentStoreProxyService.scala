@@ -17,6 +17,8 @@
 package services
 
 import connectors.EnrolmentStoreProxyConnector
+import models.AwrsEnrolmentUtr
+import models.reenrolment.{AwrsRegisteredPostcode, Identifier, KnownFact, KnownFacts, Verifier}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -26,4 +28,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class EnrolmentStoreProxyService @Inject()(esConnector: EnrolmentStoreProxyConnector) {
   def queryGroupIdForEnrolment(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     esConnector.queryGroupIdForEnrolment(awrs)
+
+  def verifyKnownFacts(arws: String, isSA: Boolean, utr: AwrsEnrolmentUtr, postCode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val knownFacts = KnownFacts("HMRC-AWRS-ORG", Seq(KnownFact("AWRSRefNumber", arws)))
+    esConnector.lookupEnrolments(knownFacts).map {
+      case Some(esResponse) => esResponse.enrolments.find(_.identifiers.contains(Identifier("AWRSRefNumber", arws)))
+          .exists { enrolment =>
+        enrolment.verifiers.contains(Verifier(if (isSA) "SAUTR" else "CTUTR", utr.utr)) &&
+          enrolment.verifiers.contains(Verifier("Postcode", postCode.registeredPostcode))
+      }
+      case _ => false
+    }
+  }
 }
+

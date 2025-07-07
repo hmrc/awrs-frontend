@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package models
+package models.reenrolment
 
-object ApiType extends Enumeration {
-  type ApiType = Value
+import play.api.libs.json.{Json, OFormat}
 
-  val API4Enrolment: models.ApiType.Value = Value
-  val API10DeEnrolment: models.ApiType.Value = Value
-  val ES9DeEnrolment: models.ApiType.Value = Value
-  val ES1Query: models.ApiType.Value = Value
-  val ES20Query: models.ApiType.Value = Value
+case class KnownFact(key: String, value: String)
+
+case class KnownFacts(service: String, knownFacts: Seq[KnownFact]) {
+  def awrsRefNumber:String = knownFacts.find(_.key == "AWRSRefNumber").map(_.value).getOrElse("")
+}
+
+object KnownFacts {
+  implicit val formats: OFormat[KnownFacts] = Json.format[KnownFacts]
+}
+
+object KnownFact {
+  implicit val formats: OFormat[KnownFact] = Json.format[KnownFact]
 }

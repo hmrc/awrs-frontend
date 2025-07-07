@@ -74,6 +74,7 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
                 groupId <- keyStoreService.fetchGroupId
                 pc <- keyStoreService.fetchAwrsRegisteredPostcode
                 awrsRef = getOrThrow(awrsUrnOpt).awrsUrn
+                //ES20
                 _ = groupId.fold(Future.successful[Boolean](true))(groupId => deEnrolService.deEnrolAwrs(awrsRef, groupId))
                 result <- enrolService.enrolAWRS(
                     awrsRef,
