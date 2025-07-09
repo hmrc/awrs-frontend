@@ -66,7 +66,7 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             awrsUrn => {
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                enrolmentStoreService.queryGroupIdForEnrolment(awrsUrn.awrsUrn).flatMap {
+                enrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(awrsUrn.awrsUrn).flatMap {
                   case Some(groupId) => keyStoreService.saveGroupId(groupId)
                     Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
                   case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
