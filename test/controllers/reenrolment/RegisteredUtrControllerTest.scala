@@ -191,7 +191,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
       "redirect to successful enrolment page when both de-enrolment and enrolment succeed" in {
         setAuthMocks()
-        setupTestData()
+        setupTestData(hasGroupId = true)
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
         setupSuccessfulVerification()
         setupSuccessfulDeEnrolment()
@@ -203,7 +203,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
       }
 
-      "redirect to successful enrolment page when no existing groupId found" in {
+      "redirect to kickout page when no existing groupId found" in {
         setAuthMocks()
         setupTestData(hasGroupId = false)
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
@@ -213,7 +213,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
 
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
         verifyNoInteractions(mockDeEnrolService)
       }
 

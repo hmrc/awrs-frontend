@@ -97,7 +97,7 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
       // 4. Process de-enrolment if needed
       deEnrolmentSuccessful <- if (isVerified) maybePrincipalGroupId match {
         case Some(groupId) => deEnrolService.deEnrolAwrs(awrsRef, groupId)
-        case None => Future.successful(true)
+        case None => Future.successful(false)
       } else Future.successful(false)
 
       // 5. Process enrolment

@@ -28,7 +28,7 @@ import utils.AwrsUnitTestTraits
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EnrolmentStroeProxyServiceTest extends AwrsUnitTestTraits with BeforeAndAfterEach with MockitoSugar {
+class EnrolmentStoreProxyServiceTest extends AwrsUnitTestTraits with BeforeAndAfterEach with MockitoSugar {
 
   implicit val req: Request[AnyContent] = FakeRequest()
 
