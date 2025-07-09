@@ -114,10 +114,11 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
             .fold(
               formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
               awrsUrn => {
-                validIds.map { ids =>
-                  val es20Resp = enrolmentsConnector.lookupEnrolments(KnownFacts(urn = ids))
-                  es20Resp.map(resp => logger.info(s"es20 response for $ids - $resp"))
-                }
+                Future
+                  .traverse(validIds) { ids =>
+                    val es20Resp = enrolmentsConnector.lookupEnrolments(KnownFacts(urn = ids))
+                    es20Resp.map(resp => logger.info(s"es20 response for $ids - $resp"))
+                  }
                 Future.successful(Ok("Done"))
               }
             )
