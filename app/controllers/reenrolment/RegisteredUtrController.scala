@@ -93,15 +93,12 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
 
       // 3. Verify known facts
       isVerified <- enrolmentStoreProxyService.verifyKnownFacts(awrsRef, isSA, utr, postcode)
-      _ <- if (!isVerified) Future.successful(Redirect(routes.KickoutController.showURNKickOutPage)) else Future.unit
 
       // 4. Process de-enrolment if needed
       deEnrolmentSuccessful <- if (isVerified) maybePrincipalGroupId match {
         case Some(groupId) => deEnrolService.deEnrolAwrs(awrsRef, groupId)
         case None => Future.successful(true)
       } else Future.successful(false)
-
-      _ <- if (!deEnrolmentSuccessful) Future.successful(Redirect(routes.KickoutController.showURNKickOutPage)) else Future.unit
 
       // 5. Process enrolment
       utrType = if (isSA) "SOP" else "CT"
@@ -123,51 +120,5 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
       logger.error("Exception occurred during re-enrolment journey", ex)
       Redirect(routes.KickoutController.showURNKickOutPage)
   }
-
-
-//  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-//    enrolmentEligibleAuthorisedAction { implicit ar =>
-//      restrictedAccessCheck {
-//        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-//          val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
-//          awrsEnrolmentUtrForm.bindFromRequest().fold(
-//            formWithErrors => Future.successful(BadRequest(template(formWithErrors, isSA))),
-//            utr => {
-//              keyStoreService.saveAwrsEnrolmentUtr(utr)
-//              val result = for {
-//                awrsUrnOpt <- keyStoreService.fetchAwrsEnrolmentUrn
-//                principalGroupId <- keyStoreService.fetchGroupId
-//                pcOpt <- keyStoreService.fetchAwrsRegisteredPostcode
-//                awrsRef = getOrThrow(awrsUrnOpt).awrsUrn
-//                pc = getOrThrow(pcOpt)
-//                verifyKnownFacts <- enrolmentStoreProxyService.verifyKnownFacts(awrsRef, isSA, utr, pc)
-//                _ = if (!verifyKnownFacts) Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-//                deEnrolmentSuccessful <- principalGroupId.fold(Future.successful[Boolean](true))(groupId => deEnrolService.deEnrolAwrs(awrsRef, groupId))
-//                _ = if (!deEnrolmentSuccessful) Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-//                result <- enrolService.enrolAWRS(
-//                    awrsRef,
-//                    pc.registeredPostcode,
-//                    Some(utr.utr),
-//                    if (isSA) "SOP" else "CT",
-//                    Map.empty
-//                  ).map {
-//                    case Some(_) => Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
-//                    case None    => Redirect(routes.KickoutController.showURNKickOutPage)
-//                  }
-//              } yield result
-//
-//              result.recover {
-//                case ex =>
-//                  logger.error("Exception occurred during saveAndContinue journey", ex)
-//                  Redirect(routes.KickoutController.showURNKickOutPage)
-//              }
-//            }
-//          )
-//        } else {
-//          Future.successful(NotFound)
-//        }
-//      }
-//    }
-//  }
 
 }

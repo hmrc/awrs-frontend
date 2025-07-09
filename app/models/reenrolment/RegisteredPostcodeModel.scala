@@ -20,6 +20,7 @@ import play.api.libs.json._
 
 case class AwrsRegisteredPostcode(registeredPostcode: String)
 
+
 object AwrsRegisteredPostcode {
   implicit val format: OFormat[AwrsRegisteredPostcode] = Json.format[AwrsRegisteredPostcode]
 
@@ -28,4 +29,9 @@ object AwrsRegisteredPostcode {
   def sanitise(postcode: String): String = {
     postcode.toLowerCase().replaceAll(awrsRegisteredPostcodePattern, "")
   }
+
+  def sanitiseAndCompare(postcode1: String, postcode2: String): Boolean = {
+    sanitise(postcode1) == sanitise(postcode2)
+  }
+
 }
