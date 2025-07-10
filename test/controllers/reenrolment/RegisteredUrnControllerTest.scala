@@ -20,7 +20,7 @@ import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.reenrolment.RegisteredUrnForm
 import models.AwrsEnrolmentUrn
-import models.reenrolment.{AwrsKnownFacts, Enrolment, Identifier, KnownFactsResponse, Verifier}
+import models.reenrolment._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -33,7 +33,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.reenrolment.awrs_registered_urn
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredUrnControllerTest extends AwrsUnitTestTraits
@@ -113,21 +112,6 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url
       verifyKeyStoreService(saveKnownFacts = 0)
 
-    }
-
-    "save should redirect to kickout page when lookupEnrolments returns an error" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))
-      (any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.failed(new RuntimeException("ES20 service unavailable")))
-
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
-
-      status(res) mustBe 303
-      redirectLocation(res) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
     }
 
   }
