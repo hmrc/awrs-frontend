@@ -277,6 +277,22 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
       }
+
+
+      "redirect to kickout page when ES0 (group id query) fails with an exception" in {
+        setAuthMocks()
+        setupTestData()
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.failed(new RuntimeException("Service unavailable")))
+
+        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+      }
+
+
     }
   }
 }

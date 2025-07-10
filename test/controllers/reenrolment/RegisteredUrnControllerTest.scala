@@ -114,6 +114,21 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
 
     }
 
+    "save should redirect to kickout page when lookupEnrolments returns an error" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))
+      (any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.failed(new RuntimeException("ES20 service unavailable")))
+
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
+
+      status(res) mustBe 303
+      redirectLocation(res) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+    }
+
   }
 
 
