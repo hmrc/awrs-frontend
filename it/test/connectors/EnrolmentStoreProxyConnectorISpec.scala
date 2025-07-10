@@ -38,7 +38,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
 
   "Enrolment Store Connector" must {
     // used in the mock to check the destination of the connector calls
-    lazy val es1Url= s"/enrolment-store-proxy/enrolment-store/enrolments/${connector.AWRS_SERVICE_NAME}~${connector.EnrolmentIdentifierName}~$awrsRef/groups"
+    lazy val es1Url= s"/enrolment-store-proxy/enrolment-store/enrolments/${connector.AWRS_SERVICE_NAME}~${connector.enrolmentIdentifierName}~$awrsRef/groups"
     lazy val es20Url= s"/enrolment-store-proxy/enrolment-store/enrolments"
 
     // these values doesn't really matter since the call itself is mocked e

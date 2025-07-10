@@ -42,19 +42,14 @@
 
 @actionRoute = @{
   if (isEditMode) {
-    controllers.routes.RegisteredUtrController
-      .continueDeEnrollment()
+    controllers.reenrolment.routes.RegisteredPostcodeController.showPostCode
   } else {
-    controllers.routes.KickoutController.showURNKickOutPage
+    controllers.reenrolment.routes.KickoutController.showURNKickOutPage
   }
 }
 
-@backlinkHtml = @{
-    @backLink(
-      controllers.routes.RegisteredUtrController
-        .showArwsUtrPage()
-        .url
-    )
+@backlinkHtml = {
+    @backLink(controllers.reenrolment.routes.RegisteredUtrController.showArwsUtrPage.url)
 }
 
 @awrsMain(
@@ -63,7 +58,7 @@
   userLoggedIn = true
 ) {
 
-  @if (confirmationForm.errors.nonEmpty) {
+  @if(confirmationForm.errors.nonEmpty) {
     @govukErrorSummary(
       ErrorSummary().withFormErrorsAsText(confirmationForm)
     )

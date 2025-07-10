@@ -1,0 +1,45 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package models.reenrolment
+
+import play.api.libs.json._
+
+case class EnrolledUserIds(
+    principalUserIds: Seq[String],
+    delegatedUserIds: Seq[String]
+)
+
+object EnrolledUserIds {
+
+  implicit val format: OFormat[EnrolledUserIds] =
+    Json.format[EnrolledUserIds]
+
+}
+
+object JsonConverters {
+
+  def parseUserIds(jsonText: String): Either[String, EnrolledUserIds] = {
+    Json
+      .parse(jsonText)
+      .validate[EnrolledUserIds] match {
+      case JsSuccess(userIds, _) => Right(userIds)
+      case JsError(errors) =>
+        Left(s"Failed to parse EnrolledUserIds: ${errors.mkString(", ")}")
+    }
+  }
+
+}

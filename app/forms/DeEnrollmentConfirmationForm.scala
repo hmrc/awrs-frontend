@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-object ApiType extends Enumeration {
-  type ApiType = Value
+import forms.validation.util.NamedMappingAndUtil.yesNoQuestion_compulsory
+import play.api.data.Form
+import play.api.data.Forms.mapping
 
-  val API4Enrolment: models.ApiType.Value = Value
-  val API10DeEnrolment: models.ApiType.Value = Value
-  val ES9DeEnrolment: models.ApiType.Value = Value
-  val ES1Query: models.ApiType.Value = Value
-  val ES0Query: models.ApiType.Value = Value
-  val ES20Query: models.ApiType.Value = Value
+object DeEnrollmentConfirmationForm {
+
+  val deEnrollmentConfirmationForm: Form[String] =
+    Form(
+      mapping(
+        "deEnrollmentConfirmation" -> yesNoQuestion_compulsory("deEnrollmentConfirmation", "awrs.generic.error.de_enrollment_confirmation")
+      )((s : Option[String]) => s"${s.getOrElse("")}")((s: String) => Option(Option(s)))
+    )
 }
