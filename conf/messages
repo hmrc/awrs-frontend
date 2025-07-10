@@ -115,6 +115,7 @@ awrs.generic.what_date_did_you=What date did you start trading wholesale alcohol
 awrs.generic.warning_icon_text=Warning.
 awrs.generic.warning_text=Warning
 awrs.generic.name.screen-reader-tip=You have logged in as:
+awrs.generic.de_enrollment_confirmation=De-enrollment will affect other users. Are you happy to continue?
 
 # Generic Error Messages
 #============================================================
@@ -206,6 +207,7 @@ awrs.generic.error.telephone_numeric.summary=The telephone number is not in the 
 awrs.generic.error.telephone_numeric= Enter a valid telephone number
 awrs.generic.error.already_started_trading=Tell us if you have already started trading wholesale alcohol
 awrs.generic.error.legislation=Tell us if your trading of wholesale alcohol started before the 31 March 2016
+awrs.generic.error.de_enrollment_confirmation=Tell us if you are happy to de-enrol?
 
 # Misc
 #============================================================
