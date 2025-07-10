@@ -20,8 +20,8 @@ import audit.Auditable
 import metrics.AwrsMetrics
 import models.ApiType
 import models.ApiType.ApiType
-import models.reenrolment.EnrolmentSuccessResponse._
-import models.reenrolment.{EnrolmentSuccessResponse, PrincipalGroups, KnownFacts}
+import models.reenrolment.KnownFactsResponse._
+import models.reenrolment.{KnownFactsResponse, PrincipalGroups, AwrsKnownFacts}
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -45,7 +45,7 @@ class EnrolmentStoreProxyConnector @Inject()(servicesConfig: ServicesConfig,
 
 
   //ES20
-  def lookupEnrolments(knownFacts: KnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolmentSuccessResponse]] = {
+  def lookupEnrolments(knownFacts: AwrsKnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[KnownFactsResponse]] = {
     val timer = metrics.startTimer(ApiType.ES20Query)
 
     val result = http
@@ -54,7 +54,7 @@ class EnrolmentStoreProxyConnector @Inject()(servicesConfig: ServicesConfig,
       .setHeader("X-Hmrc-Origin" -> "AWRS")
       .execute[HttpResponse]
       .map {
-        processResponse(_, r=>Some(Json.parse(r.body).as[EnrolmentSuccessResponse]), knownFacts.awrsRefNumber, ApiType.ES20Query)
+        processResponse(_, r=>Some(Json.parse(r.body).as[KnownFactsResponse]), knownFacts.awrsRefNumber, ApiType.ES20Query)
       }
     timer.stop()
     result
@@ -75,7 +75,7 @@ class EnrolmentStoreProxyConnector @Inject()(servicesConfig: ServicesConfig,
   private def processResponse[T](response: HttpResponse,extractFromResponse:HttpResponse => Option[T], awrsRef: String, apiType: ApiType): Option[T] = {
     response.status match {
       case OK =>
-        info(s"[ESConnector][$apiType - $awrsRef, OK ] - ${response.body} ")
+        info(s"[ESConnector][$apiType - $awrsRef, OK ]")
         metrics.incrementSuccessCounter(apiType)
         extractFromResponse(response)
       case NO_CONTENT =>

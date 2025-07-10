@@ -19,6 +19,7 @@ package controllers.reenrolment
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
+import controllers.util.KnownFactsVerifier
 import forms.reenrolment.RegisteredUtrForm.awrsEnrolmentUtrForm
 import models.AwrsEnrolmentUtr
 import play.api.mvc._
@@ -84,20 +85,22 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
     for {
       // 1. Fetch required data
       maybeAwrsUrn <- keyStoreService.fetchAwrsEnrolmentUrn
-      maybePrincipalGroupId <- keyStoreService.fetchGroupId
       maybePostcode <- keyStoreService.fetchAwrsRegisteredPostcode
+      maybeKnownFacts <- keyStoreService.fetchKnownFacts
 
       // 2. Extract and validate data
       awrsRef = getOrThrow(maybeAwrsUrn).awrsUrn
       postcode = getOrThrow(maybePostcode)
 
       // 3. Verify known facts
-      isVerified <- enrolmentStoreProxyService.verifyKnownFacts(awrsRef, isSA, utr, postcode)
+      isVerified = KnownFactsVerifier.knownFactsVerified(maybeKnownFacts, awrsRef, isSA, utr, postcode)
 
       // 4. Process de-enrolment if needed
-      deEnrolmentSuccessful <- if (isVerified) maybePrincipalGroupId match {
-        case Some(groupId) => deEnrolService.deEnrolAwrs(awrsRef, groupId)
-        case None => Future.successful(false)
+      deEnrolmentSuccessful <- if (isVerified) {
+        enrolmentStoreProxyService.queryForPrincipalGroupIdOfAWRSEnrolment(awrsRef) flatMap  {
+          case Some(groupId) => deEnrolService.deEnrolAwrs(awrsRef, groupId)
+          case None => Future.successful(true)
+        }
       } else Future.successful(false)
 
       // 5. Process enrolment

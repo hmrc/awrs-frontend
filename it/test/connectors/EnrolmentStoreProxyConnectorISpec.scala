@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.reenrolment.{Enrolment, EnrolmentSuccessResponse, Identifier, KnownFacts, Verifier}
+import models.reenrolment.{Enrolment, KnownFactsResponse, Identifier, AwrsKnownFacts, Verifier}
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status.OK
 import play.api.libs.json.Json
@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import models.reenrolment.EnrolmentSuccessResponse._
+import models.reenrolment.KnownFactsResponse._
 
 class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
@@ -58,7 +58,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
     "return EnrolmentSuccessResponse when ES20 returns successful response" in {
       val urn = "XKAW00000200130"
       val postcode = "SW1A 2AA"
-      val response: EnrolmentSuccessResponse = successResponse(urn, postcode)
+      val response: KnownFactsResponse = successResponse(urn, postcode)
       mockPostResponseES20(OK, Some(Json.toJson(response).toString()))
       val knownFacts = KnownFacts(urn)
       await(connector.lookupEnrolments(knownFacts)) mustBe Some(response)
@@ -120,7 +120,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
   }
 
   private def successResponse(urn: String, postcode: String) = {
-    EnrolmentSuccessResponse(
+    KnownFactsResponse(
       service = "IR-SA",
       enrolments = Seq(
         Enrolment(

@@ -20,6 +20,7 @@ import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.reenrolment.RegisteredUrnForm
 import models.AwrsEnrolmentUrn
+import models.reenrolment.{AwrsKnownFacts, Enrolment, Identifier, KnownFactsResponse, Verifier}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -43,7 +44,16 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), RegisteredUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
 
-  val testGroupId = "TestGroupId"
+  val testAwrsRef = "XXAW00000000051"
+  val testUtr = "1234567890"
+  val testPostcode = "SW1A 1AA"
+
+  val testKnownFactsResponse = KnownFactsResponse("HMRC-AWRS-ORG", Seq(
+    Enrolment(
+      identifiers = Seq(Identifier("AWRSRefNumber", testAwrsRef)),
+      verifiers = Seq(Verifier("SAUTR", testUtr), Verifier("Postcode", testPostcode))
+
+  )))
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_registered_urn = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
@@ -69,15 +79,16 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       status(res) mustBe 200
     }
 
-    "save the URN to keystore if no errors" in {
+    "save the URN and known facts to keystore if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(ArgumentMatchers.eq("XAAW00000123456"))
+      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))
       (any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(testGroupId)))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XAAW00000123456"))
+        .thenReturn(Future.successful(Some(testKnownFactsResponse)))
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
       status(res) mustBe 303
+      verifyKeyStoreService(saveKnownFacts = 1, saveAwrsUrn = 1)
     }
 
     "save should return 400 if form has errors" in {
@@ -87,33 +98,41 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
       status(res) mustBe 400
     }
-    
-     "save should lookup the urn and save result found in keystore" in {
+
+
+    "save should redirect to kickout page if ES20 does not return known facts" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
-
-      when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
-        .thenReturn(Future(Some(testGroupId)))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
-      status(res) mustBe 303
-      verifyKeyStoreService(saveGroupId = 1)
-    }
-
-    "save should redirect to kickout page if ES1 does not return a groupId" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(ArgumentMatchers.eq("XXAW00000000051"))(any[HeaderCarrier](),any[ExecutionContext]()))
-        .thenReturn(Future(None))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("XXAW00000000051"))
+      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](),any[ExecutionContext]()))
+        .thenReturn(Future.successful(None))
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
 
       val result = await(res)
       result.header.status mustBe 303
       result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url
-      verifyKeyStoreService(saveGroupId = 0)
+      verifyKeyStoreService(saveKnownFacts = 0)
 
     }
+
+    "save should redirect to kickout page when lookupEnrolments returns an error" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))
+      (any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.failed(new RuntimeException("ES20 service unavailable")))
+
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
+
+      status(res) mustBe 303
+      redirectLocation(res) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+    }
+
   }
+
+
+
 
 }

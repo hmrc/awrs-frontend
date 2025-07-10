@@ -16,146 +16,115 @@
 
 package services
 
-import models.AwrsEnrolmentUtr
+import connectors.EnrolmentStoreProxyConnector
 import models.reenrolment._
-import org.mockito.Mockito.{reset, when}
-import org.scalatest.BeforeAndAfterEach
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{AnyContent, Request}
 import play.api.test.FakeRequest
-import utils.AwrsUnitTestTraits
+import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class EnrolmentStoreProxyServiceTest extends AwrsUnitTestTraits with BeforeAndAfterEach with MockitoSugar {
+class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with MockitoSugar {
 
+  implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val req: Request[AnyContent] = FakeRequest()
 
-  def createKnownFacts(urn: String): KnownFacts = KnownFacts("HMRC-AWRS-ORG", Seq(KnownFact("AWRSRefNumber", urn)))
-  val testUrn = "XKAW00000200130"
-  val testUtr = AwrsEnrolmentUtr("123456789")
-  val testPostcode = AwrsRegisteredPostcode("AB1 2CD")
+  private val mockConnector = mock[EnrolmentStoreProxyConnector]
+  private val service = new EnrolmentStoreProxyService(mockConnector)
 
-  override def beforeEach(): Unit = {
-    reset(mockEnrolmentStoreProxyConnector)
-    super.beforeEach()
-  }
+  private val testAwrsRef = "XAAW00000123456"
+  private val testGroupId = "test-group-id"
+  private val testKnownFacts = AwrsKnownFacts(
+    service = "HMRC-AWRS-ORG",
+    knownFacts = Seq(KnownFact("AWRSRefNumber", testAwrsRef))
+  )
 
-  val testService: EnrolmentStoreProxyService = new EnrolmentStoreProxyService(mockEnrolmentStoreProxyConnector)
+  "EnrolmentStoreProxyService" should {
+    "queryForPrincipalGroupIdOfAWRSEnrolment" should {
+      "return Some(groupId) when connector returns a group ID" in {
+        when(mockConnector.queryForPrincipalGroupIdOfAWRSEnrolment(testAwrsRef))
+          .thenReturn(Future.successful(Some(testGroupId)))
 
-  "verifyKnownFacts" must {
-    "return false when ES20 api return None" in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(None))
+        service.queryForPrincipalGroupIdOfAWRSEnrolment(testAwrsRef).map { result =>
+          result shouldBe Some(testGroupId)
+        }
+      }
 
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
+      "return None when connector returns None" in {
+        when(mockConnector.queryForPrincipalGroupIdOfAWRSEnrolment(testAwrsRef))
+          .thenReturn(Future.successful(None))
 
-      await(result) mustBe false
+        service.queryForPrincipalGroupIdOfAWRSEnrolment(testAwrsRef).map { result =>
+          result shouldBe None
+        }
+      }
+
+      "propagate exceptions from the connector" in {
+        val exception = new RuntimeException("Connection failed")
+        when(mockConnector.queryForPrincipalGroupIdOfAWRSEnrolment(testAwrsRef))
+          .thenReturn(Future.failed(exception))
+
+        recoverToSucceededIf[RuntimeException] {
+          service.queryForPrincipalGroupIdOfAWRSEnrolment(testAwrsRef)
+        }
+      }
     }
 
-    "return false when ES20 api return empty Enrolments for service HMRC-AWRS-ORG" in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq.empty))))
-
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
-
-      await(result) mustBe false
-    }
-
-    "return false when ES20 api return Enrolments where service is not HMRC-AWRS-ORG" in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("IR-SA", Seq.empty))))
-
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
-
-      await(result) mustBe false
-    }
-
-    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG with CTUTR but no postcode match" in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
+    "lookupKnownFacts" should {
+      val testResponse = KnownFactsResponse(
+        service = "HMRC-AWRS-ORG",
+        enrolments = Seq(
           Enrolment(
-            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = testUrn)),
-            verifiers = Seq(Verifier(key = "CTUTR", value = testUtr.utr))
+            identifiers = Seq(Identifier("AWRSRefNumber", testAwrsRef)),
+            verifiers = Seq(Verifier("SAUTR", "1234567890"))
           )
-        )))))
+        )
+      )
 
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
+      "return Some(response) when connector returns a response" in {
+        when(mockConnector.lookupEnrolments(any[AwrsKnownFacts]())(any[HeaderCarrier](), any[ExecutionContext]()))
+          .thenReturn(Future.successful(Some(testResponse)))
 
-      await(result) mustBe false
+        service.lookupKnownFacts(testKnownFacts).map { result =>
+          result shouldBe Some(testResponse)
+        }
+      }
+
+      "return None when connector returns None" in {
+        when(mockConnector.lookupEnrolments(any[AwrsKnownFacts]())(any[HeaderCarrier](), any[ExecutionContext]()))
+          .thenReturn(Future.successful(None))
+
+        service.lookupKnownFacts(testKnownFacts).map { result =>
+          result shouldBe None
+        }
+      }
+
+      "propagate exceptions from the connector" in {
+        val exception = new RuntimeException("Lookup failed")
+        when(mockConnector.lookupEnrolments(any[AwrsKnownFacts]())(any[HeaderCarrier](), any[ExecutionContext]()))
+          .thenReturn(Future.failed(exception))
+
+        recoverToSucceededIf[RuntimeException] {
+          service.lookupKnownFacts(testKnownFacts)
+        }
+      }
+
+      "pass through the provided known facts to the connector" in {
+        val captor = org.mockito.ArgumentCaptor.forClass(classOf[AwrsKnownFacts])
+        when(mockConnector.lookupEnrolments(captor.capture())(any[HeaderCarrier](), any[ExecutionContext]()))
+          .thenReturn(Future.successful(Some(testResponse)))
+
+        service.lookupKnownFacts(testKnownFacts).map { _ =>
+          val capturedFacts:AwrsKnownFacts = captor.getValue
+          capturedFacts.service shouldBe testKnownFacts.service
+          capturedFacts.knownFacts shouldBe testKnownFacts.knownFacts
+        }
+      }
     }
-
-    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG with PostCode match but no CTUTR match" in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
-          Enrolment(
-            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = testUrn)),
-            verifiers = Seq(Verifier(key = "Postcode", value = testPostcode.registeredPostcode))
-          )
-        )))))
-
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
-
-      await(result) mustBe false
-    }
-
-    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG but no AWRSRefNumber identifier" in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
-          Enrolment(
-            identifiers = Seq(Identifier(key = "SomeOther", value = testUrn)),
-            verifiers = Seq(Verifier(key = "CTUTR", value = testUtr.utr))
-          )
-        )))))
-
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
-
-      await(result) mustBe false
-    }
-
-    "return false when ES20 api return Enrolments for service HMRC-AWRS-ORG but no match for AWRSRefNumber identifier" in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
-          Enrolment(
-            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = "NotTheSame")),
-            verifiers = Seq(Verifier(key = "CTUTR", value = testUtr.utr))
-          )
-        )))))
-
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
-
-      await(result) mustBe false
-    }
-
-
-    "return true when ES20 api return Enrolments for service HMRC-AWRS-ORG and finds AWRSRefNumber identifier and CTUTR and Postcode " in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
-          Enrolment(
-            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = testUrn)),
-            verifiers = Seq(Verifier(key = "CTUTR", value = testUtr.utr), Verifier(key = "Postcode", value = testPostcode.registeredPostcode))
-          )
-        )))))
-
-      val result = testService.verifyKnownFacts(testUrn, false, testUtr, testPostcode)
-
-      await(result) mustBe true
-    }
-
-    "return true when ES20 api return Enrolments for service HMRC-AWRS-ORG and finds AWRSRefNumber identifier and SAUTR and Postcode " in {
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(createKnownFacts(testUrn)))
-        .thenReturn(Future.successful(Some(EnrolmentSuccessResponse("HMRC-AWRS-ORG", Seq(
-          Enrolment(
-            identifiers = Seq(Identifier(key = "AWRSRefNumber", value = testUrn)),
-            verifiers = Seq(Verifier(key = "SAUTR", value = testUtr.utr), Verifier(key = "Postcode", value = testPostcode.registeredPostcode))
-          )
-        )))))
-
-      val result = testService.verifyKnownFacts(testUrn, true, testUtr, testPostcode)
-
-      await(result) mustBe true
-    }
-
   }
 }

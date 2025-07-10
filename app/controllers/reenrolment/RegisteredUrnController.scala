@@ -21,6 +21,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
+import models.reenrolment.AwrsKnownFacts
 import play.api.mvc._
 import services.{DeEnrolService, EnrolmentStoreProxyService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -40,7 +41,7 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
                                         val enrolmentStoreService: EnrolmentStoreProxyService,
                                         implicit val applicationConfig: ApplicationConfig,
                                         template: views.html.reenrolment.awrs_registered_urn
-                                      ) extends FrontendController(mcc) with AwrsController {
+                                       ) extends FrontendController(mcc) with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
@@ -66,10 +67,14 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
             awrsUrn => {
               keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                enrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(awrsUrn.awrsUrn).flatMap {
-                  case Some(groupId) => keyStoreService.saveGroupId(groupId)
+                enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
+                  case Some(knownFactsResponse) => keyStoreService.saveKnownFacts(knownFactsResponse)
                     Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
                   case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+                } recover {
+                  case ex: Exception =>
+                    logger.error("Exception occurred ES20 api call", ex)
+                    Redirect(routes.KickoutController.showURNKickOutPage)
                 }
               }
             }

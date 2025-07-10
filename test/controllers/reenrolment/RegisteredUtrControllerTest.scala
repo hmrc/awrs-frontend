@@ -19,7 +19,7 @@ package controllers.reenrolment
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.reenrolment.RegisteredUtrForm
-import models.reenrolment.AwrsRegisteredPostcode
+import models.reenrolment.{AwrsRegisteredPostcode, KnownFactsResponse, Verifier}
 import models.{AwrsEnrolmentUrn, AwrsEnrolmentUtr, EnrolResponse, Identifier}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -93,10 +93,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       AwrsEnrolmentUtr(answer)
     )
 
-  private def setupSuccessfulVerification(isVerified: Boolean = true): Unit = {
-    when(mockEnrolmentStoreService.verifyKnownFacts(any(), any(), any(), any())(any(), any()))
-      .thenReturn(Future.successful(isVerified))
-  }
 
   private def setupSuccessfulDeEnrolment(success: Boolean = true): Unit = {
     when(mockDeEnrolService.deEnrolAwrs(any(), any())(any(), any()))
@@ -114,12 +110,12 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       .thenReturn(Future.successful(EnrolResponse("serviceName", "state", List(Identifier("AWRS", "AWRS_Ref_No")))))
   }
 
-  private def setupTestData(hasGroupId: Boolean = true): Unit = {
+  private def setupTestData(knownFactsResponse: Option[KnownFactsResponse] = None): Unit = {
     setupMockKeystoreServiceForAwrsUtr(
       urn = Some(AwrsEnrolmentUrn(testAwrsRef)),
       utr = Some(AwrsEnrolmentUtr(testUtr)),
       registeredPostcode = Some(AwrsRegisteredPostcode(testPostcode)),
-      groupId = if (hasGroupId) Some(testGroupId) else None
+      knownFactsResponse = knownFactsResponse
     )
   }
 
@@ -150,10 +146,17 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
     "saveAndContinue is called" must {
       "redirect to kickout page when enrolment fails" in {
         setAuthMocks()
-        setupTestData()
-        setupSuccessfulVerification()
+        setupTestData(knownFactsResponse = Some(
+          KnownFactsResponse("HMRC-AWRS-ORG",
+            Seq(models.reenrolment.Enrolment(
+              identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
+              verifiers = Seq(Verifier("SAUTR", "1234567890"))
+            ))
+        )))
         setupSuccessfulDeEnrolment()
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.successful(Some(testGroupId)))
         when(mockEnrolService.enrolAWRS(any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.failed(new BadRequestException("")))
 
@@ -165,9 +168,16 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
       "redirect to kickout page when de-enrolment fails" in {
         setAuthMocks()
-        setupTestData()
+        setupTestData(knownFactsResponse = Some(
+          KnownFactsResponse("HMRC-AWRS-ORG",
+            Seq(models.reenrolment.Enrolment(
+              identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
+              verifiers = Seq(Verifier("SAUTR", testUtr))
+            ))
+          )))
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
-        setupSuccessfulVerification()
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.successful(Some(testGroupId)))
         setupSuccessfulDeEnrolment(success = false)
 
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
@@ -176,11 +186,18 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
       }
 
-      "redirect to kickout page when verifyKnownFacts returns false" in {
+      "redirect to kickout page when known facts are not verified" in {
         setAuthMocks()
-        setupTestData()
+        setupTestData(knownFactsResponse = Some(
+          KnownFactsResponse("HMRC-AWRS-ORG",
+            Seq(models.reenrolment.Enrolment(
+              identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
+              verifiers = Seq(Verifier("SAUTR", "1234567890"))
+            ))
+          )))
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.successful(Some(testGroupId)))
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
-        setupSuccessfulVerification(isVerified = false)
         setupSuccessfulDeEnrolment()
         setupSuccessfulEnrolment()
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
@@ -191,9 +208,16 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
       "redirect to successful enrolment page when both de-enrolment and enrolment succeed" in {
         setAuthMocks()
-        setupTestData(hasGroupId = true)
+        setupTestData(knownFactsResponse = Some(
+          KnownFactsResponse("HMRC-AWRS-ORG",
+            Seq(models.reenrolment.Enrolment(
+              identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
+              verifiers = Seq(Verifier("SAUTR", testUtr), Verifier("Postcode", testPostcode))
+            ))
+          )))
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.successful(Some(testGroupId)))
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
-        setupSuccessfulVerification()
         setupSuccessfulDeEnrolment()
         setupSuccessfulEnrolment()
 
@@ -203,25 +227,40 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
       }
 
-      "redirect to kickout page when no existing groupId found" in {
+      "do successful enrolment without de-enrolment when group id is not found" in {
         setAuthMocks()
-        setupTestData(hasGroupId = false)
+        setupTestData(knownFactsResponse = Some(
+          KnownFactsResponse("HMRC-AWRS-ORG",
+            Seq(models.reenrolment.Enrolment(
+              identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
+              verifiers = Seq(Verifier("SAUTR", testUtr), Verifier("Postcode", testPostcode))
+            ))
+          )))
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.successful(None))
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
-        setupSuccessfulVerification()
         setupSuccessfulEnrolment()
 
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
 
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
         verifyNoInteractions(mockDeEnrolService)
       }
 
       "handle Corporation Tax UTR when user is not SA" in {
         setAuthMocks()
-        setupTestData()
+        setupTestData(knownFactsResponse = Some(
+          KnownFactsResponse("HMRC-AWRS-ORG",
+            Seq(models.reenrolment.Enrolment(
+              identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
+              verifiers = Seq(Verifier("CTUTR", testUtr), Verifier("Postcode", testPostcode))
+            ))
+          )))
+
         when(mockAccountUtils.isSaAccount(any())).thenReturn(false)
-        setupSuccessfulVerification()
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.successful(Some(testGroupId)))
         setupSuccessfulDeEnrolment()
 
         when(mockEnrolService.enrolAWRS(
@@ -240,11 +279,11 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       }
 
 
-      "redirect to kickout page when verifyKnownFacts fails with an exception" in {
+      "redirect to kickout page when ES0 (group id query) fails with an exception" in {
         setAuthMocks()
         setupTestData()
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
-        when(mockEnrolmentStoreService.verifyKnownFacts(any(), any(), any(), any())(any(), any()))
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.failed(new RuntimeException("Service unavailable")))
 
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
@@ -255,9 +294,16 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
       "redirect to kickout page when deEnrolAwrs fails with an exception" in {
         setAuthMocks()
-        setupTestData()
+        setupTestData(knownFactsResponse = Some(
+          KnownFactsResponse("HMRC-AWRS-ORG",
+            Seq(models.reenrolment.Enrolment(
+              identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
+              verifiers = Seq(Verifier("SAUTR", testUtr), Verifier("Postcode", testPostcode))
+            ))
+          )))
+        when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
+          .thenReturn(Future.successful(Some(testGroupId)))
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
-        setupSuccessfulVerification()
         when(mockDeEnrolService.deEnrolAwrs(any(), any())(any(), any()))
           .thenReturn(Future.failed(new RuntimeException("De-enrolment failed")))
 

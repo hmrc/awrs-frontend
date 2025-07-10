@@ -23,12 +23,12 @@ import play.api.libs.json.{Json, OFormat}
 case class Identifier(key: String, value: String)
 case class Verifier(key: String, value: String)
 case class Enrolment(identifiers: Seq[Identifier], verifiers: Seq[Verifier])
-case class EnrolmentSuccessResponse(service: String, enrolments: Seq[Enrolment])
+case class KnownFactsResponse(service: String, enrolments: Seq[Enrolment])
 
-object EnrolmentSuccessResponse {
+object KnownFactsResponse {
   implicit val formats: OFormat[SuccessfulSubscriptionResponse] = Json.format[SuccessfulSubscriptionResponse]
   implicit val identifierReads: OFormat[Identifier] = Json.format[Identifier]
   implicit val verifierReads: OFormat[Verifier] = Json.format[Verifier]
   implicit val enrolmentReads: OFormat[Enrolment] = Json.format[Enrolment]
-  implicit val responseReads: OFormat[EnrolmentSuccessResponse] = Json.format[EnrolmentSuccessResponse]
+  implicit val responseReads: OFormat[KnownFactsResponse] = Json.format[KnownFactsResponse]
 }

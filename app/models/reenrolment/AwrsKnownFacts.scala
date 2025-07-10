@@ -20,12 +20,17 @@ import play.api.libs.json.{Json, OFormat}
 
 case class KnownFact(key: String, value: String)
 
-case class KnownFacts(service: String, knownFacts: Seq[KnownFact]) {
+case class AwrsKnownFacts(service: String, knownFacts: Seq[KnownFact]) {
   def awrsRefNumber:String = knownFacts.find(_.key == "AWRSRefNumber").map(_.value).getOrElse("")
 }
 
-object KnownFacts {
-  implicit val formats: OFormat[KnownFacts] = Json.format[KnownFacts]
+object AwrsKnownFacts {
+  implicit val formats: OFormat[AwrsKnownFacts] = Json.format[AwrsKnownFacts]
+
+  def apply(awrsRefNumber: String): AwrsKnownFacts = {
+    val knownFacts = Seq(KnownFact("AWRSRefNumber", awrsRefNumber))
+    AwrsKnownFacts("HMRC-AWRS-ORG", knownFacts)
+  }
 }
 
 object KnownFact {
