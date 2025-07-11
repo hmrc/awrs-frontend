@@ -19,7 +19,7 @@ package services
 import _root_.models._
 import connectors.{AwrsKeyStoreConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
-import models.reenrolment.AwrsRegisteredPostcode
+import models.reenrolment.{AwrsRegisteredPostcode, KnownFactsResponse}
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -153,14 +153,11 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
   @inline def fetchAwrsEnrolmentUtr(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsEnrolmentUtr]] =
     keyStoreConnector.fetchDataFromKeystore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName)
 
-  @inline def saveAwrsEnrolmentUtr(awrsEnrolmentUtr: AwrsEnrolmentUtr)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreConnector.saveDataToKeystore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, awrsEnrolmentUtr)
+  @inline def fetchKnownFacts(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[KnownFactsResponse]] =
+    keyStoreConnector.fetchDataFromKeystore[KnownFactsResponse](awrsKnownFactsResponseKeyName)
 
-  @inline def fetchAwrsUrnSearchResult(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SearchResult]] =
-    keyStoreConnector.fetchDataFromKeystore[SearchResult](awrsEnrolmentSearchResultKeyName)
-
-  @inline def saveAwrsUrnSearchResult(searchResult: SearchResult)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreConnector.saveDataToKeystore[SearchResult](awrsEnrolmentSearchResultKeyName, searchResult)
+  @inline def saveKnownFacts(knownFactsResponse: KnownFactsResponse)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[KnownFactsResponse](awrsKnownFactsResponseKeyName, knownFactsResponse)
 
   @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)

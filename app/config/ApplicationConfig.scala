@@ -73,4 +73,5 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
 
   def feature(name:String): Boolean = Try(servicesConfig.getBoolean("feature.enrolmentJourney")).getOrElse(false)
+
 }
