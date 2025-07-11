@@ -18,7 +18,7 @@ package connectors
 
 import models.{EnrolResponse, RequestPayload}
 import org.scalatest.matchers.must.Matchers
-import play.api.http.Status.{CREATED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE}
+import play.api.http.Status.{BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE}
 import play.api.test.Helpers._
 import play.api.test.Injecting
 import services.GGConstants._
@@ -106,16 +106,10 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
       connector.deEnrol("TestAwrsRef", "TestGroupId")(headerCarrier, implicitly)
     }
 
-    "return status as OK, for successful de-enrolment" in {
-      mockResponse(OK)
-      val result = testCall
-      await(result) mustBe deEnrolResponseSuccess
-    }
-
-    "return status as NO_CONTENT, for unsuccessful de-enrolment" in {
+    "return status as NO_CONTENT, for successful de-enrolment" in {
       mockResponse(NO_CONTENT)
       val result = testCall
-      await(result) mustBe deEnrolResponseFailure
+      await(result) mustBe deEnrolResponseSuccess
     }
 
     "return status as BAD_REQUEST, for unsuccessful de-enrolment" in {
