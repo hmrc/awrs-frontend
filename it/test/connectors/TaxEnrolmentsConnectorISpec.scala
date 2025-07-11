@@ -18,7 +18,7 @@ package connectors
 
 import models.{EnrolResponse, RequestPayload}
 import org.scalatest.matchers.must.Matchers
-import play.api.http.Status.{CREATED, BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE}
+import play.api.http.Status.{BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, SERVICE_UNAVAILABLE}
 import play.api.test.Helpers._
 import play.api.test.Injecting
 import services.GGConstants._
@@ -49,12 +49,65 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
     }
 
     def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
-
       connector.deEnrol(awrsRef, businessName, businessType)(headerCarrier, implicitly)
     }
 
-    "return status as OK, for successful de-enrolment" in {
+    "return successful de-enrolment response if de-enrolment succeeds" in {
       mockResponse(OK)
+      val result = testCall
+      await(result) mustBe deEnrolResponseSuccess
+    }
+
+    "return false, for unsuccessful de-enrolment due to BAD_REQUEST response" in {
+      mockResponse(BAD_REQUEST)
+      val result = testCall
+      await(result) mustBe deEnrolResponseFailure
+    }
+
+    "return false, for unsuccessful de-enrolment due to NOT_FOUND response" in {
+      mockResponse(NOT_FOUND)
+      val result = testCall
+      await(result) mustBe deEnrolResponseFailure
+    }
+
+    "return false, for unsuccessful de-enrolment due to SERVICE_UNAVAILABLE response" in {
+      mockResponse(SERVICE_UNAVAILABLE)
+      val result = testCall
+      await(result) mustBe deEnrolResponseFailure
+    }
+
+    "return false, for unsuccessful de-enrolment due to INTERNAL_SERVER_ERROR response" in {
+      mockResponse(INTERNAL_SERVER_ERROR, Some("error in de-enrol service end point error"))
+      val result = testCall
+      await(result) mustBe deEnrolResponseFailure
+    }
+
+    "return false, for unsuccessful de-enrolment due to unknown response" in {
+      val otherStatus = 999
+      mockResponse(otherStatus)
+      val result = testCall
+      await(result) mustBe deEnrolResponseFailure
+    }
+  }
+
+  "Tax enrolments connector de-enrolling AWRS groupid" must {
+    // used in the mock to check the destination of the connector calls
+    lazy val deEnrolURI = s"/tax-enrolments/groups/TestGroupId/enrolments/${connector.AWRS_SERVICE_NAME}~${connector.EnrolmentIdentifierName}~TestAwrsRef"
+
+    // these values doesn't really matter since the call itself is mocked
+    val deEnrolResponseSuccess = true
+    val deEnrolResponseFailure = false
+
+    def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit = {
+      stubbedDelete(deEnrolURI, responseStatus)
+    }
+
+    def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
+      connector.deEnrol("TestAwrsRef", "TestGroupId")(headerCarrier, implicitly)
+    }
+
+    "return status as NO_CONTENT, for successful de-enrolment" in {
+      mockResponse(NO_CONTENT)
       val result = testCall
       await(result) mustBe deEnrolResponseSuccess
     }
@@ -90,6 +143,7 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
       await(result) mustBe deEnrolResponseFailure
     }
   }
+
 
   "Tax enrolments connector enrolling AWRS" must {
 

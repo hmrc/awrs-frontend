@@ -915,16 +915,4 @@ object TestUtil extends PlaySpec {
     fakeRequest.withFormUrlEncodedBody(form.fill(data).data.toSeq: _*)
 
   val testAwrsRef = "XXAW00000123455"
-
-  val testInfo: String => Info = (id: String) => Info(s"testBusinessName$id", s"testTradingName$id", s"testFullName$id",
-    Address(s"testline1$id", s"testline2$id", s"testline3$id", s"testline4$id", s"testPostCode$id", s"testCountry$id"))
-
-  def testBusiness(ref: String = testAwrsRef): Business = Business(ref, "1 April 2017", models.AwrsStatus.Approved, testInfo(" bus"))
-
-  def testGroup(ref: String = testAwrsRef): Group = Group(ref, "1 April 2017", models.AwrsStatus.Approved, testInfo(" group"),
-    List(testInfo(" member 1"), testInfo(" member 2"), testInfo(" member 3"), testInfo(" member 4")))
-
-  val testBusinessSearchResult: SearchResult = SearchResult(List(testBusiness()))
-
-  val testGroupSearchResult: SearchResult = SearchResult(List(testGroup()))
 }

@@ -16,22 +16,23 @@
 
 package models.reenrolment
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, OFormat}
 
-case class AwrsRegisteredPostcode(registeredPostcode: String)
+case class KnownFact(key: String, value: String)
 
+case class AwrsKnownFacts(service: String, knownFacts: Seq[KnownFact]) {
+  def awrsRefNumber:String = knownFacts.find(_.key == "AWRSRefNumber").map(_.value).getOrElse("")
+}
 
-object AwrsRegisteredPostcode {
-  implicit val format: OFormat[AwrsRegisteredPostcode] = Json.format[AwrsRegisteredPostcode]
+object AwrsKnownFacts {
+  implicit val formats: OFormat[AwrsKnownFacts] = Json.format[AwrsKnownFacts]
 
-  private val awrsRegisteredPostcodePattern: String = "[\\s, +, ., :, _, ,, ;, =, (, ), {, }, \\[, \\], \\-, \\^, \\*]"
-
-  def sanitise(postcode: String): String = {
-    postcode.toLowerCase().replaceAll(awrsRegisteredPostcodePattern, "")
+  def apply(awrsRefNumber: String): AwrsKnownFacts = {
+    val knownFacts = Seq(KnownFact("AWRSRefNumber", awrsRefNumber))
+    AwrsKnownFacts("HMRC-AWRS-ORG", knownFacts)
   }
+}
 
-  def sanitiseAndCompare(postcode1: String, postcode2: String): Boolean = {
-    sanitise(postcode1) == sanitise(postcode2)
-  }
-
+object KnownFact {
+  implicit val formats: OFormat[KnownFact] = Json.format[KnownFact]
 }

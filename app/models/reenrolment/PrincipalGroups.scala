@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package models.reenrolment
 
-import play.api.libs.json._
+import play.api.libs.json.{Json, Reads}
 
-case class Info(businessName: Option[String] = None,
-                tradingName: Option[String] = None,
-                fullName: Option[String] = None,
-                address: Option[Address] = None
-               )
+case class PrincipalGroups(principalGroupIds: Seq[String])
 
-object Info {
-  implicit val formatter: OFormat[Info] = Json.format[Info]
+object PrincipalGroups {
+  implicit val reads: Reads[PrincipalGroups] = Json.reads[PrincipalGroups]
 }

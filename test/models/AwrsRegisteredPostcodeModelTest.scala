@@ -32,5 +32,9 @@ class AwrsRegisteredPostcodeModelTest extends PlaySpec {
       AwrsRegisteredPostcode.sanitise(postcodeVersion1) mustBe AwrsRegisteredPostcode.sanitise(postcodeVersion2)
       AwrsRegisteredPostcode.sanitise(postcodeVersion1) mustBe sanitisedPostcodeVersion
     }
+
+    "ensure the same postcode is equal after sanitisation" in {
+      AwrsRegisteredPostcode.sanitiseAndCompare("ne270jz", "Ne27 0jZ ") mustBe true
+    }
   }
 }

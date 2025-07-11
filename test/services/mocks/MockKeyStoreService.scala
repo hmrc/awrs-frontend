@@ -17,7 +17,7 @@
 package services.mocks
 
 import connectors.mock.MockKeyStoreConnector
-import models.reenrolment.AwrsRegisteredPostcode
+import models.reenrolment.{AwrsRegisteredPostcode, KnownFactsResponse}
 import models.{StatusNotification, _}
 import org.mockito.Mockito._
 import org.mockito.{AdditionalMatchers, ArgumentMatchers}
@@ -97,9 +97,13 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
   }
 
-  def setupMockKeystoreServiceForAwrsUtr(utr:Option[AwrsEnrolmentUtr] = None, searchResult: Option[SearchResult] = None, registeredPostcode: Option[AwrsRegisteredPostcode]=None): Unit = {
+  def setupMockKeystoreServiceForAwrsUtr(utr:Option[AwrsEnrolmentUtr] = None,
+                                         knownFactsResponse: Option[KnownFactsResponse] = None,
+                                         registeredPostcode: Option[AwrsRegisteredPostcode]=None,
+                                         urn: Option[AwrsEnrolmentUrn] = None): Unit = {
+    mockFetchFromKeyStore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName, urn)
     mockFetchFromKeyStore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, utr)
-    mockFetchFromKeyStore[SearchResult](awrsEnrolmentSearchResultKeyName, searchResult)
+    mockFetchFromKeyStore[KnownFactsResponse](awrsKnownFactsResponseKeyName, knownFactsResponse)
     mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, registeredPostcode)
     setupMockKeyStoreServiceOnlySaveFunctions()
 
@@ -185,7 +189,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
                                              saveViewedStatus: Option[Int] = None,
                                              fetchBusinessCustomerAddress: Option[Int] = None,
                                              saveBusinessCustomerAddress: Option[Int] = None,
-                                             saveSearchResults: Option[Int] = None,
+                                             saveKnownFacts: Option[Int] = None,
                                              saveAwrsUrn: Option[Int] = None,
                                              saveRegisteredPostcode:  Option[Int] = None,
                                            ): Unit = {
@@ -231,7 +235,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
     verifySave(awrsEnrolmentUrnKeyName, saveAwrsUrn)
 
-    verifySave(awrsEnrolmentSearchResultKeyName, saveSearchResults)
+    verifySave(awrsKnownFactsResponseKeyName, saveKnownFacts)
 
     verifySave(registeredPostcodeKeyName, saveRegisteredPostcode)
   }
