@@ -132,7 +132,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
       response =>
         timer.stop()
         response.status match {
-          case OK => info(s"[TaxEnrolmentsConnector][ES9 deEnrol] - Ok")
+          case NO_CONTENT => info(s"[TaxEnrolmentsConnector][ES9 deEnrol] - Ok")
             metrics.incrementSuccessCounter(ApiType.ES9DeEnrolment)
             true
           case status =>

@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.reenrolment.{Enrolment, EnrolmentSuccessResponse, Identifier, KnownFacts, Verifier}
+import models.reenrolment.{Enrolment, KnownFactsResponse, Identifier, AwrsKnownFacts, Verifier}
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status.OK
 import play.api.libs.json.Json
@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import models.reenrolment.EnrolmentSuccessResponse._
+import models.reenrolment.KnownFactsResponse._
 
 class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
@@ -38,7 +38,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
 
   "Enrolment Store Connector" must {
     // used in the mock to check the destination of the connector calls
-    lazy val es1Url= s"/enrolment-store-proxy/enrolment-store/enrolments/${connector.AWRS_SERVICE_NAME}~${connector.enrolmentIdentifierName}~$awrsRef/groups"
+    lazy val es1Url= s"/enrolment-store-proxy/enrolment-store/enrolments/${connector.AWRS_SERVICE_NAME}~${connector.EnrolmentIdentifierName}~$awrsRef/groups"
     lazy val es20Url= s"/enrolment-store-proxy/enrolment-store/enrolments"
 
     // these values doesn't really matter since the call itself is mocked e
@@ -58,27 +58,27 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
     "return EnrolmentSuccessResponse when ES20 returns successful response" in {
       val urn = "XKAW00000200130"
       val postcode = "SW1A 2AA"
-      val response: EnrolmentSuccessResponse = successResponse(urn, postcode)
+      val response: KnownFactsResponse = successResponse(urn, postcode)
       mockPostResponseES20(OK, Some(Json.toJson(response).toString()))
-      val knownFacts = KnownFacts(urn)
+      val knownFacts = AwrsKnownFacts(urn)
       await(connector.lookupEnrolments(knownFacts)) mustBe Some(response)
     }
 
     "return None when ES20 returns NO_CONTENT" in {
       mockPostResponseES20(NO_CONTENT, None)
-      val knownFacts = KnownFacts("XKAW00000200130")
+      val knownFacts = AwrsKnownFacts("XKAW00000200130")
       await(connector.lookupEnrolments(knownFacts)) mustBe None
     }
 
     "return None when ES20 returns BAD_REQUEST" in {
       mockPostResponseES20(BAD_REQUEST, None)
-      val knownFacts = KnownFacts("XKAW00000200130")
+      val knownFacts = AwrsKnownFacts("XKAW00000200130")
       await(connector.lookupEnrolments(knownFacts)) mustBe None
     }
 
     "return None when ES20 returns unknown status" in {
       mockPostResponseES20(999, None)
-      val knownFacts = KnownFacts("XKAW00000200130")
+      val knownFacts = AwrsKnownFacts("XKAW00000200130")
       await(connector.lookupEnrolments(knownFacts)) mustBe None
     }
 
@@ -120,7 +120,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
   }
 
   private def successResponse(urn: String, postcode: String) = {
-    EnrolmentSuccessResponse(
+    KnownFactsResponse(
       service = "IR-SA",
       enrolments = Seq(
         Enrolment(

@@ -23,6 +23,5 @@ object ApiType extends Enumeration {
   val API10DeEnrolment: models.ApiType.Value = Value
   val ES9DeEnrolment: models.ApiType.Value = Value
   val ES1Query: models.ApiType.Value = Value
-  val ES0Query: models.ApiType.Value = Value
   val ES20Query: models.ApiType.Value = Value
 }
