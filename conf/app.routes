@@ -174,3 +174,5 @@ POST        /registered-utr/saveAndReturn                   controllers.reenrolm
 GET         /reenrolment/kickout                            controllers.reenrolment.KickoutController.showURNKickOutPage
 
 GET         /reenrolment/successful-enrolment               controllers.reenrolment.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage
+
+GET         /reenrolment/deenrolment-confirmation           controllers.reenrolment.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage

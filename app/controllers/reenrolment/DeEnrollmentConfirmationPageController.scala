@@ -19,38 +19,40 @@ package controllers.reenrolment
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.AlreadyStartingTradingForm.alreadyStartedTradingForm
-import forms.DeEnrollmentConfirmationForm
+import forms.DeEnrollmentConfirmationForm.deEnrollmentConfirmationForm
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeEnrollmentConfirmationPageController @Inject()(mcc: MessagesControllerComponents,
-                                                       implicit val applicationConfig: ApplicationConfig,
-                                                       val awrsFeatureSwitches: AWRSFeatureSwitches,
-                                                       val deEnrolService: DeEnrolService,
-                                                       val authConnector: DefaultAuthConnector,
-                                                       val accountUtils: AccountUtils,
-                                                       val auditable: Auditable,
-                                                       template: views.html.awrs_already_starting_trading
-                                                     ) extends FrontendController(mcc) with AwrsController {
+class DeEnrollmentConfirmationPageController @Inject() (mcc: MessagesControllerComponents,
+                                                        implicit val applicationConfig: ApplicationConfig,
+                                                        val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                                        val deEnrolService: DeEnrolService,
+                                                        val authConnector: DefaultAuthConnector,
+                                                        val accountUtils: AccountUtils,
+                                                        val auditable: Auditable,
+                                                        template: views.html.reenrolment.awrs_deenrolment_confirmation)
+    extends FrontendController(mcc)
+    with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val signInUrl: String = applicationConfig.signIn
+  val signInUrl: String             = applicationConfig.signIn
 
-  def showDeEnrollmentConfirmationPage() : Action[AnyContent] = Action.async { implicit request =>
+  def showDeEnrollmentConfirmationPage(): Action[AnyContent] = Action.async { implicit request =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          Future.successful(Ok(template(alreadyStartedTradingForm, Some("e"))))
+          Future.successful(Ok(template(deEnrollmentConfirmationForm)))
         } else {
           Future.successful(NotFound)
         }
       }
     }
   }
+
 }

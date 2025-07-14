@@ -16,14 +16,15 @@
 
 package controllers.reenrolment
 
-
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
+import models.AwrsEnrolmentUrn
 import models.reenrolment.AwrsKnownFacts
 import play.api.mvc._
 import services.{DeEnrolService, EnrolmentStoreProxyService, KeyStoreService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -31,20 +32,21 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
-                                        keyStoreService: KeyStoreService,
-                                        val deEnrolService: DeEnrolService,
-                                        val authConnector: DefaultAuthConnector,
-                                        val auditable: Auditable,
-                                        val accountUtils: AccountUtils,
-                                        awrsFeatureSwitches: AWRSFeatureSwitches,
-                                        val enrolmentStoreService: EnrolmentStoreProxyService,
-                                        implicit val applicationConfig: ApplicationConfig,
-                                        template: views.html.reenrolment.awrs_registered_urn
-                                       ) extends FrontendController(mcc) with AwrsController {
+class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
+                                         keyStoreService: KeyStoreService,
+                                         val deEnrolService: DeEnrolService,
+                                         val authConnector: DefaultAuthConnector,
+                                         val auditable: Auditable,
+                                         val accountUtils: AccountUtils,
+                                         awrsFeatureSwitches: AWRSFeatureSwitches,
+                                         val enrolmentStoreService: EnrolmentStoreProxyService,
+                                         implicit val applicationConfig: ApplicationConfig,
+                                         template: views.html.reenrolment.awrs_registered_urn)
+    extends FrontendController(mcc)
+    with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  val signInUrl: String = applicationConfig.signIn
+  val signInUrl: String             = applicationConfig.signIn
 
   def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
@@ -52,7 +54,7 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           keyStoreService.fetchAwrsEnrolmentUrn flatMap {
             case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
-            case _ => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
+            case _             => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
           }
         } else Future.successful(NotFound)
       }
@@ -63,24 +65,32 @@ class RegisteredUrnController @Inject()(mcc: MessagesControllerComponents,
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          awrsEnrolmentUrnForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            awrsUrn => {
-              keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
-                  case Some(knownFactsResponse) => keyStoreService.saveKnownFacts(knownFactsResponse)
-                    Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
-                  case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                } recover {
-                  case ex: Exception =>
+          awrsEnrolmentUrnForm
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+              awrsUrn => {
+                keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
+                  enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
+                    case Some(knownFactsResponse) =>
+                      keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ => checkEnrollmentExistsAndConfirmDeEnrollment(awrsUrn) }
+                    case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+                  } recover { case ex: Exception =>
                     logger.error("Exception occurred ES20 api call", ex)
                     Redirect(routes.KickoutController.showURNKickOutPage)
+                  }
                 }
               }
-            }
-          )
+            )
         } else Future.successful(NotFound)
       }
+    }
+  }
+
+  private def checkEnrollmentExistsAndConfirmDeEnrollment(awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
+    enrolmentStoreService.doesEnrollmentExist(awrsUrn.awrsUrn).map {
+      case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
+      case false => Redirect(routes.KickoutController.showURNKickOutPage)
     }
   }
 

@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.reenrolment.{Enrolment, KnownFactsResponse, Identifier, AwrsKnownFacts, Verifier}
+import models.reenrolment.{AwrsKnownFacts, EnrolledUserIds, Enrolment, Identifier, KnownFactsResponse, Verifier}
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status.OK
 import play.api.libs.json.Json
@@ -31,15 +31,17 @@ import models.reenrolment.KnownFactsResponse._
 
 class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
-  val connector: EnrolmentStoreProxyConnector = inject[EnrolmentStoreProxyConnector]
-  val awrsRef = "TestAwrsRef"
-  val es1ResponseWithGroupId = Some("""{"principalGroupIds": ["TestPrincipalGroupId"]}""")
-  val es1ResponseWithoutGroupId = Some("""{"principalGroupIds": []}""")
+  val connector: EnrolmentStoreProxyConnector   = inject[EnrolmentStoreProxyConnector]
+  val awrsRef                                   = "TestAwrsRef"
+  val es1ResponseWithGroupId: Option[String]    = Some("""{"principalGroupIds": ["TestPrincipalGroupId"]}""")
+  val es1ResponseWithoutGroupId: Option[String] = Some("""{"principalGroupIds": []}""")
 
   "Enrolment Store Connector" must {
     // used in the mock to check the destination of the connector calls
-    lazy val es1Url= s"/enrolment-store-proxy/enrolment-store/enrolments/${connector.AWRS_SERVICE_NAME}~${connector.EnrolmentIdentifierName}~$awrsRef/groups"
-    lazy val es20Url= s"/enrolment-store-proxy/enrolment-store/enrolments"
+    lazy val es1Url =
+      s"/enrolment-store-proxy/enrolment-store/enrolments/${connector.awrsServiceName}~${connector.enrolmentIdentifierName}~$awrsRef/groups"
+    lazy val es20Url = s"/enrolment-store-proxy/enrolment-store/enrolments"
+    lazy val es0Url = s"/enrolment-store-proxy/enrolment-store/enrolments/${connector.awrsServiceName}~${connector.enrolmentIdentifierName}~$awrsRef/users"
 
     // these values doesn't really matter since the call itself is mocked e
 
@@ -51,17 +53,27 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
       stubbedPost(es20Url, responseStatus, responseString.getOrElse(""))
     }
 
+    def mockPostResponseES0(responseStatus: Int, responseString: Option[String]): Unit = {
+      stubbedGet(es0Url, responseStatus, responseString.getOrElse(""))
+    }
+
     def testCall(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
       connector.queryForPrincipalGroupIdOfAWRSEnrolment(awrsRef)(headerCarrier, implicitly)
     }
 
     "return EnrolmentSuccessResponse when ES20 returns successful response" in {
-      val urn = "XKAW00000200130"
-      val postcode = "SW1A 2AA"
-      val response: KnownFactsResponse = successResponse(urn, postcode)
+      val urn                          = "XKAW00000200130"
+      val postcode                     = "SW1A 2AA"
+      val response: KnownFactsResponse = es20SuccessResponse(urn, postcode)
       mockPostResponseES20(OK, Some(Json.toJson(response).toString()))
       val knownFacts = AwrsKnownFacts(urn)
       await(connector.lookupEnrolments(knownFacts)) mustBe Some(response)
+    }
+
+    "return EnrolmentSuccessResponse when ES0 returns successful response" in {
+      val response: EnrolledUserIds = es0SuccessResponse(awrsRef)
+      mockPostResponseES0(OK, Some(Json.toJson(response).toString()))
+      await(connector.queryForEnrolments(awrsRef)) mustBe Some(response)
     }
 
     "return None when ES20 returns NO_CONTENT" in {
@@ -94,32 +106,32 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
       await(result) mustBe None
     }
 
-    "return None  if response status is NO_CONTENT  " in {
+    "return None if response status is NO_CONTENT  " in {
       mockResponseES1(NO_CONTENT)
       val result = testCall
       await(result) mustBe None
     }
 
-    "return None  if response status is BAD_REQUEST  " in {
+    "return None if response status is BAD_REQUEST  " in {
       mockResponseES1(BAD_REQUEST)
       val result = testCall
       await(result) mustBe None
     }
 
-    "return None  if response status is BAD_GATEWAY  " in {
+    "return None if response status is BAD_GATEWAY  " in {
       mockResponseES1(BAD_REQUEST)
       val result = testCall
       await(result) mustBe None
     }
 
-    "return None  if response status is NOT_FOUND  " in {
+    "return None if response status is NOT_FOUND  " in {
       mockResponseES1(NOT_FOUND)
       val result = testCall
       await(result) mustBe None
     }
   }
 
-  private def successResponse(urn: String, postcode: String) = {
+  private def es20SuccessResponse(urn: String, postcode: String) = {
     KnownFactsResponse(
       service = "IR-SA",
       enrolments = Seq(
@@ -135,4 +147,10 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
       )
     )
   }
+
+  private def es0SuccessResponse(urn: String) =
+    EnrolledUserIds(
+      principalUserIds = Seq(urn), delegatedUserIds = Seq.empty
+    )
+
 }

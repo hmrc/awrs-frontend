@@ -35,31 +35,43 @@ import views.html.reenrolment.awrs_registered_urn
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegisteredUrnControllerTest extends AwrsUnitTestTraits
-  with ServicesUnitTestFixture with MockAuthConnector
-  with MockKeyStoreService
-  with MockIndexService {
+class RegisteredUrnControllerTest
+    extends AwrsUnitTestTraits
+    with ServicesUnitTestFixture
+    with MockAuthConnector
+    with MockKeyStoreService
+    with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[AwrsEnrolmentUrn](FakeRequest(), RegisteredUrnForm.awrsEnrolmentUrnForm.form, AwrsEnrolmentUrn(answer))
 
-  val testAwrsRef = "XXAW00000000051"
-  val testUtr = "1234567890"
+  val testAwrsRef  = "XXAW00000000051"
+  val testUtr      = "1234567890"
   val testPostcode = "SW1A 1AA"
 
-  val testKnownFactsResponse = KnownFactsResponse("HMRC-AWRS-ORG", Seq(
-    Enrolment(
-      identifiers = Seq(Identifier("AWRSRefNumber", testAwrsRef)),
-      verifiers = Seq(Verifier("SAUTR", testUtr), Verifier("Postcode", testPostcode))
+  val testKnownFactsResponse = KnownFactsResponse(
+    "HMRC-AWRS-ORG",
+    Seq(
+      Enrolment(
+        identifiers = Seq(Identifier("AWRSRefNumber", testAwrsRef)),
+        verifiers = Seq(Verifier("SAUTR", testUtr), Verifier("Postcode", testPostcode))
+      ))
+  )
 
-  )))
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: awrs_registered_urn = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
+  val template: awrs_registered_urn                = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
-  val testAwrsUrnController: RegisteredUrnController = new RegisteredUrnController(mockMCC,
-    testKeyStoreService, mockDeEnrolService, mockAuthConnector,
-    mockAuditable, mockAccountUtils, mockAwrsFeatureSwitches,
-    testEnrolmentStoreProxyService, mockAppConfig, template)
+  val testAwrsUrnController: RegisteredUrnController = new RegisteredUrnController(
+    mockMCC,
+    testKeyStoreService,
+    mockDeEnrolService,
+    mockAuthConnector,
+    mockAuditable,
+    mockAccountUtils,
+    mockAwrsFeatureSwitches,
+    testEnrolmentStoreProxyService,
+    mockAppConfig,
+    template)
 
   "AwrsUrnController" must {
     "show not found when feature is not enabled" in {
@@ -82,9 +94,21 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))
-      (any[HeaderCarrier](), any[ExecutionContext]()))
+      when(
+        mockEnrolmentStoreProxyConnector
+          .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testKnownFactsResponse)))
+
+      val enrollmentResponse = EnrolledUserIds(
+        principalUserIds = Seq(testAwrsRef),
+        delegatedUserIds = Seq.empty
+      )
+
+      when(
+        mockEnrolmentStoreProxyConnector
+          .queryForEnrolments(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(Some(enrollmentResponse)))
+
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
       status(res) mustBe 303
       verifyKeyStoreService(saveKnownFacts = 1, saveAwrsUrn = 1)
@@ -98,12 +122,13 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       status(res) mustBe 400
     }
 
-
     "save should redirect to kickout page if ES20 does not return known facts" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](),any[ExecutionContext]()))
+      when(
+        mockEnrolmentStoreProxyConnector
+          .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(None))
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
 
@@ -119,8 +144,9 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       setupMockKeystoreServiceForAwrsUrn()
       setupEnrolmentJourneyFeatureSwitchMock(true)
 
-      when(mockEnrolmentStoreProxyConnector.lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))
-      (any[HeaderCarrier](), any[ExecutionContext]()))
+      when(
+        mockEnrolmentStoreProxyConnector
+          .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.failed(new RuntimeException("ES20 service unavailable")))
 
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
@@ -129,9 +155,30 @@ class RegisteredUrnControllerTest extends AwrsUnitTestTraits
       redirectLocation(res) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
     }
 
+    "save should redirect to confirm de-enrolment" in {
+      setAuthMocks()
+      setupMockKeystoreServiceForAwrsUrn()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+      when(
+        mockEnrolmentStoreProxyConnector
+          .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(Some(testKnownFactsResponse)))
+
+      val enrollmentResponse = EnrolledUserIds(
+        principalUserIds = Seq(testAwrsRef),
+        delegatedUserIds = Seq.empty
+      )
+
+      when(
+        mockEnrolmentStoreProxyConnector
+          .queryForEnrolments(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(Some(enrollmentResponse)))
+
+      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
+      status(res) mustBe 303
+      verifyKeyStoreService(saveKnownFacts = 1, saveAwrsUrn = 1)
+    }
+
   }
-
-
-
 
 }
