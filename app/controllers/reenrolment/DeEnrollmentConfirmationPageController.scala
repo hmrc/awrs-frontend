@@ -20,7 +20,7 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.DeEnrollmentConfirmationForm.deEnrollmentConfirmationForm
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -51,6 +51,25 @@ class DeEnrollmentConfirmationPageController @Inject() (mcc: MessagesControllerC
         } else {
           Future.successful(NotFound)
         }
+      }
+    }
+  }
+
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        deEnrollmentConfirmationForm
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+            deEnrollmentConfirmationResponse =>
+              if (deEnrollmentConfirmationResponse == "Yes") {
+                Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
+              } else {
+                Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+
+              }
+          )
       }
     }
   }

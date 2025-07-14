@@ -68,4 +68,49 @@ class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitT
 
   }
 
+  "saveAndContinue" must {
+
+    "redirect to RegisteredPostcodeController when user answers Yes" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      val request = SessionBuilder
+        .buildRequestWithSession(userId, "POST", "/")
+        .withFormUrlEncodedBody("confirmDeEnrollment" -> "Yes")
+      val result = controller.saveAndContinue().apply(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.RegisteredPostcodeController.showPostCode.url)
+    }
+
+    "redirect to KickoutController when user answers No" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      val request = SessionBuilder
+        .buildRequestWithSession(userId, "POST", "/")
+        .withFormUrlEncodedBody("confirmDeEnrollment" -> "No")
+      val result = controller.saveAndContinue().apply(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.KickoutController.showURNKickOutPage.url)
+    }
+
+    "return BAD_REQUEST when no option is selected" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      val request = SessionBuilder
+        .buildRequestWithSession(userId, "POST", "/")
+      val result = controller.saveAndContinue().apply(request)
+
+      status(result) mustBe BAD_REQUEST
+
+      val body = contentAsString(result)
+      body must include("""name="confirmDeEnrollment"""")
+      body must include("error-summary")
+    }
+
+  }
+
 }
