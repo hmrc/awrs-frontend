@@ -20,8 +20,11 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
+import models.AwrsEnrolmentUrn
+import models.reenrolment.AwrsKnownFacts
 import play.api.mvc._
 import services.{DeEnrolService, EnrolmentStoreProxyService, KeyStoreService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -37,7 +40,6 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                                          val accountUtils: AccountUtils,
                                          awrsFeatureSwitches: AWRSFeatureSwitches,
                                          val enrolmentStoreService: EnrolmentStoreProxyService,
-                                         val deEnrollmentConfirmationPageController: DeEnrollmentConfirmationPageController,
                                          implicit val applicationConfig: ApplicationConfig,
                                          template: views.html.reenrolment.awrs_registered_urn)
     extends FrontendController(mcc)
@@ -69,22 +71,26 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
               formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
               awrsUrn => {
                 keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                  enrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(awrsUrn.awrsUrn).flatMap {
-                    case Some(groupId) =>
-                      keyStoreService.saveGroupId(groupId)
-                      enrolmentStoreService.doesEnrollmentExist(awrsUrn.awrsUrn).map {
-                        case true  => Redirect(routes.RegisteredPostcodeController.showPostCode)
-                        case false => Redirect(routes.KickoutController.showURNKickOutPage)
-                      }
+                  enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
+                    case Some(knownFactsResponse) =>
+                      keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ => checkEnrollmentExistsAndConfirmDeEnrollment(awrsUrn) }
                     case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+                  } recover { case ex: Exception =>
+                    logger.error("Exception occurred ES20 api call", ex)
+                    Redirect(routes.KickoutController.showURNKickOutPage)
                   }
                 }
               }
             )
-        } else {
-          Future.successful(NotFound)
-        }
+        } else Future.successful(NotFound)
       }
+    }
+  }
+
+  private def checkEnrollmentExistsAndConfirmDeEnrollment(awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
+    enrolmentStoreService.doesEnrollmentExist(awrsUrn.awrsUrn).map {
+      case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
+      case false => Redirect(routes.KickoutController.showURNKickOutPage)
     }
   }
 

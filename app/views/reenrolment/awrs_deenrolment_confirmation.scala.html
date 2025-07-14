@@ -32,8 +32,7 @@
   govukErrorSummary: GovukErrorSummary
 )
 
-@(confirmationForm: Form[String])
-  (implicit
+@(confirmationForm: Form[String])(implicit
     request: Request[AnyRef],
     viewApplicationType: ViewApplicationType = LinearViewMode,
     messages: Messages,

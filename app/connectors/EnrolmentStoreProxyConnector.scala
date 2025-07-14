@@ -20,8 +20,8 @@ import audit.Auditable
 import metrics.AwrsMetrics
 import models.ApiType
 import models.ApiType.ApiType
-import models.reenrolment.EnrolmentSuccessResponse._
-import models.reenrolment.{EnrolledUserIds, EnrolmentSuccessResponse, KnownFacts, PrincipalGroups}
+import models.reenrolment.KnownFactsResponse._
+import models.reenrolment.{AwrsKnownFacts, EnrolledUserIds, KnownFactsResponse, PrincipalGroups}
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -36,14 +36,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class EnrolmentStoreProxyConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2, metrics: AwrsMetrics, val auditable: Auditable)
     extends LoggingUtils {
 
-  val serviceURL: String                                = servicesConfig.baseUrl("enrolment-store-proxy")
-  private val enrolmentStoreProxyServiceUrl: String     = s"$serviceURL/enrolment-store-proxy"
-  private val awrsServiceName                           = "HMRC-AWRS-ORG"
-  private val enrolmentIdentifierName: String           = "AWRSRefNumber"
-  private def enrolmentKey(awrsReferenceNumber: String) = s"$awrsServiceName~$enrolmentIdentifierName~$awrsReferenceNumber/users"
+  val serviceURL: String                            = servicesConfig.baseUrl("enrolment-store-proxy")
+  val awrsServiceName: String                       = "HMRC-AWRS-ORG"
+  val enrolmentIdentifierName: String               = "AWRSRefNumber"
+  private val enrolmentStoreProxyServiceUrl: String = s"$serviceURL/enrolment-store-proxy"
 
   // ES20
-  def lookupEnrolments(knownFacts: KnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolmentSuccessResponse]] = {
+  def lookupEnrolments(knownFacts: AwrsKnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[KnownFactsResponse]] = {
     val timer = metrics.startTimer(ApiType.ES20Query)
 
     val result = http
@@ -52,7 +51,7 @@ class EnrolmentStoreProxyConnector @Inject() (servicesConfig: ServicesConfig, ht
       .setHeader("X-Hmrc-Origin" -> "AWRS")
       .execute[HttpResponse]
       .map {
-        processResponse(_, r => Some(Json.parse(r.body).as[EnrolmentSuccessResponse]), knownFacts.awrsRefNumber, ApiType.ES20Query)
+        processResponse(_, r => Some(Json.parse(r.body).as[KnownFactsResponse]), knownFacts.awrsRefNumber, ApiType.ES20Query)
       }
     timer.stop()
     result
@@ -61,11 +60,11 @@ class EnrolmentStoreProxyConnector @Inject() (servicesConfig: ServicesConfig, ht
   // ES1
   def queryForPrincipalGroupIdOfAWRSEnrolment(
       awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
-    val timer = metrics.startTimer(ApiType.ES1Query)
+    val timer        = metrics.startTimer(ApiType.ES1Query)
+    val enrolmentKey = s"$awrsServiceName~$enrolmentIdentifierName~$awrsReferenceNumber"
 
     val result = http
-      .get(
-        url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/${enrolmentKey(awrsReferenceNumber)}/groups?type=principal&ignore-assignments=true")
+      .get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/$enrolmentKey/groups?type=principal&ignore-assignments=true")
       .execute[HttpResponse]
       .map {
         processResponse(_, r => Json.parse(r.body).as[PrincipalGroups].principalGroupIds.headOption, awrsReferenceNumber, ApiType.ES1Query)
@@ -76,9 +75,10 @@ class EnrolmentStoreProxyConnector @Inject() (servicesConfig: ServicesConfig, ht
 
   // ES0
   def queryForEnrolments(awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolledUserIds]] = {
-    val timer = metrics.startTimer(ApiType.ES0Query)
+    val timer        = metrics.startTimer(ApiType.ES0Query)
+    val enrolmentKey = s"$awrsServiceName~$enrolmentIdentifierName~$awrsReferenceNumber"
     val result =
-      http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/${enrolmentKey(awrsReferenceNumber)}").execute[HttpResponse].map {
+      http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/$enrolmentKey/users").execute[HttpResponse].map {
         processResponse(_, r => Some(Json.parse(r.body).as[EnrolledUserIds]), awrsReferenceNumber, ApiType.ES0Query)
       }
     timer.stop()
@@ -91,7 +91,7 @@ class EnrolmentStoreProxyConnector @Inject() (servicesConfig: ServicesConfig, ht
                                  apiType: ApiType): Option[T] = {
     response.status match {
       case OK =>
-        info(s"[ESConnector][$apiType - $awrsRef, OK ] - ${response.body} ")
+        info(s"[ESConnector][$apiType - $awrsRef, OK ]")
         metrics.incrementSuccessCounter(apiType)
         extractFromResponse(response)
       case NO_CONTENT =>

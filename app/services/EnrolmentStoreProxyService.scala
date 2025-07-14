@@ -17,9 +17,7 @@
 package services
 
 import connectors.EnrolmentStoreProxyConnector
-import models.AwrsEnrolmentUtr
-import models.reenrolment.AwrsRegisteredPostcode.sanitiseAndCompare
-import models.reenrolment.{AwrsRegisteredPostcode, Identifier, KnownFact, KnownFacts, Verifier}
+import models.reenrolment.{AwrsKnownFacts, KnownFactsResponse}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -31,28 +29,12 @@ class EnrolmentStoreProxyService @Inject() (esConnector: EnrolmentStoreProxyConn
   def queryForPrincipalGroupIdOfAWRSEnrolment(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     esConnector.queryForPrincipalGroupIdOfAWRSEnrolment(awrs)
 
-  def verifyKnownFacts(arws: String, isSA: Boolean, utr: AwrsEnrolmentUtr, postCode: AwrsRegisteredPostcode)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext): Future[Boolean] = {
-    val knownFacts = KnownFacts("HMRC-AWRS-ORG", Seq(KnownFact("AWRSRefNumber", arws)))
-    esConnector.lookupEnrolments(knownFacts).map {
-      case Some(esResponse) =>
-        esResponse.enrolments
-          .find(_.identifiers.contains(Identifier("AWRSRefNumber", arws)))
-          .exists { enrolment =>
-            println("enrolment: " + enrolment)
-            enrolment.verifiers.contains(Verifier(if (isSA) "SAUTR" else "CTUTR", utr.utr)) &&
-            enrolment.verifiers.exists(verifier => verifier.key == "Postcode" && sanitiseAndCompare(verifier.value, postCode.registeredPostcode))
-          }
-      case _ => false
-    }
+  def lookupKnownFacts(knownFacts: AwrsKnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[KnownFactsResponse]] = {
+    esConnector.lookupEnrolments(knownFacts)
   }
 
   def doesEnrollmentExist(awrsRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    esConnector.queryForEnrolments(awrsRefNumber).map {
-      case Some(enrolledUserIds) => enrolledUserIds.delegatedUserIds.nonEmpty || enrolledUserIds.principalUserIds.nonEmpty
-      case None => false
-    }
+    esConnector.queryForEnrolments(awrsRefNumber).map { enrolledUserIds => enrolledUserIds.map(_.principalUserIds).exists(_.contains(awrsRefNumber)) }
 
   }
 
