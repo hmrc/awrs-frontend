@@ -27,108 +27,118 @@ object SessionBuilder {
 
   def updateRequestWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
-    fakeRequest.withSession(
-      "sessionId" -> sessionId,
-      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      "userId"-> userId)
+    fakeRequest.withSession("sessionId" -> sessionId, SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN", "userId" -> userId)
   }
 
   def updateRequestWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String, businessType: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
-    fakeRequest.withSession(
-      "sessionId" -> sessionId,
-      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      "userId"-> userId,
-      "businessType" -> businessType,
-      "businessName" -> "North East Wines"
-    ).withHeaders("Authorization" -> "auth-testheader")
+    fakeRequest
+      .withSession(
+        "sessionId"                                                -> sessionId,
+        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
+        "userId"                                                   -> userId,
+        "businessType"                                             -> businessType,
+        "businessName"                                             -> "North East Wines"
+      )
+      .withHeaders("Authorization" -> "auth-testheader")
   }
 
   def updateRequestWithSessionJSon(fakeRequest: FakeRequest[AnyContentAsJson], userId: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
-    fakeRequest.withSession(
-      "sessionId" -> sessionId,
-      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      "userId"-> userId)
+    fakeRequest.withSession("sessionId" -> sessionId, SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN", "userId" -> userId)
   }
 
   def buildRequestWithSession(userId: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      "sessionId" -> sessionId,
+      "sessionId"                                                -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      "userId"-> userId,
-      "businessName" -> "North East Wines"
+      "userId"                                                   -> userId,
+      "businessName"                                             -> "North East Wines"
+    )
+  }
+
+  def buildRequestWithSession(userId: String, method: String, path: String) = {
+    val sessionId = s"session-${UUID.randomUUID}"
+    FakeRequest(method = method, path = "/").withSession(
+      "sessionId"                                                -> sessionId,
+      SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
+      "userId"                                                   -> userId,
+      "businessName"                                             -> "North East Wines"
     )
   }
 
   def buildRequestWithSession(userId: String, businessType: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      "sessionId" -> sessionId,
+      "sessionId"                                                -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      "userId"-> userId,
-      "businessType" -> businessType,
-      "businessName" -> "North East Wines"
+      "userId"                                                   -> userId,
+      "businessType"                                             -> businessType,
+      "businessName"                                             -> "North East Wines"
     )
   }
 
   def buildRequestWithSessionBusinessName(userId: String, businessType: String, businessName: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      "sessionId" -> sessionId,
+      "sessionId"                                                -> sessionId,
       SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-      "userId"-> userId,
-      "businessType" -> businessType,
-      "businessName" -> businessName
+      "userId"                                                   -> userId,
+      "businessType"                                             -> businessType,
+      "businessName"                                             -> businessName
     )
   }
 
   def buildRequestWithSession(userId: String, businessType: String, previousLocation: Option[String]) = {
     val sessionId = s"session-${UUID.randomUUID}"
     previousLocation match {
-      case Some(location) => FakeRequest().withSession(
-        "sessionId" -> sessionId,
-        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-        "userId"-> userId,
-        AwrsSessionKeys.sessionPreviousLocation -> location,
-        "businessType" -> businessType,
-        "businessName" -> "North East Wines"
-      )
-      case _ => FakeRequest().withSession(
-        "sessionId" -> sessionId,
-        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-        "userId"-> userId,
-        "businessType" -> businessType,
-        "businessName" -> "North East Wines"
-      )
+      case Some(location) =>
+        FakeRequest().withSession(
+          "sessionId"                                                -> sessionId,
+          SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
+          "userId"                                                   -> userId,
+          AwrsSessionKeys.sessionPreviousLocation                    -> location,
+          "businessType"                                             -> businessType,
+          "businessName"                                             -> "North East Wines"
+        )
+      case _ =>
+        FakeRequest().withSession(
+          "sessionId"                                                -> sessionId,
+          SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
+          "userId"                                                   -> userId,
+          "businessType"                                             -> businessType,
+          "businessName"                                             -> "North East Wines"
+        )
     }
   }
 
   def buildRequestWithSessionStartLocation(userId: String, businessType: String, startLocation: Option[String]) = {
     val sessionId = s"session-${UUID.randomUUID}"
     startLocation match {
-      case Some(startLocation) => FakeRequest().withSession(
-        "sessionId" -> sessionId,
-        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-        "userId"-> userId,
-        AwrsSessionKeys.sessionJouneyStartLocation -> startLocation,
-        "businessType" -> businessType,
-        "businessName" -> "North East Wines"
-      )
-      case _ => FakeRequest().withSession(
-        "sessionId" -> sessionId,
-        SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
-        "userId"-> userId,
-        "businessType" -> businessType,
-        "businessName" -> "North East Wines"
-      )
+      case Some(startLocation) =>
+        FakeRequest().withSession(
+          "sessionId"                                                -> sessionId,
+          SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
+          "userId"                                                   -> userId,
+          AwrsSessionKeys.sessionJouneyStartLocation                 -> startLocation,
+          "businessType"                                             -> businessType,
+          "businessName"                                             -> "North East Wines"
+        )
+      case _ =>
+        FakeRequest().withSession(
+          "sessionId"                                                -> sessionId,
+          SimpleRetrieval("token", LegacyCredentials.reads).toString -> "RANDOMTOKEN",
+          "userId"                                                   -> userId,
+          "businessType"                                             -> businessType,
+          "businessName"                                             -> "North East Wines"
+        )
     }
   }
 
   def buildRequestWithSessionNoUser() = {
     val sessionId = s"session-${UUID.randomUUID}"
-    FakeRequest().withSession(
-      "sessionId" -> sessionId)
+    FakeRequest().withSession("sessionId" -> sessionId)
   }
+
 }

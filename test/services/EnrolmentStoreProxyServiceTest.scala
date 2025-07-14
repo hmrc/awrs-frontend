@@ -39,6 +39,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
 
   private val testAwrsRef = "XAAW00000123456"
   private val testGroupId = "test-group-id"
+  private val testUserId  = "user-1"
 
   private val testKnownFacts = AwrsKnownFacts(
     service = "HMRC-AWRS-ORG",
@@ -135,17 +136,17 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
             Future.successful(
               Some(
                 EnrolledUserIds(
-                  principalUserIds = Seq(testAwrsRef),
+                  principalUserIds = Seq(testUserId),
                   delegatedUserIds = Seq.empty
                 ))))
 
-        service.doesEnrollmentExist(testAwrsRef).map { result =>
+        service.doesEnrollmentExist(testUserId, testAwrsRef).map { result =>
           result shouldBe true
         }
       }
 
       "return false when an enrollment does not exist for the passed in URN" in {
-        when(mockConnector.queryForEnrolments(testAwrsRef))
+        when(mockConnector.queryForEnrolments(testUserId))
           .thenReturn(
             Future.successful(
               Some(
@@ -154,7 +155,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
                   delegatedUserIds = Seq.empty
                 ))))
 
-        service.doesEnrollmentExist(testAwrsRef).map { result =>
+        service.doesEnrollmentExist("different-user", testAwrsRef).map { result =>
           result shouldBe false
         }
       }
@@ -163,7 +164,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
         when(mockConnector.queryForEnrolments(testAwrsRef))
           .thenReturn(Future.successful(None))
 
-        service.doesEnrollmentExist(testAwrsRef).map { result =>
+        service.doesEnrollmentExist(testUserId, testAwrsRef).map { result =>
           result shouldBe false
         }
       }
@@ -178,7 +179,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
                   delegatedUserIds = Seq.empty
                 ))))
 
-        service.doesEnrollmentExist(testAwrsRef).map { result =>
+        service.doesEnrollmentExist(testUserId, testAwrsRef).map { result =>
           result shouldBe false
         }
       }

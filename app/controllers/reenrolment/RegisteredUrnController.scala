@@ -73,7 +73,9 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                 keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
                   enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
                     case Some(knownFactsResponse) =>
-                      keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ => checkEnrollmentExistsAndConfirmDeEnrollment(awrsUrn) }
+                      keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
+                        checkEnrollmentExistsAndConfirmDeEnrollment(request.session.get("userId"), awrsUrn)
+                      }
                     case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                   } recover { case ex: Exception =>
                     logger.error("Exception occurred ES20 api call", ex)
@@ -87,10 +89,15 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
     }
   }
 
-  private def checkEnrollmentExistsAndConfirmDeEnrollment(awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
-    enrolmentStoreService.doesEnrollmentExist(awrsUrn.awrsUrn).map {
-      case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
-      case false => Redirect(routes.KickoutController.showURNKickOutPage)
+  private def checkEnrollmentExistsAndConfirmDeEnrollment(maybeUserId: Option[String], awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
+    maybeUserId.fold {
+      logger.error("missing userId required enrollment check")
+      Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+    } { userId: String =>
+      enrolmentStoreService.doesEnrollmentExist(userId, awrsUrn.awrsUrn).map {
+        case true  => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
+        case false => Redirect(routes.KickoutController.showURNKickOutPage)
+      }
     }
   }
 

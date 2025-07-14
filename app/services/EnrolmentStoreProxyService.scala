@@ -33,8 +33,8 @@ class EnrolmentStoreProxyService @Inject() (esConnector: EnrolmentStoreProxyConn
     esConnector.lookupEnrolments(knownFacts)
   }
 
-  def doesEnrollmentExist(awrsRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    esConnector.queryForEnrolments(awrsRefNumber).map { enrolledUserIds => enrolledUserIds.map(_.principalUserIds).exists(_.contains(awrsRefNumber)) }
+  def doesEnrollmentExist(userId: String, awrsRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    esConnector.queryForEnrolments(awrsRefNumber).map { enrolledUserIds => enrolledUserIds.map(_.principalUserIds).exists(_.contains(userId)) }
 
   }
 

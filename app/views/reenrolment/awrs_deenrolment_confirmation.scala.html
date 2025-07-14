@@ -40,11 +40,7 @@
   )
 
 @actionRoute = @{
-  if (isEditMode) {
-    controllers.reenrolment.routes.RegisteredPostcodeController.showPostCode
-  } else {
-    controllers.reenrolment.routes.KickoutController.showURNKickOutPage
-  }
+    controllers.reenrolment.routes.DeEnrollmentConfirmationPageController.saveAndContinue
 }
 
 @backlinkHtml = {
