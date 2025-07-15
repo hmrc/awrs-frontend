@@ -16,18 +16,21 @@
 
 package services
 
-import connectors.TaxEnrolmentsConnector
-import javax.inject.{Inject, Singleton}
+import connectors.EnrolmentStoreProxyConnector
+import models.reenrolment.{AwrsKnownFacts, KnownFactsResponse}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+
 @Singleton
-class DeEnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector) {
+class EnrolmentStoreProxyService @Inject()(esConnector: EnrolmentStoreProxyConnector) {
+  def queryForPrincipalGroupIdOfAWRSEnrolment(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    esConnector.queryForPrincipalGroupIdOfAWRSEnrolment(awrs)
 
-  def deEnrolAWRS(awrs: String, businessName: String, businessType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    taxEnrolmentsConnector.deEnrol(awrs, businessName, businessType)
-
-  def deEnrolAwrs(awrs:String, groupId:String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    taxEnrolmentsConnector.deEnrol(awrs, groupId)
+  def lookupKnownFacts(knownFacts: AwrsKnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[KnownFactsResponse]] = {
+    esConnector.lookupEnrolments(knownFacts)
+  }
 }
+
