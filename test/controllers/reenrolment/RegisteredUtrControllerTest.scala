@@ -304,7 +304,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
       }
 
-      "redirect to kickout page when ES0 (group id query) fails with an exception" in {
+      "redirect to kickout page when ES1 (group id query) fails with an exception" in {
         setAuthMocks()
         setupTestData()
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
