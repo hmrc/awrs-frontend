@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
@@ -84,6 +84,39 @@ class EnrolServiceTest extends AwrsUnitTestTraits {
           "legal-entity" -> businessType)
       )
       await(result) mustBe successfulEnrolResponse
+    }
+
+    "fail enrolment when user has no group identifier" in {
+      mockAuthorise(EmptyPredicate)(new ~(Some(Credentials(testCredId, enrolService.GGProviderId)), None))
+      val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber,
+        testBusinessCustomerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", ""),
+        testBusinessCustomerDetails.utr,
+        businessType,
+        Map(
+          "safeId" -> testBusinessCustomerDetails.safeId,
+          "UserDetail" -> testBusinessCustomerDetails.businessName,
+          "legal-entity" -> businessType)
+      )
+      intercept[InternalServerException] {
+        await(result)
+      }.getMessage mustBe "Failed to enrol - user did not have a group identifier (not a valid GG user)"
+    }
+
+
+    "fail enrolment when user has unknown credentials" in {
+      mockAuthorise(EmptyPredicate)(new ~(None, Some(testGroupId)))
+      val result = enrolService.enrolAWRS(successfulSubscriptionResponse.awrsRegistrationNumber,
+        testBusinessCustomerDetails.businessAddress.postcode.fold("")(x => x).replaceAll("\\s+", ""),
+        testBusinessCustomerDetails.utr,
+        businessType,
+        Map(
+          "safeId" -> testBusinessCustomerDetails.safeId,
+          "UserDetail" -> testBusinessCustomerDetails.businessName,
+          "legal-entity" -> businessType)
+      )
+      intercept[InternalServerException] {
+        await(result)
+      }.getMessage mustBe "Failed to enrol - user had unknown credentials"
     }
 
     "create correct Verifiers when business type is SOP and UTR present " in {
