@@ -28,20 +28,20 @@ import scala.concurrent.Future
 
 trait MockBusinessCustomerCacheConnector extends AwrsUnitTestTraits {
 
-  val mockBusinessCustomerService = mock[BusinessCustomerCacheConnector]
+  val mockBusinessCustomerCacheConnector = mock[BusinessCustomerCacheConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockBusinessCustomerService)
+    reset(mockBusinessCustomerCacheConnector)
   }
 
   import MockBusinessCustomerCacheConnector._
 
-  protected final def setupMockBusinessCustomerService(getReviewBusinessDetails: Option[BusinessCustomerDetails] = defaultBusinessCustomerDetails): Unit =
-    when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getReviewBusinessDetails))
+  protected final def setupMockBusinessCustomerCacheConnector(getReviewBusinessDetails: Option[BusinessCustomerDetails] = defaultBusinessCustomerDetails): Unit =
+    when(mockBusinessCustomerCacheConnector.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getReviewBusinessDetails))
 
-  protected final def verifyBusinessCustomerService(getReviewBusinessDetails: Option[Int] = None): Unit =
-    getReviewBusinessDetails ifDefinedThen (count => verify(mockBusinessCustomerService, times(count)).getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any() ))
+  protected final def verifyBusinessCustomerCacheConnector(getReviewBusinessDetails: Option[Int] = None): Unit =
+    getReviewBusinessDetails ifDefinedThen (count => verify(mockBusinessCustomerCacheConnector, times(count)).getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any() ))
 
 }
 

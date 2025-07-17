@@ -16,7 +16,6 @@
 
 package connectors
 
-import audit.Auditable
 import models.BusinessCustomerDetails
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status
@@ -24,17 +23,16 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AwrsUnitTestTraits
+import uk.gov.hmrc.http.client.HttpClientV2
 
 class BusinessCustomerCacheConnectorTest extends AwrsUnitTestTraits with Matchers {
 
-  private val mockHttpClientV2                    = mock[uk.gov.hmrc.http.client.HttpClientV2]
-  override val mockServicesConfig: ServicesConfig = mock[uk.gov.hmrc.play.bootstrap.config.ServicesConfig]
-  override val mockAuditable: Auditable           = mock[audit.Auditable]
+  private val mockHttpClientV2                    = mock[HttpClientV2]
+  override val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
 
-  private val service = new BusinessCustomerCacheConnector(
+  private val businessCustomerCacheConnector = new BusinessCustomerCacheConnector(
     mockServicesConfig,
-    mockHttpClientV2,
-    mockAuditable
+    mockHttpClientV2
   )
 
   private val testBusinessCustomerDetails =
@@ -63,31 +61,31 @@ class BusinessCustomerCacheConnectorTest extends AwrsUnitTestTraits with Matcher
         body = Json.toJson(testBusinessCustomerDetails).toString()
       )
 
-      service.handleResponse[BusinessCustomerDetails](response) mustBe Some(testBusinessCustomerDetails)
+      businessCustomerCacheConnector.handleResponse[BusinessCustomerDetails](response) mustBe Some(testBusinessCustomerDetails)
     }
 
     "return None for 404" in {
       val response = HttpResponse(status = Status.NOT_FOUND, body = "")
 
-      service.handleResponse[BusinessCustomerDetails](response) mustBe None
+      businessCustomerCacheConnector.handleResponse[BusinessCustomerDetails](response) mustBe None
     }
 
     "return None for unexpected status" in {
       val response = HttpResponse(status = Status.SERVICE_UNAVAILABLE, body = "")
 
-      service.handleResponse[BusinessCustomerDetails](response) mustBe None
+      businessCustomerCacheConnector.handleResponse[BusinessCustomerDetails](response) mustBe None
     }
 
     "return None for 200 with invalid json" in {
       val response = HttpResponse(status = Status.OK, body = "not-json")
 
-      service.handleResponse[BusinessCustomerDetails](response) mustBe None
+      businessCustomerCacheConnector.handleResponse[BusinessCustomerDetails](response) mustBe None
     }
 
     "return None for 200 with json that does not validate as T" in {
       val response = HttpResponse(status = Status.OK, body = """{"foo":"bar"}""")
 
-      service.handleResponse[BusinessCustomerDetails](response) mustBe None
+      businessCustomerCacheConnector.handleResponse[BusinessCustomerDetails](response) mustBe None
     }
   }
 

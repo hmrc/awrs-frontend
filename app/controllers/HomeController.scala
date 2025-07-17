@@ -36,7 +36,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HomeController @Inject()(mcc: MessagesControllerComponents,
-                               businessCustomerService: BusinessCustomerCacheConnector,
+                               businessCustomerCacheConnector: BusinessCustomerCacheConnector,
                                val deEnrolService: DeEnrolService,
                                checkEtmpService: CheckEtmpService,
                                val authConnector: DefaultAuthConnector,
@@ -99,7 +99,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
         Future.successful(Some(data))
       case _ =>
         logger.warn("[HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore")
-        businessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails].flatMap {
+        businessCustomerCacheConnector.getReviewBusinessDetails[BusinessCustomerDetails].flatMap {
           case Some(data) =>
             logger.info("[HomeController][businessCustomerDetails] - BC Details fetched from Keystore")
             save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, data).map(_ => Some(data))

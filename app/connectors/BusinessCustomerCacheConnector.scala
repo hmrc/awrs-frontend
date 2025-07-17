@@ -16,24 +16,24 @@
 
 package connectors
 
-import audit.Auditable
+import play.api.Logging
 import play.api.http.Status
 import play.api.libs.json
 import play.api.libs.json.Json
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.LoggingUtils
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
+@Singleton
 class BusinessCustomerCacheConnector @Inject() (
     servicesConfig: ServicesConfig,
     http: HttpClientV2,
-    val auditable: Auditable
-) extends LoggingUtils {
+) extends Logging {
 
   val serviceName        = "business-customer"
   val serviceURL: String = servicesConfig.baseUrl(serviceName)
@@ -48,11 +48,11 @@ class BusinessCustomerCacheConnector @Inject() (
         Try(Json.parse(response.body).validate[T].asOpt).getOrElse(None)
 
       case Status.NOT_FOUND =>
-        logger.warn(s"[BusinessCustomerService] no business customer cache data found")
+        logger.warn(s"[BusinessCustomerCacheConnector] no business customer cache data found")
         None
 
       case status =>
-        logger.warn(s"[BusinessCustomerService] received unexpected status $status for business customer cache request")
+        logger.warn(s"[BusinessCustomerCacheConnector] received unexpected status $status for business customer cache request")
         None
     }
 
