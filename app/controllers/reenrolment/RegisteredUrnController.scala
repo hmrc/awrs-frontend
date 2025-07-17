@@ -56,7 +56,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
             case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
             case _             => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
           }
-        } else Future.successful(NotFound)
+        } else { Future.successful(NotFound) }
       }
     }
   }
@@ -74,9 +74,15 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                   enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
                     case Some(knownFactsResponse) =>
                       keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
-                        checkEnrollmentExistsAndConfirmDeEnrollment(Some("userId"), awrsUrn) //todo added this for testing purposes as userid retrieval unclear
+                        checkEnrollmentExistsAndConfirmDeEnrollment(
+                          Some("userId"),
+                          awrsUrn
+                        ) // todo added this for testing purposes as userid retrieval unclear
                       }
-                    case None => Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+                    case None => {
+                      logger.warn("no known facts found for awrs urn")
+                      Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+                    }
                   } recover { case ex: Exception =>
                     logger.error("Exception occurred ES20 api call", ex)
                     Redirect(routes.KickoutController.showURNKickOutPage)
@@ -84,7 +90,9 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                 }
               }
             )
-        } else Future.successful(NotFound)
+        } else {
+          Future.successful(NotFound)
+        }
       }
     }
   }
@@ -95,8 +103,10 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
       Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
     } { userId: String =>
       enrolmentStoreService.doesEnrollmentExist(userId, awrsUrn.awrsUrn).map {
-        case true  => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
-        case false => Redirect(routes.KickoutController.showURNKickOutPage)
+        case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
+        case false =>
+          logger.warn("no enrolments exist for urn")
+          Redirect(routes.KickoutController.showURNKickOutPage)
       }
     }
   }
