@@ -73,7 +73,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
     "return EnrolmentSuccessResponse when ES0 returns successful response" in {
       val response: EnrolledUserIds = es0SuccessResponse(awrsRef)
       mockPostResponseES0(OK, Some(Json.toJson(response).toString()))
-      await(connector.queryForEnrolments(awrsRef)) mustBe Some(response)
+      await(connector.queryForAssignedPrincipalUsersOfAWRSEnrolment(awrsRef)) mustBe Some(response)
     }
 
     "return None when ES20 returns NO_CONTENT" in {

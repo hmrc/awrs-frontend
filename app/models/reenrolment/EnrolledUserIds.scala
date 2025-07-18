@@ -19,27 +19,12 @@ package models.reenrolment
 import play.api.libs.json._
 
 case class EnrolledUserIds(
-    principalUserIds: Seq[String],
-    delegatedUserIds: Seq[String]
+    principalUserIds: Seq[String]
 )
 
 object EnrolledUserIds {
 
   implicit val format: OFormat[EnrolledUserIds] =
     Json.format[EnrolledUserIds]
-
-}
-
-object JsonConverters {
-
-  def parseUserIds(jsonText: String): Either[String, EnrolledUserIds] = {
-    Json
-      .parse(jsonText)
-      .validate[EnrolledUserIds] match {
-      case JsSuccess(userIds, _) => Right(userIds)
-      case JsError(errors) =>
-        Left(s"Failed to parse EnrolledUserIds: ${errors.mkString(", ")}")
-    }
-  }
 
 }

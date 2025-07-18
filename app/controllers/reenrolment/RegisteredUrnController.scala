@@ -79,7 +79,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                       keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
                         authConnector.authorise(EmptyPredicate, credentials and groupIdentifier).flatMap {
                           case Some(Credentials(userId, _)) ~ _ =>
-                            checkEnrollmentExistsAndConfirmDeEnrollment(
+                            checkEnrolmentExistsAndConfirmDeEnrollment(
                               Some(userId),
                               awrsUrn
                             )
@@ -105,12 +105,12 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
     }
   }
 
-  private def checkEnrollmentExistsAndConfirmDeEnrollment(maybeUserId: Option[String], awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
+  private def checkEnrolmentExistsAndConfirmDeEnrollment(maybeUserId: Option[String], awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
     maybeUserId.fold {
       logger.error("missing userId required enrollment check")
       Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
     } { userId: String =>
-      enrolmentStoreService.doesEnrollmentExist(userId, awrsUrn.awrsUrn).map {
+      enrolmentStoreService.isUserAssignedToAWRSEnloment(userId, awrsUrn.awrsUrn).map {
         case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
         case false =>
           logger.warn("no enrolments exist for urn")

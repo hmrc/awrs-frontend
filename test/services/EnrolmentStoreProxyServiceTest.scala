@@ -131,55 +131,49 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
 
     "doesEnrollmentExist check" should {
       "return true when an enrollment exists for the passed in URN" in {
-        when(mockConnector.queryForEnrolments(testAwrsRef))
+        when(mockConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(testAwrsRef))
           .thenReturn(
             Future.successful(
-              Some(
-                EnrolledUserIds(
-                  principalUserIds = Seq(testUserId),
-                  delegatedUserIds = Seq.empty
-                ))))
+              Some(EnrolledUserIds(
+                principalUserIds = Seq(testUserId)
+              ))))
 
-        service.doesEnrollmentExist(testUserId, testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnloment(testUserId, testAwrsRef).map { result =>
           result shouldBe true
         }
       }
 
       "return false when an enrollment does not exist for the passed in URN" in {
-        when(mockConnector.queryForEnrolments(testUserId))
+        when(mockConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(testUserId))
           .thenReturn(
             Future.successful(
-              Some(
-                EnrolledUserIds(
-                  principalUserIds = Seq("foo"),
-                  delegatedUserIds = Seq.empty
-                ))))
+              Some(EnrolledUserIds(
+                principalUserIds = Seq("foo")
+              ))))
 
-        service.doesEnrollmentExist("different-user", testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnloment("different-user", testAwrsRef).map { result =>
           result shouldBe false
         }
       }
 
       "return false when request returns None for the passed in URN" in {
-        when(mockConnector.queryForEnrolments(testAwrsRef))
+        when(mockConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(testAwrsRef))
           .thenReturn(Future.successful(None))
 
-        service.doesEnrollmentExist(testUserId, testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnloment(testUserId, testAwrsRef).map { result =>
           result shouldBe false
         }
       }
 
       "return false when request returns an empty object for the passed in URN" in {
-        when(mockConnector.queryForEnrolments(testAwrsRef))
+        when(mockConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(testAwrsRef))
           .thenReturn(
             Future.successful(
-              Some(
-                EnrolledUserIds(
-                  principalUserIds = Seq.empty,
-                  delegatedUserIds = Seq.empty
-                ))))
+              Some(EnrolledUserIds(
+                principalUserIds = Seq.empty
+              ))))
 
-        service.doesEnrollmentExist(testUserId, testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnloment(testUserId, testAwrsRef).map { result =>
           result shouldBe false
         }
       }

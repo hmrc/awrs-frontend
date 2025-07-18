@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DeEnrollmentConfirmationPageController @Inject() (mcc: MessagesControllerComponents,
                                                         implicit val applicationConfig: ApplicationConfig,
-                                                        val awrsFeatureSwitches: AWRSFeatureSwitches,
+                                                        awrsFeatureSwitches: AWRSFeatureSwitches,
                                                         val deEnrolService: DeEnrolService,
                                                         val authConnector: DefaultAuthConnector,
                                                         val accountUtils: AccountUtils,

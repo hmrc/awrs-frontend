@@ -74,11 +74,12 @@ class EnrolmentStoreProxyConnector @Inject() (servicesConfig: ServicesConfig, ht
   }
 
   // ES0
-  def queryForEnrolments(awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolledUserIds]] = {
+  def queryForAssignedPrincipalUsersOfAWRSEnrolment(
+      awrsReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[EnrolledUserIds]] = {
     val timer        = metrics.startTimer(ApiType.ES0Query)
     val enrolmentKey = s"$awrsServiceName~$enrolmentIdentifierName~$awrsReferenceNumber"
     val result =
-      http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/$enrolmentKey/users").execute[HttpResponse].map {
+      http.get(url"$enrolmentStoreProxyServiceUrl/enrolment-store/enrolments/$enrolmentKey/users?type=principal").execute[HttpResponse].map {
         processResponse(_, r => Some(Json.parse(r.body).as[EnrolledUserIds]), awrsReferenceNumber, ApiType.ES0Query)
       }
     timer.stop()

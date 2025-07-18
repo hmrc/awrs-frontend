@@ -25,7 +25,7 @@ object DeEnrollmentConfirmationForm {
   val deEnrollmentConfirmationForm: Form[String] =
     Form(
       mapping(
-        "confirmDeEnrollment" -> yesNoQuestion_compulsory("confirmDeEnrollment", "awrs.generic.error.de_enrollment_confirmation")
+        "confirmDeEnrollment" -> yesNoQuestion_compulsory("confirmDeEnrollment", "awrs.de_enrollment_confirmation")
       )((s : Option[String]) => s"${s.getOrElse("")}")((s: String) => Option(Option(s)))
     )
 }

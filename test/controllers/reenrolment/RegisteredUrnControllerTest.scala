@@ -100,13 +100,12 @@ class RegisteredUrnControllerTest
         .thenReturn(Future.successful(Some(testKnownFactsResponse)))
 
       val enrollmentResponse = EnrolledUserIds(
-        principalUserIds = Seq(testAwrsRef),
-        delegatedUserIds = Seq.empty
+        principalUserIds = Seq(testAwrsRef)
       )
 
       when(
         mockEnrolmentStoreProxyConnector
-          .queryForEnrolments(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
+          .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(enrollmentResponse)))
 
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
@@ -165,13 +164,12 @@ class RegisteredUrnControllerTest
         .thenReturn(Future.successful(Some(testKnownFactsResponse)))
 
       val enrollmentResponse = EnrolledUserIds(
-        principalUserIds = Seq(testAwrsRef),
-        delegatedUserIds = Seq.empty
+        principalUserIds = Seq(testAwrsRef)
       )
 
       when(
         mockEnrolmentStoreProxyConnector
-          .queryForEnrolments(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
+          .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(enrollmentResponse)))
 
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))

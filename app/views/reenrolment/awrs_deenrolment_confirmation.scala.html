@@ -48,7 +48,7 @@
 }
 
 @awrsMain(
-  title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.de_enrollment_confirmation"))}",
+  title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.de_enrollment_confirmation"))}",
   backlink = Some(backlinkHtml),
   userLoggedIn = true
 ) {
@@ -62,7 +62,7 @@
   <header class="page-header">
     <br>
     <h1 id="de-enrollment-confirmation-title" class="govuk-heading-xl">
-      @messages("awrs.generic.de_enrollment_confirmation")
+      @messages("awrs.de_enrollment_confirmation")
     </h1>
   </header>
 
@@ -76,7 +76,7 @@
               Legend(
                 classes = "govuk-visually-hidden",
                 content = Text(
-                  Messages("awrs.generic.de_enrollment_confirmation")
+                  Messages("awrs.de_enrollment_confirmation")
                 )
               )
             )
