@@ -138,7 +138,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
                 principalUserIds = Seq(testUserId)
               ))))
 
-        service.isUserAssignedToAWRSEnloment(testUserId, testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnrolment(testUserId, testAwrsRef).map { result =>
           result shouldBe true
         }
       }
@@ -151,7 +151,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
                 principalUserIds = Seq("foo")
               ))))
 
-        service.isUserAssignedToAWRSEnloment("different-user", testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnrolment("different-user", testAwrsRef).map { result =>
           result shouldBe false
         }
       }
@@ -160,7 +160,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
         when(mockConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(testAwrsRef))
           .thenReturn(Future.successful(None))
 
-        service.isUserAssignedToAWRSEnloment(testUserId, testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnrolment(testUserId, testAwrsRef).map { result =>
           result shouldBe false
         }
       }
@@ -173,7 +173,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
                 principalUserIds = Seq.empty
               ))))
 
-        service.isUserAssignedToAWRSEnloment(testUserId, testAwrsRef).map { result =>
+        service.isUserAssignedToAWRSEnrolment(testUserId, testAwrsRef).map { result =>
           result shouldBe false
         }
       }

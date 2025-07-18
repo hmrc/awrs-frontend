@@ -77,14 +77,11 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                   enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
                     case Some(knownFactsResponse) =>
                       keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
-                        authConnector.authorise(EmptyPredicate, credentials and groupIdentifier).flatMap {
-                          case Some(Credentials(userId, _)) ~ _ =>
-                            checkEnrolmentExistsAndConfirmDeEnrollment(
-                              Some(userId),
-                              awrsUrn
-                            )
+                        authConnector.authorise(EmptyPredicate, credentials).flatMap {
+                          case Some(Credentials(userId, _)) =>
+                            checkEnrolmentExistsAndConfirmDeEnrollment(userId, awrsUrn)
                           case _ =>
-                            logger.warn("no known user id found for user")
+                            logger.error("missing userId required enrollment check")
                             Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
                         }
                       }
@@ -105,17 +102,13 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
     }
   }
 
-  private def checkEnrolmentExistsAndConfirmDeEnrollment(maybeUserId: Option[String], awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
-    maybeUserId.fold {
-      logger.error("missing userId required enrollment check")
-      Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-    } { userId: String =>
-      enrolmentStoreService.isUserAssignedToAWRSEnloment(userId, awrsUrn.awrsUrn).map {
-        case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
-        case false =>
-          logger.warn("no enrolments exist for urn")
-          Redirect(routes.KickoutController.showURNKickOutPage)
-      }
+  private def checkEnrolmentExistsAndConfirmDeEnrollment(userId: String, awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
+    enrolmentStoreService.isUserAssignedToAWRSEnrolment(userId, awrsUrn.awrsUrn).map {
+      case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
+      case false =>
+        logger.warn("no enrolments exist for user id")
+        Redirect(routes.KickoutController.showURNKickOutPage)
+
     }
   }
 

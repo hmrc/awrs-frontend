@@ -33,7 +33,7 @@ class EnrolmentStoreProxyService @Inject() (esConnector: EnrolmentStoreProxyConn
     esConnector.lookupEnrolments(knownFacts)
   }
 
-  def isUserAssignedToAWRSEnloment(userId: String, awrsRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  def isUserAssignedToAWRSEnrolment(userId: String, awrsRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     esConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(awrsRefNumber).map { enrolledUserIds => enrolledUserIds.map(_.principalUserIds).exists(_.contains(userId)) }
   }
 
