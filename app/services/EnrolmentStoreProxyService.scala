@@ -34,8 +34,7 @@ class EnrolmentStoreProxyService @Inject() (esConnector: EnrolmentStoreProxyConn
   }
 
   def doesEnrollmentExist(userId: String, awrsRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    esConnector.queryForEnrolments(awrsRefNumber).map { enrolledUserIds => enrolledUserIds.map(_.principalUserIds).nonEmpty }
-
+    esConnector.queryForEnrolments(awrsRefNumber).map { enrolledUserIds => enrolledUserIds.map(_.principalUserIds).exists(_.contains(userId)) }
   }
 
 }

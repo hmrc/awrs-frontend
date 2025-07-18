@@ -24,6 +24,9 @@ import models.AwrsEnrolmentUrn
 import models.reenrolment.AwrsKnownFacts
 import play.api.mvc._
 import services.{DeEnrolService, EnrolmentStoreProxyService, KeyStoreService}
+import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{credentials, groupIdentifier}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -74,15 +77,20 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                   enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
                     case Some(knownFactsResponse) =>
                       keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
-                        checkEnrollmentExistsAndConfirmDeEnrollment(
-                          Some("userId"),
-                          awrsUrn
-                        ) // todo added this for testing purposes as userid retrieval unclear
+                        authConnector.authorise(EmptyPredicate, credentials and groupIdentifier).flatMap {
+                          case Some(Credentials(userId, _)) ~ _ =>
+                            checkEnrollmentExistsAndConfirmDeEnrollment(
+                              Some(userId),
+                              awrsUrn
+                            )
+                          case _ =>
+                            logger.warn("no known user id found for user")
+                            Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+                        }
                       }
-                    case None => {
+                    case None =>
                       logger.warn("no known facts found for awrs urn")
                       Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                    }
                   } recover { case ex: Exception =>
                     logger.error("Exception occurred ES20 api call", ex)
                     Redirect(routes.KickoutController.showURNKickOutPage)

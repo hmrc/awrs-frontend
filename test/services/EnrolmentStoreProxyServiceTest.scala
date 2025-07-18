@@ -156,8 +156,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
                 ))))
 
         service.doesEnrollmentExist("different-user", testAwrsRef).map { result =>
-          // result shouldBe false TODO uncomment once userid is passed correctly from registered urn controller
-          result shouldBe true
+          result shouldBe false
         }
       }
 
@@ -181,8 +180,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
                 ))))
 
         service.doesEnrollmentExist(testUserId, testAwrsRef).map { result =>
-          // result shouldBe false TODO uncomment once userid is passed correctly from registered urn controller
-          result shouldBe true
+          result shouldBe false
         }
       }
     }
