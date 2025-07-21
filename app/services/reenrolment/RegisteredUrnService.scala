@@ -33,10 +33,10 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegisteredUrnService @Inject()(keyStoreService: KeyStoreService,
-                                     val authConnector: DefaultAuthConnector,
-                                     val enrolmentStoreService: EnrolmentStoreProxyService,
-                                     implicit val applicationConfig: ApplicationConfig)
+class RegisteredUrnService @Inject() (keyStoreService: KeyStoreService,
+                                      val authConnector: DefaultAuthConnector,
+                                      val enrolmentStoreService: EnrolmentStoreProxyService,
+                                      implicit val applicationConfig: ApplicationConfig)
     extends Logging {
 
   def handleEnrolmentConfirmationFlow(awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
@@ -56,7 +56,7 @@ class RegisteredUrnService @Inject()(keyStoreService: KeyStoreService,
           logger.warn("no known facts found for awrs urn")
           Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
       } recover { case ex: Exception =>
-        logger.error("Exception occurred ES20 api call", ex)
+        logger.error("Exception occurred handling de-enrolment confirmation", ex)
         Redirect(routes.KickoutController.showURNKickOutPage)
       }
     }
