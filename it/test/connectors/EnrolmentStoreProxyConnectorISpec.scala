@@ -150,7 +150,7 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
 
   private def es0SuccessResponse(urn: String) =
     EnrolledUserIds(
-      principalUserIds = Seq(urn), delegatedUserIds = Seq.empty
+      principalUserIds = Seq(urn)
     )
 
 }

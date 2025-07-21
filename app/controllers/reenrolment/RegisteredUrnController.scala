@@ -20,14 +20,9 @@ import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
-import models.AwrsEnrolmentUrn
-import models.reenrolment.AwrsKnownFacts
 import play.api.mvc._
+import services.reenrolment.RegisteredUrnService
 import services.{DeEnrolService, EnrolmentStoreProxyService, KeyStoreService}
-import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{credentials, groupIdentifier}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -44,6 +39,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                                          awrsFeatureSwitches: AWRSFeatureSwitches,
                                          val enrolmentStoreService: EnrolmentStoreProxyService,
                                          implicit val applicationConfig: ApplicationConfig,
+                                         val registeredUrnService: RegisteredUrnService,
                                          template: views.html.reenrolment.awrs_registered_urn)
     extends FrontendController(mcc)
     with AwrsController {
@@ -72,43 +68,12 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
             .bindFromRequest()
             .fold(
               formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-              awrsUrn => {
-                keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-                  enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
-                    case Some(knownFactsResponse) =>
-                      keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
-                        authConnector.authorise(EmptyPredicate, credentials).flatMap {
-                          case Some(Credentials(userId, _)) =>
-                            checkEnrolmentExistsAndConfirmDeEnrollment(userId, awrsUrn)
-                          case _ =>
-                            logger.error("missing userId required enrollment check")
-                            Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                        }
-                      }
-                    case None =>
-                      logger.warn("no known facts found for awrs urn")
-                      Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-                  } recover { case ex: Exception =>
-                    logger.error("Exception occurred ES20 api call", ex)
-                    Redirect(routes.KickoutController.showURNKickOutPage)
-                  }
-                }
-              }
+              awrsUrn => registeredUrnService.handleEnrolmentConfirmationFlow(awrsUrn)
             )
         } else {
           Future.successful(NotFound)
         }
       }
-    }
-  }
-
-  private def checkEnrolmentExistsAndConfirmDeEnrollment(userId: String, awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier) = {
-    enrolmentStoreService.isUserAssignedToAWRSEnrolment(userId, awrsUrn.awrsUrn).map {
-      case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
-      case false =>
-        logger.warn("no enrolments exist for user id")
-        Redirect(routes.KickoutController.showURNKickOutPage)
-
     }
   }
 

@@ -29,6 +29,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockIndexService, MockKeyStoreService}
+import services.reenrolment.RegisteredUrnService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.reenrolment.awrs_registered_urn
@@ -61,6 +62,12 @@ class RegisteredUrnControllerTest
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_registered_urn                = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
+  val registeredUrnService = new RegisteredUrnService(
+    keyStoreService = testKeyStoreService,
+    authConnector = mockAuthConnector,
+    enrolmentStoreService = testEnrolmentStoreProxyService,
+    applicationConfig = mockAppConfig)
+
   val testAwrsUrnController: RegisteredUrnController = new RegisteredUrnController(
     mockMCC,
     testKeyStoreService,
@@ -71,6 +78,7 @@ class RegisteredUrnControllerTest
     mockAwrsFeatureSwitches,
     testEnrolmentStoreProxyService,
     mockAppConfig,
+    registeredUrnService,
     template)
 
   "AwrsUrnController" must {
