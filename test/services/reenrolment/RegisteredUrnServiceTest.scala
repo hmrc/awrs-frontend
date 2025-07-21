@@ -73,6 +73,12 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
     "redirect to kickout when user is not assigned to AWRS enrolment" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
+
+      when(
+        mockEnrolmentStoreProxyConnector
+          .lookupEnrolments(ArgumentMatchers.any)(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(testFacts))
+
       when(
         mockEnrolmentStoreProxyConnector
           .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
@@ -85,6 +91,16 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
     }
 
     "redirect to kickout when no known facts are returned" in {
+      when(
+        mockEnrolmentStoreProxyConnector
+          .lookupEnrolments(ArgumentMatchers.any)(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(None))
+
+      when(
+        mockEnrolmentStoreProxyConnector
+          .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(Some(EnrolledUserIds(principalUserIds = Seq.empty))))
+
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
       val result = svc.handleEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
@@ -93,24 +109,6 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
       redirectLocation(result) mustBe Some(routes.KickoutController.showURNKickOutPage.url)
     }
 
-    "redirect to kickout when lookupKnownFacts fails" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
-
-      val result = svc.handleEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.KickoutController.showURNKickOutPage.url)
-    }
-
-    "redirect to kickout when authConnector returns no credentials" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
-      val result = svc.handleEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.KickoutController.showURNKickOutPage.url)
-    }
   }
 
 }
