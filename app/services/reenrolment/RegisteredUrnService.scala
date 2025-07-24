@@ -68,8 +68,8 @@ class RegisteredUrnService @Inject() (keyStoreService: KeyStoreService,
     enrolmentStoreService.isUserAssignedToAWRSEnrolment(userId, awrsUrn.awrsUrn).map {
       case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
       case false =>
-        logger.warn("no enrolments exist for user id")
-        Redirect(routes.KickoutController.showURNKickOutPage)
+        logger.info("no enrolments exist for user id")
+        Redirect(routes.RegisteredPostcodeController.showPostCode)
 
     }
   }
