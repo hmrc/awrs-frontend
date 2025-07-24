@@ -24,12 +24,12 @@ import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
 import views.html.reenrolment.awrs_deenrolment_confirmation
 
-class DeEnrolmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitTestTraits with MockAuthConnector with ServicesUnitTestFixture {
+class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitTestTraits with MockAuthConnector with ServicesUnitTestFixture {
 
   private val template: awrs_deenrolment_confirmation =
     app.injector.instanceOf[views.html.reenrolment.awrs_deenrolment_confirmation]
 
-  private val controller: DeEnrolmentConfirmationController = new DeEnrolmentConfirmationController(
+  private val controller: DeEnrollmentConfirmationPageController = new DeEnrollmentConfirmationPageController(
     mockMCC,
     mockAppConfig,
     mockAwrsFeatureSwitches,
@@ -40,14 +40,14 @@ class DeEnrolmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitTe
     template
   )
 
-  "DeEnrolmentConfirmationPageController" must {
+  "DeEnrollmentConfirmationPageController" must {
 
     "return 404 when enrolmentJourney feature is disabled" in {
       setAuthMocks()
       setupEnrolmentJourneyFeatureSwitchMock(false)
 
       val request = SessionBuilder.buildRequestWithSession(userId)
-      val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
+      val result  = controller.showDeEnrollmentConfirmationPage().apply(request)
 
       status(result) mustBe NOT_FOUND
     }
@@ -57,60 +57,12 @@ class DeEnrolmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitTe
       setupEnrolmentJourneyFeatureSwitchMock(true)
 
       val request = SessionBuilder.buildRequestWithSession(userId)
-      val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
+      val result  = controller.showDeEnrollmentConfirmationPage().apply(request)
 
       status(result) mustBe OK
-
-      val body = contentAsString(result)
-      body must include("""name="confirmDeEnrolment"""")
-      body must include("de-Enrolment-confirmation")
     }
 
   }
 
-  "saveAndContinue" must {
-
-    "redirect to RegisteredPostcodeController when user answers Yes" in {
-      setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
-      val request = SessionBuilder
-        .buildRequestWithSession(userId, "POST", "/")
-        .withFormUrlEncodedBody("confirmDeEnrolment" -> "Yes")
-      val result = controller.saveAndContinue().apply(request)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.RegisteredPostcodeController.showPostCode.url)
-    }
-
-    "redirect to KickoutController when user answers No" in {
-      setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
-      val request = SessionBuilder
-        .buildRequestWithSession(userId, "POST", "/")
-        .withFormUrlEncodedBody("confirmDeEnrolment" -> "No")
-      val result = controller.saveAndContinue().apply(request)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.KickoutController.showURNKickOutPage.url)
-    }
-
-    "return BAD_REQUEST when no option is selected" in {
-      setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
-      val request = SessionBuilder
-        .buildRequestWithSession(userId, "POST", "/")
-      val result = controller.saveAndContinue().apply(request)
-
-      status(result) mustBe BAD_REQUEST
-
-      val body = contentAsString(result)
-      body must include("""name="confirmDeEnrolment"""")
-      body must include("error-summary")
-    }
-
-  }
 
 }

@@ -7,7 +7,7 @@ curl -XPOST http://localhost:9595/enrolment-store-stub/data -H "content-type: ap
 	"affinityGroup": "Organisation",
 	"users": [
 		{
-			"credId": "re-enrol",
+			"credId": "0820126901802583",
 			"name": "Admin",
 			"email": "default@example.com",
 			"credentialRole": "Admin",
@@ -25,7 +25,7 @@ curl -XPOST http://localhost:9595/enrolment-store-stub/data -H "content-type: ap
 			],
 			"enrolmentFriendlyName": "Awrs Enrolment",
 			"assignedUserCreds": [
-				"re-enrol"
+				"0820126901802583"
 			],
 			"state": "Activated",
 			"enrolmentType": "principal",

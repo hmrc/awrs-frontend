@@ -47,7 +47,7 @@ class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerCompon
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          Future.successful(Ok(template(deEnrolmentConfirmationForm)))
+          Future.successful(Ok(template(routes.RegisteredPostcodeController.showPostCode.url)))
         } else {
           Future.successful(NotFound)
         }
