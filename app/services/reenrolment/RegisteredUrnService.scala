@@ -17,13 +17,12 @@
 package services.reenrolment
 
 import config.ApplicationConfig
-import controllers.reenrolment.routes
+import connectors.EnrolmentStoreProxyConnector
 import models.AwrsEnrolmentUrn
 import models.reenrolment.AwrsKnownFacts
 import play.api.Logging
-import play.api.mvc.Results.Redirect
-import play.api.mvc._
-import services.{EnrolmentStoreProxyService, KeyStoreService}
+import services.KeyStoreService
+import services.reenrolment.domain._
 import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
 import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.credentials
@@ -34,44 +33,41 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredUrnService @Inject() (keyStoreService: KeyStoreService,
-                                      val authConnector: DefaultAuthConnector,
-                                      val enrolmentStoreService: EnrolmentStoreProxyService,
+                                      authConnector: DefaultAuthConnector,
+                                      enrolmentStoreConnector: EnrolmentStoreProxyConnector,
                                       implicit val applicationConfig: ApplicationConfig)
     extends Logging {
 
-  def handleEnrolmentConfirmationFlow(awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+  def handleDeEnrolmentConfirmationFlow(
+      awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DeEnrolmentConfirmationResponse] = {
     keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
-      enrolmentStoreService.lookupKnownFacts(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
+      enrolmentStoreConnector.lookupEnrolments(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
         case Some(knownFactsResponse) =>
           keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
             authConnector.authorise(EmptyPredicate, credentials).flatMap {
               case Some(Credentials(userId, _)) =>
-                checkEnrolmentExistsAndConfirmDeEnrollment(userId, awrsUrn)
+                isUserIdEnrolled(userId, awrsUrn)
               case _ =>
                 logger.error("missing userId required enrollment check")
-                Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+                Future.successful(UnableToRetrieveUserId)
             }
           }
         case None =>
           logger.warn("no known facts found for awrs urn")
-          Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
+          Future.successful(NoKnownFactsExist)
       } recover { case ex: Exception =>
         logger.error("Exception occurred handling de-enrolment confirmation", ex)
-        Redirect(routes.KickoutController.showURNKickOutPage)
+        ErrorRetrievingEnrolments
       }
     }
   }
 
-  private def checkEnrolmentExistsAndConfirmDeEnrollment(userId: String, awrsUrn: AwrsEnrolmentUrn)(implicit
+  private def isUserIdEnrolled(userId: String, urn: AwrsEnrolmentUrn)(implicit
       hc: HeaderCarrier,
-      ec: ExecutionContext) = {
-    enrolmentStoreService.isUserAssignedToAWRSEnrolment(userId, awrsUrn.awrsUrn).map {
-      case true => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
-      case false =>
-        logger.warn("no enrolments exist for user id")
-        Redirect(routes.KickoutController.showURNKickOutPage)
-
-    }
-  }
+      ec: ExecutionContext): Future[DeEnrolmentConfirmationResponse] =
+    enrolmentStoreConnector
+      .queryForAssignedPrincipalUsersOfAWRSEnrolment(urn.awrsUrn)
+      .map(_.exists(_.principalUserIds.contains(userId)))
+      .map(isUserEnrolled => if (isUserEnrolled) UserIsEnrolled else UserIsNotEnrolled)
 
 }

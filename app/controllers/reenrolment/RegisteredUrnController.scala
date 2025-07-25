@@ -22,7 +22,8 @@ import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
 import play.api.mvc._
 import services.reenrolment.RegisteredUrnService
-import services.{DeEnrolService, EnrolmentStoreProxyService, KeyStoreService}
+import services.reenrolment.domain.{DeEnrolmentConfirmationResponse, UserIsEnrolled, UserIsNotEnrolled}
+import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AWRSFeatureSwitches, AccountUtils}
@@ -37,9 +38,8 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                                          val auditable: Auditable,
                                          val accountUtils: AccountUtils,
                                          awrsFeatureSwitches: AWRSFeatureSwitches,
-                                         val enrolmentStoreService: EnrolmentStoreProxyService,
                                          implicit val applicationConfig: ApplicationConfig,
-                                         val registeredUrnService: RegisteredUrnService,
+                                         registeredUrnService: RegisteredUrnService,
                                          template: views.html.reenrolment.awrs_registered_urn)
     extends FrontendController(mcc)
     with AwrsController {
@@ -68,7 +68,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
             .bindFromRequest()
             .fold(
               formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-              awrsUrn => registeredUrnService.handleEnrolmentConfirmationFlow(awrsUrn)
+              awrsUrn => registeredUrnService.handleDeEnrolmentConfirmationFlow(awrsUrn).map(handleDeEnrolmentConfirmationResponse)
             )
         } else {
           Future.successful(NotFound)
@@ -76,5 +76,12 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
       }
     }
   }
+
+  private def handleDeEnrolmentConfirmationResponse(deEnrolmentConfirmationResponse: DeEnrolmentConfirmationResponse) =
+    deEnrolmentConfirmationResponse match {
+      case UserIsEnrolled    => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
+      case UserIsNotEnrolled => Redirect(routes.RegisteredPostcodeController.showPostCode)
+      case _                 => Redirect(routes.KickoutController.showURNKickOutPage)
+    }
 
 }

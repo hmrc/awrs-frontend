@@ -16,14 +16,15 @@
 
 package services.reenrolment
 
-import controllers.reenrolment.routes
 import models.AwrsEnrolmentUrn
 import models.reenrolment._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.test.Helpers._
+import org.scalatest.concurrent.ScalaFutures._
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import services.ServicesUnitTestFixture
+import services.reenrolment.domain.{ErrorRetrievingEnrolments, NoKnownFactsExist, UserIsEnrolled, UserIsNotEnrolled}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, CredentialRole, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,7 +38,7 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
   private val svc = new RegisteredUrnService(
     keyStoreService = testKeyStoreService,
     authConnector = mockAuthConnector,
-    enrolmentStoreService = testEnrolmentStoreProxyService,
+    enrolmentStoreConnector = mockEnrolmentStoreProxyConnector,
     applicationConfig = mockAppConfig
   )
 
@@ -54,7 +55,7 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
 
   "RegisteredUrnService handleEnrolmentConfirmationFlow" must {
 
-    "redirect to de‑enrolment confirmation when user is assigned to AWRS enrolment" ignore {
+    "redirect to de‑enrolment confirmation when user is assigned to AWRS enrolment" in {
       setAuthMocks()
 
       when(
@@ -63,11 +64,43 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
           ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(authResultDefault()))
 
+      when(
+        mockEnrolmentStoreProxyConnector
+          .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(EnrolledUserIds(principalUserIds = Seq(testAwrsRef)))))
+
       setupMockKeystoreServiceForAwrsUrn(AwrsEnrolmentUrn(testAwrsRef))
 
-      val result = svc.handleEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
 
-      status(result) mustBe SEE_OTHER
+      result.map {
+        _ mustBe UserIsEnrolled
+      }
+    }
+
+    "determine when user is assigned not assigned to any AWRS enrolment" in {
+      setAuthMocks()
+
+      val anotherAwrsRes = "XXBW00000221"
+
+      when(
+        mockAuthConnector.authorise[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Option[CredentialRole]](
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(authResultDefault()))
+
+      when(
+        mockEnrolmentStoreProxyConnector
+          .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(EnrolledUserIds(principalUserIds = Seq(anotherAwrsRes)))))
+
+      setupMockKeystoreServiceForAwrsUrn(AwrsEnrolmentUrn(testAwrsRef))
+
+      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+
+      result.map {
+        _ mustBe UserIsNotEnrolled
+      }
     }
 
     "redirect to kickout when user is not assigned to AWRS enrolment" in {
@@ -84,29 +117,40 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
           .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(EnrolledUserIds(principalUserIds = Seq.empty))))
 
-      val result = svc.handleEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.KickoutController.showURNKickOutPage.url)
+      whenReady(result) { res =>
+        res shouldBe ErrorRetrievingEnrolments
+      }
     }
 
-    "redirect to kickout when no known facts are returned" in {
+    "redirect to kick-out when no known facts are returned" in {
       when(
         mockEnrolmentStoreProxyConnector
           .lookupEnrolments(ArgumentMatchers.any)(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(None))
 
-      when(
-        mockEnrolmentStoreProxyConnector
-          .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(EnrolledUserIds(principalUserIds = Seq.empty))))
-
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      val result = svc.handleEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.KickoutController.showURNKickOutPage.url)
+      whenReady(result) { res =>
+        res shouldBe NoKnownFactsExist
+      }
+    }
+
+    "redirect to kick-out when no user credentials are found" in {
+      when(
+        mockEnrolmentStoreProxyConnector
+          .lookupEnrolments(ArgumentMatchers.any)(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(None))
+
+      setupMockKeystoreServiceForAwrsUrn()
+      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+
+      whenReady(result) { res =>
+        res shouldBe NoKnownFactsExist
+      }
     }
 
   }

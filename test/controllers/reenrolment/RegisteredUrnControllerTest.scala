@@ -65,7 +65,7 @@ class RegisteredUrnControllerTest
   val registeredUrnService = new RegisteredUrnService(
     keyStoreService = testKeyStoreService,
     authConnector = mockAuthConnector,
-    enrolmentStoreService = testEnrolmentStoreProxyService,
+    enrolmentStoreConnector = mockEnrolmentStoreProxyConnector,
     applicationConfig = mockAppConfig)
 
   val testAwrsUrnController: RegisteredUrnController = new RegisteredUrnController(
@@ -76,7 +76,6 @@ class RegisteredUrnControllerTest
     mockAuditable,
     mockAccountUtils,
     mockAwrsFeatureSwitches,
-    testEnrolmentStoreProxyService,
     mockAppConfig,
     registeredUrnService,
     template)
