@@ -19,7 +19,7 @@ package controllers.reenrolment
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.DeEnrollmentConfirmationForm.deEnrollmentConfirmationForm
+import forms.DeEnrolmentConfirmationForm.deEnrolmentConfirmationForm
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -29,25 +29,25 @@ import utils.{AWRSFeatureSwitches, AccountUtils}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeEnrollmentConfirmationPageController @Inject() (mcc: MessagesControllerComponents,
-                                                        implicit val applicationConfig: ApplicationConfig,
-                                                        awrsFeatureSwitches: AWRSFeatureSwitches,
-                                                        val deEnrolService: DeEnrolService,
-                                                        val authConnector: DefaultAuthConnector,
-                                                        val accountUtils: AccountUtils,
-                                                        val auditable: Auditable,
-                                                        template: views.html.reenrolment.awrs_deenrolment_confirmation)
+class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerComponents,
+                                                   implicit val applicationConfig: ApplicationConfig,
+                                                   awrsFeatureSwitches: AWRSFeatureSwitches,
+                                                   val deEnrolService: DeEnrolService,
+                                                   val authConnector: DefaultAuthConnector,
+                                                   val accountUtils: AccountUtils,
+                                                   val auditable: Auditable,
+                                                   template: views.html.reenrolment.awrs_deenrolment_confirmation)
     extends FrontendController(mcc)
     with AwrsController {
 
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String             = applicationConfig.signIn
 
-  def showDeEnrollmentConfirmationPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showDeEnrolmentConfirmationPage(): Action[AnyContent] = Action.async { implicit request =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          Future.successful(Ok(template(deEnrollmentConfirmationForm)))
+          Future.successful(Ok(template(deEnrolmentConfirmationForm)))
         } else {
           Future.successful(NotFound)
         }
@@ -58,12 +58,12 @@ class DeEnrollmentConfirmationPageController @Inject() (mcc: MessagesControllerC
   def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        deEnrollmentConfirmationForm
+        deEnrolmentConfirmationForm
           .bindFromRequest()
           .fold(
             formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            deEnrollmentConfirmationResponse =>
-              if (deEnrollmentConfirmationResponse == "Yes") {
+            deEnrolmentConfirmationResponse =>
+              if (deEnrolmentConfirmationResponse == "Yes") {
                 Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
               } else {
                 Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))

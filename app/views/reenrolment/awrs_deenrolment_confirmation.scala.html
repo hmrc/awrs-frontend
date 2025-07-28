@@ -40,7 +40,7 @@
   )
 
 @actionRoute = @{
-    controllers.reenrolment.routes.DeEnrollmentConfirmationPageController.saveAndContinue
+    controllers.reenrolment.routes.DeEnrolmentConfirmationController.saveAndContinue
 }
 
 @backlinkHtml = {
@@ -48,7 +48,7 @@
 }
 
 @awrsMain(
-  title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.de_enrollment_confirmation"))}",
+  title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.de_Enrolment_confirmation"))}",
   backlink = Some(backlinkHtml),
   userLoggedIn = true
 ) {
@@ -61,8 +61,8 @@
 
   <header class="page-header">
     <br>
-    <h1 id="de-enrollment-confirmation-title" class="govuk-heading-xl">
-      @messages("awrs.de_enrollment_confirmation")
+    <h1 id="de-Enrolment-confirmation-title" class="govuk-heading-xl">
+      @messages("awrs.de_Enrolment_confirmation")
     </h1>
   </header>
 
@@ -76,7 +76,7 @@
               Legend(
                 classes = "govuk-visually-hidden",
                 content = Text(
-                  Messages("awrs.de_enrollment_confirmation")
+                  Messages("awrs.de_Enrolment_confirmation")
                 )
               )
             )
@@ -93,7 +93,7 @@
           )
         ),
         classes = "govuk-radios--inline"
-      ).withFormField(confirmationForm("confirmDeEnrollment"))
+      ).withFormField(confirmationForm("confirmDeEnrolment"))
     )
 
     @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")

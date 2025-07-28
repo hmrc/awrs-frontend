@@ -24,7 +24,6 @@ import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures._
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import services.ServicesUnitTestFixture
-import services.reenrolment.domain.{ErrorRetrievingEnrolments, NoKnownFactsExist, UserIsEnrolled, UserIsNotEnrolled}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, CredentialRole, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,7 +36,6 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
 
   private val svc = new RegisteredUrnService(
     keyStoreService = testKeyStoreService,
-    authConnector = mockAuthConnector,
     enrolmentStoreConnector = mockEnrolmentStoreProxyConnector,
     applicationConfig = mockAppConfig
   )
@@ -71,7 +69,7 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
 
       setupMockKeystoreServiceForAwrsUrn(AwrsEnrolmentUrn(testAwrsRef))
 
-      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleAWRSRefChecks(testAwrsRef, AwrsEnrolmentUrn(testAwrsRef))
 
       result.map {
         _ mustBe UserIsEnrolled
@@ -96,7 +94,7 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
 
       setupMockKeystoreServiceForAwrsUrn(AwrsEnrolmentUrn(testAwrsRef))
 
-      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleAWRSRefChecks(testAwrsRef, AwrsEnrolmentUrn(testAwrsRef))
 
       result.map {
         _ mustBe UserIsNotEnrolled
@@ -117,10 +115,10 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
           .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(EnrolledUserIds(principalUserIds = Seq.empty))))
 
-      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleAWRSRefChecks(testAwrsRef, AwrsEnrolmentUrn(testAwrsRef))
 
       whenReady(result) { res =>
-        res shouldBe ErrorRetrievingEnrolments
+        res shouldBe UserIsNotEnrolled
       }
     }
 
@@ -132,7 +130,7 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
 
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleAWRSRefChecks(testAwrsRef, AwrsEnrolmentUrn(testAwrsRef))
 
       whenReady(result) { res =>
         res shouldBe NoKnownFactsExist
@@ -146,7 +144,7 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
         .thenReturn(Future.successful(None))
 
       setupMockKeystoreServiceForAwrsUrn()
-      val result = svc.handleDeEnrolmentConfirmationFlow(AwrsEnrolmentUrn(testAwrsRef))
+      val result = svc.handleAWRSRefChecks(testAwrsRef, AwrsEnrolmentUrn(testAwrsRef))
 
       whenReady(result) { res =>
         res shouldBe NoKnownFactsExist

@@ -18,11 +18,11 @@ package controllers.reenrolment
 
 import audit.Auditable
 import config.ApplicationConfig
-import controllers.auth.AwrsController
+import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
+import models.reenrolment.{UserIsEnrolled, UserIsNotEnrolled}
 import play.api.mvc._
 import services.reenrolment.RegisteredUrnService
-import services.reenrolment.domain.{DeEnrolmentConfirmationResponse, UserIsEnrolled, UserIsNotEnrolled}
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -61,14 +61,19 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrolmentEligibleAuthorisedAction { implicit ar =>
+    enrolmentEligibleAuthorisedAction { implicit ar: StandardAuthRetrievals =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           awrsEnrolmentUrnForm
             .bindFromRequest()
             .fold(
               formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-              awrsUrn => registeredUrnService.handleDeEnrolmentConfirmationFlow(awrsUrn).map(handleDeEnrolmentConfirmationResponse)
+              awrsUrn =>
+                registeredUrnService.handleAWRSRefChecks(ar.plainTextCredId, awrsUrn).map {
+                  case UserIsEnrolled    => Redirect(routes.DeEnrolmentConfirmationController.showDeEnrolmentConfirmationPage)
+                  case UserIsNotEnrolled => Redirect(routes.RegisteredPostcodeController.showPostCode)
+                  case _                 => Redirect(routes.KickoutController.showURNKickOutPage)
+                }
             )
         } else {
           Future.successful(NotFound)
@@ -76,12 +81,5 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
       }
     }
   }
-
-  private def handleDeEnrolmentConfirmationResponse(deEnrolmentConfirmationResponse: DeEnrolmentConfirmationResponse) =
-    deEnrolmentConfirmationResponse match {
-      case UserIsEnrolled    => Redirect(routes.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage)
-      case UserIsNotEnrolled => Redirect(routes.RegisteredPostcodeController.showPostCode)
-      case _                 => Redirect(routes.KickoutController.showURNKickOutPage)
-    }
 
 }

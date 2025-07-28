@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package services.reenrolment.domain
+package models.reenrolment
 
-sealed trait DeEnrolmentConfirmationResponse
-case object UserIsEnrolled            extends DeEnrolmentConfirmationResponse
-case object UserIsNotEnrolled         extends DeEnrolmentConfirmationResponse
-case object UnableToRetrieveUserId    extends DeEnrolmentConfirmationResponse
-case object NoKnownFactsExist         extends DeEnrolmentConfirmationResponse
-case object ErrorRetrievingEnrolments extends DeEnrolmentConfirmationResponse
+sealed trait AWRSRefCheckResponse
+case object UserIsEnrolled            extends AWRSRefCheckResponse
+case object UserIsNotEnrolled         extends AWRSRefCheckResponse
+case object NoKnownFactsExist         extends AWRSRefCheckResponse
+case object ErrorRetrievingEnrolments extends AWRSRefCheckResponse

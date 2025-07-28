@@ -949,8 +949,8 @@ awrs.application_timeout.sign_in_btn = Sign in
 #===========================
 awrs.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
 awrs.have_you_registered.error = You must select either Yes or No
-awrs.de_enrollment_confirmation=De-enrollment will affect other users. Are you happy to continue?
-awrs.error.de_enrollment_confirmation=Tell us if you are happy to de-enrol?
+awrs.de_Enrolment_confirmation=De-Enrolment will affect other users. Are you happy to continue?
+awrs.error.de_Enrolment_confirmation=Tell us if you are happy to de-enrol?
 
 # URN Messages
 #===========================

@@ -47,7 +47,7 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
       case e@(Some(Withdrawal) | Some(DeRegistered)) =>
         val enrolments = authRetrievals.enrolments
         if(accountUtils.hasAwrs(enrolments)){
-          logger.info(s"[AwrsController][restrictedAccessCheck] De-enrolled and redirecting to business-customer for status ${e.get.name}")
+          logger.info(s"[AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status ${e.get.name}")
           deEnrolService.deEnrolAWRS(accountUtils.getAwrsRefNo(enrolments), getBusinessName.getOrElse(""), getBusinessType.getOrElse(""))
           Future.successful(Redirect(applicationConfig.businessCustomerStartPage).removingFromSession(AwrsSessionKeys.sessionStatusType))
         } else {

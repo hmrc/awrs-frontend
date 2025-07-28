@@ -175,5 +175,5 @@ GET         /reenrolment/kickout                            controllers.reenrolm
 
 GET         /reenrolment/successful-enrolment               controllers.reenrolment.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage
 
-GET         /reenrolment/deenrolment-confirmation           controllers.reenrolment.DeEnrollmentConfirmationPageController.showDeEnrollmentConfirmationPage
-POST        /reenrolment/deenrolment-confirmation           controllers.reenrolment.DeEnrollmentConfirmationPageController.saveAndContinue
+GET         /reenrolment/deenrolment-confirmation           controllers.reenrolment.DeEnrolmentConfirmationController.showDeEnrolmentConfirmationPage
+POST        /reenrolment/deenrolment-confirmation           controllers.reenrolment.DeEnrolmentConfirmationController.saveAndContinue

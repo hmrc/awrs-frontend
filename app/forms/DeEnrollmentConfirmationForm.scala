@@ -20,12 +20,12 @@ import forms.validation.util.NamedMappingAndUtil.yesNoQuestion_compulsory
 import play.api.data.Form
 import play.api.data.Forms.mapping
 
-object DeEnrollmentConfirmationForm {
+object DeEnrolmentConfirmationForm {
 
-  val deEnrollmentConfirmationForm: Form[String] =
+  val deEnrolmentConfirmationForm: Form[String] =
     Form(
       mapping(
-        "confirmDeEnrollment" -> yesNoQuestion_compulsory("confirmDeEnrollment", "awrs.de_enrollment_confirmation")
+        "confirmDeEnrolment" -> yesNoQuestion_compulsory("confirmDeEnrolment", "awrs.de_Enrolment_confirmation")
       )((s : Option[String]) => s"${s.getOrElse("")}")((s: String) => Option(Option(s)))
     )
 }

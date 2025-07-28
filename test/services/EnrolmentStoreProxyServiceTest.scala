@@ -129,8 +129,8 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
       }
     }
 
-    "doesEnrollmentExist check" should {
-      "return true when an enrollment exists for the passed in URN" in {
+    "doesEnrolmentExist check" should {
+      "return true when an Enrolment exists for the passed in URN" in {
         when(mockConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(testAwrsRef))
           .thenReturn(
             Future.successful(
@@ -143,7 +143,7 @@ class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with Mo
         }
       }
 
-      "return false when an enrollment does not exist for the passed in URN" in {
+      "return false when an Enrolment does not exist for the passed in URN" in {
         when(mockConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(testUserId))
           .thenReturn(
             Future.successful(

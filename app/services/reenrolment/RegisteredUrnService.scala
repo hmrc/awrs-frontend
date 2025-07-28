@@ -19,13 +19,9 @@ package services.reenrolment
 import config.ApplicationConfig
 import connectors.EnrolmentStoreProxyConnector
 import models.AwrsEnrolmentUrn
-import models.reenrolment.AwrsKnownFacts
+import models.reenrolment._
 import play.api.Logging
 import services.KeyStoreService
-import services.reenrolment.domain._
-import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
-import uk.gov.hmrc.auth.core.retrieve.Credentials
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.credentials
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
@@ -33,24 +29,19 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredUrnService @Inject() (keyStoreService: KeyStoreService,
-                                      authConnector: DefaultAuthConnector,
                                       enrolmentStoreConnector: EnrolmentStoreProxyConnector,
                                       implicit val applicationConfig: ApplicationConfig)
     extends Logging {
 
-  def handleDeEnrolmentConfirmationFlow(
-      awrsUrn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DeEnrolmentConfirmationResponse] = {
+  def handleAWRSRefChecks(providerId: String, awrsUrn: AwrsEnrolmentUrn)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext): Future[AWRSRefCheckResponse] = {
     keyStoreService.saveAwrsEnrolmentUrn(awrsUrn) flatMap { _ =>
       enrolmentStoreConnector.lookupEnrolments(AwrsKnownFacts(awrsUrn.awrsUrn)).flatMap {
         case Some(knownFactsResponse) =>
           keyStoreService.saveKnownFacts(knownFactsResponse).flatMap { _ =>
-            authConnector.authorise(EmptyPredicate, credentials).flatMap {
-              case Some(Credentials(userId, _)) =>
-                isUserIdEnrolled(userId, awrsUrn)
-              case _ =>
-                logger.error("missing userId required enrollment check")
-                Future.successful(UnableToRetrieveUserId)
-            }
+            isProviderIdEnrolled(providerId, awrsUrn)
+              .map(isUserEnrolled => if (isUserEnrolled) UserIsEnrolled else UserIsNotEnrolled)
           }
         case None =>
           logger.warn("no known facts found for awrs urn")
@@ -62,12 +53,9 @@ class RegisteredUrnService @Inject() (keyStoreService: KeyStoreService,
     }
   }
 
-  private def isUserIdEnrolled(userId: String, urn: AwrsEnrolmentUrn)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext): Future[DeEnrolmentConfirmationResponse] =
+  private def isProviderIdEnrolled(userId: String, urn: AwrsEnrolmentUrn)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     enrolmentStoreConnector
       .queryForAssignedPrincipalUsersOfAWRSEnrolment(urn.awrsUrn)
       .map(_.exists(_.principalUserIds.contains(userId)))
-      .map(isUserEnrolled => if (isUserEnrolled) UserIsEnrolled else UserIsNotEnrolled)
 
 }

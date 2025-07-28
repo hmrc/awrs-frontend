@@ -64,7 +64,6 @@ class RegisteredUrnControllerTest
 
   val registeredUrnService = new RegisteredUrnService(
     keyStoreService = testKeyStoreService,
-    authConnector = mockAuthConnector,
     enrolmentStoreConnector = mockEnrolmentStoreProxyConnector,
     applicationConfig = mockAppConfig)
 
@@ -106,14 +105,14 @@ class RegisteredUrnControllerTest
           .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testKnownFactsResponse)))
 
-      val enrollmentResponse = EnrolledUserIds(
+      val EnrolmentResponse = EnrolledUserIds(
         principalUserIds = Seq(testAwrsRef)
       )
 
       when(
         mockEnrolmentStoreProxyConnector
           .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(enrollmentResponse)))
+        .thenReturn(Future.successful(Some(EnrolmentResponse)))
 
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
       status(res) mustBe 303
@@ -170,14 +169,14 @@ class RegisteredUrnControllerTest
           .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(testKnownFactsResponse)))
 
-      val enrollmentResponse = EnrolledUserIds(
+      val EnrolmentResponse = EnrolledUserIds(
         principalUserIds = Seq(testAwrsRef)
       )
 
       when(
         mockEnrolmentStoreProxyConnector
           .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(enrollmentResponse)))
+        .thenReturn(Future.successful(Some(EnrolmentResponse)))
 
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
       status(res) mustBe 303
