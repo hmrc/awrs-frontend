@@ -47,29 +47,10 @@ class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerCompon
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          Future.successful(Ok(template(routes.RegisteredPostcodeController.showPostCode.url)))
+          Future.successful(Ok(template(postcodePageUrl = routes.RegisteredPostcodeController.showPostCode.url)))
         } else {
           Future.successful(NotFound)
         }
-      }
-    }
-  }
-
-  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrolmentEligibleAuthorisedAction { implicit ar =>
-      restrictedAccessCheck {
-        deEnrolmentConfirmationForm
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
-            deEnrolmentConfirmationResponse =>
-              if (deEnrolmentConfirmationResponse == "Yes") {
-                Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
-              } else {
-                Future.successful(Redirect(routes.KickoutController.showURNKickOutPage))
-
-              }
-          )
       }
     }
   }

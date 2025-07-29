@@ -29,7 +29,7 @@ class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitT
   private val template: awrs_deenrolment_confirmation =
     app.injector.instanceOf[views.html.reenrolment.awrs_deenrolment_confirmation]
 
-  private val controller: DeEnrollmentConfirmationPageController = new DeEnrollmentConfirmationPageController(
+  private val controller: DeEnrolmentConfirmationController = new DeEnrolmentConfirmationController(
     mockMCC,
     mockAppConfig,
     mockAwrsFeatureSwitches,
@@ -47,7 +47,7 @@ class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitT
       setupEnrolmentJourneyFeatureSwitchMock(false)
 
       val request = SessionBuilder.buildRequestWithSession(userId)
-      val result  = controller.showDeEnrollmentConfirmationPage().apply(request)
+      val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
 
       status(result) mustBe NOT_FOUND
     }
@@ -57,12 +57,11 @@ class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitT
       setupEnrolmentJourneyFeatureSwitchMock(true)
 
       val request = SessionBuilder.buildRequestWithSession(userId)
-      val result  = controller.showDeEnrollmentConfirmationPage().apply(request)
+      val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
 
       status(result) mustBe OK
     }
 
   }
-
 
 }

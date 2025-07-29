@@ -16,6 +16,7 @@
 
 package views.reenrolment
 
+import forms.DeEnrolmentConfirmationForm.deEnrolmentConfirmationForm
 import org.mockito.Mockito.when
 import play.twirl.api.HtmlFormat
 import views.ViewTestFixture
@@ -31,7 +32,7 @@ class DeEnrolmentConfirmationViewTest extends ViewTestFixture {
     app.injector.instanceOf[views.html.reenrolment.awrs_deenrolment_confirmation]
 
 
-  override val htmlContent: HtmlFormat.Appendable = view.apply(testPostCodePageUrl)(fakeRequest, messages, mockAppConfig)
+  override val htmlContent: HtmlFormat.Appendable = view.apply(testPostCodePageUrl)(fakeRequest, applicationConfig = mockAppConfig, messages = messages)
   "deenrolment_confirmation page" should {
 
     "render the correct content" in {
