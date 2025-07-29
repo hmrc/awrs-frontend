@@ -23,14 +23,18 @@ import uk.gov.hmrc.http.HeaderCarrier
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-
 @Singleton
-class EnrolmentStoreProxyService @Inject()(esConnector: EnrolmentStoreProxyConnector) {
+class EnrolmentStoreProxyService @Inject() (esConnector: EnrolmentStoreProxyConnector) {
+
   def queryForPrincipalGroupIdOfAWRSEnrolment(awrs: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     esConnector.queryForPrincipalGroupIdOfAWRSEnrolment(awrs)
 
   def lookupKnownFacts(knownFacts: AwrsKnownFacts)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[KnownFactsResponse]] = {
     esConnector.lookupEnrolments(knownFacts)
   }
-}
 
+  def isUserAssignedToAWRSEnrolment(userId: String, awrsRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    esConnector.queryForAssignedPrincipalUsersOfAWRSEnrolment(awrsRefNumber).map { EnrolledUserIds => EnrolledUserIds.map(_.principalUserIds).exists(_.contains(userId)) }
+  }
+
+}

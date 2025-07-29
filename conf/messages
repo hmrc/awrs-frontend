@@ -949,6 +949,10 @@ awrs.application_timeout.sign_in_btn = Sign in
 #===========================
 awrs.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
 awrs.have_you_registered.error = You must select either Yes or No
+awrs.de_enrollment_confirmation=AWRS enrollment is already active on your business tax account
+awrs.de_enrollment_confirmation.p1=If you continue to create another AWRS enrollment, all other Government gateway accounts in the same group will be unassigned and lose this active enrollment.
+awrs.de_enrollment_confirmation.continue=Continue
+awrs.de_enrollment_confirmation.bta_redirect=View active enrollments
 
 # URN Messages
 #===========================

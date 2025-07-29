@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package models
+package models.reenrolment
 
-object ApiType extends Enumeration {
-  type ApiType = Value
-
-  val API4Enrolment: models.ApiType.Value = Value
-  val API10DeEnrolment: models.ApiType.Value = Value
-  val ES0Query: models.ApiType.Value = Value
-  val ES20Query: models.ApiType.Value = Value
-  val ES9DeEnrolment: models.ApiType.Value = Value
-  val ES1Query: models.ApiType.Value = Value
-}
+sealed trait AWRSRefCheckResponse
+case object UserIsEnrolled            extends AWRSRefCheckResponse
+case object UserIsNotEnrolled         extends AWRSRefCheckResponse
+case object NoKnownFactsExist         extends AWRSRefCheckResponse
+case object ErrorRetrievingEnrolments extends AWRSRefCheckResponse

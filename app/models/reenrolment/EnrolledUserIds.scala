@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package models
+package models.reenrolment
 
-object ApiType extends Enumeration {
-  type ApiType = Value
+import play.api.libs.json._
 
-  val API4Enrolment: models.ApiType.Value = Value
-  val API10DeEnrolment: models.ApiType.Value = Value
-  val ES0Query: models.ApiType.Value = Value
-  val ES20Query: models.ApiType.Value = Value
-  val ES9DeEnrolment: models.ApiType.Value = Value
-  val ES1Query: models.ApiType.Value = Value
+case class EnrolledUserIds(
+    principalUserIds: Seq[String]
+)
+
+object EnrolledUserIds {
+
+  implicit val format: OFormat[EnrolledUserIds] =
+    Json.format[EnrolledUserIds]
+
 }

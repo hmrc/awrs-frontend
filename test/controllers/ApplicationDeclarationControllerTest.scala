@@ -156,25 +156,25 @@ class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
       })
     }
 
-    "return true if AWRS user is enrolled and has status of Pending" in {
+    "return true if AWRS user is Enrolled and has status of Pending" in {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Pending.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe true
     }
 
-    "return true if AWRS user is enrolled and has status of Approved" in {
+    "return true if AWRS user is Enrolled and has status of Approved" in {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Approved.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe true
     }
 
-    "return true if AWRS user is enrolled and has status of ApprovedWithConditions" in {
+    "return true if AWRS user is Enrolled and has status of ApprovedWithConditions" in {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> ApprovedWithConditions.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe true
     }
 
-    "return false if AWRS user is enrolled and has status of Rejected" in {
+    "return false if AWRS user is Enrolled and has status of Rejected" in {
       implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionStatusType -> Rejected.name)
       val result = testApplicationDeclarationController.isEnrolledApplicant
       result mustBe false
