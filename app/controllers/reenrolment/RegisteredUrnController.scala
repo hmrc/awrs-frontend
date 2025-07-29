@@ -69,12 +69,10 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
             .fold(
               formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
               awrsUrn => {
-                println("awrsUrn " + awrsUrn)
-                println("ar " + ar.plainTextCredId)
                 registeredUrnService.handleAWRSRefChecks(ar.plainTextCredId, awrsUrn).map {
-                  case UserIsEnrolled => Redirect(routes.DeEnrolmentConfirmationController.showDeEnrolmentConfirmationPage)
+                  case UserIsEnrolled    => Redirect(routes.DeEnrolmentConfirmationController.showDeEnrolmentConfirmationPage)
                   case UserIsNotEnrolled => Redirect(routes.RegisteredPostcodeController.showPostCode)
-                  case _ => Redirect(routes.KickoutController.showURNKickOutPage)
+                  case _                 => Redirect(routes.KickoutController.showURNKickOutPage)
                 }
               }
             )
