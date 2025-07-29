@@ -16,7 +16,6 @@
 
 package views.reenrolment
 
-import forms.DeEnrolmentConfirmationForm.deEnrolmentConfirmationForm
 import org.mockito.Mockito.when
 import play.twirl.api.HtmlFormat
 import views.ViewTestFixture
@@ -25,22 +24,21 @@ import views.html.reenrolment.awrs_deenrolment_confirmation
 class DeEnrolmentConfirmationViewTest extends ViewTestFixture {
 
   val testPostCodePageUrl = "/testUrl"
-  val testBtaRedirectUrl = "/testBtaLink"
+  val testBtaRedirectUrl  = "/testBtaLink"
   when(mockAppConfig.businessTaxAccountPage).thenReturn(testBtaRedirectUrl)
 
   val view: awrs_deenrolment_confirmation =
     app.injector.instanceOf[views.html.reenrolment.awrs_deenrolment_confirmation]
 
+  override val htmlContent: HtmlFormat.Appendable =
+    view.apply(testPostCodePageUrl)(fakeRequest, applicationConfig = mockAppConfig, messages = messages)
 
-  override val htmlContent: HtmlFormat.Appendable = view.apply(testPostCodePageUrl)(fakeRequest, applicationConfig = mockAppConfig, messages = messages)
   "deenrolment_confirmation page" should {
 
     "render the correct content" in {
       heading mustBe messages("awrs.de_enrollment_confirmation")
-      bodyText mustBe (
-        messages("awrs.de_enrollment_confirmation.p1"))
+      bodyText mustBe (messages("awrs.de_enrollment_confirmation.p1"))
     }
-
 
     "contain a button to go to PostCode page" in {
       val link = document.getElementById("continue")
@@ -52,4 +50,5 @@ class DeEnrolmentConfirmationViewTest extends ViewTestFixture {
       link.attr("href") mustBe testBtaRedirectUrl
     }
   }
+
 }

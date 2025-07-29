@@ -18,7 +18,7 @@ package controllers.reenrolment
 
 import audit.Auditable
 import config.ApplicationConfig
-import controllers.auth.{AwrsController, StandardAuthRetrievals}
+import controllers.auth.AwrsController
 import forms.reenrolment.RegisteredUrnForm.awrsEnrolmentUrnForm
 import models.reenrolment.{UserIsEnrolled, UserIsNotEnrolled}
 import play.api.mvc._
@@ -61,7 +61,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    enrolmentEligibleAuthorisedAction { implicit ar: StandardAuthRetrievals =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           awrsEnrolmentUrnForm

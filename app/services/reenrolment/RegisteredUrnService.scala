@@ -23,7 +23,6 @@ import models.reenrolment._
 import play.api.Logging
 import services.KeyStoreService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

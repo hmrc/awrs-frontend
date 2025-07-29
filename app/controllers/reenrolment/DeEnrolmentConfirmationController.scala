@@ -19,8 +19,7 @@ package controllers.reenrolment
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import forms.DeEnrolmentConfirmationForm.deEnrolmentConfirmationForm
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
