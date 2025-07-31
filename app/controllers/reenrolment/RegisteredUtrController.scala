@@ -120,7 +120,9 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
         case Some(_) =>
           logger.info(s"enrolment succeeded for AWRS ref $awrsRef")
           Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
-        case None    => Redirect(routes.KickoutController.showURNKickOutPage)
+        case None    =>
+          logger.info(s"enrolment failed for AWRS ref $awrsRef")
+          Redirect(routes.KickoutController.showURNKickOutPage)
       }
     }
   }.recover {
