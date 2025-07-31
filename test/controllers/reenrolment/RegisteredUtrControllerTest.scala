@@ -73,17 +73,17 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
   }
 
   private def resetMocks(): Unit = {
-    reset(
+    val mocks: Seq[AnyRef] = Seq(
       mockDeEnrolService,
       mockAuthConnector,
       mockAuditable,
       mockAccountUtils,
       mockEnrolService,
       mockAwrsFeatureSwitches,
-      mockDeEnrolService,
       mockEnrolmentStoreService,
       mockAppConfig
     )
+    reset(mocks: _*)
   }
 
   private def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =

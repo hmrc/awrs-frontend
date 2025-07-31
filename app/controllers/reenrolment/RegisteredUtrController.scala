@@ -95,6 +95,7 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
 
       // 3. Verify known facts
       isVerified = KnownFactsVerifier.knownFactsVerified(maybeKnownFacts, awrsRef, isSA, utr.utr, postcode)
+      _          = logger.info(s"known facts verification returned $isVerified for $awrsRef")
 
       // 4. Process de-enrolment if needed
       deEnrolmentSuccessful <- if (isVerified) {
@@ -103,6 +104,7 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
           case None => Future.successful(true)
         }
       } else Future.successful(false)
+      _          = logger.info(s"De enrolment process returns $deEnrolmentSuccessful")
 
       // 5. Process enrolment
       utrType = if (isSA) "SOP" else "CT"
@@ -115,8 +117,12 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
       ) else Future.successful(None)
     } yield {
       enrolmentResult match {
-        case Some(_) => Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
-        case None    => Redirect(routes.KickoutController.showURNKickOutPage)
+        case Some(_) =>
+          logger.info(s"enrolment succeeded for AWRS ref $awrsRef")
+          Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
+        case None    =>
+          logger.info(s"enrolment failed for AWRS ref $awrsRef")
+          Redirect(routes.KickoutController.showURNKickOutPage)
       }
     }
   }.recover {
