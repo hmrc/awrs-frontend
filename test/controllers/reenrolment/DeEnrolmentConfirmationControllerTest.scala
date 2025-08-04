@@ -24,7 +24,7 @@ import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
 import views.html.reenrolment.awrs_deenrolment_confirmation
 
-class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitTestTraits with MockAuthConnector with ServicesUnitTestFixture {
+class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTraits with MockAuthConnector with ServicesUnitTestFixture {
 
   private val template: awrs_deenrolment_confirmation =
     app.injector.instanceOf[views.html.reenrolment.awrs_deenrolment_confirmation]
@@ -40,7 +40,7 @@ class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitT
     template
   )
 
-  "DeEnrollmentConfirmationPageController" must {
+  "DeEnrolmentConfirmationController" must {
 
     "return 404 when enrolmentJourney feature is disabled" in {
       setAuthMocks()
@@ -60,6 +60,51 @@ class DeEnrollmentConfirmationPageControllerTest extends PlaySpec with AwrsUnitT
       val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
 
       status(result) mustBe OK
+    }
+
+  }
+
+  "saveAndContinue" must {
+
+    "redirect to RegisteredPostcodeController when user answers Yes" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      val request = SessionBuilder
+        .buildRequestWithSession(userId, "POST", "/")
+        .withFormUrlEncodedBody("confirmDeEnrollment" -> "Yes")
+      val result = controller.saveAndContinue().apply(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.RegisteredPostcodeController.showPostCode.url)
+    }
+
+    "redirect to view enrolments when user answers No" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      val request = SessionBuilder
+        .buildRequestWithSession(userId, "POST", "/")
+        .withFormUrlEncodedBody("confirmDeEnrollment" -> "No")
+      val result = controller.saveAndContinue().apply(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.ViewEnrolmentsController.showViewEnrolmentsPage.url)
+    }
+
+    "return BAD_REQUEST when no option is selected" in {
+      setAuthMocks()
+      setupEnrolmentJourneyFeatureSwitchMock(true)
+
+      val request = SessionBuilder
+        .buildRequestWithSession(userId, "POST", "/")
+      val result = controller.saveAndContinue().apply(request)
+
+      status(result) mustBe BAD_REQUEST
+
+      val body = contentAsString(result)
+      body must include("""name="confirmDeEnrollment"""")
+      body must include("error-summary")
     }
 
   }

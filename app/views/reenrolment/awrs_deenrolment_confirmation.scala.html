@@ -26,49 +26,82 @@
 @import views.ViewUtils._
 
 @this(
-        formWithCSRF: FormWithCSRF,
-        awrsMain: main,
-        govukButton: GovukButton,
+  formWithCSRF: FormWithCSRF,
+  awrsMain: main,
+  govukRadios: GovukRadios,
+  govukErrorSummary: GovukErrorSummary
 )
 
-@(postcodePageUrl: String)(implicit
-        request: Request[AnyRef],
-        messages: Messages,
-        applicationConfig: ApplicationConfig
-)
+@(confirmationForm: Form[String])(implicit
+    request: Request[AnyRef],
+    viewApplicationType: ViewApplicationType = LinearViewMode,
+    messages: Messages,
+    applicationConfig: ApplicationConfig
+  )
 
-
+@actionRoute = @{
+    controllers.reenrolment.routes.DeEnrolmentConfirmationController.saveAndContinue
+}
 
 @backlinkHtml = {
 @backLink(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage.url)
 }
 
 @awrsMain(
-    title = s"${messages("awrs.generic.tab.title", messages("awrs.de_enrollment_confirmation"))}",
-    backlink = Some(backlinkHtml),
-    userLoggedIn = true
+  title = s"${errorPrefix(confirmationForm)} ${messages("awrs.generic.tab.title", messages("awrs.generic.de_enrolment_confirmation"))}",
+  backlink = Some(backlinkHtml),
+  userLoggedIn = true
 ) {
 
-    <header class="page-header">
-        <h1 id="de-enrollment-confirmation-title" class="govuk-heading-xl">
-            @Messages("awrs.de_enrollment_confirmation")
-        </h1>
-    </header>
+  @if(confirmationForm.errors.nonEmpty) {
+    @govukErrorSummary(
+      ErrorSummary().withFormErrorsAsText(confirmationForm)
+    )
+  }
 
-    <p class="govuk-body" id="paragraph-1">
-        @messages("awrs.de_enrollment_confirmation.p1")
-    </p>
+<header class="page-header govuk-!-margin-top-4">
+    <h1 id="de-enrollment-confirmation-title" class="govuk-heading-xl">
+        @messages("awrs.generic.de_enrolment_confirmation")
+    </h1>
+</header>
 
-    <br/>
-    <br/>
-    <br/>
-    <div class="govuk-button-group">
-        <a href="@postcodePageUrl" role="button" class="govuk-button" id = "continue" data-module="govuk-button">
-        @messages("awrs.de_enrollment_confirmation.continue")
-        </a>
-        <a href="@applicationConfig.businessTaxAccountPage" class="govuk-link" id="bta-redirect-link" data-module="govuk-button">
-        @messages("awrs.de_enrollment_confirmation.bta_redirect")
-        </a>
-    </div>
-    <br/>
+  @formWithCSRF(action = actionRoute) {
+
+    @govukRadios(
+
+      Radios(
+        fieldset = Some(
+          Fieldset(
+            legend = Some(
+              Legend(
+                classes = "govuk-visually-hidden",
+                content = Text(
+                  Messages("awrs.generic.create_new_enrolment")
+                )
+              )
+            )
+          )
+        ),
+        hint = Some(
+                 Hint(
+                     content = Text(messages("awrs.generic.error.de_enrolment_confirmation_hint"))
+                 )
+               ),
+        items = Seq(
+          RadioItem(
+            content = HtmlContent(s"<strong>${Messages("awrs.de_enrolment_confirmation.yes")}</strong>"),
+            value   = Some("Yes")
+          ),
+          RadioItem(
+            content = HtmlContent(s"<strong>${Messages("awrs.de_enrolment_confirmation.no")}</strong>"),
+            value   = Some("No")
+          )
+        ),
+        classes = ""
+      ).withFormField(confirmationForm("confirmDeEnrollment"))
+    )
+
+    @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
+  }
+
 }

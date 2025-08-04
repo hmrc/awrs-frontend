@@ -19,7 +19,8 @@ package controllers.reenrolment
 import audit.Auditable
 import config.ApplicationConfig
 import controllers.auth.AwrsController
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import forms.DeEnrolmentConfirmationForm.deEnrolmentConfirmationForm
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -46,10 +47,29 @@ class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerCompon
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          Future.successful(Ok(template(postcodePageUrl = routes.RegisteredPostcodeController.showPostCode.url)))
+          Future.successful(Ok(template(deEnrolmentConfirmationForm)))
         } else {
           Future.successful(NotFound)
         }
+      }
+    }
+  }
+
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    enrolmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        deEnrolmentConfirmationForm
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+            deEnrollmentConfirmationResponse =>
+              if (deEnrollmentConfirmationResponse == "Yes") {
+                Future.successful(Redirect(routes.RegisteredPostcodeController.showPostCode))
+              } else {
+                Future.successful(Redirect(routes.ViewEnrolmentsController.showViewEnrolmentsPage))
+
+              }
+          )
       }
     }
   }

@@ -1,0 +1,69 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.ApplicationConfig
+@import services.DataCacheKeys._
+@import views.html.helpers._
+@import views.view_application.helpers.SubViewTemplateHelper._
+@import views.view_application.helpers._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils._
+
+@this(
+        formWithCSRF: FormWithCSRF,
+        awrsMain: main,
+        govukButton: GovukButton,
+)
+
+@()(implicit
+        request: Request[AnyRef],
+        messages: Messages,
+        applicationConfig: ApplicationConfig
+)
+
+
+
+@backlinkHtml = {
+@backLink(controllers.reenrolment.routes.DeEnrolmentConfirmationController.showDeEnrolmentConfirmationPage.url)
+}
+
+@awrsMain(
+    title = s"${messages("awrs.generic.tab.title", messages("awrs.view_enrolments"))}",
+    backlink = Some(backlinkHtml),
+    userLoggedIn = true
+) {
+
+    <header class="page-header">
+        <h1 id="view-enrolment-title" class="govuk-heading-xl">
+        @Messages("awrs.view_enrolments")
+        </h1>
+    </header>
+
+    <p class="govuk-body" id="paragraph-1">
+    @messages("awrs.view_enrolments.p1")
+    </p>
+
+
+    <div class="govuk-button-group">
+        <a href="@applicationConfig.businessTaxAccountPage" role="button" class="govuk-button" id="bta-redirect-link" data-module="govuk-button">
+            @messages("awrs.view_enrollment.bta_redirect")
+        </a>
+    </div>
+    <br/>
+}
