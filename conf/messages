@@ -59,6 +59,7 @@ awrs.generic.status.person=Person
 awrs.generic.status.person_value=person
 awrs.generic.status.company=Company
 awrs.generic.status.company_value=company
+awrs.generic.create_new_enrolment=I would like to continue creating a new enrolment
 
 # Generic ID messages
 #============================================================
@@ -949,10 +950,20 @@ awrs.application_timeout.sign_in_btn = Sign in
 #===========================
 awrs.have_you_registered.title = Have you registered with the Alcohol Wholesaler Registration Scheme (AWRS)?
 awrs.have_you_registered.error = You must select either Yes or No
-awrs.de_enrollment_confirmation=AWRS enrollment is already active on your business tax account
-awrs.de_enrollment_confirmation.p1=If you continue to create another AWRS enrollment, all other Government gateway accounts in the same group will be unassigned and lose this active enrollment.
-awrs.de_enrollment_confirmation.continue=Continue
-awrs.de_enrollment_confirmation.bta_redirect=View active enrollments
+awrs.de_enrolment_confirmation=AWRS enrollment is already active on your business tax account
+awrs.de_enrolment_confirmation.continue=Continue
+awrs.de_enrolment_confirmation.bta_redirect=View active enrollments
+awrs.generic.de_enrolment_confirmation=Are you sure you want to continue with your AWRS enrolment?
+awrs.generic.error.de_enrolment_confirmation=Tell us if you are happy to de-enrol?
+awrs.de_enrolment_confirmation.yes=Yes, I want to continue
+awrs.de_enrolment_confirmation.no=No, I do not want to continue
+
+awrs.generic.error.de_enrolment_confirmation_hint=Your Business Tax Account already has an active AWRS enrolment. If you continue, other Government Gateway accounts in this group will lose access.
+
+awrs.view_enrolments=You have chosen not to continue with your AWRS enrolment
+awrs.view_enrolments.p1=You can view your active enrolments in your Business Tax Account
+awrs.view_enrollment.bta_redirect=View active enrollments
+
 
 # URN Messages
 #===========================

@@ -16,39 +16,26 @@
 
 package views.reenrolment
 
-import org.mockito.Mockito.when
+import controllers.reenrolment.routes
+import forms.DeEnrolmentConfirmationForm
 import play.twirl.api.HtmlFormat
 import views.ViewTestFixture
 import views.html.reenrolment.awrs_deenrolment_confirmation
 
 class DeEnrolmentConfirmationViewTest extends ViewTestFixture {
 
-  val testPostCodePageUrl = "/testUrl"
-  val testBtaRedirectUrl  = "/testBtaLink"
-  when(mockAppConfig.businessTaxAccountPage).thenReturn(testBtaRedirectUrl)
-
   val view: awrs_deenrolment_confirmation =
     app.injector.instanceOf[views.html.reenrolment.awrs_deenrolment_confirmation]
 
-  override val htmlContent: HtmlFormat.Appendable =
-    view.apply(testPostCodePageUrl)(fakeRequest, applicationConfig = mockAppConfig, messages = messages)
 
+  override val htmlContent: HtmlFormat.Appendable = view.apply(DeEnrolmentConfirmationForm.deEnrolmentConfirmationForm)(request = fakeRequest,messages = messages, applicationConfig = mockAppConfig)
   "deenrolment_confirmation page" should {
-
-    "render the correct content" in {
-      heading mustBe messages("awrs.de_enrollment_confirmation")
-      bodyText mustBe (messages("awrs.de_enrollment_confirmation.p1"))
-    }
-
-    "contain a button to go to PostCode page" in {
-      val link = document.getElementById("continue")
-      link.attr("href") mustBe testPostCodePageUrl
-    }
-
-    "contain a button to access the Business Tax Account page" in {
-      val link = document.getElementById("bta-redirect-link")
-      link.attr("href") mustBe testBtaRedirectUrl
+    "Display all fields correctly" in {
+      heading mustBe messages("awrs.generic.de_enrolment_confirmation")
+      document.getElementById("confirmDeEnrollment-hint").text() mustBe messages("awrs.generic.error.de_enrolment_confirmation_hint")
+      document.getElementById("confirmDeEnrollment").attr("value")  mustBe "Yes"
+      document.getElementById("confirmDeEnrollment-2").attr("value")  mustBe "No"
+      document.getElementById("back").attr("href")  mustBe routes.RegisteredUrnController.showArwsUrnPage.url
     }
   }
-
 }
