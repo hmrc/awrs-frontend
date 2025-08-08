@@ -92,11 +92,11 @@ class EnrolmentStoreProxyConnector @Inject() (servicesConfig: ServicesConfig, ht
                                  apiType: ApiType): Option[T] = {
     response.status match {
       case OK =>
-        info(s"[ESConnector][$apiType - $awrsRef, OK ]")
+        warn(s"[ESConnector][$apiType - $awrsRef, OK ]")
         metrics.incrementSuccessCounter(apiType)
         extractFromResponse(response)
       case NO_CONTENT =>
-        info(s"[ESConnector][$apiType- $awrsRef, NO_CONTENT ] - ${response.body} ")
+        warn(s"[ESConnector][$apiType- $awrsRef, NO_CONTENT ] - ${response.body} ")
         metrics.incrementSuccessCounter(apiType)
         None
       case status =>
