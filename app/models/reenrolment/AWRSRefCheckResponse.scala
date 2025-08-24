@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package models
+package models.reenrolment
 
-import play.api.libs.json._
-
-case class Info(businessName: Option[String] = None,
-                tradingName: Option[String] = None,
-                fullName: Option[String] = None,
-                address: Option[Address] = None
-               )
-
-object Info {
-  implicit val formatter: OFormat[Info] = Json.format[Info]
-}
+sealed trait AWRSRefCheckResponse
+case object UserIsEnrolled            extends AWRSRefCheckResponse
+case object UserIsNotEnrolled         extends AWRSRefCheckResponse
+case object NoKnownFactsExist         extends AWRSRefCheckResponse
+case object ErrorRetrievingEnrolments extends AWRSRefCheckResponse

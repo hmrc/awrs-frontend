@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,13 @@ package models.reenrolment
 
 import play.api.libs.json._
 
-case class AwrsRegisteredPostcode(registeredPostcode: String)
+case class EnrolledUserIds(
+    principalUserIds: Seq[String]
+)
 
+object EnrolledUserIds {
 
-object AwrsRegisteredPostcode {
-  implicit val format: OFormat[AwrsRegisteredPostcode] = Json.format[AwrsRegisteredPostcode]
-
-  private val awrsRegisteredPostcodePattern: String = "[\\s, +, ., :, _, ,, ;, =, (, ), {, }, \\[, \\], \\-, \\^, \\*]"
-
-  def sanitise(postcode: String): String = {
-    postcode.toLowerCase().replaceAll(awrsRegisteredPostcodePattern, "")
-  }
-
-  def sanitiseAndCompare(postcode1: String, postcode2: String): Boolean = {
-    sanitise(postcode1) == sanitise(postcode2)
-  }
+  implicit val format: OFormat[EnrolledUserIds] =
+    Json.format[EnrolledUserIds]
 
 }

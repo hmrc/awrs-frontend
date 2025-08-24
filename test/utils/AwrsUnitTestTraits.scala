@@ -18,7 +18,7 @@ package utils
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.LookupConnector
+import connectors.EnrolmentStoreProxyConnector
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -28,18 +28,17 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc._
-import play.api.test.Helpers.{stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi}
-import services.{BusinessDetailsService, BusinessMatchingService, DeEnrolService, LookupService}
+import play.api.test.Helpers.{defaultAwaitTimeout, stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi, await => helperAwait}
+import services.{BusinessDetailsService, BusinessMatchingService, DeEnrolService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import play.api.test.Helpers.{defaultAwaitTimeout, await => helperAwait}
 import views.html.helpers.awrsErrorNotFoundTemplate
-import views.html.{awrs_application_error, error_template, unauthorised}
 import views.html.view_application.subviews.subview_delete_confirmation
+import views.html.{awrs_application_error, error_template, unauthorised}
 
-import scala.language.implicitConversions
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.implicitConversions
 
 trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
 
@@ -65,8 +64,8 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   val mockCountryCodes: CountryCodes = mock[CountryCodes]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
   val mockMessages: Messages = mock[Messages]
-  val mockLookupConnector:LookupConnector = mock[LookupConnector]
-  val testLookupService:LookupService = new LookupService(mockLookupConnector)
+  val mockEnrolmentStoreProxyConnector:EnrolmentStoreProxyConnector  = mock[EnrolmentStoreProxyConnector]
+  val testEnrolmentStoreProxyService:EnrolmentStoreProxyService = new EnrolmentStoreProxyService(mockEnrolmentStoreProxyConnector)
   val mockMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
   implicit val messages: Messages = stubMessages()
 

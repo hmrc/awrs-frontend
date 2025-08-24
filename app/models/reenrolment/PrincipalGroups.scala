@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package services
+package models.reenrolment
 
-import javax.inject.Inject
-import connectors.LookupConnector
-import models.SearchResult
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.libs.json.{Json, Reads}
 
-import scala.concurrent.{ExecutionContext, Future}
+case class PrincipalGroups(principalGroupIds: Seq[String])
 
-class LookupService @Inject()(val connector: LookupConnector) {
-
-  def lookup(queryString: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SearchResult]] =
-    connector.queryByUrn(queryString)
+object PrincipalGroups {
+  implicit val reads: Reads[PrincipalGroups] = Json.reads[PrincipalGroups]
 }

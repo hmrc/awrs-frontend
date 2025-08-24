@@ -26,18 +26,30 @@ class AwrsMetrics {
   val metricRegistry = new MetricRegistry
 
   val timers: Map[models.ApiType.Value, Timer] = Map(
-    ApiType.API4Enrolment -> metricRegistry.timer("api4-enrolment-response-timer"),
-    ApiType.API10DeEnrolment -> metricRegistry.timer("api10-de-enrolment-response-timer")
+    ApiType.API4Enrolment    -> metricRegistry.timer("api4-enrolment-response-timer"),
+    ApiType.API10DeEnrolment -> metricRegistry.timer("api10-de-enrolment-response-timer"),
+    ApiType.ES9DeEnrolment   -> metricRegistry.timer("es9-de-enrolment-response-timer"),
+    ApiType.ES1Query         -> metricRegistry.timer("es1-query-response-timer"),
+    ApiType.ES20Query        -> metricRegistry.timer("es20-query-response-timer"),
+    ApiType.ES0Query         -> metricRegistry.timer("es0-query-response-timer")
   )
 
   val successCounters: Map[models.ApiType.Value, Counter] = Map(
-    ApiType.API4Enrolment -> metricRegistry.counter("api4-enrolment-success"),
-    ApiType.API10DeEnrolment -> metricRegistry.counter("api10-de-enrolment-success")
+    ApiType.API4Enrolment    -> metricRegistry.counter("api4-enrolment-success"),
+    ApiType.API10DeEnrolment -> metricRegistry.counter("api10-de-enrolment-success"),
+    ApiType.ES9DeEnrolment   -> metricRegistry.counter("es9-de-enrolment-success"),
+    ApiType.ES1Query         -> metricRegistry.counter("es1-query-success"),
+    ApiType.ES20Query        -> metricRegistry.counter("es20-query-success"),
+    ApiType.ES0Query         -> metricRegistry.counter("es0-query-success")
   )
 
   val failedCounters: Map[models.ApiType.Value, Counter] = Map(
-    ApiType.API4Enrolment -> metricRegistry.counter("api4-enrolment-failed"),
-    ApiType.API10DeEnrolment -> metricRegistry.counter("api10-de-enrolment-failed")
+    ApiType.API4Enrolment    -> metricRegistry.counter("api4-enrolment-failed"),
+    ApiType.API10DeEnrolment -> metricRegistry.counter("api10-de-enrolment-failed"),
+    ApiType.ES9DeEnrolment   -> metricRegistry.counter("es9-de-enrolment-failed"),
+    ApiType.ES1Query         -> metricRegistry.counter("es1-query-failed"),
+    ApiType.ES20Query        -> metricRegistry.counter("es20-query-failed"),
+    ApiType.ES0Query         -> metricRegistry.counter("es0-query-failed")
   )
 
   def startTimer(api: ApiType): Context = timers(api).time()

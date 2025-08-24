@@ -64,7 +64,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
             } yield {
               val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
               val showOneViewLink = indexService.showOneViewLink(sectionStatus)
-              val isHappyPathEnrollment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
+              val isHappyPathEnrolment: Boolean = subscriptionStatus exists (result => if (result.formBundleStatus == Pending || result.formBundleStatus == Approved || result.formBundleStatus == ApprovedWithConditions) true else false)
               val businessName: Option[String] = businessPartnerDetails.map(b => b.businessName)
               if (businessName.isDefined) {
                 Ok(template(
@@ -81,7 +81,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                   businessName = businessName,
                   sectionStatus,
                   subscriptionStatus,
-                  isHappyPathEnrollment
+                  isHappyPathEnrolment
                 )).addIndexBusinessNameToSession(businessName).removeJouneyStartLocationFromSession.addSectionStatusToSession(sectionStatus)
               } else {
                 debug("No business Name found")
