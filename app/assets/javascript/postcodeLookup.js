@@ -308,6 +308,11 @@
         }
     }
 
+    function sanitisePostcode(postcode) {
+        var postcodeFormatPattern = /[\s+.:_,;=\(\)\{\}\[\]\-\^\*]/g;
+        return postcode.toLowerCase().replace(postcodeFormatPattern, "");
+    }
+
     function validation(postcode, url, num, id) {
         var valid = true;
         // check not empty
@@ -317,7 +322,9 @@
         }
 
         // check for illegal chars
-        if (valid && !postcode.match(lookupRegex)) {
+        sanitisedPostcode = sanitisePostcode(postcode);
+
+        if (valid && !sanitisedPostcode.match(lookupRegex)) {
             valid = false;
             showErrorMessage('The postcode is not valid, check the postcode and try again', num);
         }
