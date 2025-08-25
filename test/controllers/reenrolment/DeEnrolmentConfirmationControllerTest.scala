@@ -32,7 +32,6 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
   private val controller: DeEnrolmentConfirmationController = new DeEnrolmentConfirmationController(
     mockMCC,
     mockAppConfig,
-    mockAwrsFeatureSwitches,
     mockDeEnrolService,
     mockAuthConnector,
     mockAccountUtils,
@@ -42,20 +41,8 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
 
   "DeEnrolmentConfirmationController" must {
 
-    "return 404 when enrolmentJourney feature is disabled" in {
+    "return 200 and render the confirmation form" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(false)
-
-      val request = SessionBuilder.buildRequestWithSession(userId)
-      val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
-
-      status(result) mustBe NOT_FOUND
-    }
-
-    "return 200 and render the confirmation form when feature is enabled" in {
-      setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
       val request = SessionBuilder.buildRequestWithSession(userId)
       val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
 
@@ -68,8 +55,6 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
 
     "redirect to RegisteredPostcodeController when user answers Yes" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
       val request = SessionBuilder
         .buildRequestWithSession(userId, "POST", "/")
         .withFormUrlEncodedBody("confirmDeEnrollment" -> "Yes")
@@ -81,8 +66,6 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
 
     "redirect to view enrolments when user answers No" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
       val request = SessionBuilder
         .buildRequestWithSession(userId, "POST", "/")
         .withFormUrlEncodedBody("confirmDeEnrollment" -> "No")
@@ -94,8 +77,6 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
 
     "return BAD_REQUEST when no option is selected" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-
       val request = SessionBuilder
         .buildRequestWithSession(userId, "POST", "/")
       val result = controller.saveAndContinue().apply(request)

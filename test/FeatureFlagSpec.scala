@@ -20,12 +20,12 @@ import scala.util.Using
 
 class FeatureFlagSpec extends PlaySpec {
 
-  "Enrolment journey feature flag should be off by default" in {
+  "Regime check flag should be on by default" in {
     val applicationConfFileContents = Using.resource(Source.fromFile("conf/application.conf")) { source => source.getLines().mkString("") }
-    val enrolmentJourneyFlagSetToTrue = applicationConfFileContents.toLowerCase().contains("feature.enrolmentjourney = true")
+    val regimeCheckFlagSetToTrue = applicationConfFileContents.toLowerCase().contains("feature.regimecheck = true")
 
-    withClue("Enrolment journey feature flag should be on by default in application.conf:") {
-      enrolmentJourneyFlagSetToTrue mustBe true
+    withClue("Regime check flag should be on by default in application.conf:") {
+      regimeCheckFlagSetToTrue mustBe true
     }
   }
 }

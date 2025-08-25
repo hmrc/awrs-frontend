@@ -50,12 +50,10 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
   def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           keyStoreService.fetchAwrsEnrolmentUrn flatMap {
             case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
             case _             => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
           }
-        } else { Future.successful(NotFound) }
       }
     }
   }
@@ -63,7 +61,6 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           awrsEnrolmentUrnForm
             .bindFromRequest()
             .fold(
@@ -76,9 +73,6 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                 }
               }
             )
-        } else {
-          Future.successful(NotFound)
-        }
       }
     }
   }

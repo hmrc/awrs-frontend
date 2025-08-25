@@ -69,7 +69,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
   override def beforeEach(): Unit = {
     super.beforeEach()
     resetMocks()
-    setupEnrolmentJourneyFeatureSwitchMock(true)
   }
 
   private def resetMocks(): Unit = {
@@ -122,17 +121,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
   "RegisteredUtrController" when {
 
     "showArwsUtrPage is called" must {
-      "return 404 when feature is not enabled" in {
-        setAuthMocks()
-        setupTestData()
-        setupEnrolmentJourneyFeatureSwitchMock(false)
-
-        val result = controller.showArwsUtrPage().apply(SessionBuilder.buildRequestWithSession(userId))
-
-        status(result) mustBe 404
-      }
-
-      "return 200 when enrolment journey is enabled" in {
+      "return 200" in {
         setAuthMocks()
         setupTestData()
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)

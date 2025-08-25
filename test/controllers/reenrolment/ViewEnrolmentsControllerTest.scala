@@ -26,44 +26,34 @@ import views.html.reenrolment.awrs_view_enrolments
 
 class ViewEnrolmentsControllerTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val template: awrs_view_enrolments = app.injector.instanceOf[views.html.reenrolment.awrs_view_enrolments]
+  val template: awrs_view_enrolments               = app.injector.instanceOf[views.html.reenrolment.awrs_view_enrolments]
 
-  val testViewEnrolmentController: ViewEnrolmentsController = new ViewEnrolmentsController (
+  val testViewEnrolmentController: ViewEnrolmentsController = new ViewEnrolmentsController(
     mockMCC,
     mockAppConfig,
     mockDeEnrolService,
     mockAuthConnector,
     mockAuditable,
-    mockAwrsFeatureSwitches,
     mockAccountUtils,
     template
   )
 
   "ViewEnrolmentsController" must {
 
-    "show the View Enrolment page when enrolmentJourney is enable" in {
+    "show the View Enrolment page" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
-    }
-    "return 404 the Kickout page when enrolmentJourney is disabled" in {
-      setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(false)
-      val res = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(res) mustBe 404
     }
 
     "contain a button linking to the Business Tax Account page" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
 
-      val res = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res     = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
       val content = contentAsString(res)
 
       content must include(s"""<a href="" role="button" class="govuk-button" id="bta-redirect-link" data-module="govuk-button">""")
     }
-
 
   }
 

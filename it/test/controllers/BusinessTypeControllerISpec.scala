@@ -44,7 +44,6 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
   val SessionId = s"stubbed-${UUID.randomUUID}"
 
   override lazy val app: Application = new GuiceApplicationBuilder()
-    .configure(appConfig(("feature.enrolmentJourney", "true")))
     .build()
 
   val businessCustomerDetailsString: String = """{

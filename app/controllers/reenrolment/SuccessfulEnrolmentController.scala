@@ -42,10 +42,6 @@ class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showSuccessfulEnrolmentPage(): Action[AnyContent] = Action.async { implicit request =>
-    if (awrsFeatureSwitches.enrolmentJourney().enabled) {
       Future.successful(Ok(template()))
-    } else {
-      Future.successful(NotFound)
-    }
   }
 }
