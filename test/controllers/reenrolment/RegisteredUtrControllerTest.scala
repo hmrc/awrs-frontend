@@ -61,7 +61,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
     mockAccountUtils,
     mockEnrolService,
     mockEnrolmentStoreService,
-    mockAwrsFeatureSwitches,
     mockAppConfig,
     template
   )
@@ -78,7 +77,6 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       mockAuditable,
       mockAccountUtils,
       mockEnrolService,
-      mockAwrsFeatureSwitches,
       mockEnrolmentStoreService,
       mockAppConfig
     )
@@ -141,7 +139,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
               identifiers = Seq(models.reenrolment.Identifier("AWRSRefNumber", testAwrsRef)),
               verifiers = Seq(Verifier("SAUTR", "1234567890"))
             ))
-        )))
+          )))
         setupSuccessfulDeEnrolment()
         when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
         when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
