@@ -127,6 +127,13 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
   val legalEntityStringS4L: JsObject =
     Json.parse("""{ "legalEntity": "SOP" }""").as[JsObject]
 
+  val legalEntityStringS4L2: JsObject =
+    Json.parse(
+      """{
+        |  "modelVersion": "1.0"
+        |}""".stripMargin
+    ).as[JsObject]
+
   val successResponse: JsValue = Json.parse(
     """{"processingDate":"2015-12-17T09:30:47Z","etmpFormBundleNumber":"123456789012345","awrsRegistrationNumber":"DummyRef"}"""
   )
@@ -169,7 +176,8 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"$baseURI$subscriptionURI$safeId", OK, successResponse.toString)
 
-    stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), None)
+    stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", STARTED, "SecondCall")))
+    stubS4LGet(saUtr, "legalEntity", Some(legalEntityStringS4L), Some(("S4LCalls", "SecondCall", "ThirdCall")))
   }
 
   "BusinessTypeController.saveAndContinue" should {
@@ -218,6 +226,56 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
         ""
       )
 
+      val subscriptionTypeFrontEndCache: JsObject =
+        Json.parse(
+          s"""{
+             |   "modelVersion": "1.0",
+             |   "legalEntity": {
+             |     "legalEntity": "LLP"
+             |   },
+             |   "products": {
+             |     "mainCustomers": ["John"],
+             |     "productType": ["Desk"]
+             |   },
+             |   "applicationDeclaration": {},
+             |   "suppliers": {
+             |     "suppliers": []
+             |   },
+             |   "partnership": {
+             |     "partners": [],
+             |     "modelVersion": "1.0"
+             |   },
+             |   "businessDetails": {
+             |     "newAWBusiness": {
+             |       "newAWBusiness": "no"
+             |     }
+             |   },
+             |   "tradingActivity": {
+             |     "wholesalerType": ["someSalerType"],
+             |     "typeOfAlcoholOrders": ["someAlcoholType"]
+             |   },
+             |   "businessRegistrationDetails": {},
+             |   "businessContacts": {
+             |     "modelVersion": "1.1"
+             |   },
+             |   "placeOfBusiness": {
+             |     "modelVersion": "1.0"
+             |   },
+             |   "additionalPremises": {
+             |     "premises": [{
+             |       "additionalAddress": {
+             |            "addressLine1":"23 High Street",
+             |            "addressLine2":"Park View",
+             |            "addressLine3":"Gloucester",
+             |            "addressLine4":"Gloucestershire",
+             |            "postcode":"NE98 1ZZ",
+             |            "addressCountry":"GB"
+             |      }
+             |     }]
+             |   }
+             | }""".stripMargin
+        ).as[JsObject]
+
       stubFor(
         WireMock
           .get(urlPathMatching(s"/awrs/.*/$awrsRef(/.*)?"))
@@ -226,34 +284,146 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
               .withStatus(200)
               .withHeader("Content-Type", "application/json")
               .withBody(
-                """{ "subscriptionTypeFrontEnd": { "modelVersion": "1.0", "businessType": "LLP", "legalEntity": { "type": "LLP" } } } """
+                s"""{
+                  | "subscriptionTypeFrontEnd": {
+                  |   "modelVersion": "1.0",
+                  |   "legalEntity": {
+                  |     "legalEntity": "LLP"
+                  |   },
+                  |   "products": {
+                  |     "mainCustomers": ["John"],
+                  |     "productType": ["Desk"]
+                  |   },
+                  |   "applicationDeclaration": {},
+                  |   "suppliers": {
+                  |     "suppliers": []
+                  |   },
+                  |   "partnership": {
+                  |     "partners": [],
+                  |     "modelVersion": "1.0"
+                  |   },
+                  |   "businessDetails": {
+                  |     "newAWBusiness": {
+                  |       "newAWBusiness": "no"
+                  |     }
+                  |   },
+                  |   "tradingActivity": {
+                  |     "wholesalerType": ["someSalerType"],
+                  |     "typeOfAlcoholOrders": ["someAlcoholType"]
+                  |   },
+                  |   "businessRegistrationDetails": {},
+                  |   "businessContacts": {
+                  |     "modelVersion": "1.1"
+                  |   },
+                  |   "placeOfBusiness": {
+                  |     "modelVersion": "1.0"
+                  |   },
+                  |   "additionalPremises": {
+                  |     "premises": [{
+                  |       "additionalAddress": {
+                  |            "addressLine1":"23 High Street",
+                  |            "addressLine2":"Park View",
+                  |            "addressLine3":"Gloucester",
+                  |            "addressLine4":"Gloucestershire",
+                  |            "postcode":"NE98 1ZZ",
+                  |            "addressCountry":"GB"
+                  |      }
+                  |     }]
+                  |   }
+                  | }
+                  |}""".stripMargin
               )
           )
       )
 
-      stubFor(
-        WireMock
-          .put(urlMatching("/save4later/awrs-frontend-api/[0-9]+/data/subscriptionTypeFrontEnd(\\?.*)?"))
-          .willReturn(
-            aResponse()
-              .withStatus(200)
-          )
-      )
+      stubS4LPut(saUtr, "subscriptionTypeFrontEnd", legalEntityStringS4L2, api = true)
 
-      stubFor(
-        WireMock.put(urlMatching(s"$s4lBase/subscriptionTypeFrontEnd(\\?.*)?"))
-          .willReturn(
-            okJson("""{}""") // 200 + application/json + "{}"
-          )
-      )
+      stubS4LPut(saUtr, "businessNameDetails", legalEntityStringS4L2)
+//      stubS4LPut(saUtr, "tradingDetails", legalEntityStringS4L2)
 
-      // If your flow reads it back, stub GET too
-      stubFor(
-        get(urlMatching(s"$s4lBase/subscriptionTypeFrontEnd(\\?.*)?"))
-          .willReturn(
-            okJson("""{}""")
-          )
-      )
+      val tradingStartDetailsCache: JsObject =
+        Json.parse(
+          """{
+            |  "newAWBusiness": "yes"
+            |}""".stripMargin
+        ).as[JsObject]
+
+      stubS4LPut(saUtr, "tradingStartDetails", tradingStartDetailsCache)
+
+//      stubS4LPut(saUtr, "businessRegistrationDetails", tradingStartDetailsCache)
+
+//      stubS4LPut(saUtr, "placeOfBusiness", legalEntityStringS4L2)
+
+//      stubS4LPut(saUtr, "businessContacts", legalEntityStringS4L2)
+
+      val partnerDetailsCache: JsObject =
+        Json.parse(
+          """{
+            |  "partners": [],
+            |  "modelVersion": "1.0"
+            |}""".stripMargin
+        ).as[JsObject]
+
+//      stubS4LPut(saUtr, "partnerDetails", partnerDetailsCache)
+
+      val premisesCache: JsObject =
+        Json.parse(
+          """{
+            |  "premises": [{
+            |       "additionalAddress": {
+            |            "addressLine1":"23 High Street",
+            |            "addressLine2":"Park View",
+            |            "addressLine3":"Gloucester",
+            |            "addressLine4":"Gloucestershire",
+            |            "postcode":"NE98 1ZZ",
+            |            "addressCountry":"GB"
+            |      }
+            |     }],
+            |  "modelVersion": "1.0"
+            |}""".stripMargin
+        ).as[JsObject]
+
+//      stubS4LPut(saUtr, "additionalBusinessPremises", premisesCache)
+
+      val tradingActivityCache: JsObject =
+        Json.parse(
+          """{
+            |  "wholesalerType": ["someSalerType"],
+            |  "typeOfAlcoholOrders": ["someAlcoholType"],
+            |  "modelVersion": "1.0"
+            |}""".stripMargin
+        ).as[JsObject]
+
+//      stubS4LPut(saUtr, "tradingActivity", tradingActivityCache)
+
+      val productsCache: JsObject =
+        Json.parse(
+          """{
+            |  "mainCustomers": ["John"],
+            |  "productType": ["Desk"],
+            |  "modelVersion": "1.0"
+            |}""".stripMargin
+        ).as[JsObject]
+
+//      stubS4LPut(saUtr, "products", productsCache)
+
+      val suppliersCache: JsObject =
+        Json.parse(
+          """{
+            |  "suppliers": [],
+            |  "modelVersion": "1.0"
+            |}""".stripMargin
+        ).as[JsObject]
+
+//      stubS4LPut(saUtr, "suppliers", suppliersCache)
+
+//      stubS4LPut(saUtr, "applicationDeclaration", suppliersCache)
+
+      stubS4LGet(saUtr, "subscriptionTypeFrontEnd", Some(subscriptionTypeFrontEndCache), None, api = true)
+
+      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", "ThirdCall", "FourthCall")))
+      stubS4LGet(saUtr, "legalEntity", Some(legalEntityStringS4L), Some(("S4LCalls", "FourthCall", "FifthCall")))
+      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", "FifthCall", "FifthCall")))
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 
