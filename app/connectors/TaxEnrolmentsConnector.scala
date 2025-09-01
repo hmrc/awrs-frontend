@@ -161,7 +161,7 @@ class TaxEnrolmentsConnector @Inject()(servicesConfig: ServicesConfig,
             audit(transactionName = auditSubscribeTxName, detail = auditMap, eventType = eventTypeSuccess)
             true
           case status =>
-            warn(s"[TaxEnrolmentsConnector][API10 De-Enrolment - $businessName, $awrsRef, $status ] - ${response.body} ")
+            warn(s"[TaxEnrolmentsConnector][API10 De-Enrolment - $awrsRef, $status ] - ${response.body} ")
             metrics.incrementFailedCounter(ApiType.API10DeEnrolment)
             audit(transactionName = auditSubscribeTxName, detail = auditMap ++ Map("Business Name" -> businessName,
               "AWRS Ref" -> awrsRef,
