@@ -126,11 +126,13 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
     Json.parse("""{ "legalEntity": "SOP" }""").as[JsObject]
 
   val modelVersionStringS4L: JsObject =
-    Json.parse(
-      """{
+    Json
+      .parse(
+        """{
         |  "modelVersion": "1.0"
         |}""".stripMargin
-    ).as[JsObject]
+      )
+      .as[JsObject]
 
   val successResponse: JsValue = Json.parse(
     """{"processingDate":"2015-12-17T09:30:47Z","etmpFormBundleNumber":"123456789012345","awrsRegistrationNumber":"DummyRef"}"""
@@ -225,8 +227,9 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
       )
 
       val subscriptionTypeFrontEndDetails: JsObject =
-        Json.parse(
-          s"""{
+        Json
+          .parse(
+            s"""{
              |   "modelVersion": "1.0",
              |   "legalEntity": {
              |     "legalEntity": "LLP"
@@ -272,23 +275,25 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
              |     }]
              |   }
              | }""".stripMargin
-        ).as[JsObject]
+          )
+          .as[JsObject]
 
       stubS4LPut(saUtr, "subscriptionTypeFrontEnd", modelVersionStringS4L, api = true)
 
       stubS4LPut(saUtr, "businessNameDetails", modelVersionStringS4L)
 
       val tradingStartDetailsCache: JsObject =
-        Json.parse(
-          """{
+        Json
+          .parse(
+            """{
             |  "newAWBusiness": "yes"
             |}""".stripMargin
-        ).as[JsObject]
+          )
+          .as[JsObject]
 
       stubS4LPut(saUtr, "tradingStartDetails", tradingStartDetailsCache)
 
       stubS4LGet(saUtr, "subscriptionTypeFrontEnd", Some(subscriptionTypeFrontEndDetails), None, api = true)
-
       stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", "ThirdCall", "FourthCall")))
       stubS4LGet(saUtr, "legalEntity", Some(legalEntityStringS4L), Some(("S4LCalls", "FourthCall", "FifthCall")))
       stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", "FifthCall", "FifthCall")))
