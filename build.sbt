@@ -36,7 +36,8 @@ lazy val microservice = Project(appName, file("."))
     retrieveManaged := true,
     Test / parallelExecution := false,
     Test / javaOptions ++= Seq(
-      "-Dconfig.resource=test.application.conf"
+      "-Dconfig.resource=test.application.conf",
+      s"-javaagent:${csrCacheDirectory.value.getAbsolutePath}/https/repo1.maven.org/maven2/org/mockito/mockito-core/${AppDependencies.mockitoVersion}/mockito-core-${AppDependencies.mockitoVersion}.jar"
     ),
   )
 
