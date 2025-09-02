@@ -7,7 +7,9 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "awrs-frontend"
 
-val coursierDirectory = sys.env.getOrElse("COURSIER_REPOSITORIES", "https/repo1.maven.org/maven2/")
+val coursierDirectory = sys.env.get("COURSIER_REPOSITORIES")
+  .map(_.replace("https:/", "https"))
+  .getOrElse("https/repo1.maven.org/maven2/")
 
 ThisBuild / majorVersion := 3
 ThisBuild / scalaVersion := "2.13.16"
