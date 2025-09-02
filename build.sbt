@@ -7,7 +7,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "awrs-frontend"
 
-val coursierDirectory = sys.env.getOrElse("COURSIER_REPOSITORIES", "https/repo1.maven.org/maven2")
+val coursierDirectory = sys.env.getOrElse("COURSIER_REPOSITORIES", "https/repo1.maven.org/maven2/")
 
 ThisBuild / majorVersion := 3
 ThisBuild / scalaVersion := "2.13.16"
@@ -39,7 +39,7 @@ lazy val microservice = Project(appName, file("."))
     Test / parallelExecution := false,
     Test / javaOptions ++= Seq(
       "-Dconfig.resource=test.application.conf",
-      s"-javaagent:${csrCacheDirectory.value.getAbsolutePath}/$coursierDirectory/org/mockito/mockito-core/${AppDependencies.mockitoVersion}/mockito-core-${AppDependencies.mockitoVersion}.jar"
+      s"-javaagent:${csrCacheDirectory.value.getAbsolutePath}/${coursierDirectory}org/mockito/mockito-core/${AppDependencies.mockitoVersion}/mockito-core-${AppDependencies.mockitoVersion}.jar"
     ),
   )
   .settings(
