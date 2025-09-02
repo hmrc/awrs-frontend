@@ -80,18 +80,10 @@ class RegisteredUrnControllerTest
     template)
 
   "AwrsUrnController" must {
-    "show not found when feature is not enabled" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(false)
-      val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(res) mustBe 404
-    }
 
-    "show the URN page when enrolmentJourney is enabled" in {
+    "show the URN page" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
@@ -99,7 +91,6 @@ class RegisteredUrnControllerTest
     "save the URN and known facts to keystore if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(
         mockEnrolmentStoreProxyConnector
           .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
@@ -122,7 +113,6 @@ class RegisteredUrnControllerTest
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
       status(res) mustBe 400
     }
@@ -130,7 +120,6 @@ class RegisteredUrnControllerTest
     "save should redirect to kickout page if ES20 does not return known facts" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(
         mockEnrolmentStoreProxyConnector
           .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
@@ -147,7 +136,6 @@ class RegisteredUrnControllerTest
     "save should redirect to kickout page when lookupEnrolments returns an error" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
 
       when(
         mockEnrolmentStoreProxyConnector
@@ -163,7 +151,6 @@ class RegisteredUrnControllerTest
     "save should redirect to confirm de-enrolment" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       when(
         mockEnrolmentStoreProxyConnector
           .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))

@@ -51,5 +51,4 @@ object FeatureSwitch {
 
 class AWRSFeatureSwitches @Inject() (implicit val applicationConfig: ApplicationConfig) {
   def regimeCheck(): FeatureSwitch = FeatureSwitch.getProperty("regimeCheck")
-  def enrolmentJourney(): FeatureSwitch = FeatureSwitch.getProperty("enrolmentJourney")
 }

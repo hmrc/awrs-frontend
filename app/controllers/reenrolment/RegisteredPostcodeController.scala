@@ -46,12 +46,10 @@ class RegisteredPostcodeController @Inject()(mcc: MessagesControllerComponents,
   def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled)
-          keyStoreService.fetchAwrsRegisteredPostcode map {
-            case Some(registeredPostcode) => Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode)))
-            case _ => Ok(template(awrsRegisteredPostcodeForm.form))
-          }
-        else Future.successful(NotFound)
+        keyStoreService.fetchAwrsRegisteredPostcode map {
+          case Some(registeredPostcode) => Ok(template(awrsRegisteredPostcodeForm.form.fill(registeredPostcode)))
+          case _ => Ok(template(awrsRegisteredPostcodeForm.form))
+        }
       }
     }
   }

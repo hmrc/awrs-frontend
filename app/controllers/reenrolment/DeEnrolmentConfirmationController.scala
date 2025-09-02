@@ -24,14 +24,13 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches, AccountUtils}
+import utils.AccountUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerComponents,
                                                    implicit val applicationConfig: ApplicationConfig,
-                                                   awrsFeatureSwitches: AWRSFeatureSwitches,
                                                    val deEnrolService: DeEnrolService,
                                                    val authConnector: DefaultAuthConnector,
                                                    val accountUtils: AccountUtils,
@@ -46,11 +45,7 @@ class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerCompon
   def showDeEnrolmentConfirmationPage(): Action[AnyContent] = Action.async { implicit request =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          Future.successful(Ok(template(deEnrolmentConfirmationForm)))
-        } else {
-          Future.successful(NotFound)
-        }
+        Future.successful(Ok(template(deEnrolmentConfirmationForm)))
       }
     }
   }
