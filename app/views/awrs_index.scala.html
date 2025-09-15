@@ -113,50 +113,26 @@
 
             <p class="govuk-body" id="applicationInfo">@messages("awrs.index_page.topText")</p>
 
-                <table class="govuk-table" id="index-table">
-                    <caption class="govuk-visually-hidden">@pageHeading</caption>
-                    <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                            <th scope="col" id="section-text" class="govuk-table__header">@messages("awrs.index_page.section_text")</th>
-                            <th scope="col" id="status-text" class="govuk-table__header govuk-!-width-one-quarter">@messages("awrs.index_page.status_text")</th>
-                            <th scope="col" id="action-text" class="govuk-table__header print-hidden">@messages("awrs.index_page.action_text")</th>
-                        </tr>
-                    </thead>
-                    <tbody class="govuk-table__body">
-                    @indexStatusModel.sectionModels.zipWithIndex.map { case (i, id) =>
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell" id="@i.id">
-                                @{id+1}. @messages(i.text)
-                                @i.size match {
-                                    case Some(size) => {&nbsp;(@size)<span class="govuk-visually-hidden">entries</span>}
-                                    case _ => {}
-                                }
-                        </td>
-                        <td class="govuk-table__cell awrs-status">
-                            <strong class="govuk-tag @{i.status.cssClass}" id="@{i.id + "_status"}">
+            <ul class="govuk-task-list">
+                @indexStatusModel.sectionModels.zipWithIndex.map { case (i, id) =>
+                    <li class="govuk-task-list__item govuk-task-list__item--with-link">
+                        <div class="govuk-task-list__name-and-hint">
+                        <a class="govuk-link govuk-task-list__link" href="@i.href" aria-describedby="@{i.id}_status" id="@i.id">
+                            @messages(i.text)
+                            @i.size match {
+                                case Some(size) => {&nbsp;(@size)<span class="govuk-visually-hidden">entries</span>}
+                                case _ => {}
+                            }
+                        </a>
+                        </div>
+                        <div class="govuk-task-list__status" id="@{i.id}_status">
+                            <strong class="@{i.status.cssClass}">
                                 @messages(i.status.messagesKey)
                             </strong>
-                        </td>
-                        <td class="govuk-table__cell">
-                            <a class="govuk-link govuk-body" href="@i.href">
-                                @Html(messages({i.status + "_link" +
-                                        {
-                                            someStatus match {
-                                                case Some(subStatus :SubscriptionStatusType) =>
-                                                    subStatus.formBundleStatus match {
-                                                        case Rejected | RejectedUnderReviewOrAppeal | RevokedUnderReviewOrAppeal=> "_rejected"
-                                                        case _        => ""
-                                                    }
-                                                case _ => ""
-                                            }
-                                        }
-                                }, messages(i.text) + messages("awrs.index_page.status_description_text") + " " + messages(i.status.messagesKey) + ", "))
-                            </a>
-                        </td>
-                    </tr>
-                    }
-                    </tbody>
-                </table>
+                        </div>
+                    </li>
+                }
+            </ul>
 
             @awrsRef match {
                 case Some(_) => {
