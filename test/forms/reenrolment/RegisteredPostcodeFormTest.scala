@@ -17,7 +17,7 @@
 package forms.reenrolment
 
 import forms.test.util._
-import models.reenrolment.AwrsRegisteredPostcode
+import models.AwrsPostcodeModel
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
@@ -25,7 +25,7 @@ import utils.AwrsFieldConfig
 
 class RegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
-  implicit lazy val form: Form[AwrsRegisteredPostcode] = RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form
+  implicit lazy val form: Form[AwrsPostcodeModel] = RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form
 
   "Postcode form validation" must {
 

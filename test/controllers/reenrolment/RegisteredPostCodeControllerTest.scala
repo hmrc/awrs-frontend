@@ -19,7 +19,7 @@ package controllers.reenrolment
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.reenrolment.RegisteredPostcodeForm
-import models.reenrolment.AwrsRegisteredPostcode
+import models.AwrsPostcodeModel
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -34,7 +34,7 @@ class RegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   with MockIndexService {
 
   def testRequest(answer: String): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[AwrsRegisteredPostcode](FakeRequest(), RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form, AwrsRegisteredPostcode(answer))
+    TestUtil.populateFakeRequest[AwrsPostcodeModel](FakeRequest(), RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form, AwrsPostcodeModel(answer))
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 

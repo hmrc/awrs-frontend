@@ -35,7 +35,7 @@ govukInput : GovukInput,
 govukButton : GovukButton,
 govukErrorSummary: GovukErrorSummary)
 
-@(postcodeForm: Form[models.reenrolment.AwrsRegisteredPostcode])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
+@(postcodeForm: Form[models.AwrsPostcodeModel])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 @backlinkHtml = {
     @backLink(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage.url)
 }

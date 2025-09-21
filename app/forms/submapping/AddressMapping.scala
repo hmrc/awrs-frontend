@@ -21,6 +21,7 @@ import forms.validation.util.ConstraintUtil._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
 import forms.validation.util.NamedMappingAndUtil._
+import models.AwrsPostcodeModel
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Mapping}
@@ -60,7 +61,7 @@ object AddressMapping extends AwrsFieldConfig {
 
     val invalidPostcodeErrorMessage = Seq[FieldFormatConstraintParameter](
       FieldFormatConstraintParameter(
-        (postcode: String) => if (postcode.matches(postcodeRegex)) {
+        (postcode: String) => if (AwrsPostcodeModel.sanitise(postcode).matches(postcodeRegex)) {
           Valid
         } else {
           Invalid("awrs.generic.error.postcode_invalid", prefixRefNameInErrorMessage)

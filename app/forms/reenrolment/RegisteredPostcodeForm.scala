@@ -20,7 +20,7 @@ import forms.prevalidation._
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
 import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
-import models.reenrolment.AwrsRegisteredPostcode
+import models.AwrsPostcodeModel
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
@@ -33,7 +33,7 @@ object RegisteredPostcodeForm extends AwrsValidator{
   val invalidPostcodeErrorMessage = Seq[FieldFormatConstraintParameter](
     FieldFormatConstraintParameter(
       (registeredPostcode: String) => {
-        if (AwrsRegisteredPostcode.sanitise(registeredPostcode).matches(postcodeRegex)) {
+        if (AwrsPostcodeModel.sanitise(registeredPostcode).matches(postcodeRegex)) {
           Valid
         } else {
           Invalid("awrs.reenrolment.registered_postcode.error")
@@ -49,12 +49,12 @@ object RegisteredPostcodeForm extends AwrsValidator{
       formatValidations = invalidPostcodeErrorMessage
     ))
 
-  lazy val awrsRegisteredPostcodeValidationForm: Form[AwrsRegisteredPostcode] = Form(mapping(
+  lazy val awrsRegisteredPostcodeValidationForm: Form[AwrsPostcodeModel] = Form(mapping(
     registeredPostcode -> compulsoryQueryField.toStringFormatter
-  )(AwrsRegisteredPostcode.apply)(AwrsRegisteredPostcode.unapply))
+  )(AwrsPostcodeModel.apply)(AwrsPostcodeModel.unapply))
 
 
-  lazy val awrsRegisteredPostcodeForm: PrevalidationAPI[AwrsRegisteredPostcode] = PreprocessedForm(
+  lazy val awrsRegisteredPostcodeForm: PrevalidationAPI[AwrsPostcodeModel] = PreprocessedForm(
     awrsRegisteredPostcodeValidationForm,
     trimRules = Map(),
     caseRules = Map())

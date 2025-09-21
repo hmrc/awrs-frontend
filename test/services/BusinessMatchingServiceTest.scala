@@ -19,7 +19,6 @@ package services
 import connectors._
 import forms.AWRSEnums
 import models._
-import models.reenrolment.AwrsRegisteredPostcode
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -40,17 +39,17 @@ class BusinessMatchingServiceTest extends AwrsUnitTestTraits with MockKeyStoreSe
   "isValidUTRandPostCode" must {
     "validate a UTR and PostCode is match for an individual" in {
       when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchSuccessResponseJsonWithPostCode("WD6 5DR")))
-      val result = businessMatchingServiceTest.verifyUTRandPostCode(testUtr, AwrsRegisteredPostcode("WD65dr"), TestUtil.defaultAuthRetrieval, true)
+      val result = businessMatchingServiceTest.verifyUTRandPostCode(testUtr, AwrsPostcodeModel("WD65dr"), TestUtil.defaultAuthRetrieval, true)
       await(result) mustBe true
     }
     "false when UTR does not match" in {
       when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchFailureResponseJson))
-      val result = businessMatchingServiceTest.verifyUTRandPostCode(testUtr, AwrsRegisteredPostcode("WD65dr"), TestUtil.defaultAuthRetrieval, true)
+      val result = businessMatchingServiceTest.verifyUTRandPostCode(testUtr, AwrsPostcodeModel("WD65dr"), TestUtil.defaultAuthRetrieval, true)
       await(result) mustBe false
     }
     "false when PstCode does not match" in {
       when(mockBusinessMatchingConnector.lookup(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(matchSuccessResponseJsonWithPostCode("WD6 5XX")))
-      val result = businessMatchingServiceTest.verifyUTRandPostCode(testUtr, AwrsRegisteredPostcode("WD65dr"), TestUtil.defaultAuthRetrieval, true)
+      val result = businessMatchingServiceTest.verifyUTRandPostCode(testUtr, AwrsPostcodeModel("WD65dr"), TestUtil.defaultAuthRetrieval, true)
       await(result) mustBe false
     }
   }

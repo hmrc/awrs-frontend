@@ -16,10 +16,10 @@
 
 package services
 
-import _root_.models._
+import _root_.models.{AwrsPostcodeModel, _}
 import connectors.{AwrsKeyStoreConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
-import models.reenrolment.{AwrsRegisteredPostcode, KnownFactsResponse}
+import models.reenrolment.KnownFactsResponse
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -162,11 +162,11 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
   @inline def saveKnownFacts(knownFactsResponse: KnownFactsResponse)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
     keyStoreConnector.saveDataToKeystore[KnownFactsResponse](awrsKnownFactsResponseKeyName, knownFactsResponse)
 
-  @inline def saveAwrsRegisteredPostcode(postcode: AwrsRegisteredPostcode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreConnector.saveDataToKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
+  @inline def saveAwrsRegisteredPostcode(postcode: AwrsPostcodeModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+    keyStoreConnector.saveDataToKeystore[AwrsPostcodeModel](registeredPostcodeKeyName, postcode)
 
-  @inline def fetchAwrsRegisteredPostcode(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsRegisteredPostcode]] =
-    keyStoreConnector.fetchDataFromKeystore[AwrsRegisteredPostcode](registeredPostcodeKeyName)
+  @inline def fetchAwrsRegisteredPostcode(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AwrsPostcodeModel]] =
+    keyStoreConnector.fetchDataFromKeystore[AwrsPostcodeModel](registeredPostcodeKeyName)
 
   @inline def fetchHaveYouRegistered(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[HaveYouRegisteredModel]] = {
     keyStoreConnector.fetchDataFromKeystore[HaveYouRegisteredModel](enrolmentJourneyHaveYouRegisteredKeyName)

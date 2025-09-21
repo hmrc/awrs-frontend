@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package models.reenrolment
+package models
 
 import play.api.libs.json._
 
-case class AwrsRegisteredPostcode(registeredPostcode: String)
+case class AwrsPostcodeModel(postcode: String)
 
 
-object AwrsRegisteredPostcode {
-  implicit val format: OFormat[AwrsRegisteredPostcode] = Json.format[AwrsRegisteredPostcode]
+object AwrsPostcodeModel {
+  implicit val format: OFormat[AwrsPostcodeModel] = Json.format[AwrsPostcodeModel]
 
   private val awrsRegisteredPostcodePattern: String = "[\\s, +, ., :, _, ,, ;, =, (, ), {, }, \\[, \\], \\-, \\^, \\*]"
 
