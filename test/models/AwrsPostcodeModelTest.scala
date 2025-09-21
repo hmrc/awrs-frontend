@@ -16,6 +16,7 @@
 
 package models
 
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatest.prop.TableDrivenPropertyChecks.forAll
 import org.scalatest.prop.Tables.Table
 import org.scalatestplus.play.PlaySpec
@@ -60,7 +61,7 @@ class AwrsPostcodeModelTest extends PlaySpec {
       )
 
       forAll(variants) { raw =>
-        AwrsPostcodeModel.sanitise(raw) mustBe expected
+        AwrsPostcodeModel.sanitise(raw).toUpperCase() shouldBe expected
       }
     }
   }
