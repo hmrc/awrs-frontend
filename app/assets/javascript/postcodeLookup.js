@@ -322,7 +322,7 @@
         }
 
         // check for illegal chars
-        sanitisedPostcode = sanitisePostcode(postcode);
+        let sanitisedPostcode = sanitisePostcode(postcode);
 
         if (valid && !sanitisedPostcode.match(lookupRegex)) {
             valid = false;

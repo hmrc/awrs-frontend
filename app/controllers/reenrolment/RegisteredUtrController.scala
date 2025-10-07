@@ -91,7 +91,7 @@ class RegisteredUtrController @Inject()(mcc: MessagesControllerComponents,
 
       // 2. Extract and validate data
       awrsRef = getOrThrow(maybeAwrsUrn).awrsUrn
-      postcode = getOrThrow(maybePostcode).postcode
+      postcode = getOrThrow(maybePostcode).registeredPostcode
 
       // 3. Verify known facts
       isVerified = KnownFactsVerifier.knownFactsVerified(maybeKnownFacts, awrsRef, isSA, utr.utr, postcode)

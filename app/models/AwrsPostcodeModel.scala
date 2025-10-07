@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json._
 
-case class AwrsPostcodeModel(postcode: String)
+case class AwrsPostcodeModel(registeredPostcode: String)
 
 
 object AwrsPostcodeModel {

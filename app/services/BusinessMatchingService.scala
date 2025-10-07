@@ -74,7 +74,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     val searchData = MatchBusinessData(acknowledgementReference = SessionUtil.getUniqueAckNo,
       utr = enrolmentUtr, individual = None, organisation = None)
     businessMatchingConnector.lookup(searchData, if (isSA) "sa" else "org", authRetrievals) map {
-      verifyPostCodeMatches(postCode.postcode, _)
+      verifyPostCodeMatches(postCode.registeredPostcode, _)
     }
   }
 

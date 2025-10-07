@@ -20,6 +20,7 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatest.prop.TableDrivenPropertyChecks.forAll
 import org.scalatest.prop.Tables.Table
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.Json
 
 class AwrsPostcodeModelTest extends PlaySpec {
 
@@ -66,4 +67,10 @@ class AwrsPostcodeModelTest extends PlaySpec {
     }
   }
 
+  "model should convert from json to domain" in {
+    val json   = """{"registeredPostcode":"NE27 0JZ"}"""
+    val result = Json.parse(json).as[AwrsPostcodeModel]
+
+    result.registeredPostcode shouldBe "NE27 0JZ"
+  }
 }
