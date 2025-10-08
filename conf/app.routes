@@ -159,17 +159,17 @@ GET         /re-apply                                       controllers.Reapplic
 POST        /re-apply                                       controllers.ReapplicationController.submit
 
 GET        /have-you-registered                             controllers.HaveYouRegisteredController.showHaveYouRegisteredPage
-POST       /have-you-registered/confirm                     controllers.HaveYouRegisteredController.saveAndContinue
+POST       /have-you-registered                             controllers.HaveYouRegisteredController.saveAndContinue
 
 # Reenrolment journey
 GET         /reenrolment/registered-urn                     controllers.reenrolment.RegisteredUrnController.showArwsUrnPage
-POST        /reenrolment/registered-urn/saveAndReturn       controllers.reenrolment.RegisteredUrnController.saveAndContinue
+POST        /reenrolment/registered-urn                     controllers.reenrolment.RegisteredUrnController.saveAndContinue
 
 GET         /reenrolment/registered-postcode                controllers.reenrolment.RegisteredPostcodeController.showPostCode
 POST        /reenrolment/registered-postcode                controllers.reenrolment.RegisteredPostcodeController.saveAndContinue
 
 GET         /reenrolment/registered-utr                     controllers.reenrolment.RegisteredUtrController.showArwsUtrPage
-POST        /registered-utr/saveAndReturn                   controllers.reenrolment.RegisteredUtrController.saveAndContinue
+POST        /reenrolment/registered-utr                                 controllers.reenrolment.RegisteredUtrController.saveAndContinue
 
 GET         /reenrolment/kickout                            controllers.reenrolment.KickoutController.showKickOutPage
 
