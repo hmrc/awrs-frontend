@@ -150,7 +150,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
 
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
       }
 
       "redirect to kickout page when de-enrolment fails" in {
@@ -170,7 +170,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
 
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
       }
 
       "redirect to kickout page when known facts are not verified" in {
@@ -190,7 +190,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
 
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
       }
 
       "redirect to successful enrolment page when both de-enrolment and enrolment succeed" in {
@@ -288,7 +288,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
 
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
       }
 
       "redirect to kickout page when ES1 (group id query) fails with an exception" in {
@@ -301,7 +301,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
         val result = controller.saveAndContinue().apply(testRequest(testUtr))
 
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+        redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
       }
 
 

@@ -34,7 +34,6 @@ class SuccessfulEnrolmentControllerTest extends AwrsUnitTestTraits
     mockDeEnrolService,
     mockAuthConnector,
     mockAuditable,
-    mockAwrsFeatureSwitches,
     mockAccountUtils,
     template
   )

@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches, AccountUtils}
+import utils.AccountUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +36,6 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
                                             val accountUtils: AccountUtils,
                                             val deEnrolService: DeEnrolService,
                                             val auditable: Auditable,
-                                            val awrsFeatureSwitches: AWRSFeatureSwitches,
                                             implicit val applicationConfig: ApplicationConfig,
                                             template: views.html.awrs_have_you_registered) extends FrontendController(mcc) with AwrsController{
 

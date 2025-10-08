@@ -121,13 +121,13 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
           logger.info(s"enrolment succeeded for AWRS ref $awrsRef")
           Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
         case None =>
-          logger.info(s"enrolment failed for AWRS ref $awrsRef")
-          Redirect(routes.KickoutController.showURNKickOutPage)
+          logger.info(s"re-enrolment failed for AWRS ref $awrsRef")
+          Redirect(routes.KickoutController.showKickOutPage)
       }
     }
   }.recover { case ex: Exception =>
     logger.error("Exception occurred during re-enrolment journey", ex)
-    Redirect(routes.KickoutController.showURNKickOutPage)
+    Redirect(routes.KickoutController.showKickOutPage)
   }
 
 }

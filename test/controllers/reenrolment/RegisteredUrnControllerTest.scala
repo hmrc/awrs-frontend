@@ -74,7 +74,6 @@ class RegisteredUrnControllerTest
     mockAuthConnector,
     mockAuditable,
     mockAccountUtils,
-    mockAwrsFeatureSwitches,
     mockAppConfig,
     registeredUrnService,
     template)
@@ -128,7 +127,7 @@ class RegisteredUrnControllerTest
 
       val result = await(res)
       result.header.status mustBe 303
-      result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url
+      result.header.headers("Location") mustBe controllers.reenrolment.routes.KickoutController.showKickOutPage.url
       verifyKeyStoreService(saveKnownFacts = 0)
 
     }
@@ -145,7 +144,7 @@ class RegisteredUrnControllerTest
       val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
 
       status(res) mustBe 303
-      redirectLocation(res) mustBe Some(controllers.reenrolment.routes.KickoutController.showURNKickOutPage.url)
+      redirectLocation(res) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
     }
 
     "save should redirect to confirm de-enrolment" in {

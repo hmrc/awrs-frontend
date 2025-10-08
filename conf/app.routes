@@ -171,7 +171,7 @@ POST        /reenrolment/registered-postcode                controllers.reenrolm
 GET         /reenrolment/registered-utr                     controllers.reenrolment.RegisteredUtrController.showArwsUtrPage
 POST        /registered-utr/saveAndReturn                   controllers.reenrolment.RegisteredUtrController.saveAndContinue
 
-GET         /reenrolment/kickout                            controllers.reenrolment.KickoutController.showURNKickOutPage
+GET         /reenrolment/kickout                            controllers.reenrolment.KickoutController.showKickOutPage
 
 GET         /reenrolment/successful-enrolment               controllers.reenrolment.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage
 

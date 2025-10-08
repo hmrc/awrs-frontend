@@ -44,7 +44,6 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
     mockAccountUtils,
     mockDeEnrolService,
     mockAuditable,
-    mockAwrsFeatureSwitches,
     mockAppConfig,
     template)
 
