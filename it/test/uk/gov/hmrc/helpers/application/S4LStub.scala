@@ -21,14 +21,15 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json._
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.crypto.json.JsonEncryption
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter, Sensitive}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
 import uk.gov.hmrc.helpers.IntegrationSpec
+import crypto.CryptoProvider
 
 trait S4LStub extends IntegrationSpec {
 
   case class SensitiveJs(override val decryptedValue: JsObject) extends Sensitive[JsObject]
 
-  implicit lazy val jsonCrypto: Encrypter with Decrypter = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
+  implicit lazy val jsonCrypto: Encrypter with Decrypter = new CryptoProvider(app.configuration).crypto
   implicit lazy val encryptionFormat: Writes[SensitiveJs] = JsonEncryption.sensitiveEncrypter[JsObject, SensitiveJs]
 
   def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None, api: Boolean = false): StubMapping = {

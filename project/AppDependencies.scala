@@ -19,16 +19,16 @@ import play.sbt.PlayImport.*
 
 private object AppDependencies {
 
-  private val bootstrapPlayVersion = "10.1.0"
+  private val bootstrapPlayVersion = "10.2.0"
   val mockitoVersion = "5.18.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
     "uk.gov.hmrc"                   %% "http-caching-client-play-30" % "12.2.0",
     "uk.gov.hmrc"                   %% "bootstrap-frontend-play-30"  % bootstrapPlayVersion,
-    "uk.gov.hmrc"                   %% "play-partials-play-30"       % "10.1.0", // includes code for retrieving partials, e.g. the Help with this page form
+    "uk.gov.hmrc"                   %% "play-partials-play-30"       % "10.2.0", // includes code for retrieving partials, e.g. the Help with this page form
     "com.yahoo.platform.yui"        %  "yuicompressor"               % "2.4.8",
-    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "12.15.0",
+    "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"  % "12.17.0",
     "commons-codec"                 %  "commons-codec"               % "1.19.0",
     "com.googlecode.htmlcompressor" %  "htmlcompressor"              % "1.5.2"
   )

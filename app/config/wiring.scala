@@ -16,11 +16,12 @@
 
 package config
 
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+import crypto.CryptoProvider
 
 import javax.inject.Inject
 import scala.concurrent.duration.{Duration, DurationInt}
@@ -66,13 +67,13 @@ class AwrsAPIDataShortLivedCaching @Inject()(servicesConfig: ServicesConfig,
 }
 
 class AwrsShortLivedCache @Inject()(awrsShortLivedCaching: AwrsShortLivedCaching,
-                                    applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
-  override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
+                                    cryptoProvider: CryptoProvider) extends ShortLivedCache {
+  override implicit lazy val crypto: Encrypter with Decrypter = cryptoProvider.crypto
   override lazy val shortLiveCache: ShortLivedHttpCaching = awrsShortLivedCaching
 }
 
 class AwrsAPIShortLivedCache @Inject()(awrsAPIDataShortLivedCaching: AwrsAPIDataShortLivedCaching,
-                                       applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
-  override implicit lazy val crypto: Encrypter with Decrypter = applicationCrypto.JsonCrypto
+                                       cryptoProvider: CryptoProvider) extends ShortLivedCache {
+  override implicit lazy val crypto: Encrypter with Decrypter = cryptoProvider.crypto
   override lazy val shortLiveCache: ShortLivedHttpCaching = awrsAPIDataShortLivedCaching
 }
