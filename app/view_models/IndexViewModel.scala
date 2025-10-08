@@ -27,7 +27,7 @@ sealed trait IndexStatus {
 
 case object SectionComplete extends IndexStatus {
   val messagesKey: String = "awrs.index_page.complete"
-  val cssClass: String = "govuk-tag govuk-tag--turquoise"
+  val cssClass: String = "govuk-!-font-weight-regular"
 }
 
 case object SectionIncomplete extends IndexStatus {

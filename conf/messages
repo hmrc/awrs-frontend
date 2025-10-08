@@ -370,10 +370,10 @@ awrs.index_page.submit_changes=Submit changes
 awrs.index_page.de_registration_link=Cancel registration
 awrs.index_page.withdraw_link=Withdraw application
 awrs.index_page.topText=Each section is saved as you progress. Once you start you have 28 days to complete the application before it is deleted.
-awrs.index_page.not_started=NOT STARTED
-awrs.index_page.incomplete=INCOMPLETE
-awrs.index_page.complete=COMPLETED
-awrs.index_page.edited=EDITED
+awrs.index_page.not_started=Not Started
+awrs.index_page.incomplete=Incomplete
+awrs.index_page.complete=Completed
+awrs.index_page.edited=Edited
 awrs.index_page.awrs_ref=AWRS reference number
 
 # Dynamically created - DO NOT DELETE
