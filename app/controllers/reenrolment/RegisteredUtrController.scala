@@ -61,7 +61,7 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
   }
 
   private def getOrThrow[T](x: Option[T]): T =
-    x.fold(throw new RuntimeException(s"No value found for ${x.getClass.getName} in keystore - exiting enrolment journey"))(identity)
+    x.fold(throw new RuntimeException(s"No value found for ${x.getClass.getName} in keystore - exiting re-enrolment journey"))(identity)
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
@@ -100,7 +100,10 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
             case Some(groupId) => deEnrolService.deEnrolAwrs(awrsRef, groupId)
             case None          => Future.successful(true)
           }
-        } else Future.successful(false)
+        } else {
+          logger.warn(s"Known facts verification for re-enrolment was unsuccessful for $awrsRef")
+          Future.successful(false)
+        }
       _ = logger.info(s"De enrolment process returns $deEnrolmentSuccessful")
 
       // 5. Process enrolment
@@ -114,14 +117,19 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
             utrType,
             Map.empty
           )
-        else Future.successful(None)
+        else {
+          if (isVerified) {
+            logger.warn(s"Known facts verification was successful, but de-enrolment failed for $awrsRef")
+          }
+          Future.successful(None)
+        }
     } yield {
       enrolmentResult match {
         case Some(_) =>
           logger.info(s"enrolment succeeded for AWRS ref $awrsRef")
           Redirect(routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage)
         case None =>
-          logger.info(s"re-enrolment failed for AWRS ref $awrsRef")
+          logger.warn(s"re-enrolment failed for AWRS ref $awrsRef")
           Redirect(routes.KickoutController.showKickOutPage)
       }
     }
