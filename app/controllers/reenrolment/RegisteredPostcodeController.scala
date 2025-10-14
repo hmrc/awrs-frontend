@@ -24,7 +24,7 @@ import play.api.mvc._
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches, AccountUtils}
+import utils.AccountUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,6 @@ class RegisteredPostcodeController @Inject()(mcc: MessagesControllerComponents,
                                              val accountUtils: AccountUtils,
                                              val deEnrolService: DeEnrolService,
                                              val auditable: Auditable,
-                                             awrsFeatureSwitches: AWRSFeatureSwitches,
                                              keyStoreService: KeyStoreService,
                                              template: views.html.reenrolment.awrs_registered_postcode) extends FrontendController(mcc) with AwrsController {
 

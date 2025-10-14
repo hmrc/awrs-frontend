@@ -41,7 +41,7 @@ class RegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   val template: awrs_registered_postcode = app.injector.instanceOf[views.html.reenrolment.awrs_registered_postcode]
 
   val testAwrsRegisteredPostcodeController: RegisteredPostcodeController = new RegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector,
-    mockAccountUtils, mockDeEnrolService, mockAuditable ,mockAwrsFeatureSwitches,testKeyStoreService, template)
+    mockAccountUtils, mockDeEnrolService, mockAuditable, testKeyStoreService, template)
 
   "AwrsPostcodeController" must {
     "show the postcode page" in {
