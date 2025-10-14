@@ -33,11 +33,6 @@
 
 @(withdrawalReasonForm: Form[models.WithdrawalReason])(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
-@enumPairToMessage(enumName: String, msgKey: String) = @{
-    val (key, value) = enumPair(enumName, msgKey)
-    messages(key) -> messages(value)
-}
-
 @conditionalHtml = {
     @govukInput(
         Input(

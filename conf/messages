@@ -45,10 +45,6 @@ awrs.generic.0to2years= Less than 2 years
 awrs.generic.2to4years= 2 to 4 years
 awrs.generic.5to9years= 5 to 9 years
 awrs.generic.10plusYears=10 or more years
-awrs.generic.0to2years.value= Less than 2 years
-awrs.generic.2to4years.value= 2 to 4 years
-awrs.generic.5to9years.value=5 to 9 years
-awrs.generic.10plusYears.value=10 or more years
 awrs.generic.status.director=Director
 awrs.generic.status.director_value=Director
 awrs.generic.status.company_secretary=Company secretary
@@ -798,13 +794,6 @@ awrs.de_registration.error.proposedDate_toEarly=The date you want to cancel your
 #===========================================================
 awrs.de_registration_reason.page_heading = What is the reason you are cancelling your registration?
 awrs.de_registration_reason.other_input_label= What are the other reasons you are cancelling your registration?
-awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme.schema_enum=Ceases to be registerable for the scheme
-awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler.schema_enum=Ceases to trade as an alcohol wholesaler
-awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum= Registering with a group
-awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum= Registering with a partnership
-awrs.de_registration.reason.group_disbanded.schema_enum= Group ended
-awrs.de_registration.reason.partnership_disbanded.schema_enum=Partnership disbanded
-awrs.de_registration.reason.other.schema_enum=Others
 # Dynamically created - DO NOT DELETE
 awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme= Registration no longer needed
 awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler= Stopped trading as an alcohol wholesaler or producer
@@ -843,11 +832,6 @@ awrs.withdrawal.reason.duplicate_application = Registered more than once
 awrs.withdrawal.reason.joined_awrs_group = Registering with a group
 awrs.withdrawal.reason.other=Other
 awrs.withdrawal.reason.other_message= What are the other reasons you are withdrawing your registration?
-awrs.withdrawal.reason.applied_in_error.schema_enum =  Applied in error
-awrs.withdrawal.reason.no_longer_trading.schema_enum = No Longer trading
-awrs.withdrawal.reason.duplicate_application.schema_enum = Duplicate Application
-awrs.withdrawal.reason.joined_awrs_group.schema_enum = Joined AWRS Group
-awrs.withdrawal.reason.other.schema_enum=Others
 
 # Error messages
 #============================================================
