@@ -356,6 +356,7 @@
     }
     
     function auditEvents(url, data, form) {
+     var token = $('input[name="csrfToken"]').val()
         $.ajax({
             type: 'POST',
             url: url,
@@ -368,7 +369,8 @@
             error: function() {
                 form.submit();
             },
-            headers: {"X-Hmrc-Origin": "awrs"}
+            headers: {"X-Hmrc-Origin": "awrs",
+                       "Csrf-Token": token}
         });
     }
 
