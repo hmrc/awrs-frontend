@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches, AccountUtils}
+import utils.AccountUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +36,6 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
                                             val accountUtils: AccountUtils,
                                             val deEnrolService: DeEnrolService,
                                             val auditable: Auditable,
-                                            val awrsFeatureSwitches: AWRSFeatureSwitches,
                                             implicit val applicationConfig: ApplicationConfig,
                                             template: views.html.awrs_have_you_registered) extends FrontendController(mcc) with AwrsController{
 
@@ -45,41 +44,32 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
 
 
   def showHaveYouRegisteredPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-      enrolmentEligibleAuthorisedAction { implicit ar =>
-        restrictedAccessCheck {
-          keyStoreService.fetchHaveYouRegistered flatMap {
-            case Some(hasUserRegistered) => Future.successful(Ok(template(haveYouRegisteredForm.form.fill(hasUserRegistered))))
-            case _ => Future.successful(Ok(template(haveYouRegisteredForm.form)))
-          }
+    enrolmentEligibleAuthorisedAction { implicit ar =>
+      restrictedAccessCheck {
+        keyStoreService.fetchHaveYouRegistered flatMap {
+          case Some(hasUserRegistered) => Future.successful(Ok(template(haveYouRegisteredForm.form.fill(hasUserRegistered))))
+          case _ => Future.successful(Ok(template(haveYouRegisteredForm.form)))
         }
       }
-    }
-    else {
-      Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
     }
   }
 
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          haveYouRegisteredForm.bindFromRequest().fold(
-            formWithErrors =>
-              Future.successful(BadRequest(template(formWithErrors))),
-            haveYouRegisteredData =>
-              keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap { _ =>
-                if (haveYouRegisteredData.hasUserRegistered.getOrElse(false)) {
-                  Future.successful(Redirect(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage))
-                }
-                else {
-                  Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
-                }
+        haveYouRegisteredForm.bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(BadRequest(template(formWithErrors))),
+          haveYouRegisteredData =>
+            keyStoreService.saveHaveYouRegistered(haveYouRegisteredData) flatMap { _ =>
+              if (haveYouRegisteredData.hasUserRegistered.getOrElse(false)) {
+                Future.successful(Redirect(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage))
               }
-          )
-        } else {
-          Future.successful(NotFound)
-        }
+              else {
+                Future.successful(Redirect(applicationConfig.businessCustomerStartPage))
+              }
+            }
+        )
       }
     }
   }

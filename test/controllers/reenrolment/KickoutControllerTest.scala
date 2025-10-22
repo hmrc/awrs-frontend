@@ -30,10 +30,9 @@ class KickoutControllerTest extends AwrsUnitTestTraits
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_reenrolment_kickout = app.injector.instanceOf[views.html.reenrolment.awrs_reenrolment_kickout]
 
-  val testURNKickOutController: KickoutController = new KickoutController(
+  val testKickOutController: KickoutController = new KickoutController(
     mockMCC,
     mockAppConfig,
-    mockAwrsFeatureSwitches,
     mockDeEnrolService,
     mockAuthConnector,
     mockAccountUtils,
@@ -43,17 +42,10 @@ class KickoutControllerTest extends AwrsUnitTestTraits
 
   "KickOutController" must {
 
-    "show the Kickout page when enrolmentJourney is enabled" in {
+    "show the Kickout page" in {
       setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
-      val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testKickOutController.showKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
-    }
-    "return 404 when enrolmentJourney is disabled" in {
-      setAuthMocks()
-      setupEnrolmentJourneyFeatureSwitchMock(false)
-      val res = testURNKickOutController.showURNKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(res) mustBe 404
     }
   }
 }

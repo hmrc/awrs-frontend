@@ -21,17 +21,18 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json._
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.crypto.json.JsonEncryption
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Decrypter, Encrypter, Sensitive}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter, Sensitive}
 import uk.gov.hmrc.helpers.IntegrationSpec
+import crypto.CryptoProvider
 
 trait S4LStub extends IntegrationSpec {
 
   case class SensitiveJs(override val decryptedValue: JsObject) extends Sensitive[JsObject]
 
-  implicit lazy val jsonCrypto: Encrypter with Decrypter = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
+  implicit lazy val jsonCrypto: Encrypter with Decrypter = new CryptoProvider(app.configuration).crypto
   implicit lazy val encryptionFormat: Writes[SensitiveJs] = JsonEncryption.sensitiveEncrypter[JsObject, SensitiveJs]
 
-  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None): StubMapping = {
+  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None, api: Boolean = false): StubMapping = {
 
     val keyEncryptor = JsonEncryption.sensitiveEncrypter[String, SensitiveString]
     val encKey = keyEncryptor.writes(SensitiveString(key)).as[String]
@@ -46,9 +47,11 @@ trait S4LStub extends IntegrationSpec {
       case _                => Json.obj()
     }
 
+    val apiString = if (api) "awrs-frontend-api" else "awrs-frontend"
+
     scenarioState match {
       case Some((scenario, precondition, endstate)) =>
-        stubFor(get(urlMatching(s"/save4later/awrs-frontend/$id"))
+        stubFor(get(urlMatching(s"/save4later/$apiString/$id"))
           .inScenario(scenario)
           .whenScenarioStateIs(precondition)
           .willReturn(
@@ -59,7 +62,7 @@ trait S4LStub extends IntegrationSpec {
           .willSetStateTo(endstate)
         )
       case _                       =>
-        stubFor(get(urlMatching(s"/save4later/awrs-frontend/$id"))
+        stubFor(get(urlMatching(s"/save4later/$apiString/$id"))
           .inScenario("")
           .willReturn(
             aResponse().

@@ -23,7 +23,7 @@ import play.api.mvc._
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches, AccountUtils}
+import utils.AccountUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +33,6 @@ class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
                                               val deEnrolService: DeEnrolService,
                                               val authConnector: DefaultAuthConnector,
                                               val auditable: Auditable,
-                                              awrsFeatureSwitches: AWRSFeatureSwitches,
                                               val accountUtils: AccountUtils,
                                               template: views.html.reenrolment.awrs_successful_enrolment
                                              ) extends FrontendController(mcc) with AwrsController {
@@ -42,10 +41,6 @@ class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
 
   def showSuccessfulEnrolmentPage(): Action[AnyContent] = Action.async { implicit request =>
-    if (awrsFeatureSwitches.enrolmentJourney().enabled) {
       Future.successful(Ok(template()))
-    } else {
-      Future.successful(NotFound)
-    }
   }
 }

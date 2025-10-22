@@ -26,7 +26,7 @@ import services.reenrolment.RegisteredUrnService
 import services.{DeEnrolService, KeyStoreService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches, AccountUtils}
+import utils.AccountUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,6 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                                          val authConnector: DefaultAuthConnector,
                                          val auditable: Auditable,
                                          val accountUtils: AccountUtils,
-                                         awrsFeatureSwitches: AWRSFeatureSwitches,
                                          implicit val applicationConfig: ApplicationConfig,
                                          registeredUrnService: RegisteredUrnService,
                                          template: views.html.reenrolment.awrs_registered_urn)
@@ -50,12 +49,10 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
   def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           keyStoreService.fetchAwrsEnrolmentUrn flatMap {
             case Some(awrsUrn) => Future.successful(Ok(template(awrsEnrolmentUrnForm.form.fill(awrsUrn))))
             case _             => Future.successful(Ok(template(awrsEnrolmentUrnForm.form)))
           }
-        } else { Future.successful(NotFound) }
       }
     }
   }
@@ -63,7 +60,6 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
   def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
           awrsEnrolmentUrnForm
             .bindFromRequest()
             .fold(
@@ -72,13 +68,10 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                 registeredUrnService.handleAWRSRefChecks(ar.plainTextCredId, awrsUrn).map {
                   case UserIsEnrolled    => Redirect(routes.DeEnrolmentConfirmationController.showDeEnrolmentConfirmationPage)
                   case UserIsNotEnrolled => Redirect(routes.RegisteredPostcodeController.showPostCode)
-                  case _                 => Redirect(routes.KickoutController.showURNKickOutPage)
+                  case _                 => Redirect(routes.KickoutController.showKickOutPage)
                 }
               }
             )
-        } else {
-          Future.successful(NotFound)
-        }
       }
     }
   }

@@ -23,14 +23,13 @@ import play.api.mvc._
 import services.DeEnrolService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AWRSFeatureSwitches, AccountUtils}
+import utils.AccountUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class KickoutController @Inject()(mcc: MessagesControllerComponents,
                                   implicit val applicationConfig: ApplicationConfig,
-                                  val awrsFeatureSwitches: AWRSFeatureSwitches,
                                   val deEnrolService: DeEnrolService,
                                   val authConnector: DefaultAuthConnector,
                                   val accountUtils: AccountUtils,
@@ -41,14 +40,10 @@ class KickoutController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showURNKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
+  def showKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
-        if (awrsFeatureSwitches.enrolmentJourney().enabled) {
-          Future.successful(Ok(template()))
-        } else {
-          Future.successful(NotFound)
-        }
+        Future.successful(Ok(template()))
       }
     }
   }

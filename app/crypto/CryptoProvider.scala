@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import org.scalatestplus.play.PlaySpec
-import scala.io.Source
-import scala.util.Using
+package crypto
 
-class FeatureFlagSpec extends PlaySpec {
+import javax.inject.{Inject, Singleton}
+import play.api.Configuration
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter, SymmetricCryptoFactory}
 
-  "Regime check flag should be on by default" in {
-    val applicationConfFileContents = Using.resource(Source.fromFile("conf/application.conf")) { source => source.getLines().mkString("") }
-    val regimeCheckFlagSetToTrue = applicationConfFileContents.toLowerCase().contains("feature.regimecheck = true")
-
-    withClue("Regime check flag should be on by default in application.conf:") {
-      regimeCheckFlagSetToTrue mustBe true
-    }
-  }
+@Singleton
+class CryptoProvider @Inject()(config: Configuration) {
+  val crypto: Encrypter with Decrypter =
+    SymmetricCryptoFactory.aesCryptoFromConfig("json.encryption", config.underlying)
 }

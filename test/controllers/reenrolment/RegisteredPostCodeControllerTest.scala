@@ -41,21 +41,12 @@ class RegisteredPostCodeControllerTest extends AwrsUnitTestTraits
   val template: awrs_registered_postcode = app.injector.instanceOf[views.html.reenrolment.awrs_registered_postcode]
 
   val testAwrsRegisteredPostcodeController: RegisteredPostcodeController = new RegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector,
-    mockAccountUtils, mockDeEnrolService, mockAuditable ,mockAwrsFeatureSwitches,testKeyStoreService, template)
+    mockAccountUtils, mockDeEnrolService, mockAuditable, testKeyStoreService, template)
 
   "AwrsPostcodeController" must {
-    "show not found when feature is not enabled" in {
+    "show the postcode page" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrolmentJourneyFeatureSwitchMock(false)
-      val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
-      status(res) mustBe 404
-    }
-
-    "show the postcode page when enrolmentJourney is enabled" in {
-      setAuthMocks()
-      setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
@@ -63,7 +54,6 @@ class RegisteredPostCodeControllerTest extends AwrsUnitTestTraits
     "save the postcode to keystore if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest("NE270JZ"))
       status(res) mustBe 303
     }
@@ -71,7 +61,6 @@ class RegisteredPostCodeControllerTest extends AwrsUnitTestTraits
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      setupEnrolmentJourneyFeatureSwitchMock(true)
       val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest(""))
       status(res) mustBe 400
     }
