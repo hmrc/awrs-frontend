@@ -364,6 +364,8 @@
     }
     
     function auditEvents(url, data, form) {
+     var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+     var token = csrfMeta ? csrfMeta.content : null;
         $.ajax({
             type: 'POST',
             url: url,
@@ -376,7 +378,8 @@
             error: function() {
                 form.submit();
             },
-            headers: {"X-Hmrc-Origin": "awrs"}
+            headers: {"X-Hmrc-Origin": "awrs",
+                       "Csrf-Token": token}
         });
     }
 
