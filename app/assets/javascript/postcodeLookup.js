@@ -308,7 +308,12 @@
         }
     }
 
-    function validation(postcode, url, num, id) {
+    function sanitisePostcode(postcode) {
+        const postcodeFormatPattern = /[\s+.:_,;=\(\)\{\}\[\]\-\^\*]/g;
+        return postcode.toLowerCase().replace(postcodeFormatPattern, "");
+    }
+
+    function validation(postcode, num, id) {
         var valid = true;
         // check not empty
         if (postcode == '') {
@@ -317,7 +322,9 @@
         }
 
         // check for illegal chars
-        if (valid && !postcode.match(lookupRegex)) {
+        let sanitisedPostcode = sanitisePostcode(postcode);
+
+        if (valid && !sanitisedPostcode.match(lookupRegex)) {
             valid = false;
             showErrorMessage('The postcode is not valid, check the postcode and try again', num);
         }
@@ -333,6 +340,7 @@
             if(ajaxSuccess){
                 hideErrorMessage(num);
             }
+            let url = env + lookUpPath + sanitisedPostcode;
             searchAddress(url, num);
         }
     }
@@ -533,21 +541,19 @@
 
     $('.postcode-lookup').on('click', function() {
         var postcode = $(this).prev().val().replace(/\s/g,''),
-            url = env + lookUpPath + postcode,
             id = getId(this),
             num = id.substr(id.length -1);
 
-        validation(postcode, url, num, id);
+        validation(postcode, num, id);
     });
 
     $('.postcode-lookup').on('keydown, keyup, keypress', function(e) {
         var postcode = $(this).prev().val().replace(/\s/g,''),
-            url = env + lookUpPath + postcode,
             id = getId(this),
             num = this.id.substr(this.id.length -1);
 
         if (e.which == spaceKey || e.which == enterKey) {
-            validation(postcode, url, num, id);
+            validation(postcode, num, id);
             return false;
         }
     });

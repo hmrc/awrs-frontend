@@ -21,7 +21,6 @@ import connectors.BusinessMatchingConnector
 import controllers.auth.StandardAuthRetrievals
 import forms.AWRSEnums
 import models._
-import models.reenrolment.AwrsRegisteredPostcode
 import play.api.libs.json.{JsSuccess, JsValue}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{LoggingUtils, SessionUtil}
@@ -70,7 +69,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     }
   }
 
-  def verifyUTRandPostCode(enrolmentUtr: String, postCode: AwrsRegisteredPostcode, authRetrievals: StandardAuthRetrievals, isSA: Boolean)
+  def verifyUTRandPostCode(enrolmentUtr: String, postCode: AwrsPostcodeModel, authRetrievals: StandardAuthRetrievals, isSA: Boolean)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val searchData = MatchBusinessData(acknowledgementReference = SessionUtil.getUniqueAckNo,
       utr = enrolmentUtr, individual = None, organisation = None)
@@ -83,7 +82,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
     val address = (dataReturned \ "address").validate[BCAddressApi3]
     address match {
       case s: JsSuccess[BCAddressApi3] => s.get.postalCode.fold(false) { pc: String =>
-        AwrsRegisteredPostcode.sanitise(pc) == AwrsRegisteredPostcode.sanitise(postcode)
+        AwrsPostcodeModel.sanitise(pc) == AwrsPostcodeModel.sanitise(postcode)
       }
       case _ => false
     }

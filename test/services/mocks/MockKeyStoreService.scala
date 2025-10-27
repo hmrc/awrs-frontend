@@ -17,7 +17,7 @@
 package services.mocks
 
 import connectors.mock.MockKeyStoreConnector
-import models.reenrolment.{AwrsRegisteredPostcode, KnownFactsResponse}
+import models.reenrolment.KnownFactsResponse
 import models.{StatusNotification, _}
 import org.mockito.Mockito._
 import org.mockito.{AdditionalMatchers, ArgumentMatchers}
@@ -99,18 +99,18 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
 
   def setupMockKeystoreServiceForAwrsUtr(utr:Option[AwrsEnrolmentUtr] = None,
                                          knownFactsResponse: Option[KnownFactsResponse] = None,
-                                         registeredPostcode: Option[AwrsRegisteredPostcode]=None,
+                                         registeredPostcode: Option[AwrsPostcodeModel]=None,
                                          urn: Option[AwrsEnrolmentUrn] = None): Unit = {
     mockFetchFromKeyStore[AwrsEnrolmentUrn](awrsEnrolmentUrnKeyName, urn)
     mockFetchFromKeyStore[AwrsEnrolmentUtr](awrsEnrolmentUtrKeyName, utr)
     mockFetchFromKeyStore[KnownFactsResponse](awrsKnownFactsResponseKeyName, knownFactsResponse)
-    mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, registeredPostcode)
+    mockFetchFromKeyStore[AwrsPostcodeModel](registeredPostcodeKeyName, registeredPostcode)
     setupMockKeyStoreServiceOnlySaveFunctions()
 
   }
 
-  def setupMockKeystoreServiceForRegisteredPostcode(postcode: Option[AwrsRegisteredPostcode] = None ): Unit = {
-    mockFetchFromKeyStore[AwrsRegisteredPostcode](registeredPostcodeKeyName, postcode)
+  def setupMockKeystoreServiceForRegisteredPostcode(postcode: Option[AwrsPostcodeModel] = None ): Unit = {
+    mockFetchFromKeyStore[AwrsPostcodeModel](registeredPostcodeKeyName, postcode)
     setupMockKeyStoreServiceOnlySaveFunctions()
   }
 

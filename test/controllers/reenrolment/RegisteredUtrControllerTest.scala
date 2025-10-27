@@ -19,8 +19,8 @@ package controllers.reenrolment
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import forms.reenrolment.RegisteredUtrForm
-import models.reenrolment.{AwrsRegisteredPostcode, KnownFactsResponse, Verifier}
-import models.{AwrsEnrolmentUrn, AwrsEnrolmentUtr, EnrolResponse, Identifier}
+import models.reenrolment.{KnownFactsResponse, Verifier}
+import models.{AwrsEnrolmentUrn, AwrsEnrolmentUtr, AwrsPostcodeModel, EnrolResponse, Identifier}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, verifyNoInteractions, when}
@@ -111,7 +111,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
     setupMockKeystoreServiceForAwrsUtr(
       urn = Some(AwrsEnrolmentUrn(testAwrsRef)),
       utr = Some(AwrsEnrolmentUtr(testUtr)),
-      registeredPostcode = Some(AwrsRegisteredPostcode(testPostcode)),
+      registeredPostcode = Some(AwrsPostcodeModel(testPostcode)),
       knownFactsResponse = knownFactsResponse
     )
   }

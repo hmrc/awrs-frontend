@@ -16,7 +16,7 @@
 
 package controllers.util
 
-import models.reenrolment.AwrsRegisteredPostcode.sanitiseAndCompare
+import models.AwrsPostcodeModel
 import models.reenrolment.{Identifier, KnownFactsResponse, Verifier}
 
 object KnownFactsVerifier {
@@ -25,7 +25,7 @@ object KnownFactsVerifier {
       case Some(knownFactsResponse) => knownFactsResponse.enrolments
         .find(_.identifiers.contains(Identifier("AWRSRefNumber", arws))).exists { enrolment =>
           enrolment.verifiers.contains(Verifier(if (isSA) "SAUTR" else "CTUTR", utr)) &&
-            enrolment.verifiers.exists(verifier => verifier.key == "Postcode" && sanitiseAndCompare(verifier.value, postCode))
+            enrolment.verifiers.exists(verifier => verifier.key == "Postcode" && AwrsPostcodeModel.sanitiseAndCompare(verifier.value, postCode))
         }
       case None => false
     }

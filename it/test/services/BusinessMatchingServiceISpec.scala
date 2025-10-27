@@ -16,7 +16,6 @@
 
 package services
 
-import models.reenrolment.AwrsRegisteredPostcode
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.helpers.IntegrationSpec
@@ -24,8 +23,10 @@ import utils.TestUtil
 import connectors.BusinessMatchingConnectorImpl
 import com.github.tomakehurst.wiremock.client.WireMock.{postRequestedFor, urlMatching}
 import controllers.auth.StandardAuthRetrievals
+import models.AwrsPostcodeModel
 import org.scalatest.matchers.must.Matchers
 import play.api.test.Injecting
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -36,7 +37,7 @@ class BusinessMatchingServiceISpec extends IntegrationSpec with Matchers with In
 
   val enrolmentUtr = "1111111112"
   val testPostcode = "NE98 1ZZ"
-  val awrsRegisteredPostcode: AwrsRegisteredPostcode = AwrsRegisteredPostcode(testPostcode)
+  val awrsRegisteredPostcode: AwrsPostcodeModel = AwrsPostcodeModel(testPostcode)
   val authRetrievals: StandardAuthRetrievals = TestUtil.defaultAuthRetrieval
   val url = s"/org/UNUSED/${connector.baseUri}/${connector.lookupUri}/$enrolmentUtr/org"
 

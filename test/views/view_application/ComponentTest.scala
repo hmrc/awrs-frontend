@@ -83,7 +83,7 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
       override val signInUrl = "/sign-in"
     }
 
-    implicit def conv(str: String): Option[String] = Some(str)
+  implicit def conv(str: String): Option[String] = Some(str)
 
   "row helper" must {
 
