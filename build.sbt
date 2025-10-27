@@ -12,7 +12,7 @@ val coursierDirectory = sys.env.get("COURSIER_REPOSITORIES")
   .getOrElse("https/repo1.maven.org/maven2/")
 
 ThisBuild / majorVersion := 3
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "2.13.17"
 
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala)
