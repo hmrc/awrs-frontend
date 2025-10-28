@@ -21,14 +21,8 @@ import java.time.format.DateTimeFormatter
 
 object WithdrawalHelper {
 
-  private val frontendKey = (name: String, messageKey: String) => f"awrs.$messageKey.reason.$name"
-  private val backendKey = (name: String, messageKey: String) => f"awrs.$messageKey.reason.$name.schema_enum"
-
-  def enumPair(enumName: String, messageKey: String): (String, String) = backendKey(enumName, messageKey) -> frontendKey(enumName, messageKey)
-
   private lazy val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
   private lazy val responseFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
   def stringifyDate(date: String): String = LocalDate.parse(date, responseFormatter).format(formatter)
-
 }
