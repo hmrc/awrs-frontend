@@ -751,7 +751,7 @@ awrs.application_declaration.error.confirmation_empty=You must confirm the appli
 # Confirmation Page
 #============================================================
 awrs.confirmation.button=Confirm and continue
-awrs.confirmation.title=Confirmation
+awrs.confirmation.title=Your application for {0}
 awrs.confirmation.description=Your application for
 awrs.confirmation.description_1=has been received on
 awrs.confirmation.information=What happens next
@@ -771,6 +771,7 @@ awrs.confirmation.finish=Finish and sign out
 
 # Update Confirmation Page
 #============================================================
+awrs.update.confirmation.title=Your amendment for {0}
 awrs.update.confirmation.description=Your amendment for
 awrs.update.confirmation.description_1=has been received on
 awrs.update.confirmation.information_what_next_0=Continue trading as normal while we review and check your amended application (reference {0}).

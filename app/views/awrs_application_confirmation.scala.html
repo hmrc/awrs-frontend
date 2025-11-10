@@ -26,7 +26,7 @@
 @(submissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false, selfHeal: Boolean = false)(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
 @govWrapper = {
-    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.confirmation.title")), userLoggedIn = true){
+    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.confirmation.title", request.session.get("businessName").getOrElse(""))), userLoggedIn = true){
 
                 @confirmationHelper(
                     "awrs.confirmation.description",
