@@ -751,7 +751,7 @@ awrs.application_declaration.error.confirmation_empty=You must confirm the appli
 # Confirmation Page
 #============================================================
 awrs.confirmation.button=Confirm and continue
-awrs.confirmation.title=Confirmation
+awrs.confirmation.title=Your application for {0}
 awrs.confirmation.description=Your application for
 awrs.confirmation.description_1=has been received on
 awrs.confirmation.information=What happens next
