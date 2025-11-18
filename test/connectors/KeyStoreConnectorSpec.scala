@@ -19,36 +19,37 @@ package connectors
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import uk.gov.hmrc.http.cache.client.SessionCache
-import utils.AwrsUnitTestTraits
+import repositories.SessionCacheRepository
+import uk.gov.hmrc.mongo.cache.DataKey
+import utils.AwrsUnitTestBase
 import utils.TestConstants._
 import utils.TestUtil._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
+class KeyStoreConnectorSpec extends AwrsUnitTestBase {
 
-  val mockSessionCache: SessionCache = mock[SessionCache]
+  val mockSessionCacheRepository: SessionCacheRepository = mock[SessionCacheRepository]
 
   val testKeyStoreConnector: KeyStoreConnector = new KeyStoreConnector() {
-    override val sessionCache: SessionCache = mockSessionCache
+    override val sessionCacheRepository: SessionCacheRepository = mockSessionCacheRepository
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockSessionCache)
+    reset(mockSessionCacheRepository)
   }
 
   "KeyStoreConnector" must {
     "fetch saved data from keystore" in {
-      when(mockSessionCache.fetchAndGetEntry[SubscriptionStatusType](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testSubscriptionStatusTypePendingGroup)))
+      when(mockSessionCacheRepository.getFromSession[SubscriptionStatusType](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testSubscriptionStatusTypePendingGroup)))
       val result = testKeyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](testUtr)
       await(result) mustBe Some(testSubscriptionStatusTypePendingGroup)
     }
 
     "save data to keystore" in {
-      when(mockSessionCache.cache[SubscriptionStatusType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedKeystoreCacheMap))
+      when(mockSessionCacheRepository.putSession[SubscriptionStatusType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testSubscriptionStatusTypePendingGroup))
       val result = testKeyStoreConnector.saveDataToKeystore[SubscriptionStatusType](testUtr, testSubscriptionStatusTypePendingGroup)
       await(result) mustBe returnedKeystoreCacheMap
     }

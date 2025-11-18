@@ -19,7 +19,7 @@ package services
 import connectors.AwrsDataCacheConnector
 import controllers.auth.StandardAuthRetrievals
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.AccountUtils
 
 import scala.concurrent.{ExecutionContext, Future}

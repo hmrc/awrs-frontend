@@ -31,7 +31,7 @@ import services.JourneyConstants._
 import services._
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, CacheUtil}

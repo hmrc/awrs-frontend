@@ -26,7 +26,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.TestConstants._
 import utils.TestUtil._
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}

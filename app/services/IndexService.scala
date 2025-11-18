@@ -24,7 +24,7 @@ import forms.AWRSEnums.BooleanRadioEnum
 import javax.inject.Inject
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.{AccountUtils, CacheUtil}
 import view_models._
 

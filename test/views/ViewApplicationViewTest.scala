@@ -31,7 +31,7 @@ import play.api.test.Helpers._
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
 import utils.TestUtil._

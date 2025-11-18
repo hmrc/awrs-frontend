@@ -17,7 +17,7 @@
 package services.helper
 
 import models._
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.CacheUtil._
 
 // change flag categories based on JIRA story AWRS-385
