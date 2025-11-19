@@ -17,40 +17,60 @@
 package connectors
 
 import models._
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import uk.gov.hmrc.http.cache.client.SessionCache
-import utils.AwrsUnitTestTraits
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Format
+import repositories.SessionCacheRepository
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.cache.DataKey
 import utils.TestConstants._
 import utils.TestUtil._
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration._
+import scala.concurrent.Await
 
-class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
+class KeyStoreConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
-  val mockSessionCache: SessionCache = mock[SessionCache]
+  implicit val ec: ExecutionContext = ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val format: Format[SubscriptionStatusType] = SubscriptionStatusType.formats
+
+  val mockSessionCacheRepository: SessionCacheRepository = mock[SessionCacheRepository]
 
   val testKeyStoreConnector: KeyStoreConnector = new KeyStoreConnector() {
-    override val sessionCache: SessionCache = mockSessionCache
+    override val sessionCacheRepository: SessionCacheRepository = mockSessionCacheRepository
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockSessionCache)
+    reset(mockSessionCacheRepository)
   }
+
+  def await[A](future: Future[A]): A = Await.result(future, 5.seconds)
 
   "KeyStoreConnector" must {
     "fetch saved data from keystore" in {
-      when(mockSessionCache.fetchAndGetEntry[SubscriptionStatusType](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testSubscriptionStatusTypePendingGroup)))
+      when(mockSessionCacheRepository.getFromSession[SubscriptionStatusType](DataKey[SubscriptionStatusType](testUtr)))
+        .thenReturn(Future.successful(Some(testSubscriptionStatusTypePendingGroup)))
+
       val result = testKeyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](testUtr)
       await(result) mustBe Some(testSubscriptionStatusTypePendingGroup)
     }
 
     "save data to keystore" in {
-      when(mockSessionCache.cache[SubscriptionStatusType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedKeystoreCacheMap))
+      when(mockSessionCacheRepository.putSession[SubscriptionStatusType](DataKey[SubscriptionStatusType](testUtr), testSubscriptionStatusTypePendingGroup))
+        .thenReturn(Future.successful(testSubscriptionStatusTypePendingGroup))
+
       val result = testKeyStoreConnector.saveDataToKeystore[SubscriptionStatusType](testUtr, testSubscriptionStatusTypePendingGroup)
-      await(result) mustBe returnedKeystoreCacheMap
+      val cacheMap = await(result)
+
+      cacheMap.id mustBe "" // HeaderCarrier has no session ID in test
+      cacheMap.data.keys must contain(testUtr)
+      cacheMap.data(testUtr) mustBe play.api.libs.json.Json.toJson(testSubscriptionStatusTypePendingGroup)
     }
 
   }

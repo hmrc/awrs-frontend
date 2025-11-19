@@ -17,50 +17,63 @@
 package connectors
 
 import models._
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.http.Status
-import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.http.cache.client.ShortLivedCache
-import utils.AwrsUnitTestTraits
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Format
+import repositories.ShortLivedCacheRepository
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.cache.DataKey
 import utils.TestConstants._
 import utils.TestUtil._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
-import scala.concurrent.Future
+class Save4LaterConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
-class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
+  implicit val ec: ExecutionContext = ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val format: Format[BusinessCustomerDetails] = BusinessCustomerDetails.formats
 
-  val mockShortLivedCache: ShortLivedCache = mock[ShortLivedCache]
+  val mockShortLivedCacheRepository: ShortLivedCacheRepository = mock[ShortLivedCacheRepository]
 
   val testSave4LaterConnector: Save4LaterConnector = new Save4LaterConnector() {
-    override val shortLivedCache: ShortLivedCache = mockShortLivedCache
+    override val shortLivedCacheRepository: ShortLivedCacheRepository = mockShortLivedCacheRepository
   }
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockShortLivedCache)
+    reset(mockShortLivedCacheRepository)
   }
+
+  def await[A](future: Future[A]): A = Await.result(future, 5.seconds)
 
   "ShortLivedCache" must {
     "fetch saved BusinessDetails from save4later" in {
       val key = "Business Details"
-      when(mockShortLivedCache.fetchAndGetEntry[BusinessCustomerDetails](any(), ArgumentMatchers.eq(key))(any(), any(), any())).thenReturn(Future.successful(Some(reviewDetails)))
+      when(mockShortLivedCacheRepository.fetchData4Later[BusinessCustomerDetails](testUtr, DataKey[BusinessCustomerDetails](key)))
+        .thenReturn(Future.successful(Some(reviewDetails)))
+
       val result = testSave4LaterConnector.fetchData4Later[BusinessCustomerDetails](testUtr, key)
       await(result) mustBe Some(reviewDetails)
     }
 
     "save business details into save4later" in {
       val key = "BC_Business_Details"
-      when(mockShortLivedCache.cache(any(), ArgumentMatchers.eq(key), any())(any(), any(), any())).thenReturn(Future.successful(returnedCacheMap))
+      when(mockShortLivedCacheRepository.saveData4Later[BusinessCustomerDetails](testUtr, DataKey[BusinessCustomerDetails](key), reviewDetails))
+        .thenReturn(Future.successful(Some(reviewDetails)))
+
       val result = testSave4LaterConnector.saveData4Later(testUtr, key, reviewDetails)
       await(result).get mustBe reviewDetails
     }
 
     "fetch all data from save4later by utr" in {
-      when(mockShortLivedCache.fetch(any())(any(), any())).thenReturn(Future.successful(Some(returnedCacheMap)))
+      when(mockShortLivedCacheRepository.fetchAll(testUtr))
+        .thenReturn(Future.successful(Some(testCacheItem)))
+
       val result = testSave4LaterConnector.fetchAll(testUtr)
 
       await(result).get.toString must include("BC_Business_Details")
@@ -68,12 +81,13 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "remove everything from save4later" in {
-      when(mockShortLivedCache.remove(any())(any(), any())).thenReturn(Future.successful(HttpResponse.apply(Status.OK, "")))
+      when(mockShortLivedCacheRepository.removeAll("TEST"))
+        .thenReturn(Future.successful(()))
 
       val result = testSave4LaterConnector.removeAll("TEST")
 
       await(result) mustBe ()
-      verify(mockShortLivedCache, times(1)).remove(ArgumentMatchers.eq("TEST"))(any(),any())
+      verify(mockShortLivedCacheRepository, times(1)).removeAll("TEST")
     }
 
   }

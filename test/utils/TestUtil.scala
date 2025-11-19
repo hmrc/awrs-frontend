@@ -31,7 +31,7 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.DataCacheKeys._
 import services.JourneyConstants
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
 import TestConstants._
 import controllers.auth.StandardAuthRetrievals
@@ -370,6 +370,19 @@ object TestUtil extends PlaySpec {
   val reviewDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", true, Some("agent123"))
   val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_Business_Details" -> Json.toJson(reviewDetails), "Supplier" -> Json.toJson(testSuppliers)))
   val returnedKeystoreCacheMap: CacheMap = CacheMap("data", Map("1097172564" -> Json.toJson(testSubscriptionStatusTypePendingGroup)))
+
+  // CacheItem for MongoDB repository tests
+  import uk.gov.hmrc.mongo.cache.CacheItem
+  import java.time.Instant
+  val testCacheItem: CacheItem = CacheItem(
+    id = "data",
+    data = Json.obj(
+      "BC_Business_Details" -> Json.toJson(reviewDetails),
+      "Supplier" -> Json.toJson(testSuppliers)
+    ),
+    createdAt = Instant.now(),
+    modifiedAt = Instant.now()
+  )
 
   def createIndexViewModel(legalEntity: String,
                            businessDetails: view_models.IndexStatus = SectionComplete,

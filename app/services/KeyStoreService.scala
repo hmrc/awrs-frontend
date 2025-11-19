@@ -22,7 +22,7 @@ import controllers.auth.StandardAuthRetrievals
 import models.reenrolment.KnownFactsResponse
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.AccountUtils
 import utils.CacheUtil.cacheUtil
 

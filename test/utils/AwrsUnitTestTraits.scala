@@ -40,7 +40,40 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.implicitConversions
 
-trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneAppPerSuite {
+// Base trait for pure unit tests that don't need a Guice application
+trait AwrsUnitTestBase extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+
+  def await[A](result: Future[A]): A = {
+    helperAwait(result)
+  }
+
+  implicit def convertToOption[T](value: T): Option[T] = Some(value)
+}
+
+// Trait for tests that need a full Guice application with views, controllers, etc.
+trait AwrsUnitTestTraits extends AwrsUnitTestBase with GuiceOneAppPerSuite {
+
+  // Override fakeApplication to disable MongoDB module and provide mock repositories for unit tests
+  override def fakeApplication(): play.api.Application = {
+    import play.api.inject.guice.GuiceApplicationBuilder
+    import play.api.inject.bind
+    import repositories.{SessionCacheRepository, ShortLivedCacheRepository, APIShortLivedCacheRepository}
+
+    // Create mock repositories
+    val mockSessionCacheRepository = mock[SessionCacheRepository]
+    val mockShortLivedCacheRepository = mock[ShortLivedCacheRepository]
+    val mockAPIShortLivedCacheRepository = mock[APIShortLivedCacheRepository]
+
+    GuiceApplicationBuilder()
+      .disable[config.MongoModule]
+      .overrides(
+        bind[SessionCacheRepository].toInstance(mockSessionCacheRepository),
+        bind[ShortLivedCacheRepository].toInstance(mockShortLivedCacheRepository),
+        bind[APIShortLivedCacheRepository].toInstance(mockAPIShortLivedCacheRepository)
+      )
+      .build()
+  }
 
   private val messagesActionBuilder: MessagesActionBuilder = new DefaultMessagesActionBuilderImpl(stubBodyParser[AnyContent](), stubMessagesApi())
   private val stubCC = stubControllerComponents()
@@ -68,10 +101,6 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   val testEnrolmentStoreProxyService:EnrolmentStoreProxyService = new EnrolmentStoreProxyService(mockEnrolmentStoreProxyConnector)
   val mockMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
   implicit val messages: Messages = stubMessages()
-
-  def await[A](result: Future[A]): A = {
-    helperAwait(result)
-  }
 
   when(mockAppConfig.countryCodes)
     .thenReturn(mockCountryCodes)
@@ -110,10 +139,6 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   lazy val directorEntities = List("LTD", "LTD_GRP")
   lazy val partnerEntities = List("Partnership", "LLP", "LLP_GRP")
   lazy val groupEntities = List("LTD_GRP", "LLP_GRP")
-
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-
-  implicit def convertToOption[T](value: T): Option[T] = Some(value)
 
   implicit def convertToFuture[T](value: T): Future[Option[T]] = Future.successful(value)
 

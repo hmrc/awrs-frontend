@@ -38,7 +38,7 @@ import play.twirl.api.HtmlFormat
 import services.DataCacheKeys._
 import services.Save4LaterService
 import services.mocks.MockSave4LaterService
-import uk.gov.hmrc.http.cache.client._
+import models.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.TestConstants._
 import utils.TestUtil._
