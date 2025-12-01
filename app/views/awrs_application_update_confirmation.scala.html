@@ -29,7 +29,7 @@
 @awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
 
 @govWrapper = {
-    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.confirmation.title")), userLoggedIn = true){
+    @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.update.confirmation.title", request.session.get("businessName").getOrElse(""))), userLoggedIn = true){
                 @confirmationHelper(
                     "awrs.update.confirmation.description",
                     "awrs.update.confirmation.description_1",
