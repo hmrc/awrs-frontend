@@ -136,9 +136,9 @@ object AWRSEnums {
   object DeRegistrationReasonEnum extends AWRSEnumeration {
     val CeasesToBeRegisterableForTheScheme: DeRegistrationReasonEnum.Value = Value("Ceases to be registerable for the scheme")
     val CeasesToTradeAsAnAlcoholWholesaler: DeRegistrationReasonEnum.Value = Value("Ceases to trade as an alcohol wholesaler")
-    val JoiningAGroupToRegisterForAWRS: DeRegistrationReasonEnum.Value = Value("Registering with a group")
-    val JoiningAPartnershipToRegisterForAWRS: DeRegistrationReasonEnum.Value = Value("Registering with a partnership")
-    val GroupDisbanded: DeRegistrationReasonEnum.Value = Value("Group ended")
+    val JoiningAGroupToRegisterForAWRS: DeRegistrationReasonEnum.Value = Value("Joining a group to register for AWRS")
+    val JoiningAPartnershipToRegisterForAWRS: DeRegistrationReasonEnum.Value = Value("Joining a partnership to register for AWRS")
+    val GroupDisbanded: DeRegistrationReasonEnum.Value = Value("Group disbanded")
     val PartnershipDisbanded: DeRegistrationReasonEnum.Value = Value("Partnership disbanded")
     val Other: DeRegistrationReasonEnum.Value = Value("Others")
   }

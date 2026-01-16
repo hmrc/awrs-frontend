@@ -801,9 +801,9 @@ awrs.de_registration_reason.page_heading = What is the reason you are cancelling
 awrs.de_registration_reason.other_input_label= What are the other reasons you are cancelling your registration?
 awrs.de_registration.reason.cases_to_be_registerable_for_the_scheme.schema_enum=Ceases to be registerable for the scheme
 awrs.de_registration.reason.ceases_to_trade_as_an_alcohol_wholesaler.schema_enum=Ceases to trade as an alcohol wholesaler
-awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum= Registering with a group
-awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum= Registering with a partnership
-awrs.de_registration.reason.group_disbanded.schema_enum= Group ended
+awrs.de_registration.reason.joining_a_group_to_register_for_awrs.schema_enum= Joining a group to register for AWRS
+awrs.de_registration.reason.joining_a_partnership_to_register_for_awrs.schema_enum= Joining a partnership to register for AWRS
+awrs.de_registration.reason.group_disbanded.schema_enum= Group disbanded
 awrs.de_registration.reason.partnership_disbanded.schema_enum=Partnership disbanded
 awrs.de_registration.reason.other.schema_enum=Others
 # Dynamically created - DO NOT DELETE
