@@ -23,11 +23,6 @@ import java.time.format.DateTimeFormatter
 
 object DeRegistrationHelper {
 
-  private val frontendKey = (name: String) => f"awrs.de_registration.reason.$name"
-  private val backendKey = (name: String) => f"awrs.de_registration.reason.$name.schema_enum"
-
-  def enumPair(enumName: String): (String, String) = backendKey(enumName) -> frontendKey(enumName)
-
   lazy val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
 
   def stringifyDate(date: TupleDate): String = date.localDate.format(formatter)
