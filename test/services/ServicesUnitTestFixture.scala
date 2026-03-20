@@ -18,13 +18,13 @@ package services
 
 import connectors.mock.MockAuthConnector
 import services.apis.mocks.MockAwrsAPI5
-import services.mocks.{MockApplicationService, MockBusinessCustomerService, MockIndexService, MockTestStatusManagementService}
+import services.mocks.{MockApplicationService, MockBusinessCustomerCacheConnector, MockIndexService, MockTestStatusManagementService}
 import utils.AwrsUnitTestTraits
 
 trait ServicesUnitTestFixture extends AwrsUnitTestTraits
   with MockAwrsAPI5
   with MockAuthConnector
-  with MockBusinessCustomerService
+  with MockBusinessCustomerCacheConnector
   with MockTestStatusManagementService
   with MockApplicationService
   with MockIndexService {

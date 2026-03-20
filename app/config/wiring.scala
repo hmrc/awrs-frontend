@@ -34,14 +34,6 @@ class CachedStaticHtmlPartialProvider @Inject()(val httpClientV2: HttpClientV2) 
   override def maximumEntries: Int = 1000
 }
 
-class BusinessCustomerSessionCache @Inject()(servicesConfig: ServicesConfig,
-                                             val httpClientV2: HttpClientV2) extends SessionCache {
-  override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.review-details.cache", "business-customer-frontend")
-
-  override lazy val baseUri: String = servicesConfig.baseUrl("cachable.session-cache")
-  override lazy val domain: String = servicesConfig.getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
-}
-
 class AwrsSessionCache @Inject()(servicesConfig: ServicesConfig,
                                  val httpClientV2: HttpClientV2) extends SessionCache {
   override lazy val defaultSource: String = servicesConfig.getConfString("cachable.session-cache.awrs-frontend.cache", "awrs-frontend")
