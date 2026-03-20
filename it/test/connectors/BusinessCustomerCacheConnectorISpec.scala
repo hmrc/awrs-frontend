@@ -54,7 +54,7 @@ class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting
 
   "BusinessCustomerService.getReviewBusinessDetails" must {
 
-    "return Some[T] when the downstream responds with 200 and valid json" in {
+    "return review details when the downstream responds with 200 and valid json" in {
       val expectedResponse = TestReviewDetails("agency", "1234567890")
 
       mockResponse(

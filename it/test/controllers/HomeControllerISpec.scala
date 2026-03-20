@@ -88,7 +88,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
     s"""{"processingDate":"2015-12-17T09:30:47Z","etmpFormBundleNumber":"123456789012345","awrsRegistrationNumber": "DummyRef"}"""
   )
 
-  def stubShowAndRedirectExternalCalls(data : Option[JsObject], keystoreStatus: Int): StubMapping = {
+  def stubShowAndRedirectExternalCalls(data : Option[JsObject], businessCustomerStatus: Int): StubMapping = {
     stubFor(post(urlMatching("/auth/authorise"))
       .willReturn(
         aResponse()
@@ -107,7 +107,11 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
           )
       )
     )
-    stubbedGet(s"""/keystore/business-customer-frontend/$SessionId""", keystoreStatus, businessCustomerDetailsString)
+    stubbedGet(
+      "/business-customer/external-data/awrs",
+      businessCustomerStatus,
+      data.map(_.toString).getOrElse("")
+    )
     stubS4LPut("5810451", "businessCustomerDetails", businessCustomerDetailsStringS4L)
     stubbedGet("/awrs/status-info/users/XE0001234567890", OK, testResponse)
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
@@ -128,7 +132,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
     "for API4 journey where no Business Customer data is found and redirect to business customer" in {
       stubShowAndRedirectExternalCalls(None, NOT_FOUND)
 
-      val controllerUrl = routes.HomeController.showOrRedirect(None).url
+      val controllerUrl = routes.HomeController.showOrRedirect(Some("awrs")).url
 
       val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
         HeaderNames.xSessionId -> s"$SessionId",
