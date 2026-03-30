@@ -18,8 +18,10 @@ package controllers
 
 import audit.Auditable
 import config.ApplicationConfig
+import connectors.BusinessCustomerCacheConnector
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import models.{ApplicationStatus, BusinessCustomerDetails}
+
 import java.time.LocalDateTime
 import play.api.libs.json.JsResultException
 import play.api.mvc._
@@ -34,7 +36,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HomeController @Inject()(mcc: MessagesControllerComponents,
-                               businessCustomerService: BusinessCustomerService,
+                               businessCustomerService: BusinessCustomerCacheConnector,
                                val deEnrolService: DeEnrolService,
                                checkEtmpService: CheckEtmpService,
                                val authConnector: DefaultAuthConnector,

@@ -40,7 +40,7 @@ class CryptoProviderSpec extends PlaySpec {
   }
   "MongoCryptoProvider" should {
     "encrypt and decrypt (round-trip) with the same key" in {
-      val key = randomBase64Key(32)
+      val key = randomBase64Key()
       val provider = new CryptoProvider(cfgWith(key))
       val crypto   = provider.crypto
       val plain = "Hello £Ü 𐍈 — {\"a\":1}"
@@ -49,16 +49,16 @@ class CryptoProviderSpec extends PlaySpec {
       crypto.decrypt(enc).value mustBe plain
     }
     "fail to decrypt with a different key" in {
-      val key1 = randomBase64Key(32)
-      val key2 = randomBase64Key(32)
+      val key1 = randomBase64Key()
+      val key2 = randomBase64Key()
       val p1 = new CryptoProvider(cfgWith(key1))
       val p2 = new CryptoProvider(cfgWith(key2))
       val enc = p1.crypto.encrypt(PlainText("secret"))
       an [SecurityException] must be thrownBy p2.crypto.decrypt(enc)
     }
     "support rotation via previousKeys (new key reads old ciphertext)" in {
-      val oldKey = randomBase64Key(32)
-      val newKey = randomBase64Key(32)
+      val oldKey = randomBase64Key()
+      val newKey = randomBase64Key()
       val oldProvider = new CryptoProvider(cfgWith(oldKey))
       val ciphertext  = oldProvider.crypto.encrypt(PlainText("rotate-me"))
       val newProvider = new CryptoProvider(cfgWith(newKey, previous = Seq(oldKey)))
