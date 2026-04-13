@@ -17,7 +17,6 @@
 package controllers
 
 import builders.SessionBuilder
-import connectors.BusinessCustomerCacheConnector
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums
 import models.{ApplicationStatus, BusinessCustomerDetails}
@@ -31,7 +30,7 @@ import play.api.libs.json.JsResultException
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.mocks.MockSave4LaterService
-import services.CheckEtmpService
+import services.{BusinessCustomerService, CheckEtmpService}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import utils.AwrsUnitTestTraits
@@ -45,7 +44,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector
   with MockSave4LaterService {
 
-  val mockBusinessCustomerService: BusinessCustomerCacheConnector = mock[BusinessCustomerCacheConnector]
+  val mockBusinessCustomerService: BusinessCustomerService = mock[BusinessCustomerService]
   val mockCheckEtmpService: CheckEtmpService = mock[CheckEtmpService]
 
   val tooSoonError: awrs_application_too_soon_error = app.injector.instanceOf[awrs_application_too_soon_error]
