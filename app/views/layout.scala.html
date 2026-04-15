@@ -17,6 +17,7 @@
 @import config.ApplicationConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcReportTechnicalIssueHelper, HmrcStandardPage, HmrcTimeoutDialogHelper}
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html.helper.CSPNonce
 
 @this(
@@ -67,6 +68,11 @@
 
 @hmrcStandardPage(
     HmrcStandardPageParams(
+        pageTitle = pageTitle,
+        isWelshTranslationAvailable = false,
+        serviceNavigation = Some(
+            ServiceNavigation(serviceName = Some(messages("service.name")))
+        ),
         serviceURLs = ServiceURLs(
             serviceUrl = Some(routes.HomeController.showOrRedirect(None).url),
             signOutUrl = signOutUrl
@@ -75,7 +81,6 @@
             additionalScriptsBlock = Some(scriptsBlock),
             beforeContentBlock = Some(beforeContentBlock),
             additionalHeadBlock = Some(head)
-        ),
-        pageTitle = pageTitle
+        )
     )
 )(content)
