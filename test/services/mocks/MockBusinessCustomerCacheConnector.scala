@@ -16,26 +16,26 @@
 
 package services.mocks
 
+import connectors.BusinessCustomerCacheConnector
 import models.BusinessCustomerDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import services.BusinessCustomerService
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
 import scala.concurrent.Future
 
 
-trait MockBusinessCustomerService extends AwrsUnitTestTraits {
+trait MockBusinessCustomerCacheConnector extends AwrsUnitTestTraits {
 
-  val mockBusinessCustomerService = mock[BusinessCustomerService]
+  val mockBusinessCustomerService = mock[BusinessCustomerCacheConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockBusinessCustomerService)
   }
 
-  import MockBusinessCustomerService._
+  import MockBusinessCustomerCacheConnector._
 
   protected final def setupMockBusinessCustomerService(getReviewBusinessDetails: Option[BusinessCustomerDetails] = defaultBusinessCustomerDetails): Unit =
     when(mockBusinessCustomerService.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getReviewBusinessDetails))
@@ -45,6 +45,6 @@ trait MockBusinessCustomerService extends AwrsUnitTestTraits {
 
 }
 
-object MockBusinessCustomerService {
+object MockBusinessCustomerCacheConnector {
   val defaultBusinessCustomerDetails: BusinessCustomerDetails = testBusinessCustomerDetails("SOP")
 }
