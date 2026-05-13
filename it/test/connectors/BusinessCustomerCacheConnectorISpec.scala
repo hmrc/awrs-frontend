@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
-  private val service: BusinessCustomerCacheConnector = inject[BusinessCustomerCacheConnector]
+  private val businessCustomerCacheConnector: BusinessCustomerCacheConnector = inject[BusinessCustomerCacheConnector]
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -62,7 +62,7 @@ class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting
         Json.toJson(expectedResponse).toString()
       )
 
-      val result = await(service.getReviewBusinessDetails[TestReviewDetails])
+      val result = await(businessCustomerCacheConnector.getReviewBusinessDetails[TestReviewDetails])
 
       result mustBe Some(expectedResponse)
     }
@@ -70,7 +70,7 @@ class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting
     "return None when the downstream responds with 404" in {
       mockResponse(NOT_FOUND)
 
-      val result = await(service.getReviewBusinessDetails[TestReviewDetails])
+      val result = await(businessCustomerCacheConnector.getReviewBusinessDetails[TestReviewDetails])
 
       result mustBe None
     }
@@ -78,7 +78,7 @@ class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting
     "return None when the downstream responds with an unexpected status" in {
       mockResponse(SERVICE_UNAVAILABLE)
 
-      val result = await(service.getReviewBusinessDetails[TestReviewDetails])
+      val result = await(businessCustomerCacheConnector.getReviewBusinessDetails[TestReviewDetails])
 
       result mustBe None
     }
@@ -89,7 +89,7 @@ class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting
         """this-is-not-json"""
       )
 
-      val result = await(service.getReviewBusinessDetails[TestReviewDetails])
+      val result = await(businessCustomerCacheConnector.getReviewBusinessDetails[TestReviewDetails])
 
       result mustBe None
     }
@@ -100,7 +100,7 @@ class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting
         """{"foo":"bar"}"""
       )
 
-      val result = await(service.getReviewBusinessDetails[TestReviewDetails])
+      val result = await(businessCustomerCacheConnector.getReviewBusinessDetails[TestReviewDetails])
 
       result mustBe None
     }
