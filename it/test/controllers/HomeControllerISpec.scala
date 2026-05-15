@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, getRequestedFor, post, stubFor, urlEqualTo, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import controllers.routes
 import models.AwrsUsers
@@ -127,6 +127,56 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
           |}""".stripMargin).as[JsObject]), Some(Tuple3("etmpDetails", "noneGET", "businessRegistration")))
   }
 
+  def stubShowAndRedirectWithBusinessCustomerCache(
+                                                    cachedBusinessCustomerDetails: JsObject,
+                                                    awrsStatus: Int = OK
+                                                  ): StubMapping = {
+    stubFor(post(urlMatching("/auth/authorise"))
+      .willReturn(
+        aResponse()
+          .withStatus(OK)
+          .withBody(
+            s"""{
+               |  "authorisedEnrolments": [{
+               |    "key": "IR-SA",
+               |    "identifiers": [{ "key": "utr", "value": "5810451" }],
+               |    "state": "Activated"
+               |   }],
+               |  "affinityGroup": "Individual",
+               |  "optionalCredentials": {"providerId": "12345-credId", "providerType": "GovernmentGateway"},
+               |  "groupIdentifier" : "GroupId"
+               |}""".stripMargin
+          )
+      )
+    )
+
+    stubbedGet(
+      "/business-customer/external-data/awrs",
+      OK,
+      cachedBusinessCustomerDetails.toString
+    )
+
+    stubS4LPut("5810451", "businessCustomerDetails", businessCustomerDetailsStringS4L)
+
+    stubbedGet(
+      "/awrs/status-info/users/XE0001234567890",
+      awrsStatus,
+      testResponse
+    )
+
+    stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
+    stubbedPost(s"""$baseURI$subscriptionURI$safeId""", OK, successResponse.toString)
+
+    stubS4LGet("5810451", "", None, Some(Tuple3("etmpDetails", Scenario.STARTED, "appStatus")))
+    stubS4LGet("5810451", "", None, Some(Tuple3("etmpDetails", "appStatus", "noneGET")))
+
+    stubS4LGet("5810451", "businessRegistrationDetails",
+      Some(Json.parse(
+        """{
+          | "utr" : "5810451"
+          |}""".stripMargin).as[JsObject]), Some(Tuple3("etmpDetails", "noneGET", "businessRegistration")))
+  }
+
   "redirect to business type page" when {
 
     "for API4 journey where no Business Customer data is found and redirect to business customer" in {
@@ -153,6 +203,30 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
       ).get())
       resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
       resp.status mustBe 303
+    }
+
+    "for API4 journey where Business Customer data is found in cache and AWRS has no existing enrolment" in {
+      stubShowAndRedirectWithBusinessCustomerCache(businessCustomerDetailsStringS4L)
+
+      val controllerUrl = routes.HomeController.showOrRedirect(None).url
+
+      val resp: WSResponse = await(client(controllerUrl).withHttpHeaders(
+        HeaderNames.xSessionId -> s"$SessionId",
+        "Csrf-Token" -> "nocheck"
+      ).get())
+
+      resp.header("Location") mustBe Some("/alcohol-wholesale-scheme/business-type")
+      resp.status mustBe 303
+
+      wireMockServer.verify(
+        1,
+        getRequestedFor(urlEqualTo("/business-customer/external-data/awrs"))
+      )
+
+      wireMockServer.verify(
+        1,
+        getRequestedFor(urlEqualTo("/awrs/status-info/users/XE0001234567890"))
+      )
     }
 
   }
