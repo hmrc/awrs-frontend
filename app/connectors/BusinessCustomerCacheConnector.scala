@@ -32,7 +32,7 @@ import scala.util.Try
 @Singleton
 class BusinessCustomerCacheConnector @Inject() (
     servicesConfig: ServicesConfig,
-    http: HttpClientV2,
+    http: HttpClientV2
 ) extends Logging {
 
   val serviceName        = "business-customer"
