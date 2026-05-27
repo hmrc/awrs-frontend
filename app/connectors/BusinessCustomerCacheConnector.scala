@@ -69,7 +69,10 @@ class BusinessCustomerCacheConnector @Inject() (
       .execute[HttpResponse]
       .map(handleResponse[T])
       .recover { case error =>
-        logger.warn(s"[BusinessCustomerCacheConnector] received ${error.getCause} for business customer cache request")
+        logger.warn(
+          s"[BusinessCustomerCacheConnector] failed business customer cache request: ${error.getClass.getName}: ${Option(error.getMessage).getOrElse("no message")} - $error",
+          error
+        )
         None
       }
   }
