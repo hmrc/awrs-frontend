@@ -16,7 +16,7 @@
 
 package connectors
 
-import config.{AwrsAPIShortLivedCache, AwrsSessionCache, AwrsShortLivedCache, BusinessCustomerSessionCache}
+import config.{AwrsAPIShortLivedCache, AwrsSessionCache, AwrsShortLivedCache}
 import play.api.libs.json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
@@ -35,10 +35,6 @@ class AwrsAPIDataCacheConnector @Inject()(awrsAPIShortLivedCache: AwrsAPIShortLi
 
 class AwrsKeyStoreConnector @Inject()(awrsSessionCache: AwrsSessionCache) extends KeyStoreConnector {
   override val sessionCache: SessionCache = awrsSessionCache
-}
-
-class BusinessCustomerDataCacheConnector @Inject()(businessCustomerSessionCache: BusinessCustomerSessionCache) extends KeyStoreConnector {
-  override val sessionCache: SessionCache = businessCustomerSessionCache
 }
 
 trait KeyStoreConnector {
