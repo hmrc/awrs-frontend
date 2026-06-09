@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package config
+package repositories
 
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.cache.DataKey
 
-import javax.inject.Inject
-import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.{ExecutionContext, Future}
 
-class CachedStaticHtmlPartialProvider @Inject()(val httpClientV2: HttpClientV2) extends CachedStaticHtmlPartialRetriever {
-  override def refreshAfter: Duration = 60.seconds
+trait CacheRepository {
 
-  override def expireAfter: Duration = 60.minutes
+  def putSession[T: Writes](
+      dataKey: DataKey[T],
+      data: T
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[T]
 
-  override def maximumEntries: Int = 1000
+  def getFromSession[T: Reads](dataKey: DataKey[T])(implicit hc: HeaderCarrier): Future[Option[T]]
+
+  def deleteFromSession(implicit hc: HeaderCarrier): Future[Unit]
+
 }

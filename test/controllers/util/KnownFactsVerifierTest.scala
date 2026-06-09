@@ -20,8 +20,9 @@ import models.reenrolment._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import utils.NoMongoTestApplication
 
-class KnownFactsVerifierTest extends AnyWordSpecLike with Matchers with GuiceOneAppPerSuite {
+class KnownFactsVerifierTest extends AnyWordSpecLike with Matchers with GuiceOneAppPerSuite with NoMongoTestApplication {
 
   private val testAwrsRef = "XAAW00000123456"
   private val testUtr = "1234567890"

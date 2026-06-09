@@ -88,7 +88,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
     s"""{"processingDate":"2015-12-17T09:30:47Z","etmpFormBundleNumber":"123456789012345","awrsRegistrationNumber": "DummyRef"}"""
   )
 
-  def stubShowAndRedirectExternalCalls(data : Option[JsObject], businessCustomerStatus: Int): StubMapping = {
+  def stubShowAndRedirectExternalCalls(data : Option[JsObject], businessCustomerStatus: Int): Unit = {
     stubFor(post(urlMatching("/auth/authorise"))
       .willReturn(
         aResponse()
@@ -130,7 +130,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
   def stubShowAndRedirectWithBusinessCustomerCache(
                                                     cachedBusinessCustomerDetails: JsObject,
                                                     awrsStatus: Int = OK
-                                                  ): StubMapping = {
+                                                  ): Unit = {
     stubFor(post(urlMatching("/auth/authorise"))
       .willReturn(
         aResponse()

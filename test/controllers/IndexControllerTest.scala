@@ -24,7 +24,7 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services._
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.AwrsSessionKeys
 import utils.TestUtil._
 import views.html.awrs_index
