@@ -37,30 +37,31 @@ import scala.concurrent.Future
 
 class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture with AwrsFieldConfig {
 
-  trait Setup {
-    val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-    val template: awrs_trading_name = app.injector.instanceOf[views.html.awrs_trading_name]
-    val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
+  val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val template: awrs_trading_name = app.injector.instanceOf[views.html.awrs_trading_name]
+  val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
       override val signInUrl: String = applicationConfig.signIn
-    }
+  }
+
+  def setupMocks(): Unit = {
+    val businessType = "test"
+    setupMockSave4LaterServiceWithOnly(
+      fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
+      fetchBusinessDetails = testBusinessDetails(),
+      fetchNewApplicationType = testNewApplicationType
+    )
+    when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(NewApplicationMode))
+    when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
+    setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
   }
 
   "the trading name view" must {
     "not display the business name field" when {
-      "the business is not a group in edit mode" in new Setup {
-        val businessType = "test"
-
+      "the business is not a group in edit mode" in {
         setAuthMocks()
-        setupMockSave4LaterServiceWithOnly(
-          fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
-          fetchBusinessDetails = testBusinessDetails(),
-          fetchNewApplicationType = testNewApplicationType
-        )
-        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(NewApplicationMode))
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
-        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
+        setupMocks()
 
         val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD"))
         val document: String = contentAsString(result)
@@ -70,20 +71,9 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
     }
 
     "display the business name field" when {
-      "the business is a group in edit mode" in new Setup {
-        val businessType = "test"
-
+      "the business is a group in edit mode" in{
         setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
-        setupMockSave4LaterServiceWithOnly(
-          fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
-          fetchBusinessDetails = testBusinessDetails(),
-          fetchNewApplicationType = testNewApplicationType
-        )
-        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(NewApplicationMode))
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
-        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
+        setupMocks()
 
         val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
         val document: String = contentAsString(result)
@@ -91,26 +81,51 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
         document must include(messages("awrs.generic.business_name"))
       }
 
-      "redirect the user back one page using the back link in edit mode" in new Setup {
-        val businessType = "test"
+      "redirect the user back one page using the back link in edit mode" in{
         setAuthMocks()
-        setupMockSave4LaterServiceWithOnly(
-          fetchBusinessCustomerDetails = testBusinessCustomerDetails(businessType),
-          fetchBusinessDetails = testBusinessDetails(),
-          fetchNewApplicationType = testNewApplicationType
-        )
-        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(NewApplicationMode))
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
-        setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
+        setupMocks()
 
         val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
         val document: Document = Jsoup.parse(contentAsString(result))
 
         document.getElementById("back").text() must be(Messages("awrs.generic.back"))
-        document.getElementById("back").attr("href") mustBe ("/alcohol-wholesale-scheme/view-section/businessDetails")
+        document.getElementById("back").attr("href") mustBe "/alcohol-wholesale-scheme/view-section/businessDetails"
       }
+    }
+
+    "display the title" in {
+      setAuthMocks()
+      setupMocks()
+
+      val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
+      val document: Document = Jsoup.parse(contentAsString(result))
+
+      document.getElementById("additional-information-heading").text() must be(Messages("awrs.generic.do_you_have_trading_name"))
+    }
+
+    "display the correct radio button options" in {
+      setAuthMocks()
+      setupMocks()
+
+      val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
+      val document: Document = Jsoup.parse(contentAsString(result))
+
+      val radioOptions = document.select("label.govuk-radios__label")
+      radioOptions.size() mustBe 2
+
+
+      radioOptions.get(0).text() mustBe Messages("awrs.generic.yes")
+      radioOptions.get(1).text() mustBe Messages("awrs.generic.no")
+    }
+
+    "display the continue button" in {
+      setAuthMocks()
+      setupMocks()
+
+      val result: Future[Result] = tradingDateController.showTradingName(false).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
+      val document: Document = Jsoup.parse(contentAsString(result))
+
+      document.getElementById("save-and-continue").text() mustBe Messages("awrs.generic.save_return")
     }
   }
 }

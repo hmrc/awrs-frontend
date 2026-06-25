@@ -19,7 +19,7 @@ package views
 import builders.SessionBuilder
 import controllers.ApplicationStatusController
 import models.BusinessDetailsEntityTypes.Llp
-import models.FormBundleStatus.Rejected
+import models.FormBundleStatus._
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -58,18 +58,121 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
   val testApplicationStatusController = new ApplicationStatusController(mockMCC, testStatusManagementService, mockAuditable, mockAccountUtils, mockAuthConnector, testSave4LaterService, mockDeEnrolService, mockAppConfig, template)
 
   "viewing the status page" must {
-    "display the application status decision text" in {
-      viewStatusPage {
+
+    "for an Approved user" in {
+      viewStatusPage(Approved, {
         result =>
           val document = Jsoup.parse(contentAsString(result))
+          val bodyText = document.getElementsByClass("govuk-body").text()
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
+          val listText = document.getElementsByClass("govuk-list").text()
+
+
+
+          val expectedLines = Seq(
+            Messages("awrs.application_status.info.approved.line1"),
+            Messages("awrs.application_status.info.approved.line2"),
+            Messages("application_status.info.approved.line3"),
+            Messages("awrs.application_status.info.approved.line4"),
+            Messages("awrs.application_status.info.approved.line5"),
+            Messages("awrs.application_status.info.approved.line6"),
+            Messages("awrs.application_status.info.approved.line7"),
+          )
+
+          expectedLines.foreach { msg => bodyText must include(msg) }
+          headingText must include(Messages("awrs.application_status.info.approved.heading1"))
+          headingText must include(Messages("awrs.application_status.info.approved.heading2"))
+          listText must include(Messages("awrs.application_status.info.approved.line4.1"))
+          listText must include(Messages("awrs.application_status.info.approved.line4.2"))
+      })
+    }
+
+  "for an Approved With Conditions user" in {
+    viewStatusPage(ApprovedWithConditions, {
+      result =>
+        val document = Jsoup.parse(contentAsString(result))
+        val headingText = document.getElementsByClass("govuk-heading-m").text()
+
+        document.title() must include(Messages("awrs.generic.tab.title"))
+
+        document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.lede.main"))
+        headingText must include(Messages("awrs.application_status.info.approved_with_conditions.heading"))
+    })
+  }
+
+    "for a Rejected user" in {
+      viewStatusPage(Rejected, {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
+
+          document.title() must include(Messages("awrs.generic.tab.title"))
+
+          document.getElementsByClass("govuk-details__summary-text").text() must include(Messages("awrs.application_status.decision_question"))
           document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_1"))
           document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_2"))
           document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_3"))
-      }
+          document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_4"))
+          document.getElementsByClass("govuk-details__text").text() must include(Messages("awrs.application_status.decision_answer.para_5"))
+
+          headingText must include(Messages("awrs.application_status.info.rejected.heading"))
+      })
+    }
+
+    "for a Rejected under Review or Appeal user" in {
+      viewStatusPage(RejectedUnderReviewOrAppeal, {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
+
+          document.title() must include(Messages("awrs.generic.tab.title"))
+
+          document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.under_review_or_appeal_lede.main.line1"))
+          document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.under_review_or_appeal_lede.main.line2"))
+          headingText must include(Messages("awrs.application_status.info.rejected.heading"))
+      })
+    }
+
+    "for a Revoked user" in {
+      viewStatusPage(Revoked, {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
+
+          document.title() must include(Messages("awrs.generic.tab.title"))
+
+          document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.lede.main"))
+          headingText must include(Messages("awrs.application_status.info.rejected.heading"))
+      })
+    }
+
+    "for a Revoked under Review or Appeal user" in {
+      viewStatusPage(RevokedUnderReviewOrAppeal, {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
+
+          document.title() must include(Messages("awrs.generic.tab.title"))
+
+          document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.under_review_or_appeal_lede.main.line1"))
+          headingText must include(Messages("awrs.application_status.info.rejected.heading"))
+      })
+    }
+
+    "for a Pending user" in {
+      viewStatusPage(Pending, {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
+
+          document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.lede.main"))
+
+          headingText must include("awrs.application_status.info.pending.heading")
+      })
     }
   }
 
-  private def viewStatusPage(test: Future[Result] => Any): Unit = {
+  private def viewStatusPage(status: FormBundleStatus, test: Future[Result] => Any): Unit = {
     resetAuthConnector()
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     setupMockSave4LaterServiceWithOnly(
@@ -79,7 +182,7 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
     when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
     setupMockTestStatusManagementService(
-      status = Rejected,
+      status = status,
       statusInfo = TestUtil.testStatusInfoTypeRejected,
       notification = None,
       configuration = MockStatusManagementServiceConfiguration(

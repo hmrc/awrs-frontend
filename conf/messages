@@ -294,15 +294,6 @@ awrs.application_status.info.pending.line3=If approved, your business will recei
 awrs.application_status.page_title=Application status
 awrs.application_status.appstatus-title=Alcohol Wholesaler Registration Scheme
 awrs.application_status.lede.main=Your application for {0} was {1}
-# uncomment and replace the above once date is to be displayed
-# awrs.application_status.lede.main=Your application for {0} was {1} on the {2}
-# the awrs.application_status.under_review_or_appeal_lede.main.line1 is parameterised as the parameters require css styling
-# {0} is awrs.application_status.lede.{verb_in_main.rejected or verb_in_main.revoked}
-# {1} is awrs.application_status.under_review_or_appeal_lede.{noun_in_main.rejected or noun_in_main.revoked}
-# {2} is the AWRS reference number
-# {3} is awrs.application_status.lede.verb_in_main.under_review_or_appeal
-# for rejected the text should read: Your rejected application for {AWRS ref} is under review or appeal
-# for revoked the text should read: Your revoked registration for {AWRS ref} is under review or appeal
 awrs.application_status.under_review_or_appeal_lede.main.line1=Your {0} {1} for {2} is {3}
 awrs.application_status.under_review_or_appeal_lede.main.line2=The conditions listed below still apply.
 awrs.application_status.under_review_or_appeal_lede.noun_in_main.rejected=application
@@ -319,7 +310,6 @@ awrs.application_status.lede.verb_in_main.revoked=revoked
 awrs.application_status.lede.verb_in_main.under_review_or_appeal=under review or appeal
 awrs.application_status.lede.verb_in_main.other=received
 awrs.application_status.info.pending.heading=What happens next
-# the awrs.application_status.info.pending.count must be Int and equal to the number of pending_info.linex
 awrs.application_status.info.pending.count=3
 awrs.application_status.info.pending=You can still trade while we process your application.
 awrs.application_status.info.pending.newBusiness.count=2
