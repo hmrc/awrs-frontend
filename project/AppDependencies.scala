@@ -19,7 +19,7 @@ import play.sbt.PlayImport.*
 
 private object AppDependencies {
 
-  private val bootstrapPlayVersion = "10.7.0"
+  private val bootstrapPlayVersion = "10.8.0"
   val mockitoVersion = "5.23.0"
 
   val compile: Seq[ModuleID] = Seq(
