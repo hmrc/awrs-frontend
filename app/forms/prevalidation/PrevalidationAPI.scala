@@ -73,7 +73,6 @@ trait PrevalidationAPI[T] {
       case TrimOption.bothAndCompress => trimBothAndCompressFunc(value)
       case TrimOption.all => trimAllFunc(value)
       case TrimOption.none => value
-      case TrimOption.utr => trimUTR(value)
       case TrimOption.crn => trimCRN(value)
     }
     (caseRules.getOrElse(removeKeyPrefix(key), CaseOption.none): @unchecked) match {
