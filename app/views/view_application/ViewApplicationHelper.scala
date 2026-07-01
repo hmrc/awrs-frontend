@@ -17,7 +17,7 @@
 package views.view_application
 
 import services.DataCacheKeys._
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.CacheUtil
 import views.view_application.helpers.SubViewTemplateHelper._
 import views.view_application.helpers.ViewApplicationType

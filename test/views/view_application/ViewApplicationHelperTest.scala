@@ -20,9 +20,10 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import org.scalatestplus.play.PlaySpec
+import utils.NoMongoTestApplication
 import views.view_application.ViewApplicationHelper._
 
-class ViewApplicationHelperTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite {
+class ViewApplicationHelperTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite with NoMongoTestApplication {
 
   type TestData = Seq[Option[String]]
   val dummyString = "dummyString"

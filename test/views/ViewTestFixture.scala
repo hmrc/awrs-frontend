@@ -26,10 +26,12 @@ import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
+import utils.NoMongoTestApplication
 
 abstract class ViewTestFixture extends PlaySpec
   with MockitoSugar
-  with GuiceOneAppPerSuite {
+  with GuiceOneAppPerSuite
+  with NoMongoTestApplication {
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")

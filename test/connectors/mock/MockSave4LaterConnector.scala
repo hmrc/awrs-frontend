@@ -16,14 +16,14 @@
 
 package connectors.mock
 
-import connectors.{AwrsAPIDataCacheConnector, AwrsDataCacheConnector}
+import connectors.{AwrsApiDataCacheConnector, AwrsDataCacheConnector}
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 
 trait MockSave4LaterConnector extends AwrsUnitTestTraits {
   // need to be lazy in case of overrides
   lazy val mockMainStoreSave4LaterConnector: AwrsDataCacheConnector = mock[AwrsDataCacheConnector]
-  lazy val mockApiSave4LaterConnector: AwrsAPIDataCacheConnector = mock[AwrsAPIDataCacheConnector]
+  lazy val mockApiSave4LaterConnector: AwrsApiDataCacheConnector = mock[AwrsApiDataCacheConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()

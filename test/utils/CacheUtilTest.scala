@@ -25,7 +25,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import utils.CacheUtil.cacheUtil
 import utils.TestUtil._
 
-class CacheUtilTest extends PlaySpec with GuiceOneAppPerSuite {
+class CacheUtilTest extends PlaySpec with GuiceOneAppPerSuite with NoMongoTestApplication {
 
   lazy val allEntities = List("SOP", "LTD", "Partnership", "LLP", "LTD_GRP", "LLP_GRP")
 

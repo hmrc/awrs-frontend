@@ -17,9 +17,9 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, getRequestedFor, post, stubFor, urlEqualTo, urlMatching}
-import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import controllers.routes
 import models.AwrsUsers
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -28,12 +28,20 @@ import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec}
 import uk.gov.hmrc.http.HeaderNames
 
-class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers with S4LStub {
+class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers with S4LStub with BeforeAndAfterEach {
 
   val baseURI = "/alcohol-wholesaler-register"
   val subscriptionURI = "/subscription/"
   val regimeURI = "/registration/details"
+  val saUtr: String = "5810451"
   val safeId: String = "XE0001234567890"
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    await(shortLivedCacheRepository.removeAll(saUtr))
+    await(apiShortLivedCacheRepository.removeAll(saUtr))
+    clearSessionCache()
+  }
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"
   val enrolmentKey = s"$AWRS_SERVICE_NAME~AWRSRefNumber~XAAW00000123456"
   val SessionId = s"mock-sessionid"
@@ -88,7 +96,7 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
     s"""{"processingDate":"2015-12-17T09:30:47Z","etmpFormBundleNumber":"123456789012345","awrsRegistrationNumber": "DummyRef"}"""
   )
 
-  def stubShowAndRedirectExternalCalls(data : Option[JsObject], businessCustomerStatus: Int): StubMapping = {
+  def stubShowAndRedirectExternalCalls(data : Option[JsObject], businessCustomerStatus: Int): Unit = {
     stubFor(post(urlMatching("/auth/authorise"))
       .willReturn(
         aResponse()
@@ -112,25 +120,16 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
       businessCustomerStatus,
       data.map(_.toString).getOrElse("")
     )
-    stubS4LPut("5810451", "businessCustomerDetails", businessCustomerDetailsStringS4L)
+    data.foreach(d => stubS4LPut(saUtr, "businessCustomerDetails", d))
     stubbedGet("/awrs/status-info/users/XE0001234567890", OK, testResponse)
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"""$baseURI$subscriptionURI$safeId""", OK, successResponse.toString)
-
-    stubS4LGet("5810451", "", None, Some(Tuple3("etmpDetails", Scenario.STARTED, "appStatus")))
-    stubS4LGet("5810451", "", data, Some(Tuple3("etmpDetails", "appStatus", "noneGET")))
-
-    stubS4LGet("5810451", "businessRegistrationDetails",
-      Some(Json.parse(
-        """{
-          | "utr" : "5810451"
-          |}""".stripMargin).as[JsObject]), Some(Tuple3("etmpDetails", "noneGET", "businessRegistration")))
   }
 
   def stubShowAndRedirectWithBusinessCustomerCache(
                                                     cachedBusinessCustomerDetails: JsObject,
                                                     awrsStatus: Int = OK
-                                                  ): StubMapping = {
+                                                  ): Unit = {
     stubFor(post(urlMatching("/auth/authorise"))
       .willReturn(
         aResponse()
@@ -156,8 +155,6 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
       cachedBusinessCustomerDetails.toString
     )
 
-    stubS4LPut("5810451", "businessCustomerDetails", businessCustomerDetailsStringS4L)
-
     stubbedGet(
       "/awrs/status-info/users/XE0001234567890",
       awrsStatus,
@@ -166,15 +163,6 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
 
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"""$baseURI$subscriptionURI$safeId""", OK, successResponse.toString)
-
-    stubS4LGet("5810451", "", None, Some(Tuple3("etmpDetails", Scenario.STARTED, "appStatus")))
-    stubS4LGet("5810451", "", None, Some(Tuple3("etmpDetails", "appStatus", "noneGET")))
-
-    stubS4LGet("5810451", "businessRegistrationDetails",
-      Some(Json.parse(
-        """{
-          | "utr" : "5810451"
-          |}""".stripMargin).as[JsObject]), Some(Tuple3("etmpDetails", "noneGET", "businessRegistration")))
   }
 
   "redirect to business type page" when {

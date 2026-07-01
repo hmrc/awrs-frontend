@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package config
+package models
 
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+import play.api.libs.json.{Format, JsValue, Json}
+import uk.gov.hmrc.mongo.cache.CacheItem
 
-import javax.inject.Inject
-import scala.concurrent.duration.{Duration, DurationInt}
+case class CacheMap(id: String, data: Map[String, JsValue]) {
+  def getEntry[T](key: String)(implicit fjs: Format[T]): Option[T] = {
+    data.get(key).flatMap { json =>
+      json.asOpt[T]
+    }
+  }
+}
 
-class CachedStaticHtmlPartialProvider @Inject()(val httpClientV2: HttpClientV2) extends CachedStaticHtmlPartialRetriever {
-  override def refreshAfter: Duration = 60.seconds
+object CacheMap {
+  implicit val formats: Format[CacheMap] = Json.format[CacheMap]
 
-  override def expireAfter: Duration = 60.minutes
-
-  override def maximumEntries: Int = 1000
+  def fromCacheItem(cacheItem: CacheItem): CacheMap =
+    CacheMap(cacheItem.id, cacheItem.data.value.toMap)
 }
