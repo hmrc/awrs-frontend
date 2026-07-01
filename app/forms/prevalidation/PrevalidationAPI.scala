@@ -23,7 +23,7 @@ import scala.language.implicitConversions
 
 object TrimOption extends Enumeration {
   type TrimOption = Value
-  val both, all, bothAndCompress, none, utr, crn = Value
+  val all, bothAndCompress, none, utr, crn = Value
 }
 
 object CaseOption extends Enumeration {
@@ -70,7 +70,6 @@ trait PrevalidationAPI[T] {
 
   private def preprocess(key: String, value: String): String = {
     val trimmedField: String = (trimRules.getOrElse(removeKeyPrefix(key), TrimOption.bothAndCompress): @unchecked) match {
-      case TrimOption.both => trimBothFunc(value)
       case TrimOption.bothAndCompress => trimBothAndCompressFunc(value)
       case TrimOption.all => trimAllFunc(value)
       case TrimOption.none => value

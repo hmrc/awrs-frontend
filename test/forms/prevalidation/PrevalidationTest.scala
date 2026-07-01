@@ -41,16 +41,6 @@ class PrevalidationTest extends AwrsUnitTestTraits {
   def testData(data: String): Map[String, String] = Map[String, String]("string1" -> data)
 
   "Form submission " must {
-    "trim any text strings at both ends when additional whitespace exists for option 'both'" in {
-      import TrimOption._
-      val defaultTrims = Map[String, TrimOption](
-        "string1" -> both
-      )
-      val form = DummyForm.preprocessedForm(defaultTrims)
-
-      val result = form.bind(testData(" Vinnie and the \t    grenades    \t")).get
-      result.string1 mustBe "Vinnie and the \t    grenades"
-    }
 
     "remove all whitespace if it exists for option 'all'" in {
       val defaultTrims = Map[String, TrimOption](
