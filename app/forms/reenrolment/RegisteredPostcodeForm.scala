@@ -53,9 +53,8 @@ object RegisteredPostcodeForm extends AwrsValidator{
     registeredPostcode -> compulsoryQueryField.toStringFormatter
   )(AwrsPostcodeModel.apply)(AwrsPostcodeModel.unapply))
 
-
   lazy val awrsRegisteredPostcodeForm: PrevalidationAPI[AwrsPostcodeModel] = PreprocessedForm(
     awrsRegisteredPostcodeValidationForm,
-    trimRules = Map(),
-    caseRules = Map())
+    trimRules = Map(registeredPostcode -> TrimOption.bothAndCompress),
+    caseRules = Map(registeredPostcode -> CaseOption.none))
 }

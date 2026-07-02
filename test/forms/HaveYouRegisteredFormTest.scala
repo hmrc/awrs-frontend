@@ -27,15 +27,24 @@ import play.api.data.Form
 class HaveYouRegisteredFormTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils {
 
   "HaveYouRegisteredForm" should {
-    implicit val form: Form[HaveYouRegisteredModel] = haveYouRegisteredForm.form
-    val fieldId = "hasUserRegistered"
 
+    val form: Form[HaveYouRegisteredModel] = haveYouRegisteredForm.form
 
-    "field is left blank" in {
-      form.bind(Map(fieldId -> "")).fold(
+      "show an error if the field is left blank" in {
+      form.bind(Map(hasUserRegistered -> "")).fold(
         formWithErrors => {
-          formWithErrors(fieldId).errors.size mustBe 1
-          formWithErrors(fieldId).errors.head.message mustBe "awrs.have_you_registered.error"
+          formWithErrors(hasUserRegistered).errors.size mustBe 1
+          formWithErrors(hasUserRegistered).errors.head.message mustBe "awrs.have_you_registered.error"
+        },
+        _ => fail("Field should contain errors")
+      )
+    }
+
+    "show an error if field is an invalid string" in {
+      form.bind(Map(hasUserRegistered -> "some invalid string")).fold(
+        formWithErrors => {
+          formWithErrors(hasUserRegistered).errors.size mustBe 1
+          formWithErrors(hasUserRegistered).errors.head.message mustBe "awrs.have_you_registered.error"
         },
         _ => fail("Field should contain errors")
       )

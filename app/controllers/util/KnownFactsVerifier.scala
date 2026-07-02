@@ -16,17 +16,22 @@
 
 package controllers.util
 
-import models.AwrsPostcodeModel
-import models.reenrolment.{Identifier, KnownFactsResponse, Verifier}
+import models.{AwrsEnrolmentUrn, AwrsEnrolmentUtr, AwrsPostcodeModel}
+import models.reenrolment.KnownFactsResponse
 
 object KnownFactsVerifier {
-  def knownFactsVerified(knownFactsResponse: Option[KnownFactsResponse], arws: String, isSA: Boolean, utr: String, postCode: String): Boolean = {
-    knownFactsResponse match {
+
+  def knownFactsVerified(optionalKnownFactsResponse: Option[KnownFactsResponse], awrsRef: String, isSA: Boolean, utr: String, postCode: String): Boolean = {
+
+    optionalKnownFactsResponse match {
       case Some(knownFactsResponse) => knownFactsResponse.enrolments
-        .find(_.identifiers.contains(Identifier("AWRSRefNumber", arws))).exists { enrolment =>
-          enrolment.verifiers.contains(Verifier(if (isSA) "SAUTR" else "CTUTR", utr)) &&
-            enrolment.verifiers.exists(verifier => verifier.key == "Postcode" && AwrsPostcodeModel.sanitiseAndCompare(verifier.value, postCode))
-        }
+        .filter(_.identifiers.exists(identifier =>
+          identifier.key == "AWRSRefNumber" && AwrsEnrolmentUrn.sanitiseAndCompare(identifier.value, awrsRef)))
+        .exists(awrsEnrolment =>
+          awrsEnrolment.verifiers.exists(verifier => verifier.key == (if (isSA) "SAUTR" else "CTUTR") &&
+          AwrsEnrolmentUtr.sanitiseAndCompare(verifier.value, utr)) &&
+          awrsEnrolment.verifiers.exists(verifier => verifier.key == "Postcode" &&
+          AwrsPostcodeModel.sanitiseAndCompare(verifier.value, postCode)))
       case None => false
     }
   }

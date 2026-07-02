@@ -17,7 +17,7 @@
 package forms
 
 import forms.AWRSEnums.BooleanCheckboxEnum
-import forms.prevalidation.{PreprocessedForm, PrevalidationAPI, TrimOption}
+import forms.prevalidation.{CaseOption, PreprocessedForm, PrevalidationAPI, TrimOption}
 import forms.validation.util.ConstraintUtil.CompulsoryBooleanMappingParameter
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
 import forms.validation.util.MappingUtilAPI.compulsoryBoolean
@@ -41,6 +41,6 @@ object HaveYouRegisteredForm {
 
   lazy val haveYouRegisteredForm: PrevalidationAPI[HaveYouRegisteredModel] = PreprocessedForm(
     haveYouRegisteredFormValidation,
-    trimRules = Map(hasUserRegistered -> TrimOption.bothAndCompress),
-    caseRules = Map())
+    trimRules = Map(hasUserRegistered -> TrimOption.none),
+    caseRules = Map(hasUserRegistered -> CaseOption.none))
 }

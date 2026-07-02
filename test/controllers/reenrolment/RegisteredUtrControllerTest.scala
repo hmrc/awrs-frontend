@@ -45,7 +45,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
 
   private val testGroupId = "TestGroupId"
   private val testUtr = "6232113818078"
-  private val testAwrsRef = "TestAWRSRef"
+  private val testAwrsRef = "XKAW00000200130"
   private val testPostcode = "NE98 1ZZ"
 
   private val template: awrs_registered_utr = app.injector.instanceOf[views.html.reenrolment.awrs_registered_utr]

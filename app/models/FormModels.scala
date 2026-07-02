@@ -20,7 +20,8 @@ import forms.AWRSEnums.{ApplicationStatusEnum, BooleanRadioEnum}
 import forms.{AWRSEnums, AwrsFormFields}
 import play.api.libs.json._
 import utils.AwrsFieldConfig
-import java.time.{LocalDateTime, LocalDate}
+
+import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import scala.language.implicitConversions
 
@@ -32,12 +33,30 @@ case class AwrsEnrolmentUrn(awrsUrn: String)
 
 object AwrsEnrolmentUrn {
   implicit val format: OFormat[AwrsEnrolmentUrn] = Json.format[AwrsEnrolmentUrn]
+
+  private def sanitise(urn: String): String = {
+    urn.toUpperCase().replaceAll("[\\s]", "")
+  }
+
+  def sanitiseAndCompare(urn1: String, urn2: String): Boolean = {
+    sanitise(urn1) == sanitise(urn2)
+  }
+
 }
 
 case class AwrsEnrolmentUtr(utr: String)
 
 object AwrsEnrolmentUtr {
   implicit val format: OFormat[AwrsEnrolmentUtr] = Json.format[AwrsEnrolmentUtr]
+
+  private def sanitise(utr: String): String = {
+    utr.replaceAll("[\\s]", "")
+  }
+
+  def sanitiseAndCompare(utr1: String, utr2: String): Boolean = {
+    sanitise(utr1) == sanitise(utr2)
+  }
+
 }
 
 case class ApplicationStatus(status: ApplicationStatusEnum.Value, updatedDate: LocalDateTime)

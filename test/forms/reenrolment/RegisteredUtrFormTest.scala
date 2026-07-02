@@ -25,7 +25,7 @@ import play.api.data.Form
 class RegisteredUtrFormTest extends PlaySpec with AwrsFormTestUtils {
 
   "AwrsEnrolmentUtrForm" should {
-    implicit val form: Form[AwrsEnrolmentUtr] = awrsEnrolmentUtrForm.form
+    val form: Form[AwrsEnrolmentUtr] = awrsEnrolmentUtrForm.form
     val fieldId = "utr"
     val fieldNameInErrorMessage = "utr field"
 
@@ -86,6 +86,7 @@ class RegisteredUtrFormTest extends PlaySpec with AwrsFormTestUtils {
       assertFormIsValid(form, Map(utr -> "6232113818078"))
       assertFormIsValid(form, Map(utr -> "623211381 8078"))
       assertFormIsValid(form, Map(utr -> "62321  1381 8078"))
+      assertFormIsValid(form, Map(utr -> "\t  62321 \t 1381 8 07   8   "))
     }
   }
 }
