@@ -38,14 +38,6 @@ trait AwrsValidator {
 
   val postcodeRegex = """(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$"""
 
-  val dateRegex =  """^\d{2}/\d{2}/\d{4}$"""
-
-  val asciiRegex =  """^[\x00-\x7F]*$"""
-
-  val alphaRegex = """^(?i)[A-Z ôéëàŵŷáîïâêûü]+$"""
-
-  val numericRegex = """^[0-9 ]+$"""
-
   val alphaNumericRegex = """^(?i)[A-Z0-9 ôéëàŵŷáîïâêûü]+$"""
 
   // allow any combination of numbers and letters from 1 to 20 times
@@ -58,18 +50,10 @@ trait AwrsValidator {
 
   val telephoneRegex = """^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$"""
 
-  val operatingDurationRegex = """^[0-9]*+"""
-
-  def isValidNino(errorMsg: String): Constraint[String] = Constraint[String]("nino"){
-    case nino if nino.matches(ninoRegex) => Valid
-    case _ => Invalid(errorMsg)
-  }
-
   val asciiChar32 = 32
   val asciiChar126 = 126
   val asciiChar160 = 160
   val asciiChar255 = 255
-  val asciiChar244 = 244
   val asciiWelshChars = List(244, 233, 235, 224, 373, 375, 225, 238, 239, 226)
 
   def validText(input: String): Boolean = {
