@@ -41,7 +41,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
     reset(mockAccountUtils)
   }
 
-  val template: awrs_index = app.injector.instanceOf[views.html.awrs_index]
+  lazy val template: awrs_index = app.injector.instanceOf[views.html.awrs_index]
 
   lazy val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9,
     mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {

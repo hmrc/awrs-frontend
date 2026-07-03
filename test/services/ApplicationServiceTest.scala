@@ -53,12 +53,12 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     ukSupplier = "No")
 
   override def beforeEach(): Unit = {
+    super.beforeEach()
+
     reset(mockAccountUtils)
     reset(mockKeyStoreConnector)
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
       .thenReturn(true)
-
-    super.beforeEach()
   }
 
   def cachedData(legalEntity: BusinessType = testLegalEntity): CacheMap =
