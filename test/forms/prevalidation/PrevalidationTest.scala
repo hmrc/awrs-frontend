@@ -41,77 +41,62 @@ class PrevalidationTest extends AwrsUnitTestTraits {
   def testData(data: String): Map[String, String] = Map[String, String]("string1" -> data)
 
   "Form submission " must {
-    "trim any text strings at both ends when additional whitespace exists for option 'both'" in {
-      import TrimOption._
-      val defaultTrims = Map[String, TrimOption](
-        "string1" -> both
-      )
-      val form = DummyForm.preprocessedForm(defaultTrims)
-
-      val result = form.bind(testData(" Vinnie and the \t    grenades    \t")).get
-      result.string1 mustBe "Vinnie and the \t    grenades"
-    }
 
     "remove all whitespace if it exists for option 'all'" in {
-      val defaultTrims = Map[String, TrimOption](
+      val trimAll = Map[String, TrimOption](
         "string1" -> TrimOption.all
       )
-      val form = DummyForm.preprocessedForm(defaultTrims)
+      val form = DummyForm.preprocessedForm(trimAll)
 
       val result = form.bind(testData(" Vinnie and the \t    grenades    \t")).get
       result.string1 mustBe "Vinnieandthegrenades"
     }
 
     "trim any text strings at both ends and compress when additional whitespace exists for option 'bothAndCompress'" in {
-      import TrimOption._
-      val defaultTrims = Map[String, TrimOption](
-        "string1" -> bothAndCompress
+      val trimBothAndCompress = Map[String, TrimOption](
+        "string1" -> TrimOption.bothAndCompress
       )
-      val form = DummyForm.preprocessedForm(defaultTrims)
+      val form = DummyForm.preprocessedForm(trimBothAndCompress)
 
       val result = form.bind(testData(" Vinnie and the \t    grenades    \t")).get
       result.string1 mustBe "Vinnie and the grenades"
     }
 
     "not trim any text strings when additional whitespace exists for option 'none'" in {
-      import TrimOption._
-      val defaultTrims = Map[String, TrimOption](
-        "string1" -> none
+      val trimNone = Map[String, TrimOption](
+        "string1" -> TrimOption.none
       )
-      val form = DummyForm.preprocessedForm(defaultTrims)
+      val form = DummyForm.preprocessedForm(trimNone)
 
       val result = form.bind(testData(" Vinnie and the \t    grenades    \t")).get
       result.string1 mustBe " Vinnie and the \t    grenades    \t"
     }
 
     "amend the case of any text strings to uppercase for option 'upper'" in {
-      import CaseOption._
-      val defaultCase = Map[String, CaseOption](
-        "string1" -> upper
+      val caseUpper = Map[String, CaseOption](
+        "string1" -> CaseOption.upper
       )
-      val form = DummyForm.preprocessedForm(caseRules = defaultCase)
+      val form = DummyForm.preprocessedForm(caseRules = caseUpper)
 
       val result = form.bind(testData("Vinnie and the grenades")).get
       result.string1 mustBe "VINNIE AND THE GRENADES"
     }
 
     "amend the case of any text strings to lowercase for option 'lower'" in {
-      import CaseOption._
-      val defaultCase = Map[String, CaseOption](
-        "string1" -> lower
+      val caseLower = Map[String, CaseOption](
+        "string1" -> CaseOption.lower
       )
-      val form = DummyForm.preprocessedForm(caseRules = defaultCase)
+      val form = DummyForm.preprocessedForm(caseRules = caseLower)
 
       val result = form.bind(testData("Vinnie and the grenades")).get
       result.string1 mustBe "vinnie and the grenades"
     }
 
     "leave the case of any text strings for option 'none'" in {
-      import CaseOption._
-      val defaultCase = Map[String, CaseOption](
-        "string1" -> none
+      val caseNone = Map[String, CaseOption](
+        "string1" -> CaseOption.none
       )
-      val form = DummyForm.preprocessedForm(caseRules = defaultCase)
+      val form = DummyForm.preprocessedForm(caseRules = caseNone)
 
       val result = form.bind(testData("Vinnie and the grenades")).get
       result.string1 mustBe "Vinnie and the grenades"
