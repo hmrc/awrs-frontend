@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 class BusinessCustomerCacheConnectorTest extends AwrsUnitTestTraits with Matchers {
 
   private val mockHttpClientV2                    = mock[HttpClientV2]
-  override val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
+  override lazy val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
 
   private val businessCustomerCacheConnector = new BusinessCustomerCacheConnector(
     mockServicesConfig,
