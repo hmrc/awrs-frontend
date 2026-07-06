@@ -15,54 +15,80 @@
  */
 
 package crypto
+
 import com.typesafe.config.ConfigFactory
 import org.scalatestplus.play.PlaySpec
 import play.api.Configuration
-import uk.gov.hmrc.crypto.PlainText
+import uk.gov.hmrc.crypto.{PlainText, SymmetricCryptoFactory}
 
 class CryptoProviderSpec extends PlaySpec {
-  private def randomBase64Key(bytes: Int = 32): String = {
-    val b = new Array[Byte](bytes)
-    new java.security.SecureRandom().nextBytes(b)
-    java.util.Base64.getEncoder.encodeToString(b)
-  }
-  private def cfgWith(key: String, previous: Seq[String] = Nil): Configuration = {
-    val prev = previous.map(k => s""""$k"""").mkString(", ")
+
+  private val gcmKeyA = "/d2Wt03HLJwVHKA1cDAQ+iLR/yk5kUzack1eCaojp88="
+  private val gcmKeyB = "uDmNVE2rpGhSJLF/COYEt0YyF6Uef4QX5NAqjrF8hlU="
+  private val ecbKeyA = "VGTpP4TjWR4DShgEiD2caSKeLzdSbbf7ZCJ2e2d9EqE="
+  private val ecbKeyB = "/CAzziSQUFcKBQNyLo4JdwGd9QSIoKygStoU6S4SyqA="
+  private val ecbKeyOld = "QO3buX9y0wvYeYFET0/Prc5/lOOik7yO0cP62CTCx2Y="
+
+  private def cfgWith(gcmKey: String, ecbKey: String, ecbPrevious: Seq[String] = Nil): Configuration = {
+    val prev = ecbPrevious.map(k => s""""$k"""").mkString(", ")
     val hocon =
       s"""
          |json.encryption {
          |  enabled = true
-         |  key = "$key"
+         |  key = "$ecbKey"
          |  previousKeys = [ $prev ]
+         |}
+         |json.encryptionGcm {
+         |  key = "$gcmKey"
+         |  previousKeys = []
          |}
          |""".stripMargin
     Configuration(ConfigFactory.parseString(hocon))
   }
-  "MongoCryptoProvider" should {
-    "encrypt and decrypt (round-trip) with the same key" in {
-      val key = randomBase64Key()
-      val provider = new CryptoProvider(cfgWith(key))
+
+  private def legacyEcbCrypto(cfg: Configuration) =
+    SymmetricCryptoFactory.aesCryptoFromConfig("json.encryption", cfg.underlying)
+
+  "CryptoProvider" should {
+
+    "encrypt and decrypt (round-trip) new values via AES-GCM" in {
+      val provider = new CryptoProvider(cfgWith(gcmKeyA, ecbKeyA))
       val crypto   = provider.crypto
-      val plain = "Hello £Ü 𐍈 — {\"a\":1}"
-      val enc   = crypto.encrypt(PlainText(plain))
+      val plain    = "Hello £Ü 𐍈 — {\"a\":1}"
+      val enc      = crypto.encrypt(PlainText(plain))
       enc.value must not equal plain
       crypto.decrypt(enc).value mustBe plain
     }
-    "fail to decrypt with a different key" in {
-      val key1 = randomBase64Key()
-      val key2 = randomBase64Key()
-      val p1 = new CryptoProvider(cfgWith(key1))
-      val p2 = new CryptoProvider(cfgWith(key2))
-      val enc = p1.crypto.encrypt(PlainText("secret"))
-      an [SecurityException] must be thrownBy p2.crypto.decrypt(enc)
+
+    "decrypt legacy ECB-encrypted values via the fallback" in {
+      val cfg      = cfgWith(gcmKeyA, ecbKeyA)
+      val existing = legacyEcbCrypto(cfg).encrypt(PlainText("legacy-cache-entry"))
+      val provider = new CryptoProvider(cfg)
+      provider.crypto.decrypt(existing).value mustBe "legacy-cache-entry"
     }
-    "support rotation via previousKeys (new key reads old ciphertext)" in {
-      val oldKey = randomBase64Key()
-      val newKey = randomBase64Key()
-      val oldProvider = new CryptoProvider(cfgWith(oldKey))
-      val ciphertext  = oldProvider.crypto.encrypt(PlainText("rotate-me"))
-      val newProvider = new CryptoProvider(cfgWith(newKey, previous = Seq(oldKey)))
+
+    "write new values as AES-GCM, not legacy ECB" in {
+      val cfg       = cfgWith(gcmKeyA, ecbKeyA)
+      val gcmCipher = new CryptoProvider(cfg).crypto.encrypt(PlainText("new-cache-entry"))
+      an [SecurityException] must be thrownBy legacyEcbCrypto(cfg).decrypt(gcmCipher)
+    }
+
+    "support rotation via ECB previousKeys (new provider reads old ciphertext)" in {
+      val ciphertext  = legacyEcbCrypto(cfgWith(gcmKeyA, ecbKeyOld)).encrypt(PlainText("rotate-me"))
+      val newProvider = new CryptoProvider(cfgWith(gcmKeyA, ecbKeyA, ecbPrevious = Seq(ecbKeyOld)))
       newProvider.crypto.decrypt(ciphertext).value mustBe "rotate-me"
+    }
+
+    "round-trip GCM values independently of the ECB key in config" in {
+      val enc    = new CryptoProvider(cfgWith(gcmKeyA, ecbKeyA)).crypto.encrypt(PlainText("gcm-only"))
+      val reread = new CryptoProvider(cfgWith(gcmKeyA, ecbKeyB))
+      reread.crypto.decrypt(enc).value mustBe "gcm-only"
+    }
+
+    "fail to decrypt when neither the GCM key nor any ECB key matches" in {
+      val enc   = new CryptoProvider(cfgWith(gcmKeyA, ecbKeyA)).crypto.encrypt(PlainText("secret"))
+      val other = new CryptoProvider(cfgWith(gcmKeyB, ecbKeyB))
+      an [SecurityException] must be thrownBy other.crypto.decrypt(enc)
     }
   }
 }
