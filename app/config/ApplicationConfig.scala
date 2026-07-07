@@ -26,6 +26,7 @@ import views.html.view_application.subviews.subview_delete_confirmation
 import views.html.helpers.awrsErrorNotFoundTemplate
 import views.html.error_template
 
+import scala.concurrent.duration.Duration
 import scala.util.Try
 
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
@@ -71,6 +72,9 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy_policy")
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.terms_and_conditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
+
+  lazy val mongoDbExpireAfterMinutes: Duration = servicesConfig.getDuration("mongodb.session.expireAfter")
+  lazy val mongoUri: String = servicesConfig.getString("mongodb.uri")
 
   def feature(name:String): Boolean = Try(servicesConfig.getBoolean(name)).getOrElse(false)
 }

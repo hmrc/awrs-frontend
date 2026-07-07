@@ -62,15 +62,8 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
         "microservice.services.tax-enrolments.host"                 -> "localhost",
         "microservice.services.tax-enrolments.port"                 -> wireMockPort,
         "microservice.services.tax-enrolments.protocol"             -> "http",
-        "microservice.services.cachable.short-lived-cache.host"     -> "localhost",
-        "microservice.services.cachable.short-lived-cache.port"     -> wireMockPort,
-        "cachable.short-lived-cache.domain"                         -> "localhost",
-        "cachable.short-lived-cache-api.domain"                     -> "localhost",
-        "cachable.session-cache.domain"                             -> "localhost",
-        "microservice.services.cachable.short-lived-cache-api.host" -> "localhost",
-        "microservice.services.cachable.short-lived-cache-api.port" -> wireMockPort,
-        "microservice.services.cachable.session-cache.host"         -> "localhost",
-        "microservice.services.cachable.session-cache.port"         -> wireMockPort
+        "microservice.services.business-customer.host"              -> "localhost",
+        "microservice.services.business-customer.port"              -> wireMockPort
       )
       .build()
 
@@ -138,7 +131,7 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
     """{"processingDate":"2015-12-17T09:30:47Z","etmpFormBundleNumber":"123456789012345","awrsRegistrationNumber":"DummyRef"}"""
   )
 
-  private def stubCommonExternalCalls(): StubMapping = {
+  private def stubCommonExternalCalls(): Unit = {
     stubFor(
       post(urlMatching("/auth/authorise"))
         .willReturn(

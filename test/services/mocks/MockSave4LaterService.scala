@@ -27,7 +27,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import services.DataCacheKeys._
 import services.Save4LaterService
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 

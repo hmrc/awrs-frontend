@@ -24,7 +24,7 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import services.DataCacheKeys._
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.AwrsTestJson._
 import utils.TestConstants._
 import utils.TestUtil._

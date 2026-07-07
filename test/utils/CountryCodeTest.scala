@@ -21,7 +21,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
-class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite {
+class CountryCodeTest extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with NoMongoTestApplication {
 
   trait Setup {
     val countryCodes = new CountryCodes(app.environment)
