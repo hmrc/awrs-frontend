@@ -20,7 +20,6 @@ import play.api.libs.json._
 
 case class AwrsPostcodeModel(registeredPostcode: String)
 
-
 object AwrsPostcodeModel {
   implicit val format: OFormat[AwrsPostcodeModel] = Json.format[AwrsPostcodeModel]
 
