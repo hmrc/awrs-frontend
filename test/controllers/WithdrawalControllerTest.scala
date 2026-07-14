@@ -52,7 +52,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockAwrsAPI8: AwrsAPI8 = mock[AwrsAPI8]
-  override val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
+  override lazy val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockEmailService: EmailService = mock[EmailService]
 
   val testWithdrawalController: WithdrawalController = new WithdrawalController(

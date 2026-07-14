@@ -28,13 +28,13 @@ object RegisteredUtrForm {
 
   lazy val awrsEnrolmentUtrValidationForm: Form[AwrsEnrolmentUtr] = Form(mapping(
     utr ->  text
-      .verifying("awrs.reenrolment.registered_utr.error", x => {
-        val trimmedString = x.replaceAll(" ", "")
-        (trimmedString.matches("""^[0-9]{10}$""") ||
-          trimmedString.matches("""^[0-9]{13}$""")) &&
-          UTRValidator.validateUTR(trimmedString)
+      .verifying("awrs.reenrolment.registered_utr.error", urn => {
+          UTRValidator.validateUTR(trimAllFunc(urn))
       })
   )(AwrsEnrolmentUtr.apply)(AwrsEnrolmentUtr.unapply))
 
-  lazy val awrsEnrolmentUtrForm: PrevalidationAPI[AwrsEnrolmentUtr] = PreprocessedForm(awrsEnrolmentUtrValidationForm)
+  lazy val awrsEnrolmentUtrForm: PrevalidationAPI[AwrsEnrolmentUtr] = PreprocessedForm(
+    awrsEnrolmentUtrValidationForm,
+    trimRules = Map(utr -> TrimOption.bothAndCompress),
+    caseRules = Map(utr -> CaseOption.none))
 }

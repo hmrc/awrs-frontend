@@ -49,7 +49,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
   val mockEmailService: EmailService = mock[EmailService]
 
-  override val mockDeEnrolService: DeEnrolService = new DeEnrolService(mockTaxEnrolmentsConnector)
+  val deEnrolService: DeEnrolService = new DeEnrolService(mockTaxEnrolmentsConnector)
 
   val mockTemplate: awrs_de_registration = app.injector.instanceOf[views.html.awrs_de_registration]
   val mockTemplateConfirm: awrs_de_registration_confirm = app.injector.instanceOf[views.html.awrs_de_registration_confirm]
@@ -59,7 +59,7 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val injectedAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val testDeRegistrationController: DeRegistrationController =
-    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, mockDeEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, injectedAppConfig,
+    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, deEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, injectedAppConfig,
       mockTemplate, mockTemplateConfirm, mockTemplateReason, mockTemplateEvidence) {
     override val signInUrl = "/sign-in"
   }

@@ -42,7 +42,7 @@ import scala.concurrent.Future
 class ReapplicationControllerTest extends AwrsUnitTestTraits
   with MockAuthConnector with MockKeyStoreService with MockSave4LaterService{
 
-  override val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
+  override lazy val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
   val mockKeyStoreService: KeyStoreService = mock[KeyStoreService]
   val mockAWRSNotificationConnector: AWRSNotificationConnector = mock[AWRSNotificationConnector]
   val template: awrs_application_too_soon_error = app.injector.instanceOf[views.html.awrs_application_too_soon_error]

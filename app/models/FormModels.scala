@@ -20,7 +20,8 @@ import forms.AWRSEnums.{ApplicationStatusEnum, BooleanRadioEnum}
 import forms.{AWRSEnums, AwrsFormFields}
 import play.api.libs.json._
 import utils.AwrsFieldConfig
-import java.time.{LocalDateTime, LocalDate}
+
+import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import scala.language.implicitConversions
 
@@ -32,12 +33,30 @@ case class AwrsEnrolmentUrn(awrsUrn: String)
 
 object AwrsEnrolmentUrn {
   implicit val format: OFormat[AwrsEnrolmentUrn] = Json.format[AwrsEnrolmentUrn]
+
+  private def sanitise(urn: String): String = {
+    urn.toUpperCase().replaceAll("[\\s]", "")
+  }
+
+  def sanitiseAndCompare(urn1: String, urn2: String): Boolean = {
+    sanitise(urn1) == sanitise(urn2)
+  }
+
 }
 
 case class AwrsEnrolmentUtr(utr: String)
 
 object AwrsEnrolmentUtr {
   implicit val format: OFormat[AwrsEnrolmentUtr] = Json.format[AwrsEnrolmentUtr]
+
+  private def sanitise(utr: String): String = {
+    utr.replaceAll("[\\s]", "")
+  }
+
+  def sanitiseAndCompare(utr1: String, utr2: String): Boolean = {
+    sanitise(utr1) == sanitise(utr2)
+  }
+
 }
 
 case class ApplicationStatus(status: ApplicationStatusEnum.Value, updatedDate: LocalDateTime)
@@ -205,9 +224,6 @@ case class Address(
   override def hashCode(): Int =
     (addressLine1, addressLine2, addressLine3, addressLine4, postcode, addressCountry).hashCode()
 
-  def toStringSeq: Seq[String] = {
-    Seq[Option[String]](Some(addressLine1), Some(addressLine2), addressLine3, addressLine4, postcode, addressCountry).flatten
-  }
 }
 
 case class IndexStatus(soleTraderBusinessDetailsStatus: String,
@@ -259,30 +275,6 @@ case class SubscriptionTypeFrontEnd(
                                      changeIndicators: Option[ChangeIndicators],
                                      modelVersion: String = SubscriptionTypeFrontEnd.latestModelVersion
                                    ) extends ModelVersionControl
-
-/* TODO AWRS-1800 old model to be removed after 28 days */
-case class SubscriptionTypeFrontEnd_old(
-                                         legalEntity: Option[BusinessType],
-                                         businessPartnerName: Option[String],
-                                         groupDeclaration: Option[GroupDeclaration],
-                                         businessCustomerDetails: Option[BusinessCustomerDetails],
-                                         businessDetails: Option[BusinessDetails],
-                                         businessRegistrationDetails: Option[BusinessRegistrationDetails],
-                                         businessContacts: Option[BusinessContacts],
-                                         placeOfBusiness: Option[PlaceOfBusiness],
-                                         partnership: Option[Partners],
-                                         groupMembers: Option[GroupMembers],
-                                         additionalPremises: Option[AdditionalBusinessPremisesList],
-                                         businessDirectors: Option[BusinessDirectors],
-                                         tradingActivity: Option[TradingActivity_old],
-                                         products: Option[Products],
-                                         suppliers: Option[Suppliers],
-                                         applicationDeclaration: Option[ApplicationDeclaration],
-                                         changeIndicators: Option[ChangeIndicators],
-                                         modelVersion: String = SubscriptionTypeFrontEnd_old.latestModelVersion
-                                       ) extends ModelVersionControl
-
-/* end old block */
 
 case class BusinessCustomerDetails(businessName: String,
                                    businessType: Option[String],
@@ -771,12 +763,3 @@ object ReapplicationConfirmation {
 object DeleteConfirmation {
   implicit val formats: Format[DeleteConfirmation] = Json.format[DeleteConfirmation]
 }
-
-/* TODO AWRS-1800 old model to be removed after 28 days */
-object SubscriptionTypeFrontEnd_old {
-  val latestModelVersion = "1.0"
-
-  implicit val format: Format[SubscriptionTypeFrontEnd_old] = Json.format[SubscriptionTypeFrontEnd_old]
-}
-
-/* end old block */

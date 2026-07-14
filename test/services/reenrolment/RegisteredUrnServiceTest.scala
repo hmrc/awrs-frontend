@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
 
-  private val svc = new RegisteredUrnService(
+  private def svc = new RegisteredUrnService(
     keyStoreService = testKeyStoreService,
     enrolmentStoreConnector = mockEnrolmentStoreProxyConnector,
     applicationConfig = mockAppConfig

@@ -32,7 +32,7 @@ import models.reenrolment.KnownFactsResponse._
 class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
   val connector: EnrolmentStoreProxyConnector   = inject[EnrolmentStoreProxyConnector]
-  val awrsRef                                   = "TestAwrsRef"
+  val awrsRef                                   = "XKAW00000200130"
   val es1ResponseWithGroupId: Option[String]    = Some("""{"principalGroupIds": ["TestPrincipalGroupId"]}""")
   val es1ResponseWithoutGroupId: Option[String] = Some("""{"principalGroupIds": []}""")
 

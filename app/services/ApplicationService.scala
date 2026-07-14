@@ -88,9 +88,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
             cached.get.getTradingStartDetails map {_.invertedBeforeMarch2016Question}
           )
         },
-      businessRegistrationDetails = cached.get.getBusinessRegistrationDetails.map{regDetails =>
-        regDetails.copy(utr = regDetails.utr.map(_.replaceAll("\\s+", "")))
-      },
+      businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
       groupMembers = if (sections.groupMemberDetails) addGroupRepToGroupMembers(cached) else None,
@@ -311,9 +309,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
             cached.get.getTradingStartDetails map {_.invertedBeforeMarch2016Question}
           )
         },
-      businessRegistrationDetails = cached.get.getBusinessRegistrationDetails.map{regDetails =>
-        regDetails.copy(utr = regDetails.utr.map(_.replaceAll("\\s+", "")))
-      },
+      businessRegistrationDetails = cached.get.getBusinessRegistrationDetails,
       businessContacts = cached.get.getBusinessContacts,
       placeOfBusiness = cached.get.getPlaceOfBusiness,
       groupMembers = if (isGrpRepChanged(cached, cachedSubscription)) replaceGroupRepInGroupMembers(cached) else cached.get.getGroupMembers,

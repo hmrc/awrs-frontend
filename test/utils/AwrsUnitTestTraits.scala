@@ -55,35 +55,23 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
     ExecutionContext.global
   )
 
-  val mockAwrsFeatureSwitches:AWRSFeatureSwitches = mock[AWRSFeatureSwitches]
-  val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
-  val mockAccountUtils: AccountUtils = mock[AccountUtils]
-  val mockBusinessDetailsService: BusinessDetailsService = mock[BusinessDetailsService]
-  val mockAuditable: Auditable = mock[Auditable]
-  val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
-  val mockCountryCodes: CountryCodes = mock[CountryCodes]
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  val mockMessages: Messages = mock[Messages]
-  val mockEnrolmentStoreProxyConnector:EnrolmentStoreProxyConnector  = mock[EnrolmentStoreProxyConnector]
-  val testEnrolmentStoreProxyService:EnrolmentStoreProxyService = new EnrolmentStoreProxyService(mockEnrolmentStoreProxyConnector)
-  val mockMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
-  implicit val messages: Messages = stubMessages()
+  lazy val mockAwrsFeatureSwitches:AWRSFeatureSwitches = mock[AWRSFeatureSwitches]
+  lazy val mockDeEnrolService: DeEnrolService = mock[DeEnrolService]
+  lazy val mockAccountUtils: AccountUtils = mock[AccountUtils]
+  lazy val mockBusinessDetailsService: BusinessDetailsService = mock[BusinessDetailsService]
+  lazy val mockAuditable: Auditable = mock[Auditable]
+  lazy val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
+  lazy val mockCountryCodes: CountryCodes = mock[CountryCodes]
+  lazy val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+  lazy val mockMessages: Messages = mock[Messages]
+  lazy val mockEnrolmentStoreProxyConnector:EnrolmentStoreProxyConnector  = mock[EnrolmentStoreProxyConnector]
+  lazy val testEnrolmentStoreProxyService:EnrolmentStoreProxyService = new EnrolmentStoreProxyService(mockEnrolmentStoreProxyConnector)
+  lazy val mockMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
+  implicit lazy val messages: Messages = stubMessages()
 
   def await[A](result: Future[A]): A = {
     helperAwait(result)
   }
-
-  when(mockAppConfig.countryCodes)
-    .thenReturn(mockCountryCodes)
-  when(mockCountryCodes.countries)
-    .thenReturn(
-      """[
-        |"United Kingdom"
-        |]""".stripMargin)
-  when(mockCountryCodes.getCountryCode(any()))
-    .thenReturn(Some("ES"))
-  when(mockCountryCodes.getSupplierAddressWithCountry(any()))
-    .thenReturn(Some(TestUtil.testAddressInternational))
 
   lazy val mockUnauthorised: unauthorised = app.injector.instanceOf[views.html.unauthorised]
   lazy val mockDeleteConfirm: subview_delete_confirmation = app.injector.instanceOf[views.html.view_application.subviews.subview_delete_confirmation]
@@ -93,6 +81,10 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+
+    reset(Seq[Any](mockAwrsFeatureSwitches, mockDeEnrolService, mockAccountUtils, mockBusinessDetailsService,
+      mockAuditable, mockServicesConfig, mockCountryCodes, mockAppConfig, mockMessages, mockEnrolmentStoreProxyConnector,
+      mockMatchingService): _*)
 
     when(mockAppConfig.templateUnauthorised)
       .thenReturn(mockUnauthorised)
@@ -104,6 +96,17 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
       .thenReturn(mockNotFound)
     when(mockAppConfig.templateError)
       .thenReturn(mockError)
+    when(mockAppConfig.countryCodes)
+      .thenReturn(mockCountryCodes)
+    when(mockCountryCodes.countries)
+      .thenReturn(
+        """[
+          |"United Kingdom"
+          |]""".stripMargin)
+    when(mockCountryCodes.getCountryCode(any()))
+      .thenReturn(Some("ES"))
+    when(mockCountryCodes.getSupplierAddressWithCountry(any()))
+      .thenReturn(Some(TestUtil.testAddressInternational))
   }
 
   lazy val allEntities = List("SOP", "LTD", "Partnership", "LLP", "LTD_GRP", "LLP_GRP")

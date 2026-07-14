@@ -66,16 +66,6 @@ class Save4LaterService @Inject()(mainStoreSave4LaterConnector: AwrsDataCacheCon
     @inline def saveSubscriptionTypeFrontEnd(subscriptionTypeFrontEnd: SubscriptionTypeFrontEnd, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionTypeFrontEnd] =
       saveData4Later[SubscriptionTypeFrontEnd](subscriptionTypeFrontEndName, subscriptionTypeFrontEnd, authRetrievals)
 
-    /* TODO backwards compatibility code for AWRS-1800 to be removed after 28 days */
-    @inline def fetchSubscriptionTypeFrontEnd_old(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionTypeFrontEnd_old]] = {
-      val fetch = fetchData4Later[SubscriptionTypeFrontEnd_old](subscriptionTypeFrontEndName, authRetrievals)
-      fetch.recover {
-        case _ => None
-      }
-    }
-
-    /* end old code block */
-
     @inline def fetchSubscriptionTypeFrontEnd(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionTypeFrontEnd]] = {
       val fetch = fetchData4Later[SubscriptionTypeFrontEnd](subscriptionTypeFrontEndName, authRetrievals)
       fetch.recover {

@@ -74,6 +74,21 @@ class KnownFactsVerifierTest extends AnyWordSpecLike with Matchers with GuiceOne
         result shouldBe true
       }
 
+      "all known facts match tolerant of formatting for CT UTR" in {
+        val enrolment = createTestEnrolment(isSA = false)
+        val response = Some(KnownFactsResponse("IR-AWRS", Seq(enrolment)))
+
+        val result = KnownFactsVerifier.knownFactsVerified(
+          response,
+          "xA  aW \t  00 0  0 01234\t56   ",
+          isSA = false,
+          "   123\t45 6789  \t  0  ",
+          "aA 1 - (1)_ a\t A   "
+        )
+
+        result shouldBe true
+      }
+
       "postcode matches case insensitively" in {
         val enrolment = createTestEnrolment(postcode = testPostcode.toLowerCase)
         val response = Some(KnownFactsResponse("IR-AWRS", Seq(enrolment)))
