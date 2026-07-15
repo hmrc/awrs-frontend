@@ -27,7 +27,7 @@ import java.time.LocalDate
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Request}
 import services.helper._
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.CacheUtil.cacheUtil
 import utils.{AccountUtils, LoggingUtils}

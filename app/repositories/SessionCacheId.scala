@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package config
+package repositories
 
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+import play.api.Logging
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.cache.CacheIdType
 
-import javax.inject.Inject
-import scala.concurrent.duration.{Duration, DurationInt}
-
-class CachedStaticHtmlPartialProvider @Inject()(val httpClientV2: HttpClientV2) extends CachedStaticHtmlPartialRetriever {
-  override def refreshAfter: Duration = 60.seconds
-
-  override def expireAfter: Duration = 60.minutes
-
-  override def maximumEntries: Int = 1000
+object SessionCacheId extends CacheIdType[HeaderCarrier] with Logging {
+  override def run: HeaderCarrier => String = hc =>
+    hc.sessionId.map(_.value).getOrElse {
+      logger.warn("No sessionId found in HeaderCarrier, using empty string as cache key")
+      ""
+    }
 }

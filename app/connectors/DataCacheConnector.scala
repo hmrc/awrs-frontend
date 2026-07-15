@@ -16,56 +16,54 @@
 
 package connectors
 
-import config.{AwrsAPIShortLivedCache, AwrsSessionCache, AwrsShortLivedCache}
+import models.CacheMap
 import play.api.libs.json
+import repositories.{SessionCacheRepository, ShortLivedCacheRepository}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
+import uk.gov.hmrc.mongo.cache.DataKey
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class AwrsDataCacheConnector @Inject()(awrsShortLivedCache: AwrsShortLivedCache) extends Save4LaterConnector {
-  override val shortLivedCache: ShortLivedCache = awrsShortLivedCache
-}
+class AwrsDataCacheConnector @Inject()(@Named("awrs") override val shortLivedCacheRepository: ShortLivedCacheRepository)
+  extends Save4LaterConnector
 
-class AwrsAPIDataCacheConnector @Inject()(awrsAPIShortLivedCache: AwrsAPIShortLivedCache) extends Save4LaterConnector {
-  override val shortLivedCache: ShortLivedCache = awrsAPIShortLivedCache
-}
+class AwrsApiDataCacheConnector @Inject()(@Named("awrs-api") override val shortLivedCacheRepository: ShortLivedCacheRepository)
+  extends Save4LaterConnector
 
-class AwrsKeyStoreConnector @Inject()(awrsSessionCache: AwrsSessionCache) extends KeyStoreConnector {
-  override val sessionCache: SessionCache = awrsSessionCache
-}
+class AwrsKeyStoreConnector @Inject()(override val sessionCacheRepository: SessionCacheRepository) extends KeyStoreConnector
 
 trait KeyStoreConnector {
 
-  val sessionCache: SessionCache
+  val sessionCacheRepository: SessionCacheRepository
 
-  @inline def fetchDataFromKeystore[T](key: String)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
-    sessionCache.fetchAndGetEntry[T](key)
+  @inline def fetchDataFromKeystore[T](key: String)(implicit hc: HeaderCarrier, formats: json.Format[T], @unused ec: ExecutionContext): Future[Option[T]] =
+    sessionCacheRepository.getFromSession[T](DataKey[T](key))
 
   @inline def saveDataToKeystore[T](formID: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[CacheMap] =
-    sessionCache.cache(formID, data)
+    sessionCacheRepository.putSession[T](DataKey[T](formID), data).map { _ =>
+      CacheMap(hc.sessionId.map(_.value).getOrElse(""), Map(formID -> json.Json.toJson(data)))
+    }
 
-  @inline def removeAll()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    sessionCache.remove()
+  @inline def removeAll()(implicit hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Unit] =
+    sessionCacheRepository.deleteFromSession
 }
 
 trait Save4LaterConnector {
 
-  val shortLivedCache: ShortLivedCache
+  val shortLivedCacheRepository: ShortLivedCacheRepository
 
-  @inline def fetchData4Later[T](utr: String, formId: String)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
-    shortLivedCache.fetchAndGetEntry[T](utr, formId)
+  @inline def fetchData4Later[T](utr: String, formId: String)(implicit @unused hc: HeaderCarrier, formats: json.Format[T], @unused ec: ExecutionContext): Future[Option[T]] =
+    shortLivedCacheRepository.fetchData4Later[T](utr, DataKey[T](formId))
 
-  @inline def saveData4Later[T](utr: String, formId: String, data: T)(implicit hc: HeaderCarrier, formats: json.Format[T], ec: ExecutionContext): Future[Option[T]] =
-    shortLivedCache.cache(utr, formId, data) flatMap { data =>
-      Future.successful(data.getEntry[T](formId))
-    }
+  @inline def saveData4Later[T](utr: String, formId: String, data: T)(implicit @unused hc: HeaderCarrier, formats: json.Format[T], @unused ec: ExecutionContext): Future[Option[T]] =
+    shortLivedCacheRepository.saveData4Later[T](utr, DataKey[T](formId), data)
 
-  @inline def fetchAll(utr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
-    shortLivedCache.fetch(utr)
+  @inline def fetchAll(utr: String)(implicit @unused hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
+    shortLivedCacheRepository.fetchAll(utr).map(_.map(CacheMap.fromCacheItem))
 
-  @inline def removeAll(cacheId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    shortLivedCache.remove(cacheId)
+  @inline def removeAll(cacheId: String)(implicit @unused hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Unit] =
+    shortLivedCacheRepository.removeAll(cacheId)
 }

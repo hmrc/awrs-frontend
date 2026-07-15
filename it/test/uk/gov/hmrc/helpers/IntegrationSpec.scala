@@ -22,12 +22,14 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.libs.ws.{WSCookie, WSRequest}
 import play.api.mvc.{Cookie, Session, SessionCookieBaker}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits, Injecting}
+import repositories.SessionCacheRepository
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.helpers.application.IntegrationApplication
 import uk.gov.hmrc.helpers.http.StubbedBasicHttpCalls
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys, SessionId => HcSessionId}
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -42,6 +44,15 @@ trait IntegrationSpec
   override implicit def defaultAwaitTimeout: Timeout = 5.seconds
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+
+  protected lazy val sessionCacheRepository: SessionCacheRepository =
+    app.injector.instanceOf[SessionCacheRepository]
+
+  protected val cacheHeaderCarrier: HeaderCarrier =
+    HeaderCarrier(sessionId = Some(HcSessionId("mock-sessionid")))
+
+  protected def clearSessionCache(): Unit =
+    await(sessionCacheRepository.deleteFromSession(cacheHeaderCarrier))
 
   def mockSessionCookie: WSCookie = {
 

@@ -16,12 +16,12 @@
 
 package services
 
-import connectors.{AwrsAPIDataCacheConnector, AwrsDataCacheConnector, Save4LaterConnector}
+import connectors.{AwrsApiDataCacheConnector, AwrsDataCacheConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
 import models._
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models.CacheMap
 import utils.AccountUtils
 
 import javax.inject.Inject
@@ -48,7 +48,7 @@ trait Save4LaterUtil {
 }
 
 class Save4LaterService @Inject()(mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                  apiSave4LaterConnector: AwrsAPIDataCacheConnector,
+                                  apiSave4LaterConnector: AwrsApiDataCacheConnector,
                                   accUtils: AccountUtils) {
 
   implicit def convertUtil[T](f: Option[T]): T = f.get

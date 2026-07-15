@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.auth.core.Enrolment
 @import views.view_application.helpers.ViewApplicationType
 
-@(cache: uk.gov.hmrc.http.cache.client.CacheMap, status: String, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
+@(cache: models.CacheMap, status: String, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
 
 @import services.DataCacheKeys._
 @import views.html.helpers._
