@@ -254,7 +254,7 @@ awrs.generic.assistant_kickout.more_info_link=https://www.gov.uk/guidance/how-to
 
 #  Business customer
 #============================================================
-awrs.business_verification.heading=Select your business type
+awrs.business_verification.heading=What is your business type
 awrs.business_verification.limited_company=Limited company
 awrs.business_verification.sole_trader=Sole Trader self-employed
 awrs.business_verification.business_partnership=Business partnership
