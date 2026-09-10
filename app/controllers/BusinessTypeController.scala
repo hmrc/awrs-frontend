@@ -98,7 +98,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
       save4LaterService.mainStore.fetchBusinessCustomerDetails(ar) flatMap {
         case Some(businessDetails) =>
           validateBusinessType(businessTypeForm.bindFromRequest()).fold(
-            formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessDetails.businessType.fold("")(x => x), businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
+            formWithErrors => Future.successful(BadRequest(template(formWithErrors, businessDetails.businessName, businessDetails.isAGroup, accountUtils.isSaAccount(ar.enrolments), accountUtils.isOrgAccount(ar))) addBusinessNameToSession businessDetails.businessName),
             businessTypeData =>
               save4LaterService.mainStore.saveBusinessType(businessTypeData, ar) flatMap { _ =>
                 val legalEntity = businessTypeData.legalEntity.getOrElse("SOP")

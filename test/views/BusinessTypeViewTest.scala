@@ -68,6 +68,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
             val expectedErrorKey = "awrs.business_verification.error.type_of_business_empty"
 
             testErrorMessageValidation(document, id, expectedErrorKey)
+            document.getElementById("loggedInUserName").text() must include(testBusinessCustomer.businessName)
         }
       }
 
