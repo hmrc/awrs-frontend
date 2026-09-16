@@ -110,7 +110,7 @@ backlink=Some(backlinkHtml), userLoggedIn = true) {
                 fieldset = Some(Fieldset(
                     legend = Some(Legend(
                         content = Text(messages(headerTitleName)),
-                        classes = "govuk-visually-hidden")))
+                        classes = "govuk-visually-hidden govuk-!-display-block")))
                 ),
                 items = inputItems
             ).withFormFieldWithErrorAsHtml(confirmationForm("tradingDate")))
