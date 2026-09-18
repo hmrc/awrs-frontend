@@ -19,9 +19,17 @@ package crypto
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter, SymmetricCryptoFactory}
+import uk.gov.hmrc.crypto.SymmetricCryptoFactory._
 
 @Singleton
 class CryptoProvider @Inject()(config: Configuration) {
-  val crypto: Encrypter with Decrypter =
+
+  private val gcmCrypto: Encrypter with Decrypter =
+    SymmetricCryptoFactory.aesGcmCryptoFromConfig("json.encryptionGcm", config.underlying)
+
+  private val ecbCrypto: Encrypter with Decrypter =
     SymmetricCryptoFactory.aesCryptoFromConfig("json.encryption", config.underlying)
+
+  val crypto: Encrypter with Decrypter =
+    composeCrypto(gcmCrypto, List(ecbCrypto))
 }
