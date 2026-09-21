@@ -29,6 +29,14 @@ object ErrorMessagesUtilAPI {
       FieldErrorConfig(msgId)
     )
 
+ def dateFieldMissingErrorMessage: (List[String], String) => Invalid = (fieldIds: List[String], msgId: String ) => {
+    lazy val invalid = Invalid(
+      msgId,
+      fieldIds.head, fieldIds.last
+    )
+    invalid
+  }
+
   val simpleCrossFieldErrorMessage: (TargetFieldIds, String) => Invalid = (ids:TargetFieldIds, msgId: String) =>
     createErrorMessage(
       ids,
@@ -37,5 +45,4 @@ object ErrorMessagesUtilAPI {
 
   def simpleFieldIsEmptyConstraintParameter(fieldId: String, msgId: String): FieldIsEmptyConstraintParameter =
     FieldIsEmptyConstraintParameter(simpleErrorMessage(fieldId, msgId))
-
 }

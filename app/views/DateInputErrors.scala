@@ -25,40 +25,16 @@ object DateInputErrors {
 
   private val ErrorClass = "govuk-input--error"
 
-  private[views] val AllFields: Set[String] = Set("day", "month", "year")
-
-  private[views] val affectedFields: Map[String, Set[String]] = Map(
-    "ated.error.date.day.missing" -> Set("day"),
-    "ated.error.date.month.missing" -> Set("month"),
-    "ated.error.date.year.missing" -> Set("year"),
-    "ated.error.date.daymonth.missing" -> Set("day", "month"),
-    "ated.error.date.dayyear.missing" -> Set("day", "year"),
-    "ated.error.date.monthyear.missing" -> Set("month", "year"),
-    "ated.error.date.invalid.day.month" -> Set("day", "month"),
-    "ated.error.day.invalid" -> Set("day"),
-    "ated.error.month.invalid" -> Set("month"),
-    "ated.error.date.year.length" -> Set("year"),
-    "ated.error.date.notInRange" -> Set("year")
-  )
-
-  def fieldsInError(form: Form[_], dateField: String): Set[String] =
-    form.errors
-      .filter(error => error.key == dateField || error.key.startsWith(s"$dateField."))
-      .flatMap(error => affectedFields.getOrElse(error.message, AllFields))
-      .toSet
-
-  def highlightErrors(dateInput: DateInput, form: Form[_], dateField: String): DateInput = {
-    val inError = fieldsInError(form, dateField)
+  private def highlightErrors(dateInput: DateInput, form: Form[_]): DateInput = {
 
     dateInput.copy(items = dateInput.items.map { item =>
-      val key = item.name.split('.').last
+      val dateFieldIsMissing = if (form.hasErrors) form.errors.head.args.contains(item.id) else false
       val retained = item.classes.split("\\s+").filter(c => c.nonEmpty && c != ErrorClass)
-      val classes = if (inError.contains(key)) retained :+ ErrorClass else retained
-
-      item.copy(classes = classes.mkString(" "))
+      val classes =retained :+ ErrorClass
+      if (dateFieldIsMissing) item.copy(classes = classes.mkString(" ")) else item
     })
   }
 
   def withDayMonthYear(dateInput: DateInput, form: Form[_], dateField: String)(implicit messages: Messages): DateInput =
-    highlightErrors(dateInput.withDayMonthYearFormField(form(dateField)), form, dateField)
+    highlightErrors(dateInput.withDayMonthYearFormField(form(dateField)), form)
 }

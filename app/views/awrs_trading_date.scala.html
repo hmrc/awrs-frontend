@@ -23,6 +23,7 @@
 @import views.view_application.helpers._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import views.ViewUtils._
+@import views.DateInputErrors
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -102,18 +103,22 @@ backlink=Some(backlinkHtml), userLoggedIn = true) {
             @awrsProgressHelper(businessType, businessDetailsName)<br>
             <h1 id="businessNameChangeConfirmation-heading" class="govuk-heading-xl">@messages(headerTitleName)</h1>
         </header>
+<h2>@confirmationForm.errors</h2>
         @preDateInfo
         @formWithCSRF(action = actionRoute) {
 
-            @govukDateInput(DateInput(
-                hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
-                fieldset = Some(Fieldset(
-                    legend = Some(Legend(
-                        content = Text(messages(headerTitleName)),
-                        classes = "govuk-visually-hidden govuk-!-display-block")))
-                ),
-                items = inputItems
-            ).withFormFieldWithErrorAsHtml(confirmationForm("tradingDate")))
+
+            @govukDateInput(DateInputErrors.withDayMonthYear(
+                DateInput(
+                    hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            content = Text(messages(headerTitleName)),
+                            classes = "govuk-visually-hidden govuk-!-display-block"
+                        ))
+                    )),
+                ), confirmationForm, "tradingDate"
+            ))
 
             @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
         }

@@ -21,9 +21,10 @@ import forms.helper.FormHelper._
 import forms.prevalidation._
 import forms.submapping.TupleDateMapping._
 import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter, FormData}
-import forms.validation.util.ErrorMessagesUtilAPI._
+import forms.validation.util.ErrorMessagesUtilAPI.{simpleErrorMessage, _}
 import forms.validation.util.MappingUtilAPI._
 import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.TargetFieldIds
 import models.{DeRegistrationConfirmation, DeRegistrationDate, DeRegistrationReason, TupleDate}
 import play.api.data.Forms._
 import play.api.data.validation.{Invalid, Valid}
