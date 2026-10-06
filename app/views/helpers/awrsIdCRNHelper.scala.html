@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import views.helpers.QuestionAnswerParameters
 @import views.html.helpers._
+@import views.DateInputErrors
 @this(
     awrsAnswerQuestionHelper: awrsAnswerQuestionHelper,
     govukInput: GovukInput,
@@ -63,25 +64,20 @@ businessEntity : Option[String] = ""
     }
 }
 
-@inputItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
 @isDateField = @{
     dateField match {
         case Some(someDateField) =>
-            govukDateInput(DateInput(
-                hint = Some(Hint(content = HtmlContent(hintText))),
-                fieldset = Some(Fieldset(
-                    legend = Some(Legend(
-                        content = Text(messages("awrs.generic.date_of_incorporation")),
-                        classes = "govuk-fieldset__legend--s")))),
-                    items = inputItems
-            ).withFormFieldWithErrorAsHtml(someDateField))
-
+            formInstance match {
+                case Some(form) =>
+                    govukDateInput(DateInputErrors.withDayMonthYear(DateInput(
+                        hint = Some(Hint(content = HtmlContent(hintText))),
+                        fieldset = Some(Fieldset(
+                            legend = Some(Legend(
+                                content = Text(messages("awrs.generic.date_of_incorporation")),
+                                classes = "govuk-fieldset__legend--s"))))
+                        ),form, someDateField.name).withFormFieldWithErrorAsHtml(someDateField))
+                case None =>
+            }
         case _ =>
     }
 }

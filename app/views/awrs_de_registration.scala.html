@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.ViewUtils._
+@import views.DateInputErrors
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -41,13 +42,6 @@
     <span id="proposedEndDate-year_reader" class="govuk-visually-hidden" aria-hidden="true">@messages("awrs.generic.date_year.reader")</span>
 }
 
-    @inputItems = @{
-        Seq(InputItem(attributes = Map("maxLength" -> "2")),
-            InputItem(attributes = Map("maxLength" -> "2")),
-            InputItem(attributes = Map("maxLength" -> "4"))
-        )
-    }
-
 @backlinkHtml = {
   @backLink(backUrl = controllers.routes.DeRegistrationController.showReason.toString)
 }
@@ -63,15 +57,14 @@
         <p class="govuk-body-l">@messages("awrs.de_registration.lede")</p>
         @formWithCSRF(action = controllers.routes.DeRegistrationController.submitDate) {
 
-                    @govukDateInput(DateInput(
+            @govukDateInput(DateInputErrors.withDayMonthYear(DateInput(
                         hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
                         fieldset = Some(Fieldset(
                             legend = Some(Legend(
                                 content = Text(messages("awrs.de_registration.heading")),
                                 classes = "govuk-visually-hidden")))
                             ),
-                        items = inputItems
-            ).withFormField(deRegistrationForm("proposedEndDate")))
+            ),deRegistrationForm, "proposedEndDate").withFormField(deRegistrationForm("proposedEndDate")))
 
             <button class="govuk-button" role="button" data-module="govuk-button" type="submit" id="save-and-continue">@messages("awrs.generic.continue")</button>
         }
