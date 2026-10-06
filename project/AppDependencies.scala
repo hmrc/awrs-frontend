@@ -20,7 +20,7 @@ import play.sbt.PlayImport.*
 private object AppDependencies {
 
   private val bootstrapPlayVersion = "10.8.0"
-  private val hmrcMongoVersion     = "2.12.0"
+  private val hmrcMongoVersion     = "2.14.0"
   val mockitoVersion               = "5.23.0"
 
   val compile: Seq[ModuleID] = Seq(
@@ -28,7 +28,7 @@ private object AppDependencies {
     "uk.gov.hmrc"           %% "bootstrap-frontend-play-30" % bootstrapPlayVersion,
     "uk.gov.hmrc"           %% "play-partials-play-30"      % "10.2.0", // includes code for retrieving partials, e.g. the Help with this page form
     "com.yahoo.platform.yui" % "yuicompressor"              % "2.4.8",
-    "uk.gov.hmrc"           %% "play-frontend-hmrc-play-30" % "13.9.0",
+    "uk.gov.hmrc"           %% "play-frontend-hmrc-play-30" % "13.15.0",
     "commons-codec"          % "commons-codec"              % "1.22.0",
     "com.googlecode.htmlcompressor" % "htmlcompressor"     % "1.5.2",
     "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-30" % hmrcMongoVersion
