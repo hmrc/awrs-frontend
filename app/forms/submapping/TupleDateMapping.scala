@@ -86,7 +86,6 @@ object TupleDateMapping {
         def dateFieldsMissingError(err: Invalid, missingFields: List[String]): Either[Seq[FormError], TupleDate] =
           Left(err.errors.map(ve => FormError(missingFields.head, ve.message, ve.args ++ missingFields)))
 
-        println(s"missingDateField(data, date)${missingDateField(dateData, date)}")
         missingDateField(dateData, date) match {
           case Left(missingDateFields) if missingDateFields.length.equals(1) => dateFieldsMissingError(keyRequired(extractFieldNames(missingDateFields)), missingDateFields)
           case Left(missingDateFields) => dateFieldsMissingError(twoKeysRequired(extractFieldNames(missingDateFields)), missingDateFields)
