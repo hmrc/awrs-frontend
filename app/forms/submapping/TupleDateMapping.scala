@@ -48,7 +48,26 @@ object TupleDateMapping {
     case _ => simpleErrorMessage(fieldKey, "awrs.business_details.error.year_toSmall")
   }
 
+  private def missingDateField(data: Map[String, String], date: TupleDate): Either[List[String], TupleDate] = {
+
+    val missingFields: List[String] = data
+      .withFilter(_._2.isEmpty)
+      .map(_._1)
+      .toList
+    missingFields.length match {
+      case 1 | 2 => Left(missingFields)
+      case _ => Right(date)
+    }
+  }
+  val dateFieldNames = List("day", "month", "year")
+
+  private def extractFieldNames(listOfFieldIds: List[String]): List[String] = {
+    listOfFieldIds.flatMap(fieldId => fieldId.split('.')).filter(dateFieldNames.contains(_))
+  }
+
   def CompulsoryTupleDateFormatter(isEmptyErrMessage: (String) => Invalid,
+                                   keyRequired: List[String]=> Invalid,
+                                   twoKeysRequired: List[String] => Invalid,
                                    isInvalidErrMessage: (String) => Invalid,
                                    dateRangeCheck: Option[(String) => (TupleDate) => ValidationResult] = Some(yearMustBe4Digits),
                                    isTooEarlyCheck: Option[(String) => (TupleDate) => ValidationResult],
@@ -57,34 +76,51 @@ object TupleDateMapping {
       val day = data.getOrElse(f"$key.day", "").trim()
       val month = data.getOrElse(f"$key.month", "").trim()
       val year = data.getOrElse(f"$key.year", "").trim()
+      val dateData = Map(s"$key.day" -> day,
+                         s"$key.month" -> month,
+                         s"$key.year" -> year)
       val date = TupleDate(day, month, year)
 
       def err(err: Invalid): Either[Seq[FormError], TupleDate] = Left(err.errors.map(ve => FormError(key, ve.message, ve.args)))
 
-      date match {
-        case TupleDate("", "", "") => err(isEmptyErrMessage(key))
-        case _ if isInvalidDate(date) => err(isInvalidErrMessage(key))
-        case _ => dateRangeCheck match {
-          case Some(dateRangeFunction) => dateRangeFunction(key)(date) match {
-            case Valid => isTooEarlyCheck match {
-              case Some(tooEarlyFunction) => tooEarlyFunction(key)(date) match {
-                case Valid => Right(date)
-                case invalid: Invalid => err(invalid)
-              }
-              case None => isTooLateCheck match {
-                case Some(tooLateFunction) => tooLateFunction(key)(date) match {
-                  case Valid => Right(date)
-                  case invalid: Invalid => err(invalid)
+        def dateFieldsMissingError(err: Invalid, missingFields: List[String]): Either[Seq[FormError], TupleDate] =
+          Left(err.errors.map(ve => FormError(missingFields.head, ve.message, ve.args ++ missingFields)))
+
+        missingDateField(dateData, date) match {
+          case Left(missingDateFields) if missingDateFields.length.equals(1) => dateFieldsMissingError(keyRequired(extractFieldNames(missingDateFields)), missingDateFields)
+          case Left(missingDateFields) => dateFieldsMissingError(twoKeysRequired(extractFieldNames(missingDateFields)), missingDateFields)
+          case Right(date) =>
+            date match {
+              case TupleDate("", "", "")    => err(isEmptyErrMessage(key))
+              case _ if isInvalidDate(date) => err(isInvalidErrMessage(key))
+              case _ =>
+                dateRangeCheck match {
+                  case Some(dateRangeFunction) =>
+                    dateRangeFunction(key)(date) match {
+                      case Valid =>
+                        isTooEarlyCheck match {
+                          case Some(tooEarlyFunction) =>
+                            tooEarlyFunction(key)(date) match {
+                              case Valid            => Right(date)
+                              case invalid: Invalid => err(invalid)
+                            }
+                          case None =>
+                            isTooLateCheck match {
+                              case Some(tooLateFunction) =>
+                                tooLateFunction(key)(date) match {
+                                  case Valid            => Right(date)
+                                  case invalid: Invalid => err(invalid)
+                                }
+                              case None => Right(date)
+                            }
+                        }
+                      case invalid: Invalid => err(invalid)
+                    }
+                  case _ => Right(date)
                 }
-                case None => Right(date)
-              }
             }
-            case invalid: Invalid => err(invalid)
-          }
-          case _ => Right(date)
         }
       }
-    }
 
     override def unbind(key: String, value: TupleDate): Map[String, String] =
       Map(f"$key.day" -> value.day,
@@ -94,10 +130,12 @@ object TupleDateMapping {
   }
 
   def tupleDate_compulsory(isEmptyErrMessage: (String) => Invalid,
+                           keyRequired: List[String] => Invalid  = dateFieldMissingErrorMessage(_, ("awrs.generic.error.date.fieldMissing")),
+                           twoKeysRequired: List[String] => Invalid  = dateFieldMissingErrorMessage(_, ("awrs.generic.error.date.twoFieldsMissing")),
                            isInvalidErrMessage: (String) => Invalid,
                            dateRangeCheck: Option[(String) => TupleDate => ValidationResult] = Some(TupleDateMapping.yearMustBe4Digits),
                            isTooEarlyCheck: Option[(String) => TupleDate => ValidationResult],
                            isTooLateCheck: Option[(String) => TupleDate => ValidationResult]): FieldMapping[TupleDate] =
-    of(CompulsoryTupleDateFormatter(isEmptyErrMessage, isInvalidErrMessage, dateRangeCheck, isTooEarlyCheck, isTooLateCheck))
+    of(CompulsoryTupleDateFormatter(isEmptyErrMessage, keyRequired, twoKeysRequired, isInvalidErrMessage, dateRangeCheck, isTooEarlyCheck, isTooLateCheck))
 
 }

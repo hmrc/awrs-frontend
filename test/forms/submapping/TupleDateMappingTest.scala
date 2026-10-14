@@ -46,11 +46,18 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar with AwrsFormTestU
     case false => simpleErrorMessage(fieldKey, "testkey.tooLate")
   }
 
+  private val fieldMissing = (fieldKey: String) => (date: TupleDate) => isDateBefore(latestDate, date) match {
+    case true => Valid
+    case false => simpleErrorMessage(fieldKey, "testkey.fieldMissing")
+  }
+
   private case class TestForm(sub: TupleDate, sub2: TupleDate)
 
   private def testDate_compulsory(newBusiness: Boolean): Mapping[TupleDate] =
     tupleDate_compulsory(
       isEmptyErrMessage = simpleErrorMessage(_, "testkey.emptyDate"),
+      keyRequired  = dateFieldMissingErrorMessage(_, ("testkey.fieldMissing")),
+      twoKeysRequired = dateFieldMissingErrorMessage(_, ("awrs.generic.error.date.twoFieldsMissing")),
       isInvalidErrMessage = simpleErrorMessage(_, "testkey.invalidDate"),
       dateRangeCheck = Some(yearMustBe4Digits),
       isTooEarlyCheck = if(newBusiness) Some(isTooEarly) else None,
@@ -73,10 +80,6 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar with AwrsFormTestU
               TupleDate("31", "03", "16"),
               fieldId,
               FieldError("awrs.business_details.error.year_toSmall")),
-            ExpectedInvalidDateFormat(
-              TupleDate("01", "01", ""),
-              fieldId,
-              FieldError("testkey.invalidDate")),
             ExpectedInvalidDateFormat(
               TupleDate("01", "13", "2000"),
               fieldId,

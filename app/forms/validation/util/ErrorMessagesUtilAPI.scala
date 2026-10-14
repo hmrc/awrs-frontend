@@ -29,6 +29,13 @@ object ErrorMessagesUtilAPI {
       FieldErrorConfig(msgId)
     )
 
+  def dateFieldMissingErrorMessage: (List[String], String) => Invalid = (fieldIds: List[String], msgId: String ) => {
+    Invalid(
+      msgId,
+      if (fieldIds.nonEmpty) fieldIds.head, fieldIds.last
+    )
+  }
+
   val simpleCrossFieldErrorMessage: (TargetFieldIds, String) => Invalid = (ids:TargetFieldIds, msgId: String) =>
     createErrorMessage(
       ids,

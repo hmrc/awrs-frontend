@@ -52,33 +52,67 @@ class DeRegistrationViewTest extends ViewTestFixture {
       yearField.attr("maxlength") mustBe "4"
     }
 
-    "display error if date fields are empty" in {
-      val emptyForm = deRegistrationForm.bind(Map("proposedEndDate.day" -> "", "proposedEndDate.month" -> "", "proposedEndDate.year" -> ""))
-      val doc = Jsoup.parse(templateDeRegistration.apply(emptyForm)(fakeRequest, messages, mockAppConfig).body)
-      val errorBody = doc.select(".govuk-error-summary__body")
-      errorBody.isEmpty mustBe false
-      val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
-      errorLinkText mustBe Messages("awrs.de_registration.error.date_empty")
-    }
+    "Display error correctly" when {
+      "date fields are empty" in {
+        val emptyForm = deRegistrationForm.bind(Map("proposedEndDate.day" -> "", "proposedEndDate.month" -> "", "proposedEndDate.year" -> ""))
+        val doc       = Jsoup.parse(templateDeRegistration.apply(emptyForm)(fakeRequest, messages, mockAppConfig).body)
+        val errorBody = doc.select(".govuk-error-summary__body")
+        errorBody.isEmpty mustBe false
+        val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
+        errorLinkText mustBe Messages("awrs.de_registration.error.date_empty")
 
-    "display error if date fields are invalid" in {
-      val invalidForm = deRegistrationForm.bind(Map("proposedEndDate.day" -> "32", "proposedEndDate.month" -> "13", "proposedEndDate.year" -> "2020"))
-      val doc = Jsoup.parse(templateDeRegistration.apply(invalidForm)(fakeRequest, messages, mockAppConfig).body)
-      val errorBody = doc.select(".govuk-error-summary__body")
-      errorBody.isEmpty mustBe false
-      val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
-      errorLinkText mustBe Messages("awrs.de_registration.error.date_valid")
-    }
+        doc.getElementById("proposedEndDate.day").className() must include("govuk-input--error")
+        doc.getElementById("proposedEndDate.month").className() must include("govuk-input--error")
+        doc.getElementById("proposedEndDate.year").className() must include("govuk-input--error")
+      }
 
-    "display error if date fields are too early" in {
-      val invalidForm = deRegistrationForm.bind(Map("proposedEndDate.day" -> "1", "proposedEndDate.month" -> "1", "proposedEndDate.year" -> "1900"))
-      val doc = Jsoup.parse(templateDeRegistration.apply(invalidForm)(fakeRequest, messages, mockAppConfig).body)
-      val errorBody = doc.select(".govuk-error-summary__body")
-      errorBody.isEmpty mustBe false
-      val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
-      errorLinkText mustBe Messages("awrs.de_registration.error.proposedDate_toEarly")
-    }
+      "date fields are invalid" in {
+        val invalidForm =
+          deRegistrationForm.bind(Map("proposedEndDate.day" -> "32", "proposedEndDate.month" -> "13", "proposedEndDate.year" -> "2020"))
+        val doc       = Jsoup.parse(templateDeRegistration.apply(invalidForm)(fakeRequest, messages, mockAppConfig).body)
+        val errorBody = doc.select(".govuk-error-summary__body")
+        errorBody.isEmpty mustBe false
+        val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
+        errorLinkText mustBe Messages("awrs.de_registration.error.date_valid")
+      }
+      "only a day is submitted" in {
+        val form          = deRegistrationForm.bind(Map("proposedEndDate.day" -> "1", "proposedEndDate.month" -> "", "proposedEndDate.year" -> ""))
+        val doc           = Jsoup.parse(templateDeRegistration.apply(form)(fakeRequest, messages, mockAppConfig).body)
+        val errorBody     = doc.select(".govuk-error-summary__body")
+        val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
+        val errorLink     = doc.select(".govuk-error-summary__list li a").attr("href")
 
+        errorBody.isEmpty mustBe false
+        errorLink mustBe ("#proposedEndDate.month")
+        errorLinkText mustBe Messages("awrs.generic.error.date.twoFieldsMissing", "month", "year")
+        doc.getElementById("proposedEndDate.day").className() must not include ("govuk-input--error")
+        doc.getElementById("proposedEndDate.month").className() must include("govuk-input--error")
+        doc.getElementById("proposedEndDate.year").className() must include("govuk-input--error")
+
+      }
+      "only a day and month are submitted" in {
+        val form          = deRegistrationForm.bind(Map("proposedEndDate.day" -> "1", "proposedEndDate.month" -> "2", "proposedEndDate.year" -> ""))
+        val doc           = Jsoup.parse(templateDeRegistration.apply(form)(fakeRequest, messages, mockAppConfig).body)
+        val errorBody     = doc.select(".govuk-error-summary__body")
+        val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
+        val errorLink     = doc.select(".govuk-error-summary__list li a").attr("href")
+
+        errorLink mustBe ("#proposedEndDate.year")
+        errorBody.isEmpty mustBe false
+        errorLinkText mustBe Messages("awrs.generic.error.date.fieldMissing", "year")
+        doc.getElementById("proposedEndDate.day").className() must not include "govuk-input--error"
+        doc.getElementById("proposedEndDate.month").className() must not include ("govuk-input--error")
+        doc.getElementById("proposedEndDate.year").className() must include("govuk-input--error")
+      }
+      "date fields are too early" in {
+        val invalidForm = deRegistrationForm.bind(Map("proposedEndDate.day" -> "1", "proposedEndDate.month" -> "1", "proposedEndDate.year" -> "1900"))
+        val doc         = Jsoup.parse(templateDeRegistration.apply(invalidForm)(fakeRequest, messages, mockAppConfig).body)
+        val errorBody   = doc.select(".govuk-error-summary__body")
+        errorBody.isEmpty mustBe false
+        val errorLinkText = doc.select(".govuk-error-summary__list li a").text()
+        errorLinkText mustBe Messages("awrs.de_registration.error.proposedDate_toEarly")
+      }
+    }
     "display a continue button" in {
       buttonText mustBe Messages("awrs.generic.continue")
     }
@@ -88,5 +122,4 @@ class DeRegistrationViewTest extends ViewTestFixture {
       back_link_href mustBe controllers.routes.DeRegistrationController.showReason.url
     }
   }
-
 }
