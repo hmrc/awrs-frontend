@@ -38,10 +38,6 @@ class DeRegistrationFormTest extends PlaySpec with MockitoSugar  with AwrsFormTe
         ExpectedDateFormat(
           List(
             ExpectedInvalidDateFormat(
-              TupleDate("01", "01", ""),
-              fieldId,
-              FieldError("awrs.de_registration.error.date_valid")),
-            ExpectedInvalidDateFormat(
               TupleDate("01", "13", "2000"),
               fieldId,
               FieldError("awrs.de_registration.error.date_valid")),

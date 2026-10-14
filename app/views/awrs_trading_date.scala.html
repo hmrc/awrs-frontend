@@ -23,6 +23,7 @@
 @import views.view_application.helpers._
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import views.ViewUtils._
+@import views.DateInputErrors
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -74,13 +75,6 @@
     }
 }
 
-@inputItems = @{
-    Seq(InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "2")),
-        InputItem(attributes = Map("maxLength" -> "4"))
-    )
-}
-
 @backlinkHtml = {
   @if(viewApplicationType == LinearViewMode) {
     @backLink(controllers.routes.TradingLegislationDateController.showBusinessDetails(true).url)
@@ -105,15 +99,17 @@ backlink=Some(backlinkHtml), userLoggedIn = true) {
         @preDateInfo
         @formWithCSRF(action = actionRoute) {
 
-            @govukDateInput(DateInput(
-                hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
-                fieldset = Some(Fieldset(
-                    legend = Some(Legend(
-                        content = Text(messages(headerTitleName)),
-                        classes = "govuk-visually-hidden govuk-!-display-block")))
-                ),
-                items = inputItems
-            ).withFormFieldWithErrorAsHtml(confirmationForm("tradingDate")))
+            @govukDateInput(DateInputErrors.withDayMonthYear(
+                DateInput(
+                    hint = Some(Hint(content = Text(messages("awrs.generic.date_hint")))),
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            content = Text(messages(headerTitleName)),
+                            classes = "govuk-visually-hidden govuk-!-display-block"
+                        ))
+                    )),
+                ), confirmationForm, "tradingDate"
+            ))
 
             @awrsSubmitButton(messages("awrs.generic.continue"))(id = "save-and-continue")
         }
