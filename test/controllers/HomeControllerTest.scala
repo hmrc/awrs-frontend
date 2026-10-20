@@ -21,7 +21,6 @@ import connectors.BusinessCustomerCacheConnector
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums
 import models.{ApplicationStatus, BusinessCustomerDetails}
-import java.time.LocalDateTime
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -29,19 +28,18 @@ import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.libs.json.JsResultException
 import play.api.test.Helpers._
-import services.mocks.MockSave4LaterService
 import services.CheckEtmpService
+import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 import views.html.{assistant_kickout, awrs_application_too_soon_error}
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 
-class HomeControllerTest extends AwrsUnitTestTraits
-  with MockAuthConnector
+class HomeControllerTest extends MockAuthConnector
   with MockSave4LaterService {
 
   lazy val mockBusinessCustomerCacheConnector: BusinessCustomerCacheConnector = mock[BusinessCustomerCacheConnector]
@@ -58,7 +56,7 @@ class HomeControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  override def beforeEach(): Unit = {
+  final override def beforeEach(): Unit = {
     super.beforeEach()
 
     reset(mockBusinessCustomerCacheConnector)
