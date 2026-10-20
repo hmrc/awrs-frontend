@@ -48,16 +48,15 @@ import play.api.test.Helpers._
 import services._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments, User}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.audit.model.Audit
 import utils.TestUtil._
-import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
+import utils.{AwrsSessionKeys, TestUtil}
 import views.html.{awrs_application_declaration, awrs_business_directors}
 
 import scala.concurrent.Future
 
-class ApplicationDeclarationControllerTest extends AwrsUnitTestTraits
-  with MockAuthConnector
+class ApplicationDeclarationControllerTest extends MockAuthConnector
   with MockSave4LaterService
   with MockKeyStoreService {
 

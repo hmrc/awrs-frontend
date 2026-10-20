@@ -25,20 +25,18 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ServicesUnitTestFixture
 import utils.AwrsTestJson.api5LTDJson
-import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}
+import utils.{AwrsNumberFormatter, TestUtil}
 import views.html.awrs_application_status
 
 import scala.concurrent.Future
 
-class ApplicationStatusControllerTest extends AwrsUnitTestTraits
-  with ServicesUnitTestFixture with BeforeAndAfterEach {
+class ApplicationStatusControllerTest extends ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
