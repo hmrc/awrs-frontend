@@ -23,5 +23,5 @@ import uk.gov.hmrc.crypto.{Decrypter, Encrypter, SymmetricCryptoFactory}
 @Singleton
 class CryptoProvider @Inject()(config: Configuration) {
   val crypto: Encrypter with Decrypter =
-    SymmetricCryptoFactory.aesCryptoFromConfig("json.encryption", config.underlying)
+    SymmetricCryptoFactory.aesGcmCryptoFromConfig("json.encryption", config.underlying)
 }
