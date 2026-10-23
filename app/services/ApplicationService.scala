@@ -28,6 +28,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Request}
 import services.helper._
 import models.CacheMap
+import services.apis.AwrsAPI5
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.CacheUtil.cacheUtil
 import utils.{AccountUtils, LoggingUtils}
@@ -36,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(awrsConnector: AWRSConnector,
                                    emailService: EmailService,
+                                   api5: AwrsAPI5,
                                    val save4LaterService: Save4LaterService,
                                    val keyStoreService: KeyStoreService,
                                    val auditable: Auditable,
@@ -209,7 +211,12 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
                        (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[SuccessfulUpdateSubscriptionResponse] =
     for {
       cached <- save4LaterService.mainStore.fetchAll(authRetrievals)
-      cachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
+      maybeCachedSubscription <- save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals)
+      cachedSubscription <- maybeCachedSubscription match {
+        case Some(_) => Future.successful(maybeCachedSubscription)
+        case None => warn("[updateApplication] API5 subscription missing from api cache, re-fetching from ETMP")
+          api5.refreshSubscriptionTypeFrontEnd(authRetrievals).map(Some(_))
+      }
       subscriptionStatus <- keyStoreService.fetchSubscriptionStatus
       _ <- if(isGrpRepChanged(cached,cachedSubscription)) callUpdateGroupBusinessPartner(cached, cachedSubscription, subscriptionStatus, authRetrievals) else Future("OK")
       awrsData <- awrsConnector.updateAWRSData(Json.toJson(AWRSFEModel(getModifiedSubscriptionType(cached, cachedSubscription))), authRetrievals)
