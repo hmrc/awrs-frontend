@@ -56,7 +56,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
         when(mockAppConfig.businessCustomerStartPage).thenReturn("/business-customer/business-verification/awrs")
         val request = SessionBuilder.buildRequestWithSession(userId, "LTD")
           .withSession("status" -> "Withdrawal")
-        val result = testIndexController.showIndex().apply(request)
+        val result = testIndexController.showIndex.apply(request)
 
         redirectLocation(result).get mustBe "/business-customer/business-verification/awrs"
       }
@@ -66,7 +66,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
         when(mockAppConfig.businessCustomerStartPage).thenReturn("/business-customer/business-verification/awrs")
         val request = SessionBuilder.buildRequestWithSession(userId, "LTD")
           .withSession("status" -> "De-Registered")
-        val result = testIndexController.showIndex().apply(request)
+        val result = testIndexController.showIndex.apply(request)
 
         redirectLocation(result).get mustBe "/business-customer/business-verification/awrs"
       }
@@ -90,7 +90,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
 
         val request = SessionBuilder.buildRequestWithSession(userId, "LTD")
           .withSession("status" -> "Withdrawal")
-        val result = testIndexController.showIndex().apply(request)
+        val result = testIndexController.showIndex.apply(request)
 
         status(result) mustBe OK
       }
@@ -138,7 +138,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
 
   private def callShowLastLocationWith(previousLocation: Option[String])(test: Future[Result] => Any) : Unit ={
     setAuthMocks()
-    val result = testIndexController.showLastLocation().apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
+    val result = testIndexController.showLastLocation.apply(SessionBuilder.buildRequestWithSession(userId, "SOP", previousLocation))
     test(result)
   }
 
@@ -163,7 +163,7 @@ class IndexControllerTest extends ServicesUnitTestFixture {
       case Some(definedSection) => request.withSession(request.session.+((AwrsSessionKeys.sessionJouneyStartLocation, definedSection)).data.toSeq: _*)
       case _ => request
     }
-    testIndexController.showIndex().apply(requestWithStart)
+    testIndexController.showIndex.apply(requestWithStart)
   }
 
 }

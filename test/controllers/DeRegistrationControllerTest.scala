@@ -351,25 +351,25 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
   }
 
-  def testShowReason(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showReason())(test)
+  def testShowReason(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showReason)(test)
 
-  def testSubmitReason(status: FormBundleStatus, reason: (String, String)*)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason(), reason)(test)
+  def testSubmitReason(status: FormBundleStatus, reason: (String, String)*)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason, reason)(test)
 
-  def testSubmitReasonEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason(), Seq((deRegistrationReasonId, "")))(test)
+  def testSubmitReasonEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason, Seq((deRegistrationReasonId, "")))(test)
 
-  def testShowDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showDate())(test)
+  def testShowDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showDate)(test)
 
-  def testSubmitDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", LocalDate.now().getDayOfMonth.toString), ("proposedEndDate.month", LocalDate.now().getMonth.getValue.toString), ("proposedEndDate.year", LocalDate.now().getYear.toString)))(test)
+  def testSubmitDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate, Seq(("proposedEndDate.day", LocalDate.now().getDayOfMonth.toString), ("proposedEndDate.month", LocalDate.now().getMonth.getValue.toString), ("proposedEndDate.year", LocalDate.now().getYear.toString)))(test)
 
-  def testSubmitDateOldDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", "1"), ("proposedEndDate.month", "1"), ("proposedEndDate.year", "2016")))(test)
+  def testSubmitDateOldDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate, Seq(("proposedEndDate.day", "1"), ("proposedEndDate.month", "1"), ("proposedEndDate.year", "2016")))(test)
 
-  def testSubmitDateEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", ""), ("proposedEndDate.month", ""), ("proposedEndDate.year", "")))(test)
+  def testSubmitDateEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate, Seq(("proposedEndDate.day", ""), ("proposedEndDate.month", ""), ("proposedEndDate.year", "")))(test)
 
-  def testShowConfirm(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirm())(test)
+  def testShowConfirm(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirm)(test)
 
-  def testSubmitConfirm(status: FormBundleStatus, answer: BooleanRadioEnum.Value = BooleanRadioEnum.Yes)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction(), Seq(("deRegistrationConfirmation", answer.toString)))(test)
+  def testSubmitConfirm(status: FormBundleStatus, answer: BooleanRadioEnum.Value = BooleanRadioEnum.Yes)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction, Seq(("deRegistrationConfirmation", answer.toString)))(test)
 
-  def testSubmitConfirmEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction(), Seq(("deRegistrationConfirmation", "")))(test)
+  def testSubmitConfirmEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction, Seq(("deRegistrationConfirmation", "")))(test)
 
   def testShowConfirmation(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirmation(false))(test)
 

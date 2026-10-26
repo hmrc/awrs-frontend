@@ -106,7 +106,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
   }
 
 
-  def auditAddress(): Action[AnyContent] = Action.async {
+  def auditAddress: Action[AnyContent] = Action.async {
     implicit request =>
       logger.info("[auditAddress] Attemping to auth for auditing address")
 

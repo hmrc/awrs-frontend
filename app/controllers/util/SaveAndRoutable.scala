@@ -45,9 +45,9 @@ trait SaveAndRoutable extends FrontendController with AwrsController {
           )(implicit request: Request[AnyContent]): Future[Result]
 
   // shortcut methods for single record pages as the id is not relevant
-  def saveAndContinue(): Action[AnyContent] = saveAndContinue(1, isNewRecord = true)
+  def saveAndContinue: Action[AnyContent] = saveAndContinue(1, isNewRecord = true)
 
-  def saveAndReturn(): Action[AnyContent] = saveAndReturn(1, isNewRecord = true)
+  def saveAndReturn: Action[AnyContent] = saveAndReturn(1, isNewRecord = true)
 
   def saveAndContinue(id: Int, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>

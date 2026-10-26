@@ -46,7 +46,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showIndex(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showIndex: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         request.session.get("businessType").fold("")(x => x) match {
@@ -93,7 +93,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def showLastLocation(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showLastLocation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/index")(x => x)))
@@ -101,7 +101,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def unauthorised(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def unauthorised: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction {
       _ => Future.successful(Unauthorized(applicationConfig.templateUnauthorised()))
     }

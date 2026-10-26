@@ -298,7 +298,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       getStatus = indexStatusModel
     )
     setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
-    testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
+    testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
   }
 
 

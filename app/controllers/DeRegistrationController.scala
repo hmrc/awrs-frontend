@@ -74,7 +74,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
         }
     }
 
-  def showReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showReason: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         statusPermission(
@@ -88,7 +88,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def submitReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def submitReason: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
       deRegistrationReasonForm.bindFromRequest().fold(
         formWithErrors => {
@@ -102,7 +102,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def showDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showDate: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         statusPermission(
@@ -119,7 +119,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def submitDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def submitDate: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
       deRegistrationForm.bindFromRequest().fold(
         formWithErrors =>
@@ -147,7 +147,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
           }
       })
 
-  def showConfirm(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showConfirm: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
@@ -156,7 +156,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def callToAction(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def callToAction: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>
       confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
 

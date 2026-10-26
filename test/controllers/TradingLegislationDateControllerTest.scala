@@ -110,7 +110,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingLegislationDateController.saveAndContinue()
+        val res = tradingLegislationDateController.saveAndContinue
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303
@@ -135,7 +135,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingLegislationDateController.saveAndContinue()
+        val res = tradingLegislationDateController.saveAndContinue
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303

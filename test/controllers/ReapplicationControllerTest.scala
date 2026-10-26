@@ -127,7 +127,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
   private def showWithException(statusNotification: Option[StatusNotification])(test: Future[Result] => Any): Unit = {
     when(mockAWRSNotificationConnector.fetchNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(statusNotification))
     setAuthMocks()
-    val result = testReapplicationController.show().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testReapplicationController.show.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -138,7 +138,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     setAuthMocks()
     when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     when(mockKeyStoreService.removeAll(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
-    val result = testReapplicationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD").withMethod("POST"))
+    val result = testReapplicationController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD").withMethod("POST"))
     test(result)
   }
 }
