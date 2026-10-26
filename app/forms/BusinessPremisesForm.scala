@@ -38,7 +38,7 @@ object BusinessPremisesForm {
       "additionalAddress" -> (ukAddress_compulsory(prefix = "additionalAddress", "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenThereAreAdditionalTradingPremises),
       "addAnother" -> (addAnother_compulsory iff whenThereAreAdditionalTradingPremises)
     )
-    (AdditionalBusinessPremises.apply)(AdditionalBusinessPremises.unapply)
+    (AdditionalBusinessPremises.apply)(premises => Some(Tuple.fromProductTyped(premises)))
   )
 
   def businessPremisesForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[AdditionalBusinessPremises] = PreprocessedForm(businessPremisesValidationForm)

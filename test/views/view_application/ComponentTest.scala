@@ -44,7 +44,7 @@ import scala.concurrent.Future
 class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector with MockSave4LaterService {
 
   // implicit parameters required by the save4later calls, the actual values are not important as these calls are mocked
-  implicit lazy val fakeRequest: FakeRequest[AnyContent] = {
+  given fakeRequest: FakeRequest[AnyContent] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,
@@ -60,7 +60,7 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override implicit val applicationConfig: ApplicationConfig,
+                                 override given applicationConfig: ApplicationConfig,
                                  val template: views.html.awrs_business_directors) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig, template) {
 
     def show(rowTitle: String, content: Option[String]*): Action[AnyContent] = Action.async {

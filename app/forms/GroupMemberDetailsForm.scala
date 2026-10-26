@@ -90,7 +90,7 @@ object GroupMemberDetailsForm {
         vrn -> (vrn_compulsory() iff whenAnsweredYesToVRN),
         "addAnotherGrpMember" -> otherMembers_compulsory
       )
-      (GroupMember.apply)(GroupMember.unapply)
+      (GroupMember.apply)(groupMember => Some(Tuple.fromProductTyped(groupMember)))
     )
   }
 

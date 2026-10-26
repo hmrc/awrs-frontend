@@ -25,6 +25,7 @@ import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
 import play.api.http.Status._
 import play.api.libs.json._
+import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.http.{BadRequestException, ForbiddenException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2

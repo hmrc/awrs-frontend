@@ -82,7 +82,7 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
   @inline def fetchSubscriptionStatus(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SubscriptionStatusType]] =
     keyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](subscriptionStatusTypeName) flatMap {
-      successData: Option[SubscriptionStatusType] => Future.successful(successData)
+      (successData: Option[SubscriptionStatusType]) => Future.successful(successData)
     }
 
   @inline def saveStatusInfo(statusInfoType: StatusInfoType)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
@@ -90,7 +90,7 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
   @inline def fetchStatusInfo(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[StatusInfoType]] =
     keyStoreConnector.fetchDataFromKeystore[StatusInfoType](statusInfoTypeName) flatMap {
-      successData: Option[StatusInfoType] => Future.successful(successData)
+      (successData: Option[StatusInfoType]) => Future.successful(successData)
     }
 
   @inline def saveStatusNotification(notificationStatus: StatusNotification)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =

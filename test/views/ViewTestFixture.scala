@@ -34,8 +34,8 @@ abstract class ViewTestFixture extends PlaySpec
   with NoMongoTestApplication {
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
-  implicit val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
+  given fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+  given messages: Messages = MessagesImpl(Lang("en"), messagesApi)
 
   val htmlContent:HtmlFormat.Appendable
 

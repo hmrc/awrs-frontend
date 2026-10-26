@@ -26,7 +26,7 @@ import play.api.data.Form
 
 class WithdrawalConfirmationFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
-  implicit lazy val testForm: Form[WithdrawalConfirmation] = WithdrawalConfirmationForm.withdrawalConfirmation
+  given testForm: Form[WithdrawalConfirmation] = WithdrawalConfirmationForm.withdrawalConfirmation
 
   "Withdrawal Confirmation Form" must {
     "Correctly validate that at least one selection is made" in {

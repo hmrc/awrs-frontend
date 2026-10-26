@@ -40,7 +40,7 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
   val businessPartnerDetails: Partner = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), Some(testNino), None, None, Some("Yes"), None, None, None, None)
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   private def testRequest(partner: Partner) =
     TestUtil.populateFakeRequest[Partner](FakeRequest(), PartnershipDetailsForm.partnershipDetailsValidationForm, partner)

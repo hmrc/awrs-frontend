@@ -55,19 +55,16 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
     }
   }
 
-  private[services] def createVerifiers(utr: Option[String], businessType: String, postcode: String) = {
+  private[services] def createVerifiers(utr: Option[String], businessType: String, postcode: String): List[Verifier] = {
 
-    val postCodeVerifier =
-      List(
-        Verifier("Postcode", postcode)
-    )
+    val postCodeVerifier = List(Verifier("Postcode", postcode))
 
       utr match {
         case Some(utr) => businessType match {
           case "SOP" => postCodeVerifier :+ Verifier("SAUTR", utr)
-          case _ => postCodeVerifier :+ Verifier("CTUTR", utr)
+          case _     => postCodeVerifier :+ Verifier("CTUTR", utr)
         }
-        case _ => postCodeVerifier
+        case _         => postCodeVerifier
       }
   }
 }

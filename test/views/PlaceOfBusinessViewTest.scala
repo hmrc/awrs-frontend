@@ -40,7 +40,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
 
   val businessCustomerDetailsFormId = "businessCustomerDetails"
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   def testRequest(premises: PlaceOfBusiness): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm, premises)
@@ -81,7 +81,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(placeOfBusinessName) + 1

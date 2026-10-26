@@ -29,8 +29,8 @@ import utils.AwrsFieldConfig
 import utils.TestConstants._
 
 class BusinessContactFormTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils with AwrsFieldConfig {
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form: Form[BusinessContacts] = BusinessContactsForm.businessContactsForm.form
+  given mockConfig: ApplicationConfig = mockAppConfig
+  given form: Form[BusinessContacts] = BusinessContactsForm.businessContactsForm.form
 
   override def beforeEach(): Unit = {
     when(mockAppConfig.countryCodes)

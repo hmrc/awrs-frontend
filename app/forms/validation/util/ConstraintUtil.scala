@@ -154,7 +154,7 @@ object ConstraintUtil {
   case class CompulsoryListMappingParameter[T](mapping: Mapping[T],
                                                emptyErrorMsg: Invalid) extends ValidationMappingTrait[Mapping[T]]
 
-  private def noConstraint[A] = Constraint[A] { ignore: A => Valid }
+  private def noConstraint[A] = Constraint[A] { (ignore: A) => Valid }
 
   // sub constraints for text fields
   private def fieldMustNotBeEmptyConstraint[A](config: FieldIsEmptyConstraintParameter): Constraint[A] =
@@ -210,7 +210,7 @@ object ConstraintUtil {
     )
 
   def compulsaryListConstraint(errMsgId: => Invalid): Constraint[List[String]] =
-    Constraint[List[String]]({ model: List[String] =>
+    Constraint[List[String]]({ (model: List[String]) =>
       model.nonEmpty && !model.contains("") match {
         case true => Valid
         case false => errMsgId
@@ -218,7 +218,7 @@ object ConstraintUtil {
     })
 
   def compulsaryOptListConstraint(errMsgId: => Invalid): Constraint[Option[List[String]]] =
-    Constraint[Option[List[String]]]({ model: Option[List[String]] =>
+    Constraint[Option[List[String]]]({ (model: Option[List[String]]) =>
       model match {
         case Some(mod) => mod.nonEmpty && !mod.contains("") match {
           case true => Valid

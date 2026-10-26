@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IndexService @Inject()(dataCacheService: Save4LaterService,
                              applicationService: ApplicationService,
                              accountUtils: AccountUtils) {
-  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
+  implicit val cacheUtil: Conversion[CacheMap, CacheUtil.CacheHelper] = CacheUtil.cacheUtil
 
   implicit class OptionUtil[T](option: Option[T]) {
     // internal function used to determine if suppliers or premises has any entries or if the user has chosen "No" when

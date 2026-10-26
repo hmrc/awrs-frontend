@@ -38,7 +38,7 @@ class ErrorMessageLookupLookupTest extends AwrsFormTestUtils with MockitoSugar  
   private def trimString(str: String): String =
     str.trim
 
-  implicit val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  given mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   implicit override lazy val messages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
 
   "The Message Handler" must {

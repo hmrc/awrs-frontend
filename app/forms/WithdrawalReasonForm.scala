@@ -57,7 +57,7 @@ object WithdrawalReasonForm extends AwrsFieldConfig {
   val withdrawalReasonValidationForm = Form(mapping(
     withdrawalReason -> withdrawalReasons_compulsory,
     withdrawalReasonOther -> (withdrawalReasonOther_compulsory iff whenOtherReasonIsSelected)
-  )(WithdrawalReason.apply)(WithdrawalReason.unapply))
+  )(WithdrawalReason.apply)(withdrawalReason => Some(Tuple.fromProductTyped(withdrawalReason))))
 
   val withdrawalReasonForm: PrevalidationAPI[WithdrawalReason] = PreprocessedForm(withdrawalReasonValidationForm)
 

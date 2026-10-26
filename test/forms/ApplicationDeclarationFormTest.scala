@@ -28,7 +28,7 @@ import utils.TestConstants._
 
 class ApplicationDeclarationFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
-  implicit lazy val form: Form[ApplicationDeclaration] = ApplicationDeclarationForm.applicationDeclarationForm.form
+  given form: Form[ApplicationDeclaration] = ApplicationDeclarationForm.applicationDeclarationForm.form
 
   "Declaration form validation" must {
 

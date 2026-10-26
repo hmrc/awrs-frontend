@@ -144,7 +144,7 @@ object AddressMapping extends AwrsFieldConfig {
     "postcode" -> postcode_compulsory(prefixRefNameInErrorMessage, canBeForeignAddress),
     "addressCountry" -> addressCountry_compulsory(prefix, canBeForeignAddress, countryCodes),
     "addressCountryCode" -> addressCountryCode_compulsory(canBeForeignAddress)
-  )(Address.apply)(Address.unapply)
+  )(Address.apply)(address => Some(Tuple.fromProductTyped(address)))
 
   def ukAddress_compulsory(prefix: String = "", prefixRefNameInErrorMessage: String = " ", countryCodes: CountryCodes): Mapping[Address] =
     addressMapping(prefix, prefixRefNameInErrorMessage, canBeForeignAddress = false, countryCodes)

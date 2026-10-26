@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with MockAuthConnector {
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
+  given fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,

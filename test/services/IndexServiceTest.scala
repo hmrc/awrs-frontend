@@ -35,7 +35,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockDataCacheService: Save4LaterService = mock[Save4LaterService]
-  implicit val ec: ExecutionContext = mockMCC.executionContext
+  given ec: ExecutionContext = mockMCC.executionContext
 
   override def beforeEach(): Unit = {
     super.beforeEach()

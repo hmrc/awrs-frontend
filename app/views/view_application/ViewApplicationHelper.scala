@@ -26,7 +26,7 @@ object ViewApplicationHelper {
 
   val NoneBreakingSpace = "\u00A0"
 
-  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
+  implicit val cacheUtil: Conversion[CacheMap, CacheUtil.CacheHelper] = CacheUtil.cacheUtil
 
   implicit class OptionStringUtil(someStr: Option[String]) {
     def `+`(anotherSomeStr: Option[String]): Option[String] = (someStr, anotherSomeStr) match {

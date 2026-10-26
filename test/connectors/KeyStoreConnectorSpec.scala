@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
 
-  implicit val format: Format[SubscriptionStatusType] = SubscriptionStatusType.formats
+  given format: Format[SubscriptionStatusType] = SubscriptionStatusType.formats
 
   val mockSessionCacheRepo: SessionCacheRepository = mock[SessionCacheRepository]
 

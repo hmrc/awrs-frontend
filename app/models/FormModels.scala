@@ -32,7 +32,7 @@ trait ModelVersionControl {
 case class AwrsEnrolmentUrn(awrsUrn: String)
 
 object AwrsEnrolmentUrn {
-  implicit val format: OFormat[AwrsEnrolmentUrn] = Json.format[AwrsEnrolmentUrn]
+  given format: OFormat[AwrsEnrolmentUrn] = Json.format[AwrsEnrolmentUrn]
 
   private def sanitise(urn: String): String = {
     urn.toUpperCase().replaceAll("[\\s]", "")
@@ -47,7 +47,7 @@ object AwrsEnrolmentUrn {
 case class AwrsEnrolmentUtr(utr: String)
 
 object AwrsEnrolmentUtr {
-  implicit val format: OFormat[AwrsEnrolmentUtr] = Json.format[AwrsEnrolmentUtr]
+  given format: OFormat[AwrsEnrolmentUtr] = Json.format[AwrsEnrolmentUtr]
 
   private def sanitise(utr: String): String = {
     utr.replaceAll("[\\s]", "")
@@ -322,12 +322,12 @@ object ApplicationStatus {
   )
 
   val enumReads: Reads[AWRSEnums.ApplicationStatusEnum.Value] = Reads[ApplicationStatusEnum.Value](js =>
-    js.validate[String].map[ApplicationStatusEnum.Value](enum =>
-      ApplicationStatusEnum.withName(enum)
+    js.validate[String].map[ApplicationStatusEnum.Value](
+      ApplicationStatusEnum.withName
     )
   )
 
-  implicit val writer: Writes[ApplicationStatus] = new Writes[ApplicationStatus] {
+  given writer: Writes[ApplicationStatus] = new Writes[ApplicationStatus] {
     def writes(applicationStatus: ApplicationStatus): JsValue = {
       Json.obj()
         .++(Json.obj("status" -> applicationStatus.status.toString)
@@ -335,7 +335,7 @@ object ApplicationStatus {
     }
   }
 
-  implicit val reader: Reads[ApplicationStatus] = new Reads[ApplicationStatus] {
+  given reader: Reads[ApplicationStatus] = new Reads[ApplicationStatus] {
     def reads(js: JsValue): JsResult[ApplicationStatus] = {
       for {
         status <- (js \ "status").validate[ApplicationStatusEnum.Value](enumReads)
@@ -348,23 +348,23 @@ object ApplicationStatus {
 }
 
 object SectionChangeIndicators {
-  implicit val formats: OFormat[SectionChangeIndicators] = Json.format[SectionChangeIndicators]
+  given formats: OFormat[SectionChangeIndicators] = Json.format[SectionChangeIndicators]
 }
 
 object ChangeIndicators {
-  implicit val formats: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
+  given formats: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
 }
 
 object BCAddress {
-  implicit val formats: OFormat[BCAddress] = Json.format[BCAddress]
+  given formats: OFormat[BCAddress] = Json.format[BCAddress]
 }
 
 object BusinessCustomerDetails {
-  implicit val formats: OFormat[BusinessCustomerDetails] = Json.format[BusinessCustomerDetails]
+  given formats: OFormat[BusinessCustomerDetails] = Json.format[BusinessCustomerDetails]
 }
 
 object TupleDate {
-  implicit val formats: OFormat[TupleDate] = Json.format[TupleDate]
+  given formats: OFormat[TupleDate] = Json.format[TupleDate]
 
   implicit def convert(date: LocalDate): TupleDate = TupleDate("%02d".format(date.getDayOfMonth), "%02d".format(date.getMonth.getValue()), "%04d".format(date.getYear))
 }
@@ -375,13 +375,13 @@ object CompanyRegDetails {
     js.validate[String].map[LocalDate](dtString => LocalDate.parse(dtString, formatter))
   )
 
-  implicit val writer: Writes[CompanyRegDetails] = (companyRegDetails: CompanyRegDetails) => {
+  given writer: Writes[CompanyRegDetails] = (companyRegDetails: CompanyRegDetails) => {
     Json.obj()
       .++(Json.obj("companyRegistrationNumber" -> companyRegDetails.companyRegistrationNumber)
         .++(Json.obj("dateOfIncorporation" -> companyRegDetails.dateOfIncorporation.localDate.format(formatter))))
   }
 
-  implicit val reader: Reads[CompanyRegDetails] = (js: JsValue) => {
+  given reader: Reads[CompanyRegDetails] = (js: JsValue) => {
     for {
       companyRegistrationNumber <- (js \ "companyRegistrationNumber").validate[String]
       date <- (js \ "dateOfIncorporation").validate[LocalDate](dateTimeReads)
@@ -395,14 +395,14 @@ object NewAWBusiness {
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-  implicit val writer: Writes[NewAWBusiness] = new Writes[NewAWBusiness] {
+  given writer: Writes[NewAWBusiness] = new Writes[NewAWBusiness] {
     def writes(newAWBusiness: NewAWBusiness): JsValue =
       Json.obj()
         .++(Json.obj("newAWBusiness" -> newAWBusiness.newAWBusiness)
           .++(newAWBusiness.proposedStartDate.fold(Json.obj())(tupleDate => Json.obj("proposedStartDate" -> tupleDate.localDate.format(formatter)))))
   }
 
-  implicit val reader: Reads[NewAWBusiness] = new Reads[NewAWBusiness] {
+  given reader: Reads[NewAWBusiness] = new Reads[NewAWBusiness] {
 
     def reads(js: JsValue): JsResult[NewAWBusiness] =
       for {
@@ -421,7 +421,7 @@ object NewAWBusiness {
 }
 
 object Address {
-  implicit val formats: OFormat[Address] = Json.format[Address]
+  given formats: OFormat[Address] = Json.format[Address]
 
   implicit class AddressUtil(address: Option[Address]) {
   }
@@ -429,7 +429,7 @@ object Address {
 
 object CompanyNames {
 
-  implicit val formats: OFormat[CompanyNames] = Json.format[CompanyNames]
+  given formats: OFormat[CompanyNames] = Json.format[CompanyNames]
 
   implicit class CompanyNamesGetUtil(companyNames: Option[CompanyNames]) {
     def businessName: Option[String] = companyNames.fold(None: Option[String])(_.businessName)
@@ -479,58 +479,58 @@ object CompanyNamesFact {
 }
 
 object Partner {
-  implicit val formats: Format[Partner] = Json.format[Partner]
+  given formats: Format[Partner] = Json.format[Partner]
 }
 
 object Partners {
   val latestModelVersion = "1.0"
-  implicit val formats: OFormat[Partners] = Json.format[Partners]
+  given formats: OFormat[Partners] = Json.format[Partners]
 }
 
 object AdditionalBusinessPremises {
-  implicit val formats: OFormat[AdditionalBusinessPremises] = Json.format[AdditionalBusinessPremises]
+  given formats: OFormat[AdditionalBusinessPremises] = Json.format[AdditionalBusinessPremises]
 }
 
 object AdditionalBusinessPremisesList {
-  implicit val formats: OFormat[AdditionalBusinessPremisesList] = Json.format[AdditionalBusinessPremisesList]
+  given formats: OFormat[AdditionalBusinessPremisesList] = Json.format[AdditionalBusinessPremisesList]
 }
 
 object BusinessDirector {
-  implicit val formats: Format[BusinessDirector] = Json.format[BusinessDirector]
+  given formats: Format[BusinessDirector] = Json.format[BusinessDirector]
 }
 
 object BusinessDirectors {
   val latestModelVersion = "1.0"
-  implicit val formats: Format[BusinessDirectors] = Json.format[BusinessDirectors]
+  given formats: Format[BusinessDirectors] = Json.format[BusinessDirectors]
 }
 
 object Supplier {
-  implicit val formats: OFormat[Supplier] = Json.format[Supplier]
+  given formats: OFormat[Supplier] = Json.format[Supplier]
 }
 
 object Suppliers {
-  implicit val formats: OFormat[Suppliers] = Json.format[Suppliers]
+  given formats: OFormat[Suppliers] = Json.format[Suppliers]
 }
 
 object BusinessType {
-  implicit val formats: OFormat[BusinessType] = Json.format[BusinessType]
+  given formats: OFormat[BusinessType] = Json.format[BusinessType]
 }
 
 object ApplicationDeclaration {
-  implicit val formats: OFormat[ApplicationDeclaration] = Json.format[ApplicationDeclaration]
+  given formats: OFormat[ApplicationDeclaration] = Json.format[ApplicationDeclaration]
 }
 
 object GroupDeclaration {
-  implicit val formats: OFormat[GroupDeclaration] = Json.format[GroupDeclaration]
+  given formats: OFormat[GroupDeclaration] = Json.format[GroupDeclaration]
 }
 
 object GroupMember {
-  implicit val formats: OFormat[GroupMember] = Json.format[GroupMember]
+  given formats: OFormat[GroupMember] = Json.format[GroupMember]
 }
 
 object GroupMembers {
   val latestModelVersion = "1.0"
-  implicit val formats: OFormat[GroupMembers] = Json.format[GroupMembers]
+  given formats: OFormat[GroupMembers] = Json.format[GroupMembers]
 }
 
 // This can be replaced by an implicit format if CapGemini update their schema
@@ -541,7 +541,7 @@ object TradingActivity_old extends AwrsFieldConfig {
   val Other = "99"
   val Delimiter = " "
 
-  implicit val writer: Writes[TradingActivity_old] = new Writes[TradingActivity_old] {
+  given writer: Writes[TradingActivity_old] = new Writes[TradingActivity_old] {
 
     // remove the Producer and Broker wholesaler codes if required as they will be sent via the 'Other' field from now on
     // and add the 'Other' code to the wholesaler type if either Producer or Broker are selected
@@ -578,7 +578,7 @@ object TradingActivity_old extends AwrsFieldConfig {
         .++(Json.obj("doYouExportAlcohol" -> tradingActivity.doYouExportAlcohol))
   }
 
-  implicit val reader: Reads[TradingActivity_old] = new Reads[TradingActivity_old] {
+  given reader: Reads[TradingActivity_old] = new Reads[TradingActivity_old] {
 
     // remove the 'Other' wholesaler type if it only contained Producer and Broker so it is not selected on the screen
     // add the Producer and Broker wholesaler codes if required so they are selected on the screen
@@ -637,7 +637,7 @@ object TradingActivity extends AwrsFieldConfig {
   val Other = "99"
   val Delimiter = " "
 
-  implicit val writer: Writes[TradingActivity] = new Writes[TradingActivity] {
+  given writer: Writes[TradingActivity] = new Writes[TradingActivity] {
 
     // remove the Producer and Broker wholesaler codes if required as they will be sent via the 'Other' field from now on
     // and add the 'Other' code to the wholesaler type if either Producer or Broker are selected
@@ -675,7 +675,7 @@ object TradingActivity extends AwrsFieldConfig {
         .++(tradingActivity.exportLocation.fold(Json.obj())(x => Json.obj("exportLocation" -> x)))
   }
 
-  implicit val reader: Reads[TradingActivity] = new Reads[TradingActivity] {
+  given reader: Reads[TradingActivity] = new Reads[TradingActivity] {
 
     // remove the 'Other' wholesaler type if it only contained Producer and Broker so it is not selected on the screen
     // add the Producer and Broker wholesaler codes if required so they are selected on the screen
@@ -730,36 +730,36 @@ object TradingActivity extends AwrsFieldConfig {
       }
   }
 
-  implicit val optFormats: Format[Option[TradingActivity]] = Format.optionWithNull[TradingActivity]
+  given optFormats: Format[Option[TradingActivity]] = Format.optionWithNull[TradingActivity]
 }
 
 object Products {
-  implicit val formats: OFormat[Products] = Json.format[Products]
+  given formats: OFormat[Products] = Json.format[Products]
 }
 
 object SubscriptionTypeFrontEnd {
   val latestModelVersion = "1.1"
 
-  implicit val formats: OFormat[SubscriptionTypeFrontEnd] = Json.format[SubscriptionTypeFrontEnd]
+  given formats: OFormat[SubscriptionTypeFrontEnd] = Json.format[SubscriptionTypeFrontEnd]
 }
 
 object AWRSFEModel {
-  implicit val formats: OFormat[AWRSFEModel] = Json.format[AWRSFEModel]
+  given formats: OFormat[AWRSFEModel] = Json.format[AWRSFEModel]
 }
 
 object WithdrawalConfirmation {
-  implicit val formats: OFormat[WithdrawalConfirmation] = Json.format[WithdrawalConfirmation]
+  given formats: OFormat[WithdrawalConfirmation] = Json.format[WithdrawalConfirmation]
 }
 
 object WithdrawalReason {
-  implicit val formats: OFormat[WithdrawalReason] = Json.format[WithdrawalReason]
-  implicit val optionFormats: Format[Option[WithdrawalReason]] = Format.optionWithNull[WithdrawalReason]
+  given formats: OFormat[WithdrawalReason] = Json.format[WithdrawalReason]
+  given optionFormats: Format[Option[WithdrawalReason]] = Format.optionWithNull[WithdrawalReason]
 }
 
 object ReapplicationConfirmation {
-  implicit val formats: OFormat[ReapplicationConfirmation] = Json.format[ReapplicationConfirmation]
+  given formats: OFormat[ReapplicationConfirmation] = Json.format[ReapplicationConfirmation]
 }
 
 object DeleteConfirmation {
-  implicit val formats: Format[DeleteConfirmation] = Json.format[DeleteConfirmation]
+  given formats: Format[DeleteConfirmation] = Json.format[DeleteConfirmation]
 }

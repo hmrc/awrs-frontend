@@ -47,6 +47,6 @@ object BusinessTypeForm {
     "legalEntity" -> optional(text).verifying("awrs.business_verification.error.type_of_business_empty", x => x.isDefined),
     "isSaAccount" -> optional(boolean),
     "isOrgAccount" -> optional(boolean)
-  )(BusinessType.apply)(BusinessType.unapply)
+  )(BusinessType.apply)(businessType => Some(Tuple.fromProductTyped(businessType)))
   )
 }

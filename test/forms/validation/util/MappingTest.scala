@@ -73,7 +73,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
 
       val alwaysIgnore: Option[FormQuery] = (_: FormData) => false
 
-      implicit val form: Form[Test] = Form(
+      given form: Form[Test] = Form(
         mapping(
           "field1" -> defaultCompulsoryMapping("field1"),
           "field1a" -> defaultCompulsoryMapping("field1a").toStringFormatter,
@@ -120,7 +120,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
                       field2: Option[String],
                       field3: Option[String]
                      )
-      implicit val form: Form[Test] = Form(
+      given form: Form[Test] = Form(
         mapping(
           "field1" -> optional(text),
           "field2" -> (defaultCompulsoryMapping("field2") iff field1IsEmpty()),
@@ -172,7 +172,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
           "field2" -> (defaultCompulsoryMapping(attachPrefix(prefix, "field2")) iff field1IsEmpty())
         )(SubTest.apply)(SubTest.unapply)
 
-        implicit val form = Form(mapping(
+        given form = Form(mapping(
           "sub" -> submap(Some("sub"))
         )(Test.apply)(Test.unapply))
 

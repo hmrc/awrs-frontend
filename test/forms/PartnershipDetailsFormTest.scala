@@ -32,9 +32,9 @@ import views.html.helpers.frontendDefaultLen
 
 class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils with AwrsFieldConfig {
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
-  implicit lazy val form: Form[Partner] = PartnershipDetailsForm.partnershipDetailsForm.form
+  given form: Form[Partner] = PartnershipDetailsForm.partnershipDetailsForm.form
 
   import EntityTypeEnum._
 

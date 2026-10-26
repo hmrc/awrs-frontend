@@ -25,5 +25,5 @@ object DeleteConfirmationForm {
 
   val deleteConfirmationForm = Form(mapping(
     "deleteConfirmation" -> yesNoQuestion_compulsory(fieldId = "deleteConfirmation", errorMessageId = "awrs.delete.confirmation.error.empty")
-  )(DeleteConfirmation.apply)(DeleteConfirmation.unapply))
+  )(DeleteConfirmation.apply)(deleteConfirmation => Some(deleteConfirmation.deleteConfirmation)))
 }

@@ -29,6 +29,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
+import utils.SessionUtil.SessionUtilForRequest
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,7 +51,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
   private def standardApi5Journey(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
     for {
       _ <- api5.retrieveApplication(authRetrievals)
-      Some(businessType) <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
+      case Some(businessType) <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
     } yield {
       businessCustomerDetails match {
@@ -65,7 +66,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
   private def api4Journey(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
     authorisedAction { ar =>
       for {
-        Some(bcd) <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
+        case Some(bcd) <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
         _ <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(Some(true)), authRetrievals)
         businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       } yield {

@@ -12,7 +12,7 @@ val coursierDirectory = sys.env.get("COURSIER_REPOSITORIES")
   .getOrElse("https/repo1.maven.org/maven2/")
 
 ThisBuild / majorVersion := 3
-ThisBuild / scalaVersion := "2.13.18"
+ThisBuild / scalaVersion := "3.3.7"
 
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala)
@@ -45,7 +45,7 @@ lazy val microservice = Project(appName, file("."))
     ),
   )
   .settings(
-    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s", "-feature"),
+    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s", "-feature", "-language:implicitConversions"),
     TwirlKeys.templateImports ++= Seq(
       "uk.gov.hmrc.govukfrontend.views.html.components._",
       "uk.gov.hmrc.hmrcfrontend.views.html.components._",

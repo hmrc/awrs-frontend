@@ -104,5 +104,5 @@ object CacheUtil extends Logging {
 
   }
 
-  implicit val cacheUtil: CacheMap => CacheHelper = (cache: CacheMap) => new CacheUtil.CacheHelper(cache)
+  implicit val cacheUtil: Conversion[CacheMap, CacheHelper] = (cache: CacheMap) => new CacheUtil.CacheHelper(cache)
 }

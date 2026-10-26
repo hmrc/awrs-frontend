@@ -28,7 +28,7 @@ import play.api.data.Form
 
 class DeRegistrationFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
-  implicit val testForm: Form[DeRegistrationDate] = DeRegistrationForm.deRegistrationForm
+  given testForm: Form[DeRegistrationDate] = DeRegistrationForm.deRegistrationForm
 
   "De-Registration Form" must {
     "Correctly validate 'tupleDate'" in {

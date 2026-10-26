@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class BusinessDetailsServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockSave4LaterService {
 
-  implicit val req: Request[AnyContent] = FakeRequest()
+  given req: Request[AnyContent] = FakeRequest()
 
   val mockSave4LaterService: Save4LaterService = mock[Save4LaterService]
   val testBusinessCustomerDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))

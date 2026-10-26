@@ -37,6 +37,6 @@ object GroupDeclarationForm {
 
   val groupDeclarationForm = Form(mapping(
     "groupRepConfirmation" -> groupRepConfirmation_compulsory
-  )(GroupDeclaration.apply)(GroupDeclaration.unapply))
+  )(GroupDeclaration.apply)(groupDeclaration => Some(groupDeclaration.groupRepConfirmation)))
 
 }

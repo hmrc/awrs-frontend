@@ -124,7 +124,7 @@ class GroupMembersViewTest
         Seq(true, false).foreach { isLinear =>
           s"see a progress message for the isLinearJourney is set to $isLinear" in {
             val test: Future[Result] => Unit = result => {
-              implicit val doc = Jsoup.parse(contentAsString(result))
+              given doc = Jsoup.parse(contentAsString(result))
               testId(shouldExist = true)(targetFieldId = "progress-text")
               val journey = JourneyConstants.getJourney(legalEntity)
               val expectedSectionNumber = journey.indexOf(groupMembersName) + 1

@@ -36,8 +36,8 @@ import scala.concurrent.Future
 
 class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  implicit val req: Request[AnyContent] = FakeRequest()
+  given hc: HeaderCarrier = HeaderCarrier()
+  given req: Request[AnyContent] = FakeRequest()
 
   val mockAwrsConnector: AWRSConnector = mock[AWRSConnector]
   val mockSave4LaterService: Save4LaterService = mock[Save4LaterService]

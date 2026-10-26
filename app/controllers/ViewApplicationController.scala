@@ -35,6 +35,7 @@ import models.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, CacheUtil}
+import utils.CacheUtil.cacheUtil
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
 import scala.language.postfixOps
@@ -56,7 +57,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
                                           templateViewApp: views.html.view_application.awrs_view_application) extends FrontendController(mcc) with AwrsController with UnSubmittedBannerUtil with DataCacheService {
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
+  implicit val cacheUtil: Conversion[CacheMap, CacheUtil.CacheHelper] = CacheUtil.cacheUtil
   val signInUrl: String = applicationConfig.signIn
 
   def viewApplicationContent(dataCache: CacheMap, status: String, enrolments: Set[Enrolment])(implicit request: Request[AnyContent]): Boolean => HtmlFormat.Appendable =

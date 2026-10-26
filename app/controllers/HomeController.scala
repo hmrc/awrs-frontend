@@ -42,14 +42,15 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
                                val authConnector: DefaultAuthConnector,
                                val auditable: Auditable,
                                val accountUtils: AccountUtils,
-                               implicit private val save4LaterService: Save4LaterService,
-                               implicit val applicationConfig: ApplicationConfig,
+                               private val save4LaterService: Save4LaterService,
+                               val applicationConfig: ApplicationConfig,
                                templateTooSoon: views.html.awrs_application_too_soon_error,
                                templateAssistantKickout: views.html.assistant_kickout) extends FrontendController(mcc) with AwrsController {
 
   private final lazy val MinReturnHours = 24
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
+  given ApplicationConfig = applicationConfig
   val signInUrl: String = applicationConfig.signIn
 
   def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>

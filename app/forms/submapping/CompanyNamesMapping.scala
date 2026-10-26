@@ -72,7 +72,7 @@ object CompanyNamesMapping extends AwrsFieldConfig {
       businessName -> (companyName_compulsory(prefix) iff validateBusinessName),
       doYouHaveTradingName -> doYouHaveTradingName_compulsory(prefix),
       tradingName -> (tradingName_compulsory(prefix) iff whenDoYouHaveTradingNameIsAnsweredYes(prefix))
-    )(CompanyNames.apply)(CompanyNames.unapply)
+    )(CompanyNames.apply)(companyNames => Some(Tuple.fromProductTyped(companyNames)))
 
   def companyNamesMapping(prefix: String, isBusinessNameRequired: Boolean): Mapping[CompanyNames] = companyNamesMapping(prefix, (data: FormData) => isBusinessNameRequired)
 

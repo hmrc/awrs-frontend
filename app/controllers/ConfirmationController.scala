@@ -31,6 +31,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
+import utils.SessionUtil.SessionUtilForRequest
 import views.html.awrs_application_update_confirmation
 import scala.language.postfixOps
 
