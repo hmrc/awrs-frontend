@@ -21,7 +21,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import org.scalatestplus.play.PlaySpec
 import utils.NoMongoTestApplication
-import views.view_application.ViewApplicationHelper._
+import views.view_application.ViewApplicationHelper.*
 
 class ViewApplicationHelperTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with GuiceOneServerPerSuite with NoMongoTestApplication {
 

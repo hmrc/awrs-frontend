@@ -66,7 +66,7 @@ object SupplierAddressesForm extends AwrsFieldConfig {
       isInvalidErrMessage = "awrs.generic.error.vrn_invalid"
     )
 
-  def supplierAddressesValidationForm(implicit applicationConfig: ApplicationConfig): Form[Supplier] = Form(
+  def supplierAddressesValidationForm(using applicationConfig: ApplicationConfig): Form[Supplier] = Form(
     mapping(
       "alcoholSupplier" -> alcoholSupplier_compulsory,
       "supplierName" -> (supplierName_compulsory iff whenThereAreAlcoholSuppliers),
@@ -75,10 +75,10 @@ object SupplierAddressesForm extends AwrsFieldConfig {
       "vatRegistered" -> (vatRegistered_compulsory() iff whenThereAreUkAlcoholSuppliers),
       vatNumber -> (vatNumber_compulsory iff whenSupplierIsVatRegistered),
       "additionalSupplier" -> (additionalSupplier_compulsory iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered))
-    )(Supplier.apply)(Supplier.unapply)
+    )(Supplier.apply)(supplier => Some(Tuple.fromProductTyped(supplier)))
   )
 
-  def supplierAddressesForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[Supplier] = {
+  def supplierAddressesForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[Supplier] = {
     PreprocessedForm(supplierAddressesValidationForm)
   }
 }

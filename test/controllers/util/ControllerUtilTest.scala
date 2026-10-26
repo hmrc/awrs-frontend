@@ -84,7 +84,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits with MockAuthConnector {
         viewMode,
         messages,
         mockAppConfig,
-        implicitly
+        summon
       )
 
     "display a new page with id = 1 when no data is cached and id = 1 is requested" in {
@@ -378,7 +378,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits with MockAuthConnector {
         viewMode,
         messages,
         mockAppConfig,
-        implicitly
+        summon
       )
 
 

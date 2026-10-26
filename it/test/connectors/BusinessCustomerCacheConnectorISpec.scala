@@ -30,12 +30,12 @@ class BusinessCustomerCacheConnectorISpec extends IntegrationSpec with Injecting
 
   private val businessCustomerCacheConnector: BusinessCustomerCacheConnector = inject[BusinessCustomerCacheConnector]
 
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+  given headerCarrier: HeaderCarrier = HeaderCarrier()
 
   final case class TestReviewDetails(name: String, utr: String)
 
   object TestReviewDetails {
-    implicit val format: Format[TestReviewDetails] = Json.format[TestReviewDetails]
+    given format: Format[TestReviewDetails] = Json.format[TestReviewDetails]
   }
 
   private val externalDataPath = "/business-customer/external-data/awrs"

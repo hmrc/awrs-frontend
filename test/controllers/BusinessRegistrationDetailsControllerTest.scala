@@ -48,7 +48,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
     new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService,
-      testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+      testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -105,7 +105,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
       setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
       when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
       when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-      val result = testBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
+      val result = testBusinessRegistrationDetailsController.saveAndReturn.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
       test(result)
     }
 

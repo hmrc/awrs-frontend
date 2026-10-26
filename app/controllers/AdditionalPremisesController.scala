@@ -42,10 +42,10 @@ class AdditionalPremisesController @Inject()(val mcc: MessagesControllerComponen
                                              val accountUtils: AccountUtils,
                                              val authConnector: DefaultAuthConnector,
                                              val auditable: Auditable,
-                                             implicit val applicationConfig: ApplicationConfig,
-                                             template: views.html.awrs_additional_premises) extends FrontendController(mcc) with JourneyPage with Deletable[AdditionalBusinessPremisesList, AdditionalBusinessPremises] with SaveAndRoutable {
+                                             template: views.html.awrs_additional_premises
+                                            )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with Deletable[AdditionalBusinessPremisesList, AdditionalBusinessPremises] with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val blankAddress: Address = Address("", "", None, None, None)
   val blankPremise: AdditionalBusinessPremises = AdditionalBusinessPremises(Some("Yes"), Some(blankAddress), None)
   override val signInUrl: String = applicationConfig.signIn
@@ -61,14 +61,14 @@ class AdditionalPremisesController @Inject()(val mcc: MessagesControllerComponen
   override val section: String = additionalBusinessPremisesName
   override val listToListObj: List[AdditionalBusinessPremises] => AdditionalBusinessPremisesList = (premises: List[AdditionalBusinessPremises]) => AdditionalBusinessPremisesList(premises)
   override val deleteHeadingParameter: String = "awrs.view_application.premises"
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(additionalBusinessPremisesName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(additionalBusinessPremisesName)
   override val addNoAnswerRecord: List[AdditionalBusinessPremises] => List[AdditionalBusinessPremises] = (_: List[models.AdditionalBusinessPremises]) => List(AdditionalBusinessPremises(Some("No"), None, None))
   override val amendHaveAnotherAnswer: (AdditionalBusinessPremises, String) => AdditionalBusinessPremises = (data: AdditionalBusinessPremises, newAnswer: String) => data.copy(addAnother = Some(newAnswer))
 
   def showPremisePage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { implicit authRetrievals =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -97,7 +97,7 @@ class AdditionalPremisesController @Inject()(val mcc: MessagesControllerComponen
   }
 
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]) : Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     businessPremisesForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(template(formWithErrors, id, isNewRecord)))

@@ -36,7 +36,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
-import utils.CacheUtil.cacheUtil
+import utils.CacheUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,13 +49,13 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
                                          val authConnector: DefaultAuthConnector,
                                          val auditable: Auditable,
                                          val accountUtils: AccountUtils,
-                                         implicit val applicationConfig: ApplicationConfig,
                                          template: views.html.awrs_de_registration,
                                          templateConfirm: views.html.awrs_de_registration_confirm,
                                          templateReason: views.html.awrs_de_registration_reason,
-                                         templateEvidence: views.html.awrs_de_registration_confirmation_evidence) extends FrontendController(mcc) with AwrsController {
+                                         templateEvidence: views.html.awrs_de_registration_confirmation_evidence
+                                        )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val permittedStatusTypes: Set[FormBundleStatus] = Set[FormBundleStatus](Approved, ApprovedWithConditions)
   val signInUrl: String = applicationConfig.signIn
 
@@ -74,7 +74,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
         }
     }
 
-  def showReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showReason: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         statusPermission(
@@ -88,7 +88,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def submitReason(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def submitReason: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
       deRegistrationReasonForm.bindFromRequest().fold(
         formWithErrors => {
@@ -102,7 +102,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def showDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showDate: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         statusPermission(
@@ -119,7 +119,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def submitDate(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def submitDate: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { _ =>
       deRegistrationForm.bindFromRequest().fold(
         formWithErrors =>
@@ -147,7 +147,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
           }
       })
 
-  def showConfirm(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showConfirm: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
@@ -156,7 +156,7 @@ class DeRegistrationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def callToAction(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def callToAction: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>
       confirmationJourneyPrerequisiteCheck((proposedEndDate: TupleDate) =>
 

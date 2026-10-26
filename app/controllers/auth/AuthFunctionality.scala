@@ -41,7 +41,7 @@ case class StandardAuthRetrievals(
 trait AuthFunctionality extends AuthorisedFunctions with Logging {
   val origin: String = "awrs-frontend"
   val signInUrl: String
-  implicit val applicationConfig: ApplicationConfig
+  given applicationConfig: ApplicationConfig
 
   def loginParams: Map[String, Seq[String]] = Map(
     "continue_url" -> Seq(signInUrl),

@@ -25,7 +25,7 @@ case class AwrsKnownFacts(service: String, knownFacts: Seq[KnownFact]) {
 }
 
 object AwrsKnownFacts {
-  implicit val formats: OFormat[AwrsKnownFacts] = Json.format[AwrsKnownFacts]
+  given formats: OFormat[AwrsKnownFacts] = Json.format[AwrsKnownFacts]
 
   def apply(awrsRefNumber: String): AwrsKnownFacts = {
     val knownFacts = Seq(KnownFact("AWRSRefNumber", awrsRefNumber))
@@ -34,5 +34,5 @@ object AwrsKnownFacts {
 }
 
 object KnownFact {
-  implicit val formats: OFormat[KnownFact] = Json.format[KnownFact]
+  given formats: OFormat[KnownFact] = Json.format[KnownFact]
 }

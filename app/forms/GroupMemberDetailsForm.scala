@@ -75,7 +75,7 @@ object GroupMemberDetailsForm {
       (!yesToDoYouHaveVRN || yesToDoYouHaveVRN && vrnIsNotAnswered) // if doYouhaveVRN is not answered or if it is answered with yes but no VRN is supplied
   }
 
-  def groupMemberValidationForm(implicit applicationConfig: ApplicationConfig): Form[GroupMember] = {
+  def groupMemberValidationForm(using applicationConfig: ApplicationConfig): Form[GroupMember] = {
     val noIdIsSupplied = noIdsHaveBeenSupplied _
     Form(
       mapping(
@@ -90,10 +90,10 @@ object GroupMemberDetailsForm {
         vrn -> (vrn_compulsory() iff whenAnsweredYesToVRN),
         "addAnotherGrpMember" -> otherMembers_compulsory
       )
-      (GroupMember.apply)(GroupMember.unapply)
+      (GroupMember.apply)(groupMember => Some(Tuple.fromProductTyped(groupMember)))
     )
   }
 
-  def groupMemberForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[GroupMember] = PreprocessedForm(groupMemberValidationForm).addNewPreprocessFunction(inferDoYouHave)
+  def groupMemberForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[GroupMember] = PreprocessedForm(groupMemberValidationForm).addNewPreprocessFunction(inferDoYouHave)
 
 }

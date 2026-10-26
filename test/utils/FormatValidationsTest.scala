@@ -17,7 +17,7 @@
 package utils
 
 import org.scalatestplus.play.PlaySpec
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 class FormatValidationsTest extends PlaySpec {
 
@@ -40,13 +40,13 @@ class FormatValidationsTest extends PlaySpec {
     withClue("the regex must allow these valid cases\n") {
       for (data <- validData)
         withClue(f"$data did not pass\n") {
-          validText(data) mustBe true
+          function(data) mustBe true
         }
     }
     withClue("the regex must reject these invalid cases\n") {
       for (data <- invalidData)
         withClue(f"$data did not pass\n") {
-          validText(data) mustBe false
+          function(data) mustBe false
         }
     }
   }

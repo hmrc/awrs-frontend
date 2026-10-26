@@ -26,9 +26,10 @@ import play.twirl.api.Content
 import services.DeEnrolService
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils, SessionUtil}
+import utils.{AccountUtils, AwrsSessionKeys, LoggingUtils}
 import views.html._
 import views.html.helpers.awrsErrorNotFoundTemplate
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
@@ -65,8 +66,6 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
   def showNotFoundPage(implicit request: Request[AnyContent]): Future[Result] =
     AwrsController.showNotFoundPage(applicationConfig.templateNotFound)
 
-  implicit val sessionUtil: Request[AnyContent] => SessionUtil.SessionUtilForRequest = SessionUtil.sessionUtilForRequest
-  implicit val sessionUtilForResult: Result => SessionUtil.SessionUtilForResult = SessionUtil.sessionUtilForResult
 
   def getSessionStatus(implicit request: Request[AnyContent]): Option[FormBundleStatus] =
     request getSessionStatus

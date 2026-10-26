@@ -33,11 +33,11 @@ import scala.concurrent.Future
 
 class AuthFunctionalitySpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector{
 
-  lazy implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest()
+  given fakeRequest: FakeRequest[AnyContent] = FakeRequest()
 
    protected abstract class AuthFunctionalityServer() extends AuthFunctionality {
     val authConnector: PlayAuthConnector = mockAuthConnector
-    implicit val applicationConfig: ApplicationConfig = mock[ApplicationConfig]
+    val applicationConfig: ApplicationConfig = mock[ApplicationConfig]
     override val signInUrl: String = "sign-url"
   }
 

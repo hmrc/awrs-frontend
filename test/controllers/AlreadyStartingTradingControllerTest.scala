@@ -43,7 +43,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
   val mockTemplate: awrs_already_starting_trading = app.injector.instanceOf[views.html.awrs_already_starting_trading]
 
   val alreadyStartingTradingController: AlreadyStartingTradingController =
-    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, mockTemplate) {
+    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockTemplate)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
@@ -108,7 +108,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = alreadyStartingTradingController.saveAndReturn()
+        val res = alreadyStartingTradingController.saveAndReturn
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
         status(res) mustBe 303

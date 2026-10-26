@@ -38,17 +38,17 @@ class TradingActivityController @Inject()(val mcc: MessagesControllerComponents,
                                           val authConnector: DefaultAuthConnector,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
-                                          implicit val applicationConfig: ApplicationConfig,
-                                          template: views.html.awrs_trading_activity) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                          template: views.html.awrs_trading_activity
+                                         )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   override val section: String = tradingActivityName
   val signInUrl: String = applicationConfig.signIn
 
   def showTradingActivity(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -64,7 +64,7 @@ class TradingActivityController @Inject()(val mcc: MessagesControllerComponents,
 
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
 
     tradingActivityForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors))),

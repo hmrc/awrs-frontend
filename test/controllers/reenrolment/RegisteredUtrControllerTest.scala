@@ -61,9 +61,8 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
     mockAccountUtils,
     mockEnrolService,
     mockEnrolmentStoreService,
-    mockAppConfig,
     template
-  )
+  )(using mockAppConfig)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -104,7 +103,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       ArgumentMatchers.eq("SOP"),
       ArgumentMatchers.eq(Map.empty)
     )(any(), any()))
-      .thenReturn(Future.successful(EnrolResponse("serviceName", "state", List(Identifier("AWRS", "AWRS_Ref_No")))))
+      .thenReturn(Future.successful(Some(EnrolResponse("serviceName", "state", List(Identifier("AWRS", "AWRS_Ref_No"))))))
   }
 
   private def setupTestData(knownFactsResponse: Option[KnownFactsResponse] = None): Unit = {
@@ -122,9 +121,9 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       "return 200" in {
         setAuthMocks()
         setupTestData()
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
 
-        val result = controller.showArwsUtrPage().apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = controller.showArwsUtrPage.apply(SessionBuilder.buildRequestWithSession(userId))
 
         status(result) mustBe 200
       }
@@ -141,13 +140,13 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
             ))
           )))
         setupSuccessfulDeEnrolment()
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
         when(mockEnrolmentStoreProxyConnector.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.successful(Some(testGroupId)))
         when(mockEnrolService.enrolAWRS(any(), any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.failed(new BadRequestException("")))
 
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
@@ -162,12 +161,12 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
               verifiers = Seq(Verifier("SAUTR", testUtr))
             ))
           )))
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
         when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.successful(Some(testGroupId)))
         setupSuccessfulDeEnrolment(success = false)
 
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
@@ -184,10 +183,10 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
           )))
         when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.successful(Some(testGroupId)))
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
         setupSuccessfulDeEnrolment()
         setupSuccessfulEnrolment()
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
@@ -204,11 +203,11 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
           )))
         when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.successful(Some(testGroupId)))
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
         setupSuccessfulDeEnrolment()
         setupSuccessfulEnrolment()
 
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
@@ -225,10 +224,10 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
           )))
         when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.successful(None))
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
         setupSuccessfulEnrolment()
 
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
@@ -246,7 +245,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
             ))
           )))
 
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(false)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(false))
         when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.successful(Some(testGroupId)))
         setupSuccessfulDeEnrolment()
@@ -258,9 +257,9 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
           eqTo("CT"),  // Should use CT for non-SA users
           eqTo(Map.empty)
         )(any(), any()))
-          .thenReturn(Future.successful(EnrolResponse("serviceName", "state", List(Identifier("AWRS", "AWRS_Ref_No")))))
+          .thenReturn(Future.successful(Some(EnrolResponse("serviceName", "state", List(Identifier("AWRS", "AWRS_Ref_No"))))))
 
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.SuccessfulEnrolmentController.showSuccessfulEnrolmentPage.url)
@@ -270,7 +269,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       "redirect to kickout page when ES9/ enrolment fails with an exception" in {
         setAuthMocks()
         setupTestData()
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(false)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(false))
         when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.successful(Some(testGroupId)))
         setupSuccessfulDeEnrolment()
@@ -285,7 +284,7 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
           .thenReturn(Future.failed(new RuntimeException("Service unavailable")))
 
 
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
@@ -294,11 +293,11 @@ class RegisteredUtrControllerTest extends AwrsUnitTestTraits
       "redirect to kickout page when ES1 (group id query) fails with an exception" in {
         setAuthMocks()
         setupTestData()
-        when(mockAccountUtils.isSaAccount(any())).thenReturn(true)
+        when(mockAccountUtils.isSaAccount(any())).thenReturn(Some(true))
         when(mockEnrolmentStoreService.queryForPrincipalGroupIdOfAWRSEnrolment(any())(any(), any()))
           .thenReturn(Future.failed(new RuntimeException("Service unavailable")))
 
-        val result = controller.saveAndContinue().apply(testRequest(testUtr))
+        val result = controller.saveAndContinue.apply(testRequest(testUtr))
 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)

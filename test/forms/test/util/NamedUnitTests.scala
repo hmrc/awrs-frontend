@@ -16,8 +16,8 @@
 
 package forms.test.util
 
-import forms.AWRSEnums.BooleanRadioEnum._
-import forms.AWRSEnums._
+import forms.AWRSEnums.BooleanRadioEnum.*
+import forms.AWRSEnums.*
 import forms.submapping.CompanyNamesMapping
 import forms.validation.util.{FieldError, MessageArguments, SummaryError}
 import models.TupleDate
@@ -26,15 +26,15 @@ import utils.AwrsFieldConfig
 
 object NamedUnitTests extends AwrsFormTestUtils {
 
-  import AddressVerifications._
-  import IdentityVerifications._
-  import ProofOfIdentiticationVerifications._
+  import AddressVerifications.*
+  import IdentityVerifications.*
+  import ProofOfIdentiticationVerifications.*
 
   def firstNameAndLastNameIsCompulsoryAndValid(preCondition: Map[String, String] = Map(),
                                                ignoreCondition: Set[Map[String, String]] = Set(),
                                                idPrefix: IdPrefix = None,
                                                firstNameId: String = "",
-                                               lastNameId: String = "")(implicit form: Form[_]): Unit = {
+                                               lastNameId: String = "")(using form: Form[_]): Unit = {
     firstNameIsCompulsory(preCondition, ignoreCondition, idPrefix, firstNameId)
     lastNameIsCompulsory(preCondition, ignoreCondition, idPrefix, lastNameId)
   }
@@ -42,7 +42,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
   def fieldIsCompulsoryAndValid(idPrefix: IdPrefix = None,
                                 fieldId: String = "",
                                 emptyErrorMsg: String,
-                                invalidFormatErrorMsg: String)(implicit form: Form[_]): Unit = {
+                                invalidFormatErrorMsg: String)(using form: Form[_]): Unit = {
     val newFieldId = idPrefix attach fieldId
 
     val emptyError = ExpectedFieldIsEmpty(newFieldId, FieldError(emptyErrorMsg))
@@ -59,7 +59,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
                                                                 ignoreBothCondition: Set[Map[String, String]] = Set(),
                                                                 ignoreCompanyNameCondition: Set[Map[String, String]] = Set(),
                                                                 ignoreTradingCondition: Set[Map[String, String]] = Set(),
-                                                                idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                                                                idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     companyNameIsOptional(companyNameDescString, preCondition, ignoreCompanyNameCondition ++ ignoreCompanyNameCondition, idPrefix)
     IdentityVerifications.tradingNameIsOptional(preCondition, ignoreBothCondition ++ ignoreTradingCondition, idPrefix)
     companyOrTradingNameIsAnswered(preCondition, ignoreBothCondition, idPrefix)
@@ -67,21 +67,21 @@ object NamedUnitTests extends AwrsFormTestUtils {
 
   @inline def tradingNameIsOptional(preCondition: Map[String, String] = Map(),
                                     ignoreCondition: Set[Map[String, String]] = Set(),
-                                    idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                                    idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     IdentityVerifications.tradingNameIsOptional(preCondition, ignoreCondition, idPrefix)
   }
 
   @inline def companyNamesAreValid(preCondition: Map[String, String] = Map(),
                                    ignoreCondition: Set[Map[String, String]] = Set(),
                                    idPrefix: IdPrefix = None,
-                                   isBusinessNameRequired: Boolean = true)(implicit form: Form[_]): Unit =
+                                   isBusinessNameRequired: Boolean = true)(using form: Form[_]): Unit =
     IdentityVerifications.companyNamesAreValid(preCondition, ignoreCondition, idPrefix, isBusinessNameRequired)
 
   def doYouHaveNinoIsAnsweredAndValidIfTheAnswerIsYes(preCondition: Map[String, String] = Map(),
                                                       ignoreCondition: Set[Map[String, String]] = Set(),
                                                       idPrefix: IdPrefix = None,
                                                       doYouHaveNinoNameString: String = "doYouHaveNino",
-                                                      ninoNameString: String = "NINO")(implicit form: Form[_]): Unit = {
+                                                      ninoNameString: String = "NINO")(using form: Form[_]): Unit = {
     doYouHaveNinoIsAnswered(preCondition, ignoreCondition, idPrefix, doYouHaveNinoNameString)
     ninoIsValidatedIfHaveNinoIsYes(preCondition, ignoreCondition, idPrefix, doYouHaveNinoNameString, ninoNameString)
   }
@@ -92,7 +92,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
    idPrefix: IdPrefix = None,
    doYouHaveNinoNameString: String = "doYouHaveNino",
    ninoNameString: String = "NINO"
-  )(implicit form: Form[_]): Unit = {
+  )(using form: Form[_]): Unit = {
     doYouHaveNinoIsAnsweredAndValidIfTheAnswerIsYes(preCondition, ignoreCondition, idPrefix, doYouHaveNinoNameString, ninoNameString)
     passportIsValidatedIfHaveNinoIsNo(preCondition, ignoreCondition, idPrefix, doYouHaveNinoNameString)
     nationalIDIsValidatedIfHaveNinoIsNo(preCondition, ignoreCondition, idPrefix, doYouHaveNinoNameString)
@@ -101,7 +101,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
 
   def doYouHaveVRNIsAnsweredAndValidIfTheAnswerIsYes(preCondition: Map[String, String] = Map(),
                                                      ignoreCondition: Set[Map[String, String]] = Set(),
-                                                     idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                                                     idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     doYouHaveVRNIsAnswered(preCondition, ignoreCondition, idPrefix)
     vrnIsValidWhenDoYouHaveVRNIsAnsweredWithYes(preCondition, ignoreCondition, idPrefix)
   }
@@ -112,7 +112,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
                                                                                 doYouHaveCRNNameString: String,
                                                                                 idPrefix: IdPrefix = None,
                                                                                 CRNNameString: String,
-                                                                                alsoTestWhenDoYouHaveCRNIsAnsweredWithNo: Boolean = true)(implicit form: Form[_]): Unit = {
+                                                                                alsoTestWhenDoYouHaveCRNIsAnsweredWithNo: Boolean = true)(using form: Form[_]): Unit = {
     doYouHaveCRNIsAnswered(preCondition, ignoreCondition, doYouHaveCRNPrefix, doYouHaveCRNNameString)
     companyRegNumberIsValidWhenDoYouHaveCRNIsAnsweredWithYes(preCondition, ignoreCondition, doYouHaveCRNPrefix, doYouHaveCRNNameString, idPrefix, CRNNameString, alsoTestWhenDoYouHaveCRNIsAnsweredWithNo)
   }
@@ -123,7 +123,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
                                                                              doYouHaveCRNNameString: String,
                                                                              idPrefix: IdPrefix = None,
                                                                              CRNNameString: String = "companyRegistrationNumber"
-                                                                            )(implicit form: Form[_]): Unit = {
+                                                                            )(using form: Form[_]): Unit = {
     doYouHaveCRNIsAnswered(preCondition, ignoreCondition, doYouHaveCRNPrefix, doYouHaveCRNNameString)
     val dateOfIncorporation = idPrefix attach "dateOfIncorporation"
     val preConditionRegNum_test_safe = preCondition ++ Map(f"$dateOfIncorporation.day" -> "", f"$dateOfIncorporation.month" -> "", f"$dateOfIncorporation.year" -> "")
@@ -136,7 +136,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
   def doYouHaveUTRIsAnsweredAndValidIfTheAnswerIsYes(preCondition: Map[String, String] = Map(),
                                                      ignoreCondition: Set[Map[String, String]] = Set(),
                                                      idPrefix: IdPrefix = None,
-                                                     alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true)(implicit form: Form[_]): Unit = {
+                                                     alsoTestWhenDoYouHaveUtrIsAnsweredWithNo: Boolean = true)(using form: Form[_]): Unit = {
     doYouHaveUTRIsAnswered(preCondition, ignoreCondition, idPrefix)
     utrIsValidWhenDoYouHaveUTRIsAnsweredWithYes(preCondition, ignoreCondition, idPrefix, alsoTestWhenDoYouHaveUtrIsAnsweredWithNo)
   }
@@ -145,13 +145,12 @@ object NamedUnitTests extends AwrsFormTestUtils {
                                            preCondition: Map[String, String] = Map(),
                                            fieldIds: Set[String],
                                            ignoreCondition: Set[Map[String, String]] = Set(),
-                                           idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit =
+                                           idPrefix: IdPrefix = None)(using form: Form[_]): Unit =
     ProofOfIdentiticationVerifications.AtLeastOneProofOfIdIsAnsweredWithYes(expectedError, preCondition, fieldIds, ignoreCondition, idPrefix)
 
 
   def doYouHaveOtherDirectorsIsAnswered(preCondition: Map[String, String] = Map(),
-                                        ignoreCondition: Set[Map[String, String]] = Set(),
-                                        idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                                        idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach "otherDirectors"
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.business_directors.error.other_directors"))
@@ -163,7 +162,7 @@ object NamedUnitTests extends AwrsFormTestUtils {
   def ukAddressIsCompulsoryAndValid(preCondition: Map[String, String] = Map(),
                                     ignoreCondition: Set[Map[String, String]] = Set(),
                                     idPrefix: IdPrefix = None,
-                                    nameInErrorMessage: String = "")(implicit form: Form[_]): Unit = {
+                                    nameInErrorMessage: String = "")(using form: Form[_]): Unit = {
     addressLine1(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
     addressLine2(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
     addressLine3(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
@@ -174,12 +173,12 @@ object NamedUnitTests extends AwrsFormTestUtils {
   def foreignAddressIsCompulsoryAndValid(preCondition: Map[String, String] = Map(),
                                          ignoreCondition: Set[Map[String, String]] = Set(),
                                          idPrefix: IdPrefix = None,
-                                         nameInErrorMessage: String = "")(implicit form: Form[_]): Unit = {
+                                         nameInErrorMessage: String = "")(using form: Form[_]): Unit = {
     addressLine1(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
     addressLine2(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
     addressLine3(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
     addressLine4(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
-    addressCountry(preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
+    addressCountry(preCondition, ignoreCondition, idPrefix)
   }
 }
 
@@ -188,14 +187,14 @@ private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConf
                            preCondition: Map[String, String],
                            ignoreCondition: Set[Map[String, String]],
                            idPrefix: IdPrefix,
-                           nameInErrorMessage: String)(implicit form: Form[_]): Unit = {
+                           nameInErrorMessage: String)(using form: Form[_]): Unit = {
     require(Set(1, 2, 3, 4) contains lineNumber)
     val preCondition_safe = preCondition ++
       Map((idPrefix attach "addressLine1") -> "") ++
       Map((idPrefix attach "addressLine2") -> "")
 
     val fieldId: String = idPrefix attach f"addressLine$lineNumber"
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, f"$nameInErrorMessage address line $lineNumber", addressLineLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(f"$nameInErrorMessage address line $lineNumber", addressLineLen)
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, f"$nameInErrorMessage address line $lineNumber"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -222,7 +221,7 @@ private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConf
   def addressLine1(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
                    idPrefix: IdPrefix = None,
-                   nameInErrorMessage: String)(implicit form: Form[_]): Unit ={
+                   nameInErrorMessage: String)(using form: Form[_]): Unit ={
     addressLinex(1, preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
   }
 
@@ -230,25 +229,25 @@ private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConf
   def addressLine2(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
                    idPrefix: IdPrefix = None,
-                   nameInErrorMessage: String)(implicit form: Form[_]): Unit =
+                   nameInErrorMessage: String)(using form: Form[_]): Unit =
     addressLinex(2, preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
 
   def addressLine3(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
                    idPrefix: IdPrefix = None,
-                   nameInErrorMessage: String)(implicit form: Form[_]): Unit =
+                   nameInErrorMessage: String)(using form: Form[_]): Unit =
     addressLinex(3, preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
 
   def addressLine4(preCondition: Map[String, String] = Map(),
                    ignoreCondition: Set[Map[String, String]] = Set(),
                    idPrefix: IdPrefix = None,
-                   nameInErrorMessage: String)(implicit form: Form[_]): Unit =
+                   nameInErrorMessage: String)(using form: Form[_]): Unit =
     addressLinex(4, preCondition, ignoreCondition, idPrefix, nameInErrorMessage)
 
   def postcode(preCondition: Map[String, String] = Map(),
                ignoreCondition: Set[Map[String, String]] = Set(),
                idPrefix: IdPrefix = None,
-               nameInErrorMessage: String)(implicit form: Form[_]): Unit = {
+               nameInErrorMessage: String)(using form: Form[_]): Unit = {
     val preCondition_safe = preCondition ++
       Map((idPrefix attach "addressLine1") -> "") ++
       Map((idPrefix attach "addressLine2") -> "")
@@ -271,8 +270,7 @@ private object AddressVerifications extends AwrsFormTestUtils with AwrsFieldConf
 
   def addressCountry(preCondition: Map[String, String] = Map(),
                      ignoreCondition: Set[Map[String, String]] = Set(),
-                     idPrefix: IdPrefix = None,
-                     nameInErrorMessage: String)(implicit form: Form[_]): Unit = {
+                     idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     val preCondition_safe = preCondition ++
       Map((idPrefix attach "addressLine1") -> "") ++
       Map((idPrefix attach "addressLine2") -> "")
@@ -298,13 +296,13 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
   def firstNameIsCompulsory(preCondition: Map[String, String],
                             ignoreCondition: Set[Map[String, String]],
                             idPrefix: IdPrefix = None,
-                            firstNameId: String)(implicit form: Form[_]): Unit = {
+                            firstNameId: String)(using form: Form[_]): Unit = {
     val fieldId: String = idPrefix attach (firstNameId match {
       case "" => "firstName"
       case id => id
     })
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.first_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "First name", firstNameLen, "awrs.generic.error.name.maximum_length")
+    val maxLenError = ExpectedFieldExceedsMaxLength("First name", firstNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "first name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -318,14 +316,14 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
   def lastNameIsCompulsory(preCondition: Map[String, String],
                            ignoreCondition: Set[Map[String, String]],
                            idPrefix: IdPrefix = None,
-                           lastNameId: String)(implicit form: Form[_]): Unit = {
+                           lastNameId: String)(using form: Form[_]): Unit = {
     val fieldId: String = idPrefix attach (lastNameId match {
       case "" => "lastName"
       case id => id
     })
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.last_name_empty"))
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "Last name", lastNameLen, "awrs.generic.error.name.maximum_length")
+    val maxLenError = ExpectedFieldExceedsMaxLength("Last name", lastNameLen, "awrs.generic.error.name.maximum_length")
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "last name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -341,7 +339,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
                            ignoreCondition: Set[Map[String, String]],
                            idPrefix: IdPrefix,
                            isBusinessNameRequired: Boolean = true
-                          )(implicit form: Form[_]): Unit = {
+                          )(using form: Form[_]): Unit = {
 
     val businessName = idPrefix attach CompanyNamesMapping.businessName
     val doYouHaveTradingName = idPrefix attach CompanyNamesMapping.doYouHaveTradingName
@@ -350,7 +348,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
     val businessNameExpectations = (fieldId: String) => {
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.businessName_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "business name", companyNameLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength("business name", companyNameLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "business name"))
       val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -365,7 +363,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
     val tradingNameExpectations = (fieldId: String) => {
       val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.tradingName_empty"))
-      val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", tradingNameLen)
+      val maxLenError = ExpectedFieldExceedsMaxLength("trading name", tradingNameLen)
       val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "trading name"))
       val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -423,10 +421,10 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
                             preCondition: Map[String, String],
                             ignoreCondition: Set[Map[String, String]],
                             idPrefix: IdPrefix = None
-                           )(implicit form: Form[_]): Unit = {
+                           )(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach "companyName"
 
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, companyNameDescString, companyNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength(companyNameDescString, companyNameLen)
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, companyNameDescString))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -438,10 +436,10 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
   def tradingNameIsOptional(preCondition: Map[String, String],
                             ignoreCondition: Set[Map[String, String]],
-                            idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                            idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach "tradingName"
 
-    val maxLenError = ExpectedFieldExceedsMaxLength(fieldId, "trading name", tradingNameLen)
+    val maxLenError = ExpectedFieldExceedsMaxLength("trading name", tradingNameLen)
     val invalidFormats = List(ExpectedInvalidFieldFormat("α", fieldId, "trading name"))
     val formatError = ExpectedFieldFormat(invalidFormats)
 
@@ -453,7 +451,7 @@ private object IdentityVerifications extends AwrsFormTestUtils with AwrsFieldCon
 
   def companyOrTradingNameIsAnswered(preCondition: Map[String, String],
                                      ignoreCondition: Set[Map[String, String]],
-                                     idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                                     idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     val companyNameId = idPrefix attach "companyName"
     val fieldIds = Set(companyNameId, idPrefix attach "tradingName")
 
@@ -483,8 +481,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
   def doYouHaveNinoIsAnswered(preCondition: Map[String, String],
                               ignoreCondition: Set[Map[String, String]],
                               idPrefix: IdPrefix = None,
-                              doYouHaveNinoNameString: String = "doYouHaveNino",
-                              ninoNameString: String = "NINO")(implicit form: Form[_]): Unit = {
+                              doYouHaveNinoNameString: String = "doYouHaveNino")(using form: Form[_]): Unit = {
     withClue(f"check $doYouHaveNinoNameString' validations\n") {
       val fieldId = idPrefix attach doYouHaveNinoNameString
 
@@ -512,7 +509,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
                                      idPrefix: IdPrefix = None,
                                      doYouHaveNinoNameString: String = "doYouHaveNino",
                                      ninoNameString: String = "NINO",
-                                     alsoTestWhenDoYouHaveNinoIsAnsweredWithNo: Boolean = true)(implicit form: Form[_]): Unit = {
+                                     alsoTestWhenDoYouHaveNinoIsAnsweredWithNo: Boolean = true)(using form: Form[_]): Unit = {
     withClue(f"check $ninoNameString validations\n") {
       val fieldId = idPrefix attach ninoNameString
       val questionId = idPrefix attach doYouHaveNinoNameString
@@ -540,7 +537,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
   def passportIsValidatedIfHaveNinoIsNo(preCondition: Map[String, String],
                                         ignoreCondition: Set[Map[String, String]],
                                         idPrefix: IdPrefix = None,
-                                        doYouHaveNinoNameString: String = "doYouHaveNino")(implicit form: Form[_]): Unit = {
+                                        doYouHaveNinoNameString: String = "doYouHaveNino")(using form: Form[_]): Unit = {
     withClue("check 'passportNumber' validations\n") {
       val fieldId = idPrefix attach "passportNumber"
 
@@ -564,7 +561,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
   def nationalIDIsValidatedIfHaveNinoIsNo(preCondition: Map[String, String],
                                           ignoreCondition: Set[Map[String, String]],
                                           idPrefix: IdPrefix = None,
-                                          doYouHaveNinoNameString: String = "doYouHaveNino")(implicit form: Form[_]): Unit = {
+                                          doYouHaveNinoNameString: String = "doYouHaveNino")(using form: Form[_]): Unit = {
     withClue("check 'nationalID' validations\n") {
       val fieldId = idPrefix attach "nationalID"
 
@@ -588,7 +585,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
   def eitherPassportOrNationalIDMustBeEnteredIfNinoIsNo(preCondition: Map[String, String],
                                                         ignoreCondition: Set[Map[String, String]],
                                                         idPrefix: IdPrefix = None,
-                                                        doYouHaveNinoNameString: String = "doYouHaveNino")(implicit form: Form[_]): Unit = {
+                                                        doYouHaveNinoNameString: String = "doYouHaveNino")(using form: Form[_]): Unit = {
     withClue("check validations for at least one in ('passportNumber' or 'nationalID')\n") {
       val fieldIds = Set(idPrefix attach "passportNumber", idPrefix attach "nationalID")
 
@@ -612,7 +609,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
   def doYouHaveVRNIsAnswered(preCondition: Map[String, String],
                              ignoreCondition: Set[Map[String, String]],
-                             idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                             idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach "doYouHaveVRN"
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_vat_reg_empty"))
@@ -625,7 +622,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
   def vrnIsValidWhenDoYouHaveVRNIsAnsweredWithYes(preCondition: Map[String, String],
                                                   ignoreCondition: Set[Map[String, String]],
-                                                  idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                                                  idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach "vrn"
 
     val questionId = idPrefix attach "doYouHaveVRN"
@@ -649,7 +646,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
   def doYouHaveCRNIsAnswered(preCondition: Map[String, String],
                              ignoreCondition: Set[Map[String, String]],
                              idPrefix: IdPrefix = None,
-                             doYouHaveCRNNameString: String)(implicit form: Form[_]): Unit = {
+                             doYouHaveCRNNameString: String)(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach doYouHaveCRNNameString
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_company_reg_empty"))
@@ -666,7 +663,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
                                                                doYouHaveCRNNameString: String,
                                                                crnPrefix: IdPrefix = None,
                                                                CRNNameString: String,
-                                                               alsoTestWhenDoYouHaveCRNIsAnsweredWithNo: Boolean = true)(implicit form: Form[_]): Unit = {
+                                                               alsoTestWhenDoYouHaveCRNIsAnsweredWithNo: Boolean = true)(using form: Form[_]): Unit = {
     val fieldId = crnPrefix attach CRNNameString
 
     val theyHaveCRN = preCondition + ((doYouHaveCRNPrefix attach doYouHaveCRNNameString) -> Yes.toString)
@@ -699,7 +696,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
   def dateOfIncorporationIsCompulsoryAndValidWhenDoYouHaveCRNIsAnsweredWithYes(preCondition: Map[String, String] = Map(),
                                                                                ignoreCondition: Set[Map[String, String]] = Set(),
                                                                                idPrefix: IdPrefix = None,
-                                                                               doYouHaveCRNNameString: String)(implicit form: Form[_]): Unit = {
+                                                                               doYouHaveCRNNameString: String)(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach "dateOfIncorporation"
 
     val theyHaveCRN = preCondition + (doYouHaveCRNNameString -> Yes.toString)
@@ -718,7 +715,7 @@ object ProofOfIdentiticationVerifications extends AwrsFormTestUtils {
 
   def doYouHaveUTRIsAnswered(preCondition: Map[String, String],
                              ignoreCondition: Set[Map[String, String]],
-                             idPrefix: IdPrefix = None)(implicit form: Form[_]): Unit = {
+                             idPrefix: IdPrefix = None)(using form: Form[_]): Unit = {
     val fieldId = idPrefix attach "doYouHaveUTR"
 
     val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.generic.error.do_you_have_utr_empty"))

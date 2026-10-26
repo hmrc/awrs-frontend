@@ -19,7 +19,7 @@ package views
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import views.html.awrs_withdrawal_confirmation_status
-import utils.SessionUtil._
+import utils.SessionUtil.*
 
 import java.time.{LocalDate, LocalTime, OffsetDateTime, ZoneOffset}
 import java.time.format.DateTimeFormatter

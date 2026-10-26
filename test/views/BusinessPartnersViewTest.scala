@@ -20,18 +20,18 @@ import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.BusinessPartnersController
 import forms.AWRSEnums.BooleanRadioEnum
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.JourneyConstants
 import services.mocks.MockSave4LaterService
-import utils.TestConstants._
+import utils.TestConstants.*
 import utils.TestUtil.testBusinessCustomerDetails
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_partner_member_details
@@ -47,7 +47,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
   val businessPartnerDetails: Partner = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), testNino, None, None, Some("Yes"), None, None, None, None)
 
   val testBusinessPartnersController: BusinessPartnersController =
-    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template)(using mockAppConfig) {
       override val signInUrl = "/sign-in"
     }
 
@@ -260,7 +260,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(partnersName) + 1
@@ -302,7 +302,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
   private def postLinearJourneyAddition(partnerId: Int, businessType: String)(test: Future[Result] => Any): Future[Any] = {
     val partners: Option[Partners] = partnerId - 1 match {
       case 0 => None
-      case num =>
+      case _ =>
         @tailrec
         def loop(list: List[Partner], numLeft: Int): List[Partner] = numLeft match {
           case 0 => list

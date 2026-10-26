@@ -21,7 +21,7 @@ import play.api.libs.json._
 case class AwrsPostcodeModel(registeredPostcode: String)
 
 object AwrsPostcodeModel {
-  implicit val format: OFormat[AwrsPostcodeModel] = Json.format[AwrsPostcodeModel]
+  given format: OFormat[AwrsPostcodeModel] = Json.format[AwrsPostcodeModel]
 
   private val awrsRegisteredPostcodePattern: String = "[\\s, +, ., :, _, ,, ;, =, (, ), {, }, \\[, \\], \\-, \\^, \\*]"
 

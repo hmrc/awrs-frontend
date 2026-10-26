@@ -17,7 +17,7 @@
 package models
 
 import play.api.libs.json.Json
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
 
 class FormModelsTest extends AwrsUnitTestTraits with AwrsFieldConfig {

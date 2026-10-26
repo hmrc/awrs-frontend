@@ -37,7 +37,7 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val formId = "groupDeclaration"
   val testGroupDeclarationController: GroupDeclarationController = new GroupDeclarationController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template)(using mockAppConfig)
 
   "Submitting the application declaration form with " must {
     "Authenticated and authorised users" must {
@@ -67,7 +67,7 @@ class GroupDeclarationControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
-    val result = testGroupDeclarationController.sendConfirmation().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testGroupDeclarationController.sendConfirmation.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

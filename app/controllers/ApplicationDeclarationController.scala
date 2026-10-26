@@ -30,6 +30,7 @@ import services._
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,11 +44,11 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
                                                  val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                                 implicit val applicationConfig: ApplicationConfig,
-                                                 template: views.html.awrs_application_declaration) extends FrontendController(mcc) with AwrsController with DataCacheService {
+                                                 template: views.html.awrs_application_declaration)(
+                                                 using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController with DataCacheService {
 
   val signInUrl: String = applicationConfig.signIn
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def isEnrolledApplicant(implicit request: Request[AnyContent]): Boolean = {
     val validStatus: Set[FormBundleStatus] = Set(Pending, Approved, ApprovedWithConditions)
@@ -91,7 +92,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
     )
   }
 
-  def sendApplication(): Action[AnyContent] = Action.async { implicit request =>
+  def sendApplication: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       if (accountUtils.hasAwrs(ar.enrolments)) {
         api5Application(ar)

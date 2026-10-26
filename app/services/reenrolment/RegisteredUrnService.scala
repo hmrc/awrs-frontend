@@ -28,8 +28,8 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredUrnService @Inject() (keyStoreService: KeyStoreService,
-                                      enrolmentStoreConnector: EnrolmentStoreProxyConnector,
-                                      implicit val applicationConfig: ApplicationConfig)
+                                      enrolmentStoreConnector: EnrolmentStoreProxyConnector
+                                     )(using val applicationConfig: ApplicationConfig)
     extends Logging {
 
   def handleAWRSRefChecks(providerId: String, awrsUrn: AwrsEnrolmentUrn)(implicit

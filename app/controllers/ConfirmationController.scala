@@ -18,6 +18,7 @@ package controllers
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import utils.SessionUtil.*
 
 import audit.Auditable
 import config.ApplicationConfig
@@ -43,11 +44,11 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                        val authConnector: DefaultAuthConnector,
                                        val auditable: Auditable,
                                        val accountUtils: AccountUtils,
-                                       implicit val applicationConfig: ApplicationConfig,
                                        templateConfirmation: views.html.awrs_application_confirmation,
-                                       templateUpdate: awrs_application_update_confirmation) extends FrontendController(mcc) with AwrsController {
+                                       templateUpdate: awrs_application_update_confirmation)(
+                                       using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   // because the nature of visiting this page deletes all data in save4later

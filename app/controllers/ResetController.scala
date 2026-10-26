@@ -36,7 +36,7 @@ class ResetController @Inject()(mcc: MessagesControllerComponents,
                                 val accountUtils: AccountUtils,
                                 val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def resetApplication: Action[AnyContent] = Action.async { implicit request =>

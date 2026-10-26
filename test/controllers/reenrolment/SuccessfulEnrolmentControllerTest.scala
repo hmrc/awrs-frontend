@@ -30,38 +30,37 @@ class SuccessfulEnrolmentControllerTest extends AwrsUnitTestTraits
   val template: awrs_successful_enrolment = app.injector.instanceOf[views.html.reenrolment.awrs_successful_enrolment]
   val testSuccessfulEnrolmentController: SuccessfulEnrolmentController = new SuccessfulEnrolmentController(
     mockMCC,
-    mockAppConfig,
     mockDeEnrolService,
     mockAuthConnector,
     mockAuditable,
     mockAccountUtils,
     template
-  )
+  )(using mockAppConfig)
 
   "SuccessfulEnrolmentController" must {
 
     "show the Successful Enrolment page" in {
       setAuthMocks()
-      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
     "contain a button linking to the Business Tax Account page" in {
       setAuthMocks()
-      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage.apply(SessionBuilder.buildRequestWithSession(userId))
       val content = contentAsString(res)
 
       content must include(s"""<a href="" role="button" class="govuk-button" id="bta-redirect-button" data-module="govuk-button">""")
     }
     "redirect to Business Tax Account Page when button is clicked" in {
       setAuthMocks()
-      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
     "contain a hyperlink to the correct AWRS guidance page" in {
       setAuthMocks()
-      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testSuccessfulEnrolmentController.showSuccessfulEnrolmentPage.apply(SessionBuilder.buildRequestWithSession(userId))
       val content = contentAsString(res)
       content must include("""<a href="https://www.gov.uk/guidance/the-alcohol-wholesaler-registration-scheme-awrs" target="_blank"> """)
     }

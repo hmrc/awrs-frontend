@@ -18,7 +18,7 @@ package forms.submapping
 
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI.MappingUtil
+import forms.validation.util.MappingUtilAPI.toStringFormatter
 import forms.validation.util.NamedMappingAndUtil._
 import models.{CompanyRegDetails, TupleDate}
 import play.api.data.Forms._
@@ -47,14 +47,13 @@ object CompanyRegMapping {
   def companyReg_compulsory(prefix: String): Mapping[CompanyRegDetails] = mapping(
     crn -> crn_compulsory(fieldId = prefix attach crn).toStringFormatter,
     dateOfIncorporation -> dateOfIncorporation_compulsory
-  )(CompanyRegDetails.apply)(CompanyRegDetails.unapply)
+  )(CompanyRegDetails.apply)(companyRegDetails => Some(Tuple.fromProductTyped(companyRegDetails)))
 
 
-  implicit class CompanyRegUtil(companyRegMapping: Mapping[CompanyRegDetails]) {
+  extension (companyRegMapping: Mapping[CompanyRegDetails])
     def toOptionalCompanyRegMapping: Mapping[Option[CompanyRegDetails]] =
       companyRegMapping.transform[Option[CompanyRegDetails]](
         (value: CompanyRegDetails) => Some(value),
         (value: Option[CompanyRegDetails]) => value.getOrElse(CompanyRegDetails("", TupleDate("", "", ""))))
-  }
 
 }

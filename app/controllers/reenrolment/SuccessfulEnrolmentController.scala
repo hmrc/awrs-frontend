@@ -29,18 +29,17 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
-                                              implicit val applicationConfig: ApplicationConfig,
                                               val deEnrolService: DeEnrolService,
                                               val authConnector: DefaultAuthConnector,
                                               val auditable: Auditable,
                                               val accountUtils: AccountUtils,
                                               template: views.html.reenrolment.awrs_successful_enrolment
-                                             ) extends FrontendController(mcc) with AwrsController {
+                                             )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showSuccessfulEnrolmentPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showSuccessfulEnrolmentPage: Action[AnyContent] = Action.async { implicit request =>
       Future.successful(Ok(template()))
   }
 }

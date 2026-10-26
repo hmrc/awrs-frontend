@@ -50,7 +50,7 @@ import scala.concurrent.Future
 class BusinessContactsControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   val businessCustomerDetailsFormId = "businessCustomerDetails"
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
@@ -63,7 +63,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
 
   val testBusinessContactsController: BusinessContactsController =
     new BusinessContactsController(mockMCC, mockEmailVerificationService, testSave4LaterService, mockDeEnrolService,
-      mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+      mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
@@ -140,7 +140,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchAdditionalBusinessPremisesList = None
     )
     setAuthMocks()
-    val result = testBusinessContactsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+    val result = testBusinessContactsController.saveAndContinue.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
@@ -149,7 +149,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchBusinessCustomerDetails = if (customerDetails) testBusinessCustomerDetails(businessType) else None
     )
     setAuthMocks()
-    val result = testBusinessContactsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
+    val result = testBusinessContactsController.saveAndContinue.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
@@ -159,7 +159,7 @@ class BusinessContactsControllerTest extends AwrsUnitTestTraits
       fetchBusinessContacts = testBusinessContactsDefault()
     )
     setAuthMocks()
-    val result = testBusinessContactsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails("SOP").businessType.get))
+    val result = testBusinessContactsController.saveAndReturn.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails("SOP").businessType.get))
     test(result)
   }
 

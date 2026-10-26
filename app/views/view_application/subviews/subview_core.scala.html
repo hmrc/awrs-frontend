@@ -14,9 +14,10 @@
  * limitations under the License.
  *@
 
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers.ViewApplicationType
+@import _root_.utils.SessionUtil.*
 
 @(heading: String, headingId: String, href: String = "#", sectionName: Option[String] = None)(content: Html, preContent: Option[Html] = None, postContent: Option[Html] = None)(implicit viewApplicationType: ViewApplicationType, request:Request[AnyContent],  messages : Messages)
 
@@ -42,7 +43,7 @@
 }
 
 @tabValue = {
-    @if(isOneViewMode) {
+    @if(isOneViewMode()) {
         tabindex = "0"
     } else {
         {}
@@ -50,7 +51,7 @@
 }
 
 <div id="@headingId" class="govuk-form-group view-application-section">
-        <header class="page-header @if(isOneViewMode){page-header-block}">
+        <header class="page-header @if(isOneViewMode()){page-header-block}">
             @awrsProgressHelper(request.getBusinessType, sectionName)<br>
             @headerType
 

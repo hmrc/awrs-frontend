@@ -57,7 +57,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
 
   val testWithdrawalController: WithdrawalController = new WithdrawalController(
     mockMCC, testAPI9, mockAwrsAPI8, mockEmailService, testKeyStoreService, mockDeEnrolService, testSave4LaterService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, templateReasons, templateConfirm, templateStatus)
+    mockAuthConnector, mockAuditable, mockAccountUtils, templateReasons, templateConfirm, templateStatus)(using mockAppConfig)
 
   private def testConfirmationRequest(confirmation: WithdrawalConfirmation) =
     TestUtil.populateFakeRequest[WithdrawalConfirmation](FakeRequest(), WithdrawalConfirmationForm.withdrawalConfirmation, confirmation)
@@ -203,7 +203,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     resetAuthConnector()
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveWithdrawalReason = true)
     setAuthMocks()
-    val result = testWithdrawalController.submitConfirmWithdrawal().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    val result = testWithdrawalController.submitConfirmWithdrawal.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
@@ -237,7 +237,7 @@ class WithdrawalControllerTest extends AwrsUnitTestTraits
     )
     when(mockAwrsAPI8.withdrawApplication(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(api8Repsonse))
     when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(deEnrol))
-    setupMockSave4LaterServiceWithOnly(removeAll = MockSave4LaterService.defaultRemoveAll)
+    setupMockSave4LaterServiceWithOnly(removeAll = Configure(MockSave4LaterService.defaultRemoveAll))
     when(mockEmailService.sendWithdrawnEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     setupMockSave4LaterService(fetchAll = cachedData())
     setAuthMocks()

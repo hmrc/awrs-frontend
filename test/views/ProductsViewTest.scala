@@ -23,10 +23,10 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.{JourneyConstants, ServicesUnitTestFixture}
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
 import views.html.awrs_products
 
@@ -36,7 +36,9 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_products = app.injector.instanceOf[views.html.awrs_products]
-  val testProductsController: ProductsController = new ProductsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+  val testProductsController: ProductsController = new ProductsController(
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template
+  )(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -149,7 +151,7 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {
                   val test: Future[Result] => Unit = result => {
-                    implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                    given doc: Document = Jsoup.parse(contentAsString(result))
                     testId(shouldExist = true)(targetFieldId = "progress-text")
                     val journey = JourneyConstants.getJourney(legalEntity)
                     val expectedSectionNumber = journey.indexOf(productsName) + 1
@@ -169,7 +171,7 @@ class ProductsViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture w
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks()
-    val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testProductsController.saveAndContinue.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

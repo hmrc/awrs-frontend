@@ -65,7 +65,7 @@ trait LoggingUtils extends Logging {
   private def splunkToLogger(transactionName: String, detail: Map[String, String], eventType: String): String =
     s"${if (eventType.nonEmpty) eventType + "\n"}$transactionName\n$detail"
 
-  private def splunkFunction(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  private def splunkFunction(transactionName: String, detail: Map[String, String], eventType: String)(using hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     logger.debug(splunkString + splunkToLogger(transactionName, detail, eventType))
     auditable.sendDataEvent(
       transactionName = transactionName,
@@ -74,7 +74,7 @@ trait LoggingUtils extends Logging {
     )
   }
 
-  def audit(transactionName: String, detail: Map[String, String], eventType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = splunkFunction(transactionName, detail, eventType)
+  def audit(transactionName: String, detail: Map[String, String], eventType: String)(using hc: HeaderCarrier, ec: ExecutionContext): Unit = splunkFunction(transactionName, detail, eventType)
 
   @inline def trace(msg: String): Unit = logger.trace(msg)
   @inline def debug(msg: String): Unit = logger.debug(msg)

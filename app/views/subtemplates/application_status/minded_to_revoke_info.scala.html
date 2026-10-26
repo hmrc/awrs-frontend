@@ -15,7 +15,7 @@
  *@
 
 @(params: views.subtemplates.application_status.ApplicationMindedToRevokeParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages )
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 
 <h2 class="govuk-heading-m" xmlns="http://www.w3.org/1999/html">@Messages("awrs.application_status.info.minded_to_revoke.heading")</h2>
 

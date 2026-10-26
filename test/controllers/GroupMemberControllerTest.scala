@@ -40,7 +40,7 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
 
   val formId = "groupMember"
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   val template: awrs_group_member = app.injector.instanceOf[views.html.awrs_group_member]
 
@@ -50,25 +50,25 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
   lazy val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = testRequest(testGroupMember)
 
   val testGroupMemberController: GroupMemberController = new GroupMemberController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template)
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template)
 
   "Submitting the application declaration form with " must {
 
     "Authenticated and authorised users" must {
       "redirect to additional premises page when valid data is provided for LTD" in {
-        continueWithAuthorisedUser(1, Some(testGroupMemberDetails), testGroupMemberDetails, "LTD_GRP", fakeRequest) {
+        continueWithAuthorisedUser(1, Some(testGroupMemberDetails), "LTD_GRP", fakeRequest) {
           result =>
             redirectLocation(result).get must include("/alcohol-wholesale-scheme/additional-premises")
         }
       }
       "redirect to business partners page when valid data is provided for LLP" in {
-        continueWithAuthorisedUser(1, Some(testGroupMemberDetails), testGroupMemberDetails, "LLP_GRP", fakeRequest) {
+        continueWithAuthorisedUser(1, Some(testGroupMemberDetails), "LLP_GRP", fakeRequest) {
           result =>
             redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
         }
       }
       "save form data to Save4Later and redirect to business partners page for LLP" in {
-        continueWithAuthorisedUser(1, Some(testGroupMemberDetails), testGroupMemberDetails, "LLP_GRP", fakeRequest) {
+        continueWithAuthorisedUser(1, Some(testGroupMemberDetails), "LLP_GRP", fakeRequest) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
@@ -76,7 +76,7 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
         }
       }
       "save form data to Save4Later for second member and redirect to business partners page for LLP" in {
-        continueWithAuthorisedUser(2, Some(testGroupMemberDetailsAddAnother), testGroupMemberDetails2Members, "LLP", fakeRequest) {
+        continueWithAuthorisedUser(2, Some(testGroupMemberDetailsAddAnother), "LLP", fakeRequest) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
@@ -84,7 +84,7 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
         }
       }
       "save form data to Save4Later for first member where no data currently exists and redirect to business partners page for LLP" in {
-        continueWithAuthorisedUser(1, None, testGroupMemberDetails, "LLP_GRP", fakeRequest) {
+        continueWithAuthorisedUser(1, None, "LLP_GRP", fakeRequest) {
           result =>
             status(result) must be(SEE_OTHER)
             redirectLocation(result).get must include("/alcohol-wholesale-scheme/business-partners")
@@ -92,7 +92,7 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
         }
       }
       "save form data to Save4Later for first member where no data currently exists and redirect to next member page " in {
-        continueWithAuthorisedUser(1, None, testGroupMemberDetailsAddAnother, "LLP", testRequest(testGroupMemberDefault(addAnotherGrpMember = "Yes"))) {
+        continueWithAuthorisedUser(1, None, "LLP", testRequest(testGroupMemberDefault(addAnotherGrpMember = "Yes"))) {
           result =>
             redirectLocation(result).get must include("/alcohol-wholesale-scheme/group-member?id=2")
             status(result) must be(SEE_OTHER)
@@ -110,7 +110,7 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
 
   "Users who entered from the summary edit view" must {
     "return to the summary view after clicking return" in {
-      returnWithAuthorisedUser(1, None, testGroupMemberDetailsAddAnother, "LLP", fakeRequest) {
+      returnWithAuthorisedUser(1, None, "LLP", fakeRequest) {
         result =>
           redirectLocation(result).get must include(f"/alcohol-wholesale-scheme/view-section/$groupMembersName")
           verifySave4LaterService(saveGroupMemberDetails = 1)
@@ -169,14 +169,14 @@ class GroupMemberControllerTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  private def continueWithAuthorisedUser(memberId: Int, testDetailsFetch: Option[GroupMembers], testDetailsSave: GroupMembers, businessType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+  private def continueWithAuthorisedUser(memberId: Int, testDetailsFetch: Option[GroupMembers], businessType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = testDetailsFetch, fetchPartnerDetails = None, fetchAdditionalBusinessPremisesList = None)
     setAuthMocks()
     val result = testGroupMemberController.saveAndContinue(memberId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
     test(result)
   }
 
-  private def returnWithAuthorisedUser(memberId: Int, testDetailsFetch: Option[GroupMembers], testDetailsSave: GroupMembers, businessType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+  private def returnWithAuthorisedUser(memberId: Int, testDetailsFetch: Option[GroupMembers], businessType: String, fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchGroupMemberDetails = testDetailsFetch)
     setAuthMocks()
     val result = testGroupMemberController.saveAndReturn(memberId, true).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))

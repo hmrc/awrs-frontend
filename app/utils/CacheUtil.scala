@@ -28,12 +28,12 @@ import scala.util.{Failure, Success, Try}
 
 object CacheUtil extends Logging {
 
-  implicit class CacheHelper(cache: CacheMap){
+  extension (cache: CacheMap)
 
-    private def tryOrReturnNone[T](f: => Option[T])(implicit tag: ClassTag[T]): Option[T] = Try(f) match {
+    private def tryOrReturnNone[T](f: => Option[T])(using tag: ClassTag[T]): Option[T] = Try(f) match {
       case Success(result) => result
       case Failure(e) =>
-        logger.debug(s"\nCacheUtil.CacheHelper failure on retrieving ${tag.runtimeClass}:\n$e")
+        logger.debug(s"\nCacheUtil failure on retrieving ${tag.runtimeClass}:\n$e")
         None
     }
 
@@ -102,7 +102,4 @@ object CacheUtil extends Logging {
       CacheMap(cache.id, jsonMap)
     }
 
-  }
-
-  implicit val cacheUtil: CacheMap => CacheHelper = (cache: CacheMap) => new CacheUtil.CacheHelper(cache)
 }

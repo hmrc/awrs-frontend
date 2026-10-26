@@ -27,14 +27,14 @@ case class CheckRegimeModel(businessCustomerDetails: BusinessCustomerDetails,
                             legalEntity: String)
 
 object CheckRegimeModel {
-  implicit val format: OFormat[CheckRegimeModel] = Json.format[CheckRegimeModel]
+  given format: OFormat[CheckRegimeModel] = Json.format[CheckRegimeModel]
 }
 
 case class BusinessDetailsSupport(missingProposedStartDate: Boolean)
 
 object BusinessDetailsSupport {
 
-  implicit val format: OFormat[BusinessDetailsSupport] = Json.format[BusinessDetailsSupport]
+  given format: OFormat[BusinessDetailsSupport] = Json.format[BusinessDetailsSupport]
 
   def evaluate(newAWBusiness: NewAWBusiness): BusinessDetailsSupport = {
     val missing: Boolean =

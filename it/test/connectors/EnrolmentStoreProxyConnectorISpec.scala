@@ -57,8 +57,8 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
       stubbedGet(es0Url, responseStatus, responseString.getOrElse(""))
     }
 
-    def testCall(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
-      connector.queryForPrincipalGroupIdOfAWRSEnrolment(awrsRef)(headerCarrier, implicitly)
+    def testCall(using headerCarrier: HeaderCarrier): Future[Option[String]] = {
+      connector.queryForPrincipalGroupIdOfAWRSEnrolment(awrsRef)(headerCarrier, summon)
     }
 
     "return EnrolmentSuccessResponse when ES20 returns successful response" in {

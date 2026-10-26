@@ -16,17 +16,14 @@
 
 package views.html
 
-import play.api.mvc.{AnyContent, Request}
-import utils.{AwrsFieldConfig, SessionUtil}
+import utils.AwrsFieldConfig
 
 import scala.language.implicitConversions
 
 package object helpers extends AwrsFieldConfig {
-
-  implicit def argConv[T](arg: T): Option[T] = Some(arg)
-
-  implicit val sessionUtil: Request[AnyContent] => SessionUtil.SessionUtilForRequest = SessionUtil.sessionUtilForRequest
-
+  
+  given argConv[T]: Conversion[T, Option[T]] = Some(_)
+  
   val frontendDefaultLen: String = "40"
 
   val ordinalIntSuffix: Int => String =

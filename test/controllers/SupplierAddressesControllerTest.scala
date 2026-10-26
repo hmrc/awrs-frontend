@@ -37,7 +37,7 @@ import scala.concurrent.Future
 class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
   val template: awrs_supplier_addresses = app.injector.instanceOf[views.html.awrs_supplier_addresses]
 
   def testRequest(supplier: Supplier): FakeRequest[AnyContentAsFormUrlEncoded] =
@@ -47,7 +47,8 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   val supplierPage2URL: String = supplierPageURL(2)
 
   val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, mockAppConfig, template) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, template
+  )(using mockAppConfig) {
     override val signInUrl: String = "/sign-in"
     override val countryList: Seq[(String, String)] = Seq()
   }

@@ -26,7 +26,8 @@ class PartnerMemberDetailsViewTest extends ViewTestFixture {
 
   val templatePartnerMemberDetails: awrs_partner_member_details = app.injector.instanceOf[views.html.awrs_partner_member_details]
 
-  val htmlContent: HtmlFormat.Appendable = templatePartnerMemberDetails.apply(partnershipDetailsForm(mockAppConfig).form, 1, isNewRecord = true)(fakeRequest, viewApplicationType = LinearViewMode, messages, mockAppConfig)
+  val htmlContent: HtmlFormat.Appendable = templatePartnerMemberDetails.apply(
+    partnershipDetailsForm(using mockAppConfig).form, 1, isNewRecord = true)(fakeRequest, viewApplicationType = LinearViewMode, messages, mockAppConfig)
 
   "the partner member details page" must {
 

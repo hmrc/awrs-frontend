@@ -34,6 +34,7 @@ import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 import scala.concurrent.{ExecutionContext, Future}
 import models.NewAWBusiness
+import utils.SessionUtil.*
 
 class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComponents,
                                                  val save4LaterService: Save4LaterService,
@@ -44,17 +45,17 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
                                                  val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                                 implicit val applicationConfig: ApplicationConfig,
-                                                 template: views.html.awrs_already_starting_trading) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
+                                                 template: views.html.awrs_already_starting_trading)(
+                                                 using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 
   override val section: String = businessDetailsName
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def showBusinessDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       val businessType = request.getBusinessType
-      implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
+      given viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {_ =>
           for {
@@ -95,7 +96,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                     isNewRecord: Boolean,
                     authRetrievals: StandardAuthRetrievals)
                    (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {_ =>
       alreadyStartedTradingForm.bindFromRequest().fold(
         formWithErrors =>

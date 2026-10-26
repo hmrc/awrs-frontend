@@ -26,10 +26,10 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.{JourneyConstants, ServicesUnitTestFixture}
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_principal_place_of_business
 
@@ -40,14 +40,16 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
 
   val businessCustomerDetailsFormId = "businessCustomerDetails"
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   def testRequest(premises: PlaceOfBusiness): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm, premises)
 
   val template: awrs_principal_place_of_business = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
 
-  val testPlaceOfBusinessController = new PlaceOfBusinessController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig, template)
+  val testPlaceOfBusinessController = new PlaceOfBusinessController(
+    mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, template
+  )(using mockAppConfig)
 
   "BusinessContactsController" must {
 
@@ -81,7 +83,7 @@ class PlaceOfBusinessViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(placeOfBusinessName) + 1

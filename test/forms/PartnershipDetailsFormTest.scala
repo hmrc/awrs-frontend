@@ -18,25 +18,25 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum.{No, NoString, Yes, YesString}
-import forms.AWRSEnums._
-import forms.PartnershipDetailsForm._
-import forms.test.util._
+import forms.AWRSEnums.*
+import forms.PartnershipDetailsForm.*
+import forms.test.util.*
 import forms.validation.util.FieldError
 import models.Partner
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 import utils.AwrsFieldConfig
-import utils.TestConstants._
+import utils.TestConstants.*
 import views.html.helpers.frontendDefaultLen
 
 class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils with AwrsFieldConfig {
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
-  implicit lazy val form: Form[Partner] = PartnershipDetailsForm.partnershipDetailsForm.form
+  given form: Form[Partner] = PartnershipDetailsForm.partnershipDetailsForm.form
 
-  import EntityTypeEnum._
+  import EntityTypeEnum.*
 
   val partnerTypes = Set(Individual, CorporateBody, SoleTrader)
   lazy val crnField = s"$crnMapping.companyRegistrationNumber"
@@ -387,42 +387,42 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
 
       }
 
-        "check validations for Business name for CorporateBody " when {
-          val preCondition: Map[String, String] = Map("entityType" -> CorporateBody.toString)
-          val fieldId = "companyNames.businessName"
-          val fieldNameInErrorMessage = "business name"
+      "check validations for Business name for CorporateBody " when {
+        val preCondition: Map[String, String] = Map("entityType" -> CorporateBody.toString)
+        val fieldId = "companyNames.businessName"
+        val fieldNameInErrorMessage = "business name"
 
 
-          "the Business name field is left empty" in {
-            form.bind(Map(fieldId -> "") ++ preCondition).fold(
-              formWithErrors => {
-                formWithErrors(fieldId).errors.size mustBe 1
-                formWithErrors(fieldId).errors.head.message mustBe "awrs.generic.error.businessName_empty"
-              },
-              _ => fail("Field should contain errors")
-            )
-          }
-
-          "the Business name field maxLength is exceeded" in {
-            form.bind(Map(fieldId -> "a" * 141) ++ preCondition).fold(
-              formWithErrors => {
-                formWithErrors(fieldId).errors.size mustBe 1
-                messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.maximum_length", fieldNameInErrorMessage, companyNameLen)
-              },
-              _ => fail("Field should contain errors")
-            )
-          }
-
-          "invalid characters are entered in the Business name field field" in {
-            form.bind(Map(fieldId -> "α") ++ preCondition).fold(
-              formWithErrors => {
-                formWithErrors(fieldId).errors.size mustBe 1
-                messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage)
-              },
-              _ => fail("Field should contain errors")
-            )
-          }
+        "the Business name field is left empty" in {
+          form.bind(Map(fieldId -> "") ++ preCondition).fold(
+            formWithErrors => {
+              formWithErrors(fieldId).errors.size mustBe 1
+              formWithErrors(fieldId).errors.head.message mustBe "awrs.generic.error.businessName_empty"
+            },
+            _ => fail("Field should contain errors")
+          )
         }
+
+        "the Business name field maxLength is exceeded" in {
+          form.bind(Map(fieldId -> "a" * 141) ++ preCondition).fold(
+            formWithErrors => {
+              formWithErrors(fieldId).errors.size mustBe 1
+              messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.maximum_length", fieldNameInErrorMessage, companyNameLen)
+            },
+            _ => fail("Field should contain errors")
+          )
+        }
+
+        "invalid characters are entered in the Business name field field" in {
+          form.bind(Map(fieldId -> "α") ++ preCondition).fold(
+            formWithErrors => {
+              formWithErrors(fieldId).errors.size mustBe 1
+              messages(formWithErrors(fieldId).errors.head.message) mustBe messages("awrs.generic.error.character_invalid.summary", fieldNameInErrorMessage)
+            },
+            _ => fail("Field should contain errors")
+          )
+        }
+      }
 
       "check validations for company registration number CRN for CorporateBody " when {
         val preCondition: Map[String, String] = Map("entityType" -> CorporateBody.toString)
@@ -557,249 +557,249 @@ class PartnershipDetailsFormTest extends PlaySpec with MockitoSugar with AwrsFor
       }
     }
 
-  "check that if 'companyRegNumber' is entered, it is correctly validated, when partner is Corporate Body" in {
-    val data = Map(
-      "companyNames.businessName" -> Seq("Business Name"),
-      "companyNames.doYouHaveTradingName" -> Seq("No"),
-      "address.addressLine1" -> Seq("1 Testing Test Road"),
-      "address.addressLine2" -> Seq("Testton"),
-      "address.postcode" -> Seq("NE98 1ZZ"),
-      "doYouHaveUTR" -> Seq("No"),
-      "isBusinessIncorporated" -> Seq("Yes"),
-      "companyRegDetails.companyRegistrationNumber" -> Seq("10101010"),
-      "companyRegDetails.dateOfIncorporation.day" -> Seq("20"),
-      "companyRegDetails.dateOfIncorporation.month" -> Seq("5"),
-      "companyRegDetails.dateOfIncorporation.year" -> Seq("2015"),
-      "doYouHaveVRN" -> Seq("No"),
-      "otherPartners" -> Seq("No"),
-      "entityType" -> Seq("Corporate Body"),
-      "partnerAddress.addressLine1" -> Seq("1 Testing Test Road"),
-      "partnerAddress.addressLine2" -> Seq("Testton"),
-      "partnerAddress.postcode" -> Seq("NE98 1ZZ")
-    )
+    "check that if 'companyRegNumber' is entered, it is correctly validated, when partner is Corporate Body" in {
+      val data = Map(
+        "companyNames.businessName" -> Seq("Business Name"),
+        "companyNames.doYouHaveTradingName" -> Seq("No"),
+        "address.addressLine1" -> Seq("1 Testing Test Road"),
+        "address.addressLine2" -> Seq("Testton"),
+        "address.postcode" -> Seq("NE98 1ZZ"),
+        "doYouHaveUTR" -> Seq("No"),
+        "isBusinessIncorporated" -> Seq("Yes"),
+        "companyRegDetails.companyRegistrationNumber" -> Seq("10101010"),
+        "companyRegDetails.dateOfIncorporation.day" -> Seq("20"),
+        "companyRegDetails.dateOfIncorporation.month" -> Seq("5"),
+        "companyRegDetails.dateOfIncorporation.year" -> Seq("2015"),
+        "doYouHaveVRN" -> Seq("No"),
+        "otherPartners" -> Seq("No"),
+        "entityType" -> Seq("Corporate Body"),
+        "partnerAddress.addressLine1" -> Seq("1 Testing Test Road"),
+        "partnerAddress.addressLine2" -> Seq("Testton"),
+        "partnerAddress.postcode" -> Seq("NE98 1ZZ")
+      )
 
-    val testForm = form.bindFromRequest(data)
-    testForm.errors mustBe Seq()
-  }
+      val testForm = form.bindFromRequest(data)
+      testForm.errors mustBe Seq()
+    }
 
-  "check do you have other partner is selected when adding more than one partner" in {
-    val fieldId = "otherPartners"
+    "check do you have other partner is selected when adding more than one partner" in {
+      val fieldId = "otherPartners"
 
-    val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.business-partner.error.add_more_partner"))
+      val emptyError = ExpectedFieldIsEmpty(fieldId, FieldError("awrs.business-partner.error.add_more_partner"))
 
-    val expectations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
-    fieldId assertEnumFieldIsCompulsory expectations
-  }
+      val expectations = CompulsoryEnumValidationExpectations(emptyError, BooleanRadioEnum)
+      fieldId assertEnumFieldIsCompulsory expectations
+    }
 
-  "Valid journeys for when partner is Individual must pass" in {
-    val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
+    "Valid journeys for when partner is Individual must pass" in {
+      val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
 
-    val testDataScen1: Map[String, String] =
-      conditionEntityIsIndividual ++
-        (Map("firstName" -> "firstName",
-          "lastName" -> "lastName",
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "doYouHaveNino" -> Yes.toString,
-          "nino" -> testNino,
-          "otherPartners" -> Yes.toString
+      val testDataScen1: Map[String, String] =
+        conditionEntityIsIndividual ++
+          (Map("firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "doYouHaveNino" -> Yes.toString,
+            "nino" -> testNino,
+            "otherPartners" -> Yes.toString
           ))
-    assertFormIsValid(form, testDataScen1)
+      assertFormIsValid(form, testDataScen1)
 
-    val testDataScen2: Map[String, String] =
-      conditionEntityIsIndividual ++
-        Map("firstName" -> "firstName",
-          "lastName" -> "lastName",
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "partnerAddress.addressLine3" -> "addressLine3",
-          "partnerAddress.addressLine4" -> "addressLine4",
-          "doYouHaveNino" -> No.toString,
-          "otherPartners" -> No.toString
+      val testDataScen2: Map[String, String] =
+        conditionEntityIsIndividual ++
+          Map("firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "partnerAddress.addressLine3" -> "addressLine3",
+            "partnerAddress.addressLine4" -> "addressLine4",
+            "doYouHaveNino" -> No.toString,
+            "otherPartners" -> No.toString
           )
-    assertFormIsValid(form, testDataScen2)
-  }
+      assertFormIsValid(form, testDataScen2)
+    }
 
-  "check when partner is Individual and uses Welsh characters" in {
-    val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
+    "check when partner is Individual and uses Welsh characters" in {
+      val conditionEntityIsIndividual = Map("entityType" -> Individual.toString)
 
-    val testDataScen1: Map[String, String] =
-      conditionEntityIsIndividual ++
-        Map("firstName" -> testWelshChars,
-          "lastName" -> testWelshChars,
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> testWelshChars,
-          "partnerAddress.addressLine2" -> testWelshChars,
-          "partnerAddress.addressLine3" -> testWelshChars,
-          "partnerAddress.addressLine4" -> testWelshChars,
-          "doYouHaveNino" -> Yes.toString,
-          "nino" -> testNino,
-          "otherPartners" -> Yes.toString
-        )
-    assertFormIsValid(form, testDataScen1)
-  }
+      val testDataScen1: Map[String, String] =
+        conditionEntityIsIndividual ++
+          Map("firstName" -> testWelshChars,
+            "lastName" -> testWelshChars,
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> testWelshChars,
+            "partnerAddress.addressLine2" -> testWelshChars,
+            "partnerAddress.addressLine3" -> testWelshChars,
+            "partnerAddress.addressLine4" -> testWelshChars,
+            "doYouHaveNino" -> Yes.toString,
+            "nino" -> testNino,
+            "otherPartners" -> Yes.toString
+          )
+      assertFormIsValid(form, testDataScen1)
+    }
 
     "Valid journeys for when partner is Corporate Body must pass" in {
-    val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
+      val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
 
-    val testDataScen1: Map[String, String] =
-      conditionEntityIsCompany ++
-        Map(
-          "companyNames.businessName" -> "businessName",
-          "companyNames.doYouHaveTradingName" -> NoString,
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "doYouHaveVRN" -> Yes.toString,
-          "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
-          "isBusinessIncorporated" -> Yes.toString,
-          "companyRegDetails.companyRegistrationNumber" ->
-            generateFieldTestDataInThisFormat(
-              DataFormat("0", 1),
-              DataFormat("1", 7)),
-          "companyRegDetails.dateOfIncorporation.day" -> "10",
-          "companyRegDetails.dateOfIncorporation.month" -> "10",
-          "companyRegDetails.dateOfIncorporation.year" -> "1000",
-          "doYouHaveUTR" -> Yes.toString,
-          "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
-          "otherPartners" -> Yes.toString
+      val testDataScen1: Map[String, String] =
+        conditionEntityIsCompany ++
+          Map(
+            "companyNames.businessName" -> "businessName",
+            "companyNames.doYouHaveTradingName" -> NoString,
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "doYouHaveVRN" -> Yes.toString,
+            "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
+            "isBusinessIncorporated" -> Yes.toString,
+            "companyRegDetails.companyRegistrationNumber" ->
+              generateFieldTestDataInThisFormat(
+                DataFormat("0", 1),
+                DataFormat("1", 7)),
+            "companyRegDetails.dateOfIncorporation.day" -> "10",
+            "companyRegDetails.dateOfIncorporation.month" -> "10",
+            "companyRegDetails.dateOfIncorporation.year" -> "1000",
+            "doYouHaveUTR" -> Yes.toString,
+            "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+            "otherPartners" -> Yes.toString
           )
-    assertFormIsValid(form, testDataScen1)
+      assertFormIsValid(form, testDataScen1)
 
-    val testDataScen2: Map[String, String] =
-      conditionEntityIsCompany ++
-        Map("companyNames.businessName" -> "businessName",
-          "companyNames.doYouHaveTradingName" -> YesString,
-          "companyNames.tradingName" -> "Trading",
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "doYouHaveVRN" -> No.toString,
-          "isBusinessIncorporated" -> No.toString,
-          "doYouHaveUTR" -> Yes.toString,
-          "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
-          "otherPartners" -> No.toString
+      val testDataScen2: Map[String, String] =
+        conditionEntityIsCompany ++
+          Map("companyNames.businessName" -> "businessName",
+            "companyNames.doYouHaveTradingName" -> YesString,
+            "companyNames.tradingName" -> "Trading",
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "doYouHaveVRN" -> No.toString,
+            "isBusinessIncorporated" -> No.toString,
+            "doYouHaveUTR" -> Yes.toString,
+            "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+            "otherPartners" -> No.toString
           )
-    assertFormIsValid(form, testDataScen2)
+      assertFormIsValid(form, testDataScen2)
 
-    val testDataScen3: Map[String, String] =
-      conditionEntityIsCompany ++
-        Map("companyNames.businessName" -> "businessName",
-          "companyNames.doYouHaveTradingName" -> YesString,
-          "companyNames.tradingName" -> "tradingName",
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "doYouHaveVRN" -> Yes.toString,
-          "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
-          "isBusinessIncorporated" -> No.toString,
-          "doYouHaveUTR" -> No.toString,
-          "otherPartners" -> Yes.toString
+      val testDataScen3: Map[String, String] =
+        conditionEntityIsCompany ++
+          Map("companyNames.businessName" -> "businessName",
+            "companyNames.doYouHaveTradingName" -> YesString,
+            "companyNames.tradingName" -> "tradingName",
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "doYouHaveVRN" -> Yes.toString,
+            "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
+            "isBusinessIncorporated" -> No.toString,
+            "doYouHaveUTR" -> No.toString,
+            "otherPartners" -> Yes.toString
           )
-    assertFormIsValid(form, testDataScen3)
+      assertFormIsValid(form, testDataScen3)
 
-  }
+    }
 
-  "check when partner is Corporate Body and uses Welsh characters" in {
-    val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
+    "check when partner is Corporate Body and uses Welsh characters" in {
+      val conditionEntityIsCompany = Map("entityType" -> CorporateBody.toString)
 
-    val data: Map[String, String] =
-      conditionEntityIsCompany ++
-        (Map("companyNames.businessName" -> testWelshChars,
-          "companyNames.doYouHaveTradingName" -> YesString,
-          "companyNames.tradingName" -> testWelshChars,
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> testWelshChars,
-          "partnerAddress.addressLine2" -> testWelshChars,
-          "doYouHaveVRN" -> No.toString,
-          "isBusinessIncorporated" -> No.toString,
-          "doYouHaveUTR" -> Yes.toString,
-          "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
-          "otherPartners" -> No.toString
-        ))
-    assertFormIsValid(form, data)
-  }
-
-  "Valid journeys for when partner is Sole Trader must pass" in {
-    val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
-
-    val testDataScen1: Map[String, String] =
-      conditionEntityIsSoleTrader ++
-        (Map("firstName" -> "firstName",
-          "lastName" -> "lastName",
-          "companyNames.doYouHaveTradingName" -> YesString,
-          "companyNames.tradingName" -> "tradingName",
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "doYouHaveNino" -> Yes.toString,
-          "nino" -> testNino,
-          "doYouHaveVRN" -> Yes.toString,
-          "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
-          "doYouHaveUTR" -> Yes.toString,
-          "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
-          "otherPartners" -> Yes.toString
+      val data: Map[String, String] =
+        conditionEntityIsCompany ++
+          (Map("companyNames.businessName" -> testWelshChars,
+            "companyNames.doYouHaveTradingName" -> YesString,
+            "companyNames.tradingName" -> testWelshChars,
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> testWelshChars,
+            "partnerAddress.addressLine2" -> testWelshChars,
+            "doYouHaveVRN" -> No.toString,
+            "isBusinessIncorporated" -> No.toString,
+            "doYouHaveUTR" -> Yes.toString,
+            "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+            "otherPartners" -> No.toString
           ))
-    assertFormIsValid(form, testDataScen1)
+      assertFormIsValid(form, data)
+    }
 
-    val testDataScen2: Map[String, String] =
-      conditionEntityIsSoleTrader ++
-        (Map("firstName" -> "firstName",
-          "lastName" -> "lastName",
-          "companyNames.doYouHaveTradingName" -> NoString,
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "doYouHaveNino" -> No.toString,
-          "doYouHaveVRN" -> No.toString,
-          "doYouHaveUTR" -> Yes.toString,
-          "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
-          "otherPartners" -> Yes.toString
+    "Valid journeys for when partner is Sole Trader must pass" in {
+      val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
+
+      val testDataScen1: Map[String, String] =
+        conditionEntityIsSoleTrader ++
+          (Map("firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "companyNames.doYouHaveTradingName" -> YesString,
+            "companyNames.tradingName" -> "tradingName",
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "doYouHaveNino" -> Yes.toString,
+            "nino" -> testNino,
+            "doYouHaveVRN" -> Yes.toString,
+            "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
+            "doYouHaveUTR" -> Yes.toString,
+            "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+            "otherPartners" -> Yes.toString
           ))
-    assertFormIsValid(form, testDataScen2)
+      assertFormIsValid(form, testDataScen1)
 
-    val testDataScen3: Map[String, String] =
-      conditionEntityIsSoleTrader ++
-        (Map("firstName" -> "firstName",
-          "lastName" -> "lastName",
-          "companyNames.doYouHaveTradingName" -> YesString,
-          "companyNames.tradingName" -> "tradingName",
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> "addressLine1",
-          "partnerAddress.addressLine2" -> "addressLine2",
-          "doYouHaveNino" -> Yes.toString,
-          "nino" -> testNino,
-          "doYouHaveVRN" -> No.toString,
-          "doYouHaveUTR" -> No.toString,
-          "otherPartners" -> No.toString
+      val testDataScen2: Map[String, String] =
+        conditionEntityIsSoleTrader ++
+          (Map("firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "companyNames.doYouHaveTradingName" -> NoString,
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "doYouHaveNino" -> No.toString,
+            "doYouHaveVRN" -> No.toString,
+            "doYouHaveUTR" -> Yes.toString,
+            "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+            "otherPartners" -> Yes.toString
           ))
-    assertFormIsValid(form, testDataScen3)
+      assertFormIsValid(form, testDataScen2)
 
+      val testDataScen3: Map[String, String] =
+        conditionEntityIsSoleTrader ++
+          (Map("firstName" -> "firstName",
+            "lastName" -> "lastName",
+            "companyNames.doYouHaveTradingName" -> YesString,
+            "companyNames.tradingName" -> "tradingName",
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> "addressLine1",
+            "partnerAddress.addressLine2" -> "addressLine2",
+            "doYouHaveNino" -> Yes.toString,
+            "nino" -> testNino,
+            "doYouHaveVRN" -> No.toString,
+            "doYouHaveUTR" -> No.toString,
+            "otherPartners" -> No.toString
+          ))
+      assertFormIsValid(form, testDataScen3)
+
+    }
+
+    "check when partner is Sole Trader and uses Welsh characters" in {
+      val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
+
+      val data: Map[String, String] =
+        conditionEntityIsSoleTrader ++
+          (Map("firstName" -> testWelshChars,
+            "lastName" -> testWelshChars,
+            "companyNames.doYouHaveTradingName" -> YesString,
+            "companyNames.tradingName" -> testWelshChars,
+            "partnerAddress.postcode" -> testPostcode,
+            "partnerAddress.addressLine1" -> testWelshChars,
+            "partnerAddress.addressLine2" -> testWelshChars,
+            "doYouHaveNino" -> Yes.toString,
+            "nino" -> testNino,
+            "doYouHaveVRN" -> Yes.toString,
+            "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
+            "doYouHaveUTR" -> Yes.toString,
+            "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
+            "otherPartners" -> Yes.toString
+          ))
+      assertFormIsValid(form, data)
+    }
   }
-
-  "check when partner is Sole Trader and uses Welsh characters" in {
-    val conditionEntityIsSoleTrader = Map("entityType" -> SoleTrader.toString)
-
-    val data: Map[String, String] =
-      conditionEntityIsSoleTrader ++
-        (Map("firstName" -> testWelshChars,
-          "lastName" -> testWelshChars,
-          "companyNames.doYouHaveTradingName" -> YesString,
-          "companyNames.tradingName" -> testWelshChars,
-          "partnerAddress.postcode" -> testPostcode,
-          "partnerAddress.addressLine1" -> testWelshChars,
-          "partnerAddress.addressLine2" -> testWelshChars,
-          "doYouHaveNino" -> Yes.toString,
-          "nino" -> testNino,
-          "doYouHaveVRN" -> Yes.toString,
-          "vrn" -> generateFieldTestDataInThisFormat(DataFormat("1", 9)),
-          "doYouHaveUTR" -> Yes.toString,
-          "utr" -> generateFieldTestDataInThisFormat(DataFormat("1", 10)),
-          "otherPartners" -> Yes.toString
-        ))
-    assertFormIsValid(form, data)
-  }
-}
 }

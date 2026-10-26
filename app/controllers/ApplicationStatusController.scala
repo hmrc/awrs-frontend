@@ -21,18 +21,19 @@ import config.ApplicationConfig
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import forms.AWRSEnums.BooleanRadioEnum
 import javax.inject.Inject
-import models.FormBundleStatus._
+import models.FormBundleStatus.*
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
-import models._
+import models.*
 import play.api.i18n.I18nSupport
-import play.api.mvc._
+import play.api.mvc.*
 import services.{DeEnrolService, Save4LaterService, StatusManagementService, StatusReturnType}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
-import views.subtemplates.application_status._
+import views.subtemplates.application_status.*
 import scala.language.postfixOps
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,16 +42,17 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
                                             val authConnector: DefaultAuthConnector,
-                                            implicit val save4LaterService: Save4LaterService,
+                                            val save4LaterService: Save4LaterService,
                                             val deEnrolService: DeEnrolService,
-                                            implicit val applicationConfig: ApplicationConfig,
+                                            val applicationConfig: ApplicationConfig,
                                             template: views.html.awrs_application_status
                                            ) extends FrontendController(mcc) with AwrsController with I18nSupport {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
+  given ApplicationConfig = applicationConfig
   val signInUrl: String = applicationConfig.signIn
 
-  def isNewBusiness(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+  def isNewBusiness(authRetrievals: StandardAuthRetrievals)(using hc: HeaderCarrier): Future[Option[Boolean]] = {
     val err: () => Nothing = () => {
       logger.warn("[isNewBusiness] Unexpected error when evaluating if the application is a new business")
       throw new InternalServerException("Unexpected error when evaluating if the application is a new business")
@@ -82,7 +84,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                             statusReturnType: StatusReturnType,
                             isNewBusiness: Boolean,
                             authRetrievals: StandardAuthRetrievals
-                           )(implicit request: Request[AnyContent]) = {
+                           )(using request: Request[AnyContent]) = {
     val subscriptionStatus = statusReturnType.status
     val alertStatus = statusReturnType.notification
     val statusInfo = statusReturnType.info
@@ -156,7 +158,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
               case Some(notification) =>
                 notification.contactType match {
                   case Some(MindedToReject) =>
-                    safeUseStatusInfo { info: StatusInfoSuccessResponseType =>
+                    safeUseStatusInfo { info =>
                       displayOk(ApplicationMindedToRejectedParameter(status, info, organisationName))
                     }
                   case _ => pending

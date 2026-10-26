@@ -44,15 +44,15 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
                                         val auditable: Auditable,
                                         val accountUtils: AccountUtils,
-                                        implicit val applicationConfig: ApplicationConfig,
                                         templateTooSoon: awrs_application_too_soon_error,
-                                        templateReappConfirm: awrs_reapplication_confirmation) extends FrontendController(mcc) with AwrsController with LoggingUtils {
+                                        templateReappConfirm: awrs_reapplication_confirmation
+                                       )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController with LoggingUtils {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   private final lazy val MinReturnHours = 24
   val signInUrl: String = applicationConfig.signIn
 
-  def show(): Action[AnyContent] = Action.async { implicit request =>
+  def show: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       val applicationStatus = ApplicationStatus(ApplicationStatusEnum.blankString, LocalDateTime.now())
       // check that the user has not returned within the specified amount of hours since being revoked or rejected
@@ -77,7 +77,7 @@ class ReapplicationController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def submit(): Action[AnyContent] = Action.async { implicit request =>
+  def submit: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       reapplicationForm.bindFromRequest().fold(
         formWithErrors =>

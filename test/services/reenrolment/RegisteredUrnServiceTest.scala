@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures._
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.shouldBe
 import services.ServicesUnitTestFixture
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, CredentialRole, Enrolments}
@@ -36,8 +36,8 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
 
   private def svc = new RegisteredUrnService(
     keyStoreService = testKeyStoreService,
-    enrolmentStoreConnector = mockEnrolmentStoreProxyConnector,
-    applicationConfig = mockAppConfig
+    enrolmentStoreConnector = mockEnrolmentStoreProxyConnector)(
+    using mockAppConfig
   )
 
   private val testFacts =
@@ -108,7 +108,7 @@ class RegisteredUrnServiceTest extends ServicesUnitTestFixture {
       when(
         mockEnrolmentStoreProxyConnector
           .lookupEnrolments(ArgumentMatchers.any)(any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(testFacts))
+        .thenReturn(Future.successful(Some(testFacts)))
 
       when(
         mockEnrolmentStoreProxyConnector

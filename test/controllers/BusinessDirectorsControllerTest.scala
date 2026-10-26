@@ -38,7 +38,7 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
   val mockTemplate: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

@@ -49,7 +49,7 @@ object TradingNameForm {
         businessName -> (companyName_compulsory() iff ids.contains(businessName)),
         doYouHaveTradingName -> doYouHaveTradingName_compulsory(),
         tradingName -> (tradingName_compulsory iff whenDoYouHaveTradingNameIsAnsweredYes)
-      )(BusinessNameDetails.apply)(BusinessNameDetails.unapply)
+      )(BusinessNameDetails.apply)(details => Some(Tuple.fromProductTyped(details)))
     )
   }
 

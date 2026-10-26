@@ -47,7 +47,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
 
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
     mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, templateError, templateViewApp)
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, templateError, templateViewApp)(using mockAppConfig)
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
                        businessCustomerDetails: Option[BusinessCustomerDetails] = None,
@@ -80,7 +80,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
     CacheMap(id, cacheMap)
   }
 
-  def prepMap[T](key: String, optionParam: Option[T])(implicit format: Format[T]): Map[String, JsValue] =
+  def prepMap[T](key: String, optionParam: Option[T])(using format: Format[T]): Map[String, JsValue] =
     optionParam match {
       case Some(param) => Map[String, JsValue](key -> Json.toJson(param))
       case _ => Map[String, JsValue]()
