@@ -41,7 +41,7 @@
 
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.TradingNameController.saveAndReturn(1, false)
     } else {
         controllers.routes.TradingNameController.saveAndContinue
@@ -49,7 +49,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         Messages("awrs.generic.save_return")
     } else {
         Messages("awrs.generic.continue")
@@ -86,7 +86,7 @@
 }
 
 @businessNameSection = @{
-    (isEditMode, businessType.getOrElse("")) match {
+    (isEditMode(), businessType.getOrElse("")) match {
         case (true, "LLP_GRP" | "LTD_GRP") => businessNameSectionContent
         case _ =>
     }

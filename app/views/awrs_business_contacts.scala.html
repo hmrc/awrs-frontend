@@ -47,7 +47,7 @@
 }
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.BusinessContactsController.saveAndReturn
     } else {
         controllers.routes.BusinessContactsController.saveAndContinue
@@ -55,7 +55,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")

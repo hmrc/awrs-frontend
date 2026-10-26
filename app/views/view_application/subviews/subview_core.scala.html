@@ -42,7 +42,7 @@
 }
 
 @tabValue = {
-    @if(isOneViewMode) {
+    @if(isOneViewMode()) {
         tabindex = "0"
     } else {
         {}
@@ -50,7 +50,7 @@
 }
 
 <div id="@headingId" class="govuk-form-group view-application-section">
-        <header class="page-header @if(isOneViewMode){page-header-block}">
+        <header class="page-header @if(isOneViewMode()){page-header-block}">
             @awrsProgressHelper(request.getBusinessType, sectionName)<br>
             @headerType
 

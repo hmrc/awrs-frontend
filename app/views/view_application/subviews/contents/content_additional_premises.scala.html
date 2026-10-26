@@ -28,7 +28,7 @@
 @premisesCounter = @{s"$id."}
 
 @links = @{
-    isEditMode match {
+    isEditMode() match {
         case true  => Some(List(edit_link_address(editUrl, id, premisesCounter), delete_link_address(deleteUrl, id, premisesCounter)))
         case false => None
     }

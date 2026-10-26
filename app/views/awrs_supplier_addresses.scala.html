@@ -55,7 +55,7 @@
 }
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.SupplierAddressesController.saveAndReturn(supplierAddressId, isNewRecord)
     } else {
         controllers.routes.SupplierAddressesController.saveAndContinue(supplierAddressId, isNewRecord)
@@ -63,7 +63,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")
@@ -196,7 +196,7 @@
                             </div>
                         </div>
                     </div>
-                    @if(supplierAddressId < 5 && !isEditMode){
+                    @if(supplierAddressId < 5 && !isEditMode()){
                         <div class="govuk-form-group">
 
                     @govukRadios(

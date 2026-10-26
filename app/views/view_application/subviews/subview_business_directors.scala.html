@@ -50,12 +50,12 @@
 
 @ledeAndTopAdd(model: models.BusinessDirectors) = {
     @if(model.directors.size > 1) {
-        <p class="govuk-body">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.director"))</p>
+        <p class="govuk-body">@add_none_table_link_helper(isSectionEdit())("top", addLinkHref(model), messages("awrs.view_application.director"))</p>
     }
 }
 
 @bottomAdd(model: models.BusinessDirectors)  = {
-    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.director"))
+    @add_none_table_link_helper(isSectionEdit())("bottom", addLinkHref(model), messages("awrs.view_application.director"))
 }
 
 @content(model: models.BusinessDirectors) = {
