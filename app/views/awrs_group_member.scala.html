@@ -43,7 +43,7 @@
 
 @(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(groupMemberForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 @pageScripts = {
 <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>

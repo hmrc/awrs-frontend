@@ -38,7 +38,7 @@
 @(productsForm: Form[models.Products])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(productsForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(productsForm) }
 
 @actionRoute = @{
     if(isEditMode()) {

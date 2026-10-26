@@ -61,7 +61,7 @@ class AdditionalPremisesController @Inject()(val mcc: MessagesControllerComponen
   override val section: String = additionalBusinessPremisesName
   override val listToListObj: List[AdditionalBusinessPremises] => AdditionalBusinessPremisesList = (premises: List[AdditionalBusinessPremises]) => AdditionalBusinessPremisesList(premises)
   override val deleteHeadingParameter: String = "awrs.view_application.premises"
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(additionalBusinessPremisesName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(additionalBusinessPremisesName)
   override val addNoAnswerRecord: List[AdditionalBusinessPremises] => List[AdditionalBusinessPremises] = (_: List[models.AdditionalBusinessPremises]) => List(AdditionalBusinessPremises(Some("No"), None, None))
   override val amendHaveAnotherAnswer: (AdditionalBusinessPremises, String) => AdditionalBusinessPremises = (data: AdditionalBusinessPremises, newAnswer: String) => data.copy(addAnother = Some(newAnswer))
 

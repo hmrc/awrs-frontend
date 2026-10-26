@@ -38,7 +38,7 @@
 
 @(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean, countryList: Seq[(String, String)])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(supplierAddressForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(supplierAddressForm) }
 
 
 @pageScripts = {

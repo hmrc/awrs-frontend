@@ -42,7 +42,7 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
 
   implicit val ec: ExecutionContext = mcc.executionContext
   lazy val isEmailVerificationEnabled: Boolean = applicationConfig.emailVerificationEnabled
-  lazy val signInUrl: String = applicationConfig.signIn
+  val signInUrl: String = applicationConfig.signIn
 
   def checkEmailVerification: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>

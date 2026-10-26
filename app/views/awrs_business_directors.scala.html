@@ -37,7 +37,7 @@
 
 @(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(businessDirectorsForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(businessDirectorsForm) }
 
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 

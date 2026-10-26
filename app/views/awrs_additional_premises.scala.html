@@ -36,7 +36,7 @@ govukErrorSummary: GovukErrorSummary)
 @(businessPremisesForm: Form[models.AdditionalBusinessPremises], businessPremisesId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent] , viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 
-    @implicitFormInstance = @{
+    @implicitFormInstance: Option[Form[_]] = @{
         Some(businessPremisesForm)
     }
 

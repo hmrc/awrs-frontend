@@ -29,7 +29,7 @@
 
 @(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{
+@implicitFormInstance: Option[Form[_]] = @{
     Some(groupDeclarationForm)
 }
 

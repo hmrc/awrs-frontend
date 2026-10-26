@@ -38,7 +38,7 @@
 
 @(isAPI5: Boolean, businessType: Option[String], business: models.BCAddress, businessContactsForm: Form[models.BusinessContacts])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{
+@implicitFormInstance: Option[Form[_]] = @{
     Some(businessContactsForm)
 }
 

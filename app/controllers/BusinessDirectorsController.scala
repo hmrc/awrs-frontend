@@ -59,7 +59,7 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
   override val section: String = businessDirectorsName
   override val listToListObj: List[BusinessDirector] => BusinessDirectors = (directors: List[BusinessDirector]) => BusinessDirectors(directors)
   override val deleteHeadingParameter: String = "awrs.view_application.director"
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(businessDirectorsName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(businessDirectorsName)
   override val addNoAnswerRecord: List[BusinessDirector] => List[BusinessDirector] = (emptyList: List[models.BusinessDirector]) => emptyList // in the directors page ignores this
   override val amendHaveAnotherAnswer: (BusinessDirector, String) => BusinessDirector = (data: BusinessDirector, newAnswer: String) => data.copy(otherDirectors = Some(newAnswer))
 
