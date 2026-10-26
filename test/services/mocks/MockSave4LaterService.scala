@@ -27,14 +27,11 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import services.DataCacheKeys._
 import services.Save4LaterService
-import models.CacheMap
-import utils.AwrsUnitTestTraits
 import utils.TestUtil._
 
 import scala.concurrent.Future
 
-trait MockSave4LaterService extends AwrsUnitTestTraits
-  with MockSave4LaterConnector {
+trait MockSave4LaterService extends MockSave4LaterConnector {
 
   import MockSave4LaterService._
 
