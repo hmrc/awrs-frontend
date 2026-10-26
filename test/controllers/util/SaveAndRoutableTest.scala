@@ -41,7 +41,7 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
 
   val testController: TradingActivityController = new TradingActivityController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
-    override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result]
+    override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)(using request: Request[AnyContent]): Future[Result]
     = Future.successful(Ok)
   }
 
@@ -64,7 +64,7 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
   }
 
   def testWasSectionCompletedWhenCurrentJourneyStarted(sectionName: String, sessionSectionStatusHash: String): Future[Boolean] = {
-    implicit val implicitRequest = baseRequest.withSession(baseRequest.session.+((AwrsSessionKeys.sessionSectionStatus, sessionSectionStatusHash)).data.toSeq: _*)
+    given implicitRequest: FakeRequest[AnyContentAsEmpty.type] = baseRequest.withSession(baseRequest.session.+((AwrsSessionKeys.sessionSectionStatus, sessionSectionStatusHash)).data.toSeq: _*)
     testController.redirectToIndex(sectionName)
   }
 

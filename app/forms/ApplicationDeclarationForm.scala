@@ -50,7 +50,7 @@ object ApplicationDeclarationForm extends AwrsFieldConfig {
     "declarationName" -> compulsoryText(declarationNameConstraintParameters),
     "declarationRole" -> compulsoryText(declarationRoleConstraintParameters),
     "confirmation" -> compulsoryBoolean(confirmationConstraintParameters)
-  )(ApplicationDeclaration.apply)(ApplicationDeclaration.unapply))
+  )(ApplicationDeclaration.apply)(applicationDeclaration => Some(Tuple.fromProductTyped(applicationDeclaration))))
 
   val applicationDeclarationForm: PrevalidationAPI[ApplicationDeclaration] = PreprocessedForm(applicationDeclarationValidationForm)
 }

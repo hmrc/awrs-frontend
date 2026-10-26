@@ -20,12 +20,12 @@ import _root_.models.FormBundleStatus.{Approved, ApprovedWithConditions, Pending
 import audit.Auditable
 import controllers.auth.StandardAuthRetrievals
 import javax.inject.Inject
-import models._
+import models.*
 import play.api.mvc.{AnyContent, Request}
 import services.apis.{AwrsAPI11, AwrsAPI12Cache, AwrsAPI9}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.LoggingUtils
-import utils.SessionUtil._
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,7 +43,7 @@ class StatusManagementService @Inject()(api9: AwrsAPI9,
   // This method will call api 9 first and depending on the status decides whether to call api 12 or not before calling api 11.
   // when changing the routing conditions also review the impl in api 11, as it will have safe guards of its own within its methods.
   private def deepFetch(authRetrievals: StandardAuthRetrievals)
-                       (implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] = {
+                       (using hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] = {
     lazy val onComplete =
       (status: Option[SubscriptionStatusType], notification: Option[StatusNotification], info: Option[StatusInfoType]) =>
         api12.getNotificationViewedStatus(authRetrievals) flatMap {
@@ -94,20 +94,20 @@ class StatusManagementService @Inject()(api9: AwrsAPI9,
     }
   }
 
-  private def localFetch(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[StatusReturnType] =
+  private def localFetch(using hc: HeaderCarrier, ec: ExecutionContext): Future[StatusReturnType] =
     for {
       subscriptionStatus <- api9.getSubscriptionStatusFromCache
       alertStatus <- api12.getAlertFromCache
       statusInfo <- api11.getStatusInfoFromCache
-      Some(wasViewed) <- keyStoreService.fetchViewedStatus
+      case Some(wasViewed) <- keyStoreService.fetchViewedStatus
     } yield StatusReturnType(wasViewed = wasViewed, subscriptionStatus, alertStatus, statusInfo)
 
 
   // if all the api calls were successful then the status must be in the session, and the session variable can only exist if all the status related apis were called successfully
-  def retrieveStatus(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] =
+  def retrieveStatus(authRetrievals: StandardAuthRetrievals)(using hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] =
     request.getSessionStatus match {
       case Some(_) => localFetch
-      case _       => deepFetch(authRetrievals)
+      case _ => deepFetch(authRetrievals)
     }
 
 }

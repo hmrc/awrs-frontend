@@ -42,7 +42,7 @@ class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerCompon
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String             = applicationConfig.signIn
 
-  def showDeEnrolmentConfirmationPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showDeEnrolmentConfirmationPage: Action[AnyContent] = Action.async { implicit request =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         Future.successful(Ok(template(deEnrolmentConfirmationForm)))

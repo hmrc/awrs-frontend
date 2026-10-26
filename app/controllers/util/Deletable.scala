@@ -125,7 +125,7 @@ trait Deletable[C, T] extends FrontendController with AwrsController {
     @tailrec
     def main(list: List[T], index: Int, out: List[T]): List[T] = (list: @unchecked) match {
       case h :: t if index != id => main(t, index + 1, out :+ h)
-      case h :: t if index == id => main(t, index + 1, out)
+      case _ :: t if index == id => main(t, index + 1, out)
       case Nil => out
     }
     main(list, 1, List())

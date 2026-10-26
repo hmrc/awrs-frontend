@@ -50,7 +50,7 @@ object RegisteredUrnForm  {
 
   lazy val awrsEnrolmentUrnValidationForm: Form[AwrsEnrolmentUrn] = Form(mapping(
     awrsUrn -> compulsoryQueryField.toStringFormatter
-  )(AwrsEnrolmentUrn.apply)(AwrsEnrolmentUrn.unapply))
+  )(AwrsEnrolmentUrn.apply)(enrolmentUrn => Some(enrolmentUrn.awrsUrn)))
 
   lazy val awrsEnrolmentUrnForm: PrevalidationAPI[AwrsEnrolmentUrn] = PreprocessedForm(
     awrsEnrolmentUrnValidationForm,

@@ -77,7 +77,7 @@ object PartnershipDetailsForm {
       case _ => Seq[String]()
     }) match {
       case Success(result) => result
-      case Failure(ex) => Seq[String]()
+      case Failure(_) => Seq[String]()
     }
 
   // cross field validation condition for when the partner is not a corporate body
@@ -135,7 +135,7 @@ object PartnershipDetailsForm {
         val vrnIsNotAnswered = data.getOrElse(vrn, "").equals("")
         val ninoIsNotAnswered = data.getOrElse(nino, "").equals("")
         val vrnIncomplete = !yesToDoYouHaveVRN || yesToDoYouHaveVRN && vrnIsNotAnswered // if doYouhaveVRN is not answered or if it is answered with yes but no VRN is supplied
-      val ninoIncomplete = !yesToDoYouHaveNino || yesToDoYouHaveNino && ninoIsNotAnswered // if doYouhaveNino is not answered or if it is answered with yes but no Nino is supplied
+        val ninoIncomplete = !yesToDoYouHaveNino || yesToDoYouHaveNino && ninoIsNotAnswered // if doYouhaveNino is not answered or if it is answered with yes but no Nino is supplied
 
         !ids(data).filter(!_.equals(doYouHaveVrn)).filter(!_.equals(doYouHaveNino)).map(id => whenAnswerToFieldIs(id, BooleanRadioEnum.YesString)(data)).reduce(_ || _) &&
           (vrnIncomplete && ninoIncomplete) // if either vrn and nino are incomplete
@@ -155,7 +155,7 @@ object PartnershipDetailsForm {
   val companyNamesMapping_rules: Mapping[Option[CompanyNames]] =
     companyNamesMapping(companyNames, validateBusinessName = whenPartnerIsCorporateBody).toOptional iff whenPartnerTypeIsAnsweredButNotIndividual
 
-  def partnershipDetailsValidationForm(implicit applicationConfig: ApplicationConfig): Form[Partner] = {
+  def partnershipDetailsValidationForm(using applicationConfig: ApplicationConfig): Form[Partner] = {
     val noIdIsSupplied = (associatedQuestion: String) => noIdsHaveBeenSupplied(getIds)(associatedQuestion)(_)
     val idExists = (associatedQuestion: String) => idExistsForQuestion(getIds)(associatedQuestion)(_)
     Form(
@@ -176,9 +176,9 @@ object PartnershipDetailsForm {
         doYouHaveVrn -> ((doYouHaveVRN_compulsory() iff whenPartnerTypeIsAnsweredButNotIndividual) + (mustHaveVRNorCRNorUTR xiff whenPartnerIsCorporateBody)),
         vrn -> (vrn_compulsory() iff (whenAnsweredYesToVRN &&& whenPartnerTypeIsAnsweredButNotIndividual)),
         "otherPartners" -> otherPartners_compulsory
-      )(Partner.apply)(Partner.unapply))
+      )(Partner.apply)(partner => Some(Tuple.fromProductTyped(partner))))
   }
 
-  def partnershipDetailsForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[Partner] = PreprocessedForm(partnershipDetailsValidationForm).addNewPreprocessFunction(inferDoYouHave)
+  def partnershipDetailsForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[Partner] = PreprocessedForm(partnershipDetailsValidationForm).addNewPreprocessFunction(inferDoYouHave)
 
 }

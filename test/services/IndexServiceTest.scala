@@ -35,7 +35,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockDataCacheService: Save4LaterService = mock[Save4LaterService]
-  implicit val ec: ExecutionContext = mockMCC.executionContext
+  given ec: ExecutionContext = mockMCC.executionContext
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -45,7 +45,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       .thenReturn(true)
   }
 
-  val testIndexService: IndexService = new IndexService(mockDataCacheService, mockApplicationService, mockAccountUtils)
+  val testIndexService: IndexService = new IndexService(mockApplicationService, mockAccountUtils)
 
   "OptionUtil" must {
     "unsupported type must throw an exception" in {
@@ -402,7 +402,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           await(result) mustBe createIndexViewModel(legalEntity = legalEntity)
         }
         s"return an IndexStatus model for business type $legalEntity that is no longer complete" in {
-          val completedCachemapApartFromNewBus = createCacheMap(legalEntity = legalEntity, businessNameDetails = (x: String) => testBusinessNameDetails(), businessDirectors = testBusinessDirectors.copy(directors = Nil))
+          val completedCachemapApartFromNewBus = createCacheMap(legalEntity = legalEntity, businessNameDetails = (_: String) => testBusinessNameDetails(), businessDirectors = testBusinessDirectors.copy(directors = Nil))
           val result = testIndexService.getStatus(completedCachemapApartFromNewBus, legalEntity, TestUtil.defaultAuthRetrieval)
           await(result) mustBe createIndexViewModel(legalEntity = legalEntity, businessDirectors = SectionIncomplete, directorSize = 0)
         }

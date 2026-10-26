@@ -46,14 +46,14 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showConfirm(): Action[AnyContent] = Action.async { implicit request =>
+  def showConfirm: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { _ =>
       val businessType = request.getBusinessType
       Future.successful(Ok(template(businessNameChangeConfirmationForm, businessType)))
     }
   }
 
-  def callToAction(): Action[AnyContent] = Action.async { implicit request =>
+  def callToAction: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       businessNameChangeConfirmationForm.bindFromRequest().fold(
         formWithErrors => {

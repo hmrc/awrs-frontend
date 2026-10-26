@@ -32,7 +32,7 @@ object ErrorMessagesUtilAPI {
   def dateFieldMissingErrorMessage: (List[String], String) => Invalid = (fieldIds: List[String], msgId: String ) => {
     Invalid(
       msgId,
-      if (fieldIds.nonEmpty) fieldIds.head, fieldIds.last
+      fieldIds.head, fieldIds.last
     )
   }
 

@@ -18,19 +18,19 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.AWRSEnums.BooleanRadioEnum._
-import forms.test.util._
+import forms.AWRSEnums.BooleanRadioEnum.*
+import forms.test.util.*
 import forms.validation.util.FieldError
 import models.Supplier
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 import utils.AwrsFieldConfig
-import utils.TestConstants._
+import utils.TestConstants.*
 
 class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form: Form[Supplier] = SupplierAddressesForm.supplierAddressesForm.form
+  given mockConfig: ApplicationConfig = mockAppConfig
+  given form: Form[Supplier] = SupplierAddressesForm.supplierAddressesForm.form
 
   "Form validations" must {
 

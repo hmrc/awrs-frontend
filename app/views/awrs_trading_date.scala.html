@@ -35,7 +35,7 @@
 @(confirmationForm: Form[TupleDate], businessType: Option[String], pastStart: Boolean)(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.TradingDateController.saveAndReturn(1, isNewRecord = false)
     } else {
         controllers.routes.TradingDateController.saveAndContinue

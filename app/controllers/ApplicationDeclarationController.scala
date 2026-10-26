@@ -91,7 +91,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
     )
   }
 
-  def sendApplication(): Action[AnyContent] = Action.async { implicit request =>
+  def sendApplication: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       if (accountUtils.hasAwrs(ar.enrolments)) {
         api5Application(ar)

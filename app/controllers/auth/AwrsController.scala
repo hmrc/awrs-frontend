@@ -65,8 +65,8 @@ trait AwrsController extends LoggingUtils with AuthFunctionality with I18nSuppor
   def showNotFoundPage(implicit request: Request[AnyContent]): Future[Result] =
     AwrsController.showNotFoundPage(applicationConfig.templateNotFound)
 
-  implicit val sessionUtil: Request[AnyContent] => SessionUtil.SessionUtilForRequest = SessionUtil.sessionUtilForRequest
-  implicit val sessionUtilForResult: Result => SessionUtil.SessionUtilForResult = SessionUtil.sessionUtilForResult
+  implicit val sessionUtil: Conversion[Request[AnyContent], SessionUtil.SessionUtilForRequest] = SessionUtil.sessionUtilForRequest
+  implicit val sessionUtilForResult: Conversion[Result, SessionUtil.SessionUtilForResult] = SessionUtil.sessionUtilForResult
 
   def getSessionStatus(implicit request: Request[AnyContent]): Option[FormBundleStatus] =
     request getSessionStatus

@@ -19,7 +19,7 @@ package views
 import builders.SessionBuilder
 import controllers.BusinessTypeController
 import models.BusinessDetailsEntityTypes.Llp
-import models._
+import models.*
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}

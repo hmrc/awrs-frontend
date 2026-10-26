@@ -56,23 +56,23 @@ class EmailService @Inject()(
     sendEmail(email, awrsNotificationConnector.sendWithdrawnEmail, ApiTypes.API8)
   }
 
-  def sendCancellationEmail(email: String, deRegistrationDate : Option[DeRegistrationDate])
+  def sendCancellationEmail(email: String, deRegistrationDate: Option[DeRegistrationDate])
                            (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10,deRegistrationDate)
+    sendEmail(email, awrsNotificationConnector.sendCancellationEmail, ApiTypes.API10, deRegistrationDate)
   }
 
   private def sendEmail(email: String,
                         doEmailCall: EmailRequest => Future[Boolean],
                         apiTypePromise: ApiTypes.ApiType,
-                        deRegistrationDate : Option[DeRegistrationDate] = None,
+                        deRegistrationDate: Option[DeRegistrationDate] = None,
                         reference: Option[String] = None,
                         isNewBusiness: Option[Boolean] = None)
                        (implicit request: Request[AnyContent]): Future[Boolean] = {
-        val deRegistrationDateStr = deRegistrationDate match {
-          case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))
-          case _ => None
-        }
-      val emailRequest = EmailRequest(apiTypePromise, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness, deRegistrationDateStr)
-      doEmailCall(emailRequest)
+    val deRegistrationDateStr = deRegistrationDate match {
+      case Some(deRegDate) => Some(deRegDate.proposedEndDate.toString("dd MMMM yyyy"))
+      case _ => None
     }
+    val emailRequest = EmailRequest(apiTypePromise, request.getBusinessName.fold("")(x => x), email, reference, isNewBusiness, deRegistrationDateStr)
+    doEmailCall(emailRequest)
+  }
 }

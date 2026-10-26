@@ -140,7 +140,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
 
     // when viewing the pages, the first page must be the same as all other pages
     "display the page correctly in edit mode when viewing existing records" in {
-      for ((director, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
+      for ((_, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
         val id = index + 1
         showDirector(id, isLinearMode = false, isNewRecord = false) {
           result =>
@@ -179,7 +179,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(businessDirectorsName) + 1

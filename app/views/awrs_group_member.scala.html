@@ -43,14 +43,14 @@
 
 @(groupMemberForm: Form[models.GroupMember], groupMemberId: Int, isNewRecord: Boolean, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(groupMemberForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(groupMemberForm) }
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 @pageScripts = {
 <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/javascript/postcodeLookup.js")'></script>
 }
 
 @actionRoute = @{
-  if(isEditMode) {
+  if(isEditMode()) {
       controllers.routes.GroupMemberController.saveAndReturn(groupMemberId, isNewRecord)
   } else {
       controllers.routes.GroupMemberController.saveAndContinue(groupMemberId, isNewRecord)
@@ -58,7 +58,7 @@
 }
 
 @ctaMessage = @{
-  if(isEditMode) {
+  if(isEditMode()) {
       messages("awrs.generic.save_return")
   } else {
       messages("awrs.generic.save_continue")
@@ -176,7 +176,7 @@ if(accountUtils.hasAwrs(enrolments)) {
                 ariaLabelledBy = "vrn_field vrn-information",
                 formHasErrors = groupMemberForm.hasErrors
             )
-            @if(!isEditMode){
+            @if(!isEditMode()){
                 <div class="govuk-form-group">
 
                     @govukRadios(

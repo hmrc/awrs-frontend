@@ -17,7 +17,7 @@
 package utils
 
 import play.api.libs.json.JsValue
-import utils.JsonUtil._
+import utils.JsonUtil.*
 
 object AwrsTestJson extends AwrsTestJson
 

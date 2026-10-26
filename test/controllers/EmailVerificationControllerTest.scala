@@ -47,7 +47,6 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
   val testEmailVerificationControllerEmailEnabled: EmailVerificationController =
     new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig,
       mockTemplateError, mockTemplate) {
-      override lazy val signInUrl: String = applicationConfig.signIn
       override lazy val isEmailVerificationEnabled = true
   }
 
@@ -55,7 +54,6 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig,
       mockTemplateError, mockTemplate) {
       override lazy val isEmailVerificationEnabled = false
-      override lazy val signInUrl: String = applicationConfig.signIn
   }
 
   "Page load for Authorised users" must {
@@ -152,13 +150,13 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     setAuthMocks()
     when(mockEmailVerificationService.sendVerificationEmail(ArgumentMatchers.eq(testEmail))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(isVerified))
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = testEmailVerificationControllerEmailEnabled.resend().apply(request)
+    val result = testEmailVerificationControllerEmailEnabled.resend.apply(request)
     test(result)
   }
 
   def showSuccess(test: Future[Result] => Any): Unit = {
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = testEmailVerificationControllerEmailEnabled.showSuccess().apply(request)
+    val result = testEmailVerificationControllerEmailEnabled.showSuccess.apply(request)
     test(result)
   }
 

@@ -29,7 +29,7 @@ case class BooleanFeatureSwitch(name: String, enabled: Boolean) extends FeatureS
 
 object FeatureSwitch {
 
-  private[utils] def getProperty(name: String)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = {
+  private[utils] def getProperty(name: String)(using applicationConfig: ApplicationConfig): FeatureSwitch = {
     val value = sys.props.get(systemPropertyName(name))
     value match {
       case Some("true") => BooleanFeatureSwitch(name, enabled = true)
@@ -37,18 +37,18 @@ object FeatureSwitch {
     }
   }
 
-  private[utils] def setProperty(name: String, value: String)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = {
+  private[utils] def setProperty(name: String, value: String)(using applicationConfig: ApplicationConfig): FeatureSwitch = {
     sys.props += ((systemPropertyName(name), value))
     getProperty(name)
   }
 
   private[utils] def systemPropertyName(name: String) = s"feature.$name"
 
-  def enable(fs: FeatureSwitch)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = setProperty(fs.name, "true")
-  def disable(fs: FeatureSwitch)(implicit applicationConfig: ApplicationConfig): FeatureSwitch = setProperty(fs.name, "false")
+  def enable(fs: FeatureSwitch)(using applicationConfig: ApplicationConfig): FeatureSwitch = setProperty(fs.name, "true")
+  def disable(fs: FeatureSwitch)(using applicationConfig: ApplicationConfig): FeatureSwitch = setProperty(fs.name, "false")
 }
 
 
-class AWRSFeatureSwitches @Inject() (implicit val applicationConfig: ApplicationConfig) {
+class AWRSFeatureSwitches @Inject() ()(using applicationConfig: ApplicationConfig) {
   def regimeCheck(): FeatureSwitch = FeatureSwitch.getProperty("regimeCheck")
 }

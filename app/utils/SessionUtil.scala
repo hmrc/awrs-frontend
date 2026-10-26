@@ -61,41 +61,41 @@ object SessionUtil {
 
   implicit class SessionUtilForResult(result: Result) {
 
-    @inline def addBusinessTypeToSession(businessType: String)(implicit request: Request[AnyContent]): Result =
+    @inline def addBusinessTypeToSession(businessType: String)(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionBusinessType -> businessType)
 
-    @inline def addBusinessTypeToSession(businessType: Option[BusinessType])(implicit request: Request[AnyContent]): Result =
+    @inline def addBusinessTypeToSession(businessType: Option[BusinessType])(using request: Request[AnyContent]): Result =
       addBusinessTypeToSession(businessType.get)
 
-    @inline def addBusinessTypeToSession(businessType: BusinessType)(implicit request: Request[AnyContent]): Result =
+    @inline def addBusinessTypeToSession(businessType: BusinessType)(using request: Request[AnyContent]): Result =
       addBusinessTypeToSession(businessType.legalEntity.fold("SOP")(x => x))
 
-    @inline def addToSession(status: FormBundleStatus)(implicit request: Request[AnyContent]): Result =
+    @inline def addToSession(status: FormBundleStatus)(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionStatusType -> status.name)
 
-    @inline def addAwrsRefToSession(awrsRef: String)(implicit request: Request[AnyContent]): Result =
+    @inline def addAwrsRefToSession(awrsRef: String)(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionAwrsRefNo -> awrsRef)
 
-    @inline def addBusinessNameToSession(businessName: String)(implicit request: Request[AnyContent]): Result =
+    @inline def addBusinessNameToSession(businessName: String)(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionBusinessName -> businessName)
 
-    @inline def addIndexBusinessNameToSession(businessName: Option[String])(implicit request: Request[AnyContent]): Result =
+    @inline def addIndexBusinessNameToSession(businessName: Option[String])(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionBusinessName -> businessName.getOrElse(""))
 
-    @inline def addJourneyStartLocationToSession(startLocation: String)(implicit request: Request[AnyContent]): Result =
+    @inline def addJourneyStartLocationToSession(startLocation: String)(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionJouneyStartLocation -> startLocation)
 
-    @inline def removeJouneyStartLocationFromSession(implicit request: Request[AnyContent]): Result =
+    @inline def removeJouneyStartLocationFromSession(using request: Request[AnyContent]): Result =
       result.removingFromSession(AwrsSessionKeys.sessionJouneyStartLocation)
 
-    @inline def addSectionStatusToSession(indexViewModel: IndexViewModel)(implicit request: Request[AnyContent]): Result =
+    @inline def addSectionStatusToSession(indexViewModel: IndexViewModel)(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionSectionStatus -> indexViewModel.toSessionHash)
 
-    @inline def addProcessingDateToSession(processingDate:String)(implicit request: Request[AnyContent]): Result =
+    @inline def addProcessingDateToSession(processingDate:String)(using request: Request[AnyContent]): Result =
       result.addingToSession(AwrsSessionKeys.sessionProcessingDate -> processingDate)
 
     // This method must be called after withSession
-    @inline def addSessionStatus(subscriptionStatusType: Option[SubscriptionStatusType])(implicit request: Request[AnyContent]): Result =
+    @inline def addSessionStatus(subscriptionStatusType: Option[SubscriptionStatusType])(using request: Request[AnyContent]): Result =
     subscriptionStatusType match {
       case Some(status) => addSessionStatus(status)
       case None => result
@@ -117,8 +117,8 @@ object SessionUtil {
 
   // cached implicit that can be used elsewhere
   // e.g. implicit val sessionUtil = SessionUtil.sessionUtil
-  implicit val sessionUtilForRequest: Request[AnyContent] => SessionUtilForRequest = (request: Request[AnyContent]) => new SessionUtil.SessionUtilForRequest(request)
-  implicit val sessionUtilForResult: Result => SessionUtilForResult = (result: Result) => new SessionUtil.SessionUtilForResult(result)
+  implicit val sessionUtilForRequest: Conversion[Request[AnyContent], SessionUtilForRequest] = (request: Request[AnyContent]) => new SessionUtil.SessionUtilForRequest(request)
+  implicit val sessionUtilForResult: Conversion[Result, SessionUtilForResult] = (result: Result) => new SessionUtil.SessionUtilForResult(result)
 
   def getUniqueAckNo: String = {
     val length = 32

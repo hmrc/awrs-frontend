@@ -57,7 +57,7 @@ class ApplicationControllerTest
   "timedout users" must {
     "should see timed out page" in {
       val result = testApplicationController
-        .timedOut()
+        .timedOut
         .apply(SessionBuilder.buildRequestWithSession(userId))
       val document = Jsoup.parse(contentAsString(result))
       document.getElementsByTag("h1").text must be("awrs.application_timeout.heading")

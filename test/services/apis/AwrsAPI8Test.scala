@@ -42,7 +42,7 @@ class AwrsAPI8Test extends MockKeyStoreService with MockAuthConnector {
     reset(mockAWRSConnector)
   }
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
+  given fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,

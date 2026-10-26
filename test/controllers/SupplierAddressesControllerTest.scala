@@ -37,7 +37,7 @@ import scala.concurrent.Future
 class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
   val template: awrs_supplier_addresses = app.injector.instanceOf[views.html.awrs_supplier_addresses]
 
   def testRequest(supplier: Supplier): FakeRequest[AnyContentAsFormUrlEncoded] =

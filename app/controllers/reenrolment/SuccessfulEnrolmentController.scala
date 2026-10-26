@@ -40,7 +40,7 @@ class SuccessfulEnrolmentController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showSuccessfulEnrolmentPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showSuccessfulEnrolmentPage: Action[AnyContent] = Action.async { implicit request =>
       Future.successful(Ok(template()))
   }
 }

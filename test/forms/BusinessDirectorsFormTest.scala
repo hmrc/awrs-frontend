@@ -16,24 +16,24 @@
 
 package forms
 
-import forms.AWRSEnums._
+import forms.AWRSEnums.*
 import forms.ProductsForm.companyNameLen
-import forms.test.util._
+import forms.test.util.*
 import forms.validation.util.FieldError
 import models.BusinessDirector
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
-import utils.TestConstants._
+import utils.TestConstants.*
 import views.html.helpers.frontendDefaultLen
 
 class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
-  implicit lazy val form: Form[BusinessDirector] = BusinessDirectorsForm.businessDirectorsForm.form
+  given form: Form[BusinessDirector] = BusinessDirectorsForm.businessDirectorsForm.form
 
-  import BooleanRadioEnum._
-  import DirectorAndSecretaryEnum._
-  import PersonOrCompanyEnum._
+  import BooleanRadioEnum.*
+  import DirectorAndSecretaryEnum.*
+  import PersonOrCompanyEnum.*
 
   val directorTypes = Set(Director, CompanySecretary, DirectorAndSecretary)
 

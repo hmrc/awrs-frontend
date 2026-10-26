@@ -260,7 +260,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(partnersName) + 1
@@ -302,7 +302,7 @@ class BusinessPartnersViewTest extends AwrsUnitTestTraits
   private def postLinearJourneyAddition(partnerId: Int, businessType: String)(test: Future[Result] => Any): Future[Any] = {
     val partners: Option[Partners] = partnerId - 1 match {
       case 0 => None
-      case num =>
+      case _ =>
         @tailrec
         def loop(list: List[Partner], numLeft: Int): List[Partner] = numLeft match {
           case 0 => list

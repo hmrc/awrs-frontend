@@ -25,7 +25,7 @@ package object helpers extends AwrsFieldConfig {
 
   implicit def argConv[T](arg: T): Option[T] = Some(arg)
 
-  implicit val sessionUtil: Request[AnyContent] => SessionUtil.SessionUtilForRequest = SessionUtil.sessionUtilForRequest
+  implicit val sessionUtil: Conversion[Request[AnyContent], SessionUtil.SessionUtilForRequest] = SessionUtil.sessionUtilForRequest
 
   val frontendDefaultLen: String = "40"
 

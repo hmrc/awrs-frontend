@@ -111,10 +111,10 @@ class BusinessTypeControllerTest extends AwrsUnitTestTraits
     }
   }
 
-  def assertBusinessName(expected: String)(implicit result: Future[Result]): Assertion =
+  def assertBusinessName(expected: String)(using result: Future[Result]): Assertion =
     await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessName, "") mustBe expected
 
-  def assertBusinessType(expected: String)(implicit result: Future[Result]): Assertion =
+  def assertBusinessType(expected: String)(using result: Future[Result]): Assertion =
     await(result).session(FakeRequest()).data.getOrElse(AwrsSessionKeys.sessionBusinessType, "") mustBe expected
 
   "Session management in BusinessTypeController" must {

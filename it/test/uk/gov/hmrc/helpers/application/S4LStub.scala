@@ -30,7 +30,7 @@ trait S4LStub extends IntegrationSpec {
   lazy val apiShortLivedCacheRepository: ShortLivedCacheRepository =
     app.injector.instanceOf[ShortLivedCacheRepository](BindingKey(classOf[ShortLivedCacheRepository]).qualifiedWith("awrs-api"))
 
-  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None, api: Boolean = false): Unit = {
+  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, api: Boolean = false): Unit = {
     data.foreach { d =>
       if (api) {
         await(apiShortLivedCacheRepository.saveData4Later[JsObject](id, DataKey[JsObject](key), d))

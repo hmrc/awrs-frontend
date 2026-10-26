@@ -52,7 +52,7 @@ class AwrsAPI9 @Inject()(
       businessDetails =>
         if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
           awrsConnector.checkStatus(authRetrievals, businessDetails.get.businessName) flatMap {
-            successData: SubscriptionStatusType =>
+            (successData: SubscriptionStatusType) =>
               keyStoreService.saveSubscriptionStatus(successData) flatMap {
                 _ => Future.successful(Some(successData))
               }
