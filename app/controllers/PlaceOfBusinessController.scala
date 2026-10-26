@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,17 +41,17 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
                                           val deEnrolService: DeEnrolService,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
-                                          implicit val applicationConfig: ApplicationConfig,
-                                          template: views.html.awrs_principal_place_of_business) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                          template: views.html.awrs_principal_place_of_business
+                                         )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   override val section: String = placeOfBusinessName
   val signInUrl: String = applicationConfig.signIn
 
   def showPlaceOfBusiness(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -75,7 +76,7 @@ class PlaceOfBusinessController @Inject()(val mcc: MessagesControllerComponents,
 
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     placeOfBusinessForm.bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(template(accountUtils.hasAwrs(authRetrievals.enrolments), request.getBusinessType, formWithErrors)))

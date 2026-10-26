@@ -17,7 +17,7 @@
 package forms.validation.util
 
 import forms.validation.util.ConstraintUtil.FieldIsEmptyConstraintParameter
-import forms.validation.util.ErrorMessageFactory._
+import forms.validation.util.ErrorMessageFactory.*
 import play.api.data.validation.Invalid
 
 
@@ -32,7 +32,7 @@ object ErrorMessagesUtilAPI {
   def dateFieldMissingErrorMessage: (List[String], String) => Invalid = (fieldIds: List[String], msgId: String ) => {
     Invalid(
       msgId,
-      if (fieldIds.nonEmpty) fieldIds.head, fieldIds.last
+      fieldIds.head, fieldIds.last
     )
   }
 

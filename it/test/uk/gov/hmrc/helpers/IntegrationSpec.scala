@@ -17,7 +17,7 @@
 package uk.gov.hmrc.helpers
 
 import org.apache.pekko.util.Timeout
-import org.scalatest._
+import org.scalatest.*
 import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.libs.ws.{WSCookie, WSRequest}
 import play.api.mvc.{Cookie, Session, SessionCookieBaker}
@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys, SessionId => HcSessionId}
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 trait IntegrationSpec
   extends AnyWordSpecLike
@@ -41,9 +41,9 @@ trait IntegrationSpec
     with IntegrationApplication
     with StubbedBasicHttpCalls with Injecting {
 
-  override implicit def defaultAwaitTimeout: Timeout = 5.seconds
+  override given defaultAwaitTimeout: Timeout = 5.seconds
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   protected lazy val sessionCacheRepository: CacheRepository =
     app.injector.instanceOf[CacheRepository](BindingKey(classOf[CacheRepository]).qualifiedWith("session"))

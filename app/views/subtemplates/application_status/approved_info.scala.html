@@ -15,7 +15,7 @@
  *@
 
 @(printFriendly: Boolean = false)(implicit messages: Messages)
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 
 <p class="govuk-body">@messages("awrs.application_status.info.approved.line1")</p>
 <p class="govuk-body print-only">@messages("awrs.application_status.info.approved.line2.printOnly")</p>

@@ -17,14 +17,14 @@
 package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.prevalidation._
-import forms.submapping.CompanyRegMapping._
-import forms.submapping.FieldNameUtil
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.MappingUtilAPI._
+import forms.prevalidation.*
+import forms.submapping.CompanyRegMapping.*
+import forms.submapping.attach
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.MappingUtilAPI.*
 import forms.validation.util.NamedMappingAndUtil.{doYouHaveCRN_compulsory => _, _}
-import models._
-import play.api.data.Forms._
+import models.*
+import play.api.data.Forms.*
 import play.api.data.{Form, Mapping}
 
 object BusinessRegistrationDetailsForm {
@@ -105,7 +105,7 @@ object BusinessRegistrationDetailsForm {
         crnMapping -> (companyReg_compulsory(crnMapping).toOptionalCompanyRegMapping iff noIdIsSupplied(doYouHaveCrn) ||| answeredYesToDoYouHaveCRN),
         doYouHaveVrn -> (doYouHaveVRN_compulsory(doYouHaveVrn) iff ids.contains(doYouHaveVrn)),
         vrn -> (vrn_compulsory(vrn) iff answeredYesToDoYouHaveVRN ||| answeredYesToDoYouHaveVRN)
-      )(BusinessRegistrationDetails.apply)(BusinessRegistrationDetails.unapply))
+      )(BusinessRegistrationDetails.apply)(details => Some(Tuple.fromProductTyped(details))))
   }
 
   val businessRegistrationDetailsForm: String => PrevalidationAPI[BusinessRegistrationDetails] = (entityType: String) => PreprocessedForm(businessRegistrationDetailsValidationForm(entityType)).addNewPreprocessFunction(inferDoYouHave)

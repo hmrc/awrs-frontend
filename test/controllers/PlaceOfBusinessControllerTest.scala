@@ -18,13 +18,13 @@ package controllers
 
 import builders.SessionBuilder
 import forms.PlaceOfBusinessForm
-import models._
+import models.*
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.ServicesUnitTestFixture
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_principal_place_of_business
 
@@ -34,12 +34,12 @@ class PlaceOfBusinessControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
   def testRequest(pob: PlaceOfBusiness): FakeRequest[AnyContentAsFormUrlEncoded] =
-    TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm(mockAppConfig), pob)
+    TestUtil.populateFakeRequest[PlaceOfBusiness](FakeRequest(), PlaceOfBusinessForm.placeOfBusinessValidationForm(using mockAppConfig), pob)
 
   val mockTemplate: awrs_principal_place_of_business = app.injector.instanceOf[views.html.awrs_principal_place_of_business]
 
   val testPlaceOfBusinessController: PlaceOfBusinessController =
-    new PlaceOfBusinessController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+    new PlaceOfBusinessController(mockMCC, testSave4LaterService, testKeyStoreService, mockAuthConnector, mockDeEnrolService, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -146,7 +146,7 @@ class PlaceOfBusinessControllerTest extends AwrsUnitTestTraits
     def getWithAuthorisedUser(placeOfBusiness: Option[PlaceOfBusiness], businessCustomerDetails: Option[BusinessCustomerDetails], isLinearMode: Boolean = true)(test: Future[Result] => Any): Future[Any] = {
       setupMockSave4LaterServiceWithOnly(fetchPlaceOfBusiness = placeOfBusiness, fetchBusinessCustomerDetails = businessCustomerDetails)
       setAuthMocks()
-      val result = testPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
+      val result = testPlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = isLinearMode).apply(SessionBuilder.buildRequestWithSession(userId, "LTD_GRP"))
       test(result)
     }
 

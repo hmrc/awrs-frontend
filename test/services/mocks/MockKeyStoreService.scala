@@ -18,11 +18,11 @@ package services.mocks
 
 import models.reenrolment.KnownFactsResponse
 import models.{StatusNotification, _}
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.{AdditionalMatchers, ArgumentMatchers}
-import services.DataCacheKeys._
+import services.DataCacheKeys.*
 import services.KeyStoreService
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil, WithdrawalTestUtils}
 
 import scala.concurrent.Future
@@ -30,7 +30,7 @@ import scala.concurrent.Future
 trait MockKeyStoreService extends AwrsUnitTestTraits
   with MockKeyStoreCacheService {
 
-  import MockKeyStoreService._
+  import MockKeyStoreService.*
 
   val testKeyStoreService: KeyStoreService = new KeyStoreService(mockKeyStoreCacheService)
 
@@ -39,7 +39,7 @@ trait MockKeyStoreService extends AwrsUnitTestTraits
     val DeletedData = Value("Deleted")
   }
 
-  import FetchNoneType._
+  import FetchNoneType.*
 
   // children must not override this method, update here when KeyStoreService changes
   protected final def mockFetchFromKeyStore[T](key: String, config: MockConfiguration[Future[Option[T]]]): Unit =

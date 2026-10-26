@@ -19,7 +19,7 @@ package services.apis.mocks
 import connectors.mock.MockAWRSConnector
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import models.{FormBundleStatus, StatusContactType, StatusInfoType}
-import models.FormBundleStatus._
+import models.FormBundleStatus.*
 import services.apis.AwrsAPI11
 import services.mocks.MockKeyStoreService
 import utils.{AwrsUnitTestTraits, TestUtil}

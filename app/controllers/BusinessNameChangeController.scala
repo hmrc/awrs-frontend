@@ -29,6 +29,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,20 +41,20 @@ class BusinessNameChangeController @Inject()(mcc: MessagesControllerComponents,
                                              val authConnector: DefaultAuthConnector,
                                              val auditable: Auditable,
                                              val accountUtils: AccountUtils,
-                                             implicit val applicationConfig: ApplicationConfig,
-                                             template: views.html.awrs_group_representative_change_confirm) extends FrontendController(mcc) with AwrsController {
+                                             template: views.html.awrs_group_representative_change_confirm
+                                            )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showConfirm(): Action[AnyContent] = Action.async { implicit request =>
+  def showConfirm: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { _ =>
       val businessType = request.getBusinessType
       Future.successful(Ok(template(businessNameChangeConfirmationForm, businessType)))
     }
   }
 
-  def callToAction(): Action[AnyContent] = Action.async { implicit request =>
+  def callToAction: Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { ar =>
       businessNameChangeConfirmationForm.bindFromRequest().fold(
         formWithErrors => {

@@ -28,8 +28,8 @@ case class EmailRequest(apiType: ApiTypes.ApiType,
                         deregistrationDateStr : Option[String] = None)
 
 object ApiTypes extends Enumeration {
-
-  implicit def convertToString(value: Value): String = value.toString
+  
+  given convertToString: Conversion[Value, String] = _.toString
 
   type ApiType = Value
 
@@ -39,25 +39,25 @@ object ApiTypes extends Enumeration {
   val API10: ApiTypes.Value = Value("api10")
   val API8: ApiTypes.Value = Value("api8")
 
-  implicit val reader: Reads[ApiTypes.Value] = new Reads[ApiTypes.Value] {
+  given reader: Reads[ApiTypes.Value] = new Reads[ApiTypes.Value] {
 
     def reads(js: JsValue): JsResult[ApiTypes.Value] = js match {
       case JsString(s) =>
         Try(ApiTypes.withName(s)) match {
           case Success(value) => JsSuccess(value)
-          case Failure(e) => JsError("api_type.invalid") //This key doesn't exist
+          case Failure(_) => JsError("api_type.invalid") //This key doesn't exist
         }
       case _ => JsError("error.expected.jsstring") //This key doesn't exist
     }
 
   }
 
-  implicit val writer: Writes[ApiTypes.Value] = new Writes[ApiTypes.Value] {
+  given writer: Writes[ApiTypes.Value] = new Writes[ApiTypes.Value] {
     def writes(apiType: ApiTypes.Value): JsValue = Json.toJson(apiType.toString)
   }
 
 }
 
 object EmailRequest {
-  implicit val formats: OFormat[EmailRequest] = Json.format[EmailRequest]
+  given formats: OFormat[EmailRequest] = Json.format[EmailRequest]
 }

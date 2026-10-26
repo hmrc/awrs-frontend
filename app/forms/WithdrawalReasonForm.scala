@@ -17,16 +17,16 @@
 package forms
 
 import forms.AWRSEnums.WithdrawalReasonEnum
-import forms.prevalidation._
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
+import forms.prevalidation.*
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
 import models.WithdrawalReason
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form}
 import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 object WithdrawalReasonForm extends AwrsFieldConfig {
 
@@ -57,7 +57,7 @@ object WithdrawalReasonForm extends AwrsFieldConfig {
   val withdrawalReasonValidationForm = Form(mapping(
     withdrawalReason -> withdrawalReasons_compulsory,
     withdrawalReasonOther -> (withdrawalReasonOther_compulsory iff whenOtherReasonIsSelected)
-  )(WithdrawalReason.apply)(WithdrawalReason.unapply))
+  )(WithdrawalReason.apply)(withdrawalReason => Some(Tuple.fromProductTyped(withdrawalReason))))
 
   val withdrawalReasonForm: PrevalidationAPI[WithdrawalReason] = PreprocessedForm(withdrawalReasonValidationForm)
 

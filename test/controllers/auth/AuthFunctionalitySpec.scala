@@ -19,25 +19,25 @@ package controllers.auth
 import config.ApplicationConfig
 import connectors.mock.MockAuthConnector
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{AnyContent, Result, Results}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.{MissingBearerToken, PlayAuthConnector}
 import org.scalatestplus.play.PlaySpec
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AuthFunctionalitySpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector{
 
-  lazy implicit val fakeRequest: FakeRequest[AnyContent] = FakeRequest()
+  given fakeRequest: FakeRequest[AnyContent] = FakeRequest()
 
    protected abstract class AuthFunctionalityServer() extends AuthFunctionality {
     val authConnector: PlayAuthConnector = mockAuthConnector
-    implicit val applicationConfig: ApplicationConfig = mock[ApplicationConfig]
+    val applicationConfig: ApplicationConfig = mock[ApplicationConfig]
     override val signInUrl: String = "sign-url"
   }
 

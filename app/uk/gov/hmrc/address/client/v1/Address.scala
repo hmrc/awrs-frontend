@@ -29,7 +29,7 @@ case class Country(
                     name: String)
 
 object Country {
-  implicit val formats: OFormat[Country] = Json.format[Country]
+  given formats: OFormat[Country] = Json.format[Country]
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ case class Address(lines: Seq[String],
 }
 
 object Address {
-  implicit val formats: OFormat[Address] = Json.format[Address]
+  given formats: OFormat[Address] = Json.format[Address]
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ case class AddressRecord(
 }
 
 object AddressRecord {
-  implicit val formats: OFormat[AddressRecord] = Json.format[AddressRecord]
+  given formats: OFormat[AddressRecord] = Json.format[AddressRecord]
 }
 
 //-------------------------------------------------------------------------------------------------

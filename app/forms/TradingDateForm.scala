@@ -20,7 +20,7 @@ import forms.helper.FormHelper.{isDateAfterOrEqual, isDateBefore}
 import forms.submapping.TupleDateMapping.{tupleDate_compulsory, _}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleErrorMessage
 import models.TupleDate
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.Valid
 import play.api.data.{Form, Mapping}
 

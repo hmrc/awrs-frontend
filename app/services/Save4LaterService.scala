@@ -49,8 +49,8 @@ trait Save4LaterUtil {
 class Save4LaterService @Inject()(mainStoreSave4LaterCacheService: AwrsDataCacheService,
                                   apiSave4LaterCacheService: AwrsApiDataCacheService,
                                   accUtils: AccountUtils) {
-
-  implicit def convertUtil[T](f: Option[T]): T = f.get
+  
+  given convertUtil[T]: Conversion[Option[T], T] = _.get
 
   val mainStore: MainStore = new MainStore(accUtils, mainStoreSave4LaterCacheService)
 

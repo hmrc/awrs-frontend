@@ -27,6 +27,7 @@ import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.view_application.helpers.EditSectionOnlyMode
+import utils.SessionUtil.*
 
 import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +38,7 @@ trait Deletable[C, T] extends FrontendController with AwrsController {
 
   val applicationConfig: ApplicationConfig
   val mcc: MessagesControllerComponents
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext
 
   def fetch(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[C]]
 
@@ -125,7 +126,7 @@ trait Deletable[C, T] extends FrontendController with AwrsController {
     @tailrec
     def main(list: List[T], index: Int, out: List[T]): List[T] = (list: @unchecked) match {
       case h :: t if index != id => main(t, index + 1, out :+ h)
-      case h :: t if index == id => main(t, index + 1, out)
+      case _ :: t if index == id => main(t, index + 1, out)
       case Nil => out
     }
     main(list, 1, List())

@@ -16,20 +16,20 @@
 
 package forms
 
-import forms.AWRSEnums.PersonOrCompanyEnum._
+import forms.AWRSEnums.PersonOrCompanyEnum.*
 import forms.AWRSEnums.{BooleanRadioEnum, DirectorAndSecretaryEnum, PersonOrCompanyEnum}
-import forms.prevalidation._
-import forms.submapping.CompanyNamesMapping._
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.prevalidation.*
+import forms.submapping.CompanyNamesMapping.*
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import forms.validation.util.TargetFieldIds
 import models.BusinessDirector
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.Valid
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 object BusinessDirectorsForm {
 
@@ -166,7 +166,7 @@ object BusinessDirectorsForm {
       vrn -> (vrn_compulsory() iff (whenDirectorIsCompany &&& whenAnsweredYesToVRN)),
       "directorsAndCompanySecretaries" -> directorsAndCompanySecretaries_compulsory,
       "otherDirectors" -> otherDirectors_compulsory
-    )(BusinessDirector.apply)(BusinessDirector.unapply))
+    )(BusinessDirector.apply)(businessDirector => Some(Tuple.fromProductTyped(businessDirector))))
   }
 
   val businessDirectorsForm: PrevalidationAPI[BusinessDirector] = PreprocessedForm(businessDirectorsValidationForm).addNewPreprocessFunction(inferDoYouHave)

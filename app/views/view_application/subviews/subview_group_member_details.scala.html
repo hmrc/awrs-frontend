@@ -59,16 +59,16 @@
 }
 
 @ledeAndTopAdd(model: models.GroupMembers) = {
-    @if(isSectionEdit) {
+    @if(isSectionEdit()) {
         <p class="govuk-body-l">@messages("awrs.group_member.lead_paragraph")</p>
         @if(model.members.size > 1) {
-            <p class="govuk-body">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.group"))</p>
+            <p class="govuk-body">@add_none_table_link_helper(isSectionEdit())("top", addLinkHref(model), messages("awrs.view_application.group"))</p>
         }
     }
 }
 
 @bottomAdd(model: models.GroupMembers)  = {
-    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.group"))
+    @add_none_table_link_helper(isSectionEdit())("bottom", addLinkHref(model), messages("awrs.view_application.group"))
 }
 
 @content(model: models.GroupMembers) = {

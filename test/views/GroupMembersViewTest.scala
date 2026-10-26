@@ -19,12 +19,13 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.GroupMemberController
-import models._
+import models.*
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.JourneyConstants
 import services.mocks.MockSave4LaterService
 import utils.TestUtil.testBusinessCustomerDetails
@@ -54,9 +55,8 @@ class GroupMembersViewTest
       mockAuthConnector,
       mockAuditable,
       mockAccountUtils,
-      mockAppConfig,
       template
-    )
+    )(using mockAppConfig)
 
   "Group member page" must {
 
@@ -124,7 +124,7 @@ class GroupMembersViewTest
         Seq(true, false).foreach { isLinear =>
           s"see a progress message for the isLinearJourney is set to $isLinear" in {
             val test: Future[Result] => Unit = result => {
-              implicit val doc = Jsoup.parse(contentAsString(result))
+              given doc: Document = Jsoup.parse(contentAsString(result))
               testId(shouldExist = true)(targetFieldId = "progress-text")
               val journey = JourneyConstants.getJourney(legalEntity)
               val expectedSectionNumber = journey.indexOf(groupMembersName) + 1

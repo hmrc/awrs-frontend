@@ -17,7 +17,7 @@
 package services
 
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.helpers.IntegrationSpec
 import utils.TestUtil
 import connectors.BusinessMatchingConnectorImpl

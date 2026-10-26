@@ -24,13 +24,13 @@ import forms.AWRSEnums
 import forms.AWRSEnums.{BooleanRadioEnum, DeRegistrationReasonEnum}
 import forms.DeRegistrationReasonForm.{deRegReasonOtherId, deRegistrationReasonId}
 import models.FormBundleStatus.{DeRegistered, NoStatus, Pending, Rejected, RejectedUnderReviewOrAppeal, Revoked, RevokedUnderReviewOrAppeal, Withdrawal}
-import models._
+import models.*
 import java.time.LocalDate
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.apis.AwrsAPI10
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, EmailService}
@@ -43,7 +43,7 @@ import scala.concurrent.Future
 
 class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreService with MockSave4LaterService {
 
-  import MockKeyStoreService._
+  import MockKeyStoreService.*
 
   val mockApi10: AwrsAPI10 = mock[AwrsAPI10]
   val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
@@ -59,8 +59,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
   val injectedAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   val testDeRegistrationController: DeRegistrationController =
-    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, deEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils, injectedAppConfig,
-      mockTemplate, mockTemplateConfirm, mockTemplateReason, mockTemplateEvidence) {
+    new DeRegistrationController(mockMCC, mockApi10, mockEmailService, deEnrolService, testKeyStoreService, testSave4LaterService, mockAuthConnector, mockAuditable, mockAccountUtils,
+      mockTemplate, mockTemplateConfirm, mockTemplateReason, mockTemplateEvidence)(using injectedAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
@@ -94,8 +94,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
             haveDeRegReason: Boolean = true,
             deRegSuccess: Boolean = true): Unit = {
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveDeRegDate = haveDeRegDate, haveDeRegReason = haveDeRegReason)
-    setupMockSave4LaterServiceWithOnly(removeAll = MockSave4LaterService.defaultRemoveAll)
-    setupMockApiSave4LaterServiceWithOnly(removeAll = MockSave4LaterService.defaultRemoveAll)
+    setupMockSave4LaterServiceWithOnly(removeAll = Configure(MockSave4LaterService.defaultRemoveAll))
+    setupMockApiSave4LaterServiceWithOnly(removeAll = Configure(MockSave4LaterService.defaultRemoveAll))
     mockAPI10AndDeEnroll(deRegSuccess = deRegSuccess)
   }
 
@@ -351,25 +351,25 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
 
   }
 
-  def testShowReason(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showReason())(test)
+  def testShowReason(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showReason)(test)
 
-  def testSubmitReason(status: FormBundleStatus, reason: (String, String)*)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason(), reason)(test)
+  def testSubmitReason(status: FormBundleStatus, reason: (String, String)*)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason, reason)(test)
 
-  def testSubmitReasonEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason(), Seq((deRegistrationReasonId, "")))(test)
+  def testSubmitReasonEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitReason, Seq((deRegistrationReasonId, "")))(test)
 
-  def testShowDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showDate())(test)
+  def testShowDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showDate)(test)
 
-  def testSubmitDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", LocalDate.now().getDayOfMonth.toString), ("proposedEndDate.month", LocalDate.now().getMonth.getValue.toString), ("proposedEndDate.year", LocalDate.now().getYear.toString)))(test)
+  def testSubmitDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate, Seq(("proposedEndDate.day", LocalDate.now().getDayOfMonth.toString), ("proposedEndDate.month", LocalDate.now().getMonth.getValue.toString), ("proposedEndDate.year", LocalDate.now().getYear.toString)))(test)
 
-  def testSubmitDateOldDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", "1"), ("proposedEndDate.month", "1"), ("proposedEndDate.year", "2016")))(test)
+  def testSubmitDateOldDate(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate, Seq(("proposedEndDate.day", "1"), ("proposedEndDate.month", "1"), ("proposedEndDate.year", "2016")))(test)
 
-  def testSubmitDateEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate(), Seq(("proposedEndDate.day", ""), ("proposedEndDate.month", ""), ("proposedEndDate.year", "")))(test)
+  def testSubmitDateEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.submitDate, Seq(("proposedEndDate.day", ""), ("proposedEndDate.month", ""), ("proposedEndDate.year", "")))(test)
 
-  def testShowConfirm(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirm())(test)
+  def testShowConfirm(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirm)(test)
 
-  def testSubmitConfirm(status: FormBundleStatus, answer: BooleanRadioEnum.Value = BooleanRadioEnum.Yes)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction(), Seq(("deRegistrationConfirmation", answer.toString)))(test)
+  def testSubmitConfirm(status: FormBundleStatus, answer: BooleanRadioEnum.Value = BooleanRadioEnum.Yes)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction, Seq(("deRegistrationConfirmation", answer.toString)))(test)
 
-  def testSubmitConfirmEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction(), Seq(("deRegistrationConfirmation", "")))(test)
+  def testSubmitConfirmEmpty(status: FormBundleStatus)(test: Future[Result] => Any): Unit = submits(status, testDeRegistrationController.callToAction, Seq(("deRegistrationConfirmation", "")))(test)
 
   def testShowConfirmation(status: FormBundleStatus)(test: Future[Result] => Any): Unit = actionWithAuthorisedAgentUser(status, testDeRegistrationController.showConfirmation(false))(test)
 

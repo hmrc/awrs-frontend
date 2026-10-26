@@ -42,12 +42,12 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
                                             val countryCodes: CountryCodes,
-                                            implicit val applicationConfig: ApplicationConfig,
-                                            template: views.html.awrs_supplier_addresses) extends FrontendController(mcc) with AwrsController
+                                            template: views.html.awrs_supplier_addresses
+                                           )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController
   with JourneyPage
   with Deletable[Suppliers, Supplier] with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
   val countryList: Seq[(String, String)] = countryCodes.countryCodesTuplesSeq
 
@@ -59,17 +59,17 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
 
   override val listToListObj: List[Supplier] => Suppliers = (suppliers: List[Supplier]) => Suppliers(suppliers)
   override val listObjToList: Suppliers => List[Supplier] = (suppliers: Suppliers) => suppliers.suppliers
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(suppliersName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(suppliersName)
   override val section: String = suppliersName
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.SupplierAddressesController.actionDelete(id)
-  override lazy val deleteHeadingParameter: String = "awrs.view_application.supplier"
+  override val deleteHeadingParameter: String = "awrs.view_application.supplier"
   override val addNoAnswerRecord: List[Supplier] => List[Supplier] = (_: List[models.Supplier]) => List(Supplier(Some("No"), None, None, None, None, None, None))
   override val amendHaveAnotherAnswer: (Supplier, String) => Supplier = (data: Supplier, newAnswer: String) => data.copy(additionalSupplier = Some(newAnswer))
 
   def showSupplierAddressesPage(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -111,7 +111,7 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
 
   def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     supplierAddressesForm.bindFromRequest().fold(
       formWithErrors =>
         fetch(authRetrievals) flatMap {

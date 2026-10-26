@@ -16,9 +16,9 @@
 
 package forms
 
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.NamedMappingAndUtil.*
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object AlreadyStartingTradingForm {
 

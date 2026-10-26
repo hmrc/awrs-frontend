@@ -16,11 +16,9 @@
 
 package forms
 
-import forms.test.util._
+import forms.test.util.*
 import forms.validation.util.FieldError
 import models.{DeRegistrationDate, TupleDate}
-import models.TupleDate._
-
 import java.time.LocalDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -28,7 +26,7 @@ import play.api.data.Form
 
 class DeRegistrationFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
-  implicit val testForm: Form[DeRegistrationDate] = DeRegistrationForm.deRegistrationForm
+  given testForm: Form[DeRegistrationDate] = DeRegistrationForm.deRegistrationForm
 
   "De-Registration Form" must {
     "Correctly validate 'tupleDate'" in {

@@ -18,18 +18,18 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.prevalidation._
-import forms.submapping.AddressMapping._
-import forms.submapping.CompanyNamesMapping._
-import forms.submapping.CompanyRegMapping._
-import forms.submapping._
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.prevalidation.*
+import forms.submapping.AddressMapping.*
+import forms.submapping.CompanyNamesMapping.*
+import forms.submapping.CompanyRegMapping.*
+import forms.submapping.*
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import forms.validation.util.TargetFieldIds
 import models.GroupMember
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object GroupMemberDetailsForm {
   @inline def answeredYesToDoYouHaveCRN: FormData => Boolean = whenAnswerToFieldIs(doYouHaveCrn, BooleanRadioEnum.YesString)(_)
@@ -75,7 +75,7 @@ object GroupMemberDetailsForm {
       (!yesToDoYouHaveVRN || yesToDoYouHaveVRN && vrnIsNotAnswered) // if doYouhaveVRN is not answered or if it is answered with yes but no VRN is supplied
   }
 
-  def groupMemberValidationForm(implicit applicationConfig: ApplicationConfig): Form[GroupMember] = {
+  def groupMemberValidationForm(using applicationConfig: ApplicationConfig): Form[GroupMember] = {
     val noIdIsSupplied = noIdsHaveBeenSupplied _
     Form(
       mapping(
@@ -90,10 +90,10 @@ object GroupMemberDetailsForm {
         vrn -> (vrn_compulsory() iff whenAnsweredYesToVRN),
         "addAnotherGrpMember" -> otherMembers_compulsory
       )
-      (GroupMember.apply)(GroupMember.unapply)
+      (GroupMember.apply)(groupMember => Some(Tuple.fromProductTyped(groupMember)))
     )
   }
 
-  def groupMemberForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[GroupMember] = PreprocessedForm(groupMemberValidationForm).addNewPreprocessFunction(inferDoYouHave)
+  def groupMemberForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[GroupMember] = PreprocessedForm(groupMemberValidationForm).addNewPreprocessFunction(inferDoYouHave)
 
 }

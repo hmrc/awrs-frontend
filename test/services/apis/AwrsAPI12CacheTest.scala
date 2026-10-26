@@ -25,14 +25,14 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.apis.mocks.MockAwrsAPI12Cache
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
-import utils.TestConstants._
+import utils.TestConstants.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AwrsAPI12CacheTest extends AwrsUnitTestTraits with MockAwrsAPI12Cache with MockAuthConnector {
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
+  given fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,

@@ -40,11 +40,10 @@ trait MockTestStatusManagementService extends AwrsUnitTestTraits
                                            statusInfo: MockConfiguration[Option[StatusInfoType]] = DoNotConfigure, // here the DoNotConfigure will use default configuration instead
                                            configuration: MockStatusManagementServiceConfiguration = MockStatusManagementServiceConfiguration()): Unit = {
 
-    implicit def optionToMockConfig[T](someValue: Option[T]): MockConfiguration[T] =
-      someValue match {
-        case Some(v) => Configure(v)
-        case None => DoNotConfigure
-      }
+    given optionToMockConfig[T]: Conversion[Option[T], MockConfiguration[T]] = {
+      case Some(v) => Configure(v)
+      case None    => DoNotConfigure
+    }
 
     def setLocalData[T](dependent: CacheConfigurationLocation)(data: Option[T]): Option[T] = dependent match {
       case CachedLocally => data

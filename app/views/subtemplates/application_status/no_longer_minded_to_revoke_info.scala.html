@@ -15,7 +15,7 @@
  *@
 
 @(params: views.subtemplates.application_status.ApplicationNoLongerMindedToRevokeParameter, printFriendly: Boolean = false)(implicit request: Request[AnyRef], messages: Messages )
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 
 <h2 class="govuk-heading-m">@Messages("awrs.application_status.info.no_longer_minded_to_revoke.heading")</h2>
 

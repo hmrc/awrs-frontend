@@ -17,13 +17,13 @@
 package connectors.mock
 
 import connectors.AWRSConnector
-import models._
+import models.*
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.libs.json.JsValue
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
-import utils.AwrsTestJson._
+import utils.TestUtil.*
+import utils.AwrsTestJson.*
 
 import scala.concurrent.Future
 
@@ -38,7 +38,7 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
     reset(mockAWRSConnector)
   }
 
-  import MockAWRSConnector._
+  import MockAWRSConnector.*
 
   def setupMockAWRSConnector(lookupAWRSData: JsValue = defaultAPI5,
                              checkStatus: SubscriptionStatusType = defaultSubscriptionStatusType,
@@ -65,7 +65,7 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
     lookupAWRSData ifConfiguredThen (jsValue => when(mockAWRSConnector.lookupAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(jsValue)))
     checkStatus ifConfiguredThen (status => when(mockAWRSConnector.checkStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(status)))
     getStatusInfo ifConfiguredThen (info => when(mockAWRSConnector.getStatusInfo(ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(info)))
-    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
+    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
     updateAWRSData ifConfiguredThen (data => when(mockAWRSConnector.updateAWRSData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
     updateGroupBusinessPartner ifConfiguredThen (data => when(mockAWRSConnector.updateGroupBusinessPartner(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
   }

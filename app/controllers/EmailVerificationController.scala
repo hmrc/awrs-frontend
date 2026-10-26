@@ -36,13 +36,13 @@ class EmailVerificationController @Inject()(mcc: MessagesControllerComponents,
                                             val deEnrolService: DeEnrolService,
                                             val save4LaterService: Save4LaterService,
                                             val authConnector: DefaultAuthConnector,
-                                            implicit val applicationConfig: ApplicationConfig,
                                             templateError: awrs_email_verification_error,
-                                            templateSuccess: awrs_email_verification_success) extends FrontendController(mcc) with AwrsController {
+                                            templateSuccess: awrs_email_verification_success
+                                           )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   lazy val isEmailVerificationEnabled: Boolean = applicationConfig.emailVerificationEnabled
-  lazy val signInUrl: String = applicationConfig.signIn
+  val signInUrl: String = applicationConfig.signIn
 
   def checkEmailVerification: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { ar =>

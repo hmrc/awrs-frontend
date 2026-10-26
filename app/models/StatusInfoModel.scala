@@ -32,7 +32,7 @@ case class StatusInfoFailureResponseType(reason: String) extends StatusInfoRespo
 
 object StatusInfoSuccessResponseType {
 
-  implicit val reader: Reads[StatusInfoSuccessResponseType] = new Reads[StatusInfoSuccessResponseType] {
+  given reader: Reads[StatusInfoSuccessResponseType] = new Reads[StatusInfoSuccessResponseType] {
 
     def reads(js: JsValue): JsResult[StatusInfoSuccessResponseType] = {
       for {
@@ -44,12 +44,12 @@ object StatusInfoSuccessResponseType {
     }
   }
 
-  implicit val formats: OFormat[StatusInfoSuccessResponseType] = Json.format[StatusInfoSuccessResponseType]
+  given formats: OFormat[StatusInfoSuccessResponseType] = Json.format[StatusInfoSuccessResponseType]
 }
 
 object StatusInfoFailureResponseType {
 
-  implicit val reader: Reads[StatusInfoFailureResponseType] = new Reads[StatusInfoFailureResponseType] {
+  given reader: Reads[StatusInfoFailureResponseType] = new Reads[StatusInfoFailureResponseType] {
 
     def reads(js: JsValue): JsResult[StatusInfoFailureResponseType] = {
       for {
@@ -59,13 +59,13 @@ object StatusInfoFailureResponseType {
       }
     }
   }
-  implicit val formats: OFormat[StatusInfoFailureResponseType] = Json.format[StatusInfoFailureResponseType]
+  given formats: OFormat[StatusInfoFailureResponseType] = Json.format[StatusInfoFailureResponseType]
 }
 
 
 object StatusInfoType {
 
-  implicit val reader: Reads[StatusInfoType] = new Reads[StatusInfoType] {
+  given reader: Reads[StatusInfoType] = new Reads[StatusInfoType] {
 
     def reads(js: JsValue): JsResult[StatusInfoType] = {
       val successResponse = Try(js.asOpt[StatusInfoSuccessResponseType]).getOrElse(None)
@@ -80,7 +80,7 @@ object StatusInfoType {
  }
 
 
-  implicit val writter: Writes[StatusInfoType] = new Writes[StatusInfoType] {
+  given writter: Writes[StatusInfoType] = new Writes[StatusInfoType] {
     def writes(info: StatusInfoType): JsObject =
       info.response match {
         case Some(r: StatusInfoSuccessResponseType) => StatusInfoSuccessResponseType.formats.writes(r)

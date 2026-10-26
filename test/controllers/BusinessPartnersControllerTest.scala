@@ -21,17 +21,17 @@ import config.ApplicationConfig
 import connectors.mock.MockAuthConnector
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.PartnershipDetailsForm
-import models._
+import models.*
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.mocks.MockSave4LaterService
-import utils.TestConstants._
+import utils.TestConstants.*
 import utils.{AwrsUnitTestTraits, TestUtil}
-import utils.TestUtil._
+import utils.TestUtil.*
 import views.html.awrs_partner_member_details
 
 import scala.concurrent.Future
@@ -40,7 +40,7 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
   val businessPartnerDetails: Partner = Partner(None, Some("business partner first name"), Some("business partner last name"), None, None, Some("Yes"), Some(testNino), None, None, Some("Yes"), None, None, None, None)
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   private def testRequest(partner: Partner) =
     TestUtil.populateFakeRequest[Partner](FakeRequest(), PartnershipDetailsForm.partnershipDetailsValidationForm, partner)
@@ -48,7 +48,7 @@ class BusinessPartnersControllerTest extends AwrsUnitTestTraits
   val mockTemplate: awrs_partner_member_details = app.injector.instanceOf[views.html.awrs_partner_member_details]
 
   val testBusinessPartnersController: BusinessPartnersController =
-    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+    new BusinessPartnersController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

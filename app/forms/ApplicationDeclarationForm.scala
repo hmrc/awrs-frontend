@@ -17,16 +17,16 @@
 package forms
 
 import forms.AWRSEnums.BooleanCheckboxEnum
-import forms.prevalidation._
+import forms.prevalidation.*
 import forms.validation.util.ConstraintUtil.{CompulsoryBooleanMappingParameter, CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter, castSingleToSet}
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
 import models.ApplicationDeclaration
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 object ApplicationDeclarationForm extends AwrsFieldConfig {
   val declarationNameConstraintParameters =
@@ -50,7 +50,7 @@ object ApplicationDeclarationForm extends AwrsFieldConfig {
     "declarationName" -> compulsoryText(declarationNameConstraintParameters),
     "declarationRole" -> compulsoryText(declarationRoleConstraintParameters),
     "confirmation" -> compulsoryBoolean(confirmationConstraintParameters)
-  )(ApplicationDeclaration.apply)(ApplicationDeclaration.unapply))
+  )(ApplicationDeclaration.apply)(applicationDeclaration => Some(Tuple.fromProductTyped(applicationDeclaration))))
 
   val applicationDeclarationForm: PrevalidationAPI[ApplicationDeclaration] = PreprocessedForm(applicationDeclarationValidationForm)
 }

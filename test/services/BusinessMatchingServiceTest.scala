@@ -16,14 +16,14 @@
 
 package services
 
-import connectors._
+import connectors.*
 import forms.AWRSEnums
-import models._
+import models.*
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
-import utils.AwrsTestJson._
+import utils.AwrsTestJson.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import utils.TestConstants.{testPostcode, testUtr}
 

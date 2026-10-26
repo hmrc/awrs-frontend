@@ -19,16 +19,16 @@ package views
 import builders.SessionBuilder
 import controllers.BusinessTypeController
 import models.BusinessDetailsEntityTypes.Llp
-import models._
+import models.*
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.{CheckEtmpService, ServicesUnitTestFixture}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments, User}
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_business_type
 
@@ -54,7 +54,7 @@ class BusinessTypeViewTest extends AwrsUnitTestTraits
 
   lazy val testSubscriptionTypeFrontEnd: SubscriptionTypeFrontEnd = TestUtil.testSubscriptionTypeFrontEnd(legalEntity = Some(testBusinessDetailsEntityTypes(Llp)))
 
-  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, mockAppConfig, template) {
+  val testBusinessTypeController: BusinessTypeController = new BusinessTypeController(mockMCC, testAPI5, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, testEtmpCheckService, template)(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 

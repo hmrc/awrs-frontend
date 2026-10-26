@@ -18,28 +18,28 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.prevalidation._
-import forms.submapping.AddressMapping._
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.prevalidation.*
+import forms.submapping.AddressMapping.*
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.AdditionalBusinessPremises
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object BusinessPremisesForm {
   private val whenThereAreAdditionalTradingPremises = (data: FormData) => data.getOrElse("additionalPremises", "").equals(BooleanRadioEnum.Yes.toString)
   private val additionalPremises_compulsory = yesNoQuestion_compulsory("additionalPremises", "awrs.additional-premises.error.do_you_have_additional_premises")
   private val addAnother_compulsory = yesNoQuestion_compulsory("addAnother", "awrs.additional-premises.error.add_another")
 
-  def businessPremisesValidationForm(implicit applicationConfig: ApplicationConfig): Form[AdditionalBusinessPremises] = Form(
+  def businessPremisesValidationForm(using applicationConfig: ApplicationConfig): Form[AdditionalBusinessPremises] = Form(
     mapping(
       "additionalPremises" -> additionalPremises_compulsory,
       "additionalAddress" -> (ukAddress_compulsory(prefix = "additionalAddress", "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenThereAreAdditionalTradingPremises),
       "addAnother" -> (addAnother_compulsory iff whenThereAreAdditionalTradingPremises)
     )
-    (AdditionalBusinessPremises.apply)(AdditionalBusinessPremises.unapply)
+    (AdditionalBusinessPremises.apply)(premises => Some(Tuple.fromProductTyped(premises)))
   )
 
-  def businessPremisesForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[AdditionalBusinessPremises] = PreprocessedForm(businessPremisesValidationForm)
+  def businessPremisesForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[AdditionalBusinessPremises] = PreprocessedForm(businessPremisesValidationForm)
 }

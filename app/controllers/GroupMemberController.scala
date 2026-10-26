@@ -41,10 +41,10 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
                                       val authConnector: DefaultAuthConnector,
                                       val auditable: Auditable,
                                       val accountUtils: AccountUtils,
-                                      implicit val applicationConfig: ApplicationConfig,
-                                      template: views.html.awrs_group_member) extends FrontendController(mcc) with JourneyPage with Deletable[GroupMembers, GroupMember] with SaveAndRoutable {
+                                      template: views.html.awrs_group_member
+                                     )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with Deletable[GroupMembers, GroupMember] with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   //fetch function
@@ -55,17 +55,17 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
 
   override val listToListObj: List[GroupMember] => GroupMembers = (groupMemberDetails: List[GroupMember]) => GroupMembers(groupMemberDetails)
   override val listObjToList: GroupMembers => List[GroupMember] = (groupMemberDetails: GroupMembers) => groupMemberDetails.members
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(groupMembersName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(groupMembersName)
   override val section: String = groupMembersName
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.GroupMemberController.actionDelete(id)
-  override lazy val deleteHeadingParameter: String = "awrs.view_application.group"
+  override val deleteHeadingParameter: String = "awrs.view_application.group"
   override val addNoAnswerRecord: List[GroupMember] => List[GroupMember] = emptyList => emptyList
   override val amendHaveAnotherAnswer: (GroupMember, String) => GroupMember = (data: GroupMember, newAnswer: String) => data.copy(addAnotherGrpMember = Some(newAnswer))
 
   def showMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -97,7 +97,7 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
 
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, ar: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     groupMemberForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord, ar.enrolments, accountUtils))),
       groupMemberData =>
@@ -110,7 +110,7 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
         )(
           haveAnotherAnswer = (data: GroupMember) => data.addAnotherGrpMember.fold("")(x => x),
           amendHaveAnotherAnswer = amendHaveAnotherAnswer,
-          hasSingleNoAnswer = (fetchData: GroupMembers) => "This is not required for group members"
+          hasSingleNoAnswer = (_: GroupMembers) => "This is not required for group members"
         )(
           listObjToList = (listObj: GroupMembers) => listObj.members,
           listToListObj = (list: List[GroupMember]) => GroupMembers(list)

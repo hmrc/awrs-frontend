@@ -21,7 +21,7 @@ import play.twirl.api.HtmlFormat
 import views.ViewTestFixture
 import views.html.reenrolment.awrs_registered_urn
 
-class RegisteredUrnViewTest extends ViewTestFixture  {
+class RegisteredUrnViewTest extends ViewTestFixture {
 
   val template: awrs_registered_urn = app.injector.instanceOf[views.html.reenrolment.awrs_registered_urn]
 
@@ -29,12 +29,12 @@ class RegisteredUrnViewTest extends ViewTestFixture  {
 
   "Awrs Urn Template" must {
 
-      "Display all fields correctly" in {
+    "Display all fields correctly" in {
 
-        heading mustBe messages("awrs.reenrolment.registered_urn.title")
-        document.select("label").text() mustBe messages("awrs.reenrolment.registered_urn.label")
-        document.select("input").attr("id") mustBe "awrsUrn"
-      }
+      heading mustBe messages("awrs.reenrolment.registered_urn.title")
+      document.select("label").text() mustBe messages("awrs.reenrolment.registered_urn.label")
+      document.select("input").attr("id") mustBe "awrsUrn"
+    }
 
     "contain a backlink pointing to the correct controller (haveYouRegistered)" in {
 

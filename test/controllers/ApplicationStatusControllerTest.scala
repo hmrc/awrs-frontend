@@ -20,16 +20,16 @@ package controllers
 import builders.SessionBuilder
 import controllers.auth.StandardAuthRetrievals
 import models.FormBundleStatus.Pending
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.ServicesUnitTestFixture
 import utils.AwrsTestJson.api5LTDJson
 import utils.{AwrsNumberFormatter, AwrsUnitTestTraits, TestUtil}

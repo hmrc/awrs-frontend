@@ -20,7 +20,7 @@
 @(backUrl: String = controllers.routes.IndexController.showLastLocation.toString, alwaysShow: Boolean = false)(implicit viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
     @{
 
-        (isOneViewMode, alwaysShow, backUrl) match {
+        (isOneViewMode(), alwaysShow, backUrl) match {
             case (true, false, _) =>
 
             case _ =>

@@ -25,16 +25,16 @@ import java.time.LocalDateTime
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.i18n.Messages
 import play.api.libs.json.JsResultException
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.mocks.MockSave4LaterService
 import services.CheckEtmpService
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
+import utils.TestUtil.*
 import views.html.{assistant_kickout, awrs_application_too_soon_error}
 
 import scala.concurrent.Future

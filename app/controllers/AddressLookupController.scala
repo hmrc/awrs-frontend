@@ -38,9 +38,9 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
                                         val authConnector: DefaultAuthConnector,
                                         val addressLookupConnector: AddressLookupConnector,
                                         val auditable: Auditable,
-                                        implicit val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with HasAddressLookupConnector with LoggingUtils with AuthFunctionality {
+                                        val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with HasAddressLookupConnector with LoggingUtils with AuthFunctionality {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   implicit object AddressOrdering extends Ordering[AddressRecord] {
@@ -50,7 +50,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
   def addressLookup(postcode: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorisedAction { _ =>
-        implicit val writes: OFormat[RecordSet] = Json.format[RecordSet]
+        given writes: OFormat[RecordSet] = Json.format[RecordSet]
         val validPostcodeCharacters = "^[A-z0-9 ]*$"
         if (postcode.matches(validPostcodeCharacters)) {
           addressLookupConnector.lookup(postcode) map {
@@ -106,7 +106,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
   }
 
 
-  def auditAddress(): Action[AnyContent] = Action.async {
+  def auditAddress: Action[AnyContent] = Action.async {
     implicit request =>
       logger.info("[auditAddress] Attemping to auth for auditing address")
 
@@ -120,7 +120,7 @@ class AddressLookupController @Inject()(mcc: MessagesControllerComponents,
         logger.info(s"[auditAddress] Auditing ${addressToAudit.addressAudits.size} addresses")
 
         addressToAudit.addressAudits.foreach {
-          toAudit: AddressAudit =>
+          (toAudit: AddressAudit) =>
             lazy val uprn = Map(("uprn", toAudit.uprn.fold("")(x => x)))
 
             logger.info(s"[auditAddress] Auditing ${toAudit.eventType} address")

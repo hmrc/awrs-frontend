@@ -18,25 +18,25 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.{BooleanRadioEnum, EntityTypeEnum}
-import forms.prevalidation._
-import forms.submapping.CompanyNamesMapping._
-import forms.submapping.FieldNameUtil
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util._
+import forms.prevalidation.*
+import forms.submapping.CompanyNamesMapping.*
+import forms.submapping.attach
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.*
 import models.{CompanyNames, Partner}
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.{Form, Mapping}
 
 import scala.util.{Failure, Success, Try}
 
 object PartnershipDetailsForm {
 
-  import EntityTypeEnum._
-  import forms.validation.util.NamedMappingAndUtil._
-  import submapping.AddressMapping._
-  import submapping.CompanyRegMapping._
+  import EntityTypeEnum.*
+  import forms.validation.util.NamedMappingAndUtil.*
+  import submapping.AddressMapping.*
+  import submapping.CompanyRegMapping.*
 
   val partnerTypes: Set[AWRSEnums.EntityTypeEnum.Value] = Set(Individual, CorporateBody, SoleTrader)
 
@@ -77,7 +77,7 @@ object PartnershipDetailsForm {
       case _ => Seq[String]()
     }) match {
       case Success(result) => result
-      case Failure(ex) => Seq[String]()
+      case Failure(_) => Seq[String]()
     }
 
   // cross field validation condition for when the partner is not a corporate body
@@ -135,7 +135,7 @@ object PartnershipDetailsForm {
         val vrnIsNotAnswered = data.getOrElse(vrn, "").equals("")
         val ninoIsNotAnswered = data.getOrElse(nino, "").equals("")
         val vrnIncomplete = !yesToDoYouHaveVRN || yesToDoYouHaveVRN && vrnIsNotAnswered // if doYouhaveVRN is not answered or if it is answered with yes but no VRN is supplied
-      val ninoIncomplete = !yesToDoYouHaveNino || yesToDoYouHaveNino && ninoIsNotAnswered // if doYouhaveNino is not answered or if it is answered with yes but no Nino is supplied
+        val ninoIncomplete = !yesToDoYouHaveNino || yesToDoYouHaveNino && ninoIsNotAnswered // if doYouhaveNino is not answered or if it is answered with yes but no Nino is supplied
 
         !ids(data).filter(!_.equals(doYouHaveVrn)).filter(!_.equals(doYouHaveNino)).map(id => whenAnswerToFieldIs(id, BooleanRadioEnum.YesString)(data)).reduce(_ || _) &&
           (vrnIncomplete && ninoIncomplete) // if either vrn and nino are incomplete
@@ -155,7 +155,7 @@ object PartnershipDetailsForm {
   val companyNamesMapping_rules: Mapping[Option[CompanyNames]] =
     companyNamesMapping(companyNames, validateBusinessName = whenPartnerIsCorporateBody).toOptional iff whenPartnerTypeIsAnsweredButNotIndividual
 
-  def partnershipDetailsValidationForm(implicit applicationConfig: ApplicationConfig): Form[Partner] = {
+  def partnershipDetailsValidationForm(using applicationConfig: ApplicationConfig): Form[Partner] = {
     val noIdIsSupplied = (associatedQuestion: String) => noIdsHaveBeenSupplied(getIds)(associatedQuestion)(_)
     val idExists = (associatedQuestion: String) => idExistsForQuestion(getIds)(associatedQuestion)(_)
     Form(
@@ -176,9 +176,9 @@ object PartnershipDetailsForm {
         doYouHaveVrn -> ((doYouHaveVRN_compulsory() iff whenPartnerTypeIsAnsweredButNotIndividual) + (mustHaveVRNorCRNorUTR xiff whenPartnerIsCorporateBody)),
         vrn -> (vrn_compulsory() iff (whenAnsweredYesToVRN &&& whenPartnerTypeIsAnsweredButNotIndividual)),
         "otherPartners" -> otherPartners_compulsory
-      )(Partner.apply)(Partner.unapply))
+      )(Partner.apply)(partner => Some(Tuple.fromProductTyped(partner))))
   }
 
-  def partnershipDetailsForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[Partner] = PreprocessedForm(partnershipDetailsValidationForm).addNewPreprocessFunction(inferDoYouHave)
+  def partnershipDetailsForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[Partner] = PreprocessedForm(partnershipDetailsValidationForm).addNewPreprocessFunction(inferDoYouHave)
 
 }

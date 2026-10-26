@@ -17,7 +17,7 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import views.helpers._
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 @import views.html.view_application.subviews.contents._
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -25,6 +25,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import views.ViewUtils._
+@import _root_.utils.SessionUtil.*
 
 @this(
     formWithCSRF: FormWithCSRF,

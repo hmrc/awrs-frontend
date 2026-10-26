@@ -18,8 +18,8 @@ package utils
 
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.{AWRSEnums, DeleteConfirmationForm}
-import models.BusinessDetailsEntityTypes._
-import models.FormBundleStatus._
+import models.BusinessDetailsEntityTypes.*
+import models.FormBundleStatus.*
 import models.StatusContactType.{MindedToReject, MindedToRevoke, NoLongerMindedToRevoke}
 import models.{BusinessDetailsEntityTypes, _}
 import java.time.LocalDateTime
@@ -29,11 +29,11 @@ import play.api.i18n.Messages
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.DataCacheKeys._
+import services.DataCacheKeys.*
 import services.JourneyConstants
 import models.CacheMap
 import view_models.{IndexViewModel, SectionComplete, SectionModel}
-import TestConstants._
+import TestConstants.*
 import controllers.auth.StandardAuthRetrievals
 import org.scalatest.Assertion
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, User}
@@ -46,8 +46,8 @@ import scala.io.Source
 
 object TestUtil extends PlaySpec {
 
-  implicit val messages: Messages = stubMessages()
-  implicit def convertToOption[T](value: T): Option[T] = Some(value)
+  given messages: Messages = stubMessages()
+  given convertToOption[T]: Conversion[T, Option[T]] = (value: T) => Some(value)
   final lazy val Yes = Some("Yes")
   final lazy val No = Some("No")
   final lazy val EmptyJsVal = None: Option[JsValue]
@@ -113,7 +113,6 @@ object TestUtil extends PlaySpec {
                                   nino: Option[String] = None,
                                   passportNumber: Option[String] = None,
                                   nationalID: Option[String] = None,
-                                  isDirectorACompany: Option[String] = None,
                                   businessName: Option[String] = None,
                                   doYouHaveTradingName: Option[String] = None,
                                   tradingName: Option[String] = None,
@@ -455,9 +454,9 @@ object TestUtil extends PlaySpec {
                      businessType: BusinessDetailsEntityTypes.Value = SoleTrader): CacheMap = {
     def addTestData(legalEntity: String, section: String): Option[JsValue] = section match {
       case `businessDetailsName` => None
-      case `businessNameDetailsName` => businessNameDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
-      case `tradingStartDetailsName` => tradingStartDetails.fold(EmptyJsVal)(f => Json.toJson(f))
-      case `businessRegistrationDetailsName` => businessRegistrationDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
+      case `businessNameDetailsName` => businessNameDetails.map(f => Json.toJson(f(legalEntity)))
+      case `tradingStartDetailsName` => tradingStartDetails.map(f => Json.toJson(f))
+      case `businessRegistrationDetailsName` => businessRegistrationDetails.map(f => Json.toJson(f(legalEntity)))
       case `placeOfBusinessName` => placeOfBusiness.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
       case `businessContactsName` => businessContacts.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
       case `additionalBusinessPremisesName` => additionalBusinessPremises.fold(EmptyJsVal)(x => Some(Json.toJson(x)))
@@ -474,8 +473,8 @@ object TestUtil extends PlaySpec {
       case head :: tail => addTestData(legalEntity, head) match {
         case Some(data) => addSectionToMap(tail, cacheMap + (head -> data))
         case _ if head == `businessDetailsName` =>
-          val businessDetailsOpt = businessNameDetails.fold(EmptyJsVal)(f => Json.toJson(f(legalEntity)))
-          val tradingStartOpt = tradingStartDetails.fold(EmptyJsVal)(f => Json.toJson(f))
+          val businessDetailsOpt = businessNameDetails.map(f => Json.toJson(f(legalEntity)))
+          val tradingStartOpt = tradingStartDetails.map(f => Json.toJson(f))
           val newCacheMap: Map[String, JsValue] = (businessDetailsOpt, tradingStartOpt) match {
             case (Some(bdo), Some(tso)) => cacheMap + (`businessNameDetailsName` -> bdo) + (`tradingStartDetailsName` -> tso)
             case (Some(bdo), _) => cacheMap + (`businessNameDetailsName` -> bdo)
@@ -502,7 +501,7 @@ object TestUtil extends PlaySpec {
   def testBusinessDetailsWithMissingStartDate(legalEntity: String = "SOP", isNewBusiness: Boolean, propDate: Option[TupleDate] = None): CacheMap =
     createCacheMap(
       legalEntity = legalEntity,
-      businessNameDetails = (_F: String) => testBusinessNameDetails(),
+      businessNameDetails = (_: String) => testBusinessNameDetails(),
       tradingStartDetails = newAWBusiness( if (isNewBusiness) {
         BooleanRadioEnum.YesString
       } else {
@@ -512,7 +511,7 @@ object TestUtil extends PlaySpec {
   def testBusinessDetailsWithMissingTradingStartDetails(legalEntity: String = "SOP"): CacheMap =
     createCacheMap(
       legalEntity = legalEntity,
-      businessNameDetails = (_F: String) => testBusinessNameDetails(),
+      businessNameDetails = (_: String) => testBusinessNameDetails(),
       tradingStartDetails = None
     )
 
@@ -654,7 +653,6 @@ object TestUtil extends PlaySpec {
                                    contactFirstName: Option[String] = Some("John"),
                                    contactLastName: Option[String] = Some("Walker"),
                                    email: Option[String] = Some(testEmail),
-                                   confirmEmail: Option[String] = Some(testEmail),
                                    telephone: Option[String] = Some("01123456789")): BusinessContacts =
     BusinessContacts(
       contactAddressSame = contactAddressSame,
@@ -671,7 +669,6 @@ object TestUtil extends PlaySpec {
                                       contactFirstName: Option[String] = Some("John"),
                                       contactLastName: Option[String] = Some("Walker"),
                                       email: Option[String] = Some(testEmail),
-                                      confirmEmail: Option[String] = Some(testEmail),
                                       telephone: Option[String] = Some("01123456789")): BusinessContacts =
     BusinessContacts(
       contactAddressSame = contactAddressSame,

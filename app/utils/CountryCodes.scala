@@ -28,7 +28,7 @@ class CountryCodes @Inject()(val environment: Environment) {
   case class Country(country: String, countryCode: String)
 
   object Country {
-    implicit val formats: OFormat[Country] = Json.format[Country]
+    given formats: OFormat[Country] = Json.format[Country]
   }
 
   private[utils] val readJson: JsValue = {

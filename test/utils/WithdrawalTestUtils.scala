@@ -19,14 +19,14 @@ package utils
 import models.{WithdrawalReason, WithdrawalResponse}
 import play.api.libs.json.{JsValue, Json}
 import models.CacheMap
-import services.DataCacheKeys._
+import services.DataCacheKeys.*
 
 object WithdrawalTestUtils {
   val withdrawalJsonToSend: JsValue = Json.toJson(withdrawalReason())
   val withdrawResponseJson: JsValue = Json.toJson(witdrawalResponse())
 
 
-  def withdrawalReason(reason: Option[String] = Some("Applied in error"), reasonOther: Option[String] = None): WithdrawalReason = WithdrawalReason(reason, None)
+  def withdrawalReason(reason: Option[String] = Some("Applied in error")): WithdrawalReason = WithdrawalReason(reason, None)
 
   def witdrawalResponse(processingDate: String = "2001-12-17T09:30:47Z"): WithdrawalResponse = WithdrawalResponse(processingDate)
 
