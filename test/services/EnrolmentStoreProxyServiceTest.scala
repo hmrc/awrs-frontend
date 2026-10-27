@@ -31,8 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EnrolmentStoreProxyServiceTest extends AsyncWordSpec with Matchers with MockitoSugar {
 
-  implicit val hc: HeaderCarrier        = HeaderCarrier()
-  implicit val req: Request[AnyContent] = FakeRequest()
+  given hc: HeaderCarrier        = HeaderCarrier()
+  given req: Request[AnyContent] = FakeRequest()
 
   private val mockConnector = mock[EnrolmentStoreProxyConnector]
   private val service       = new EnrolmentStoreProxyService(mockConnector)

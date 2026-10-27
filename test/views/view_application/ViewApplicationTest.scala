@@ -69,7 +69,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override implicit val applicationConfig: ApplicationConfig,
+                                 override val applicationConfig: ApplicationConfig,
                                  val template: views.html.awrs_business_directors,
                                  viewApp: views.html.view_application.awrs_view_application) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig, template) {
     val status = "does not matter"
@@ -325,14 +325,14 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(entity: BusinessType, testData: BusinessNameDetails) = {
-        implicit val divId: String = businessDetailsId
+        given divId: String = businessDetailsId
 
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(businessNameDetails = testData,
             businessCustomerDetails = bcd,
             tradingStartDetails = testAWBusiness,
             businessType = entity)
-        implicit val doc: Document = getDoc(entity.legalEntity.get)
+        given doc: Document = getDoc(entity.legalEntity.get)
         val subview = getSubview
 
         testSectionExists(businessDetails = true)
@@ -409,13 +409,13 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           businessRegistrationDetailsToExpectation(entity, testData)
 
       def test(entity: BusinessType, testData: BusinessRegistrationDetails) = {
-        implicit val divId: String = businessRegistrationDetailsId
+        given divId: String = businessRegistrationDetailsId
 
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(businessRegistrationDetails = testData,
             businessCustomerDetails = bcd,
             businessType = entity)
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(businessRegistrationDetails = true)
@@ -433,7 +433,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display place of business correctly" in {
-      implicit val divId: String = placeOfBusinessId
+      given divId: String = placeOfBusinessId
       val testData = testPlaceOfBusinessDefault()
 
       def toExpectation(testData: PlaceOfBusiness, testBCDetails: BusinessCustomerDetails): List[Row] =
@@ -445,12 +445,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
 
       def test(entity: BusinessType, testData: PlaceOfBusiness) = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(placeOfBusiness = testData,
             businessType = entity,
             businessCustomerDetails = testBusinessCustomerDetails(entity.legalEntity.get))
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(placeOfBusiness = true)
@@ -474,7 +474,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display business contacts correctly" in {
-      implicit val divId: String = businessContactsId
+      given divId: String = businessContactsId
       val testData = List[BusinessContacts](testBusinessContactsDefault(), testBusinessContactsDefault(contactAddressSame = Some(BooleanRadioEnum.NoString)))
 
       def toExpectation(testData: BusinessContacts, testBCDetails: BusinessCustomerDetails): List[Row] = {
@@ -492,12 +492,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(entity: BusinessType, testData: BusinessContacts) = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(businessContacts = testData,
             businessType = entity,
             businessCustomerDetails = testBusinessCustomerDetails(entity.legalEntity.get))
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(businessContacts = true)
@@ -522,7 +522,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display group members details correctly" in {
-      implicit val divId: String = groupMemberDetailsId
+      given divId: String = groupMemberDetailsId
 
       val testData = GroupMembers(
         List(GroupMember(companyNames = CompanyNames(Some("ACME"), Some("Yes"), Some("Business1")), address = Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), groupJoiningDate = None, doYouHaveUTR = Some("Yes"), utr = testUtr, isBusinessIncorporated = Some("No"), companyRegDetails = Some(
@@ -563,10 +563,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(testData: GroupMembers): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(groupMembers = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(groupMembers = true)
@@ -581,7 +581,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display partner details correctly" in {
-      implicit val divId: String = partnerDetailsId
+      given divId: String = partnerDetailsId
 
       @scala.annotation.nowarn
       def partnerDetailOneViewTest(entityType: Option[String] = Some("Individual"),
@@ -667,10 +667,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(testData: Partners): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(partnerDetails = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(partnerDetails = true)
@@ -689,7 +689,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display additional premises correctly" in {
-      implicit val divId: String = additionalPremisesId
+      given divId: String = additionalPremisesId
       val testData = AdditionalBusinessPremisesList(
         List(testAdditionalBusinessPremises,
           testAdditionalBusinessPremises,
@@ -703,10 +703,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(testData: AdditionalBusinessPremisesList): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(additionalBusinessPremises = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(additionalBusinessPremises = true)
@@ -722,7 +722,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display business directors correctly" in {
-      implicit val divId: String = businessDirectorsId
+      given divId: String = businessDirectorsId
 
       def businessDirectorOneViewTest(directorsAndCompanySecretaries: Option[String] = "Director and Company Secretary",
                                       personOrCompany: Option[String] = "company",
@@ -803,12 +803,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(entity: BusinessType, testData: BusinessDirectors): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(
             businessDirectors = testData,
             businessType = entity)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(businessDirectors = true)
@@ -829,7 +829,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display trading activity correctly" in {
-      implicit val divId: String = tradingActivityId
+      given divId: String = tradingActivityId
       val testData = testTradingActivity()
 
       def toExpectation(testData: TradingActivity): List[Row] =
@@ -843,7 +843,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
 
       def test(testData: TradingActivity): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(tradingActivity = testData)
 
         implicit val doc: Document = getDoc()

@@ -129,7 +129,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                           fetchAll: MockConfiguration[Future[Option[CacheMap]]] = DoNotConfigure,
                                                           removeAll: MockConfiguration[Future[Unit]] = DoNotConfigure
                                                         ): Unit = {
-    implicit val connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
+    given connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
 
     mockFetchFromSave4Later(applicationStatusName, fetchApplicationStatus)
     mockFetchFromSave4Later(businessTypeName, fetchBusinessType)
@@ -173,7 +173,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                              fetchBusinessDetailsSupport: MockConfiguration[Future[Option[BusinessDetailsSupport]]] = DoNotConfigure,
                                                              removeAll: MockConfiguration[Future[Unit]] = DoNotConfigure
                                                            ): Unit = {
-    implicit val connector: Save4LaterConnector = mockApiSave4LaterConnector
+    given connector: Save4LaterConnector = mockApiSave4LaterConnector
 
     mockFetchFromSave4Later(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     mockFetchFromSave4Later(businessDetailsSupportName, fetchBusinessDetailsSupport)
@@ -220,7 +220,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                removeAll: Option[Int] = None
                                              ): Unit = {
 
-    implicit val connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
+    given connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
 
     verifySave4LaterFetch(businessTypeName, fetchBusinessType)
     verifySave4LaterSave(businessTypeName, saveBusinessType)
@@ -268,7 +268,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                   removeAll: Option[Int] = None
                                                 ): Unit = {
 
-    implicit val connector: Save4LaterConnector = mockApiSave4LaterConnector
+    given connector: Save4LaterConnector = mockApiSave4LaterConnector
 
     verifySave4LaterFetch(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     verifySave4LaterSave(subscriptionTypeFrontEndName, saveSubscriptionTypeFrontEnd)

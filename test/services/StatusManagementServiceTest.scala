@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class StatusManagementServiceTest extends AwrsUnitTestTraits
   with MockTestStatusManagementService with MockAuthConnector {
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
+  given fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,
@@ -51,7 +51,7 @@ class StatusManagementServiceTest extends AwrsUnitTestTraits
     "not call any apis if the data is already locally cached" in {
       // currently the existence of "AwrsSessionKeys.sessionStatusType" in the session is used to determine if the data
       // is cached locally.
-      implicit val fakeRequest = {
+      given fakeRequest = {
         val sessionId = s"session-${UUID.randomUUID}"
         FakeRequest().withSession(
           "sessionId" -> sessionId,

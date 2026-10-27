@@ -47,7 +47,7 @@ object BusinessContactsForm {
       contactAddressSame -> contactAddress_compulsory,
       contactAddress -> (ukAddress_compulsory(prefix = contactAddress, "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenContactAddressNo),
       "modelVersion" -> ignored[String](BusinessContacts.latestModelVersion)
-    )(BusinessContacts.apply)(BusinessContacts.unapply))
+    )(BusinessContacts.apply)(businessContacts => Some(Tuple.fromProductTyped(businessContacts))))
   }
 
   def businessContactsForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[BusinessContacts] = PreprocessedForm(businessContactsValidationForm)

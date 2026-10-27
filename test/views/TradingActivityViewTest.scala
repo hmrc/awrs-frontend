@@ -184,7 +184,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits with ServicesUnitTestFi
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {
                   val test: Future[Result] => Unit = result => {
-                    implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                    given doc: Document = Jsoup.parse(contentAsString(result))
                     testId(shouldExist = true)(targetFieldId = "progress-text")
                     val journey = JourneyConstants.getJourney(legalEntity)
                     val expectedSectionNumber = journey.indexOf(tradingActivityName) + 1
@@ -204,7 +204,7 @@ class TradingActivityViewTest extends AwrsUnitTestTraits with ServicesUnitTestFi
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
     setAuthMocks()
-    val result = testTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testTradingActivityController.saveAndContinue.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

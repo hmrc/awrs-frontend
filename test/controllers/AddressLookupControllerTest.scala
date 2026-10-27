@@ -147,7 +147,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
       SessionBuilder.buildRequestWithSession(userId).withJsonBody(Json.toJson(addressAudits))
     }
 
-    val result = testAddressLookupController.auditAddress().apply(fakeRequest)
+    val result = testAddressLookupController.auditAddress.apply(fakeRequest)
     test(result)
   }
 }

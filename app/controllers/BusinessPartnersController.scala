@@ -54,7 +54,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
 
   override val listToListObj: List[Partner] => Partners = (partnerDetails: List[Partner]) => Partners(partnerDetails)
   override val listObjToList: Partners => List[Partner] = (partnerDetails: Partners) => partnerDetails.partners
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(partnersName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(partnersName)
   override val section: String = partnersName
   override val deleteHeadingParameter: String = "awrs.view_application.partner"
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.BusinessPartnersController.actionDelete(id)

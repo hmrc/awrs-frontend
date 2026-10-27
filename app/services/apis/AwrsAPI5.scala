@@ -85,15 +85,15 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
     lazy val updatedPremises = AdditionalBusinessPremisesList(amendedSTFE.additionalPremises.get.premises.drop(1))
 
     for {
-      dataCache <- save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
+      _ <- save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
       businessCustomerDetails <- save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, convertToBusinessCustomerDetails(amendedSTFE))
-      x <- getEntitySpecificData(newFeModel, businessCustomerDetails, authRetrievals)
-      businessType <- save4LaterService.mainStore.saveBusinessType(amendedSTFE.legalEntity.get, authRetrievals)
-      additionalPremises <- save4LaterService.mainStore.saveAdditionalBusinessPremisesList(authRetrievals, updatedPremises)
-      tradingActivity <- save4LaterService.mainStore.saveTradingActivity(authRetrievals, amendedSTFE.tradingActivity.get)
-      products <- save4LaterService.mainStore.saveProducts(authRetrievals, amendedSTFE.products.get)
-      suppliers <- save4LaterService.mainStore.saveSuppliers(authRetrievals, amendedSTFE.suppliers.get)
-      applicationDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(authRetrievals, amendedSTFE.applicationDeclaration.get)
+      _ <- getEntitySpecificData(newFeModel, businessCustomerDetails, authRetrievals)
+      _ <- save4LaterService.mainStore.saveBusinessType(amendedSTFE.legalEntity.get, authRetrievals)
+      _ <- save4LaterService.mainStore.saveAdditionalBusinessPremisesList(authRetrievals, updatedPremises)
+      _ <- save4LaterService.mainStore.saveTradingActivity(authRetrievals, amendedSTFE.tradingActivity.get)
+      _ <- save4LaterService.mainStore.saveProducts(authRetrievals, amendedSTFE.products.get)
+      _ <- save4LaterService.mainStore.saveSuppliers(authRetrievals, amendedSTFE.suppliers.get)
+      _ <- save4LaterService.mainStore.saveApplicationDeclaration(authRetrievals, amendedSTFE.applicationDeclaration.get)
     } yield newFeModel.subscriptionTypeFrontEnd
   }
 
@@ -114,31 +114,31 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
         Future.successful((): Unit)
       case "LTD" =>
         for {
-          businessDirectors <- save4LaterService.mainStore.saveBusinessDirectors(authRetrievals, subscriptionTypeFrontEnd.businessDirectors.get)
+          _ <- save4LaterService.mainStore.saveBusinessDirectors(authRetrievals, subscriptionTypeFrontEnd.businessDirectors.get)
         } yield ()
 
       case "Partnership" =>
         for {
-          businessPartners <- save4LaterService.mainStore.savePartnerDetails(authRetrievals, subscriptionTypeFrontEnd.partnership.get)
+          _ <- save4LaterService.mainStore.savePartnerDetails(authRetrievals, subscriptionTypeFrontEnd.partnership.get)
         } yield ()
 
       case "LLP_GRP" =>
         for {
-          groupMembers <- save4LaterService.mainStore.saveGroupMembers(authRetrievals, subscriptionTypeFrontEnd.groupMembers.get)
-          groupDeclaration <- save4LaterService.mainStore.saveGroupDeclaration(authRetrievals, subscriptionTypeFrontEnd.groupDeclaration.get)
-          businessPartners <- save4LaterService.mainStore.savePartnerDetails(authRetrievals, subscriptionTypeFrontEnd.partnership.get)
+          _ <- save4LaterService.mainStore.saveGroupMembers(authRetrievals, subscriptionTypeFrontEnd.groupMembers.get)
+          _ <- save4LaterService.mainStore.saveGroupDeclaration(authRetrievals, subscriptionTypeFrontEnd.groupDeclaration.get)
+          _ <- save4LaterService.mainStore.savePartnerDetails(authRetrievals, subscriptionTypeFrontEnd.partnership.get)
         } yield ()
 
       case "LTD_GRP" =>
         for {
-          groupMembers <- save4LaterService.mainStore.saveGroupMembers(authRetrievals, subscriptionTypeFrontEnd.groupMembers.get)
-          groupDeclaration <- save4LaterService.mainStore.saveGroupDeclaration(authRetrievals, subscriptionTypeFrontEnd.groupDeclaration.get)
-          businessDirectors <- save4LaterService.mainStore.saveBusinessDirectors(authRetrievals, subscriptionTypeFrontEnd.businessDirectors.get)
+          _ <- save4LaterService.mainStore.saveGroupMembers(authRetrievals, subscriptionTypeFrontEnd.groupMembers.get)
+          _ <- save4LaterService.mainStore.saveGroupDeclaration(authRetrievals, subscriptionTypeFrontEnd.groupDeclaration.get)
+          _ <- save4LaterService.mainStore.saveBusinessDirectors(authRetrievals, subscriptionTypeFrontEnd.businessDirectors.get)
         } yield ()
 
       case _ =>
         for {
-          businessPartners <- save4LaterService.mainStore.savePartnerDetails(authRetrievals, subscriptionTypeFrontEnd.partnership.get)
+          _ <- save4LaterService.mainStore.savePartnerDetails(authRetrievals, subscriptionTypeFrontEnd.partnership.get)
         } yield ()
     }
 

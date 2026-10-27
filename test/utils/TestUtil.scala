@@ -46,7 +46,7 @@ import scala.io.Source
 
 object TestUtil extends PlaySpec {
 
-  implicit val messages: Messages = stubMessages()
+  given messages: Messages = stubMessages()
   implicit def convertToOption[T](value: T): Option[T] = Some(value)
   final lazy val Yes = Some("Yes")
   final lazy val No = Some("No")

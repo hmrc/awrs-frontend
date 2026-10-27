@@ -64,7 +64,7 @@ class SaveAndRoutableTest extends AwrsUnitTestTraits
   }
 
   def testWasSectionCompletedWhenCurrentJourneyStarted(sectionName: String, sessionSectionStatusHash: String): Future[Boolean] = {
-    implicit val implicitRequest = baseRequest.withSession(baseRequest.session.+((AwrsSessionKeys.sessionSectionStatus, sessionSectionStatusHash)).data.toSeq: _*)
+    given implicitRequest = baseRequest.withSession(baseRequest.session.+((AwrsSessionKeys.sessionSectionStatus, sessionSectionStatusHash)).data.toSeq: _*)
     testController.redirectToIndex(sectionName)
   }
 

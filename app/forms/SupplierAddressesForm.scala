@@ -75,7 +75,7 @@ object SupplierAddressesForm extends AwrsFieldConfig {
       "vatRegistered" -> (vatRegistered_compulsory() iff whenThereAreUkAlcoholSuppliers),
       vatNumber -> (vatNumber_compulsory iff whenSupplierIsVatRegistered),
       "additionalSupplier" -> (additionalSupplier_compulsory iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered))
-    )(Supplier.apply)(Supplier.unapply)
+    )(Supplier.apply)(supplier => Some(Tuple.fromProductTyped(supplier)))
   )
 
   def supplierAddressesForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[Supplier] = {

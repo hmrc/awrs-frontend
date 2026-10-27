@@ -35,11 +35,11 @@
 
 @(businessType: Option[String], businessRegistrationDetailsForm: Form[models.BusinessRegistrationDetails])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(businessRegistrationDetailsForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(businessRegistrationDetailsForm) }
 
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.BusinessRegistrationDetailsController.saveAndReturn
     } else {
         controllers.routes.BusinessRegistrationDetailsController.saveAndContinue
@@ -47,7 +47,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")

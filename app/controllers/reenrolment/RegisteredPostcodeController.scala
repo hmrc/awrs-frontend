@@ -42,7 +42,7 @@ class RegisteredPostcodeController @Inject()(mcc: MessagesControllerComponents,
   val signInUrl: String = applicationConfig.signIn
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showPostCode: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         keyStoreService.fetchAwrsRegisteredPostcode map {

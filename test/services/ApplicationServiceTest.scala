@@ -930,55 +930,55 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       "return valid Section object when legal entity is LTD" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData())
         val expectedSection = Sections(corporateBodyBusinessDetails = true, businessDirectors = true)
-        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val outputSection = await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is SOP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("SOP")))
         val expectedSection = Sections(soleTraderBusinessDetails = true)
-        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val outputSection = await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is Partnership" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("Partnership")))
         val expectedSection = Sections(partnershipBusinessDetails = true, partnership = true)
-        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val outputSection = await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LP")))
         val expectedSection = Sections(llpBusinessDetails = true, partnership = true)
-        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val outputSection = await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LLP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LLP")))
         val expectedSection = Sections(llpBusinessDetails = true, partnership = true)
-        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val outputSection = await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LTD_GRP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LTD_GRP")))
         val expectedSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, businessDirectors = true)
-        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val outputSection = await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         outputSection mustBe expectedSection
       }
 
       "return valid Section object when legal entity is LLP_GRP" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("LLP_GRP")))
         val expectedSection = Sections(groupRepBusinessDetails = true, groupMemberDetails = true, partnership = true)
-        val outputSection = await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val outputSection = await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         outputSection mustBe expectedSection
       }
 
       "return exception when legal entity is invalid" in {
         setupMockSave4LaterServiceWithOnly(fetchAll = cachedData(dynamicLegalEntity("XYZ")))
-        val thrown = the[InvalidStateException] thrownBy await(testApplicationService.getSections("cacheID", TestUtil.defaultAuthRetrieval))
+        val thrown = the[InvalidStateException] thrownBy await(testApplicationService.getSections(TestUtil.defaultAuthRetrieval))
         thrown.getMessage mustBe "Invalid Legal entity"
       }
     }
@@ -1098,14 +1098,14 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       "return false if no section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = soleTraderSubscriptionTypeFrontEnd)
-        val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
+        val result = testApplicationService.hasAPI5ApplicationChanged(TestUtil.defaultAuthRetrieval)
         await(result) mustBe false
       }
 
       "return true if any section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = differentSoleTraderSubscriptionTypeFrontEnd)
-        val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
+        val result = testApplicationService.hasAPI5ApplicationChanged(TestUtil.defaultAuthRetrieval)
         await(result) mustBe true
       }
     }

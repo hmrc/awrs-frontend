@@ -59,7 +59,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
 
     "correctly route to the HaveYouRegistered page without disrupting the user flow from BTA when the feature flag is enabled" in {
       setUpMocks()
-      val result = mockHaveYouRegisteredController.showHaveYouRegisteredPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = mockHaveYouRegisteredController.showHaveYouRegisteredPage.apply(SessionBuilder.buildRequestWithSession(userId))
 
       status(result) mustBe 200
       contentAsString(result) must include("/alcohol-wholesale-scheme/have-you-registered")
@@ -68,7 +68,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
     "redirect the user to the business customer start page when the feature flag is disabled" ignore {
       setUpMocks()
       when(mockAppConfig.businessCustomerStartPage).thenReturn("/business-customer/business-verification/awrs")
-      val result = mockHaveYouRegisteredController.showHaveYouRegisteredPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = mockHaveYouRegisteredController.showHaveYouRegisteredPage.apply(SessionBuilder.buildRequestWithSession(userId))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/business-customer/business-verification/awrs")
@@ -76,14 +76,14 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
 
     "return a 400 when the form has errors on submission" in {
       setUpMocks()
-      val result = mockHaveYouRegisteredController.saveAndContinue().apply(testRequest(None))
+      val result = mockHaveYouRegisteredController.saveAndContinue.apply(testRequest(None))
 
       status(result) mustBe 400
     }
 
     "redirect to awrs urn page after successfully saving data" in {
       setUpMocks()
-      val result: Future[Result] = mockHaveYouRegisteredController.saveAndContinue().apply(testRequest(Some(true)))
+      val result: Future[Result] = mockHaveYouRegisteredController.saveAndContinue.apply(testRequest(Some(true)))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.reenrolment.routes.RegisteredUrnController.showArwsUrnPage.url)
@@ -92,7 +92,7 @@ class HaveYouRegisteredControllerTest extends AwrsUnitTestTraits with ServicesUn
     "redirect to business customer start page if user selects No" in {
       setUpMocks()
       when(mockAppConfig.businessCustomerStartPage).thenReturn("/business-customer/business-verification/awrs")
-      val result = mockHaveYouRegisteredController.saveAndContinue().apply(testRequest(Some(false)))
+      val result = mockHaveYouRegisteredController.saveAndContinue.apply(testRequest(Some(false)))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/business-customer/business-verification/awrs")

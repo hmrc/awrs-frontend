@@ -29,7 +29,7 @@ import utils.AwrsFieldConfig
 class WithdrawalReasonFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
   // lazy required when AwrsFieldConfig is used to make sure the app is started before the config is accessed
-  implicit lazy val form: Form[WithdrawalReason] = WithdrawalReasonForm.withdrawalReasonForm.form
+  given form: Form[WithdrawalReason] = WithdrawalReasonForm.withdrawalReasonForm.form
   val preDefinedTypes: Set[AWRSEnums.WithdrawalReasonEnum.Value] = Set(AppliedInError, NoLongerTrading, DuplicateApplication, JoinedAWRSGroup)
 
   "Withdrawal Reason Form" must {

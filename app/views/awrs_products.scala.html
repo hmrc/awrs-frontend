@@ -38,10 +38,10 @@
 @(productsForm: Form[models.Products])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(productsForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(productsForm) }
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.ProductsController.saveAndReturn
     } else {
         controllers.routes.ProductsController.saveAndContinue
@@ -49,7 +49,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")

@@ -25,7 +25,6 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
-                                 save4LaterService: Save4LaterService,
                                  enrolService: EnrolService) extends Logging {
 
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails, legalEntity: String)

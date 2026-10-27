@@ -29,7 +29,7 @@ import views.html.helpers.frontendDefaultLen
 
 class BusinessDirectorsFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
 
-  implicit lazy val form: Form[BusinessDirector] = BusinessDirectorsForm.businessDirectorsForm.form
+  given form: Form[BusinessDirector] = BusinessDirectorsForm.businessDirectorsForm.form
 
   import BooleanRadioEnum._
   import DirectorAndSecretaryEnum._

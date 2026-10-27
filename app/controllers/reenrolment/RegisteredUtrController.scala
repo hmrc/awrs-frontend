@@ -48,7 +48,7 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String             = applicationConfig.signIn
 
-  def showArwsUtrPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showArwsUtrPage: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
@@ -63,7 +63,7 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
   private def getOrThrow[T](x: Option[T]): T =
     x.fold(throw new RuntimeException(s"No value found for ${x.getClass.getName} in keystore - exiting re-enrolment journey"))(identity)
 
-  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)

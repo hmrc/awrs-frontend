@@ -41,13 +41,14 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
                                             val authConnector: DefaultAuthConnector,
-                                            implicit val save4LaterService: Save4LaterService,
+                                            val save4LaterService: Save4LaterService,
                                             val deEnrolService: DeEnrolService,
-                                            implicit val applicationConfig: ApplicationConfig,
+                                            val applicationConfig: ApplicationConfig,
                                             template: views.html.awrs_application_status
                                            ) extends FrontendController(mcc) with AwrsController with I18nSupport {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
+  given ApplicationConfig = applicationConfig
   val signInUrl: String = applicationConfig.signIn
 
   def isNewBusiness(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
@@ -156,7 +157,7 @@ class ApplicationStatusController @Inject()(mcc: MessagesControllerComponents,
               case Some(notification) =>
                 notification.contactType match {
                   case Some(MindedToReject) =>
-                    safeUseStatusInfo { info: StatusInfoSuccessResponseType =>
+                    safeUseStatusInfo { info =>
                       displayOk(ApplicationMindedToRejectedParameter(status, info, organisationName))
                     }
                   case _ => pending

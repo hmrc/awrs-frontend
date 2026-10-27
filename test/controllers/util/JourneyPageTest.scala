@@ -73,7 +73,7 @@ class JourneyPageTest extends AwrsUnitTestTraits with MockAuthConnector {
 
     override val accountUtils: AccountUtils = mockAccountUtils
     override val auditable: Auditable = mockAuditable
-    override implicit val applicationConfig: ApplicationConfig = mockAppConfig
+    override given applicationConfig: ApplicationConfig = mockAppConfig
   }
 
   val template = app.injector.instanceOf[views.html.awrs_additional_premises]

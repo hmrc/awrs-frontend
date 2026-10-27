@@ -99,7 +99,7 @@ class StatusManagementService @Inject()(api9: AwrsAPI9,
       subscriptionStatus <- api9.getSubscriptionStatusFromCache
       alertStatus <- api12.getAlertFromCache
       statusInfo <- api11.getStatusInfoFromCache
-      Some(wasViewed) <- keyStoreService.fetchViewedStatus
+      case Some(wasViewed) <- keyStoreService.fetchViewedStatus
     } yield StatusReturnType(wasViewed = wasViewed, subscriptionStatus, alertStatus, statusInfo)
 
 
@@ -107,7 +107,7 @@ class StatusManagementService @Inject()(api9: AwrsAPI9,
   def retrieveStatus(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, request: Request[AnyContent], ec: ExecutionContext): Future[StatusReturnType] =
     request.getSessionStatus match {
       case Some(_) => localFetch
-      case _       => deepFetch(authRetrievals)
+      case _ => deepFetch(authRetrievals)
     }
 
 }

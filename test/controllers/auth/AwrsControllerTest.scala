@@ -101,7 +101,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     )
     setupMockIndexService()
     setAuthMocks()
-    val result = testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -117,7 +117,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     setupMockIndexService(showContinueButton = false)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
     setAuthMocks()
-    val result = testIndexController.showIndex().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
+    val result = testIndexController.showIndex.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
 
@@ -134,7 +134,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     getWithAuthorisedUserCtWithStatus(testSubscriptionStatusTypeRejected)(_)
 
   def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 }

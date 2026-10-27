@@ -25,6 +25,7 @@ import models.StatusContactType.{MindedToReject, MindedToRevoke}
 import models._
 import play.api.http.Status._
 import play.api.libs.json._
+import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.http.{BadRequestException, ForbiddenException, HeaderCarrier, HttpResponse, InternalServerException, NotFoundException, ServiceUnavailableException, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -49,7 +50,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
   val duplicateFailurePattern: Regex = "(^.*already has an active AWRS.*$)".r
   val deregFailurePattern: Regex = "(^.*whilst previous one is Under Appeal/Review or being Deregistered.*$)".r
 
-  def submitAWRSData(fileData: JsValue, authRetrievals: StandardAuthRetrievals)
+  def submitAWRSData(fileData: JsValue)
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]] = {
 
     val legalEntityType = (fileData \ subscriptionTypeJSPath \ "legalEntity" \ "legalEntity").as[String]
@@ -76,14 +77,14 @@ class AWRSConnector @Inject()(http: HttpClientV2,
             throw new ServiceUnavailableException("Service unavailable")
           case 400 =>
             response.body.toString.replace("\n", "") match {
-              case validationPattern(contents) =>
+              case validationPattern(_) =>
                 audit(auditAPI4TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeBadRequest)
                 warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Bad Request \n API4 Request Json From Frontend ## ")
                 debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
                 throw new DESValidationException("Validation against schema failed")
-              case ggFailurePattern(contents) => throw new GovernmentGatewayException("There was a problem with the admin service")
-              case duplicateFailurePattern(contents) => throw new DuplicateSubscriptionException("This subscription already exists")
-              case deregFailurePattern(contents) => throw new PendingDeregistrationException("You cannot submit a new application while your cancelled application is still pending")
+              case ggFailurePattern(_) => throw new GovernmentGatewayException("There was a problem with the admin service")
+              case duplicateFailurePattern(_) => throw new DuplicateSubscriptionException("This subscription already exists")
+              case deregFailurePattern(_) => throw new PendingDeregistrationException("You cannot submit a new application while your cancelled application is still pending")
               case _ => throw new BadRequestException("Bad Request: " + response.body.toString)
             }
           case 500 /*INTERNAL_SERVER_ERROR*/ =>
@@ -91,7 +92,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Unsuccessful return of data ## ")
             debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
             response.body.toString.replace("\n", "") match {
-              case ggFailurePattern(contents) => throw new GovernmentGatewayException("There was a problem with the admin service")
+              case ggFailurePattern(_) => throw new GovernmentGatewayException("There was a problem with the admin service")
               case _ => throw new InternalServerException("Internal server error")
             }
           case status@_ =>
@@ -99,7 +100,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
             warn(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - $status Exception \n API4 Request Json From Frontend ## ")
             debug(s"[$auditAPI4TxName - $businessName, $legalEntityType ] - Request Json ## $fileData")
             response.body.toString.replace("\n", "") match {
-              case ggFailurePattern(contents) => throw new GovernmentGatewayException("There was a problem with the admin service")
+              case ggFailurePattern(_) => throw new GovernmentGatewayException("There was a problem with the admin service")
               case _ => throw new RuntimeException("Unknown response")
             }
         }
@@ -130,7 +131,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
             throw new ForbiddenException(s"[$auditAPI3TxName] - ETMP has returned a error code003 with a status of NOT_OK - record is not editable.")
           case 400 =>
             response.body.toString.replace("\n", "") match {
-              case validationPattern(contents) =>
+              case validationPattern(_) =>
                 audit(auditAPI3TxName, Map("businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> updateRegistrationDetailsJsonRequest.toString()), eventTypeBadRequest)
                 warn(s"[$auditAPI3TxName - $businessName, $legalEntityType ] - Bad Request \n API3 Request Json From Frontend ## ")
                 throw new DESValidationException("Validation against schema failed")
@@ -179,7 +180,7 @@ class AWRSConnector @Inject()(http: HttpClientV2,
             throw new ServiceUnavailableException(s"[$auditAPI6TxName] - Dependant systems are currently not responding")
           case 400 =>
             response.body.toString.replace("\n", "") match {
-              case validationPattern(contents) =>
+              case validationPattern(_) =>
                 audit(auditAPI6TxName, Map("awrsRefNo" -> awrsRefNo.toString(), "businessName" -> businessName, "legalEntityType" -> legalEntityType, "requestJson" -> fileData.toString()), eventTypeBadRequest)
                 warn(s"[$auditAPI6TxName - $awrsRefNo, $businessName, $legalEntityType ] - Bad Request \n API6 Request Json From Frontend ## ")
                 throw new DESValidationException("Validation against schema failed")

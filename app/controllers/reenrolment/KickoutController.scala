@@ -40,7 +40,7 @@ class KickoutController @Inject()(mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showKickOutPage() : Action[AnyContent] = Action.async { implicit request =>
+  def showKickOutPage : Action[AnyContent] = Action.async { implicit request =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         Future.successful(Ok(template()))

@@ -67,7 +67,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   lazy val mockEnrolmentStoreProxyConnector:EnrolmentStoreProxyConnector  = mock[EnrolmentStoreProxyConnector]
   lazy val testEnrolmentStoreProxyService:EnrolmentStoreProxyService = new EnrolmentStoreProxyService(mockEnrolmentStoreProxyConnector)
   lazy val mockMatchingService: BusinessMatchingService = mock[BusinessMatchingService]
-  implicit lazy val messages: Messages = stubMessages()
+  given messages: Messages = stubMessages()
 
   def await[A](result: Future[A]): A = {
     helperAwait(result)
@@ -114,7 +114,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   lazy val partnerEntities = List("Partnership", "LLP", "LLP_GRP")
   lazy val groupEntities = List("LTD_GRP", "LLP_GRP")
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   implicit def convertToOption[T](value: T): Option[T] = Some(value)
 

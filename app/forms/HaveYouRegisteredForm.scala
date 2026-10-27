@@ -37,7 +37,7 @@ object HaveYouRegisteredForm {
   val haveYouRegisteredFormValidation: Form[HaveYouRegisteredModel] =
     Form(mapping(
       "hasUserRegistered" -> haveYouRegisteredFormCompulsoryBooleanMappingParam
-    )(HaveYouRegisteredModel.apply)(HaveYouRegisteredModel.unapply))
+    )(HaveYouRegisteredModel.apply)(model => Some(model.hasUserRegistered)))
 
   lazy val haveYouRegisteredForm: PrevalidationAPI[HaveYouRegisteredModel] = PreprocessedForm(
     haveYouRegisteredFormValidation,

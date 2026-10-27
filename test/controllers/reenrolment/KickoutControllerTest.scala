@@ -44,7 +44,7 @@ class KickoutControllerTest extends AwrsUnitTestTraits
 
     "show the Kickout page" in {
       setAuthMocks()
-      val res = testKickOutController.showKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testKickOutController.showKickOutPage.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
   }

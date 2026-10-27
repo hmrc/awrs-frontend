@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class AwrsAPI5Test extends AwrsUnitTestTraits
   with MockAwrsAPI5 {
 
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
 
   "API 5" must {

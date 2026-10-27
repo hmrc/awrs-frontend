@@ -35,7 +35,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockDataCacheService: Save4LaterService = mock[Save4LaterService]
-  implicit val ec: ExecutionContext = mockMCC.executionContext
+  given ec: ExecutionContext = mockMCC.executionContext
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -45,7 +45,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       .thenReturn(true)
   }
 
-  val testIndexService: IndexService = new IndexService(mockDataCacheService, mockApplicationService, mockAccountUtils)
+  val testIndexService: IndexService = new IndexService(mockApplicationService, mockAccountUtils)
 
   "OptionUtil" must {
     "unsupported type must throw an exception" in {

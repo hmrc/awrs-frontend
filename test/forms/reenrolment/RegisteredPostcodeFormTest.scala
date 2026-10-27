@@ -25,7 +25,7 @@ import utils.AwrsFieldConfig
 
 class RegisteredPostcodeFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 
-  implicit lazy val form: Form[AwrsPostcodeModel] = RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form
+  given form: Form[AwrsPostcodeModel] = RegisteredPostcodeForm.awrsRegisteredPostcodeForm.form
 
   "Postcode form validation" must {
 

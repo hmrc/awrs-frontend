@@ -72,6 +72,6 @@ object TradingActivityForm extends AwrsFieldConfig {
     "doYouExportAlcohol" -> yesNoQuestion_compulsory("doYouExportAlcohol", "awrs.additional_information.error.do_you_export_alcohol"),
     "exportLocation" -> (compulsoryOptStringList("exportLocation", "awrs.additional_information.error.export_location") iff doYouExportAlcoholIsYes),
     "thirdPartyStorage" -> yesNoQuestion_compulsory("thirdPartyStorage", "awrs.additional_information.error.third_party_storage")
-  )(TradingActivity.apply)(TradingActivity.unapply))
+  )(TradingActivity.apply)(tradingActivity => Some(Tuple.fromProductTyped(tradingActivity))))
 
 }

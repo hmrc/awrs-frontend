@@ -49,7 +49,7 @@ object PlaceOfBusinessForm {
     "placeOfBusinessAddressLast3Years" -> (ukAddress_compulsory(prefix = "placeOfBusinessAddressLast3Years", prefixRefNameInErrorMessage = "previous principal place of business", applicationConfig.countryCodes).toOptionalAddressMapping iff whenPreviousAddressNo),
     "operatingDuration" -> operatingDuration_compulsory,
     "modelVersion" -> ignored[String](PlaceOfBusiness.latestModelVersion)
-  )(PlaceOfBusiness.apply)(PlaceOfBusiness.unapply))
+  )(PlaceOfBusiness.apply)(placeOfBusiness => Some(Tuple.fromProductTyped(placeOfBusiness))))
 
   def placeOfBusinessForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[PlaceOfBusiness] = PreprocessedForm(placeOfBusinessValidationForm)
 }

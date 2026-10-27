@@ -31,7 +31,7 @@
 
 @(businessTypeForm: Form[models.BusinessType], businessName : String, isAGroup : Boolean = false, isSaAccount : Option[Boolean], isOrgAccount : Option[Boolean])(implicit request: Request[AnyContent], messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(businessTypeForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(businessTypeForm) }
 
 @awrsMain(
     title = s"${errorPrefix(businessTypeForm)} ${messages("awrs.generic.tab.title", messages("awrs.business_verification.heading"))}",
@@ -41,7 +41,7 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessTypeForm))
     }
 
-        @formWithCSRF(action = controllers.routes.BusinessTypeController.saveAndContinue){
+        @formWithCSRF(action = controllers.routes.BusinessTypeController.saveAndContinue()){
 
             <input type="hidden" name="isSaAccount" value="@{isSaAccount}">
             <input type="hidden" name="isOrgAccount" value="@{isOrgAccount}">

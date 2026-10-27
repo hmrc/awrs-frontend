@@ -28,8 +28,8 @@
         case _ => messages("awrs.generic.wait_info_de-registration")
     }
 }
-@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.wait_info", removeStatus))) {
+@awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.generic.wait_info", removeStatus()))) {
 
-    <h1 id="application-error-header" class="govuk-heading-xl">@Html(messages("awrs.generic.wait_info", removeStatus))</h1><br>
+    <h1 id="application-error-header" class="govuk-heading-xl">@Html(messages("awrs.generic.wait_info", removeStatus()))</h1><br>
 
 }

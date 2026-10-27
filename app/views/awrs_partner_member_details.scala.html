@@ -44,7 +44,7 @@
 
 @(partnerForm: Form[models.Partner], partnerId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{
+@implicitFormInstance: Option[Form[_]] = @{
     Some(partnerForm)
 }
 
@@ -60,7 +60,7 @@
 }
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.BusinessPartnersController.saveAndReturn(partnerId, isNewRecord)
     } else {
         controllers.routes.BusinessPartnersController.saveAndContinue(partnerId, isNewRecord)
@@ -68,7 +68,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")
@@ -285,7 +285,7 @@
                     @if(partnerId < 2) {
                         <input type="hidden" name="otherPartners" value="Yes">
                     } else {
-                        @if(!isEditMode) {
+                        @if(!isEditMode()) {
                             <div class="govuk-form-group" id="businessPartner.otherPartners">
 
                                 @govukRadios(

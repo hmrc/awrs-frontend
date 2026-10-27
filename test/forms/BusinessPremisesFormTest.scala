@@ -28,8 +28,8 @@ import play.api.data.Form
 import utils.TestConstants._
 
 class BusinessPremisesFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form: Form[AdditionalBusinessPremises] = BusinessPremisesForm.businessPremisesForm.form
+  given mockConfig: ApplicationConfig = mockAppConfig
+  given form: Form[AdditionalBusinessPremises] = BusinessPremisesForm.businessPremisesForm.form
 
   "Form validation" must {
     "display the correct validation errors for additionalPremises" in {

@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
 
-  implicit val format: Format[BusinessCustomerDetails] = BusinessCustomerDetails.formats
+  given format: Format[BusinessCustomerDetails] = BusinessCustomerDetails.formats
 
   val mockShortLivedCacheRepo: ShortLivedCacheRepository = mock[ShortLivedCacheRepository]
 

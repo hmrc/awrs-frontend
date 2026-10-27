@@ -63,6 +63,6 @@ object ProductsForm extends AwrsFieldConfig {
     "otherMainCustomers" -> (otherMainCustomers_compulsory iff mainCustomerOtherIsSelected),
     "productType" -> compulsoryStringList("productType", "awrs.additional_information.error.type_of_product"),
     "otherProductType" -> (otherProductType_compulsory iff productTypeIsSelected)
-  )(Products.apply)(Products.unapply))
+  )(Products.apply)(products => Some(Tuple.fromProductTyped(products))))
 
 }

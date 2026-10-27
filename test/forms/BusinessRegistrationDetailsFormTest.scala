@@ -78,7 +78,7 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
 
   "Business registration details form" must {
     entities.foreach { entity =>
-      implicit lazy val form: Form[BusinessRegistrationDetails] = forms(entity)
+      given form: Form[BusinessRegistrationDetails] = forms(entity)
 
       lazy val targetIds: Set[String] = (entity: @unchecked) match {
         case SoleTrader => soleTraderIds

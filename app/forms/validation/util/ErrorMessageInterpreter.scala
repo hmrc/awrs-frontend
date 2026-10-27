@@ -164,7 +164,7 @@ object ErrorMessageInterpreter extends ErrorMessageInterpreter {
       val anchor = error.args.nonEmpty match {
         case true => {
           (error.args.head: @unchecked) match {
-            case arg: String =>
+            case _: String =>
               if (error.key.nonEmpty) {
                 error.key + error.args.fold("")((x, y) => s"$x.$y")
               } else {

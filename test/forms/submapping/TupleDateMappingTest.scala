@@ -64,7 +64,7 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar with AwrsFormTestU
       isTooLateCheck = if(!newBusiness) Some(isTooLate) else None
     )
 
-  private implicit val testForm: Form[TestForm] = Form(mapping(
+  private given testForm: Form[TestForm] = Form(mapping(
     "newBusTrue" -> testDate_compulsory(true),
     "newBusFalse" -> testDate_compulsory(false)
   )(TestForm.apply)(TestForm.unapply))

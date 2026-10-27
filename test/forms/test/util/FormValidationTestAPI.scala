@@ -24,7 +24,7 @@ import scala.language.implicitConversions
 
 trait ImplicitSingleFieldTestAPI {
 
-  implicit val fieldId: String
+  given fieldId: String
 
   def assertFieldIsCompulsory(config: CompulsoryFieldValidationExpectations): Unit
 

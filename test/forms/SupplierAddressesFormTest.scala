@@ -29,8 +29,8 @@ import utils.AwrsFieldConfig
 import utils.TestConstants._
 
 class SupplierAddressesFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form: Form[Supplier] = SupplierAddressesForm.supplierAddressesForm.form
+  given mockConfig: ApplicationConfig = mockAppConfig
+  given form: Form[Supplier] = SupplierAddressesForm.supplierAddressesForm.form
 
   "Form validations" must {
 

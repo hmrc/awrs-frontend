@@ -42,14 +42,15 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
                                val authConnector: DefaultAuthConnector,
                                val auditable: Auditable,
                                val accountUtils: AccountUtils,
-                               implicit private val save4LaterService: Save4LaterService,
-                               implicit val applicationConfig: ApplicationConfig,
+                               private val save4LaterService: Save4LaterService,
+                               val applicationConfig: ApplicationConfig,
                                templateTooSoon: views.html.awrs_application_too_soon_error,
                                templateAssistantKickout: views.html.assistant_kickout) extends FrontendController(mcc) with AwrsController {
 
   private final lazy val MinReturnHours = 24
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
+  given ApplicationConfig = applicationConfig
   val signInUrl: String = applicationConfig.signIn
 
   def showOrRedirect(callerId: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
@@ -92,7 +93,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def businessCustomerDetails(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
+  private def businessCustomerDetails(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
       case Some(data) if data.safeId.nonEmpty =>
         logger.info("[HomeController][businessCustomerDetails] - BC Details fetched from save4later")
@@ -110,7 +111,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     }
 
   private def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] =
-    businessCustomerDetails(authRetrievals, callerId).flatMap {
+    businessCustomerDetails(authRetrievals).flatMap {
       _.fold(Future.successful(Redirect(applicationConfig.businessCustomerStartPage))) { details =>
         checkEtmpService.checkUsersEnrolments(details, authRetrievals.plainTextCredId) flatMap { result =>
           result match {

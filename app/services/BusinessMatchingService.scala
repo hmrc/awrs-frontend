@@ -81,7 +81,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
   private def verifyPostCodeMatches(postcode: String, dataReturned: JsValue): Boolean = {
     val address = (dataReturned \ "address").validate[BCAddressApi3]
     address match {
-      case s: JsSuccess[BCAddressApi3] => s.get.postalCode.fold(false) { pc: String =>
+      case JsSuccess(bcAddress, _) => bcAddress.postalCode.fold(false) { (pc: String) =>
         AwrsPostcodeModel.sanitise(pc) == AwrsPostcodeModel.sanitise(postcode)
       }
       case _ => false
@@ -91,7 +91,7 @@ class BusinessMatchingService @Inject()(keyStoreService: KeyStoreService,
   private def storeBCAddressApi3(dataReturned: JsValue)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val address = (dataReturned \ "address").validate[BCAddressApi3]
     address match {
-      case s: JsSuccess[BCAddressApi3] => keyStoreService.saveBusinessCustomerAddress(s.get)
+      case JsSuccess(bcAddress, _) => keyStoreService.saveBusinessCustomerAddress(bcAddress)
       case _ => {}
     }
   }

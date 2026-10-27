@@ -26,7 +26,7 @@ class HaveYouRegisteredViewTest extends ViewTestFixture {
 
   val template: awrs_have_you_registered = app.injector.instanceOf[views.html.awrs_have_you_registered]
 
-  implicit val appConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
+  given appConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
 
   override val htmlContent: HtmlFormat.Appendable = template.apply(haveYouRegisteredForm.form)(fakeRequest, LinearViewMode, messages, appConfig)
 

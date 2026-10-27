@@ -34,7 +34,7 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
     Redirect(applicationConfig.signOut)
   }
 
-  def timedOut(): Action[AnyContent] = Action { implicit request =>
+  def timedOut: Action[AnyContent] = Action { implicit request =>
     Ok(template()).withNewSession
   }
 

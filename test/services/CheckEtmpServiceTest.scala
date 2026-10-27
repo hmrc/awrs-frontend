@@ -36,8 +36,8 @@ import scala.concurrent.Future
 
 class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach {
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  implicit val req: Request[AnyContent] = FakeRequest()
+  given hc: HeaderCarrier = HeaderCarrier()
+  given req: Request[AnyContent] = FakeRequest()
 
   val mockAwrsConnector: AWRSConnector = mock[AWRSConnector]
   val mockSave4LaterService: Save4LaterService = mock[Save4LaterService]
@@ -47,7 +47,7 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
   val testAuthRetrievals: StandardAuthRetrievals = TestUtil.defaultAuthRetrieval
   val testBusinessCustomerDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
   val testBusinessRegistrationDetails: BusinessRegistrationDetails = BusinessRegistrationDetails(Some("SOP"), None, Some("1234"))
-  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockSave4LaterService, mockEnrolService)
+  val checkEtmpTest = new CheckEtmpService(mockAwrsConnector, mockEnrolService)
 
   override def beforeEach(): Unit = {
     reset(mockAwrsConnector)
