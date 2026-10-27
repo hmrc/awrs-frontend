@@ -16,18 +16,19 @@
 
 package forms.validation.util
 
-import forms.test.util._
-import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, _}
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
+import forms.test.util.*
+import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, *}
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.{MappingUtil, *}
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import utils.NoMongoTestApplication
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form, FormError}
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
+import views.html.helper.form
 
 class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSugar with GuiceOneAppPerSuite with NoMongoTestApplication {
 
@@ -80,7 +81,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
           "field2" -> defaultOptionalMapping("field2"),
           "ignoredField" -> (defaultCompulsoryMapping("ignoredField") iff alwaysIgnore),
           "ignoredField2" -> (defaultOptionalMapping("ignoredField2") iff alwaysIgnore)
-        )(Test.apply)(Test.unapply))
+        )(Test.apply)(test => Some(Tuple.fromProductTyped(test))))
 
       "trigger validation errors" in {
         compulsoryFieldTest("field1", defaultMaxLength)
@@ -125,7 +126,7 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
           "field1" -> optional(text),
           "field2" -> (defaultCompulsoryMapping("field2") iff field1IsEmpty()),
           "field3" -> (defaultOptionalMapping("field3") iff field1IsEmpty())
-        )(Test.apply)(Test.unapply))
+        )(Test.apply)(test => Some(Tuple.fromProductTyped(test))))
 
       "trigger validation errors" in {
         compulsoryFieldTest("field2",defaultMaxLength, field1IsEmptyTestData)
@@ -170,11 +171,11 @@ class MappingTest extends AwrsFormTestUtils with AnyWordSpecLike with MockitoSug
         val submap = (prefix: Option[String]) => mapping(
           "field1" -> optional(text),
           "field2" -> (defaultCompulsoryMapping(attachPrefix(prefix, "field2")) iff field1IsEmpty())
-        )(SubTest.apply)(SubTest.unapply)
+        )(SubTest.apply)(test => Some(Tuple.fromProductTyped(test)))
 
-        given form = Form(mapping(
+        given form: Form[Test] = Form(mapping(
           "sub" -> submap(Some("sub"))
-        )(Test.apply)(Test.unapply))
+        )(Test.apply)(test => Some(test.field1)))
 
         "trigger validation errors" in {
           compulsoryFieldTest("sub.field2", defaultMaxLength, field1IsEmptyTestData)

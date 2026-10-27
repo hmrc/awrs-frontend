@@ -69,7 +69,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override given applicationConfig: ApplicationConfig,
+                                 override val applicationConfig: ApplicationConfig,
                                  val template: views.html.awrs_business_directors,
                                  viewApp: views.html.view_application.awrs_view_application) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig, template) {
     val status = "does not matter"

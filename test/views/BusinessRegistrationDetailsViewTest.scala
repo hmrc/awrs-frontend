@@ -106,6 +106,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
         val ids = getIds(entity)
         val test: Future[Result] => Unit = result => {
           given doc: Document = Jsoup.parse(contentAsString(result))
+
           testId(shouldExist = ids.utr)(targetFieldId = "utr")
           testId(shouldExist = ids.crn)(targetFieldId = "companyRegDetails.companyRegistrationNumber")
           testId(shouldExist = ids.nino)(targetFieldId = "NINO")
@@ -134,6 +135,7 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
                   given doc = Jsoup.parse(contentAsString(result))
+
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(businessRegistrationDetailsName) + 1

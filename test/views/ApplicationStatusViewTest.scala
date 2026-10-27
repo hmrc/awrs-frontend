@@ -68,7 +68,6 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
           val listText = document.getElementsByClass("govuk-list").text()
 
 
-
           val expectedLines = Seq(
             Messages("awrs.application_status.info.approved.line1"),
             Messages("awrs.application_status.info.approved.line2"),
@@ -87,18 +86,18 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
       })
     }
 
-  "for an Approved With Conditions user" in {
-    viewStatusPage(ApprovedWithConditions, {
-      result =>
-        val document = Jsoup.parse(contentAsString(result))
-        val headingText = document.getElementsByClass("govuk-heading-m").text()
+    "for an Approved With Conditions user" in {
+      viewStatusPage(ApprovedWithConditions, {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
 
-        document.title() must include(Messages("awrs.generic.tab.title"))
+          document.title() must include(Messages("awrs.generic.tab.title"))
 
-        document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.lede.main"))
-        headingText must include(Messages("awrs.application_status.info.approved_with_conditions.heading"))
-    })
-  }
+          document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.lede.main"))
+          headingText must include(Messages("awrs.application_status.info.approved_with_conditions.heading"))
+      })
+    }
 
     "for a Rejected user" in {
       viewStatusPage(Rejected, {
