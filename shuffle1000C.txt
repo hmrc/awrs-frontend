@@ -1,0 +1,1744 @@
+
+ test run 1[info] welcome to sbt 1.11.7 (Eclipse Adoptium Java 21.0.6)
+[info] loading settings for project global-plugins from plugins.sbt...
+[info] loading global plugins from /Users/lan.nguyen/.sbt/1.0/plugins
+[info] loading settings for project awrs-frontend-build from plugins.sbt...
+[info] loading project definition from /Users/lan.nguyen/HMRC/Brotherhood/AWRS-ALL/awrs-frontend/project
+[info] SbtAutoBuildPlugin - adding projectSettings
+[info] loading settings for project awrs-frontend from build.sbt...
+[info] SbtAutoBuildPlugin - adding projectSettings
+[info] SbtAutoBuildPlugin - adding global settings
+[info] SbtAutoBuildPlugin - repository is marked public. Licence headers will be added to all source files
+[info] SbtAutoBuildPlugin - repository is marked public. Licence headers will be added to all source files
+[info]   __              __
+[info]   \ \     ____   / /____ _ __  __
+[info]    \ \   / __ \ / // __ `// / / /
+[info]    / /  / /_/ // // /_/ // /_/ /
+[info]   /_/  / .___//_/ \__,_/ \__, /
+[info]       /_/               /____/
+[info] 
+[info] Version 3.0.12 running Java 21.0.6
+[info] 
+[info] Play is run entirely by the community. Please consider contributing and/or donating:
+[info] https://www.playframework.com/sponsors
+[info] 
+[info] Shuffling tests with seed 1079301077
+12:35:50,772 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-core version 1.6.4
+12:35:50,772 |-INFO in ch.qos.logback.classic.util.ContextInitializer@8e6a985 - No custom configurators were discovered as a service.
+12:35:50,772 |-INFO in ch.qos.logback.classic.util.ContextInitializer@8e6a985 - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+12:35:50,773 |-INFO in ch.qos.logback.classic.util.ContextInitializer@8e6a985 - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+12:35:50,776 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback-test.xml] at [file:/Users/lan.nguyen/HMRC/Brotherhood/AWRS-ALL/awrs-frontend/target/scala-2.13/classes/logback-test.xml]
+12:35:50,805 |-INFO in ch.qos.logback.classic.model.processor.ConfigurationModelHandlerFull - Scan attribute not set.
+12:35:50,809 |-INFO in ch.qos.logback.classic.model.processor.CallerInstructionLogic@3f2be8a - No contradictions in caller extraction instruction were detected
+12:35:50,810 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [FILE]
+12:35:50,810 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.FileAppender]
+12:35:50,821 |-INFO in ch.qos.logback.core.FileAppender[FILE] - File property is set to [logs/awrs-frontend.log]
+12:35:50,821 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [STDOUT]
+12:35:50,821 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+12:35:50,822 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - NOTE: Writing to the console can be slow. Try to avoid logging to the 
+12:35:50,822 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - console in production environments, especially in high volume systems.
+12:35:50,822 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - See also https://logback.qos.ch/codes.html#slowConsole
+12:35:50,822 |-WARN in ch.qos.logback.core.model.processor.AppenderModelHandler - Appender named [CONNECTOR_LOG_FILE] not referenced. Skipping further processing.
+12:35:50,823 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.google.inject] to OFF
+12:35:50,823 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [uk.gov] to OFF
+12:35:50,823 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [application] to INFO
+12:35:50,823 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [connector] to INFO
+12:35:50,823 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [STDOUT] to Logger[connector]
+12:35:50,823 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+12:35:50,823 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [FILE] to Logger[ROOT]
+12:35:50,823 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [STDOUT] to Logger[ROOT]
+12:35:50,823 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@186f15b9 - End of configuration.
+12:35:50,823 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@25783db0 - Registering current configuration as safe fallback point
+12:35:50,825 |-INFO in ch.qos.logback.classic.util.ContextInitializer@8e6a985 - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 50 milliseconds. ExecutionStatus=DO_NOT_INVOKE_NEXT_IF_ANY
+
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:51,047 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:51,492 
+[info] BusinessTypeControllerTest:
+[info] Submitting the Business Type form with 
+[info] - must redirect to index page when User with Organisation and Sa GGW account selects 'Business Type' as Corporate Body
+[info] - must redirect to index page when User with Organisation GGW account selects 'Business Type' as Corporate Body
+[info] - must redirect to index page when User with Individual GGW account selects 'Business Type' as Sole Trader
+[info] - must save form data to Save4Later and redirect to Index page 
+[info]   must isAGroup is true 
+[info]   - must Save and continue must redirect to the Group Declaration 
+[info] Session management in BusinessTypeController
+[info] - must add the correct businessType and businessName to the session for API4 user
+[info] - must add the correct businessType and businessName to the session for API5 user
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:52,508 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:52,577 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:52,608 
+[info] DeRegistrationControllerTest:
+[info] DeRegistration
+[info] - must allow usage if type is Approved(04)
+[info] - must allow usage if type is Approved with Conditions(05)
+[info] - must disallow usage if type is Pending(01)
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:35:52,872 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:35:52,873 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:35:52,874 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:35:52,874 
+[info] - must disallow usage if type is De-Registered(10)
+[info] - must disallow usage if type is Rejected(06)
+[info] - must disallow usage if type is Revoked(08)
+[info] - must disallow usage if type is None(00)
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status Withdrawal  2026-10-27 12:35:52,892 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status Withdrawal  2026-10-27 12:35:52,893 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status Withdrawal  2026-10-27 12:35:52,893 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status Withdrawal  2026-10-27 12:35:52,894 
+[info] - must disallow usage if type is Withdrawal(02)
+[info] - must disallow usage if type is Revoked under Review/Appeal(09)
+[info] - must disallow usage if type is Rejected under Review/Appeal(07)
+[info] - must redirect Approved(04) users to 'de-register-awrs-reason' from date, confirm and confirmation pages when reason is not answered
+[info] - must redirect Approved with Conditions(05) users to 'de-register-awrs-reason' from date, confirm and confirmation pages when reason is not answered
+[info] - must redirect Approved(04) users to 'de-register-awrs-date' from confirm and confirmation pages when date is not answered
+[info] - must redirect Approved with Conditions(05) users to 'de-register-awrs-date' from confirm and confirmation pages when date is not answered
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-date' 
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-date' 
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Ceases to be registerable for the scheme
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Ceases to trade as an alcohol wholesaler
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Joining a group to register for AWRS
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Joining a partnership to register for AWRS
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Group disbanded
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Partnership disbanded
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Others
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Ceases to be registerable for the scheme
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Ceases to trade as an alcohol wholesaler
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Joining a group to register for AWRS
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Joining a partnership to register for AWRS
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Group disbanded
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Partnership disbanded
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Others
+[info] - must redirect Approved(04) users to confirmation from 'de-register-awrs-confirm' 
+[info] - must redirect Approved with Conditions(05) users to confirmation from 'de-register-awrs-confirm' 
+[info] - must redirect Approved(04) users to index from 'de-register-awrs-confirm' if they answer no
+[info] - must redirect Approved with Conditions(05) users to index from 'de-register-awrs-confirm' if they answer no
+[info] - must fail submission for Approved(04) users when forms are empty' 
+[info] - must fail submission for Approved with Conditions(05) users when forms are empty' 
+[info] - must Approved(04) users who have submitted a dereg date show confirmation page
+[info] - must Approved with Conditions(05) users who have submitted a dereg date show confirmation page
+[[1;31mERRO[0;39m] call to API 10 failed  2026-10-27 12:35:53,006 
+[info] - must Approved(04) users who experienced API10 failures must not have save 4 later cleared up
+[[1;31mERRO[0;39m] call to API 10 failed  2026-10-27 12:35:53,012 
+[info] - must Approved with Conditions(05) users who experienced API10 failures must not have save 4 later cleared up
+[info] - must Approved(04) users who went through successesful API 10 and de-enrol must have their save 4 later cleared up
+[info] - must Approved with Conditions(05) users who went through successesful API 10 and de-enrol must have their save 4 later cleared up
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:53,023 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:53,032 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:53,061 
+[info] TradingActivityControllerTest:
+[info] TradingActivityController
+[info] - must redirect to products page when valid data is provided
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:53,213 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:53,221 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:53,247 
+[info] ApplicationStatusControllerTest:
+[info] ApplicationStatusController
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:35:53,353 
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:35:53,363 
+[info] - must Display the status page on an inital visit when routed from home controller or the link
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:35:53,371 
+[info] - must Display the status page on subsequent visits only when routed from the link
+[info] When status page needs to be displayed the ApplicationStatusController
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:35:53,379 
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:35:53,417 
+[info] - must redirect to pending status page if API 9 Status is pending and API 12 Notification is not minded to reject
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:35:53,426 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(Minded to Reject(MTRJ)),Some(Pending(01)),Some(2017-04-01T0013:07:11))  2026-10-27 12:35:53,426 
+[info] - must redirect to minded to reject status page if API 9 Status is pending and API 12 Notification is minded to reject
+[[34mINFO[0;39m] Application status : Approved(04)  2026-10-27 12:35:53,436 
+[info] - must redirect to approved status page if API 9 Status is approved
+[[34mINFO[0;39m] Application status : Approved(04)  2026-10-27 12:35:53,445 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(Minded to Revoke(MTRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:35:53,445 
+[info] - must redirect to minded to reject status page if API 9 Status is approved and API 12 Notification is minded to revoke
+[[34mINFO[0;39m] Application status : Approved(04)  2026-10-27 12:35:53,459 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(No longer minded to Revoke(NMRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:35:53,459 
+[info] - must redirect to no longer minded to reject status page if API 9 Status is approved and API 12 Notification is no longer minded to revoke
+[[34mINFO[0;39m] Application status : Approved with Conditions(05)  2026-10-27 12:35:53,471 
+[info] - must redirect to approved with conditions status page if API 9 Status is approved with conditions
+[[34mINFO[0;39m] Application status : Approved with Conditions(05)  2026-10-27 12:35:53,479 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(Minded to Revoke(MTRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:35:53,479 
+[info] - must redirect to minded to reject status page if API 9 Status is approved with conditions and API 12 Notification is minded to revoke
+[[34mINFO[0;39m] Application status : Approved with Conditions(05)  2026-10-27 12:35:53,490 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(No longer minded to Revoke(NMRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:35:53,490 
+[info] - must redirect to no longer minded to reject status page if API 9 Status is approved with conditions and API 12 Notification is no longer minded to revoke
+[[34mINFO[0;39m] Application status : Rejected(06)  2026-10-27 12:35:53,503 
+[info] - must redirect to rejected status page if API 9 Status is rejected
+[[34mINFO[0;39m] Application status : Rejected under Review/Appeal(07)  2026-10-27 12:35:53,511 
+[info] - must redirect to rejected under review status page if API 9 Status is rejected under review
+[[34mINFO[0;39m] Application status : Revoked under Review/Appeal(09)  2026-10-27 12:35:53,520 
+[info] - must redirect to revoked under review status page if API 9 Status is revoked under review
+[[34mINFO[0;39m] Application status : Revoked(08)  2026-10-27 12:35:53,528 
+[info] - must redirect to revoked status page if API 9 Status is revoked
+[info] isNewBusiness
+[info]   must report a new business
+[info]   - when the answer is available in trading start details
+[info]   - when the answer is not available in trading start details, instead in fe model
+[info]   must fail to report new business
+[[31mWARN[0;39m] [isNewBusiness] Unexpected error when evaluating if the application is a new business  2026-10-27 12:35:53,542 
+[info]   - when the answer is not available anywhere
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:53,543 
+[info] ResetControllerTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:53,562 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:53,591 
+[info] Reset application page 
+[info] - must return a Signed out view for SA utr
+[info] - must return a Signed out view for CT utr
+[info] Update reset page 
+[info] - must return a signed out view
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:53,747 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:53,753 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:53,778 
+[info] KickoutControllerTest:
+[info] KickOutController
+[info] - must show the Kickout page
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:53,896 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:53,900 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:53,924 
+[info] RegisteredUrnControllerTest:
+[info] AwrsUrnController
+[info] - must show the URN page
+[info] - must save the URN and known facts to keystore if no errors
+[info] - must save should return 400 if form has errors
+[[31mWARN[0;39m] no known facts found for awrs urn  2026-10-27 12:35:54,024 
+[info] - must save should redirect to kickout page if ES20 does not return known facts
+[[1;31mERRO[0;39m] Exception occurred handling de-enrolment confirmation exception=[java.lang.RuntimeException: ES20 service unavailable
+	at controllers.reenrolment.RegisteredUrnControllerTest.$anonfun$new$6(RegisteredUrnControllerTest.scala:142)
+	at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+	at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:83)
+	at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+	at org.scalatest.Transformer.apply(Transformer.scala:22)
+	at org.scalatest.Transformer.apply(Transformer.scala:20)
+	at org.scalatest.wordspec.AnyWordSpecLike$$anon$3.apply(AnyWordSpecLike.scala:1240)
+	at org.scalatest.TestSuite.withFixture(TestSuite.scala:196)
+	at org.scalatest.TestSuite.withFixture$(TestSuite.scala:195)
+	at org.scalatest.wordspec.AnyWordSpec.withFixture(AnyWordSpec.scala:1880)
+	at org.scalatest.wordspec.AnyWordSpecLike.invokeWithFixture$1(AnyWordSpecLike.scala:1238)
+	at org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTest$1(AnyWordSpecLike.scala:1250)
+	at org.scalatest.SuperEngine.runTestImpl(Engine.scala:306)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTest(AnyWordSpecLike.scala:1250)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTest$(AnyWordSpecLike.scala:1232)
+	at controllers.reenrolment.RegisteredUrnControllerTest.org$scalatest$BeforeAndAfterEach$$super$runTest(RegisteredUrnControllerTest.scala:39)
+	at org.scalatest.BeforeAndAfterEach.runTest(BeforeAndAfterEach.scala:234)
+	at org.scalatest.BeforeAndAfterEach.runTest$(BeforeAndAfterEach.scala:227)
+	at controllers.reenrolment.RegisteredUrnControllerTest.runTest(RegisteredUrnControllerTest.scala:39)
+	at org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTests$1(AnyWordSpecLike.scala:1309)
+	at org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:413)
+	at scala.collection.immutable.List.foreach(List.scala:323)
+	at org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+	at org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:390)
+	at org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:427)
+	at scala.collection.immutable.List.foreach(List.scala:323)
+	at org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+	at org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:396)
+	at org.scalatest.SuperEngine.runTestsImpl(Engine.scala:475)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTests(AnyWordSpecLike.scala:1309)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTests$(AnyWordSpecLike.scala:1308)
+	at org.scalatest.wordspec.AnyWordSpec.runTests(AnyWordSpec.scala:1880)
+	at org.scalatest.Suite.run(Suite.scala:1114)
+	at org.scalatest.Suite.run$(Suite.scala:1096)
+	at org.scalatest.wordspec.AnyWordSpec.org$scalatest$wordspec$AnyWordSpecLike$$super$run(AnyWordSpec.scala:1880)
+	at org.scalatest.wordspec.AnyWordSpecLike.$anonfun$run$1(AnyWordSpecLike.scala:1354)
+	at org.scalatest.SuperEngine.runImpl(Engine.scala:535)
+	at org.scalatest.wordspec.AnyWordSpecLike.run(AnyWordSpecLike.scala:1354)
+	at org.scalatest.wordspec.AnyWordSpecLike.run$(AnyWordSpecLike.scala:1352)
+	at controllers.reenrolment.RegisteredUrnControllerTest.org$scalatestplus$play$BaseOneAppPerSuite$$super$run(RegisteredUrnControllerTest.scala:39)
+	at org.scalatestplus.play.BaseOneAppPerSuite.run(BaseOneAppPerSuite.scala:51)
+	at org.scalatestplus.play.BaseOneAppPerSuite.run$(BaseOneAppPerSuite.scala:46)
+	at controllers.reenrolment.RegisteredUrnControllerTest.run(RegisteredUrnControllerTest.scala:39)
+	at org.scalatest.tools.Framework.org$scalatest$tools$Framework$$runSuite(Framework.scala:321)
+	at org.scalatest.tools.Framework$ScalaTestTask.execute(Framework.scala:517)
+	at sbt.ForkMain$Run.lambda$runTest$1(ForkMain.java:414)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+] 2026-10-27 12:35:54,025 
+[info] - must save should redirect to kickout page when lookupEnrolments returns an error
+[info] - must save should redirect to confirm de-enrolment
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:54,029 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:54,036 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:54,059 
+[info] HaveYouRegisteredControllerTest:
+[info] HaveYouRegisteredController
+[info] - should correctly route to the HaveYouRegistered page without disrupting the user flow from BTA when the feature flag is enabled
+[info] - should redirect the user to the business customer start page when the feature flag is disabled !!! IGNORED !!!
+[info] - should return a 400 when the form has errors on submission
+[info] - should redirect to awrs urn page after successfully saving data
+[info] - should redirect to business customer start page if user selects No
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:54,164 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:54,172 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:54,199 
+[info] SupplierAddressesControllerTest:
+[info] processCountryNonUK
+[info] - must do nothing with a non-uk supplier with non-uk address
+[info] - must alter a uk supplier with non-uk address (country)
+[info] Authenticated and authorised users
+[info] - must validate that first addition of supplier does not throw an exception
+[info] - must validate that passing in an invalid id redirects to NOT FOUND error page
+[info] - must redirect to index page when 'user has selected No suppliers'
+[info] - must redirect to index page when 'user has selected No suppliers' and account for a mismatch
+[info] - must redirect to next supplier page when valid data is provided and 'Additional Suppliers' is Yes
+[info] - must redirect to Supplier addresses page when valid data is provided and 'Additional Suppliers' is Yes
+[info] - must save form data in Save4Later if the data is valid
+[info] - must redirect to index page when 'user has selected No additional supplier'
+[info] - must redirect to next additional supplier page when 'user has selected Yes additional supplier'
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When no data has previously been cached, entering no supplier and pressing save and continue
+[info] - must cache the supplier and redirect to the index page
+[info] Entering a valid supplier, selecting add additional and pressing Save and Continue
+[info] - must cache the supplier, load a blank Supplier page and increment the supplier number
+[info] When loading the page with 5 suppliers already entered we
+[info] - must see to the 1st supplier
+[info] Saving supplier with a country code
+[info] - must retrieve country
+[info] When loading the delete page we
+[info] - must see to the selected suppliers delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:54,389 
+[info] ControllerUtilTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:54,436 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:54,459 
+[info] lookup
+[info] - must display a new page with id = 1 when no data is cached and id = 1 is requested
+[info] - must display a new page with id = 1 and populated when there is data cached and id = 1 is requested
+[info] - must in linear viewMode, display page not found when id = 1 and populated and have another is answered no and id = 2 is requested
+[info] - must in edit viewMode, display a new page when id = 1 and populated and have another is answered no and id = 2 is requested
+[info] - must display page not found when no data is cached and id = 2 is requested
+[info] - must display page not found when 1 data entry is cached and id = 3 is requested
+[info] - must display page not found when 1 data entry is cached and id = 2 is requested but the upper limit is set to 1
+[info] sanitise
+[info] - must all elements in the middle of the list with have another answered as no will be set to yes, in linear viewMode the answer to last element must not be amended
+[info] - must all elements in the middle of the list with have another answered as no will be set to yes, in edit viewMode the answer to the last element will always have have another set to no
+[info] updateList
+[info] - must if the fetched data was there are no entries, then the element list is not updated but rather replaced
+[info]   must update the entries correctly in linear viewMode
+[info]   - must when have another is set to no and id is not the last element in the list, update the elemnet and removes the rest
+[info]   - must when have another is set to yes, update the elemnt and do not edit the rest
+[info] - must update the entries correctly in edit viewMode
+[info] - must id from 1 more than max will be appended
+[info] - must id from more than 1 more than max will result in None being returned
+[info] saveThenRedirect
+[info] - must if fetch returned no data and the save id = 1 then persist the new data in a new list
+[info] - must if fetch returned no data and the save id is not 1 then show error page
+[info] - must if fetch returned data but the requested id is 1 element beyond the returend list range then append the data to the end of the list
+[info] - must if fetch returned data but the requested id is out of the expected range then show error page
+[info] - must if fetch returned some data then update the item specified without changing the other entries
+[info] - convertBCAddressToAddress
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:54,635 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:54,641 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:54,704 
+[info] GroupMemberControllerTest:
+[info] Submitting the application declaration form with 
+[info]   must Authenticated and authorised users
+[info]   - must redirect to additional premises page when valid data is provided for LTD
+[info]   - must redirect to business partners page when valid data is provided for LLP
+[info]   - must save form data to Save4Later and redirect to business partners page for LLP
+[info]   - must save form data to Save4Later for second member and redirect to business partners page for LLP
+[info]   - must save form data to Save4Later for first member where no data currently exists and redirect to business partners page for LLP
+[info]   - must save form data to Save4Later for first member where no data currently exists and redirect to next member page 
+[info]   - must get out of range member must return NOT FOUND error 
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When loading the delete page we
+[info] - must see to the selected suppliers delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:55,327 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:55,365 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:55,447 
+[info] BusinessContactsControllerTest:
+[info] BusinessContactsController
+[info]   must Authorised users
+[info]     must AWRS Contact Details entered 
+[info]     - must save invalid form data and show the form error
+[info]     - must save invalid form data with no customer details and show internal server error
+[info]     - must save form data in Save4Later and when contact details entered are valid
+[info]     - must redirect to additional trading premises page when contact details entered are valid
+[info]     - must redirect to group members page when contact details entered are valid for a group business type
+[info]     - must redirect to business partners page when contact details entered are valid for a LLP business type
+[info]   must Users who entered from the summary edit view
+[info]   - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:55,883 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:55,894 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:55,963 
+[info] DeEnrolmentConfirmationControllerTest:
+[info] DeEnrolmentConfirmationController
+[info] - must return 200 and render the confirmation form
+[info] saveAndContinue
+[info] - must redirect to RegisteredPostcodeController when user answers Yes
+[info] - must redirect to view enrolments when user answers No
+[info] - must return BAD_REQUEST when no option is selected
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:56,418 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:56,432 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:56,464 
+[info] TradingLegislationDateControllerTest:
+[info] showBusinessDetails
+[info]   must show the business details page
+[info]   - when a user is logged in
+[info] save
+[info]   must save the legislation date question
+[info]   - when providing a yes
+[info]   - when providing a no
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:57,068 
+[info] AddressLookupControllerTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:57,148 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:57,236 
+[info] Postcode lookup controller
+[info] - must return Ok response for a valid postcode
+[info] - must return bad request for invalid postcode
+[info] - must return internal server error
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:35:57,682 
+[[34mINFO[0;39m] [auditAddress] Auditing 1 addresses  2026-10-27 12:35:57,685 
+[[34mINFO[0;39m] [auditAddress] Auditing Some(postcodeAddressSubmitted) address  2026-10-27 12:35:57,686 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:35:57,687 
+[info] - must return ok on an address audit POST route
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:35:57,689 
+[[34mINFO[0;39m] [auditAddress] Auditing 1 addresses  2026-10-27 12:35:57,690 
+[[34mINFO[0;39m] [auditAddress] Auditing Some(manualAddressSubmitted) address  2026-10-27 12:35:57,690 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:35:57,690 
+[info] - must return ok on an address audit POST route for manualAddressSubmitted
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:35:57,694 
+[[34mINFO[0;39m] [auditAddress] Auditing 1 addresses  2026-10-27 12:35:57,695 
+[[34mINFO[0;39m] [auditAddress] Auditing Some(postcodeAddressSubmitted) address  2026-10-27 12:35:57,695 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:35:57,696 
+[info] - must return ok on an address audit POST route with country code and no duplicate address 
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:35:57,698 
+[[34mINFO[0;39m] [auditAddress] Auditing 0 addresses  2026-10-27 12:35:57,699 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:35:57,699 
+[info] - must return ok on an address audit POST route with an empty list
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:57,700 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:57,715 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:57,754 
+[info] RegisteredPostCodeControllerTest:
+[info] AwrsPostcodeController
+[info] - must show the postcode page
+[info] - must save the postcode to keystore if no errors
+[info] - must save should return 400 if form has errors
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:58,217 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:58,227 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:58,260 
+[info] BusinessPartnersControllerTest:
+[info] Users who entered from the summary page using the linear view
+[info] - must be redirected to the additional premises view after submitting a valid form
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When loading the delete page we
+[info] - must see to the selected partner's delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:58,505 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:58,512 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:58,557 
+[info] EmailVerificationControllerTest:
+[info] Page load for Authorised users
+[info] - must redirect to the declaration page if the email verification is turned off
+[info] - must redirect to the declaration page if the email has been verified
+[info] - must display the email verification reminder page if the email has not yet been verified
+[info] - must resend email and reload the reminder screen with resent text
+[info] - must display error screen if resend fails
+[info] - must return to error page if Internal Error thrown
+[info] - must show success message
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:58,858 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:58,881 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:58,946 
+[info] SuccessfulEnrolmentControllerTest:
+[info] SuccessfulEnrolmentController
+[info] - must show the Successful Enrolment page
+[info] - must contain a button linking to the Business Tax Account page
+[info] - must redirect to Business Tax Account Page when button is clicked
+[info] - must contain a hyperlink to the correct AWRS guidance page
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:59,137 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:59,151 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:59,183 
+[info] AlreadyStartingTradingControllerTest:
+[info] showBusinessDetails
+[info]   must show the business details page
+[info]   - when a user is logged in
+[info] save
+[info]   must save the already trading answer
+[info]   - when provided with an answer to the already trading question
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:59,355 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:59,367 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:59,391 
+[info] RegisteredUtrControllerTest:
+[info] RegisteredUtrController
+[info]   when showArwsUtrPage is called
+[info]   - must return 200
+[info]   when saveAndContinue is called
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:35:59,549 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:35:59,549 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:35:59,549 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:35:59,549 
+[info]   - must redirect to kickout page when enrolment fails
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:35:59,551 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:35:59,551 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:35:59,551 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:35:59,551 
+[info]   - must redirect to kickout page when de-enrolment fails
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:35:59,552 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:35:59,552 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:35:59,552 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:35:59,552 
+[info]   - must redirect to kickout page when known facts are not verified
+[[34mINFO[0;39m] known facts verification returned true for XKAW00000200130  2026-10-27 12:35:59,553 
+[[34mINFO[0;39m] De enrolment process returns true  2026-10-27 12:35:59,553 
+[[34mINFO[0;39m] enrolment succeeded for AWRS ref XKAW00000200130  2026-10-27 12:35:59,554 
+[info]   - must redirect to successful enrolment page when both de-enrolment and enrolment succeed
+[[34mINFO[0;39m] known facts verification returned true for XKAW00000200130  2026-10-27 12:35:59,554 
+[[34mINFO[0;39m] De enrolment process returns true  2026-10-27 12:35:59,555 
+[[34mINFO[0;39m] enrolment succeeded for AWRS ref XKAW00000200130  2026-10-27 12:35:59,555 
+[info]   - must do successful enrolment without de-enrolment when group id is not found
+[[34mINFO[0;39m] known facts verification returned true for XKAW00000200130  2026-10-27 12:35:59,556 
+[[34mINFO[0;39m] De enrolment process returns true  2026-10-27 12:35:59,556 
+[[34mINFO[0;39m] enrolment succeeded for AWRS ref XKAW00000200130  2026-10-27 12:35:59,556 
+[info]   - must handle Corporation Tax UTR when user is not SA
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:35:59,557 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:35:59,557 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:35:59,557 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:35:59,557 
+[info]   - must redirect to kickout page when ES9/ enrolment fails with an exception
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:35:59,558 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:35:59,558 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:35:59,558 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:35:59,558 
+[info]   - must redirect to kickout page when ES1 (group id query) fails with an exception
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:59,558 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:59,564 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:59,582 
+[info] BusinessNameChangeControllerTest:
+[info] show confirm
+[info] - must show the confirm page
+[info] Submitting the business name change confirmation form with 
+[info]   must Authenticated and authorised users
+[info]   - must redirect to view section for Business Details page when valid data is provided
+[info]   - must save form data to Save4Later and redirect to Index page 
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:59,684 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:59,694 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:59,713 
+[info] PlaceOfBusinessControllerTest:
+[info] BusinessRegistrationDetailsController
+[info]   must Display the Place of Business page
+[info]   - when PlaceOfBusiness is fetched from save4Later
+[info]   - when BusinessCustomerDetails are fetched from save4Later
+[info] - must Display an error page if neither PlaceOfBusiness or BusinessCustomerDetails can be retrieved from save4Later
+[info]   must Users who entered from the summary edit view
+[info]   - must return to the summary view after clicking return when valid form data submitted
+[info]   - must be presented with the Place of Business page with errors, and a 400 status when invalid form data submitted
+[info]   must Users who entered from the linear view
+[info]   - must continue to the next section after submitting the form
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:59,837 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:59,846 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:59,864 
+[info] ProductsControllerTest:
+[info] ProductsController
+[info] - must redirect to supplier addresses page when valid data is provided
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:35:59,953 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:35:59,966 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:35:59,983 
+[info] WithdrawalControllerTest:
+[info] Withdrawal Controller
+[info]   must Withdrawal Confirmation
+[info]   - must display a validation error on submit if radio button is not selected
+[info]   must Withdrawal Reasons
+[info]   - must display the withdrawal reasons page if user has status of Pending with reasons in cache
+[info]   - must display error page (Reasons) if user has status of anything else than pending (Approved)
+[info]   - must return to error page where Internal Error thrown
+[info]   - must display the withdrawal reasons page if user has status of Pending
+[info]   - must display a blank withdrawal reasons page if user has status of Pending and nothing is in the keystore
+[info]   must Submit Withdrawal Reasons
+[info]   - must redirect to confirmation page when registered by mistake
+[info]   - must redirect to confirmation page when no longer trading as an alcohol wholesaler or producer
+[info]   - must redirect to confirmation page when registered more than once
+[info]   - must redirect to confirmation page when registering with a group
+[info]   - must redirect to confirmation page when other is selected
+[info]   - must show a form error (Bad Request) if nothing is selected
+[info]   must Submit withdrawal application
+[info]   - must display success message when deEnrol and withdrawal is successful
+[info]   - must redirect to index message when selects No
+[[1;31mERRO[0;39m] call to government gateway de-enrol failed  2026-10-27 12:36:00,138 
+[info]   - must display error when enrol is not successful
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:00,139 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:00,146 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:00,166 
+[info] AdditionalDirectorsControllerTest:
+[info] Business Directors Page load for Authorised users
+[info] - must do not load a blank page for Director 2 if cache is empty
+[info] On Business Directors page, for Directors that is a person, pressing Continue for Authorised users
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is Director
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes, when director is Director
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is Company Secretary
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes, when director is Company Secretary
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is Director and Company Secretary
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes, when director is Director and Company Secretary
+[info] On Business Directors page, for Directors that are Companies, pressing Continue for Authorised users
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:00,264 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:00,274 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:00,291 
+[info] BusinessDirectorsControllerTest:
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[info] processDataPersonOrCompany
+[info]   when the director is a person
+[info]   - must remove the VRN and CompanyNames fields
+[info]   when the director is a company
+[info]   - must remove the do you have NINO field
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:00,391 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:00,403 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:00,421 
+[info] AwrsControllerTest:
+[info] The index page which implements AwrsController
+[info] - must not perform any redirection if the status is not rejected
+[info] - must redirect back to the status page if the status is rejected
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:00,533 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:00,543 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:00,559 
+[info] GroupDeclarationControllerTest:
+[info] Submitting the application declaration form with 
+[info]   must Authenticated and authorised users
+[info]   - must show an ok when the group declaration is available
+[info]   - must redirect to Index page when valid data is provided
+[info]   - must save form data to Save4Later and redirect to Index page 
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:00,656 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:00,662 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:00,678 
+[info] ViewEnrolmentsControllerTest:
+[info] ViewEnrolmentsController
+[info] - must show the View Enrolment page
+[info] - must contain a button linking to the Business Tax Account page
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:00,787 
+[info] IndexControllerTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:00,801 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:00,820 
+[info] showIndex
+[info]   must de-enrol the user and redirect to business customer frontend
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status Withdrawal  2026-10-27 12:36:00,914 
+[info]   - when the user has an enrolment and the AWRS application status is Withdrawn
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:36:00,915 
+[info]   - when the user has an enrolment and the AWRS application status is De-Registered
+[info]   must display the index page
+[info]   - when businessType exists in session
+[info]   - when the AWRS status in session is Withdrawal, businessType exists in session, but there is no enrolment
+[info]   must redirect back to the home controller
+[info]   - when business type is missing from session
+[info]   - when business name is missing from session
+[info] - must clear sessionJourneyStartLocation from session when index is shown
+[info] showLastLocation
+[info] - must route to the previous page if it exists in session
+[info] - must route to index page if it exists in session
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:00,939 
+[info] HomeControllerTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:00,960 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:00,977 
+[info] HomeController
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:01,066 
+[[34mINFO[0;39m] User business already has AWRS enrolment  2026-10-27 12:36:01,066 
+[info] - must redirect to the wrong account page when an AWRS enrolment is found for the current cred ID
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:01,067 
+[info] - must redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment
+[[31mWARN[0;39m] Assistant attempting to use AWRS without AWRS enrolment  2026-10-27 12:36:01,068 
+[info] - must redirect to the Assistant kickout page if the user is an Assistant who does not have an AWRS enrolment
+[[31mWARN[0;39m] [recoverAuthorisedCalls] Auth exception: uk.gov.hmrc.auth.core.UnsupportedAffinityGroup: [getUtr] No UTR found and affinity group was Individual  2026-10-27 12:36:01,075 
+[info] - must redirect to the Unauthorised kickout page if the user is an Individual with no UTR
+[info] - must redirect to the Business Type page if the save4Later review details are present and the user is an Assistant with an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,079 
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no BC Details found in save4later or Keystore  2026-10-27 12:36:01,080 
+[info] - must redirect to the Business customer matching if the save4Later review details are present WITHOUT SAFEID and the user does not have an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,081 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:01,081 
+[info] - must redirect to the Business type page if the save4Later review details are present WITHOUT SAFEID, but details in keystore contain safeID
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:01,082 
+[info] - must redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment and they came from BTA
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,083 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:01,083 
+[info] - must redirect to the Business Type page if the save4Later review details are not present but the keystore review details are present and the user does not have an AWRS enrolment
+[info] - must redirect to the Business Type page if the save4Later review details are present and the user has an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,085 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:01,085 
+[info] - must redirect to the Business Type page if the save4Later review details are not present but the keystore review details is present and the user has an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,093 
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no BC Details found in save4later or Keystore  2026-10-27 12:36:01,093 
+[info] - must redirect to the Business Customer Frontend if the save4Later and keystore review details are not present
+[info] - must redirect to the Business Type page if the save4Later review details are present and the user came from BTA
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,095 
+[[31mWARN[0;39m] Exception encountered in Home Controller: Future(<not completed>) 
+ERROR: An error occurred  2026-10-27 12:36:01,096 
+[info] - must show error page if a runtime error is produced
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,099 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:01,099 
+[info] - must redirect to Business Type page if for AWRS Registered users JSResultException produced
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:01,100 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:01,100 
+[info] - must redirect to Business Type page if for Non reistered AWRS users JSResultException produced
+[info] - must show recent withdrawal error page if the user has withdrawn within 24 hours
+[info] - must show recent re-registration error page if the user has de-registered within 24 hours
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:01,108 
+[info] - must redirect to the business type page if the user has withdrawn more than 24 hours ago
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:01,108 
+[info] - must redirect to the Business Type page if validate business details returns true
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:01,109 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:01,119 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:01,135 
+[info] TradingDateControllerTest:
+[info] showBusinessDetails
+[info]   must show the business details page
+[info]   - when a user is logged in
+[info] save
+[info]   must save the trading date
+[info]   - when provided with a date for the past before 31 March 2016
+[info]   - when provided with a date for the past after 31 March 2016
+[info]     when provided with a date for the future
+[info]     - when when trading has already started
+[info]     - when when trading hasn't started
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:01,251 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:01,258 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:01,275 
+[info] AdditionalPremisesControllerTest:
+[info] Pressing Continue within Business Details Page
+[info] - must if No Additional Premise is selected, save an object to Save4later and redirect to Index
+[info] - must redirect LTD/LTD_GRP business type to Business Directors page when valid data is provided and 'Add Another' is 'No'
+[info] - must redirect SOP/Partnership/LP/LLP business type to trading activity page when valid data is provided and 'Add Another' is 'No'
+[info] - must redirect LTD/LTD_GRP business type to Business Directors page when 'Additional Premises' is 'No'
+[info] - must redirect SOP/Partnership/LP/LLP business type to trading activity page when 'Additional Premises' is 'No'
+[info] - must redirect to additional premises page when valid data is provided and 'Add Another' is 'Yes'
+[info] When loading the delete page we
+[info] - must see to the selected suppliers delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:01,386 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:01,429 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:01,444 
+[info] ReapplicationControllerTest:
+[info] Reapplication Controller
+[info] - must submit confirmation and redirect to root home page when yes selected
+[info] - must submit confirmation and redirect to root home page when no selected
+[info] - must show recent withdrawal error page if the user has been Rejected within 24 hours
+[info] - must show recent re-registration error page if the user has been Revoked within 24 hours
+[info] - must redirect to re-application confirm page if more than 24 hours ago
+[info] - must redirect to re-application confirm page if a date is not found
+[info] - must redirect to re-application confirm page if a notification is not found
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:01,555 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:01,566 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:01,582 
+[info] BusinessRegistrationDetailsControllerTest:
+[info] BusinessRegistrationDetailsController
+[info]   must Users who entered from the summary edit view
+[info]   - must return to the summary view after clicking return
+[info] - must successfully save the page if the group utr is valid for entity LTD_GRP
+[info] - must fail to save the page if the group utr is invalid for entity LTD_GRP
+[info] - must fail to save the page if the group utr is missing for entity LTD_GRP
+[info] - must successfully save the page if the group utr is valid for entity LLP_GRP
+[info] - must fail to save the page if the group utr is invalid for entity LLP_GRP
+[info] - must fail to save the page if the group utr is missing for entity LLP_GRP
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:01,695 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:01,703 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:01,718 
+[info] ConfirmationControllerTest:
+[info] Page load for Authorised users
+[info] - must return a Confirmation Successful view
+[info] - must return a Confirmation Successful view, determining if it is a new business dynamically 
+[info] Update confirmation page 
+[info] - must return a Confirmation Update Successful view
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:01,864 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:01,898 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:01,913 
+[info] ApplicationDeclarationControllerTest:
+[info] ApplicationDeclarationController
+[info] - must show application declaration page without preloaded data
+[info] - must show application declaration page with preloaded data
+[info] - must show error page if a DES Validation Exception is encountered
+[info] - must show error page if a GovernmentGatewayException is encountered
+[info] - must show error page if a DuplicateSubscriptionException is encountered
+[info] - must show error page if a PendingDeregistrationException is encountered
+[info] - must show error page if api 6 is submitted without any changes
+[[31mWARN[0;39m] Exception encountered in Application Declaration Controller :
+controllers.ApplicationDeclarationControllerTest.$anonfun$new$17(ApplicationDeclarationControllerTest.scala:153)
+scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+org.scalatest.Assertions.intercept(Assertions.scala:749)
+org.scalatest.Assertions.intercept$(Assertions.scala:746)
+org.scalatest.wordspec.AnyWordSpec.intercept(AnyWordSpec.scala:1880)
+controllers.ApplicationDeclarationControllerTest.$anonfun$new$16(ApplicationDeclarationControllerTest.scala:153)
+org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:83)
+org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+org.scalatest.Transformer.apply(Transformer.scala:22)
+org.scalatest.Transformer.apply(Transformer.scala:20)
+org.scalatest.wordspec.AnyWordSpecLike$$anon$3.apply(AnyWordSpecLike.scala:1240)
+org.scalatest.TestSuite.withFixture(TestSuite.scala:196)
+org.scalatest.TestSuite.withFixture$(TestSuite.scala:195)
+org.scalatest.wordspec.AnyWordSpec.withFixture(AnyWordSpec.scala:1880)
+org.scalatest.wordspec.AnyWordSpecLike.invokeWithFixture$1(AnyWordSpecLike.scala:1238)
+org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTest$1(AnyWordSpecLike.scala:1250)
+org.scalatest.SuperEngine.runTestImpl(Engine.scala:306)
+org.scalatest.wordspec.AnyWordSpecLike.runTest(AnyWordSpecLike.scala:1250)
+org.scalatest.wordspec.AnyWordSpecLike.runTest$(AnyWordSpecLike.scala:1232)
+controllers.ApplicationDeclarationControllerTest.org$scalatest$BeforeAndAfterEach$$super$runTest(ApplicationDeclarationControllerTest.scala:59)
+org.scalatest.BeforeAndAfterEach.runTest(BeforeAndAfterEach.scala:234)
+org.scalatest.BeforeAndAfterEach.runTest$(BeforeAndAfterEach.scala:227)
+controllers.ApplicationDeclarationControllerTest.runTest(ApplicationDeclarationControllerTest.scala:59)
+org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTests$1(AnyWordSpecLike.scala:1309)
+org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:413)
+scala.collection.immutable.List.foreach(List.scala:323)
+org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:390)
+org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:427)
+scala.collection.immutable.List.foreach(List.scala:323)
+org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:396)
+org.scalatest.SuperEngine.runTestsImpl(Engine.scala:475)
+org.scalatest.wordspec.AnyWordSpecLike.runTests(AnyWordSpecLike.scala:1309)
+org.scalatest.wordspec.AnyWordSpecLike.runTests$(AnyWordSpecLike.scala:1308)
+org.scalatest.wordspec.AnyWordSpec.runTests(AnyWordSpec.scala:1880)
+org.scalatest.Suite.run(Suite.scala:1114)
+org.scalatest.Suite.run$(Suite.scala:1096)
+org.scalatest.wordspec.AnyWordSpec.org$scalatest$wordspec$AnyWordSpecLike$$super$run(AnyWordSpec.scala:1880)
+org.scalatest.wordspec.AnyWordSpecLike.$anonfun$run$1(AnyWordSpecLike.scala:1354)
+org.scalatest.SuperEngine.runImpl(Engine.scala:535)
+org.scalatest.wordspec.AnyWordSpecLike.run(AnyWordSpecLike.scala:1354)
+org.scalatest.wordspec.AnyWordSpecLike.run$(AnyWordSpecLike.scala:1352)
+controllers.ApplicationDeclarationControllerTest.org$scalatestplus$play$BaseOneAppPerSuite$$super$run(ApplicationDeclarationControllerTest.scala:59)
+org.scalatestplus.play.BaseOneAppPerSuite.run(BaseOneAppPerSuite.scala:51)
+org.scalatestplus.play.BaseOneAppPerSuite.run$(BaseOneAppPerSuite.scala:46)
+controllers.ApplicationDeclarationControllerTest.run(ApplicationDeclarationControllerTest.scala:59)
+org.scalatest.tools.Framework.org$scalatest$tools$Framework$$runSuite(Framework.scala:321)
+org.scalatest.tools.Framework$ScalaTestTask.execute(Framework.scala:517)
+sbt.ForkMain$Run.lambda$runTest$1(ForkMain.java:414)
+java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+java.base/java.lang.Thread.run(Thread.java:1583)  2026-10-27 12:36:02,188 
+[info] - must show error page if a Run time exception is encountered
+[info] - must return true if AWRS user is Enrolled and has status of Pending
+[info] - must return true if AWRS user is Enrolled and has status of Approved
+[info] - must return true if AWRS user is Enrolled and has status of ApprovedWithConditions
+[info] - must return false if AWRS user is Enrolled and has status of Rejected
+[info] Submitting the application declaration form with 
+[info]   must Authenticated and authorised users
+[info]   - must redirect to Confirmation page when valid data is provided
+[info]   - must save form data to Save4Later and redirect to Confirmation page 
+[info]   - must redirect to Confirmation page when valid updated data is provided
+[info]   - must redirect to Confirmation page must fail when confirmation is not checked
+[info] Self heal redirect
+[info] - must redirect to application status page when valid data is provided
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:02,214 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:02,266 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:02,320 
+[info] ApplicationControllerTest:
+[info] Authorised users
+[info] - must be redirected to feedback-survey page
+[info] unauthorised users
+[info] - must be directed to the unauthorised page
+[info] timedout users
+[info] - must should see timed out page
+[info] keep alive
+[info] - must keep alive the session
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:02,524 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:02,532 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:02,575 
+[info] ViewApplicationControllerTest:
+[info] showViewApplication
+[info] - must redirect the user back one page using the back link
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:02,728 
+[info] Run completed in 12 seconds, 658 milliseconds.
+[info] Total number of tests run: 324
+[info] Suites: completed 40, aborted 0
+[info] Tests: succeeded 324, failed 0, canceled 0, ignored 1, pending 0
+[info] All tests passed.
+[success] Total time: 14 s, completed 27 Oct 2026, 12:36:02
+
+ test run 2[info] welcome to sbt 1.11.7 (Eclipse Adoptium Java 21.0.6)
+[info] loading settings for project global-plugins from plugins.sbt...
+[info] loading global plugins from /Users/lan.nguyen/.sbt/1.0/plugins
+[info] loading settings for project awrs-frontend-build from plugins.sbt...
+[info] loading project definition from /Users/lan.nguyen/HMRC/Brotherhood/AWRS-ALL/awrs-frontend/project
+[info] SbtAutoBuildPlugin - adding projectSettings
+[info] loading settings for project awrs-frontend from build.sbt...
+[info] SbtAutoBuildPlugin - adding projectSettings
+[info] SbtAutoBuildPlugin - adding global settings
+[info] SbtAutoBuildPlugin - repository is marked public. Licence headers will be added to all source files
+[info] SbtAutoBuildPlugin - repository is marked public. Licence headers will be added to all source files
+[info]   __              __
+[info]   \ \     ____   / /____ _ __  __
+[info]    \ \   / __ \ / // __ `// / / /
+[info]    / /  / /_/ // // /_/ // /_/ /
+[info]   /_/  / .___//_/ \__,_/ \__, /
+[info]       /_/               /____/
+[info] 
+[info] Version 3.0.12 running Java 21.0.6
+[info] 
+[info] Play is run entirely by the community. Please consider contributing and/or donating:
+[info] https://www.playframework.com/sponsors
+[info] 
+[info] Shuffling tests with seed -1665402553
+12:36:12,572 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-core version 1.6.4
+12:36:12,573 |-INFO in ch.qos.logback.classic.util.ContextInitializer@1b6fdd23 - No custom configurators were discovered as a service.
+12:36:12,573 |-INFO in ch.qos.logback.classic.util.ContextInitializer@1b6fdd23 - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+12:36:12,573 |-INFO in ch.qos.logback.classic.util.ContextInitializer@1b6fdd23 - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+12:36:12,576 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback-test.xml] at [file:/Users/lan.nguyen/HMRC/Brotherhood/AWRS-ALL/awrs-frontend/target/scala-2.13/classes/logback-test.xml]
+12:36:12,608 |-INFO in ch.qos.logback.classic.model.processor.ConfigurationModelHandlerFull - Scan attribute not set.
+12:36:12,613 |-INFO in ch.qos.logback.classic.model.processor.CallerInstructionLogic@727ece94 - No contradictions in caller extraction instruction were detected
+12:36:12,614 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [FILE]
+12:36:12,614 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.FileAppender]
+12:36:12,626 |-INFO in ch.qos.logback.core.FileAppender[FILE] - File property is set to [logs/awrs-frontend.log]
+12:36:12,626 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [STDOUT]
+12:36:12,626 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+12:36:12,627 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - NOTE: Writing to the console can be slow. Try to avoid logging to the 
+12:36:12,627 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - console in production environments, especially in high volume systems.
+12:36:12,627 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - See also https://logback.qos.ch/codes.html#slowConsole
+12:36:12,627 |-WARN in ch.qos.logback.core.model.processor.AppenderModelHandler - Appender named [CONNECTOR_LOG_FILE] not referenced. Skipping further processing.
+12:36:12,628 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [com.google.inject] to OFF
+12:36:12,628 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [uk.gov] to OFF
+12:36:12,628 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [application] to INFO
+12:36:12,628 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [connector] to INFO
+12:36:12,628 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [STDOUT] to Logger[connector]
+12:36:12,628 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+12:36:12,628 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [FILE] to Logger[ROOT]
+12:36:12,628 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [STDOUT] to Logger[ROOT]
+12:36:12,628 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@74afe0cd - End of configuration.
+12:36:12,628 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@11ccbdbe - Registering current configuration as safe fallback point
+12:36:12,630 |-INFO in ch.qos.logback.classic.util.ContextInitializer@1b6fdd23 - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 55 milliseconds. ExecutionStatus=DO_NOT_INVOKE_NEXT_IF_ANY
+
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:12,659 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:13,116 
+[info] ApplicationControllerTest:
+[info] Authorised users
+[info] - must be redirected to feedback-survey page
+[info] unauthorised users
+[info] - must be directed to the unauthorised page
+[info] timedout users
+[info] - must should see timed out page
+[info] keep alive
+[info] - must keep alive the session
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:14,110 
+[info] ControllerUtilTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:14,172 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:14,208 
+[info] lookup
+[info] - must display a new page with id = 1 when no data is cached and id = 1 is requested
+[info] - must display a new page with id = 1 and populated when there is data cached and id = 1 is requested
+[info] - must in linear viewMode, display page not found when id = 1 and populated and have another is answered no and id = 2 is requested
+[info] - must in edit viewMode, display a new page when id = 1 and populated and have another is answered no and id = 2 is requested
+[info] - must display page not found when no data is cached and id = 2 is requested
+[info] - must display page not found when 1 data entry is cached and id = 3 is requested
+[info] - must display page not found when 1 data entry is cached and id = 2 is requested but the upper limit is set to 1
+[info] sanitise
+[info] - must all elements in the middle of the list with have another answered as no will be set to yes, in linear viewMode the answer to last element must not be amended
+[info] - must all elements in the middle of the list with have another answered as no will be set to yes, in edit viewMode the answer to the last element will always have have another set to no
+[info] updateList
+[info] - must if the fetched data was there are no entries, then the element list is not updated but rather replaced
+[info]   must update the entries correctly in linear viewMode
+[info]   - must when have another is set to no and id is not the last element in the list, update the elemnet and removes the rest
+[info]   - must when have another is set to yes, update the elemnt and do not edit the rest
+[info] - must update the entries correctly in edit viewMode
+[info] - must id from 1 more than max will be appended
+[info] - must id from more than 1 more than max will result in None being returned
+[info] saveThenRedirect
+[info] - must if fetch returned no data and the save id = 1 then persist the new data in a new list
+[info] - must if fetch returned no data and the save id is not 1 then show error page
+[info] - must if fetch returned data but the requested id is 1 element beyond the returend list range then append the data to the end of the list
+[info] - must if fetch returned data but the requested id is out of the expected range then show error page
+[info] - must if fetch returned some data then update the item specified without changing the other entries
+[info] - convertBCAddressToAddress
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:14,438 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:14,495 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:14,521 
+[info] ConfirmationControllerTest:
+[info] Page load for Authorised users
+[info] - must return a Confirmation Successful view
+[info] - must return a Confirmation Successful view, determining if it is a new business dynamically 
+[info] Update confirmation page 
+[info] - must return a Confirmation Update Successful view
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:14,793 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:14,936 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:14,962 
+[info] TradingLegislationDateControllerTest:
+[info] showBusinessDetails
+[info]   must show the business details page
+[info]   - when a user is logged in
+[info] save
+[info]   must save the legislation date question
+[info]   - when providing a yes
+[info]   - when providing a no
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:15,105 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:15,115 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:15,139 
+[info] TradingDateControllerTest:
+[info] showBusinessDetails
+[info]   must show the business details page
+[info]   - when a user is logged in
+[info] save
+[info]   must save the trading date
+[info]   - when provided with a date for the past before 31 March 2016
+[info]   - when provided with a date for the past after 31 March 2016
+[info]     when provided with a date for the future
+[info]     - when when trading has already started
+[info]     - when when trading hasn't started
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:15,335 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:15,383 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:15,432 
+[info] BusinessContactsControllerTest:
+[info] BusinessContactsController
+[info]   must Authorised users
+[info]     must AWRS Contact Details entered 
+[info]     - must save invalid form data and show the form error
+[info]     - must save invalid form data with no customer details and show internal server error
+[info]     - must save form data in Save4Later and when contact details entered are valid
+[info]     - must redirect to additional trading premises page when contact details entered are valid
+[info]     - must redirect to group members page when contact details entered are valid for a group business type
+[info]     - must redirect to business partners page when contact details entered are valid for a LLP business type
+[info]   must Users who entered from the summary edit view
+[info]   - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:15,612 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:15,624 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:15,647 
+[info] AwrsControllerTest:
+[info] The index page which implements AwrsController
+[info] - must not perform any redirection if the status is not rejected
+[info] - must redirect back to the status page if the status is rejected
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:15,767 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:15,782 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:15,813 
+[info] DeEnrolmentConfirmationControllerTest:
+[info] DeEnrolmentConfirmationController
+[info] - must return 200 and render the confirmation form
+[info] saveAndContinue
+[info] - must redirect to RegisteredPostcodeController when user answers Yes
+[info] - must redirect to view enrolments when user answers No
+[info] - must return BAD_REQUEST when no option is selected
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:16,102 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:16,117 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:16,187 
+[info] SuccessfulEnrolmentControllerTest:
+[info] SuccessfulEnrolmentController
+[info] - must show the Successful Enrolment page
+[info] - must contain a button linking to the Business Tax Account page
+[info] - must redirect to Business Tax Account Page when button is clicked
+[info] - must contain a hyperlink to the correct AWRS guidance page
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:16,548 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:16,569 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:16,645 
+[info] HaveYouRegisteredControllerTest:
+[info] HaveYouRegisteredController
+[info] - should correctly route to the HaveYouRegistered page without disrupting the user flow from BTA when the feature flag is enabled
+[info] - should redirect the user to the business customer start page when the feature flag is disabled !!! IGNORED !!!
+[info] - should return a 400 when the form has errors on submission
+[info] - should redirect to awrs urn page after successfully saving data
+[info] - should redirect to business customer start page if user selects No
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:16,828 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:16,834 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:16,858 
+[info] GroupDeclarationControllerTest:
+[info] Submitting the application declaration form with 
+[info]   must Authenticated and authorised users
+[info]   - must show an ok when the group declaration is available
+[info]   - must redirect to Index page when valid data is provided
+[info]   - must save form data to Save4Later and redirect to Index page 
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:16,977 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:16,989 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:17,019 
+[info] ApplicationStatusControllerTest:
+[info] ApplicationStatusController
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:36:17,164 
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:36:17,175 
+[info] - must Display the status page on an inital visit when routed from home controller or the link
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:36:17,185 
+[info] - must Display the status page on subsequent visits only when routed from the link
+[info] When status page needs to be displayed the ApplicationStatusController
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:36:17,192 
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:36:17,200 
+[info] - must redirect to pending status page if API 9 Status is pending and API 12 Notification is not minded to reject
+[[34mINFO[0;39m] Application status : Pending(01)  2026-10-27 12:36:17,209 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(Minded to Reject(MTRJ)),Some(Pending(01)),Some(2017-04-01T0013:07:11))  2026-10-27 12:36:17,210 
+[info] - must redirect to minded to reject status page if API 9 Status is pending and API 12 Notification is minded to reject
+[[34mINFO[0;39m] Application status : Approved(04)  2026-10-27 12:36:17,218 
+[info] - must redirect to approved status page if API 9 Status is approved
+[[34mINFO[0;39m] Application status : Approved(04)  2026-10-27 12:36:17,227 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(Minded to Revoke(MTRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:36:17,227 
+[info] - must redirect to minded to reject status page if API 9 Status is approved and API 12 Notification is minded to revoke
+[[34mINFO[0;39m] Application status : Approved(04)  2026-10-27 12:36:17,243 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(No longer minded to Revoke(NMRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:36:17,243 
+[info] - must redirect to no longer minded to reject status page if API 9 Status is approved and API 12 Notification is no longer minded to revoke
+[[34mINFO[0;39m] Application status : Approved with Conditions(05)  2026-10-27 12:36:17,260 
+[info] - must redirect to approved with conditions status page if API 9 Status is approved with conditions
+[[34mINFO[0;39m] Application status : Approved with Conditions(05)  2026-10-27 12:36:17,274 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(Minded to Revoke(MTRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:36:17,274 
+[info] - must redirect to minded to reject status page if API 9 Status is approved with conditions and API 12 Notification is minded to revoke
+[[34mINFO[0;39m] Application status : Approved with Conditions(05)  2026-10-27 12:36:17,290 
+[[34mINFO[0;39m] alert : StatusNotification(Some(XXAW000001234560),Some(123456789012),Some(No longer minded to Revoke(NMRV)),Some(Approved(04)),Some(2017-04-01T0013:07:11))  2026-10-27 12:36:17,290 
+[info] - must redirect to no longer minded to reject status page if API 9 Status is approved with conditions and API 12 Notification is no longer minded to revoke
+[[34mINFO[0;39m] Application status : Rejected(06)  2026-10-27 12:36:17,303 
+[info] - must redirect to rejected status page if API 9 Status is rejected
+[[34mINFO[0;39m] Application status : Rejected under Review/Appeal(07)  2026-10-27 12:36:17,312 
+[info] - must redirect to rejected under review status page if API 9 Status is rejected under review
+[[34mINFO[0;39m] Application status : Revoked under Review/Appeal(09)  2026-10-27 12:36:17,323 
+[info] - must redirect to revoked under review status page if API 9 Status is revoked under review
+[[34mINFO[0;39m] Application status : Revoked(08)  2026-10-27 12:36:17,330 
+[info] - must redirect to revoked status page if API 9 Status is revoked
+[info] isNewBusiness
+[info]   must report a new business
+[info]   - when the answer is available in trading start details
+[info]   - when the answer is not available in trading start details, instead in fe model
+[info]   must fail to report new business
+[[31mWARN[0;39m] [isNewBusiness] Unexpected error when evaluating if the application is a new business  2026-10-27 12:36:17,348 
+[info]   - when the answer is not available anywhere
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:17,349 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:17,383 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:17,401 
+[info] BusinessTypeControllerTest:
+[info] Submitting the Business Type form with 
+[info] - must redirect to index page when User with Organisation and Sa GGW account selects 'Business Type' as Corporate Body
+[info] - must redirect to index page when User with Organisation GGW account selects 'Business Type' as Corporate Body
+[info] - must redirect to index page when User with Individual GGW account selects 'Business Type' as Sole Trader
+[info] - must save form data to Save4Later and redirect to Index page 
+[info]   must isAGroup is true 
+[info]   - must Save and continue must redirect to the Group Declaration 
+[info] Session management in BusinessTypeController
+[info] - must add the correct businessType and businessName to the session for API4 user
+[info] - must add the correct businessType and businessName to the session for API5 user
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:17,592 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:17,604 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:17,623 
+[info] AlreadyStartingTradingControllerTest:
+[info] showBusinessDetails
+[info]   must show the business details page
+[info]   - when a user is logged in
+[info] save
+[info]   must save the already trading answer
+[info]   - when provided with an answer to the already trading question
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:17,713 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:17,750 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:17,770 
+[info] ReapplicationControllerTest:
+[info] Reapplication Controller
+[info] - must submit confirmation and redirect to root home page when yes selected
+[info] - must submit confirmation and redirect to root home page when no selected
+[info] - must show recent withdrawal error page if the user has been Rejected within 24 hours
+[info] - must show recent re-registration error page if the user has been Revoked within 24 hours
+[info] - must redirect to re-application confirm page if more than 24 hours ago
+[info] - must redirect to re-application confirm page if a date is not found
+[info] - must redirect to re-application confirm page if a notification is not found
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:17,956 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:17,962 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:17,979 
+[info] BusinessDirectorsControllerTest:
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[info] processDataPersonOrCompany
+[info]   when the director is a person
+[info]   - must remove the VRN and CompanyNames fields
+[info]   when the director is a company
+[info]   - must remove the do you have NINO field
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:18,079 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:18,137 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:18,153 
+[info] ApplicationDeclarationControllerTest:
+[info] ApplicationDeclarationController
+[info] - must show application declaration page without preloaded data
+[info] - must show application declaration page with preloaded data
+[info] - must show error page if a DES Validation Exception is encountered
+[info] - must show error page if a GovernmentGatewayException is encountered
+[info] - must show error page if a DuplicateSubscriptionException is encountered
+[info] - must show error page if a PendingDeregistrationException is encountered
+[info] - must show error page if api 6 is submitted without any changes
+[[31mWARN[0;39m] Exception encountered in Application Declaration Controller :
+controllers.ApplicationDeclarationControllerTest.$anonfun$new$17(ApplicationDeclarationControllerTest.scala:153)
+scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+org.scalatest.Assertions.intercept(Assertions.scala:749)
+org.scalatest.Assertions.intercept$(Assertions.scala:746)
+org.scalatest.wordspec.AnyWordSpec.intercept(AnyWordSpec.scala:1880)
+controllers.ApplicationDeclarationControllerTest.$anonfun$new$16(ApplicationDeclarationControllerTest.scala:153)
+org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:83)
+org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+org.scalatest.Transformer.apply(Transformer.scala:22)
+org.scalatest.Transformer.apply(Transformer.scala:20)
+org.scalatest.wordspec.AnyWordSpecLike$$anon$3.apply(AnyWordSpecLike.scala:1240)
+org.scalatest.TestSuite.withFixture(TestSuite.scala:196)
+org.scalatest.TestSuite.withFixture$(TestSuite.scala:195)
+org.scalatest.wordspec.AnyWordSpec.withFixture(AnyWordSpec.scala:1880)
+org.scalatest.wordspec.AnyWordSpecLike.invokeWithFixture$1(AnyWordSpecLike.scala:1238)
+org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTest$1(AnyWordSpecLike.scala:1250)
+org.scalatest.SuperEngine.runTestImpl(Engine.scala:306)
+org.scalatest.wordspec.AnyWordSpecLike.runTest(AnyWordSpecLike.scala:1250)
+org.scalatest.wordspec.AnyWordSpecLike.runTest$(AnyWordSpecLike.scala:1232)
+controllers.ApplicationDeclarationControllerTest.org$scalatest$BeforeAndAfterEach$$super$runTest(ApplicationDeclarationControllerTest.scala:59)
+org.scalatest.BeforeAndAfterEach.runTest(BeforeAndAfterEach.scala:234)
+org.scalatest.BeforeAndAfterEach.runTest$(BeforeAndAfterEach.scala:227)
+controllers.ApplicationDeclarationControllerTest.runTest(ApplicationDeclarationControllerTest.scala:59)
+org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTests$1(AnyWordSpecLike.scala:1309)
+org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:413)
+scala.collection.immutable.List.foreach(List.scala:323)
+org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:390)
+org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:427)
+scala.collection.immutable.List.foreach(List.scala:323)
+org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:396)
+org.scalatest.SuperEngine.runTestsImpl(Engine.scala:475)
+org.scalatest.wordspec.AnyWordSpecLike.runTests(AnyWordSpecLike.scala:1309)
+org.scalatest.wordspec.AnyWordSpecLike.runTests$(AnyWordSpecLike.scala:1308)
+org.scalatest.wordspec.AnyWordSpec.runTests(AnyWordSpec.scala:1880)
+org.scalatest.Suite.run(Suite.scala:1114)
+org.scalatest.Suite.run$(Suite.scala:1096)
+org.scalatest.wordspec.AnyWordSpec.org$scalatest$wordspec$AnyWordSpecLike$$super$run(AnyWordSpec.scala:1880)
+org.scalatest.wordspec.AnyWordSpecLike.$anonfun$run$1(AnyWordSpecLike.scala:1354)
+org.scalatest.SuperEngine.runImpl(Engine.scala:535)
+org.scalatest.wordspec.AnyWordSpecLike.run(AnyWordSpecLike.scala:1354)
+org.scalatest.wordspec.AnyWordSpecLike.run$(AnyWordSpecLike.scala:1352)
+controllers.ApplicationDeclarationControllerTest.org$scalatestplus$play$BaseOneAppPerSuite$$super$run(ApplicationDeclarationControllerTest.scala:59)
+org.scalatestplus.play.BaseOneAppPerSuite.run(BaseOneAppPerSuite.scala:51)
+org.scalatestplus.play.BaseOneAppPerSuite.run$(BaseOneAppPerSuite.scala:46)
+controllers.ApplicationDeclarationControllerTest.run(ApplicationDeclarationControllerTest.scala:59)
+org.scalatest.tools.Framework.org$scalatest$tools$Framework$$runSuite(Framework.scala:321)
+org.scalatest.tools.Framework$ScalaTestTask.execute(Framework.scala:517)
+sbt.ForkMain$Run.lambda$runTest$1(ForkMain.java:414)
+java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+java.base/java.lang.Thread.run(Thread.java:1583)  2026-10-27 12:36:18,275 
+[info] - must show error page if a Run time exception is encountered
+[info] - must return true if AWRS user is Enrolled and has status of Pending
+[info] - must return true if AWRS user is Enrolled and has status of Approved
+[info] - must return true if AWRS user is Enrolled and has status of ApprovedWithConditions
+[info] - must return false if AWRS user is Enrolled and has status of Rejected
+[info] Submitting the application declaration form with 
+[info]   must Authenticated and authorised users
+[info]   - must redirect to Confirmation page when valid data is provided
+[info]   - must save form data to Save4Later and redirect to Confirmation page 
+[info]   - must redirect to Confirmation page when valid updated data is provided
+[info]   - must redirect to Confirmation page must fail when confirmation is not checked
+[info] Self heal redirect
+[info] - must redirect to application status page when valid data is provided
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:18,297 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:18,308 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:18,328 
+[info] RegisteredUrnControllerTest:
+[info] AwrsUrnController
+[info] - must show the URN page
+[info] - must save the URN and known facts to keystore if no errors
+[info] - must save should return 400 if form has errors
+[[31mWARN[0;39m] no known facts found for awrs urn  2026-10-27 12:36:18,428 
+[info] - must save should redirect to kickout page if ES20 does not return known facts
+[[1;31mERRO[0;39m] Exception occurred handling de-enrolment confirmation exception=[java.lang.RuntimeException: ES20 service unavailable
+	at controllers.reenrolment.RegisteredUrnControllerTest.$anonfun$new$6(RegisteredUrnControllerTest.scala:142)
+	at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
+	at org.scalatest.OutcomeOf.outcomeOf$(OutcomeOf.scala:83)
+	at org.scalatest.OutcomeOf$.outcomeOf(OutcomeOf.scala:104)
+	at org.scalatest.Transformer.apply(Transformer.scala:22)
+	at org.scalatest.Transformer.apply(Transformer.scala:20)
+	at org.scalatest.wordspec.AnyWordSpecLike$$anon$3.apply(AnyWordSpecLike.scala:1240)
+	at org.scalatest.TestSuite.withFixture(TestSuite.scala:196)
+	at org.scalatest.TestSuite.withFixture$(TestSuite.scala:195)
+	at org.scalatest.wordspec.AnyWordSpec.withFixture(AnyWordSpec.scala:1880)
+	at org.scalatest.wordspec.AnyWordSpecLike.invokeWithFixture$1(AnyWordSpecLike.scala:1238)
+	at org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTest$1(AnyWordSpecLike.scala:1250)
+	at org.scalatest.SuperEngine.runTestImpl(Engine.scala:306)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTest(AnyWordSpecLike.scala:1250)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTest$(AnyWordSpecLike.scala:1232)
+	at controllers.reenrolment.RegisteredUrnControllerTest.org$scalatest$BeforeAndAfterEach$$super$runTest(RegisteredUrnControllerTest.scala:39)
+	at org.scalatest.BeforeAndAfterEach.runTest(BeforeAndAfterEach.scala:234)
+	at org.scalatest.BeforeAndAfterEach.runTest$(BeforeAndAfterEach.scala:227)
+	at controllers.reenrolment.RegisteredUrnControllerTest.runTest(RegisteredUrnControllerTest.scala:39)
+	at org.scalatest.wordspec.AnyWordSpecLike.$anonfun$runTests$1(AnyWordSpecLike.scala:1309)
+	at org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:413)
+	at scala.collection.immutable.List.foreach(List.scala:323)
+	at org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+	at org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:390)
+	at org.scalatest.SuperEngine.$anonfun$runTestsInBranch$1(Engine.scala:427)
+	at scala.collection.immutable.List.foreach(List.scala:323)
+	at org.scalatest.SuperEngine.traverseSubNodes$1(Engine.scala:401)
+	at org.scalatest.SuperEngine.runTestsInBranch(Engine.scala:396)
+	at org.scalatest.SuperEngine.runTestsImpl(Engine.scala:475)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTests(AnyWordSpecLike.scala:1309)
+	at org.scalatest.wordspec.AnyWordSpecLike.runTests$(AnyWordSpecLike.scala:1308)
+	at org.scalatest.wordspec.AnyWordSpec.runTests(AnyWordSpec.scala:1880)
+	at org.scalatest.Suite.run(Suite.scala:1114)
+	at org.scalatest.Suite.run$(Suite.scala:1096)
+	at org.scalatest.wordspec.AnyWordSpec.org$scalatest$wordspec$AnyWordSpecLike$$super$run(AnyWordSpec.scala:1880)
+	at org.scalatest.wordspec.AnyWordSpecLike.$anonfun$run$1(AnyWordSpecLike.scala:1354)
+	at org.scalatest.SuperEngine.runImpl(Engine.scala:535)
+	at org.scalatest.wordspec.AnyWordSpecLike.run(AnyWordSpecLike.scala:1354)
+	at org.scalatest.wordspec.AnyWordSpecLike.run$(AnyWordSpecLike.scala:1352)
+	at controllers.reenrolment.RegisteredUrnControllerTest.org$scalatestplus$play$BaseOneAppPerSuite$$super$run(RegisteredUrnControllerTest.scala:39)
+	at org.scalatestplus.play.BaseOneAppPerSuite.run(BaseOneAppPerSuite.scala:51)
+	at org.scalatestplus.play.BaseOneAppPerSuite.run$(BaseOneAppPerSuite.scala:46)
+	at controllers.reenrolment.RegisteredUrnControllerTest.run(RegisteredUrnControllerTest.scala:39)
+	at org.scalatest.tools.Framework.org$scalatest$tools$Framework$$runSuite(Framework.scala:321)
+	at org.scalatest.tools.Framework$ScalaTestTask.execute(Framework.scala:517)
+	at sbt.ForkMain$Run.lambda$runTest$1(ForkMain.java:414)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+] 2026-10-27 12:36:18,430 
+[info] - must save should redirect to kickout page when lookupEnrolments returns an error
+[info] - must save should redirect to confirm de-enrolment
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:18,432 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:18,441 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:18,459 
+[info] BusinessPartnersControllerTest:
+[info] Users who entered from the summary page using the linear view
+[info] - must be redirected to the additional premises view after submitting a valid form
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When loading the delete page we
+[info] - must see to the selected partner's delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:18,570 
+[info] HomeControllerTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:18,585 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:18,603 
+[info] HomeController
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:18,686 
+[[34mINFO[0;39m] User business already has AWRS enrolment  2026-10-27 12:36:18,686 
+[info] - must redirect to the wrong account page when an AWRS enrolment is found for the current cred ID
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:18,687 
+[info] - must redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment
+[[31mWARN[0;39m] Assistant attempting to use AWRS without AWRS enrolment  2026-10-27 12:36:18,688 
+[info] - must redirect to the Assistant kickout page if the user is an Assistant who does not have an AWRS enrolment
+[[31mWARN[0;39m] [recoverAuthorisedCalls] Auth exception: uk.gov.hmrc.auth.core.UnsupportedAffinityGroup: [getUtr] No UTR found and affinity group was Individual  2026-10-27 12:36:18,695 
+[info] - must redirect to the Unauthorised kickout page if the user is an Individual with no UTR
+[info] - must redirect to the Business Type page if the save4Later review details are present and the user is an Assistant with an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,700 
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no BC Details found in save4later or Keystore  2026-10-27 12:36:18,700 
+[info] - must redirect to the Business customer matching if the save4Later review details are present WITHOUT SAFEID and the user does not have an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,701 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:18,701 
+[info] - must redirect to the Business type page if the save4Later review details are present WITHOUT SAFEID, but details in keystore contain safeID
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:18,702 
+[info] - must redirect to the Business Type page if the save4Later review details are present but the user does not have an AWRS enrolment and they came from BTA
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,703 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:18,703 
+[info] - must redirect to the Business Type page if the save4Later review details are not present but the keystore review details are present and the user does not have an AWRS enrolment
+[info] - must redirect to the Business Type page if the save4Later review details are present and the user has an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,705 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:18,705 
+[info] - must redirect to the Business Type page if the save4Later review details are not present but the keystore review details is present and the user has an AWRS enrolment
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,706 
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no BC Details found in save4later or Keystore  2026-10-27 12:36:18,706 
+[info] - must redirect to the Business Customer Frontend if the save4Later and keystore review details are not present
+[info] - must redirect to the Business Type page if the save4Later review details are present and the user came from BTA
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,708 
+[[31mWARN[0;39m] Exception encountered in Home Controller: Future(<not completed>) 
+ERROR: An error occurred  2026-10-27 12:36:18,709 
+[info] - must show error page if a runtime error is produced
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,712 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:18,712 
+[info] - must redirect to Business Type page if for AWRS Registered users JSResultException produced
+[[31mWARN[0;39m] [HomeController][businessCustomerDetails] - no valid BC Details found in save4later, checking Keystore  2026-10-27 12:36:18,714 
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from Keystore  2026-10-27 12:36:18,714 
+[info] - must redirect to Business Type page if for Non reistered AWRS users JSResultException produced
+[info] - must show recent withdrawal error page if the user has withdrawn within 24 hours
+[info] - must show recent re-registration error page if the user has de-registered within 24 hours
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:18,721 
+[info] - must redirect to the business type page if the user has withdrawn more than 24 hours ago
+[[34mINFO[0;39m] [HomeController][businessCustomerDetails] - BC Details fetched from save4later  2026-10-27 12:36:18,723 
+[info] - must redirect to the Business Type page if validate business details returns true
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:18,723 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:18,736 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:18,753 
+[info] RegisteredPostCodeControllerTest:
+[info] AwrsPostcodeController
+[info] - must show the postcode page
+[info] - must save the postcode to keystore if no errors
+[info] - must save should return 400 if form has errors
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:18,860 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:18,873 
+[info] ResetControllerTest:
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:18,891 
+[info] Reset application page 
+[info] - must return a Signed out view for SA utr
+[info] - must return a Signed out view for CT utr
+[info] Update reset page 
+[info] - must return a signed out view
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:18,964 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:19,045 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:19,062 
+[info] DeRegistrationControllerTest:
+[info] DeRegistration
+[info] - must allow usage if type is Approved(04)
+[info] - must allow usage if type is Approved with Conditions(05)
+[info] - must disallow usage if type is Pending(01)
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:36:19,204 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:36:19,205 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:36:19,206 
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:36:19,207 
+[info] - must disallow usage if type is De-Registered(10)
+[info] - must disallow usage if type is Rejected(06)
+[info] - must disallow usage if type is Revoked(08)
+[info] - must disallow usage if type is None(00)
+[info] - must disallow usage if type is Withdrawal(02) *** FAILED ***
+[info]   404 was not equal to 303 (DeRegistrationControllerTest.scala:149)
+[info] - must disallow usage if type is Revoked under Review/Appeal(09)
+[info] - must disallow usage if type is Rejected under Review/Appeal(07)
+[info] - must redirect Approved(04) users to 'de-register-awrs-reason' from date, confirm and confirmation pages when reason is not answered
+[info] - must redirect Approved with Conditions(05) users to 'de-register-awrs-reason' from date, confirm and confirmation pages when reason is not answered
+[info] - must redirect Approved(04) users to 'de-register-awrs-date' from confirm and confirmation pages when date is not answered
+[info] - must redirect Approved with Conditions(05) users to 'de-register-awrs-date' from confirm and confirmation pages when date is not answered
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-date' 
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-date' 
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Ceases to be registerable for the scheme
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Ceases to trade as an alcohol wholesaler
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Joining a group to register for AWRS
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Joining a partnership to register for AWRS
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Group disbanded
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Partnership disbanded
+[info] - must redirect Approved(04) users to confirm from 'de-register-awrs-reason' for reason Others
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Ceases to be registerable for the scheme
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Ceases to trade as an alcohol wholesaler
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Joining a group to register for AWRS
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Joining a partnership to register for AWRS
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Group disbanded
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Partnership disbanded
+[info] - must redirect Approved with Conditions(05) users to confirm from 'de-register-awrs-reason' for reason Others
+[info] - must redirect Approved(04) users to confirmation from 'de-register-awrs-confirm' 
+[info] - must redirect Approved with Conditions(05) users to confirmation from 'de-register-awrs-confirm' 
+[info] - must redirect Approved(04) users to index from 'de-register-awrs-confirm' if they answer no
+[info] - must redirect Approved with Conditions(05) users to index from 'de-register-awrs-confirm' if they answer no
+[info] - must fail submission for Approved(04) users when forms are empty' 
+[info] - must fail submission for Approved with Conditions(05) users when forms are empty' 
+[info] - must Approved(04) users who have submitted a dereg date show confirmation page
+[info] - must Approved with Conditions(05) users who have submitted a dereg date show confirmation page
+[[1;31mERRO[0;39m] call to API 10 failed  2026-10-27 12:36:19,376 
+[info] - must Approved(04) users who experienced API10 failures must not have save 4 later cleared up
+[[1;31mERRO[0;39m] call to API 10 failed  2026-10-27 12:36:19,379 
+[info] - must Approved with Conditions(05) users who experienced API10 failures must not have save 4 later cleared up
+[info] - must Approved(04) users who went through successesful API 10 and de-enrol must have their save 4 later cleared up
+[info] - must Approved with Conditions(05) users who went through successesful API 10 and de-enrol must have their save 4 later cleared up
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:19,389 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:19,395 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:19,422 
+[info] GroupMemberControllerTest:
+[info] Submitting the application declaration form with 
+[info]   must Authenticated and authorised users
+[info]   - must redirect to additional premises page when valid data is provided for LTD
+[info]   - must redirect to business partners page when valid data is provided for LLP
+[info]   - must save form data to Save4Later and redirect to business partners page for LLP
+[info]   - must save form data to Save4Later for second member and redirect to business partners page for LLP
+[info]   - must save form data to Save4Later for first member where no data currently exists and redirect to business partners page for LLP
+[info]   - must save form data to Save4Later for first member where no data currently exists and redirect to next member page 
+[info]   - must get out of range member must return NOT FOUND error 
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When loading the delete page we
+[info] - must see to the selected suppliers delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:19,541 
+[info] AddressLookupControllerTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:19,589 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:19,608 
+[info] Postcode lookup controller
+[info] - must return Ok response for a valid postcode
+[info] - must return bad request for invalid postcode
+[info] - must return internal server error
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:36:19,738 
+[[34mINFO[0;39m] [auditAddress] Auditing 1 addresses  2026-10-27 12:36:19,739 
+[[34mINFO[0;39m] [auditAddress] Auditing Some(postcodeAddressSubmitted) address  2026-10-27 12:36:19,739 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:36:19,740 
+[info] - must return ok on an address audit POST route
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:36:19,741 
+[[34mINFO[0;39m] [auditAddress] Auditing 1 addresses  2026-10-27 12:36:19,741 
+[[34mINFO[0;39m] [auditAddress] Auditing Some(manualAddressSubmitted) address  2026-10-27 12:36:19,741 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:36:19,741 
+[info] - must return ok on an address audit POST route for manualAddressSubmitted
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:36:19,742 
+[[34mINFO[0;39m] [auditAddress] Auditing 1 addresses  2026-10-27 12:36:19,742 
+[[34mINFO[0;39m] [auditAddress] Auditing Some(postcodeAddressSubmitted) address  2026-10-27 12:36:19,742 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:36:19,743 
+[info] - must return ok on an address audit POST route with country code and no duplicate address 
+[[34mINFO[0;39m] [auditAddress] Attemping to auth for auditing address  2026-10-27 12:36:19,743 
+[[34mINFO[0;39m] [auditAddress] Auditing 0 addresses  2026-10-27 12:36:19,743 
+[[34mINFO[0;39m] [auditAddress] Audited addresses, sending 200  2026-10-27 12:36:19,743 
+[info] - must return ok on an address audit POST route with an empty list
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:19,744 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:19,750 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:19,770 
+[info] ViewApplicationControllerTest:
+[info] showViewApplication
+[info] - must redirect the user back one page using the back link
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:20,074 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:20,081 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:20,099 
+[info] EmailVerificationControllerTest:
+[info] Page load for Authorised users
+[info] - must redirect to the declaration page if the email verification is turned off
+[info] - must redirect to the declaration page if the email has been verified
+[info] - must display the email verification reminder page if the email has not yet been verified
+[info] - must resend email and reload the reminder screen with resent text
+[info] - must display error screen if resend fails
+[info] - must return to error page if Internal Error thrown
+[info] - must show success message
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:20,289 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:20,302 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:20,322 
+[info] KickoutControllerTest:
+[info] KickOutController
+[info] - must show the Kickout page
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:20,433 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:20,445 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:20,462 
+[info] BusinessNameChangeControllerTest:
+[info] show confirm
+[info] - must show the confirm page
+[info] Submitting the business name change confirmation form with 
+[info]   must Authenticated and authorised users
+[info]   - must redirect to view section for Business Details page when valid data is provided
+[info]   - must save form data to Save4Later and redirect to Index page 
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:20,562 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:20,564 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:20,580 
+[info] BusinessRegistrationDetailsControllerTest:
+[info] BusinessRegistrationDetailsController
+[info]   must Users who entered from the summary edit view
+[info]   - must return to the summary view after clicking return
+[info] - must successfully save the page if the group utr is valid for entity LTD_GRP
+[info] - must fail to save the page if the group utr is invalid for entity LTD_GRP
+[info] - must fail to save the page if the group utr is missing for entity LTD_GRP
+[info] - must successfully save the page if the group utr is valid for entity LLP_GRP
+[info] - must fail to save the page if the group utr is invalid for entity LLP_GRP
+[info] - must fail to save the page if the group utr is missing for entity LLP_GRP
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:20,691 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:20,703 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:20,719 
+[info] AdditionalPremisesControllerTest:
+[info] Pressing Continue within Business Details Page
+[info] - must if No Additional Premise is selected, save an object to Save4later and redirect to Index
+[info] - must redirect LTD/LTD_GRP business type to Business Directors page when valid data is provided and 'Add Another' is 'No'
+[info] - must redirect SOP/Partnership/LP/LLP business type to trading activity page when valid data is provided and 'Add Another' is 'No'
+[info] - must redirect LTD/LTD_GRP business type to Business Directors page when 'Additional Premises' is 'No'
+[info] - must redirect SOP/Partnership/LP/LLP business type to trading activity page when 'Additional Premises' is 'No'
+[info] - must redirect to additional premises page when valid data is provided and 'Add Another' is 'Yes'
+[info] When loading the delete page we
+[info] - must see to the selected suppliers delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:20,845 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:20,853 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:20,871 
+[info] AdditionalDirectorsControllerTest:
+[info] Business Directors Page load for Authorised users
+[info] - must do not load a blank page for Director 2 if cache is empty
+[info] On Business Directors page, for Directors that is a person, pressing Continue for Authorised users
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is Director
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes, when director is Director
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is Company Secretary
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes, when director is Company Secretary
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is Director and Company Secretary
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes, when director is Director and Company Secretary
+[info] On Business Directors page, for Directors that are Companies, pressing Continue for Authorised users
+[info] - must redirect to trading activity page when valid data is provided and 'Other directors' is No
+[info] - must redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:20,966 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:20,973 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:20,990 
+[info] ProductsControllerTest:
+[info] ProductsController
+[info] - must redirect to supplier addresses page when valid data is provided
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:21,081 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:21,092 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:21,108 
+[info] PlaceOfBusinessControllerTest:
+[info] BusinessRegistrationDetailsController
+[info]   must Display the Place of Business page
+[info]   - when PlaceOfBusiness is fetched from save4Later
+[info]   - when BusinessCustomerDetails are fetched from save4Later
+[info] - must Display an error page if neither PlaceOfBusiness or BusinessCustomerDetails can be retrieved from save4Later
+[info]   must Users who entered from the summary edit view
+[info]   - must return to the summary view after clicking return when valid form data submitted
+[info]   - must be presented with the Place of Business page with errors, and a 400 status when invalid form data submitted
+[info]   must Users who entered from the linear view
+[info]   - must continue to the next section after submitting the form
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:21,222 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:21,232 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:21,248 
+[info] RegisteredUtrControllerTest:
+[info] RegisteredUtrController
+[info]   when showArwsUtrPage is called
+[info]   - must return 200
+[info]   when saveAndContinue is called
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:36:21,368 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:36:21,368 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:36:21,368 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:36:21,368 
+[info]   - must redirect to kickout page when enrolment fails
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:36:21,370 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:36:21,370 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:36:21,370 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:36:21,370 
+[info]   - must redirect to kickout page when de-enrolment fails
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:36:21,371 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:36:21,371 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:36:21,371 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:36:21,371 
+[info]   - must redirect to kickout page when known facts are not verified
+[[34mINFO[0;39m] known facts verification returned true for XKAW00000200130  2026-10-27 12:36:21,372 
+[[34mINFO[0;39m] De enrolment process returns true  2026-10-27 12:36:21,372 
+[[34mINFO[0;39m] enrolment succeeded for AWRS ref XKAW00000200130  2026-10-27 12:36:21,372 
+[info]   - must redirect to successful enrolment page when both de-enrolment and enrolment succeed
+[[34mINFO[0;39m] known facts verification returned true for XKAW00000200130  2026-10-27 12:36:21,373 
+[[34mINFO[0;39m] De enrolment process returns true  2026-10-27 12:36:21,373 
+[[34mINFO[0;39m] enrolment succeeded for AWRS ref XKAW00000200130  2026-10-27 12:36:21,373 
+[info]   - must do successful enrolment without de-enrolment when group id is not found
+[[34mINFO[0;39m] known facts verification returned true for XKAW00000200130  2026-10-27 12:36:21,374 
+[[34mINFO[0;39m] De enrolment process returns true  2026-10-27 12:36:21,374 
+[[34mINFO[0;39m] enrolment succeeded for AWRS ref XKAW00000200130  2026-10-27 12:36:21,374 
+[info]   - must handle Corporation Tax UTR when user is not SA
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:36:21,375 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:36:21,375 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:36:21,375 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:36:21,375 
+[info]   - must redirect to kickout page when ES9/ enrolment fails with an exception
+[[34mINFO[0;39m] known facts verification returned false for XKAW00000200130  2026-10-27 12:36:21,376 
+[[31mWARN[0;39m] Known facts verification for re-enrolment was unsuccessful for XKAW00000200130  2026-10-27 12:36:21,376 
+[[34mINFO[0;39m] De enrolment process returns false  2026-10-27 12:36:21,376 
+[[31mWARN[0;39m] re-enrolment failed for AWRS ref XKAW00000200130  2026-10-27 12:36:21,376 
+[info]   - must redirect to kickout page when ES1 (group id query) fails with an exception
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:21,377 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:21,390 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:21,406 
+[info] SupplierAddressesControllerTest:
+[info] processCountryNonUK
+[info] - must do nothing with a non-uk supplier with non-uk address
+[info] - must alter a uk supplier with non-uk address (country)
+[info] Authenticated and authorised users
+[info] - must validate that first addition of supplier does not throw an exception
+[info] - must validate that passing in an invalid id redirects to NOT FOUND error page
+[info] - must redirect to index page when 'user has selected No suppliers'
+[info] - must redirect to index page when 'user has selected No suppliers' and account for a mismatch
+[info] - must redirect to next supplier page when valid data is provided and 'Additional Suppliers' is Yes
+[info] - must redirect to Supplier addresses page when valid data is provided and 'Additional Suppliers' is Yes
+[info] - must save form data in Save4Later if the data is valid
+[info] - must redirect to index page when 'user has selected No additional supplier'
+[info] - must redirect to next additional supplier page when 'user has selected Yes additional supplier'
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[info] When no data has previously been cached, entering no supplier and pressing save and continue
+[info] - must cache the supplier and redirect to the index page
+[info] Entering a valid supplier, selecting add additional and pressing Save and Continue
+[info] - must cache the supplier, load a blank Supplier page and increment the supplier number
+[info] When loading the page with 5 suppliers already entered we
+[info] - must see to the 1st supplier
+[info] Saving supplier with a country code
+[info] - must retrieve country
+[info] When loading the delete page we
+[info] - must see to the selected suppliers delete confirmation page
+[info] When submitting the delete confirmation page we
+[info] - must be routed back to the summary page after confirming Yes
+[info] - must be routed back to the summary page after confirming No
+[info] - must be shown an error if nothing is selected
+[info] - must be routed back to the summary page after confirming Yes for a record that is not the first
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:21,554 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:21,570 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:21,586 
+[info] TradingActivityControllerTest:
+[info] TradingActivityController
+[info] - must redirect to products page when valid data is provided
+[info] Users who entered from the summary edit view
+[info] - must return to the summary view after clicking return
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:21,677 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:21,688 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:21,704 
+[info] ViewEnrolmentsControllerTest:
+[info] ViewEnrolmentsController
+[info] - must show the View Enrolment page
+[info] - must contain a button linking to the Business Tax Account page
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:21,795 
+[info] IndexControllerTest:
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:21,809 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:21,841 
+[info] showIndex
+[info]   must de-enrol the user and redirect to business customer frontend
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status Withdrawal  2026-10-27 12:36:21,967 
+[info]   - when the user has an enrolment and the AWRS application status is Withdrawn
+[[34mINFO[0;39m] [AwrsController][restrictedAccessCheck] De-Enrolled and redirecting to business-customer for status De-Registered  2026-10-27 12:36:21,968 
+[info]   - when the user has an enrolment and the AWRS application status is De-Registered
+[info]   must display the index page
+[info]   - when businessType exists in session
+[info]   - when the AWRS status in session is Withdrawal, businessType exists in session, but there is no enrolment
+[info]   must redirect back to the home controller
+[info]   - when business type is missing from session
+[info]   - when business name is missing from session
+[info] - must clear sessionJourneyStartLocation from session when index is shown
+[info] showLastLocation
+[info] - must route to the previous page if it exists in session
+[info] - must route to index page if it exists in session
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:21,991 
+[[34mINFO[0;39m] Registering exception handler: guice-provision-exception-handler  2026-10-27 12:36:22,003 
+[[34mINFO[0;39m] Slf4jLogger started  2026-10-27 12:36:22,020 
+[info] WithdrawalControllerTest:
+[info] Withdrawal Controller
+[info]   must Withdrawal Confirmation
+[info]   - must display a validation error on submit if radio button is not selected
+[info]   must Withdrawal Reasons
+[info]   - must display the withdrawal reasons page if user has status of Pending with reasons in cache
+[info]   - must display error page (Reasons) if user has status of anything else than pending (Approved)
+[info]   - must return to error page where Internal Error thrown
+[info]   - must display the withdrawal reasons page if user has status of Pending
+[info]   - must display a blank withdrawal reasons page if user has status of Pending and nothing is in the keystore
+[info]   must Submit Withdrawal Reasons
+[info]   - must redirect to confirmation page when registered by mistake
+[info]   - must redirect to confirmation page when no longer trading as an alcohol wholesaler or producer
+[info]   - must redirect to confirmation page when registered more than once
+[info]   - must redirect to confirmation page when registering with a group
+[info]   - must redirect to confirmation page when other is selected
+[info]   - must show a form error (Bad Request) if nothing is selected
+[info]   must Submit withdrawal application
+[info]   - must display success message when deEnrol and withdrawal is successful
+[info]   - must redirect to index message when selects No
+[[1;31mERRO[0;39m] call to government gateway de-enrol failed  2026-10-27 12:36:22,197 
+[info]   - must display error when enrol is not successful
+[[34mINFO[0;39m] Running CoordinatedShutdown with reason [ApplicationStoppedReason]  2026-10-27 12:36:22,197 
+[info] Run completed in 10 seconds, 302 milliseconds.
+[info] Total number of tests run: 324
+[info] Suites: completed 40, aborted 0
+[info] Tests: succeeded 323, failed 1, canceled 0, ignored 1, pending 0
+[info] *** 1 TEST FAILED ***
+[error] Failed tests:
+[error] 	controllers.DeRegistrationControllerTest
+[error] (Test / testOnly) sbt.TestsFailedException: Tests unsuccessful
+[error] Total time: 11 s, completed 27 Oct 2026, 12:36:22

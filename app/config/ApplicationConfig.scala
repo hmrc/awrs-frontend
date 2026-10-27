@@ -40,17 +40,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   private def loadConfig(key: String) = servicesConfig.getConfString(key, throw new Exception(s"Missing configuration key: $key"))
 
-  private lazy val contactHost = servicesConfig.getString("contact-frontend.host")
-  private lazy val awrsHost = loadConfig("awrs.host")
-
-  lazy val assetsPrefix: String = loadConfig("assets.url") + loadConfig("assets.version")
-  lazy val externalReportProblemUrl = s"$contactHost/contact/problem_reports"
-  private lazy val contactFormServiceIdentifier = "AWRS"
-  lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  lazy val homeUrl = s"$awrsHost/"
-  lazy val defaultTimeoutSeconds: Int = servicesConfig.getInt("defaultTimeoutSeconds")
-  lazy val timeoutCountdown: Int = servicesConfig.getInt("timeoutCountdown")
   lazy val emailVerificationEnabled: Boolean = servicesConfig.getBoolean("email-verification.enabled")
   lazy val emailVerificationBaseUrl: String = servicesConfig.getString("email-verification.continue.baseUrl")
 
@@ -58,20 +47,12 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   private lazy val basGatewayHost: String = loadConfig("auth.bas-gateway-frontend.host")
   private lazy val loginCallback: String = loadConfig("auth.login-callback.url")
   private lazy val loginPath: String = loadConfig("auth.login-path")
-  lazy val accountType: String = loadConfig("auth.accountType")
   lazy val signIn: String = s"$basGatewayHost/bas-gateway/$loginPath?continue_url=$loginCallback"
-  lazy val loginURL: String = s"$basGatewayHost/bas-gateway/$loginPath"
-  lazy val logoutCallbackUrl: String = loadConfig("auth.logout-callback.url")
+
   lazy val signOut: String = s"""$basGatewayHost/bas-gateway/sign-out-without-state?continue=${servicesConfig.getString("service-signout.url")}"""
   lazy val businessCustomerStartPage: String = loadConfig("business-customer.serviceRedirectUrl")
   lazy val businessTaxAccountPage: String = loadConfig("business-tax-account.serviceRedirectUrl")
   lazy val addTaxesFrontEndUrl: String = loadConfig("add-taxes-frontend.serviceRedirectUrl")
-
-  lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
-  lazy val accessibilityStatement: String = servicesConfig.getString("urls.footer.accessibility_statement")
-  lazy val privacy: String = servicesConfig.getString("urls.footer.privacy_policy")
-  lazy val termsConditions: String = servicesConfig.getString("urls.footer.terms_and_conditions")
-  lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
 
   lazy val mongoSessionTtl: Duration = servicesConfig.getDuration("mongodb.session.expireAfter")
 

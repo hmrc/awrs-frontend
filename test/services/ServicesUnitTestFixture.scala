@@ -21,8 +21,7 @@ import services.apis.mocks.MockAwrsAPI5
 import services.mocks.{MockApplicationService, MockBusinessCustomerCacheConnector, MockIndexService, MockTestStatusManagementService}
 import utils.AwrsUnitTestTraits
 
-trait ServicesUnitTestFixture extends AwrsUnitTestTraits
-  with MockAwrsAPI5
+trait ServicesUnitTestFixture extends MockAwrsAPI5
   with MockAuthConnector
   with MockBusinessCustomerCacheConnector
   with MockTestStatusManagementService

@@ -28,8 +28,7 @@ import utils.{AwrsUnitTestTraits, TestUtil, WithdrawalTestUtils}
 
 import scala.concurrent.Future
 
-trait MockKeyStoreService extends AwrsUnitTestTraits
-  with MockKeyStoreConnector {
+trait MockKeyStoreService extends MockKeyStoreConnector {
 
   import MockKeyStoreService._
 

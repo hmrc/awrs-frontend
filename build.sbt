@@ -5,6 +5,8 @@ import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
+import scala.util.Random
+
 val appName = "awrs-frontend"
 
 val coursierDirectory = sys.env.get("COURSIER_REPOSITORIES")
@@ -30,6 +32,30 @@ lazy val scoverageSettings = {
   )
 }
 
+lazy val testShuffle = taskKey[Unit]("Runs test in reproducible order...")
+
+testShuffle := Def.taskDyn {
+
+  val logger = streams.value.log
+
+  val seedOption =
+    sys.props.get("test.shuffle.seed")
+  val seed: Long = seedOption.map(_.toLong).getOrElse(scala.util.Random.nextInt())
+
+  logger.info(s"Shuffling tests with seed $seed")
+
+  val testClasses = (Test / definedTests).value.filter(test => test.name.contains("HomeControllerTest") || test.name.contains("BusinessTypeControllerTest"))
+
+  Random.setSeed(seed)
+  val shuffledClasses = Random.shuffle(testClasses.map(_.name)).mkString(" ")
+
+
+  val shuffledTasks = Def.task  {
+    (Test / testOnly).toTask(s" ${shuffledClasses}").value
+  }
+  Def.sequential(shuffledTasks)
+}.value
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) ++ plugins : _*)
   .settings(playSettings ++ scoverageSettings : _*)
@@ -39,6 +65,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     Test / parallelExecution := false,
+    Test / fork := true,
     Test / javaOptions ++= Seq(
       "-Dconfig.resource=test.application.conf",
       s"-javaagent:${csrCacheDirectory.value.getAbsolutePath}/${coursierDirectory}org/mockito/mockito-core/${AppDependencies.mockitoVersion}/mockito-core-${AppDependencies.mockitoVersion}.jar"

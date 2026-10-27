@@ -17,6 +17,7 @@
 package controllers
 
 import builders.SessionBuilder
+import connectors.mock.MockAuthConnector
 import models.BusinessCustomerDetails
 import org.mockito.Mockito._
 import play.api.libs.json.JsValue
@@ -25,6 +26,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services._
 import models.CacheMap
+import services.mocks.{MockApplicationService, MockIndexService, MockTestStatusManagementService}
 import utils.AwrsSessionKeys
 import utils.TestUtil._
 import views.html.awrs_index
