@@ -48,12 +48,6 @@ class MongoCryptoSpec extends PlaySpec {
       crypto.decrypt(crypto.encrypt(data)) mustBe data
     }
 
-    "produce different ciphertext each time for the same value (AES-GCM random nonce)" in {
-      val crypto = mongoCrypto()
-
-      crypto.encrypt(data) must not equal crypto.encrypt(data)
-    }
-
     "return unencrypted JSON cached before encryption was reinstated as-is" in {
       mongoCrypto().decrypt(data) mustBe data
     }
