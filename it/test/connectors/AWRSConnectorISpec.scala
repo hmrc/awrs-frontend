@@ -72,35 +72,35 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as OK, for successful subscription" in {
       stubbedPost("/awrs/send-data", OK, subscribeSuccessResponseJson.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       await(result) mustBe Right(subscribeSuccessResponse)
       verifySubmitData()
     }
 
     "return status as OK, for Partnership legal entity" in {
       stubbedPost("/awrs/send-data", OK, subscribeSuccessResponseJson.toString())
-      val result = connector.submitAWRSData(api4PartnerJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4PartnerJson)
       await(result) mustBe Right(subscribeSuccessResponse)
       verifySubmitData()
     }
 
     "return status as OK, for LTD legal entity" in {
       stubbedPost("/awrs/send-data", OK, subscribeSuccessResponseJson.toString())
-      val result = connector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api5LTDJson)
       await(result) mustBe Right(subscribeSuccessResponse)
       verifySubmitData()
     }
 
     "return status ACCEPTED, for a organisation self heal case" in {
       stubbedPost("/awrs/send-data", ACCEPTED, acceptedResponseJson.toString())
-      val result = connector.submitAWRSData(api5LTDJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api5LTDJson)
       await(result) mustBe Left(subscribeAcceptedResponse)
       verifySubmitData()
     }
 
     "return status as BAD_REQUEST and catch all, for bad data sent for subscription" in {
       stubbedPost("/awrs/send-data", BAD_REQUEST, subscribeFailureResponseJson.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[BadRequestException] thrownBy await(result)
       thrown.getMessage must include("Bad Request")
       verifySubmitData()
@@ -108,7 +108,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as BAD_REQUEST and throw DESValidationException, for unsuccessful subscription" in {
       stubbedPost("/awrs/send-data", BAD_REQUEST, subscribeFailureDesValResponse.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
 
       val thrown = the[DESValidationException] thrownBy await(result)
       thrown.getMessage mustBe "Validation against schema failed"
@@ -117,7 +117,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as BAD_REQUEST and throw GovernmentGatewayException, for unsuccessful subscription" in {
       stubbedPost("/awrs/send-data", BAD_REQUEST, subscribeFailureGovGateResponse.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
       thrown.getMessage mustBe "There was a problem with the admin service"
       verifySubmitData()
@@ -125,7 +125,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as BAD_REQUEST and throw DuplicateSubscriptionException, for unsuccessful subscription" in {
       stubbedPost("/awrs/send-data", BAD_REQUEST, subscribeFailureDupSubsResponse.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[DuplicateSubscriptionException] thrownBy await(result)
       thrown.getMessage mustBe "This subscription already exists"
       verifySubmitData()
@@ -133,7 +133,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as BAD_REQUEST and throw PendingDeregistrationException, for unsuccessful subscription" in {
       stubbedPost("/awrs/send-data", BAD_REQUEST, subscribeFailurePendingDeregResponse.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[PendingDeregistrationException] thrownBy await(result)
       thrown.getMessage mustBe "You cannot submit a new application while your cancelled application is still pending"
       verifySubmitData()
@@ -141,7 +141,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as NOT_FOUND, for bad data sent for subscription" in {
       stubbedPost("/awrs/send-data", NOT_FOUND, subscribeFailureResponseJson.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[NotFoundException] thrownBy await(result)
       thrown.getMessage mustBe "URL not found"
       verifySubmitData()
@@ -149,7 +149,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as SERVICE_UNAVAILABLE, for bad data sent for subscription" in {
       stubbedPost("/awrs/send-data", SERVICE_UNAVAILABLE, subscribeFailureResponseJson.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[ServiceUnavailableException] thrownBy await(result)
       thrown.getMessage mustBe "Service unavailable"
       verifySubmitData()
@@ -157,7 +157,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status INTERNAL SERVER ERROR" in {
       stubbedPost("/awrs/send-data", INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[InternalServerException] thrownBy await(result)
       thrown.getMessage mustBe "Internal server error"
       verifySubmitData()
@@ -165,7 +165,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status as INTERNAL SERVER ERROR and throw GovernmentGatewayException, for unsuccessful subscription" in {
       stubbedPost("/awrs/send-data", INTERNAL_SERVER_ERROR, subscribeFailureGovGateResponse.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
       thrown.getMessage mustBe "There was a problem with the admin service"
       verifySubmitData()
@@ -173,7 +173,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status anything else" in {
       stubbedPost("/awrs/send-data", 777, subscribeFailureResponseJson.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[RuntimeException] thrownBy await(result)
       thrown.getMessage mustBe "Unknown response"
       verifySubmitData()
@@ -181,7 +181,7 @@ class AWRSConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
     "return status anything else and throw GovernmentGatewayException, for unsuccessful subscription" in {
       stubbedPost("/awrs/send-data", 777, subscribeFailureGovGateResponse.toString())
-      val result = connector.submitAWRSData(api4SOPJson, retrievalsWithAwrsEnrolment)
+      val result = connector.submitAWRSData(api4SOPJson)
       val thrown = the[GovernmentGatewayException] thrownBy await(result)
       thrown.getMessage mustBe "There was a problem with the admin service"
       verifySubmitData()

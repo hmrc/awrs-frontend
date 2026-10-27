@@ -59,7 +59,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
               businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
               subscriptionStatus <- api9.getSubscriptionStatusFromCache
               awrsDataMap <- save4LaterService.mainStore.fetchAll(ar)
-              applicationChangeFlag <- applicationService.hasAPI5ApplicationChanged(accountUtils.getUtr(ar), ar)
+              applicationChangeFlag <- applicationService.hasAPI5ApplicationChanged(ar)
               sectionStatus <- indexService.getStatus(awrsDataMap, businessType, ar)
             } yield {
               val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)

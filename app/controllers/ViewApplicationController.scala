@@ -35,7 +35,6 @@ import models.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, CacheUtil}
-import utils.CacheUtil.cacheUtil
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
 import scala.language.postfixOps

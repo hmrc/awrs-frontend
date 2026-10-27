@@ -45,7 +45,7 @@ object ApiTypes extends Enumeration {
       case JsString(s) =>
         Try(ApiTypes.withName(s)) match {
           case Success(value) => JsSuccess(value)
-          case Failure(e) => JsError("api_type.invalid") //This key doesn't exist
+          case Failure(_) => JsError("api_type.invalid") //This key doesn't exist
         }
       case _ => JsError("error.expected.jsstring") //This key doesn't exist
     }

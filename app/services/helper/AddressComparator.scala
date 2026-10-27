@@ -22,7 +22,7 @@ object AddressComparator {
 
   def isDifferent(toAddress: Option[Address], fromAddress: Option[Address]): Boolean =
     (toAddress, fromAddress) match {
-      case (Some(t), Some(f)) => !toAddress.equals(fromAddress)
+      case (Some(_), Some(_)) => !toAddress.equals(fromAddress)
       case (None, None) => false
       case _ => true
     }

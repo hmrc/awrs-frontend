@@ -422,9 +422,6 @@ object NewAWBusiness {
 
 object Address {
   given formats: OFormat[Address] = Json.format[Address]
-
-  implicit class AddressUtil(address: Option[Address]) {
-  }
 }
 
 object CompanyNames {
@@ -570,7 +567,7 @@ object TradingActivity_old extends AwrsFieldConfig {
     def writes(tradingActivity: TradingActivity_old): JsValue =
       Json.obj()
         .++(Json.obj("wholesalerType" -> updateWholesaler(tradingActivity.wholesalerType)))
-        .++(tradingActivity.otherWholesaler.fold(augmentOtherWholesaler(tradingActivity.wholesalerType, tradingActivity.otherWholesaler))(x => augmentOtherWholesaler(tradingActivity.wholesalerType, tradingActivity.otherWholesaler)))
+        .++(augmentOtherWholesaler(tradingActivity.wholesalerType, tradingActivity.otherWholesaler))
         .++(Json.obj("typeOfAlcoholOrders" -> tradingActivity.typeOfAlcoholOrders))
         .++(tradingActivity.otherTypeOfAlcoholOrders.fold(Json.obj())(x => Json.obj("otherTypeOfAlcoholOrders" -> x)))
         .++(tradingActivity.doesBusinessImportAlcohol.fold(Json.obj())(x => Json.obj("doesBusinessImportAlcohol" -> x)))
@@ -597,7 +594,7 @@ object TradingActivity_old extends AwrsFieldConfig {
     // Remove the Producer and Broker text from the free text 'Other' field.
     // Check for the String plus delimiter first then just the String, this caters for spaces being used as the delimiter
     // as these will be trimmed if there is no genuine 'otherWholesaler' string after the 'Producer' or 'Broker' String.
-    def cleanseOtherWholesaler(wholesalerType: List[String], otherWholesaler: Option[String]): Option[String] = otherWholesaler match {
+    def cleanseOtherWholesaler(otherWholesaler: Option[String]): Option[String] = otherWholesaler match {
       case Some(other) =>
         val trimmed = other.split(Delimiter).filterNot(x => x == Producer._1 || x == Broker._1).mkString(Delimiter)
         trimmed.nonEmpty match {
@@ -617,7 +614,7 @@ object TradingActivity_old extends AwrsFieldConfig {
         thirdPartyStorage <- (js \ "thirdPartyStorage").validateOpt[String]
         doYouExportAlcohol <- (js \ "doYouExportAlcohol").validate[List[String]]
       } yield {
-        val other = cleanseOtherWholesaler(wholesalerType, otherWholesaler)
+        val other = cleanseOtherWholesaler(otherWholesaler)
         TradingActivity_old(wholesalerType = augmentWholesaler(wholesalerType, otherWholesaler),
           otherWholesaler = other,
           typeOfAlcoholOrders = typeOfAlcoholOrders,
@@ -666,7 +663,7 @@ object TradingActivity extends AwrsFieldConfig {
     def writes(tradingActivity: TradingActivity): JsValue =
       Json.obj()
         .++(Json.obj("wholesalerType" -> updateWholesaler(tradingActivity.wholesalerType)))
-        .++(tradingActivity.otherWholesaler.fold(augmentOtherWholesaler(tradingActivity.wholesalerType, tradingActivity.otherWholesaler))(x => augmentOtherWholesaler(tradingActivity.wholesalerType, tradingActivity.otherWholesaler)))
+        .++(augmentOtherWholesaler(tradingActivity.wholesalerType, tradingActivity.otherWholesaler))
         .++(Json.obj("typeOfAlcoholOrders" -> tradingActivity.typeOfAlcoholOrders))
         .++(tradingActivity.otherTypeOfAlcoholOrders.fold(Json.obj())(x => Json.obj("otherTypeOfAlcoholOrders" -> x)))
         .++(tradingActivity.doesBusinessImportAlcohol.fold(Json.obj())(x => Json.obj("doesBusinessImportAlcohol" -> x)))
@@ -694,7 +691,7 @@ object TradingActivity extends AwrsFieldConfig {
     // Remove the Producer and Broker text from the free text 'Other' field.
     // Check for the String plus delimiter first then just the String, this caters for spaces being used as the delimiter
     // as these will be trimmed if there is no genuine 'otherWholesaler' string after the 'Producer' or 'Broker' String.
-    def cleanseOtherWholesaler(wholesalerType: List[String], otherWholesaler: Option[String]): Option[String] = otherWholesaler match {
+    def cleanseOtherWholesaler(otherWholesaler: Option[String]): Option[String] = otherWholesaler match {
       case Some(other) =>
         val trimmed = other.split(Delimiter).filterNot(x => x == Producer._1 || x == Broker._1).mkString(Delimiter)
         trimmed.nonEmpty match {
@@ -718,7 +715,7 @@ object TradingActivity extends AwrsFieldConfig {
         doYouExportAlcohol <- (js \ "doYouExportAlcohol").validateOpt[String]
         exportLocation <- (js \ "exportLocation").validateOpt[List[String]]
       } yield {
-        val other = cleanseOtherWholesaler(wholesalerType, otherWholesaler)
+        val other = cleanseOtherWholesaler(otherWholesaler)
         TradingActivity(wholesalerType = getOrderedWholesalers(AwrsFormFields.wholesaler, augmentWholesaler(wholesalerType, otherWholesaler)),
           otherWholesaler = other,
           typeOfAlcoholOrders = typeOfAlcoholOrders,

@@ -45,7 +45,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       .thenReturn(true)
   }
 
-  val testIndexService: IndexService = new IndexService(mockDataCacheService, mockApplicationService, mockAccountUtils)
+  val testIndexService: IndexService = new IndexService(mockApplicationService, mockAccountUtils)
 
   "OptionUtil" must {
     "unsupported type must throw an exception" in {

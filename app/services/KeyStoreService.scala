@@ -40,7 +40,7 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
   @inline def fetchDeRegistrationDate(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[DeRegistrationDate]] =
     keyStoreConnector.fetchDataFromKeystore[Option[DeRegistrationDate]](deRegistrationDateName) flatMap {
-      case Some(someData@Some(data)) => Future.successful(someData)
+      case Some(someData@Some(_)) => Future.successful(someData)
       case _ => Future.successful(None)
     }
 
@@ -55,7 +55,7 @@ class KeyStoreService @Inject()(keyStoreConnector: AwrsKeyStoreConnector) {
 
   @inline def fetchWithdrawalReason()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[WithdrawalReason]] =
     keyStoreConnector.fetchDataFromKeystore[Option[WithdrawalReason]](withdrawalReasonName) flatMap {
-      case Some(someData@Some(data)) => Future.successful(someData)
+      case Some(someData@Some(_)) => Future.successful(someData)
       case _ => Future.successful(None)
     }
 

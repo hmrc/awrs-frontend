@@ -110,7 +110,7 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
         )(
           haveAnotherAnswer = (data: GroupMember) => data.addAnotherGrpMember.fold("")(x => x),
           amendHaveAnotherAnswer = amendHaveAnotherAnswer,
-          hasSingleNoAnswer = (fetchData: GroupMembers) => "This is not required for group members"
+          hasSingleNoAnswer = (_: GroupMembers) => "This is not required for group members"
         )(
           listObjToList = (listObj: GroupMembers) => listObj.members,
           listToListObj = (list: List[GroupMember]) => GroupMembers(list)

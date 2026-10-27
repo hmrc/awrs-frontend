@@ -25,6 +25,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionSectionHashUtil
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 trait SaveAndRoutable extends FrontendController with AwrsController {
@@ -67,7 +68,7 @@ trait SaveAndRoutable extends FrontendController with AwrsController {
       case _ => nextSection(isNewRecord)
     }
 
-  private def doRedirectReturn(param: Option[RedirectParam], isNewRecord: Boolean) =
+  private def doRedirectReturn(@unused param: Option[RedirectParam], @unused isNewRecord: Boolean) =
     Future.successful(Redirect(controllers.routes.ViewApplicationController.viewSection(section)))
 
   type MultiRecordSectionURL = (Int, Boolean, Boolean) => Call
@@ -100,16 +101,16 @@ trait SaveAndRoutable extends FrontendController with AwrsController {
   type NextSectionForBusinessType = (Option[String]) => String
 
   val sectionRouteMap: Map[String, NextSectionForBusinessType] = Map(
-    (businessDetailsName, (businessType: Option[String]) => businessRegistrationDetailsName),
-    (businessRegistrationDetailsName, (businessType: Option[String]) => placeOfBusinessName),
-    (placeOfBusinessName, (businessType: Option[String]) => businessContactsName),
+    (businessDetailsName, (_: Option[String]) => businessRegistrationDetailsName),
+    (businessRegistrationDetailsName, (_: Option[String]) => placeOfBusinessName),
+    (placeOfBusinessName, (_: Option[String]) => businessContactsName),
     (businessContactsName, {
       case Some("LTD_GRP") | Some("LLP_GRP") => groupMembersName
       case Some("Partnership") | Some("LP") | Some("LLP") => partnersName
       case Some(_) => additionalBusinessPremisesName
       case _ => ErrorString
     }),
-    (partnersName, (businessType: Option[String]) => additionalBusinessPremisesName),
+    (partnersName, (_: Option[String]) => additionalBusinessPremisesName),
     (additionalBusinessPremisesName, {
       case Some("LTD") | Some("LTD_GRP") => businessDirectorsName
       case Some(_) => tradingActivityName
@@ -120,10 +121,10 @@ trait SaveAndRoutable extends FrontendController with AwrsController {
       case Some(_) => partnersName
       case _ => ErrorString
     }),
-    (businessDirectorsName, (businessType: Option[String]) => tradingActivityName),
-    (tradingActivityName, (businessType: Option[String]) => productsName),
-    (productsName, (businessType: Option[String]) => suppliersName),
-    (suppliersName, (businessType: Option[String]) => indexName)
+    (businessDirectorsName, (_: Option[String]) => tradingActivityName),
+    (tradingActivityName, (_: Option[String]) => productsName),
+    (productsName, (_: Option[String]) => suppliersName),
+    (suppliersName, (_: Option[String]) => indexName)
   )
 
   private def whereToNext(implicit request: Request[AnyContent]): String =

@@ -29,9 +29,9 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
-import utils.SessionUtil.SessionUtilForRequest
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
@@ -81,7 +81,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
 
   // showBusinessType is added to enable users who had submitted the wrong legal entities to correct them post submission.
   // they will have to manually enter the amendment url in order to access this feature
-  def showBusinessType(showBusinessType: Boolean = false): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showBusinessType(@unused showBusinessType: Boolean = false): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (accountUtils.hasAwrs(ar.enrolments)) {

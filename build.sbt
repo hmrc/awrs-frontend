@@ -45,7 +45,13 @@ lazy val microservice = Project(appName, file("."))
     ),
   )
   .settings(
-    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s", "-feature", "-language:implicitConversions"),
+    scalacOptions ++= Seq(
+      "-feature",
+      "-Wconf:src=target/.*:s",
+      "-Wconf:src=routes/.*:s",
+      "-language:implicitConversions"
+    ),
+    scalacOptions ~= (_.distinct),
     TwirlKeys.templateImports ++= Seq(
       "uk.gov.hmrc.govukfrontend.views.html.components._",
       "uk.gov.hmrc.hmrcfrontend.views.html.components._",

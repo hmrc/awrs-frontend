@@ -93,7 +93,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def businessCustomerDetails(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
+  private def businessCustomerDetails(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Option[BusinessCustomerDetails]] =
     save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals) flatMap {
       case Some(data) if data.safeId.nonEmpty =>
         logger.info("[HomeController][businessCustomerDetails] - BC Details fetched from save4later")
@@ -111,7 +111,7 @@ class HomeController @Inject()(mcc: MessagesControllerComponents,
     }
 
   private def api4Journey(authRetrievals: StandardAuthRetrievals, callerId: Option[String])(implicit request: Request[AnyContent]): Future[Result] =
-    businessCustomerDetails(authRetrievals, callerId).flatMap {
+    businessCustomerDetails(authRetrievals).flatMap {
       _.fold(Future.successful(Redirect(applicationConfig.businessCustomerStartPage))) { details =>
         checkEtmpService.checkUsersEnrolments(details, authRetrievals.plainTextCredId) flatMap { result =>
           result match {

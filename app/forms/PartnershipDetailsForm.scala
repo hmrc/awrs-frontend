@@ -77,7 +77,7 @@ object PartnershipDetailsForm {
       case _ => Seq[String]()
     }) match {
       case Success(result) => result
-      case Failure(ex) => Seq[String]()
+      case Failure(_) => Seq[String]()
     }
 
   // cross field validation condition for when the partner is not a corporate body
