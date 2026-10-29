@@ -48,7 +48,7 @@ class MongoCryptoSpec extends PlaySpec {
       crypto.decrypt(crypto.encrypt(data)) mustBe data
     }
 
-    "return unencrypted JSON cached before encryption was reinstated as-is" in {
+    "return unencrypted JSON cached before encryption was reinstated" in {
       mongoCrypto().decrypt(data) mustBe data
     }
 
