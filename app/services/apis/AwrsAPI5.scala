@@ -43,7 +43,7 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
       case Some(_) =>
         save4LaterService.api.fetchSubscriptionTypeFrontEnd(authRetrievals) flatMap {
           case Some(subscriptionTypeFrontEnd) =>
-            checkSavedSubscriptionTypeFrontend(authRetrievals, subscriptionTypeFrontEnd) map {_ => subscriptionTypeFrontEnd}
+            checkSavedSubscriptionTypeFrontend(authRetrievals, subscriptionTypeFrontEnd) map { _ => subscriptionTypeFrontEnd }
           case _ => callETMP
         }
       case None => callETMP
@@ -55,7 +55,7 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
                                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     save4LaterService.mainStore.fetchTradingStartDetails(authRetrievals) flatMap {
       case Some(_) => Future.successful(true)
-      case _       =>
+      case _ =>
         val amendedSTFE = convertEtmpFormatSTFE(subTypeFrontend)
         val busCusDetails = convertToBusinessCustomerDetails(amendedSTFE)
         val businessDetails = amendedSTFE.businessDetails.get
@@ -71,8 +71,15 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
     }
   }
 
+  def refreshSubscriptionTypeFrontEnd(authRetrievals: StandardAuthRetrievals)
+                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionTypeFrontEnd] =
+    awrsConnector.lookupAWRSData(authRetrievals) flatMap { api5Data =>
+      val amendedSTFE = convertEtmpFormatSTFE(api5Data.as[AWRSFEModel].subscriptionTypeFrontEnd)
+      save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
+    }
+
   private[apis] def convertEtmpFormatSTFE(stfe: SubscriptionTypeFrontEnd): SubscriptionTypeFrontEnd = {
-    stfe.copy(businessDetails = stfe.businessDetails.map{
+    stfe.copy(businessDetails = stfe.businessDetails.map {
       bd => bd.copy(newAWBusiness = bd.newAWBusiness.map(_.invertedBeforeMarch2016Question))
     })
   }
@@ -85,15 +92,15 @@ class AwrsAPI5 @Inject()(val awrsConnector: AWRSConnector,
     lazy val updatedPremises = AdditionalBusinessPremisesList(amendedSTFE.additionalPremises.get.premises.drop(1))
 
     for {
-      dataCache <- save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
+      _ <- save4LaterService.api.saveSubscriptionTypeFrontEnd(amendedSTFE, authRetrievals)
       businessCustomerDetails <- save4LaterService.mainStore.saveBusinessCustomerDetails(authRetrievals, convertToBusinessCustomerDetails(amendedSTFE))
-      x <- getEntitySpecificData(newFeModel, businessCustomerDetails, authRetrievals)
-      businessType <- save4LaterService.mainStore.saveBusinessType(amendedSTFE.legalEntity.get, authRetrievals)
-      additionalPremises <- save4LaterService.mainStore.saveAdditionalBusinessPremisesList(authRetrievals, updatedPremises)
-      tradingActivity <- save4LaterService.mainStore.saveTradingActivity(authRetrievals, amendedSTFE.tradingActivity.get)
-      products <- save4LaterService.mainStore.saveProducts(authRetrievals, amendedSTFE.products.get)
-      suppliers <- save4LaterService.mainStore.saveSuppliers(authRetrievals, amendedSTFE.suppliers.get)
-      applicationDeclaration <- save4LaterService.mainStore.saveApplicationDeclaration(authRetrievals, amendedSTFE.applicationDeclaration.get)
+      _ <- getEntitySpecificData(newFeModel, businessCustomerDetails, authRetrievals)
+      _ <- save4LaterService.mainStore.saveBusinessType(amendedSTFE.legalEntity.get, authRetrievals)
+      _ <- save4LaterService.mainStore.saveAdditionalBusinessPremisesList(authRetrievals, updatedPremises)
+      _ <- save4LaterService.mainStore.saveTradingActivity(authRetrievals, amendedSTFE.tradingActivity.get)
+      _ <- save4LaterService.mainStore.saveProducts(authRetrievals, amendedSTFE.products.get)
+      _ <- save4LaterService.mainStore.saveSuppliers(authRetrievals, amendedSTFE.suppliers.get)
+      _ <- save4LaterService.mainStore.saveApplicationDeclaration(authRetrievals, amendedSTFE.applicationDeclaration.get)
     } yield newFeModel.subscriptionTypeFrontEnd
   }
 
