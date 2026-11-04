@@ -17,6 +17,7 @@
 package config
 
 import connectors.{BusinessMatchingConnector, BusinessMatchingConnectorImpl}
+import crypto.MongoCrypto
 import play.api.inject.{Binding, Module, bind => playBind}
 import play.api.{Configuration, Environment}
 import repositories.ShortLivedCacheRepository
@@ -38,20 +39,22 @@ class Bindings extends Module {
 class AwrsShortLivedCacheRepositoryProvider @Inject()(
     mongoComponent: MongoComponent,
     timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
+    appConfig: ApplicationConfig,
+    mongoCrypto: MongoCrypto
 )(implicit ec: ExecutionContext) extends Provider[ShortLivedCacheRepository] {
   override def get(): ShortLivedCacheRepository =
-    new ShortLivedCacheRepository("awrs-short-lived-cache", mongoComponent, timestampSupport, appConfig)
+    new ShortLivedCacheRepository("awrs-short-lived-cache", mongoComponent, timestampSupport, appConfig, mongoCrypto)
 }
 
 @Singleton
 class AwrsApiShortLivedCacheRepositoryProvider @Inject()(
     mongoComponent: MongoComponent,
     timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
+    appConfig: ApplicationConfig,
+    mongoCrypto: MongoCrypto
 )(implicit ec: ExecutionContext) extends Provider[ShortLivedCacheRepository] {
   override def get(): ShortLivedCacheRepository =
-    new ShortLivedCacheRepository("awrs-api-short-lived-cache", mongoComponent, timestampSupport, appConfig)
+    new ShortLivedCacheRepository("awrs-api-short-lived-cache", mongoComponent, timestampSupport, appConfig, mongoCrypto)
 }
 
 class MongoModule extends Module {

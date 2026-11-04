@@ -16,14 +16,12 @@
 
 package repositories
 
-import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.cache.CacheIdType
 
-object SessionCacheId extends CacheIdType[HeaderCarrier] with Logging {
+object SessionCacheId extends CacheIdType[HeaderCarrier] {
+
   override def run: HeaderCarrier => String = hc =>
-    hc.sessionId.map(_.value).getOrElse {
-      logger.warn("No sessionId found in HeaderCarrier, using empty string as cache key")
-      ""
-    }
+    hc.sessionId.map(_.value).getOrElse(throw new IllegalStateException("[SessionCacheId] No sessionId found in HeaderCarrier"))
+
 }
