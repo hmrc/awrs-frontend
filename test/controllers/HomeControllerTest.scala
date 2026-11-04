@@ -111,10 +111,10 @@ class HomeControllerTest extends AwrsUnitTestTraits
 
     "redirect to the Unauthorised kickout page if the user is an Individual with no UTR" in new TestHomeControllerEnv {
       setupMockSave4LaterServiceWithOnly(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchApplicationStatus = None)
-      when(mockAccountUtils.getUtr(ArgumentMatchers.any()))
-        .thenThrow(new UnsupportedAffinityGroup(s"[getUtr] No UTR found and affinity group was Individual"))
       setAuthMocks(Future.successful(
         new ~(new ~( new ~(Enrolments(Set(Enrolment("IR-CT", Seq.empty, "activated"))), Some(AffinityGroup.Individual)), Credentials("fakeCredID", "type")), Some(User))), mockAccountUtils)
+      when(mockAccountUtils.getUtr(ArgumentMatchers.any()))
+        .thenThrow(new UnsupportedAffinityGroup(s"[getUtr] No UTR found and affinity group was Individual"))
 
       val result = testHomeController.showOrRedirect(None).apply(SessionBuilder.buildRequestWithSession(userId))
       status(result) mustBe 401

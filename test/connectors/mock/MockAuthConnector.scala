@@ -63,7 +63,7 @@ trait MockAuthConnector extends AwrsUnitTestTraits {
                     authResult: Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Some[CredentialRole]] = Future.successful(authResultDefault()),
                     mockAccountUtils: Option[AccountUtils] = None
                   ): OngoingStubbing[Future[Enrolments ~ Option[AffinityGroup] ~ Option[Credentials] ~ Option[CredentialRole]]] = {
-    authResult.foreach{ case Enrolments(e) ~ _ ~ _ ~ _ =>
+    authResult.value.flatMap(_.toOption).foreach { case Enrolments(e) ~ _ ~ _ ~ _ =>
       val enrolment: Option[Enrolment] = e.find(_.key == "HMRC-AWRS-ORG")
 
       mockAccountUtils.foreach { utils =>

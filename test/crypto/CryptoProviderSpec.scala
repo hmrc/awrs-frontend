@@ -21,11 +21,6 @@ import play.api.Configuration
 import uk.gov.hmrc.crypto.PlainText
 
 class CryptoProviderSpec extends PlaySpec {
-  private def randomBase64Key(bytes: Int = 32): String = {
-    val b = new Array[Byte](bytes)
-    new java.security.SecureRandom().nextBytes(b)
-    java.util.Base64.getEncoder.encodeToString(b)
-  }
   private def cfgWith(key: String, previous: Seq[String] = Nil): Configuration = {
     val prev = previous.map(k => s""""$k"""").mkString(", ")
     val hocon =
@@ -38,10 +33,12 @@ class CryptoProviderSpec extends PlaySpec {
          |""".stripMargin
     Configuration(ConfigFactory.parseString(hocon))
   }
+
+  val key1 = "lQtfTMWfWJ6lUvQ+ZI2cy90J0PHNVVW41HDfg/LcR+s="
+  val key2 = "WhYcCCeJ0UkfLJZyO0PcItX+sZ7suPV6Jl0sqOpyDZ8="
   "MongoCryptoProvider" should {
     "encrypt and decrypt (round-trip) with the same key" in {
-      val key = randomBase64Key()
-      val provider = new CryptoProvider(cfgWith(key))
+      val provider = new CryptoProvider(cfgWith(key1))
       val crypto   = provider.crypto
       val plain = "Hello £Ü 𐍈 — {\"a\":1}"
       val enc   = crypto.encrypt(PlainText(plain))
@@ -49,19 +46,15 @@ class CryptoProviderSpec extends PlaySpec {
       crypto.decrypt(enc).value mustBe plain
     }
     "fail to decrypt with a different key" in {
-      val key1 = randomBase64Key()
-      val key2 = randomBase64Key()
       val p1 = new CryptoProvider(cfgWith(key1))
       val p2 = new CryptoProvider(cfgWith(key2))
       val enc = p1.crypto.encrypt(PlainText("secret"))
       an [SecurityException] must be thrownBy p2.crypto.decrypt(enc)
     }
     "support rotation via previousKeys (new key reads old ciphertext)" in {
-      val oldKey = randomBase64Key()
-      val newKey = randomBase64Key()
-      val oldProvider = new CryptoProvider(cfgWith(oldKey))
+      val oldProvider = new CryptoProvider(cfgWith(key1))
       val ciphertext  = oldProvider.crypto.encrypt(PlainText("rotate-me"))
-      val newProvider = new CryptoProvider(cfgWith(newKey, previous = Seq(oldKey)))
+      val newProvider = new CryptoProvider(cfgWith(key2, previous = Seq(key1)))
       newProvider.crypto.decrypt(ciphertext).value mustBe "rotate-me"
     }
   }
