@@ -19,9 +19,9 @@ package services
 import _root_.models.BusinessDetailsEntityTypes._
 import exceptions.{InvalidStateException, ResubmissionException}
 import models._
-import org.mockito.ArgumentMatchers
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.Mockito._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import services.DataCacheKeys._
 import models.CacheMap
@@ -141,7 +141,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   lazy val feModel: AWRSFEModel = api6LTDJson.as[AWRSFEModel]
   lazy val cachedSubscription: SubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd
 
-  val testApplicationService: ApplicationService = new ApplicationService(mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
+  val testApplicationService: ApplicationService = new ApplicationService(mockAWRSConnector, mockEmailService, testAPI5, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
 
   "Application Service" must {
     "getRegistrationReferenceNumber must return left when given self heal case " in {
@@ -180,6 +180,30 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
           result =>
             await(result) mustBe subscribeUpdateSuccessResponse
         , newAW = true)
+      }
+
+      "re-fetch API5 into the api store only when the cached subscription is missing, and send change indicators" in {
+        reset(mockMainStoreSave4LaterConnector, mockApiSave4LaterConnector)
+        setupUpdateApplication(cachedApiSubscription = None)
+
+        await(testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)(FakeRequest(), hc, global)) mustBe subscribeUpdateSuccessResponse
+
+        verify(mockAWRSConnector, times(1)).lookupAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockApiSave4LaterConnector, times(1))
+          .saveData4Later(ArgumentMatchers.any(), ArgumentMatchers.eq(subscriptionTypeFrontEndName), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockMainStoreSave4LaterConnector, never())
+          .saveData4Later(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+        (capturedUpdateJson() \ "subscriptionTypeFrontEnd" \ "changeIndicators").isDefined mustBe true
+      }
+
+      "not call API5 when the cached subscription is present" in {
+        reset(mockMainStoreSave4LaterConnector, mockApiSave4LaterConnector)
+        setupUpdateApplication(cachedApiSubscription = Some(cachedSubscription))
+
+        await(testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)(FakeRequest(), hc, global)) mustBe subscribeUpdateSuccessResponse
+
+        verify(mockAWRSConnector, never()).lookupAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+        (capturedUpdateJson() \ "subscriptionTypeFrontEnd" \ "changeIndicators").isDefined mustBe true
       }
 
       "send updated registration details to service with a valid address and handle success" in {
@@ -1288,9 +1312,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def sendUpdateSubscriptionTypeWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any, newAW: Boolean = false): Unit = {
-    setupMockSave4LaterService(fetchAll = cachedData())
-
+  def sendUpdateSubscriptionTypeWithAuthorisedUser(test: Future[SuccessfulUpdateSubscriptionResponse] => Any, newAW: Boolean = false): Unit = {
     val cachedSub = if (newAW) {
       val alteredBusinessDetails = cachedSubscription.businessDetails.map(bd => bd.copy(newAWBusiness = Some(NewAWBusiness("Yes", None))))
       cachedSubscription.copy(businessDetails = alteredBusinessDetails)
@@ -1298,10 +1320,24 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       cachedSubscription
     }
 
-    setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSub)
-    setupMockAWRSConnectorWithOnly(updateAWRSData = subscribeUpdateSuccessResponse)
+    setupUpdateApplication(cachedApiSubscription = Some(cachedSub))
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
-    testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)
+    val result = testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)
+    test(result)
+  }
+
+  def setupUpdateApplication(cachedApiSubscription: Option[SubscriptionTypeFrontEnd]): Unit = {
+    setupMockSave4LaterService(fetchAll = cachedData())
+    setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = Configure(Future.successful(cachedApiSubscription)))
+    setupMockAWRSConnectorWithOnly(lookupAWRSData = api6LTDJson, updateAWRSData = subscribeUpdateSuccessResponse)
+    setupMockKeyStoreServiceWithOnly(subscriptionStatusType = Configure(Future.successful(None)))
+    when(mockEmailService.sendConfirmationEmail(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
+  }
+
+  def capturedUpdateJson(): JsValue = {
+    val captor = ArgumentCaptor.forClass(classOf[JsValue])
+    verify(mockAWRSConnector, times(1)).updateAWRSData(captor.capture(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+    captor.getValue
   }
 
   def sendCallUpdateGroupBusinessPartnerWithAuthorisedUser(test: Future[SuccessfulUpdateGroupBusinessPartnerResponse] => Any) : Unit = {
