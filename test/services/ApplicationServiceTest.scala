@@ -186,7 +186,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         setupMockKeyStoreServiceForBusinessCustomerAddress()
         sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
           result =>
-            await(result) mustBe SuccessfulUpdateGroupBusinessPartnerResponse
+            await(result) mustBe updateGroupBusinessPartnerResponse
         }
       }
 
@@ -194,7 +194,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
         setupMockKeyStoreServiceForBusinessCustomerAddress(noAddress = true)
         sendCallUpdateGroupBusinessPartnerWithAuthorisedUser {
           result =>
-            await(result) mustBe SuccessfulUpdateGroupBusinessPartnerResponse
+            await(result) mustBe updateGroupBusinessPartnerResponse
         }
       }
 
@@ -1288,8 +1288,9 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     test(result)
   }
 
-  def sendUpdateSubscriptionTypeWithAuthorisedUser(test: Future[SuccessfulSubscriptionResponse] => Any, newAW: Boolean = false): Unit = {
+  def sendUpdateSubscriptionTypeWithAuthorisedUser(test: Future[SuccessfulUpdateSubscriptionResponse] => Any, newAW: Boolean = false): Unit = {
     setupMockSave4LaterService(fetchAll = cachedData())
+    setupMockKeyStoreService()
 
     val cachedSub = if (newAW) {
       val alteredBusinessDetails = cachedSubscription.businessDetails.map(bd => bd.copy(newAWBusiness = Some(NewAWBusiness("Yes", None))))
@@ -1301,7 +1302,8 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSub)
     setupMockAWRSConnectorWithOnly(updateAWRSData = subscribeUpdateSuccessResponse)
     implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
-    testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)
+    val result = testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)
+    test(result)
   }
 
   def sendCallUpdateGroupBusinessPartnerWithAuthorisedUser(test: Future[SuccessfulUpdateGroupBusinessPartnerResponse] => Any) : Unit = {
@@ -1309,6 +1311,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSubscription)
     setupMockAWRSConnectorWithOnly(updateGroupBusinessPartner = updateGroupBusinessPartnerResponse)
     FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
-    testApplicationService.callUpdateGroupBusinessPartner(cachedData(), Some(cachedSubscription), testSubscriptionStatusTypeApproved, TestUtil.defaultAuthRetrieval)
+    val result = testApplicationService.callUpdateGroupBusinessPartner(cachedData(), Some(cachedSubscription), testSubscriptionStatusTypeApproved, TestUtil.defaultAuthRetrieval)
+    test(result)
   }
 }
