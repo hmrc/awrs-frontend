@@ -29,7 +29,6 @@ import uk.gov.hmrc.helpers.http.StubbedBasicHttpCalls
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys, SessionId => HcSessionId}
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
