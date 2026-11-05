@@ -27,7 +27,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.{
   exactly => exactlyTimes
 }
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder

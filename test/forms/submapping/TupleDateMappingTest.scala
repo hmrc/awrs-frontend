@@ -46,11 +46,6 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar with AwrsFormTestU
     case false => simpleErrorMessage(fieldKey, "testkey.tooLate")
   }
 
-  private val fieldMissing = (fieldKey: String) => (date: TupleDate) => isDateBefore(latestDate, date) match {
-    case true => Valid
-    case false => simpleErrorMessage(fieldKey, "testkey.fieldMissing")
-  }
-
   private case class TestForm(sub: TupleDate, sub2: TupleDate)
 
   private def testDate_compulsory(newBusiness: Boolean): Mapping[TupleDate] =

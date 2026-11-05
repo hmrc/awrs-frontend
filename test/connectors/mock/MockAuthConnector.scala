@@ -16,19 +16,16 @@
 
 package connectors.mock
 
-import java.util.UUID
-
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments, User}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import java.util.UUID
 import scala.concurrent.Future
-import uk.gov.hmrc.auth.core.CredentialRole
 
 sealed trait BType
 
