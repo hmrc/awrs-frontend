@@ -41,7 +41,7 @@
 @(isAPI5: Boolean, businessType: Option[String], placeOfBusinessForm: Form[models.PlaceOfBusiness])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{
+@implicitFormInstance: Option[Form[_]] = @{
     Some(placeOfBusinessForm)
 }
 
@@ -50,7 +50,7 @@
 }
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.PlaceOfBusinessController.saveAndReturn
     } else {
         controllers.routes.PlaceOfBusinessController.saveAndContinue
@@ -58,7 +58,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")

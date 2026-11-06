@@ -152,7 +152,7 @@ case class TargetFieldIds(anchor: String, otherIds: String*)
   * All types inheriting this trait must contain a message key.
   */
 trait MessageLookup extends MessageConfig[String] {
-  def toString(implicit messages: Messages): String = ErrorMessageLookup.messageLookup(this)
+  def toString(using messages: Messages): String = ErrorMessageLookup.messageLookup(this)
 }
 
 /**

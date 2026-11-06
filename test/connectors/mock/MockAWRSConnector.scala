@@ -65,7 +65,7 @@ trait MockAWRSConnector extends AwrsUnitTestTraits {
     lookupAWRSData ifConfiguredThen (jsValue => when(mockAWRSConnector.lookupAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(jsValue)))
     checkStatus ifConfiguredThen (status => when(mockAWRSConnector.checkStatus(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(status)))
     getStatusInfo ifConfiguredThen (info => when(mockAWRSConnector.getStatusInfo(ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(info)))
-    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
+    submitAWRSData ifConfiguredThen (data => when(mockAWRSConnector.submitAWRSData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
     updateAWRSData ifConfiguredThen (data => when(mockAWRSConnector.updateAWRSData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
     updateGroupBusinessPartner ifConfiguredThen (data => when(mockAWRSConnector.updateGroupBusinessPartner(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(data)))
   }

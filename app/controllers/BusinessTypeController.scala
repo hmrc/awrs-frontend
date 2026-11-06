@@ -31,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
@@ -50,7 +51,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
   private def standardApi5Journey(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
     for {
       _ <- api5.retrieveApplication(authRetrievals)
-      Some(businessType) <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
+      case Some(businessType) <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
     } yield {
       businessCustomerDetails match {
@@ -65,7 +66,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
   private def api4Journey(authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] =
     authorisedAction { ar =>
       for {
-        Some(bcd) <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
+        case Some(bcd) <- save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals)
         _ <- save4LaterService.mainStore.saveNewApplicationType(NewApplicationType(Some(true)), authRetrievals)
         businessType <- save4LaterService.mainStore.fetchBusinessType(authRetrievals)
       } yield {
@@ -80,7 +81,7 @@ class BusinessTypeController @Inject()(mcc: MessagesControllerComponents,
 
   // showBusinessType is added to enable users who had submitted the wrong legal entities to correct them post submission.
   // they will have to manually enter the amendment url in order to access this feature
-  def showBusinessType(showBusinessType: Boolean = false): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showBusinessType(@unused showBusinessType: Boolean = false): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         if (accountUtils.hasAwrs(ar.enrolments)) {

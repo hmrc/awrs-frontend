@@ -41,7 +41,7 @@
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.TradingActivityController.saveAndReturn
     } else {
         controllers.routes.TradingActivityController.saveAndContinue
@@ -49,7 +49,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")

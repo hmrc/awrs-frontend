@@ -109,7 +109,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingDateController.saveAndReturn()
+        val res = tradingDateController.saveAndReturn
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
         status(res) mustBe 303
@@ -134,7 +134,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingDateController.saveAndReturn()
+        val res = tradingDateController.saveAndReturn
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
         status(res) mustBe 303
@@ -164,7 +164,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(NewApplicationMode))
 
-          val res = tradingDateController.saveAndReturn()
+          val res = tradingDateController.saveAndReturn
             .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
           status(res) mustBe 303
@@ -193,7 +193,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(NewApplicationMode))
 
-          val res = tradingDateController.saveAndReturn()
+          val res = tradingDateController.saveAndReturn
             .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType).withMethod("POST"))
 
           status(res) mustBe 303

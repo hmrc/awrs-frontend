@@ -47,7 +47,7 @@ object CompanyRegMapping {
   def companyReg_compulsory(prefix: String): Mapping[CompanyRegDetails] = mapping(
     crn -> crn_compulsory(fieldId = prefix attach crn).toStringFormatter,
     dateOfIncorporation -> dateOfIncorporation_compulsory
-  )(CompanyRegDetails.apply)(CompanyRegDetails.unapply)
+  )(CompanyRegDetails.apply)(companyRegDetails => Some(Tuple.fromProductTyped(companyRegDetails)))
 
 
   implicit class CompanyRegUtil(companyRegMapping: Mapping[CompanyRegDetails]) {

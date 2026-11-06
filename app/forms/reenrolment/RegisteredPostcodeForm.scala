@@ -51,7 +51,7 @@ object RegisteredPostcodeForm extends AwrsValidator{
 
   lazy val awrsRegisteredPostcodeValidationForm: Form[AwrsPostcodeModel] = Form(mapping(
     registeredPostcode -> compulsoryQueryField.toStringFormatter
-  )(AwrsPostcodeModel.apply)(AwrsPostcodeModel.unapply))
+  )(AwrsPostcodeModel.apply)(model => Some(model.registeredPostcode)))
 
   lazy val awrsRegisteredPostcodeForm: PrevalidationAPI[AwrsPostcodeModel] = PreprocessedForm(
     awrsRegisteredPostcodeValidationForm,

@@ -118,7 +118,7 @@
 //        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
 //          .thenReturn(Future.successful(ReturnedApplicationMode))
 //
-//        val res = testTradingNameController.saveAndReturn()
+//        val res = testTradingNameController.saveAndReturn
 //          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 //
 //        status(res) mustBe 303
@@ -142,7 +142,7 @@
 //        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
 //          .thenReturn(Future.successful(NewApplicationMode))
 //
-//        val res = testTradingNameController.saveAndContinue()
+//        val res = testTradingNameController.saveAndContinue
 //          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 //
 //        status(res) mustBe 303
@@ -167,7 +167,7 @@
 //        when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
 //          .thenReturn(Future.successful(NewApplicationMode))
 //
-//        val res = testTradingNameController.saveAndContinue()
+//        val res = testTradingNameController.saveAndContinue
 //          .apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, businessType))
 //
 //        status(res) mustBe 303

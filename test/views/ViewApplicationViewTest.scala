@@ -19,15 +19,15 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.ViewApplicationController
-import models.BusinessDetailsEntityTypes._
+import models.BusinessDetailsEntityTypes.*
 import models.{ApplicationDeclaration, Suppliers, _}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.i18n.Messages
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.DataCacheKeys._
 import services.ServicesUnitTestFixture
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
@@ -90,7 +90,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     CacheMap(id, cacheMap)
   }
 
-  def prepMap[T](key: String, optionParam: Option[T])(implicit format: Format[T]) =
+  def prepMap[T](key: String, optionParam: Option[T])(using format: Format[T]) =
     optionParam match {
       case Some(param) => Map[String, JsValue](key -> Json.toJson(param))
       case _ => Map[String, JsValue]()
@@ -141,7 +141,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     def viewSection(sectionName: String, cacheMap: CacheMap, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
       setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = cacheMap)
       setAuthMocks()
-      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
+      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
       val result = testViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -149,7 +149,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     def viewSectionEmptyCache(sectionName: String, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
       setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = Future.successful(None))
       setAuthMocks()
-      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
+      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
       val result = testViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }

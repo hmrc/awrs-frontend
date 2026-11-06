@@ -12,7 +12,7 @@ val coursierDirectory = sys.env.get("COURSIER_REPOSITORIES")
   .getOrElse("https/repo1.maven.org/maven2/")
 
 ThisBuild / majorVersion := 3
-ThisBuild / scalaVersion := "2.13.18"
+ThisBuild / scalaVersion := "3.3.7"
 
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala)
@@ -23,7 +23,7 @@ lazy val scoverageSettings = {
   Seq(
     // Semicolon-separated list of regexs matching classes to exclude
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;views.html.*;app.Routes.*;prod.*;uk.gov.hmrc.*;testOnlyDoNotUseInAppConf.*;config.*;models.*;awrs.*;awrs.app.*;view_models.*;views.helpers.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 82,
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true,
     Test / parallelExecution := false
@@ -45,12 +45,18 @@ lazy val microservice = Project(appName, file("."))
     ),
   )
   .settings(
-    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s", "-feature"),
+    scalacOptions ++= Seq(
+      "-feature",
+      "-Wconf:src=target/.*:s",
+      "-Wconf:src=routes/.*:s",
+      "-language:implicitConversions"
+    ),
+    scalacOptions ~= (_.distinct),
     TwirlKeys.templateImports ++= Seq(
-      "uk.gov.hmrc.govukfrontend.views.html.components._",
-      "uk.gov.hmrc.hmrcfrontend.views.html.components._",
-      "uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._",
-      "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
+      "uk.gov.hmrc.govukfrontend.views.html.components.*",
+      "uk.gov.hmrc.hmrcfrontend.views.html.components.*",
+      "uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.*",
+      "uk.gov.hmrc.hmrcfrontend.views.html.helpers.*"
     )
   )
 
@@ -61,5 +67,6 @@ lazy val it = project
   .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.itDependencies)
+  .settings(scalacOptions ~= (_.distinct))
 
 addCommandAlias("runAllChecks", ";clean;compile;coverage;test;it/test;coverageReport")

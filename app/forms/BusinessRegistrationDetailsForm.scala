@@ -105,7 +105,7 @@ object BusinessRegistrationDetailsForm {
         crnMapping -> (companyReg_compulsory(crnMapping).toOptionalCompanyRegMapping iff noIdIsSupplied(doYouHaveCrn) ||| answeredYesToDoYouHaveCRN),
         doYouHaveVrn -> (doYouHaveVRN_compulsory(doYouHaveVrn) iff ids.contains(doYouHaveVrn)),
         vrn -> (vrn_compulsory(vrn) iff answeredYesToDoYouHaveVRN ||| answeredYesToDoYouHaveVRN)
-      )(BusinessRegistrationDetails.apply)(BusinessRegistrationDetails.unapply))
+      )(BusinessRegistrationDetails.apply)(details => Some(Tuple.fromProductTyped(details))))
   }
 
   val businessRegistrationDetailsForm: String => PrevalidationAPI[BusinessRegistrationDetails] = (entityType: String) => PreprocessedForm(businessRegistrationDetailsValidationForm(entityType)).addNewPreprocessFunction(inferDoYouHave)

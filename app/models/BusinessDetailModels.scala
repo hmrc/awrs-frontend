@@ -34,7 +34,7 @@ object BusinessDetailsEntityTypes extends Enumeration {
       case JsString(s) =>
         Try(BusinessDetailsEntityTypes.withName(s)) match {
           case Success(value) => JsSuccess(value)
-          case Failure(e) => JsError(s"Enumeration expected of type: '${BusinessDetailsEntityTypes.getClass}', but it does not appear to contain the value: '$s'")
+          case Failure(_) => JsError(s"Enumeration expected of type: '${BusinessDetailsEntityTypes.getClass}', but it does not appear to contain the value: '$s'")
         }
       case _ => JsError("String value expected")
     }

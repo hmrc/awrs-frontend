@@ -41,7 +41,7 @@ class ViewEnrolmentsController @Inject() (mcc: MessagesControllerComponents,
   val signInUrl: String             = applicationConfig.signIn
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def showViewEnrolmentsPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showViewEnrolmentsPage: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(template()))
   }
 

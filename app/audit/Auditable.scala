@@ -34,7 +34,7 @@ class Auditable @Inject()(auditConnector: DefaultAuditConnector) {
                     tags: Map[String, String] = Map.empty[String, String],
                     detail: Map[String, String],
                     eventType: String)
-                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Unit =
+                   (using hc: HeaderCarrier, ec: ExecutionContext): Unit =
     audit.sendDataEvent(
       DataEvent(
         appName,

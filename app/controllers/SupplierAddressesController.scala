@@ -59,10 +59,10 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
 
   override val listToListObj: List[Supplier] => Suppliers = (suppliers: List[Supplier]) => Suppliers(suppliers)
   override val listObjToList: Suppliers => List[Supplier] = (suppliers: Suppliers) => suppliers.suppliers
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(suppliersName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(suppliersName)
   override val section: String = suppliersName
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.SupplierAddressesController.actionDelete(id)
-  override lazy val deleteHeadingParameter: String = "awrs.view_application.supplier"
+  override val deleteHeadingParameter: String = "awrs.view_application.supplier"
   override val addNoAnswerRecord: List[Supplier] => List[Supplier] = (_: List[models.Supplier]) => List(Supplier(Some("No"), None, None, None, None, None, None))
   override val amendHaveAnotherAnswer: (Supplier, String) => Supplier = (data: Supplier, newAnswer: String) => data.copy(additionalSupplier = Some(newAnswer))
 

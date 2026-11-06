@@ -34,7 +34,7 @@
 @(confirmationForm: Form[String], businessType: Option[String])(implicit request: Request[AnyRef], viewApplicationType: ViewApplicationType = LinearViewMode , messages: Messages, applicationConfig: ApplicationConfig)
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.AlreadyStartingTradingController.saveAndReturn(1, isNewRecord = false)
     } else {
         controllers.routes.AlreadyStartingTradingController.saveAndContinue

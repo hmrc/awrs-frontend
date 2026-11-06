@@ -32,7 +32,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import services.{DeEnrolService, KeyStoreService}
-import uk.gov.hmrc.http.HttpResponse
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.{awrs_application_too_soon_error, awrs_reapplication_confirmation}
 
@@ -127,7 +126,7 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
   private def showWithException(statusNotification: Option[StatusNotification])(test: Future[Result] => Any): Unit = {
     when(mockAWRSNotificationConnector.fetchNotificationCache(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(statusNotification))
     setAuthMocks()
-    val result = testReapplicationController.show().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testReapplicationController.show.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -137,8 +136,8 @@ class ReapplicationControllerTest extends AwrsUnitTestTraits
     setupMockApiSave4LaterService()
     setAuthMocks()
     when(mockDeEnrolService.deEnrolAWRS(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-    when(mockKeyStoreService.removeAll(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
-    val result = testReapplicationController.submit().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD").withMethod("POST"))
+    when(mockKeyStoreService.removeAll(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.unit)
+    val result = testReapplicationController.submit.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "LTD").withMethod("POST"))
     test(result)
   }
 }

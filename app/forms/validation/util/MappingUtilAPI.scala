@@ -128,7 +128,7 @@ object MappingUtilAPI {
         val second: ValidationResult = additionalValidation.bind(data)
 
         def processErr(err: Invalid): Seq[FormError] =
-          err.errors.toSeq.flatten.foldLeft(Seq[FormError]())((seq, ve) => seq ++ FormError(key, ve.message, ve.args))
+          err.errors.map(ve => FormError(key, ve.message, ve.args))
 
         first match {
           case Left(ferrors) => Left(ferrors)

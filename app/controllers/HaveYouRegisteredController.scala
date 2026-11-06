@@ -43,7 +43,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
   val signInUrl: String = applicationConfig.signIn
 
 
-  def showHaveYouRegisteredPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showHaveYouRegisteredPage: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         keyStoreService.fetchHaveYouRegistered flatMap {
@@ -54,7 +54,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
     }
   }
 
-  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         haveYouRegisteredForm.bindFromRequest().fold(

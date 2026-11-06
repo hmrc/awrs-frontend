@@ -37,12 +37,12 @@
 
 @(businessDirectorsForm: Form[models.BusinessDirector], businessDirectorId: Int, isNewRecord: Boolean)(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode,  messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(businessDirectorsForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(businessDirectorsForm) }
 
 @businessType = @{request.getBusinessType.fold("")(x=>x)}
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.BusinessDirectorsController.saveAndReturn(businessDirectorId, isNewRecord)
     } else {
         controllers.routes.BusinessDirectorsController.saveAndContinue(businessDirectorId, isNewRecord)
@@ -50,7 +50,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")
@@ -59,14 +59,14 @@
 
 @h1text = @{
     businessDirectorId match {
-        case  1 if isEditMode & !isNewRecord => messages("awrs.business_directors.heading.first.edit")
+        case  1 if isEditMode() & !isNewRecord => messages("awrs.business_directors.heading.first.edit")
         case  1                              => messages("awrs.business_directors.heading.first")
         case id                              => messages("awrs.business_directors.heading", messages(headingPrefix(enter = "awrs.director.what.are", isNewRecord = isNewRecord)), ordinalIntSuffix(id))
     }
 }
 
 @directorHeading = @{
-    (businessDirectorId, isEditMode) match {
+    (businessDirectorId, isEditMode()) match {
         case (1, false) => messages("awrs.business_directors.role_question.first")
         case _ => messages("awrs.business_directors.role_question.additional")
     }
@@ -83,7 +83,7 @@
 }
 
 @personOrCompanyClass = @{
-    (businessDirectorId, isEditMode) match {
+    (businessDirectorId, isEditMode()) match {
         case (1, false) => " hidden"
         case _ => ""
     }
@@ -279,7 +279,7 @@
                 )
             </div>
 
-            @if(!isEditMode){
+            @if(!isEditMode()){
                 <div class="govuk-form-group">
 
                     @govukRadios(

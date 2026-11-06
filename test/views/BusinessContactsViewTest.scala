@@ -26,10 +26,10 @@ import org.jsoup.nodes.{Document, Element}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.{EmailVerificationService, JourneyConstants, ServicesUnitTestFixture}
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.Future
@@ -42,7 +42,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
   val businessCustomerDetailsFormId = "businessCustomerDetails"
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   def testRequest(premises: BusinessContacts): FakeRequest[AnyContentAsFormUrlEncoded] =
     TestUtil.populateFakeRequest[BusinessContacts](FakeRequest(), BusinessContactsForm.businessContactsValidationForm, premises)
@@ -127,7 +127,7 @@ class BusinessContactsViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(businessContactsName) + 1

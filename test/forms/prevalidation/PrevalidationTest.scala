@@ -19,7 +19,7 @@ package forms.prevalidation
 import forms.prevalidation.CaseOption.CaseOption
 import forms.prevalidation.TrimOption.TrimOption
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import utils.AwrsUnitTestTraits
 
 class PrevalidationTest extends AwrsUnitTestTraits {
@@ -31,7 +31,7 @@ class PrevalidationTest extends AwrsUnitTestTraits {
     val dummyForm = Form[DummyData](
       mapping(
         "string1" -> text
-      )(DummyData.apply)(DummyData.unapply)
+      )(DummyData.apply)(dummyData => Some(dummyData.string1))
     )
 
     def preprocessedForm(trims: Map[String, TrimOption] = Map(), caseRules: Map[String, CaseOption] = Map()) = PreprocessedForm(dummyForm, trims, caseRules)

@@ -53,23 +53,23 @@ class AwrsControllerTest extends AwrsUnitTestTraits
 
   "The index page which implements AwrsController" must {
 
-    def noRedirection()(implicit result: Future[Result]): Unit = {
+    def noRedirection(result: Future[Result]): Unit = {
       status(result) mustBe OK
     }
 
-    def redirected()(implicit result: Future[Result]): Unit = {
+    def redirected(result: Future[Result]): Unit = {
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/alcohol-wholesale-scheme/status-page")
     }
 
     "not perform any redirection if the status is not rejected" in {
-      getWithAuthorisedUserCtWithStatusPending(implicit result => noRedirection())
-      getWithAuthorisedUserCtWithStatusApproved(implicit result => noRedirection())
-      getWithAuthorisedUserCtWithStatusApprovedWithConditions(implicit result => noRedirection())
+      getWithAuthorisedUserCtWithStatusPending(noRedirection)
+      getWithAuthorisedUserCtWithStatusApproved(noRedirection)
+      getWithAuthorisedUserCtWithStatusApprovedWithConditions(noRedirection)
     }
 
     "redirect back to the status page if the status is rejected" in {
-      getWithAuthorisedUserCtWithStatusRejected(implicit result => redirected())
+      getWithAuthorisedUserCtWithStatusRejected(redirected)
     }
   }
 
@@ -101,7 +101,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     )
     setupMockIndexService()
     setAuthMocks()
-    val result = testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -117,7 +117,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     setupMockIndexService(showContinueButton = false)
     setupMockApplicationService(hasAPI5ApplicationChanged = false)
     setAuthMocks()
-    val result = testIndexController.showIndex().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
+    val result = testIndexController.showIndex.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, "SOP"))
     test(result)
   }
 
@@ -134,7 +134,7 @@ class AwrsControllerTest extends AwrsUnitTestTraits
     getWithAuthorisedUserCtWithStatus(testSubscriptionStatusTypeRejected)(_)
 
   def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 }

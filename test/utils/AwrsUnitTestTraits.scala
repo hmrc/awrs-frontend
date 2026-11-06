@@ -21,13 +21,13 @@ import config.ApplicationConfig
 import connectors.EnrolmentStoreProxyConnector
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.{Assertion, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.Helpers.{defaultAwaitTimeout, stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi, await => helperAwait}
 import services.{BusinessDetailsService, BusinessMatchingService, DeEnrolService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -114,7 +114,7 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   lazy val partnerEntities = List("Partnership", "LLP", "LLP_GRP")
   lazy val groupEntities = List("LTD_GRP", "LLP_GRP")
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   implicit def convertToOption[T](value: T): Option[T] = Some(value)
 
@@ -175,12 +175,12 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
     case _ => Ids(utr = true, nino = false, crn = true, vrn = true)
   }
 
-  def testId(shouldExist: Boolean)(targetFieldId: String)(implicit doc: Document): Assertion = shouldExist match {
+  def testId(shouldExist: Boolean)(targetFieldId: String)(using doc: Document): Assertion = shouldExist match {
     case false => doc.getElementById(targetFieldId) mustBe null
     case true => doc.getElementById(targetFieldId) must not be null
   }
 
-  def testText(expectedText: String)(targetFieldId: String)(implicit doc: Document): Assertion = {
+  def testText(expectedText: String)(targetFieldId: String)(using doc: Document): Assertion = {
     doc.getElementById(targetFieldId).text mustBe expectedText
   }
 

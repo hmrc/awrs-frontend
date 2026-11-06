@@ -42,7 +42,7 @@ class EmailVerificationConnectorISpec extends IntegrationSpec with Injecting wit
 
   "sendVerificationEmail" must {
 
-    def testPostCall(implicit  hc: HeaderCarrier): Future[Boolean] = connector.sendVerificationEmail(testEmail)
+    def testPostCall(using  hc: HeaderCarrier): Future[Boolean] = connector.sendVerificationEmail(testEmail)
 
     "return success equals true, for successful created email sending" in {
       mockPostResponse(sendEmailURI, CREATED)

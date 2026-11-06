@@ -17,11 +17,12 @@
 package builders
 
 import java.util.UUID
-
 import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import utils.AwrsSessionKeys
+
+import scala.annotation.unused
 
 object SessionBuilder {
 
@@ -58,7 +59,7 @@ object SessionBuilder {
     )
   }
 
-  def buildRequestWithSession(userId: String, method: String, path: String) = {
+  def buildRequestWithSession(userId: String, method: String, @unused path: String) = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest(method = method, path = "/").withSession(
       "sessionId"                                                -> sessionId,

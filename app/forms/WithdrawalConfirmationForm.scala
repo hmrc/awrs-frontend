@@ -33,6 +33,6 @@ object WithdrawalConfirmationForm {
 
   val withdrawalConfirmation = Form(mapping(
     fieldId -> yesNoQuestion_compulsory(fieldId = fieldId, errorMessageId = "awrs.withdrawal.confirmation.error.empty")
-    )(WithdrawalConfirmation.apply)(WithdrawalConfirmation.unapply))
+    )(WithdrawalConfirmation.apply)(withdrawalConfirmation => Some(withdrawalConfirmation.confirmation)))
 
 }

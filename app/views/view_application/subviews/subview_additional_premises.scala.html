@@ -55,7 +55,7 @@
         
         case _ => {
             @model.premises.zipWithIndex.map { case (premises, id) =>
-                @content_additional_premises(premises, id + 1)(implicitly, cssClass = {isSectionEdit match {
+                @content_additional_premises(premises, id + 1)(implicitly, cssClass = {isSectionEdit() match {
                     case true => Some("govuk-summary-list__row")
                     case false => None
                 }}, implicitly, implicitly)
@@ -67,12 +67,12 @@
 
 @topAdd(model : models.AdditionalBusinessPremisesList) = {
     @if(model.premises.size > 1) {
-        <p class="govuk-body">@add_none_table_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.premises"))</p>
+        <p class="govuk-body">@add_none_table_link_helper(isSectionEdit())("top", addLinkHref(model), messages("awrs.view_application.premises"))</p>
     }
 }
 
 @bottomAdd(model : models.AdditionalBusinessPremisesList)  = {
-    @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.premises"))
+    @add_none_table_link_helper(isSectionEdit())("bottom", addLinkHref(model), messages("awrs.view_application.premises"))
 }
 
 @someModel match {

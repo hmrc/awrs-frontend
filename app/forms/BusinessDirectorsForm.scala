@@ -166,7 +166,7 @@ object BusinessDirectorsForm {
       vrn -> (vrn_compulsory() iff (whenDirectorIsCompany &&& whenAnsweredYesToVRN)),
       "directorsAndCompanySecretaries" -> directorsAndCompanySecretaries_compulsory,
       "otherDirectors" -> otherDirectors_compulsory
-    )(BusinessDirector.apply)(BusinessDirector.unapply))
+    )(BusinessDirector.apply)(businessDirector => Some(Tuple.fromProductTyped(businessDirector))))
   }
 
   val businessDirectorsForm: PrevalidationAPI[BusinessDirector] = PreprocessedForm(businessDirectorsValidationForm).addNewPreprocessFunction(inferDoYouHave)

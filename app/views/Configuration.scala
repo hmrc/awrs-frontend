@@ -33,7 +33,7 @@ object Configuration {
 
   case object ReturnedApplicationEditMode extends NewBusinessStartDateConfiguration
 
-  def showHint1(implicit request: Request[AnyContent]): Boolean =
+  def showHint1(request: Request[AnyContent]): Boolean =
     request getSessionStatus match {
       case None => throw new RuntimeException("Missing status in session data")
       case Some(Approved) | Some(ApprovedWithConditions) | Some(Revoked) | Some(RevokedUnderReviewOrAppeal) => false

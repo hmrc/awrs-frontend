@@ -46,7 +46,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
   implicit val ec: ExecutionContext = mcc.executionContext
   val signInUrl: String             = applicationConfig.signIn
 
-  def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showArwsUrnPage: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
           keyStoreService.fetchAwrsEnrolmentUrn flatMap {
@@ -57,7 +57,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
     }
   }
 
-  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
           awrsEnrolmentUrnForm

@@ -44,16 +44,16 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, mockTemplate, mockTemplateApp)
 
   lazy val urlMap: Map[String, Option[Int] => String] = Map[String, (Option[Int]) => String](
-    (businessDetailsName, (id: Option[Int]) => controllers.routes.TradingNameController.showTradingName(true).url),
-    (businessRegistrationDetailsName, (id: Option[Int]) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).url),
-    (placeOfBusinessName, (id: Option[Int]) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).url),
-    (businessContactsName, (id: Option[Int]) => controllers.routes.BusinessContactsController.showBusinessContacts(isLinearMode = true).url),
+    (businessDetailsName, (_: Option[Int]) => controllers.routes.TradingNameController.showTradingName(true).url),
+    (businessRegistrationDetailsName, (_: Option[Int]) => controllers.routes.BusinessRegistrationDetailsController.showBusinessRegistrationDetails(isLinearMode = true).url),
+    (placeOfBusinessName, (_: Option[Int]) => controllers.routes.PlaceOfBusinessController.showPlaceOfBusiness(isLinearMode = true).url),
+    (businessContactsName, (_: Option[Int]) => controllers.routes.BusinessContactsController.showBusinessContacts(isLinearMode = true).url),
     (groupMembersName, (id: Option[Int]) => controllers.routes.GroupMemberController.showMemberDetails(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url),
     (partnersName, (id: Option[Int]) => controllers.routes.BusinessPartnersController.showPartnerMemberDetails(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url),
     (additionalBusinessPremisesName, (id: Option[Int]) => controllers.routes.AdditionalPremisesController.showPremisePage(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url),
     (businessDirectorsName, (id: Option[Int]) => controllers.routes.BusinessDirectorsController.showBusinessDirectors(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url),
-    (tradingActivityName, (id: Option[Int]) => controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url),
-    (productsName, (id: Option[Int]) => controllers.routes.ProductsController.showProducts(isLinearMode = true).url),
+    (tradingActivityName, (_: Option[Int]) => controllers.routes.TradingActivityController.showTradingActivity(isLinearMode = true).url),
+    (productsName, (_: Option[Int]) => controllers.routes.ProductsController.showProducts(isLinearMode = true).url),
     (suppliersName, (id: Option[Int]) => controllers.routes.SupplierAddressesController.showSupplierAddressesPage(id.fold(1)(x => x), isLinearMode = true, isNewRecord = true).url)
   )
   
@@ -65,7 +65,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     require(total >= 0)
     total match {
       case 0 => None
-      case num => GroupMembers(List.fill(total)(testGroupMember))
+      case _ => GroupMembers(List.fill(total)(testGroupMember))
     }
   }: Option[GroupMembers]
 
@@ -73,7 +73,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     require(total >= 0)
     total match {
       case 0 => None
-      case num => Partners(List.fill(total)(testPartner()))
+      case _ => Partners(List.fill(total)(testPartner()))
     }
   }: Option[Partners]
 
@@ -81,7 +81,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     require(total >= 0)
     total match {
       case 0 => None
-      case num => AdditionalBusinessPremisesList(List.fill(total)(testAdditionalBusinessPremises))
+      case _ => AdditionalBusinessPremisesList(List.fill(total)(testAdditionalBusinessPremises))
     }
   }: Option[AdditionalBusinessPremisesList]
 
@@ -89,7 +89,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     require(total >= 0)
     total match {
       case 0 => None
-      case num => BusinessDirectors(List.fill(total)(testBusinessDirector))
+      case _ => BusinessDirectors(List.fill(total)(testBusinessDirector))
     }
   }: Option[BusinessDirectors]
 
@@ -97,7 +97,7 @@ class BackButtonFunctionalityTest extends AwrsUnitTestTraits
     require(total >= 0)
     total match {
       case 0 => None
-      case num => Suppliers(List.fill(total)(testSupplier()))
+      case _ => Suppliers(List.fill(total)(testSupplier()))
     }
   }: Option[Suppliers]
 

@@ -42,14 +42,14 @@ class ViewEnrolmentsControllerTest extends AwrsUnitTestTraits with ServicesUnitT
 
     "show the View Enrolment page" in {
       setAuthMocks()
-      val res = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testViewEnrolmentController.showViewEnrolmentsPage.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
     "contain a button linking to the Business Tax Account page" in {
       setAuthMocks()
 
-      val res     = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res     = testViewEnrolmentController.showViewEnrolmentsPage.apply(SessionBuilder.buildRequestWithSession(userId))
       val content = contentAsString(res)
 
       content must include(s"""<a href="" role="button" class="govuk-button" id="bta-redirect-link" data-module="govuk-button">""")

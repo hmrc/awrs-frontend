@@ -23,7 +23,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.ServicesUnitTestFixture
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
 import views.Configuration.NewApplicationMode

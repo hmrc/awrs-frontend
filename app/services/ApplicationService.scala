@@ -32,6 +32,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.CacheUtil.cacheUtil
 import utils.{AccountUtils, LoggingUtils}
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class ApplicationService @Inject()(awrsConnector: AWRSConnector,
@@ -50,7 +51,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
   // these lists as a filter on the user data so they can then be compared ignoring any changes to the `all` option
   implicit class TAndPUtil(selections: List[String]) {
     def sortAndFilterWith(formField: Seq[(String, String)]): List[String] =
-      selections.filter(key => formField.map { case (formFieldKey, y) => formFieldKey }.contains(key)).sorted
+      selections.filter(key => formField.map { case (formFieldKey, _) => formFieldKey }.contains(key)).sorted
   }
 
   def trimSuppliers(suppliers: Option[Suppliers]): Option[Suppliers] =
@@ -59,7 +60,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       case _ => suppliers
     }
 
-  def getSections(cacheID: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Sections] =
+  def getSections(@unused cacheID: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Sections] =
     save4LaterService.mainStore.fetchAll(authRetrievals).map {
       res => res.get.getEntry[BusinessType]("legalEntity") match {
         case Some(BusinessType(Some("SOP"), _, _)) => Sections(soleTraderBusinessDetails = true)
@@ -183,7 +184,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       sections <- getSections(accountUtils.getUtr(authRetrievals), authRetrievals)
       awrsData <- {
         val schema = assembleAWRSFEModel(cached, businessCustomerDetails, sections)
-        awrsConnector.submitAWRSData(Json.toJson(schema), authRetrievals)
+        awrsConnector.submitAWRSData(Json.toJson(schema))
       }
       processedData <- handleAWRSData(awrsData, authRetrievals, cached)
     } yield {
@@ -191,7 +192,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
     }
   }
 
-  def hasAPI5ApplicationChanged(cacheID: String, authRetrievals: StandardAuthRetrievals)
+  def hasAPI5ApplicationChanged(authRetrievals: StandardAuthRetrievals)
                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
       for {
@@ -398,13 +399,8 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
       val suppliersChanged: Boolean = data.suppliers.fold(false){suppliers =>
         val suppliersLst = cached.getSuppliers.fold(List[Supplier]())(_.suppliers)
 
-        val formAddressSupplier = suppliersLst match {
-          case supplierList :: supplierLst => suppliersLst.zipWithIndex.map {
-            case (supplier, index) =>
-              supplier.copy(supplierAddress = removeCountry(supplier.supplierAddress))
-            case _ => supplierList
-          }
-          case _ => List()
+        val formAddressSupplier = suppliersLst.map { supplier =>
+          supplier.copy(supplierAddress = removeCountry(supplier.supplierAddress))
         }
         !suppliers.suppliers.equals(formAddressSupplier)
       }
