@@ -27,11 +27,11 @@ private object AppDependencies {
     ws,
     "uk.gov.hmrc"           %% "bootstrap-frontend-play-30" % bootstrapPlayVersion,
     "uk.gov.hmrc"           %% "play-partials-play-30"      % "10.2.0", // includes code for retrieving partials, e.g. the Help with this page form
-    "com.yahoo.platform.yui" % "yuicompressor"              % "2.4.8",
     "uk.gov.hmrc"           %% "play-frontend-hmrc-play-30" % "13.16.0",
+    "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-30"         % hmrcMongoVersion,
+    "com.yahoo.platform.yui" % "yuicompressor"              % "2.4.8",
     "commons-codec"          % "commons-codec"              % "1.22.1",
-    "com.googlecode.htmlcompressor" % "htmlcompressor"     % "1.5.2",
-    "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-30" % hmrcMongoVersion
+    "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
   )
 
   val test: Seq[ModuleID] = Seq(
