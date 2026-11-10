@@ -18,33 +18,33 @@ package uk.gov.hmrc.helpers.application
 
 import play.api.inject.BindingKey
 import play.api.libs.json._
-import repositories.ShortLivedCacheRepository
+import repositories.CacheRepository
 import uk.gov.hmrc.helpers.IntegrationSpec
 import uk.gov.hmrc.mongo.cache.DataKey
 
 trait S4LStub extends IntegrationSpec {
 
-  lazy val shortLivedCacheRepository: ShortLivedCacheRepository =
-    app.injector.instanceOf[ShortLivedCacheRepository](BindingKey(classOf[ShortLivedCacheRepository]).qualifiedWith("awrs"))
+  lazy val shortLivedCacheRepository: CacheRepository =
+    app.injector.instanceOf[CacheRepository](BindingKey(classOf[CacheRepository]).qualifiedWith("awrs"))
 
-  lazy val apiShortLivedCacheRepository: ShortLivedCacheRepository =
-    app.injector.instanceOf[ShortLivedCacheRepository](BindingKey(classOf[ShortLivedCacheRepository]).qualifiedWith("awrs-api"))
+  lazy val apiShortLivedCacheRepository: CacheRepository =
+    app.injector.instanceOf[CacheRepository](BindingKey(classOf[CacheRepository]).qualifiedWith("awrs-api"))
 
   def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None, api: Boolean = false): Unit = {
     data.foreach { d =>
       if (api) {
-        await(apiShortLivedCacheRepository.saveData4Later[JsObject](id, DataKey[JsObject](key), d))
+        await(apiShortLivedCacheRepository.put[JsObject](id, DataKey[JsObject](key), d))
       } else {
-        await(shortLivedCacheRepository.saveData4Later[JsObject](id, DataKey[JsObject](key), d))
+        await(shortLivedCacheRepository.put[JsObject](id, DataKey[JsObject](key), d))
       }
     }
   }
 
   def stubS4LPut(id: String, key: String, data: JsObject, api: Boolean = false): Unit = {
     if (api) {
-      await(apiShortLivedCacheRepository.saveData4Later[JsObject](id, DataKey[JsObject](key), data))
+      await(apiShortLivedCacheRepository.put[JsObject](id, DataKey[JsObject](key), data))
     } else {
-      await(shortLivedCacheRepository.saveData4Later[JsObject](id, DataKey[JsObject](key), data))
+      await(shortLivedCacheRepository.put[JsObject](id, DataKey[JsObject](key), data))
     }
   }
 }

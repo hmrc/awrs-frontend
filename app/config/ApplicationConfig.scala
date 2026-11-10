@@ -74,6 +74,7 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
 
   lazy val mongoSessionTtl: Duration = servicesConfig.getDuration("mongodb.session.expireAfter")
+  lazy val mongoShortLivedCacheTtl: Duration = servicesConfig.getDuration("mongodb.shortLivedCache.expireAfter")
 
   def feature(name:String): Boolean = Try(servicesConfig.getBoolean(name)).getOrElse(false)
 }

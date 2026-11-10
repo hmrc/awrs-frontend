@@ -21,22 +21,22 @@ import org.scalatestplus.play.guice.GuiceFakeApplicationFactory
 import play.api.Application
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import repositories.{SessionCacheRepository, ShortLivedCacheRepository}
+import repositories.CacheRepository
 
 trait NoMongoTestApplication extends GuiceFakeApplicationFactory with MockitoSugar {
 
-  val mockSessionCacheRepository: SessionCacheRepository = mock[SessionCacheRepository]
-  val mockShortLivedCacheRepository: ShortLivedCacheRepository = mock[ShortLivedCacheRepository]
-  val mockApiShortLivedCacheRepository: ShortLivedCacheRepository = mock[ShortLivedCacheRepository]
+  val mockSessionCacheRepository: CacheRepository = mock[CacheRepository]
+  val mockShortLivedCacheRepository: CacheRepository = mock[CacheRepository]
+  val mockApiShortLivedCacheRepository: CacheRepository = mock[CacheRepository]
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .disable[config.MongoModule]
       .disable[uk.gov.hmrc.mongo.play.PlayMongoModule]
       .overrides(
-        bind[SessionCacheRepository].toInstance(mockSessionCacheRepository),
-        bind[ShortLivedCacheRepository].qualifiedWith("awrs").toInstance(mockShortLivedCacheRepository),
-        bind[ShortLivedCacheRepository].qualifiedWith("awrs-api").toInstance(mockApiShortLivedCacheRepository)
+        bind[CacheRepository].qualifiedWith("session").toInstance(mockSessionCacheRepository),
+        bind[CacheRepository].qualifiedWith("awrs").toInstance(mockShortLivedCacheRepository),
+        bind[CacheRepository].qualifiedWith("awrs-api").toInstance(mockApiShortLivedCacheRepository)
       )
       .build()
 }

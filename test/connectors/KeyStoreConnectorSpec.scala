@@ -19,7 +19,7 @@ package connectors
 import models._
 import org.mockito.Mockito._
 import play.api.libs.json.Format
-import repositories.SessionCacheRepository
+import repositories.CacheRepository
 import uk.gov.hmrc.mongo.cache.DataKey
 import utils.AwrsUnitTestTraits
 import utils.TestConstants._
@@ -32,10 +32,10 @@ class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
 
   implicit val format: Format[SubscriptionStatusType] = SubscriptionStatusType.formats
 
-  val mockSessionCacheRepo: SessionCacheRepository = mock[SessionCacheRepository]
+  val mockSessionCacheRepo: CacheRepository = mock[CacheRepository]
 
   val testKeyStoreConnector: KeyStoreConnector = new KeyStoreConnector() {
-    override val sessionCacheRepository: SessionCacheRepository = mockSessionCacheRepo
+    override val cacheRepository: CacheRepository = mockSessionCacheRepo
   }
 
   override def beforeEach(): Unit = {
@@ -45,7 +45,7 @@ class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
 
   "KeyStoreConnector" must {
     "fetch saved data from keystore" in {
-      when(mockSessionCacheRepo.getFromSession[SubscriptionStatusType](DataKey[SubscriptionStatusType](testUtr)))
+      when(mockSessionCacheRepo.get[SubscriptionStatusType]("", DataKey[SubscriptionStatusType](testUtr)))
         .thenReturn(Future.successful(Some(testSubscriptionStatusTypePendingGroup)))
 
       val result = testKeyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](testUtr)
@@ -53,7 +53,7 @@ class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
     }
 
     "save data to keystore" in {
-      when(mockSessionCacheRepo.putSession[SubscriptionStatusType](DataKey[SubscriptionStatusType](testUtr), testSubscriptionStatusTypePendingGroup))
+      when(mockSessionCacheRepo.put[SubscriptionStatusType]("", DataKey[SubscriptionStatusType](testUtr), testSubscriptionStatusTypePendingGroup))
         .thenReturn(Future.successful(testSubscriptionStatusTypePendingGroup))
 
       val result = testKeyStoreConnector.saveDataToKeystore[SubscriptionStatusType](testUtr, testSubscriptionStatusTypePendingGroup)
