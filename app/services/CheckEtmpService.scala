@@ -31,7 +31,7 @@ class CheckEtmpService @Inject()(awrsConnector: AWRSConnector,
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails, legalEntity: String)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
-
+    println(s" \n\n\n [CheckEtmpService][validateBusinessDetails]  Sending enrolment to enrolAWRS**************&&&&&& \n\n\n")
     awrsConnector.checkEtmp(busCusDetails, legalEntity) flatMap {
       case Some(successResponse) =>
         enrolService.enrolAWRS(

@@ -100,6 +100,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
         applicationDeclarationForm.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(template(formWithErrors, isEnrolledApplicant))),
           applicationDeclarationData => {
+            println(s" \n\n\n [ApplicationDeclarationController][sendApplication]  Sending enrolment to enrolAWRS**************&&&&&& \n\n\n")
             for {
               _ <- save4LaterService.mainStore.saveApplicationDeclaration(ar, applicationDeclarationData)
               _ <- backUpSave4LaterInKeyStore(ar)

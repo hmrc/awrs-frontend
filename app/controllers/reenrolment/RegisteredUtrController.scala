@@ -79,6 +79,7 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
 
   private def processEnrolment(utr: AwrsEnrolmentUtr, isSA: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
     keyStoreService.saveAwrsEnrolmentUtr(utr)
+    println(s" \n\n\n [RegisteredUtrController][processEnrolment]  Sending enrolment to enrolAWRS**************&&&&&& \n\n\n")
     for {
       // 1. Fetch required data
       maybeAwrsUrn    <- keyStoreService.fetchAwrsEnrolmentUrn
