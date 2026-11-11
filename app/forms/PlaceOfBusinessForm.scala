@@ -42,14 +42,14 @@ object PlaceOfBusinessForm {
     compulsoryEnum(question)
   }
 
-  def placeOfBusinessValidationForm(implicit applicationConfig: ApplicationConfig): Form[PlaceOfBusiness] = Form(mapping(
+  def placeOfBusinessValidationForm(using applicationConfig: ApplicationConfig): Form[PlaceOfBusiness] = Form(mapping(
     "mainPlaceOfBusiness" -> principalAddress_compulsory,
     "mainAddress" -> (ukAddress_compulsory(prefix = "mainAddress", prefixRefNameInErrorMessage = "principal place of business", applicationConfig.countryCodes).toOptionalAddressMapping iff whenPrincipalAddressNo),
     "placeOfBusinessLast3Years" -> previousAddress_compulsory,
     "placeOfBusinessAddressLast3Years" -> (ukAddress_compulsory(prefix = "placeOfBusinessAddressLast3Years", prefixRefNameInErrorMessage = "previous principal place of business", applicationConfig.countryCodes).toOptionalAddressMapping iff whenPreviousAddressNo),
     "operatingDuration" -> operatingDuration_compulsory,
     "modelVersion" -> ignored[String](PlaceOfBusiness.latestModelVersion)
-  )(PlaceOfBusiness.apply)(PlaceOfBusiness.unapply))
+  )(PlaceOfBusiness.apply)(placeOfBusiness => Some(Tuple.fromProductTyped(placeOfBusiness))))
 
-  def placeOfBusinessForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[PlaceOfBusiness] = PreprocessedForm(placeOfBusinessValidationForm)
+  def placeOfBusinessForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[PlaceOfBusiness] = PreprocessedForm(placeOfBusinessValidationForm)
 }

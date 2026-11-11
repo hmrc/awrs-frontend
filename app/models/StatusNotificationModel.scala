@@ -38,12 +38,12 @@ object StatusContactType {
       NoLongerMindedToRevoke,
       Other)
 
-  implicit val reader: Reads[StatusContactType] = (json: JsValue) => JsSuccess(json match {
+  given reader: Reads[StatusContactType] = (json: JsValue) => JsSuccess(json match {
     case JsString(code) => apply(code)
     case _ => throw new RuntimeException(s"Unexpected StatusContactType: $json")
   })
 
-  implicit val writer: Writes[StatusContactType] = {
+  given writer: Writes[StatusContactType] = {
     case v@_ => JsString(v.code)
   }
 
@@ -111,7 +111,7 @@ object StatusNotification {
 
   import play.api.libs.functional.syntax._
 
-  implicit val reader: Reads[StatusNotification] = (
+  given reader: Reads[StatusNotification] = (
     (JsPath \ "registrationNumber").readNullable[String] and
       (JsPath \ "contactNumber").readNullable[String] and
       (JsPath \ "contactType").readNullable[StatusContactType] and
@@ -119,7 +119,7 @@ object StatusNotification {
       (JsPath \ "storageDatetime").readNullable[String]
     ) (StatusNotification.apply _)
 
-  implicit val writer: OWrites[StatusNotification] = Json.writes[StatusNotification]
+  given writer: OWrites[StatusNotification] = Json.writes[StatusNotification]
 
 }
 
@@ -127,5 +127,5 @@ object StatusNotification {
 case class ViewedStatusResponse(viewed: Boolean)
 
 object ViewedStatusResponse {
-  implicit val format: OFormat[ViewedStatusResponse] = Json.format[ViewedStatusResponse]
+  given format: OFormat[ViewedStatusResponse] = Json.format[ViewedStatusResponse]
 }

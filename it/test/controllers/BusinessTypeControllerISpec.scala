@@ -26,12 +26,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.{
   verify,
   exactly => exactlyTimes
 }
-import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, JsValue, Json}
-import play.api.libs.ws.WSResponse
+import play.api.libs.ws.{WSResponse, writeableOf_urlEncodedForm}
 import play.api.{Application, Logging}
 import uk.gov.hmrc.helpers.application.S4LStub
 import uk.gov.hmrc.helpers.{AuthHelpers, IntegrationSpec, LogCapturing}
@@ -168,8 +167,8 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
     stubbedPut(s"/enrolment-store-proxy/enrolment-store/enrolments/$enrolmentKey", OK)
     stubbedPost(s"$baseURI$subscriptionURI$safeId", OK, successResponse.toString)
 
-    stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", STARTED, "SecondCall")))
-    stubS4LGet(saUtr, "legalEntity", Some(legalEntityStringS4L), Some(("S4LCalls", "SecondCall", "ThirdCall")))
+    stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L))
+    stubS4LGet(saUtr, "legalEntity", Some(legalEntityStringS4L))
   }
 
   "BusinessTypeController.saveAndContinue" should {
@@ -285,10 +284,10 @@ class BusinessTypeControllerISpec extends IntegrationSpec with AuthHelpers with 
 
       stubS4LPut(saUtr, "tradingStartDetails", tradingStartDetailsCache)
 
-      stubS4LGet(saUtr, "subscriptionTypeFrontEnd", Some(subscriptionTypeFrontEndDetails), None, api = true)
-      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", "ThirdCall", "FourthCall")))
-      stubS4LGet(saUtr, "legalEntity", Some(legalEntityStringS4L), Some(("S4LCalls", "FourthCall", "FifthCall")))
-      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L), Some(("S4LCalls", "FifthCall", "FifthCall")))
+      stubS4LGet(saUtr, "subscriptionTypeFrontEnd", Some(subscriptionTypeFrontEndDetails), api = true)
+      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L))
+      stubS4LGet(saUtr, "legalEntity", Some(legalEntityStringS4L))
+      stubS4LGet(saUtr, "businessCustomerDetails", Some(businessCustomerDetailsStringS4L))
 
       val controllerUrl = routes.BusinessTypeController.saveAndContinue().url
 

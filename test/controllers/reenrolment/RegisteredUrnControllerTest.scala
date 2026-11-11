@@ -64,8 +64,8 @@ class RegisteredUrnControllerTest
 
   val registeredUrnService = new RegisteredUrnService(
     keyStoreService = testKeyStoreService,
-    enrolmentStoreConnector = mockEnrolmentStoreProxyConnector,
-    applicationConfig = mockAppConfig)
+    enrolmentStoreConnector = mockEnrolmentStoreProxyConnector
+  )(using mockAppConfig)
 
   val testAwrsUrnController: RegisteredUrnController = new RegisteredUrnController(
     mockMCC,
@@ -74,16 +74,15 @@ class RegisteredUrnControllerTest
     mockAuthConnector,
     mockAuditable,
     mockAccountUtils,
-    mockAppConfig,
     registeredUrnService,
-    template)
+    template)(using mockAppConfig)
 
   "AwrsUrnController" must {
 
     "show the URN page" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      val res = testAwrsUrnController.showArwsUrnPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testAwrsUrnController.showArwsUrnPage.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
@@ -104,7 +103,7 @@ class RegisteredUrnControllerTest
           .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(EnrolmentResponse)))
 
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
+      val res = testAwrsUrnController.saveAndContinue.apply(testRequest(testAwrsRef))
       status(res) mustBe 303
       verifyKeyStoreService(saveKnownFacts = 1, saveAwrsUrn = 1)
     }
@@ -112,7 +111,7 @@ class RegisteredUrnControllerTest
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForAwrsUrn()
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest("SomthingWithError"))
+      val res = testAwrsUrnController.saveAndContinue.apply(testRequest("SomthingWithError"))
       status(res) mustBe 400
     }
 
@@ -123,7 +122,7 @@ class RegisteredUrnControllerTest
         mockEnrolmentStoreProxyConnector
           .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(None))
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
+      val res = testAwrsUrnController.saveAndContinue.apply(testRequest(testAwrsRef))
 
       val result = await(res)
       result.header.status mustBe 303
@@ -141,7 +140,7 @@ class RegisteredUrnControllerTest
           .lookupEnrolments(ArgumentMatchers.eq(AwrsKnownFacts(testAwrsRef)))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.failed(new RuntimeException("ES20 service unavailable")))
 
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
+      val res = testAwrsUrnController.saveAndContinue.apply(testRequest(testAwrsRef))
 
       status(res) mustBe 303
       redirectLocation(res) mustBe Some(controllers.reenrolment.routes.KickoutController.showKickOutPage.url)
@@ -164,7 +163,7 @@ class RegisteredUrnControllerTest
           .queryForAssignedPrincipalUsersOfAWRSEnrolment(ArgumentMatchers.eq(testAwrsRef))(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(EnrolmentResponse)))
 
-      val res = testAwrsUrnController.saveAndContinue().apply(testRequest(testAwrsRef))
+      val res = testAwrsUrnController.saveAndContinue.apply(testRequest(testAwrsRef))
       status(res) mustBe 303
       verifyKeyStoreService(saveKnownFacts = 1, saveAwrsUrn = 1)
     }

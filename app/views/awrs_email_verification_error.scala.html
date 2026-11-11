@@ -20,7 +20,7 @@
 @(email: String, resent: Boolean = false)(implicit request: Request[AnyRef], messages: Messages, applicationConfig: ApplicationConfig)
 
 @import play.twirl.api.Html
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 
 @emailAddress = {
     <strong>@email</strong>.

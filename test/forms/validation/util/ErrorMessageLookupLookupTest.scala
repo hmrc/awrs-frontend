@@ -17,7 +17,7 @@
 package forms.validation.util
 
 import forms.test.util.AwrsFormTestUtils
-import forms.validation.util.ErrorMessageLookup._
+import forms.validation.util.ErrorMessageLookup.*
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.MessagesControllerComponents
@@ -38,7 +38,7 @@ class ErrorMessageLookupLookupTest extends AwrsFormTestUtils with MockitoSugar  
   private def trimString(str: String): String =
     str.trim
 
-  implicit val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  given mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   implicit override lazy val messages: Messages = mcc.messagesApi.preferred(Seq(Lang.defaultLang))
 
   "The Message Handler" must {

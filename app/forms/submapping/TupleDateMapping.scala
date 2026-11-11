@@ -29,14 +29,14 @@ object TupleDateMapping {
   private val tupleToOptionalTuple = (value: TupleDate) => Some(value)
   private val optionalTupleToTuple = (value: Option[TupleDate]) => value.getOrElse(TupleDate("", "", ""))
 
-  implicit class TupleDateUtil(tupleMapping: Mapping[TupleDate]) {
+  extension (tupleMapping: Mapping[TupleDate]) {
     def toOptionalTupleDate: Mapping[Option[TupleDate]] =
       tupleMapping.transform[Option[TupleDate]](
         tupleToOptionalTuple,
         optionalTupleToTuple)
   }
 
-  implicit class TupleDateReverseUtil(tupleMapping: Mapping[Option[TupleDate]]) {
+  extension (tupleMapping: Mapping[Option[TupleDate]]) {
     def toTupleDate: Mapping[TupleDate] =
       tupleMapping.transform[TupleDate](
         optionalTupleToTuple,

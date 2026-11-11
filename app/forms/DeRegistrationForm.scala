@@ -61,7 +61,7 @@ object DeRegistrationForm {
 
   val deRegistrationForm: Form[DeRegistrationDate] = Form(mapping(
     "proposedEndDate" -> testDate_compulsory
-  )(DeRegistrationDate.apply)(DeRegistrationDate.unapply))
+  )(DeRegistrationDate.apply)(deregistrationDate => Some(deregistrationDate.proposedEndDate)))
 
 }
 
@@ -95,7 +95,7 @@ object DeRegistrationReasonForm extends AwrsFieldConfig {
   val deRegistrationReasonValidationForm: Form[DeRegistrationReason] = Form(mapping(
     deRegistrationReasonId -> deRegistrationReason_compulsory,
     deRegReasonOtherId -> (otherReason_compulsory iff whenOtherReasonIsSelected)
-  )(DeRegistrationReason.apply)(DeRegistrationReason.unapply))
+  )(DeRegistrationReason.apply)(reason => Some(Tuple.fromProductTyped(reason))))
 
   val deRegistrationReasonForm: PrevalidationAPI[DeRegistrationReason] = PreprocessedForm(deRegistrationReasonValidationForm)
 
@@ -105,6 +105,6 @@ object DeRegistrationConfirmationForm {
 
   val deRegistrationConfirmationForm = Form(mapping(
     "deRegistrationConfirmation" -> yesNoQuestion_compulsory(fieldId = "deRegistrationConfirmation", errorMessageId = "awrs.de_registration.confirmation.error.empty")
-  )(DeRegistrationConfirmation.apply)(DeRegistrationConfirmation.unapply))
+  )(DeRegistrationConfirmation.apply)(confirmation => Some(confirmation.deRegistrationConfirmation)))
 
 }

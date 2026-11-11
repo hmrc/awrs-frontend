@@ -29,19 +29,19 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewEnrolmentsController @Inject() (mcc: MessagesControllerComponents,
-                                          implicit val applicationConfig: ApplicationConfig,
                                           val deEnrolService: DeEnrolService,
                                           val authConnector: DefaultAuthConnector,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
-                                          template: views.html.reenrolment.awrs_view_enrolments)
+                                          template: views.html.reenrolment.awrs_view_enrolments
+                                         )(using val applicationConfig: ApplicationConfig)
     extends FrontendController(mcc)
     with AwrsController {
 
   val signInUrl: String             = applicationConfig.signIn
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
-  def showViewEnrolmentsPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showViewEnrolmentsPage: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(template()))
   }
 

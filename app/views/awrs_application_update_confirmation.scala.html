@@ -17,8 +17,9 @@
 @import config.ApplicationConfig
 @import models.FormBundleStatus._
 @import play.twirl.api.Html
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 @import views.html.helper.CSPNonce
+@import _root_.utils.SessionUtil.*
 
 @this(
     awrsMain: main,
@@ -26,7 +27,7 @@
 
 @(resubmissionDate: String, isNewBusiness : Boolean, printFriendly: Boolean = false)(implicit request: Request[AnyContent],  messages: Messages, applicationConfig: ApplicationConfig)
 
-@awrsRef = @{sessionUtil(request).getSessionAwrsRefNo.fold("")(x => x)}
+@awrsRef = @{request.getSessionAwrsRefNo.fold("")(x => x)}
 
 @govWrapper = {
     @awrsMain(title = messages("awrs.generic.tab.title", messages("awrs.update.confirmation.title", request.session.get("businessName").getOrElse(""))), userLoggedIn = true){

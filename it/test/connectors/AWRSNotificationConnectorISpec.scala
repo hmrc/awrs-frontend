@@ -36,7 +36,7 @@ class AWRSNotificationConnectorISpec extends IntegrationSpec with Injecting with
   val connector: AWRSNotificationConnector = inject[AWRSNotificationConnector]
 
   // these values doesn't really matter since the call itself is mocked
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val awrsRef: String = "0123456"
 
   lazy val notificationViewedStatusURI: String => String = (awrsRef: String) => s"${connector.markAsViewedURI}/$awrsRef"
@@ -61,9 +61,9 @@ class AWRSNotificationConnectorISpec extends IntegrationSpec with Injecting with
       stubbedDelete(s"/awrs-notification/cache/$awrsRef", responseStatus)
     }
 
-    def testFetchCall(implicit  hc: HeaderCarrier): Future[Option[StatusNotification]] = connector.fetchNotificationCache(TestUtil.defaultAuthRetrieval)
+    def testFetchCall(using  hc: HeaderCarrier): Future[Option[StatusNotification]] = connector.fetchNotificationCache(TestUtil.defaultAuthRetrieval)
 
-    def testDeleteCall(implicit  hc: HeaderCarrier): Future[Boolean] = connector.deleteFromNotificationCache(TestUtil.defaultAuthRetrieval)
+    def testDeleteCall(using  hc: HeaderCarrier): Future[Boolean] = connector.deleteFromNotificationCache(TestUtil.defaultAuthRetrieval)
 
     val revokeJSon = """{
                        "registrationNumber": "XXAW000001234560",
@@ -162,7 +162,7 @@ class AWRSNotificationConnectorISpec extends IntegrationSpec with Injecting with
       stubbedGet(s"/awrs-notification/cache/viewed/$awrsRef", responseStatus, responseData)
     }
 
-    def testGetViewedStatusCall(implicit  hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = connector.getNotificationViewedStatus(TestUtil.defaultAuthRetrieval)
+    def testGetViewedStatusCall(using  hc: HeaderCarrier): Future[Option[ViewedStatusResponse]] = connector.getNotificationViewedStatus(TestUtil.defaultAuthRetrieval)
 
     "return status as OK or NO_CONTENT, for successful getNotificationViewedStatus" in {
       val viewed = true
@@ -181,7 +181,7 @@ class AWRSNotificationConnectorISpec extends IntegrationSpec with Injecting with
 
   "markNotificationViewedStatusAsViewed" must {
 
-    def testMarkViewedStatusCall(implicit  hc: HeaderCarrier): Future[Option[Boolean]] = connector.markNotificationViewedStatusAsViewed(TestUtil.defaultAuthRetrieval)
+    def testMarkViewedStatusCall(using  hc: HeaderCarrier): Future[Option[Boolean]] = connector.markNotificationViewedStatusAsViewed(TestUtil.defaultAuthRetrieval)
 
     "return the value Some(true), for successful markNotificationViewedStatusAsViewed" in {
       // so long as a response is given then ok is returned
@@ -206,7 +206,7 @@ class AWRSNotificationConnectorISpec extends IntegrationSpec with Injecting with
 
   "sendConfirmationEmail" must {
     val testEmailRequest = EmailRequest(ApiTypes.API4, "test business", "example@example.com", Some(testUtr), isNewBusiness = Some(true))
-    def testSendConfirmationCall(implicit hc: HeaderCarrier): Future[Boolean] = connector.sendConfirmationEmail(testEmailRequest)
+    def testSendConfirmationCall(using hc: HeaderCarrier): Future[Boolean] = connector.sendConfirmationEmail(testEmailRequest)
 
     "return true for a successful request" in {
       stubbedPost(confirmationEmailURI, NO_CONTENT, "")

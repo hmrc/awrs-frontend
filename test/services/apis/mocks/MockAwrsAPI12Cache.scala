@@ -17,7 +17,7 @@
 package services.apis.mocks
 
 import connectors.mock.MockAWRSNotificationConnector
-import models.StatusContactType._
+import models.StatusContactType.*
 import models.{StatusContactType, StatusNotification, ViewedStatusResponse}
 import services.apis.AwrsAPI12Cache
 import services.mocks.MockKeyStoreService

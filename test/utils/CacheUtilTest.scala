@@ -17,13 +17,13 @@
 package utils
 
 import models.BusinessDetailsEntityTypes
-import models.BusinessDetailsEntityTypes._
-import services.DataCacheKeys._
+import models.BusinessDetailsEntityTypes.*
+import services.DataCacheKeys.*
 import services.JourneyConstants
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import utils.CacheUtil.cacheUtil
-import utils.TestUtil._
+import utils.CacheUtil.*
+import utils.TestUtil.*
 
 class CacheUtilTest extends PlaySpec with GuiceOneAppPerSuite with NoMongoTestApplication {
 

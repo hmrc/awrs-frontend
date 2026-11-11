@@ -30,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,17 +42,17 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
                                                       val authConnector: DefaultAuthConnector,
                                                       val auditable: Auditable,
                                                       val accountUtils: AccountUtils,
-                                                      implicit val applicationConfig: ApplicationConfig,
-                                                      template: views.html.awrs_business_registration_details) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                                      template: views.html.awrs_business_registration_details
+                                                     )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   override val section: String = businessRegistrationDetailsName
   val signInUrl: String = applicationConfig.signIn
 
   def showBusinessRegistrationDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -76,7 +77,7 @@ class BusinessRegistrationDetailsController @Inject()(val mcc: MessagesControlle
                     isNewRecord: Boolean,
                     authRetrievals: StandardAuthRetrievals)
                    (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     val businessType = request.getBusinessType
     businessRegistrationDetailsForm(businessType.get).bindFromRequest().fold(
       formWithErrors =>

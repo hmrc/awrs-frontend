@@ -30,19 +30,19 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeEnrolmentConfirmationController @Inject() (mcc: MessagesControllerComponents,
-                                                   implicit val applicationConfig: ApplicationConfig,
                                                    val deEnrolService: DeEnrolService,
                                                    val authConnector: DefaultAuthConnector,
                                                    val accountUtils: AccountUtils,
                                                    val auditable: Auditable,
-                                                   template: views.html.reenrolment.awrs_deenrolment_confirmation)
+                                                   template: views.html.reenrolment.awrs_deenrolment_confirmation
+                                                  )(using val applicationConfig: ApplicationConfig)
     extends FrontendController(mcc)
     with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String             = applicationConfig.signIn
 
-  def showDeEnrolmentConfirmationPage(): Action[AnyContent] = Action.async { implicit request =>
+  def showDeEnrolmentConfirmationPage: Action[AnyContent] = Action.async { implicit request =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         Future.successful(Ok(template(deEnrolmentConfirmationForm)))

@@ -40,28 +40,28 @@ class RegisteredPostCodeControllerTest extends AwrsUnitTestTraits
 
   val template: awrs_registered_postcode = app.injector.instanceOf[views.html.reenrolment.awrs_registered_postcode]
 
-  val testAwrsRegisteredPostcodeController: RegisteredPostcodeController = new RegisteredPostcodeController(mockMCC, mockAppConfig, mockAuthConnector,
-    mockAccountUtils, mockDeEnrolService, mockAuditable, testKeyStoreService, template)
+  val testAwrsRegisteredPostcodeController: RegisteredPostcodeController = new RegisteredPostcodeController(mockMCC, mockAuthConnector,
+    mockAccountUtils, mockDeEnrolService, mockAuditable, testKeyStoreService, template)(using mockAppConfig)
 
   "AwrsPostcodeController" must {
     "show the postcode page" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      val res = testAwrsRegisteredPostcodeController.showPostCode().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testAwrsRegisteredPostcodeController.showPostCode.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
     "save the postcode to keystore if no errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest("NE270JZ"))
+      val res = testAwrsRegisteredPostcodeController.saveAndContinue.apply(testRequest("NE270JZ"))
       status(res) mustBe 303
     }
 
     "save should return 400 if form has errors" in {
       setAuthMocks()
       setupMockKeystoreServiceForRegisteredPostcode()
-      val res = testAwrsRegisteredPostcodeController.saveAndContinue().apply(testRequest(""))
+      val res = testAwrsRegisteredPostcodeController.saveAndContinue.apply(testRequest(""))
       status(res) mustBe 400
     }
   }

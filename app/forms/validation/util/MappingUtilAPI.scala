@@ -42,38 +42,25 @@ object MappingUtilAPI {
   def compulsoryOptList(config: CompulsoryListMappingParameter[String]): Mapping[Option[List[String]]] =
     optional(list(config.mapping)).verifying(compulsaryOptListConstraint(config.emptyErrorMsg))
 
-  implicit class MappingUtil(mapping: Mapping[Option[String]]) {
+  extension (mapping: Mapping[Option[String]])
     /**
       * used to convert Option[String] formatters to String formatters, this so we can reuse the compulsory text
       * formatter on String fields instead of the default Option[String] fields
       */
     def toStringFormatter: Mapping[String] =
     mapping.transform[String]((value: Option[String]) => value.fold("")(x => x), (value: String) => Some(value))
-  }
 
-  implicit class MappingUtil_AddPreconditionToOptionMapping[T](mapping: Mapping[Option[T]]) {
+  // attach the key to the mapping if they do not have the expected key
+  private def checkKey[A](expectedKey: String, mapping: Mapping[A]): Mapping[A] =
+    if (expectedKey.equals(mapping.key)) mapping else mapping.withPrefix(expectedKey)
 
-    // attach the key to the mapping if they do not have the expected key
-    private def checkKey(expectedKey: String, mapping: Mapping[Option[T]]): Mapping[Option[T]] = {
-      if (expectedKey.equals(mapping.key)) {
-        mapping
-      } else {
-        mapping.withPrefix(expectedKey)
-      }
-    }
+  extension [T](mapping: Mapping[Option[T]])
 
-    private val iffBind = (key: String, data: Map[String, String]) => (preCondition: Boolean) =>
-      (preCondition match {
-        case false => Right(None)
-        case true =>
-          val validated: Either[Seq[FormError], Option[T]] = checkKey(key, mapping).bind(data)
-          validated match {
-            case Left(errors) => Left(errors)
-            case Right(ostring) => Right(ostring)
-          }
-      }): Either[Seq[FormError], Option[T]]
+    private def iffBind(key: String, data: Map[String, String])(preCondition: Boolean): Either[Seq[FormError], Option[T]] =
+      if (preCondition) checkKey(key, mapping).bind(data) else Right(None)
 
-    private val iffUnbind = (key: String, value: Option[T]) => checkKey(key, mapping).unbind(value): Map[String, String]
+    private def iffUnbind(key: String, value: Option[T]): Map[String, String] =
+      checkKey(key, mapping).unbind(value)
 
     def iff(preCondition: Option[FormQuery]): Mapping[Option[T]] = of(new Formatter[Option[T]] {
 
@@ -88,7 +75,7 @@ object MappingUtilAPI {
     def iff(preCondition: FormQuery): Mapping[Option[T]] = of(new Formatter[Option[T]] {
 
       def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Option[T]] =
-        iffBind(key, data)(preCondition.get(data))
+        iffBind(key, data)(preCondition(data))
 
       def unbind(key: String, value: Option[T]): Map[String, String] =
         iffUnbind(key, value)
@@ -105,19 +92,7 @@ object MappingUtilAPI {
 
     })
 
-  }
-
-  implicit class MappingUtil_AddPreconditionToMapping[T](mapping: Mapping[T]) {
-
-    // attach the key to the mapping if they do not have the expected key
-    private def checkKey(expectedKey: String, mapping: Mapping[T]): Mapping[T] = {
-      val mappingKey = mapping.key
-      expectedKey.equals(mappingKey) match {
-        case true => mapping
-        case false => //TODO need more tests to see if this can be simplified, could prob just append
-          mapping.withPrefix(expectedKey)
-      }
-    }
+  extension [T](mapping: Mapping[T])
 
     // used to attach a constraint to an existing mapping
     def `+`(additionalValidation: CrossFieldConstraint): Mapping[T] = of(new Formatter[T] {
@@ -128,7 +103,7 @@ object MappingUtilAPI {
         val second: ValidationResult = additionalValidation.bind(data)
 
         def processErr(err: Invalid): Seq[FormError] =
-          err.errors.toSeq.flatten.foldLeft(Seq[FormError]())((seq, ve) => seq ++ FormError(key, ve.message, ve.args))
+          err.errors.map(ve => FormError(key, ve.message, ve.args))
 
         first match {
           case Left(ferrors) => Left(ferrors)
@@ -143,7 +118,6 @@ object MappingUtilAPI {
         checkKey(key, mapping).unbind(value)
     })
 
-  }
 
   class CrossFieldConstraint(val condition: FormQuery, val errorMessage: Invalid, val booleanValueOfInvalid: Boolean = true) {
 

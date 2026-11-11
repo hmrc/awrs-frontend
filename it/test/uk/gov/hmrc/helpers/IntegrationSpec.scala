@@ -40,9 +40,9 @@ trait IntegrationSpec
     with IntegrationApplication
     with StubbedBasicHttpCalls with Injecting {
 
-  override implicit def defaultAwaitTimeout: Timeout = 5.seconds
+  override given defaultAwaitTimeout: Timeout = 5.seconds
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   protected lazy val sessionCacheRepository: SessionCacheRepository =
     app.injector.instanceOf[SessionCacheRepository]

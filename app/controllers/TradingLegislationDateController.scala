@@ -33,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.controller.WithUrlEncodedOnlyFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
+import utils.SessionUtil.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,18 +47,18 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
                                                  val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                                 implicit val applicationConfig: ApplicationConfig,
-                                                 template: views.html.awrs_legislation_date) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService with WithUrlEncodedOnlyFormBinding {
+                                                 template: views.html.awrs_legislation_date
+                                                )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService with WithUrlEncodedOnlyFormBinding {
 
   override val section: String = businessDetailsName
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def showBusinessDetails(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         businessDetailsService.businessDetailsPageRenderMode(ar) flatMap {_ =>
-          implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
+          given viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
           val businessType = request.getBusinessType
           for {
             maybeAWBusiness <- save4LaterService.mainStore.fetchTradingStartDetails(ar)
@@ -105,7 +106,7 @@ class TradingLegislationDateController @Inject()(val mcc: MessagesControllerComp
                     isNewRecord: Boolean,
                     authRetrievals: StandardAuthRetrievals)
                    (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     businessDetailsService.businessDetailsPageRenderMode(authRetrievals) flatMap {_ =>
       val businessType = request.getBusinessType
       tradingLegislationForm.bindFromRequest().fold(

@@ -17,7 +17,7 @@
 @import config.ApplicationConfig
 @import services.DataCacheKeys._
 @import views.helpers._
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
@@ -26,6 +26,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.ViewUtils._
 @import views.html.helper.CSPNonce
+@import _root_.utils.SessionUtil.*
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -38,7 +39,7 @@
 
 @(supplierAddressForm: Form[models.Supplier], supplierAddressId: Int, isNewRecord: Boolean, countryList: Seq[(String, String)])(implicit request: Request[AnyContent], viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(supplierAddressForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(supplierAddressForm) }
 
 
 @pageScripts = {
@@ -55,7 +56,7 @@
 }
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.SupplierAddressesController.saveAndReturn(supplierAddressId, isNewRecord)
     } else {
         controllers.routes.SupplierAddressesController.saveAndContinue(supplierAddressId, isNewRecord)
@@ -63,7 +64,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")
@@ -196,7 +197,7 @@
                             </div>
                         </div>
                     </div>
-                    @if(supplierAddressId < 5 && !isEditMode){
+                    @if(supplierAddressId < 5 && !isEditMode()){
                         <div class="govuk-form-group">
 
                     @govukRadios(

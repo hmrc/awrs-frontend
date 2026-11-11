@@ -99,7 +99,7 @@ trait PrevalidationAPI[T] {
 
   // copied the source from play 2.4 to convert a Request object into Map[String, Seq[String]] then call our trimmed
   // bindFromRequest function
-  def bindFromRequest()(implicit request: play.api.mvc.Request[_]): Form[T] =
+  def bindFromRequest()(using request: play.api.mvc.Request[_]): Form[T] =
   bindFromRequest {
     (request.body match {
       case body: play.api.mvc.AnyContent if body.asFormUrlEncoded.isDefined => body.asFormUrlEncoded.get
@@ -111,7 +111,7 @@ trait PrevalidationAPI[T] {
   }
 
   // extracted from the source of play 2.4 ( def bindFromRequest(data: Map[String, Seq[String]]): Form[T] )
-  implicit def conv(data: Map[String, Seq[String]]): Map[String, String] =
+  given conv: Conversion[Map[String, Seq[String]], Map[String, String]] = (data: Map[String, Seq[String]]) =>
   data.foldLeft(Map.empty[String, String]) {
     case (s, (key, values)) if key.endsWith("[]") => s ++ values.zipWithIndex.map { case (v, i) => (key.dropRight(2) + "[" + i + "]") -> v }
     case (s, (key, values)) => s + (key -> values.headOption.getOrElse(""))

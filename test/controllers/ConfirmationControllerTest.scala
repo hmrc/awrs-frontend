@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, when}
 import play.api.i18n.Messages
 import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits}
 import views.html.{awrs_application_confirmation, awrs_application_update_confirmation}
@@ -45,7 +45,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
 
   val testConfirmationController: ConfirmationController = new ConfirmationController(
     mockMCC, testSave4LaterService, testKeyStoreService, mockDeEnrolService, mockAuthConnector,
-    mockAuditable, mockAccountUtils, mockAppConfig, template, templateUpdate) {
+    mockAuditable, mockAccountUtils, template, templateUpdate)(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -157,7 +157,7 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
       val statusSet = Set(Pending, Approved, ApprovedWithConditions)
       statusSet.foreach { status =>
         validateForBothNewAndOldBusiness {
-          isNewBusiness =>
+          _ =>
             getUpdateWithAuthorisedUserCt(status) {
               result =>
                 val companyName = "North East Wines"

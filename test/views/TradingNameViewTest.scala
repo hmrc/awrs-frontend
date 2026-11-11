@@ -26,7 +26,7 @@ import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.ServicesUnitTestFixture
 import utils.TestUtil.{testBusinessCustomerDetails, testBusinessDetails, testNewApplicationType}
 import utils.{AwrsFieldConfig, AwrsUnitTestTraits}
@@ -39,7 +39,9 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_trading_name = app.injector.instanceOf[views.html.awrs_trading_name]
-  val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
+  val tradingDateController: TradingNameController = new TradingNameController(
+    mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, template
+  )(using mockAppConfig) {
       override val signInUrl: String = applicationConfig.signIn
   }
 

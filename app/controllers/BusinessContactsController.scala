@@ -29,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,18 +40,17 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
-                                           implicit val applicationConfig: ApplicationConfig,
-                                           template: views.html.awrs_business_contacts
-                                          ) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                           template: views.html.awrs_business_contacts)(
+                                           using val applicationConfig: ApplicationConfig )extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   override val section: String = businessContactsName
   val signInUrl: String = applicationConfig.signIn
 
   def showBusinessContacts(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -79,7 +79,7 @@ class BusinessContactsController @Inject()(val mcc: MessagesControllerComponents
 
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     businessContactsForm.bindFromRequest().fold(
       formWithErrors =>
         save4LaterService.mainStore.fetchBusinessCustomerDetails(authRetrievals).flatMap {

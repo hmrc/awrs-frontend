@@ -18,8 +18,7 @@ package forms
 
 package object submapping {
 
-  implicit class FieldNameUtil(prefix: String) {
+  extension (prefix: String)
     def attach(fieldId: String): String = f"${if (prefix.equals("")) "" else f"$prefix."}$fieldId"
-  }
 
 }

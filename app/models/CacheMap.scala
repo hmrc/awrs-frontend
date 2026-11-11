@@ -28,7 +28,7 @@ case class CacheMap(id: String, data: Map[String, JsValue]) {
 }
 
 object CacheMap {
-  implicit val formats: Format[CacheMap] = Json.format[CacheMap]
+  given formats: Format[CacheMap] = Json.format[CacheMap]
 
   def fromCacheItem(cacheItem: CacheItem): CacheMap =
     CacheMap(cacheItem.id, cacheItem.data.value.toMap)

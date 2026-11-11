@@ -32,8 +32,9 @@ import services.apis.{AwrsAPI8, AwrsAPI9}
 import services.{DeEnrolService, EmailService, KeyStoreService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.CacheUtil.cacheUtil
+import utils.CacheUtil.*
 import utils.{AccountUtils, LoggingUtils}
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,12 +48,12 @@ class WithdrawalController @Inject()(mcc: MessagesControllerComponents,
                                      val authConnector: DefaultAuthConnector,
                                      val auditable: Auditable,
                                      val accountUtils: AccountUtils,
-                                     implicit val applicationConfig: ApplicationConfig,
                                      templateWithdrawalReasons: views.html.awrs_withdrawal_reasons,
                                      templateWithdrawalConfirmation: views.html.awrs_withdrawal_confirmation,
-                                     templateWithdrawalStatus: views.html.awrs_withdrawal_confirmation_status) extends FrontendController(mcc) with AwrsController with LoggingUtils {
+                                     templateWithdrawalStatus: views.html.awrs_withdrawal_confirmation_status
+                                    )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController with LoggingUtils {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def showWithdrawalReasons: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>

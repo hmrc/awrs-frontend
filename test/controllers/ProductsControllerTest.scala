@@ -35,7 +35,7 @@ class ProductsControllerTest extends AwrsUnitTestTraits
   val template: awrs_products = app.injector.instanceOf[views.html.awrs_products]
 
   val testProductsController: ProductsController = new ProductsController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template)(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -61,14 +61,14 @@ class ProductsControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchSuppliers = None)
     setAuthMocks()
-    val result = testProductsController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testProductsController.saveAndContinue.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
-    val result = testProductsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testProductsController.saveAndReturn.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

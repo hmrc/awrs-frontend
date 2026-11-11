@@ -48,8 +48,8 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
       stubbedPost(deEnrolURI, responseStatus, responseString.getOrElse(""))
     }
 
-    def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
-      connector.deEnrol(awrsRef, businessName, businessType)(headerCarrier, implicitly)
+    def testCall(using headerCarrier: HeaderCarrier): Future[Boolean] = {
+      connector.deEnrol(awrsRef, businessName, businessType)(headerCarrier, summon)
     }
 
     "return successful de-enrolment response if de-enrolment succeeds" in {
@@ -98,12 +98,12 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
     val deEnrolResponseSuccess = true
     val deEnrolResponseFailure = false
 
-    def mockResponse(responseStatus: Int, responseString: Option[String] = None): Unit = {
+    def mockResponse(responseStatus: Int): Unit = {
       stubbedDelete(deEnrolURI, responseStatus)
     }
 
-    def testCall(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
-      connector.deEnrol("TestAwrsRef", "TestGroupId")(headerCarrier, implicitly)
+    def testCall(using headerCarrier: HeaderCarrier): Future[Boolean] = {
+      connector.deEnrol("TestAwrsRef", "TestGroupId")(headerCarrier, summon)
     }
 
     "return status as NO_CONTENT, for successful de-enrolment" in {
@@ -131,7 +131,7 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
     }
 
     "return status as INTERNAL_SERVER_ERROR, for unsuccessful de-enrolment" in {
-      mockResponse(INTERNAL_SERVER_ERROR, Some("error in de-enrol service end point error"))
+      mockResponse(INTERNAL_SERVER_ERROR)
       val result = testCall
       await(result) mustBe deEnrolResponseFailure
     }
@@ -151,7 +151,7 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
       stubbedPost(s"/tax-enrolments/groups/groupId/enrolments/$service~AWRSRefNumber~1234567", responseStatus, responseString.getOrElse(""))
     }
 
-    def testCall(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
+    def testCall(using headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
       val requestPayload = RequestPayload.apply("", "", "", List.empty)
       val groupId = "groupId"
       val awrsRef = "1234567"
@@ -163,15 +163,15 @@ class TaxEnrolmentsConnectorISpec extends IntegrationSpec with Injecting with Ma
         Map(
           "safeId" -> businessPartnerDetails.safeId,
           "UserDetail" -> businessPartnerDetails.businessName,
-          "legal-entity" -> businessType))(headerCarrier, implicitly))
+          "legal-entity" -> businessType))(headerCarrier, summon))
     }
 
-    def testCallEnrolWithAuditMap(implicit headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
+    def testCallEnrolWithAuditMap(using headerCarrier: HeaderCarrier): Option[EnrolResponse] = {
       val requestPayload = RequestPayload.apply("", "", "", List.empty)
       val groupId = "groupId"
       val awrsRef = "1234567"
 
-      await(connector.enrol(requestPayload, groupId, awrsRef, auditMap = Map.empty)(headerCarrier, implicitly))
+      await(connector.enrol(requestPayload, groupId, awrsRef, auditMap = Map.empty)(headerCarrier, summon))
     }
 
     "return enrol response for successful enrolment" in {

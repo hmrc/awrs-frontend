@@ -30,5 +30,5 @@ object ReapplicationForm {
 
   val reapplicationForm = Form(mapping(
       answer -> answer_compulsory
-    )(ReapplicationConfirmation.apply)(ReapplicationConfirmation.unapply))
+    )(ReapplicationConfirmation.apply)(confirmation => Some(confirmation.answer)))
 }

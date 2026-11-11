@@ -18,10 +18,10 @@ package services.mocks
 
 import models.SectionChangeIndicators
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import services.ApplicationService
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
+import utils.TestUtil.*
 
 import scala.concurrent.Future
 
@@ -34,11 +34,11 @@ trait MockApplicationService extends AwrsUnitTestTraits {
     reset(mockApplicationService)
   }
 
-  import MockApplicationService._
+  import MockApplicationService.*
 
   protected final def setupMockApplicationService(hasAPI5ApplicationChanged: Boolean = defaultTrueBoolean,
                                                   getApi5ChangeIndicators: SectionChangeIndicators = defaultSectionChangeIndicators): Unit = {
-    when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(hasAPI5ApplicationChanged))
+    when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(hasAPI5ApplicationChanged))
     when(mockApplicationService.getApi5ChangeIndicators(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getApi5ChangeIndicators))
   }
 }

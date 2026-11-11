@@ -17,7 +17,6 @@
 package forms.validation.util
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.validation.util.ConstraintUtil.FieldFormatConstraintParameter._
 import forms.validation.util.ConstraintUtil._
 import forms.validation.util.ErrorMessagesUtilAPI._
 import forms.validation.util.MappingUtilAPI._
@@ -129,7 +128,7 @@ object NamedMappingAndUtil extends AwrsFieldConfig {
     data.getOrElse(fieldId, "").equals(answer)
 
   @inline def whenListContainsAnswer(listId: String, answer: String): FormData => Boolean = (data: FormData) =>
-    data.view.filterKeys((key: String) => key.contains(listId)).values.exists(answer)
+    data.view.filterKeys((key: String) => key.contains(listId)).values.exists(_ == answer)
 
   @inline def whenAnswerToIdTypeIs(doYouHaveIdTypeFieldId: String, answer: BooleanRadioEnum.Value)(data: FormData): Boolean =
     whenAnswerToFieldIs(doYouHaveIdTypeFieldId, answer.toString)(data)

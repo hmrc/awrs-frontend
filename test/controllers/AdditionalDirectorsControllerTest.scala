@@ -39,7 +39,7 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
   val mockTemplate: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate){
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig){
     override val signInUrl = "/sign-in"
   }
 
@@ -62,7 +62,7 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
     for (directorType <- personTypes) {
 
       "redirect to trading activity page when valid data is provided and 'Other directors' is No, when director is %s".format(directorType) in {
-        continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = directorType, personOrCompany = "person", firstName = "firstName", lastName = "lastName", doTheyHaveNationalInsurance = "No", nino = "", passportNumber = testPassportNo, isDirectorACompany = "No", otherDirectors = "No"))) {
+        continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = directorType, personOrCompany = "person", firstName = "firstName", lastName = "lastName", doTheyHaveNationalInsurance = "No", nino = "", passportNumber = testPassportNo, otherDirectors = "No"))) {
           result =>
             status(result) mustBe SEE_OTHER
             redirectLocation(result).get must be("/alcohol-wholesale-scheme/trading-activity")
@@ -71,7 +71,7 @@ class AdditionalDirectorsControllerTest extends ServicesUnitTestFixture {
 
       "redirect to Business Directors view page when valid data is provided and 'Other directors' is Yes, when director is %s".format(directorType) in {
 
-        continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = directorType, personOrCompany = "person", firstName = "firstName", lastName = "lastName", doTheyHaveNationalInsurance = "No", nino = "", passportNumber = testPassportNo, isDirectorACompany = "No", otherDirectors = "Yes"))) {
+        continueWithAuthorisedUser(testRequest(testBusinessDirectorDefault(directorsAndCompanySecretaries = directorType, personOrCompany = "person", firstName = "firstName", lastName = "lastName", doTheyHaveNationalInsurance = "No", nino = "", passportNumber = testPassportNo, otherDirectors = "Yes"))) {
           result =>
             status(result) mustBe SEE_OTHER
             redirectLocation(result).get must be(directorPage2URL)

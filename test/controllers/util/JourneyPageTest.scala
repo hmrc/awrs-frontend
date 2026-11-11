@@ -44,6 +44,7 @@ import play.api.test.Helpers._
 import services.{DeEnrolService, Save4LaterService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits}
+import utils.SessionUtil.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -65,21 +66,21 @@ class JourneyPageTest extends AwrsUnitTestTraits with MockAuthConnector {
       authorisedAction { implicit ar =>
         restrictedAccessCheck {
           Future.successful(Ok(request.getJourneyStartLocation.getOrElse(noVariableFound)))
-        }(request, ar, implicitly, implicitly)
-      }(request, implicitly, implicitly, messages)
+        }(request, ar, summon, summon)
+      }(request, summon, summon, messages)
     }
 
     override protected def controllerComponents: ControllerComponents = mockMCC
 
     override val accountUtils: AccountUtils = mockAccountUtils
     override val auditable: Auditable = mockAuditable
-    override implicit val applicationConfig: ApplicationConfig = mockAppConfig
+    override val applicationConfig: ApplicationConfig = mockAppConfig
   }
 
   val template = app.injector.instanceOf[views.html.awrs_additional_premises]
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, mockDataCacheService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig, template) {
+    new AdditionalPremisesController(mockMCC, mockDataCacheService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, template)(using mockAppConfig) {
       override val signInUrl = "/sign-in"
     }
 

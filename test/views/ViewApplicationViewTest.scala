@@ -19,22 +19,22 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.ViewApplicationController
-import models.BusinessDetailsEntityTypes._
+import models.BusinessDetailsEntityTypes.*
 import models.{ApplicationDeclaration, Suppliers, _}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.i18n.Messages
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.ServicesUnitTestFixture
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import models.CacheMap
 import utils.AwrsUnitTestTraits
-import utils.TestConstants._
-import utils.TestUtil._
+import utils.TestConstants.*
+import utils.TestUtil.*
 import views.view_application.subviews.SubviewIds
 
 import scala.concurrent.Future
@@ -48,8 +48,9 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
   val mockTemplateAppError = app.injector.instanceOf[views.html.awrs_application_error]
   val mockTemplateViewApp = app.injector.instanceOf[views.html.view_application.awrs_view_application]
 
-  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig,
-    mockTemplateAppError, mockTemplateViewApp)
+  val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
+    mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector,
+    mockTemplateAppError, mockTemplateViewApp)(using mockAppConfig)
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
                        businessCustomerDetails: Option[BusinessCustomerDetails] = None,
@@ -90,7 +91,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     CacheMap(id, cacheMap)
   }
 
-  def prepMap[T](key: String, optionParam: Option[T])(implicit format: Format[T]) =
+  def prepMap[T](key: String, optionParam: Option[T])(using format: Format[T]) =
     optionParam match {
       case Some(param) => Map[String, JsValue](key -> Json.toJson(param))
       case _ => Map[String, JsValue]()
@@ -141,7 +142,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     def viewSection(sectionName: String, cacheMap: CacheMap, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
       setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = cacheMap)
       setAuthMocks()
-      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
+      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
       val result = testViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }
@@ -149,7 +150,7 @@ class ViewApplicationViewTest extends AwrsUnitTestTraits
     def viewSectionEmptyCache(sectionName: String, printFriendly: Boolean = false)(test: Future[Result] => Any) = {
       setupMockSave4LaterService(fetchBusinessCustomerDetails = testBusinessCustomerDetails("SOP"), fetchAll = Future.successful(None))
       setAuthMocks()
-      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
+      when(mockApplicationService.hasAPI5ApplicationChanged(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(false)
       val result = testViewApplicationController.viewSection(sectionName, printFriendly).apply(SessionBuilder.buildRequestWithSession(userId))
       test(result)
     }

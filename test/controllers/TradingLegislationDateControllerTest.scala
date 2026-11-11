@@ -45,7 +45,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
   val tradingLegislationDateController: TradingLegislationDateController =
     new TradingLegislationDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService,
       testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils,
-      mockMainStoreSave4LaterConnector, mockAppConfig, template) {
+      mockMainStoreSave4LaterConnector, template)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
@@ -110,7 +110,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingLegislationDateController.saveAndContinue()
+        val res = tradingLegislationDateController.saveAndContinue
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303
@@ -135,7 +135,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingLegislationDateController.saveAndContinue()
+        val res = tradingLegislationDateController.saveAndContinue
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303

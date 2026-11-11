@@ -22,11 +22,11 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import services.DataCacheKeys._
-import utils.TestConstants._
-import utils.TestUtil._
+import services.DataCacheKeys.*
+import utils.TestConstants.*
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
-import view_models._
+import view_models.*
 
 import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val mockDataCacheService: Save4LaterService = mock[Save4LaterService]
-  implicit val ec: ExecutionContext = mockMCC.executionContext
+  given ec: ExecutionContext = mockMCC.executionContext
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -45,12 +45,12 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       .thenReturn(true)
   }
 
-  val testIndexService: IndexService = new IndexService(mockDataCacheService, mockApplicationService, mockAccountUtils)
+  val testIndexService: IndexService = new IndexService(mockApplicationService, mockAccountUtils)
 
   "OptionUtil" must {
     "unsupported type must throw an exception" in {
       an[RuntimeException] must be thrownBy {
-        testIndexService.OptionUtil(Some(0)).getOrElseSize
+        testIndexService.getOrElseSize(Some(0))
       }
     }
 
@@ -72,8 +72,8 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           additionalSupplier = None,
           ukSupplier = None)
       )))
-      testIndexService.OptionUtil(testAdditionalBusinessPremisesList).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testSuppliers).getOrElseSize mustBe None
+      testIndexService.getOrElseSize(testAdditionalBusinessPremisesList) mustBe None
+      testIndexService.getOrElseSize(testSuppliers) mustBe None
     }
 
     "return None when the input is None" in {
@@ -83,11 +83,11 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       val testPartnerDetails = None
       val testBusinessDirectors = None
 
-      testIndexService.OptionUtil(testGroupMemberDetails).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testAdditionalBusinessPremisesList).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testSuppliers).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testPartnerDetails).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testBusinessDirectors).getOrElseSize mustBe None
+      testIndexService.getOrElseSize(testGroupMemberDetails) mustBe None
+      testIndexService.getOrElseSize(testAdditionalBusinessPremisesList) mustBe None
+      testIndexService.getOrElseSize(testSuppliers) mustBe None
+      testIndexService.getOrElseSize(testPartnerDetails) mustBe None
+      testIndexService.getOrElseSize(testBusinessDirectors) mustBe None
     }
 
     "return None when there is nothing in the list" in {
@@ -97,11 +97,11 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       val testPartnerDetails = Some(Partners(List()))
       val testBusinessDirectors = Some(BusinessDirectors(List[BusinessDirector]()))
 
-      testIndexService.OptionUtil(testGroupMemberDetails).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testAdditionalBusinessPremisesList).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testSuppliers).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testPartnerDetails).getOrElseSize mustBe None
-      testIndexService.OptionUtil(testBusinessDirectors).getOrElseSize mustBe None
+      testIndexService.getOrElseSize(testGroupMemberDetails) mustBe None
+      testIndexService.getOrElseSize(testAdditionalBusinessPremisesList) mustBe None
+      testIndexService.getOrElseSize(testSuppliers) mustBe None
+      testIndexService.getOrElseSize(testPartnerDetails) mustBe None
+      testIndexService.getOrElseSize(testBusinessDirectors) mustBe None
     }
 
     "return the correct size when there is something in the list" in {
@@ -111,23 +111,21 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       val testPartnerDetails = Some(Partners(List(testPartner(), testPartner(), testPartner())))
       val testBusinessDirectors = Some(BusinessDirectors(List[BusinessDirector](testBusinessDirector, testBusinessDirector, testBusinessDirector)))
 
-      testIndexService.OptionUtil(testGroupMemberDetails).getOrElseSize.get mustBe 3
-      testIndexService.OptionUtil(testAdditionalBusinessPremisesList).getOrElseSize.get mustBe 3
-      testIndexService.OptionUtil(testSuppliers).getOrElseSize.get mustBe 3
-      testIndexService.OptionUtil(testPartnerDetails).getOrElseSize.get mustBe 3
-      testIndexService.OptionUtil(testBusinessDirectors).getOrElseSize.get mustBe 3
+      testIndexService.getOrElseSize(testGroupMemberDetails).get mustBe 3
+      testIndexService.getOrElseSize(testAdditionalBusinessPremisesList).get mustBe 3
+      testIndexService.getOrElseSize(testSuppliers).get mustBe 3
+      testIndexService.getOrElseSize(testPartnerDetails).get mustBe 3
+      testIndexService.getOrElseSize(testBusinessDirectors).get mustBe 3
     }
   }
 
-  implicit class SectionModelTestUtil(sectionModelList: List[SectionModel]) {
+  extension (sectionModelList: List[SectionModel])
     def getSection(sectionName: String, BusinessType: String): SectionModel =
       sectionModelList(JourneyConstants.getJourney(BusinessType).indexOf(sectionName))
-  }
 
-  implicit class IndexViewModelTestUtil(result: Future[IndexViewModel]) {
+  extension (result: Future[IndexViewModel])
     def getSection(sectionName: String, BusinessType: String): SectionModel =
       await(result).sectionModels.getSection(sectionName, BusinessType)
-  }
 
   "IndexService show continue button method " must {
 
@@ -402,7 +400,7 @@ class IndexServiceTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           await(result) mustBe createIndexViewModel(legalEntity = legalEntity)
         }
         s"return an IndexStatus model for business type $legalEntity that is no longer complete" in {
-          val completedCachemapApartFromNewBus = createCacheMap(legalEntity = legalEntity, businessNameDetails = (x: String) => testBusinessNameDetails(), businessDirectors = testBusinessDirectors.copy(directors = Nil))
+          val completedCachemapApartFromNewBus = createCacheMap(legalEntity = legalEntity, businessNameDetails = (_: String) => testBusinessNameDetails(), businessDirectors = testBusinessDirectors.copy(directors = Nil))
           val result = testIndexService.getStatus(completedCachemapApartFromNewBus, legalEntity, TestUtil.defaultAuthRetrieval)
           await(result) mustBe createIndexViewModel(legalEntity = legalEntity, businessDirectors = SectionIncomplete, directorSize = 0)
         }

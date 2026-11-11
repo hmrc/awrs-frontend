@@ -41,13 +41,14 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
                                             val authConnector: DefaultAuthConnector,
                                             val auditable: Auditable,
                                             val accountUtils: AccountUtils,
-                                            implicit val applicationConfig: ApplicationConfig,
-                                            template: views.html.awrs_business_directors) extends FrontendController(mcc) with AwrsController
+                                            template: views.html.awrs_business_directors)(
+                                            using val applicationConfig: ApplicationConfig
+                                            ) extends FrontendController(mcc) with AwrsController
   with JourneyPage
   with Deletable[BusinessDirectors, BusinessDirector]
   with SaveAndRoutable
 {
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   override def fetch(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier): Future[Option[BusinessDirectors]] = save4LaterService.mainStore.fetchBusinessDirectors(authRetrievals)
@@ -59,14 +60,14 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
   override val section: String = businessDirectorsName
   override val listToListObj: List[BusinessDirector] => BusinessDirectors = (directors: List[BusinessDirector]) => BusinessDirectors(directors)
   override val deleteHeadingParameter: String = "awrs.view_application.director"
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(businessDirectorsName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(businessDirectorsName)
   override val addNoAnswerRecord: List[BusinessDirector] => List[BusinessDirector] = (emptyList: List[models.BusinessDirector]) => emptyList // in the directors page ignores this
   override val amendHaveAnotherAnswer: (BusinessDirector, String) => BusinessDirector = (data: BusinessDirector, newAnswer: String) => data.copy(otherDirectors = Some(newAnswer))
 
   def showBusinessDirectors(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -111,7 +112,7 @@ class BusinessDirectorsController @Inject()(val mcc: MessagesControllerComponent
                      isNewRecord: Boolean,
                      authRetrievals: StandardAuthRetrievals)(implicit request: Request[AnyContent]): Future[Result] = {
 
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
 
      businessDirectorsForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),

@@ -38,17 +38,17 @@ class ProductsController @Inject()(val mcc: MessagesControllerComponents,
                                    val authConnector: DefaultAuthConnector,
                                    val auditable: Auditable,
                                    val accountUtils: AccountUtils,
-                                   implicit val applicationConfig: ApplicationConfig,
-                                   template: views.html.awrs_products) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
+                                   template: views.html.awrs_products
+                                  )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   override val section: String = productsName
   val signInUrl: String = applicationConfig.signIn
 
   def showProducts(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -64,7 +64,7 @@ class ProductsController @Inject()(val mcc: MessagesControllerComponents,
 
   override def save(id: Int, redirectRoute: (Option[RedirectParam], Boolean) => Future[Result], viewApplicationType: ViewApplicationType, isNewRecord: Boolean, authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     productsForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors)))
       ,

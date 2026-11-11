@@ -33,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AccountUtils
 import views.Configuration.NewApplicationMode
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
+import utils.SessionUtil.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,17 +46,17 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
                                       val auditable: Auditable,
                                       val accountUtils: AccountUtils,
                                       val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                      implicit val applicationConfig: ApplicationConfig,
-                                      template: views.html.awrs_trading_name) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
+                                      template: views.html.awrs_trading_name
+                                     )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 
   override val section: String = businessDetailsName
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def showTradingName(isLinearMode: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) LinearViewMode else EditSectionOnlyMode
         val businessType = request.getBusinessType
         for {
           businessCustomerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
@@ -98,7 +99,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
            isNewRecord: Boolean,
            authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     val businessType = request.getBusinessType
     tradingNameForm(businessType.get, accountUtils.hasAwrs(authRetrievals.enrolments)).bindFromRequest().fold(
       formWithErrors =>

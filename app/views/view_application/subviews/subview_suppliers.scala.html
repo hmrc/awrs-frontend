@@ -49,13 +49,13 @@
 
 @topAdd(model: models.Suppliers) = {
     @if(model.suppliers.size < 5 && model.suppliers.size > 1) {
-        <div class="add-link-top">@add_link_helper(isSectionEdit)("top", addLinkHref(model), messages("awrs.view_application.supplier"))</div>
+        <div class="add-link-top">@add_link_helper(isSectionEdit())("top", addLinkHref(model), messages("awrs.view_application.supplier"))</div>
     }
 }
 
 @bottomAdd(model: models.Suppliers)  = {
     @if(model.suppliers.size < 5) {
-        @add_none_table_link_helper(isSectionEdit)("bottom", addLinkHref(model), messages("awrs.view_application.supplier"))
+        @add_none_table_link_helper(isSectionEdit())("bottom", addLinkHref(model), messages("awrs.view_application.supplier"))
     }
 }
 

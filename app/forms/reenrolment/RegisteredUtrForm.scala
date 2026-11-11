@@ -31,7 +31,7 @@ object RegisteredUtrForm {
       .verifying("awrs.reenrolment.registered_utr.error", urn => {
           UTRValidator.validateUTR(trimAllFunc(urn))
       })
-  )(AwrsEnrolmentUtr.apply)(AwrsEnrolmentUtr.unapply))
+  )(AwrsEnrolmentUtr.apply)(enrolmentUtr => Some(enrolmentUtr.utr)))
 
   lazy val awrsEnrolmentUtrForm: PrevalidationAPI[AwrsEnrolmentUtr] = PreprocessedForm(
     awrsEnrolmentUtrValidationForm,

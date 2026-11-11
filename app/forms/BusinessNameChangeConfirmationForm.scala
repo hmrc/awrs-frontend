@@ -25,6 +25,6 @@ object BusinessNameChangeConfirmationForm {
 
   val businessNameChangeConfirmationForm: Form[BusinessNameChangeConfirmation] = Form(mapping(
     "businessNameChangeConfirmation" -> yesNoQuestion_compulsory(fieldId = "businessNameChangeConfirmation", errorMessageId = "awrs.business_name_change.error.empty")
-  )(BusinessNameChangeConfirmation.apply)(BusinessNameChangeConfirmation.unapply))
+  )(BusinessNameChangeConfirmation.apply)(confirmation => Some(confirmation.businessNameChangeConfirmation)))
 
 }

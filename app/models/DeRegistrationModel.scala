@@ -41,26 +41,26 @@ case class DeRegistrationFailureResponseType(reason: String) extends DeRegistrat
 
 
 object DeRegistrationDate {
-   implicit val formats: Format[DeRegistrationDate] = Json.format[DeRegistrationDate]
-   implicit val optionFormats: Format[Option[DeRegistrationDate]] = Format.optionWithNull[DeRegistrationDate]
+   given formats: Format[DeRegistrationDate] = Json.format[DeRegistrationDate]
+   given optionFormats: Format[Option[DeRegistrationDate]] = Format.optionWithNull[DeRegistrationDate]
 }
 
 
 object DeRegistrationReason {
-  implicit val formats: Format[DeRegistrationReason] = Json.format[DeRegistrationReason]
-  implicit val optionFormats: Format[Option[DeRegistrationReason]] = Format.optionWithNull[DeRegistrationReason]
+  given formats: Format[DeRegistrationReason] = Json.format[DeRegistrationReason]
+  given optionFormats: Format[Option[DeRegistrationReason]] = Format.optionWithNull[DeRegistrationReason]
 }
 
 
 
 
 object DeRegistrationConfirmation {
-  implicit val formats: Format[DeRegistrationConfirmation] = Json.format[DeRegistrationConfirmation]
+  given formats: Format[DeRegistrationConfirmation] = Json.format[DeRegistrationConfirmation]
 }
 
 object DeRegistration {
-  implicit val formats: Format[DeRegistration] = Json.format[DeRegistration]
-  implicit val optionFormats: Format[Option[DeRegistration]] = Format.optionWithNull[DeRegistration]
+  given formats: Format[DeRegistration] = Json.format[DeRegistration]
+  given optionFormats: Format[Option[DeRegistration]] = Format.optionWithNull[DeRegistration]
   val dateFormat = "yyyy-MM-dd"
 
   // N.B. for the sake of simplicity this is not made into an overload of apply because it would break the above Json.format call
@@ -73,7 +73,7 @@ object DeRegistration {
 
 
 object DeRegistrationSuccessResponseType {
-  implicit val reader: Reads[DeRegistrationSuccessResponseType] = new Reads[DeRegistrationSuccessResponseType] {
+  given reader: Reads[DeRegistrationSuccessResponseType] = new Reads[DeRegistrationSuccessResponseType] {
 
     def reads(js: JsValue): JsResult[DeRegistrationSuccessResponseType] =
       for {
@@ -84,11 +84,11 @@ object DeRegistrationSuccessResponseType {
 
   }
 
-  implicit val writter: OWrites[DeRegistrationSuccessResponseType] = Json.writes[DeRegistrationSuccessResponseType]
+  given writter: OWrites[DeRegistrationSuccessResponseType] = Json.writes[DeRegistrationSuccessResponseType]
 }
 
 object DeRegistrationFailureResponseType {
-  implicit val reader: Reads[DeRegistrationFailureResponseType] = new Reads[DeRegistrationFailureResponseType] {
+  given reader: Reads[DeRegistrationFailureResponseType] = new Reads[DeRegistrationFailureResponseType] {
 
     def reads(js: JsValue): JsResult[DeRegistrationFailureResponseType] =
       for {
@@ -98,13 +98,13 @@ object DeRegistrationFailureResponseType {
       }
 
   }
-  implicit val writter: OWrites[DeRegistrationFailureResponseType] = Json.writes[DeRegistrationFailureResponseType]
+  given writter: OWrites[DeRegistrationFailureResponseType] = Json.writes[DeRegistrationFailureResponseType]
 }
 
 
 object DeRegistrationType {
 
-  implicit val reader: Reads[DeRegistrationType] = new Reads[DeRegistrationType] {
+  given reader: Reads[DeRegistrationType] = new Reads[DeRegistrationType] {
     def reads(js: JsValue): JsResult[DeRegistrationType] = {
       val successResponse = Try(js.asOpt[DeRegistrationSuccessResponseType]).getOrElse(None)
       val failureResponse = Try(js.asOpt[DeRegistrationFailureResponseType]).getOrElse(None)
@@ -117,7 +117,7 @@ object DeRegistrationType {
     }
   }
 
-  implicit val writter: Writes[DeRegistrationType] = new Writes[DeRegistrationType] {
+  given writter: Writes[DeRegistrationType] = new Writes[DeRegistrationType] {
     def writes(info: DeRegistrationType): JsObject =
       info.response match {
         case Some(r: DeRegistrationSuccessResponseType) => DeRegistrationSuccessResponseType.writter.writes(r)

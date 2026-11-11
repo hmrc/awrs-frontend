@@ -17,15 +17,15 @@
 package services
 import connectors.mock.MockAuthConnector
 import services.mocks.MockKeyStoreService
-import utils.TestUtil._
+import utils.TestUtil.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class KeyStoreServiceTest extends MockKeyStoreService with MockAuthConnector {
 
-  import MockKeyStoreService._
+  import MockKeyStoreService.*
 
-  import FetchNoneType._
+  import FetchNoneType.*
 
   "KeyStore service functions and deleteDeRegistrationDate" must {
 

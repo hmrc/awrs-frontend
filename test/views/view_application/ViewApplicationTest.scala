@@ -22,8 +22,8 @@ import connectors.mock.MockAuthConnector
 import controllers.BusinessDirectorsController
 import forms.AWRSEnums.{BooleanRadioEnum, DirectorAndSecretaryEnum, EntityTypeEnum, PersonOrCompanyEnum}
 import forms.AwrsFormFields
-import models.BusinessDetailsEntityTypes._
-import models._
+import models.BusinessDetailsEntityTypes.*
+import models.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.mockito.ArgumentMatchers
@@ -33,24 +33,24 @@ import play.api.i18n.Messages
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, _}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.twirl.api.HtmlFormat
-import services.DataCacheKeys._
+import services.DataCacheKeys.*
 import services.Save4LaterService
 import services.mocks.MockSave4LaterService
 import models.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import utils.TestConstants._
-import utils.TestUtil._
+import utils.TestConstants.*
+import utils.TestUtil.*
 import utils.{AccountUtils, AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_business_directors
 import views.html.view_application.awrs_view_application
 import views.view_application.helpers.{OneViewMode, PrintFriendlyMode}
-import views.view_application.subviews.SubviewIds._
+import views.view_application.subviews.SubviewIds.*
 
 import javax.inject.Inject
-import play.twirl.api.TwirlHelperImports.twirlJavaCollectionToScala
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters.*
 import scala.language.implicitConversions
 
 
@@ -69,26 +69,26 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override implicit val applicationConfig: ApplicationConfig,
+                                 override val applicationConfig: ApplicationConfig,
                                  val template: views.html.awrs_business_directors,
-                                 viewApp: views.html.view_application.awrs_view_application) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig, template) {
+                                 viewApp: views.html.view_application.awrs_view_application) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, template)(using applicationConfig) {
     val status = "does not matter"
 
-    def viewApplicationContent(dataCache: CacheMap, status: String)(implicit request: Request[AnyContent]): Boolean => HtmlFormat.Appendable =
+    def viewApplicationContent(dataCache: CacheMap, status: String)(using request: Request[AnyContent]): Boolean => HtmlFormat.Appendable =
       (printFriendly: Boolean) => {
         when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
           .thenReturn(true)
 
         if (printFriendly) {
-          views.html.view_application.awrs_view_application_core(dataCache, status, TestUtil.defaultEnrolmentSet, mockAccountUtils)(viewApplicationType = PrintFriendlyMode, implicitly, messages, implicitly)
+          views.html.view_application.awrs_view_application_core(dataCache, status, TestUtil.defaultEnrolmentSet, mockAccountUtils)(viewApplicationType = PrintFriendlyMode, request, messages, applicationConfig)
         } else {
-          views.html.view_application.awrs_view_application_core(dataCache, status, TestUtil.defaultEnrolmentSet, mockAccountUtils)(viewApplicationType = OneViewMode, implicitly, messages, implicitly)
+          views.html.view_application.awrs_view_application_core(dataCache, status, TestUtil.defaultEnrolmentSet, mockAccountUtils)(viewApplicationType = OneViewMode, request, messages, applicationConfig)
         }
       }
 
     def show(dataCache: CacheMap): Action[AnyContent] = Action.async {
       implicit request =>
-        Future.successful(Ok(viewApp(viewApplicationContent(dataCache, status), printFriendly = true, None, None)(implicitly, messages= messages, applicationConfig = mockAppConfig)))
+        Future.successful(Ok(viewApp(viewApplicationContent(dataCache, status), printFriendly = true, None, None)(summon, messages= messages, applicationConfig = mockAppConfig)))
     }
   }
 
@@ -142,22 +142,22 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     CacheMap(id, cacheMap)
   }
 
-  def prepMap[T](key: String, optionParam: Option[T])(implicit format: Format[T]): Map[String, JsValue] =
+  def prepMap[T](key: String, optionParam: Option[T])(using format: Format[T]): Map[String, JsValue] =
     optionParam match {
       case Some(param) => Map[String, JsValue](key -> Json.toJson(param))
       case _ => Map[String, JsValue]()
     }
 
-  implicit def conv(item: String): List[String] = List(item)
+  given stringToList: Conversion[String, List[String]] = (item: String) => List(item)
 
-  implicit def conv(someItem: Option[String]): List[String] = someItem match {
+  given optionToList: Conversion[Option[String], List[String]] = {
     case Some(item) => List(item)
     case _ => List()
   }
+  
+  given conv: Conversion[Row, List[Row]] = (newRow: Row) => List(newRow)
 
-  implicit def conv(newRow: Row): List[Row] = List(newRow)
-
-  implicit def conv(tupleDate: TupleDate): List[String] = List(tupleDate.toString("dd MMMM yyyy"))
+  given tupleDateToList: Conversion[TupleDate, List[String]] = (tupleDate: TupleDate) => List(tupleDate.toString("dd MMMM yyyy"))
 
 
   def utrMessage(businessType: String): String = businessType match {
@@ -169,7 +169,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
   def businessRegistrationDetailsToExpectation(someBusinessType: Option[String], testBusinessRegistrationDetails: Option[BusinessRegistrationDetails]): List[Row] = {
     (someBusinessType, testBusinessRegistrationDetails) match {
-      case (Some(businessType), Some(id)) =>
+      case (Some(_), Some(id)) =>
         prepRow(Messages("awrs.generic.UTR_number"), id.utr) ++
           prepRow(Messages("awrs.generic.NINO"), id.nino) ++
           prepRowCustom(Messages("awrs.generic.company_reg"), id.companyRegDetails)(id.companyRegDetails.get.companyRegistrationNumber) ++
@@ -279,18 +279,18 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
   "view-application page" must {
 
     "display business details correctly" in {
-      def testDataOne(legalEntity: Option[String]) = testBusinessNameDetails()
+      def testDataOne() = testBusinessNameDetails()
 
-      def testDataTwo(legalEntity: Option[String]) = testBusinessNameDetails()
+      def testDataTwo() = testBusinessNameDetails()
 
       val testAWBusiness = NewAWBusiness(
         "Yes",
         Some(TupleDate("20", "1", "2015"))
       )
 
-      val testDataSeqPartnership = Seq(testDataOne(Some("Partnership")), testDataTwo(Some("Partnership")))
-      val testDataSeqGroup = Seq(testDataOne(Some("LLP_GRP")), testDataTwo(Some("LLP_GRP")))
-      val testDataSeqBusDetails = Seq(testDataOne(Some("SoleTrader")), testDataTwo(Some("SoleTrader")))
+      val testDataSeqPartnership = Seq(testDataOne(), testDataTwo())
+      val testDataSeqGroup = Seq(testDataOne(), testDataTwo())
+      val testDataSeqBusDetails = Seq(testDataOne(), testDataTwo())
 
       val bcd = testBusinessCustomerDetails("SOP")
 
@@ -325,14 +325,14 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(entity: BusinessType, testData: BusinessNameDetails) = {
-        implicit val divId: String = businessDetailsId
+        given divId: String = businessDetailsId
 
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(businessNameDetails = testData,
             businessCustomerDetails = bcd,
             tradingStartDetails = testAWBusiness,
             businessType = entity)
-        implicit val doc: Document = getDoc(entity.legalEntity.get)
+        given doc: Document = getDoc(entity.legalEntity.get)
         val subview = getSubview
 
         testSectionExists(businessDetails = true)
@@ -355,7 +355,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
                   equal.toString + "\t" + {
                     equal match {
                       case true => ""
-                      case false => s"${a.heading.toCharArray.map(_.toInt.toString)}\t${b.heading.toCharArray.map(_.toInt.toString)}\n\t${a.content.map(_.toCharArray.map(_.toInt.toString))}\t${b.content.map(_.toCharArray.map(_.toInt.toString))}\n"
+                      case false => s"${a.heading.toList.map(_.toInt.toString)}\t${b.heading.toList.map(_.toInt.toString)}\n\t${a.content.map(_.toList.map(_.toInt.toString))}\t${b.content.map(_.toList.map(_.toInt.toString))}\n"
                     }
                   }
               }
@@ -409,13 +409,13 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           businessRegistrationDetailsToExpectation(entity, testData)
 
       def test(entity: BusinessType, testData: BusinessRegistrationDetails) = {
-        implicit val divId: String = businessRegistrationDetailsId
+        given divId: String = businessRegistrationDetailsId
 
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(businessRegistrationDetails = testData,
             businessCustomerDetails = bcd,
             businessType = entity)
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(businessRegistrationDetails = true)
@@ -433,10 +433,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display place of business correctly" in {
-      implicit val divId: String = placeOfBusinessId
+      given divId: String = placeOfBusinessId
       val testData = testPlaceOfBusinessDefault()
 
-      def toExpectation(testData: PlaceOfBusiness, testBCDetails: BusinessCustomerDetails): List[Row] =
+      def toExpectation(testData: PlaceOfBusiness): List[Row] =
         Row("", None) ++
           addressToExpectation(Messages("awrs.view_application.principal_place_business"), testData.mainAddress) ++
           prepRow(Messages("awrs.business_contacts.place_of_business_changed_last_3_years"), testData.placeOfBusinessLast3Years) ++
@@ -445,12 +445,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
 
       def test(entity: BusinessType, testData: PlaceOfBusiness) = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(placeOfBusiness = testData,
             businessType = entity,
             businessCustomerDetails = testBusinessCustomerDetails(entity.legalEntity.get))
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(placeOfBusiness = true)
@@ -462,7 +462,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
         }
 
         subview.heading mustBe expectedHeading
-        subview.rows mustBe toExpectation(testData, testBusinessCustomerDetails(entity.legalEntity.get)).drop(1)
+        subview.rows mustBe toExpectation(testData).drop(1)
       }
 
       val entities = Seq(testBusinessDetailsEntityTypes(Partnership),
@@ -474,7 +474,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display business contacts correctly" in {
-      implicit val divId: String = businessContactsId
+      given divId: String = businessContactsId
       val testData = List[BusinessContacts](testBusinessContactsDefault(), testBusinessContactsDefault(contactAddressSame = Some(BooleanRadioEnum.NoString)))
 
       def toExpectation(testData: BusinessContacts, testBCDetails: BusinessCustomerDetails): List[Row] = {
@@ -492,12 +492,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(entity: BusinessType, testData: BusinessContacts) = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(businessContacts = testData,
             businessType = entity,
             businessCustomerDetails = testBusinessCustomerDetails(entity.legalEntity.get))
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(businessContacts = true)
@@ -522,7 +522,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display group members details correctly" in {
-      implicit val divId: String = groupMemberDetailsId
+      given divId: String = groupMemberDetailsId
 
       val testData = GroupMembers(
         List(GroupMember(companyNames = CompanyNames(Some("ACME"), Some("Yes"), Some("Business1")), address = Some(Address("line1", "line2", Option("line3"), Option("line4"), Option("NE28 6LZ"), None, None)), groupJoiningDate = None, doYouHaveUTR = Some("Yes"), utr = testUtr, isBusinessIncorporated = Some("No"), companyRegDetails = Some(
@@ -540,7 +540,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
       def toExpectation(testData: GroupMembers): List[Row] = {
         def toList(testData: GroupMember): List[Row] = {
-          def companyOrTradingName: String = testData.companyNames.businessName.fold(testData.companyNames.tradingName)(x => x).fold("")(x => x)
+          def companyOrTradingName: String = testData.companyNames.businessName.orElse(testData.companyNames.tradingName).getOrElse("")
 
           def identificationToExpectation(groupMember: GroupMember): List[Row] =
             prepRow(Messages("awrs.generic.do_they_have_CT_UTR"), groupMember.doYouHaveUTR) ++
@@ -563,10 +563,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(testData: GroupMembers): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(groupMembers = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(groupMembers = true)
@@ -581,7 +581,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display partner details correctly" in {
-      implicit val divId: String = partnerDetailsId
+      given divId: String = partnerDetailsId
 
       @scala.annotation.nowarn
       def partnerDetailOneViewTest(entityType: Option[String] = Some("Individual"),
@@ -628,7 +628,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       )
 
       def toExpectation(testData: Partners): List[Row] = {
-        def toList(testData: Partner, index: Int): List[Row] = {
+        def toList(testData: Partner): List[Row] = {
 
           def nameOrCompanyOrTradingName: List[Row] =
             testData.entityType.get.toLowerCase match {
@@ -656,21 +656,21 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
               prepRow(Messages("awrs.generic.do_they_have_VAT"), partner.doYouHaveVRN) ++
               prepRow(Messages("awrs.generic.VAT_registration_number"), partner.vrn)
 
-         // sectionHeader ++
-            nameOrCompanyOrTradingName ++
+          // sectionHeader ++
+          nameOrCompanyOrTradingName ++
             prepRowCustom(Messages("awrs.business-partner.partner_role"), testData.entityType)(EntityTypeEnum.getMessageKey(testData.entityType.get)) ++
             addressToExpectation(Messages("awrs.generic.address"), testData.partnerAddress) ++
             identificationToExpectation(testData)
         }
 
-        testData.partners.zipWithIndex.flatMap { case (x, index) => toList(x, index) }
+        testData.partners.flatMap(x => toList(x))
       }
 
       def test(testData: Partners): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(partnerDetails = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(partnerDetails = true)
@@ -689,7 +689,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display additional premises correctly" in {
-      implicit val divId: String = additionalPremisesId
+      given divId: String = additionalPremisesId
       val testData = AdditionalBusinessPremisesList(
         List(testAdditionalBusinessPremises,
           testAdditionalBusinessPremises,
@@ -703,10 +703,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(testData: AdditionalBusinessPremisesList): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(additionalBusinessPremises = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(additionalBusinessPremises = true)
@@ -722,14 +722,13 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display business directors correctly" in {
-      implicit val divId: String = businessDirectorsId
+      given divId: String = businessDirectorsId
 
       def businessDirectorOneViewTest(directorsAndCompanySecretaries: Option[String] = "Director and Company Secretary",
                                       personOrCompany: Option[String] = "company",
                                       firstName: Option[String] = "John", lastName: Option[String] = "Smith",
                                       doTheyHaveNationalInsurance: Option[String] = "Yes", nino: Option[String] = testNino,
                                       passportNumber: Option[String] = None, nationalID: Option[String] = None,
-                                      isDirectorACompany: Option[String] = None,
                                       companyName: Option[String] = "Company Name", tradingName: Option[String] = "Trading Name",
                                       doYouHaveVRN: Option[String] = "Yes", vrn: Option[String] = testVrn,
                                       doYouHaveCRN: Option[String] = "Yes", companyRegNumber: Option[String] = testCrn,
@@ -803,12 +802,12 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(entity: BusinessType, testData: BusinessDirectors): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(
             businessDirectors = testData,
             businessType = entity)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(businessDirectors = true)
@@ -829,7 +828,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display trading activity correctly" in {
-      implicit val divId: String = tradingActivityId
+      given divId: String = tradingActivityId
       val testData = testTradingActivity()
 
       def toExpectation(testData: TradingActivity): List[Row] =
@@ -843,10 +842,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
 
       def test(testData: TradingActivity): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(tradingActivity = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(tradingActivity = true)
@@ -861,7 +860,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display products correctly" in {
-      implicit val divId: String = productsId
+      given divId: String = productsId
       val testData = testProducts()
 
       def toExpectation(testData: Products): List[Row] =
@@ -871,10 +870,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
 
       def test(testData: Products): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(products = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(products = true)
@@ -892,7 +891,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       when(mockCountryCodes.getCountry(ArgumentMatchers.any()))
         .thenReturn(None, Some("United States of America"))
 
-      implicit val divId: String = suppliersId
+      given divId: String = suppliersId
       // Data in testUtil is not correct
       val testData = Suppliers(List(
         Supplier(
@@ -949,10 +948,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
       }
 
       def test(testData: Suppliers): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(suppliers = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(suppliers = true)
@@ -967,7 +966,7 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
     }
 
     "display application declaration correctly" in {
-      implicit val divId: String = applicationDeclarationId
+      given divId: String = applicationDeclarationId
       val testData = testApplicationDeclaration
 
       def toExpectation(testData: ApplicationDeclaration): List[Row] =
@@ -975,10 +974,10 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
           prepRow(Messages("awrs.application_declaration.declaration_role_hint", "sending"), testData.declarationRole)
 
       def test(testData: ApplicationDeclaration): Unit = {
-        implicit val cache: CacheMap =
+        given cache: CacheMap =
           getCustomizedMap(applicationDeclaration = testData)
 
-        implicit val doc: Document = getDoc()
+        given doc: Document = getDoc()
         val subview = getSubview
 
         testSectionExists(applicationDeclaration = true)
@@ -1029,11 +1028,11 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
   def getRow(div: Element): Row = {
     val row1stCol = div.getElementsByTag("dt")
     val row = div.getElementsByTag("dd")
-    val rowText: List[String] = row.head.children().toList match {
-      case Nil => List(row.head.text())
-      case _ => row.head.children().toList.map(_.text())
+    val rowText: List[String] = row.first().children().asScala.toList match {
+      case Nil => List(row.first().text())
+      case children => children.map(_.text())
     }
-    Row(row1stCol.head.text, rowText)
+    Row(row1stCol.first().text, rowText)
   }
 
   def getDoc(entityType: String = "SOP")(implicit cache: CacheMap): Document = {
@@ -1043,9 +1042,9 @@ class ViewApplicationTest extends AwrsUnitTestTraits with MockAuthConnector with
 
   def getSubview(implicit doc: Document, id: String): Subview = {
     val div = doc.getElementById(id)
-    val heading = div.getElementsByTag("h1").head.text()
-    val subheading = div.getElementsByTag("h2").toList.map(_.text())
-    val rows = div.getElementsByClass("govuk-summary-list__row").foldLeft(List[Row]())((list, x) => list :+ getRow(x))
+    val heading = div.getElementsByTag("h1").first().text()
+    val subheading = div.getElementsByTag("h2").asScala.toList.map(_.text())
+    val rows = div.getElementsByClass("govuk-summary-list__row").asScala.toList.map(getRow)
     Subview(heading, subheading, rows)
   }
 

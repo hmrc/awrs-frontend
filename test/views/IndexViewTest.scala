@@ -18,22 +18,22 @@ package views
 
 import builders.SessionBuilder
 import controllers.{IndexController, routes}
-import models.FormBundleStatus._
+import models.FormBundleStatus.*
 import models.SubscriptionStatusType
 import org.jsoup.Jsoup
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.i18n.Messages
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
-import services._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
+import services.*
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments, User}
 import models.CacheMap
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
-import view_models._
+import view_models.*
 import views.html.awrs_index
 
 import scala.concurrent.Future
@@ -46,7 +46,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
   }
   val template: awrs_index = app.injector.instanceOf[views.html.awrs_index]
 
-  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+  val testIndexController: IndexController = new IndexController(mockMCC, mockIndexService, testAPI9, mockApplicationService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
@@ -68,7 +68,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
   "IndexView" must {
 
     "Index-table" must {
-      def checkSectionStatus(testData: IndexViewModel)(implicit result: Future[Result]): Unit = {
+      def checkSectionStatus(testData: IndexViewModel)(using result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         testData.sectionModels.foreach {
           spec =>
@@ -89,7 +89,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         List(SectionComplete, SectionIncomplete, SectionEdited, SectionNotStarted).foreach {
           sectionStatus =>
             val testData = testIndexViewModel(sectionStatus, 10)
-            implicit val result: Future[Result] = showIndexPageAPI4(indexStatusModel = testData)
+            given result: Future[Result] = showIndexPageAPI4(indexStatusModel = testData)
             checkSectionStatus(testData = testData)
         }
       }
@@ -159,12 +159,12 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
     }
 
     "The status window" must {
-      def checkElementsText(elementId: String, expected: String)(implicit result: Future[Result]): Unit = {
+      def checkElementsText(elementId: String, expected: String)(using result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         document.select(s"#$elementId").text() must include(expected)
       }
 
-      def checkAwrsRefNo(shouldExists: Boolean)(implicit result: Future[Result]): Unit = {
+      def checkAwrsRefNo(shouldExists: Boolean)(using result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         shouldExists match {
           case true =>
@@ -176,7 +176,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
       case class LinkExpectations(href: String, text: String)
 
-      def checkLinks(linkId: String, expectations: Option[LinkExpectations])(implicit result: Future[Result]): Unit = {
+      def checkLinks(linkId: String, expectations: Option[LinkExpectations])(using result: Future[Result]): Unit = {
         val document = Jsoup.parse(contentAsString(result))
         val link = document.select(s"#$linkId")
         expectations match {
@@ -189,7 +189,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         }
       }
 
-      def checkWithdrawLink(shouldExists: Boolean)(implicit result: Future[Result]): Unit =
+      def checkWithdrawLink(shouldExists: Boolean)(using result: Future[Result]): Unit =
         checkLinks(linkId = "withdraw_link", shouldExists match {
           case true =>
             LinkExpectations(href = routes.WithdrawalController.showWithdrawalReasons.toString, text = Messages("awrs.index_page.withdraw_link"))
@@ -197,7 +197,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         }
         )
 
-      def checkDeRegLink(shouldExists: Boolean)(implicit result: Future[Result]): Unit =
+      def checkDeRegLink(shouldExists: Boolean)(using result: Future[Result]): Unit =
         checkLinks(linkId = "de_reg_page_link", shouldExists match {
           case true =>
             LinkExpectations(href = routes.DeRegistrationController.showReason.toString, text = Messages("awrs.index_page.de_registration_link"))
@@ -205,7 +205,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         }
         )
 
-      def checkViewApplicationLink(shouldExists: Boolean)(implicit result: Future[Result]): Unit =
+      def checkViewApplicationLink(shouldExists: Boolean)(using result: Future[Result]): Unit =
         checkLinks(linkId = "view-application", shouldExists match {
           case true =>
             LinkExpectations(href = routes.ViewApplicationController.show(false).toString, text = Messages("awrs.generic.print_application"))
@@ -213,7 +213,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         }
         )
 
-      def checkViewApplicationStatusLink(shouldExists: Boolean)(implicit result: Future[Result]): Unit =
+      def checkViewApplicationStatusLink(shouldExists: Boolean)(using result: Future[Result]): Unit =
         checkLinks(linkId = "status-page_link", shouldExists match {
           case true =>
             LinkExpectations(href = routes.ApplicationStatusController.showStatus().toString, text = Messages("awrs.index_page.view_application_status_link_text"))
@@ -223,7 +223,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
       "display application-status showing correct application status" in {
         {
-          implicit val result: Future[Result] = showIndexPageAPI4()
+          given result: Future[Result] = showIndexPageAPI4()
           checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.draft")} ${Messages("awrs.index_page.application_status_text").toLowerCase}")
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = false)
@@ -231,7 +231,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkViewApplicationStatusLink (shouldExists = false)
         }
         {
-          implicit val result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypePending)
+          given result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypePending)
           checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.application_status_text")} ${Pending.name.toLowerCase}")
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = true)
@@ -239,7 +239,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkViewApplicationStatusLink (shouldExists = true)
         }
         {
-          implicit val result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApproved)
+          given result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApproved)
           checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.application_status_text")} ${Approved.name.toLowerCase}")
           checkAwrsRefNo(shouldExists = true)
           checkWithdrawLink(shouldExists = false)
@@ -247,7 +247,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
           checkViewApplicationStatusLink (shouldExists = true)
         }
         {
-          implicit val result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApprovedWithConditions)
+          given result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeApprovedWithConditions)
           checkElementsText(elementId = "application-status", expected = s"${Messages("awrs.index_page.application_status_text")} ${ApprovedWithConditions.name.toLowerCase}")
           checkAwrsRefNo(shouldExists = true)
           checkWithdrawLink(shouldExists = false)
@@ -257,7 +257,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
         // n.b. currently rejected users must simply be redirected, this will not be the case in these tests because
         // the status is not stored in the session. These tests are left in in-case this behaviour changes in the future.
         {
-          implicit val result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeRejected)
+          given result: Future[Result] = showIndexPageAPI5(someStatus = testSubscriptionStatusTypeRejected)
           checkElementsText(elementId = "application-status", expected = Rejected.name.toLowerCase)
           checkAwrsRefNo(shouldExists = false)
           checkWithdrawLink(shouldExists = false)
@@ -268,7 +268,7 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       "show one view link only when it is specifed" in {
         List(true, false).foreach {
           showLink =>
-            implicit val result: Future[Result] = showIndexPageAPI4(showOneViewLink = showLink)
+            given result: Future[Result] = showIndexPageAPI4(showOneViewLink = showLink)
             checkViewApplicationLink(shouldExists = showLink)
         }
       }
@@ -278,11 +278,9 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
 
   }
 
-  private def showIndexPage(hasAwrs: Boolean,
-                            hasApplicationChanged: Boolean,
+  private def showIndexPage(hasApplicationChanged: Boolean,
                             allSectionComplete: Boolean,
                             showOneViewLink: Boolean,
-                            businessName: String,
                             indexStatusModel: view_models.IndexViewModel,
                             someStatus: Option[SubscriptionStatusType]): Future[Result] = {
     resetAuthConnector()
@@ -298,20 +296,17 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
       getStatus = indexStatusModel
     )
     setAuthMocks(Future.successful(new ~(new ~( new ~(Enrolments(TestUtil.defaultEnrolmentSet), Some(AffinityGroup.Organisation)), Credentials("fakeCredID", "type")), Some(User))))
-    testIndexController.showIndex().apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
+    testIndexController.showIndex.apply(SessionBuilder.buildRequestWithSession(userId, "SOP"))
   }
 
 
   private def showIndexPageAPI4(allSectionComplete: Boolean = false,
                                 showOneViewLink: Boolean = false,
-                                indexStatusModel: view_models.IndexViewModel = noStatus,
-                                businessName: String = "My Business"): Future[Result] =
+                                indexStatusModel: view_models.IndexViewModel = noStatus): Future[Result] =
     showIndexPage(
-      hasAwrs = false, // can never have awrs in api4
       hasApplicationChanged = false, // can never be modified in api4
       allSectionComplete = allSectionComplete,
       showOneViewLink = showOneViewLink,
-      businessName = businessName,
       indexStatusModel = indexStatusModel,
       someStatus = None // status will always be draft in api4
     )
@@ -320,15 +315,12 @@ class IndexViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixture {
                                 allSectionComplete: Boolean = false,
                                 showOneViewLink: Boolean = false,
                                 indexStatusModel: view_models.IndexViewModel = noStatus,
-                                someStatus: Option[SubscriptionStatusType] = testSubscriptionStatusTypePending,
-                                businessName: String = "My Business"
+                                someStatus: Option[SubscriptionStatusType] = testSubscriptionStatusTypePending
                                ): Future[Result] =
     showIndexPage(
-      hasAwrs = true,
       hasApplicationChanged = hasApplicationChanged,
       allSectionComplete = allSectionComplete,
       showOneViewLink = showOneViewLink,
-      businessName = businessName,
       indexStatusModel = indexStatusModel,
       someStatus = someStatus
     )

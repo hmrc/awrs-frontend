@@ -34,10 +34,12 @@ import uk.gov.hmrc.http.InternalServerException
 import models.CacheMap
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{AccountUtils, CacheUtil}
+import utils.AccountUtils
+import utils.CacheUtil.*
 import views.view_application.ViewApplicationHelper._
 import views.view_application.helpers._
 import scala.language.postfixOps
+import utils.SessionUtil.{addLocation, getJourneyStartLocation}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -51,20 +53,19 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
                                           val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                          implicit val applicationConfig: ApplicationConfig,
                                           templateError: views.html.awrs_application_error,
-                                          templateViewApp: views.html.view_application.awrs_view_application) extends FrontendController(mcc) with AwrsController with UnSubmittedBannerUtil with DataCacheService {
+                                          templateViewApp: views.html.view_application.awrs_view_application
+                                         )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController with UnSubmittedBannerUtil with DataCacheService {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
-  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def viewApplicationContent(dataCache: CacheMap, status: String, enrolments: Set[Enrolment])(implicit request: Request[AnyContent]): Boolean => HtmlFormat.Appendable =
     (printFriendly: Boolean) =>
       if (printFriendly) {
-        views.html.view_application.awrs_view_application_core(dataCache, status, enrolments, accountUtils)(viewApplicationType = PrintFriendlyMode, implicitly, implicitly, implicitly)
+        views.html.view_application.awrs_view_application_core(dataCache, status, enrolments, accountUtils)(viewApplicationType = PrintFriendlyMode, summon, summon, summon)
       } else {
-        views.html.view_application.awrs_view_application_core(dataCache, status, enrolments, accountUtils)(viewApplicationType = OneViewMode, implicitly, implicitly, implicitly)
+        views.html.view_application.awrs_view_application_core(dataCache, status, enrolments, accountUtils)(viewApplicationType = OneViewMode, summon, summon, summon)
       }
 
   def show(printFriendly: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
@@ -126,27 +127,27 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
 
             sectionName match {
               case `businessDetailsName` => showPage(views.html.view_application.subviews.subview_business_details(
-                displayNameKey, BusinessDetailSummaryModel(cacheMap.getBusinessNameDetails, cacheMap.getTradingStartDetails), Some(businessCustomerDetails.fold("")(x => x.businessName)), businessCustomerDetails.fold(false)(_.isAGroup))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
+                displayNameKey, BusinessDetailSummaryModel(cacheMap.getBusinessNameDetails, cacheMap.getTradingStartDetails), Some(businessCustomerDetails.fold("")(x => x.businessName)), businessCustomerDetails.fold(false)(_.isAGroup))(viewApplicationType = EditRecordOnlyMode, summon, summon), legalEntity)
               case `businessRegistrationDetailsName` => showPage(views.html.view_application.subviews.subview_business_registration_details(
-                displayNameKey, cacheMap.getBusinessRegistrationDetails, Some(legalEntity))(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getBusinessRegistrationDetails, Some(legalEntity))(viewApplicationType = EditRecordOnlyMode, summon, summon), legalEntity)
               case `placeOfBusinessName` => showPage(views.html.view_application.subviews.subview_place_of_business(
-                displayNameKey, cacheMap.getPlaceOfBusiness)(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getPlaceOfBusiness)(viewApplicationType = EditRecordOnlyMode, summon, summon, summon), legalEntity)
               case `businessContactsName` => showPage(views.html.view_application.subviews.subview_business_contacts(
-                displayNameKey, cacheMap.getBusinessContacts, businessCustomerDetails)(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getBusinessContacts, businessCustomerDetails)(viewApplicationType = EditRecordOnlyMode, summon, summon, summon), legalEntity)
               case `partnersName` => showPage(views.html.view_application.subviews.subview_partner_details(
-                displayNameKey, cacheMap.getPartners)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getPartners)(viewApplicationType = EditSectionOnlyMode, summon, summon, summon), legalEntity)
               case `groupMembersName` => showPage(views.html.view_application.subviews.subview_group_member_details(
-                displayNameKey, cacheMap.getGroupMembers, legalEntity, ar.enrolments, accountUtils)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getGroupMembers, legalEntity, ar.enrolments, accountUtils)(viewApplicationType = EditSectionOnlyMode, summon, summon, summon), legalEntity)
               case `additionalBusinessPremisesName` => showPage(views.html.view_application.subviews.subview_additional_premises(
-                displayNameKey, cacheMap.getAdditionalBusinessPremises)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getAdditionalBusinessPremises)(viewApplicationType = EditSectionOnlyMode, summon, summon, summon), legalEntity)
               case `businessDirectorsName` => showPage(views.html.view_application.subviews.subview_business_directors(
-                displayNameKey, cacheMap.getBusinessDirectors, legalEntity)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getBusinessDirectors, legalEntity)(viewApplicationType = EditSectionOnlyMode, summon, summon), legalEntity)
               case `tradingActivityName` => showPage(views.html.view_application.subviews.subview_trading_activity(
-                displayNameKey, cacheMap.getTradingActivity)(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getTradingActivity)(viewApplicationType = EditRecordOnlyMode, summon, summon), legalEntity)
               case `productsName` => showPage(views.html.view_application.subviews.subview_products(
-                displayNameKey, cacheMap.getProducts)(viewApplicationType = EditRecordOnlyMode, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getProducts)(viewApplicationType = EditRecordOnlyMode, summon, summon), legalEntity)
               case `suppliersName` => showPage(views.html.view_application.subviews.subview_suppliers(
-                displayNameKey, cacheMap.getSuppliers)(viewApplicationType = EditSectionOnlyMode, implicitly, implicitly, implicitly), legalEntity)
+                displayNameKey, cacheMap.getSuppliers)(viewApplicationType = EditSectionOnlyMode, summon, summon, summon), legalEntity)
               case _ => NotFound(applicationConfig.templateNotFound())
             }
           case _ => NotFound(applicationConfig.templateNotFound())

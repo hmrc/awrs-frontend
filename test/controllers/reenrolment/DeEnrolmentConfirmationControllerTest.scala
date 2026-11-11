@@ -31,20 +31,19 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
 
   private val controller: DeEnrolmentConfirmationController = new DeEnrolmentConfirmationController(
     mockMCC,
-    mockAppConfig,
     mockDeEnrolService,
     mockAuthConnector,
     mockAccountUtils,
     mockAuditable,
     template
-  )
+  )(using mockAppConfig)
 
   "DeEnrolmentConfirmationController" must {
 
     "return 200 and render the confirmation form" in {
       setAuthMocks()
       val request = SessionBuilder.buildRequestWithSession(userId)
-      val result  = controller.showDeEnrolmentConfirmationPage().apply(request)
+      val result  = controller.showDeEnrolmentConfirmationPage.apply(request)
 
       status(result) mustBe OK
     }
@@ -58,7 +57,7 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
       val request = SessionBuilder
         .buildRequestWithSession(userId, "POST", "/")
         .withFormUrlEncodedBody("confirmDeEnrollment" -> "Yes")
-      val result = controller.saveAndContinue().apply(request)
+      val result = controller.saveAndContinue.apply(request)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(routes.RegisteredPostcodeController.showPostCode.url)
@@ -69,7 +68,7 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
       val request = SessionBuilder
         .buildRequestWithSession(userId, "POST", "/")
         .withFormUrlEncodedBody("confirmDeEnrollment" -> "No")
-      val result = controller.saveAndContinue().apply(request)
+      val result = controller.saveAndContinue.apply(request)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(routes.ViewEnrolmentsController.showViewEnrolmentsPage.url)
@@ -79,7 +78,7 @@ class DeEnrolmentConfirmationControllerTest extends PlaySpec with AwrsUnitTestTr
       setAuthMocks()
       val request = SessionBuilder
         .buildRequestWithSession(userId, "POST", "/")
-      val result = controller.saveAndContinue().apply(request)
+      val result = controller.saveAndContinue.apply(request)
 
       status(result) mustBe BAD_REQUEST
 

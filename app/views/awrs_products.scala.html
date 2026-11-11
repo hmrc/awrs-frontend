@@ -18,7 +18,7 @@
 @import forms.AwrsFormFields._
 @import services.DataCacheKeys._
 @import views.helpers._
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 @import views.view_application.helpers.SubViewTemplateHelper._
 @import views.view_application.helpers._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
@@ -27,6 +27,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import views.ViewUtils._
+@import _root_.utils.SessionUtil.*
 
 @this(
     formWithCSRF: FormWithCSRF,
@@ -38,10 +39,10 @@
 @(productsForm: Form[models.Products])(implicit request: Request[AnyContent],
         viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(productsForm) }
+@implicitFormInstance: Option[Form[_]] = @{ Some(productsForm) }
 
 @actionRoute = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         controllers.routes.ProductsController.saveAndReturn
     } else {
         controllers.routes.ProductsController.saveAndContinue
@@ -49,7 +50,7 @@
 }
 
 @ctaMessage = @{
-    if(isEditMode) {
+    if(isEditMode()) {
         messages("awrs.generic.save_return")
     } else {
         messages("awrs.generic.save_continue")

@@ -21,6 +21,7 @@ import metrics.AwrsMetrics
 import models._
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.writeableOf_JsValue
 import services.GGConstants._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._

@@ -18,6 +18,7 @@ package connectors
 
 import audit.Auditable
 import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits.readJsValue

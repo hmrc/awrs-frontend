@@ -34,7 +34,8 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
   val template: awrs_trading_activity = app.injector.instanceOf[views.html.awrs_trading_activity]
 
   val testTradingActivityController: TradingActivityController = new TradingActivityController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template
+  )(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -62,14 +63,14 @@ class TradingActivityControllerTest extends AwrsUnitTestTraits
   private def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceWithOnly(fetchProducts = None)
     setAuthMocks()
-    val result = testTradingActivityController.saveAndContinue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testTradingActivityController.saveAndContinue.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
   private def returnWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     setupMockSave4LaterServiceOnlySaveFunctions()
     setAuthMocks()
-    val result = testTradingActivityController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testTradingActivityController.saveAndReturn.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 

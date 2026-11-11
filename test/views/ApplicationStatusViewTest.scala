@@ -19,17 +19,17 @@ package views
 import builders.SessionBuilder
 import controllers.ApplicationStatusController
 import models.BusinessDetailsEntityTypes.Llp
-import models.FormBundleStatus._
-import models._
+import models.FormBundleStatus.*
+import models.*
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.{CheckEtmpService, ServicesUnitTestFixture}
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_application_status
 
@@ -68,7 +68,6 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
           val listText = document.getElementsByClass("govuk-list").text()
 
 
-
           val expectedLines = Seq(
             Messages("awrs.application_status.info.approved.line1"),
             Messages("awrs.application_status.info.approved.line2"),
@@ -87,18 +86,18 @@ class ApplicationStatusViewTest extends AwrsUnitTestTraits
       })
     }
 
-  "for an Approved With Conditions user" in {
-    viewStatusPage(ApprovedWithConditions, {
-      result =>
-        val document = Jsoup.parse(contentAsString(result))
-        val headingText = document.getElementsByClass("govuk-heading-m").text()
+    "for an Approved With Conditions user" in {
+      viewStatusPage(ApprovedWithConditions, {
+        result =>
+          val document = Jsoup.parse(contentAsString(result))
+          val headingText = document.getElementsByClass("govuk-heading-m").text()
 
-        document.title() must include(Messages("awrs.generic.tab.title"))
+          document.title() must include(Messages("awrs.generic.tab.title"))
 
-        document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.lede.main"))
-        headingText must include(Messages("awrs.application_status.info.approved_with_conditions.heading"))
-    })
-  }
+          document.getElementsByClass("govuk-panel__body").text() must include(Messages("awrs.application_status.lede.main"))
+          headingText must include(Messages("awrs.application_status.info.approved_with_conditions.heading"))
+      })
+    }
 
     "for a Rejected user" in {
       viewStatusPage(Rejected, {

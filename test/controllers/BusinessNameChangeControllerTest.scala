@@ -48,14 +48,14 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
 
   val testBusinessNameChangeController: BusinessNameChangeController =
     new BusinessNameChangeController(mockMCC, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
-      mockIndexService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+      mockIndexService, mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
   "show confirm" must {
     "show the confirm page" in {
       setAuthMocks()
-      val result = testBusinessNameChangeController.showConfirm().apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = testBusinessNameChangeController.showConfirm.apply(SessionBuilder.buildRequestWithSession(userId))
       status(result) must be(OK)
       val document = Jsoup.parse(contentAsString(result))
       document.getElementById("businessNameChangeConfirmation-heading").text() must include("awrs.business_name_change.heading")
@@ -90,7 +90,7 @@ class BusinessNameChangeControllerTest extends AwrsUnitTestTraits
     when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
 
-    val result = testBusinessNameChangeController.callToAction().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
+    val result = testBusinessNameChangeController.callToAction.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId).withMethod("POST"))
     test(result)
   }
 
