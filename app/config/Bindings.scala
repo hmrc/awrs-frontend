@@ -19,13 +19,10 @@ package config
 import connectors.{BusinessMatchingConnector, BusinessMatchingConnectorImpl}
 import play.api.inject.{Binding, Module, bind => playBind}
 import play.api.{Configuration, Environment}
-import repositories.CacheRepository
-import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
+import repositories.{AwrsApiShortLivedCacheRepositoryProvider, AwrsShortLivedCacheRepositoryProvider, CacheRepository, SessionCacheRepositoryProvider}
+import uk.gov.hmrc.mongo.TimestampSupport
 
 import java.time.Instant
-import javax.inject.{Inject, Provider, Singleton}
-import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.Duration
 
 class Bindings extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -33,51 +30,6 @@ class Bindings extends Module {
       playBind(classOf[BusinessMatchingConnector]).to(classOf[BusinessMatchingConnectorImpl])
     )
   }
-}
-
-abstract class CacheRepositoryProvider(
-    collectionName: String,
-    mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport
-)(implicit ec: ExecutionContext) extends Provider[CacheRepository] {
-
-  protected def ttl: Duration
-
-  override def get(): CacheRepository =
-    new CacheRepository(collectionName, ttl, mongoComponent, timestampSupport)
-}
-
-@Singleton
-class SessionCacheRepositoryProvider @Inject()(
-    mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
-)(implicit ec: ExecutionContext)
-  extends CacheRepositoryProvider("sessions", mongoComponent, timestampSupport) {
-
-  override protected def ttl: Duration = appConfig.mongoSessionTtl
-}
-
-@Singleton
-class AwrsShortLivedCacheRepositoryProvider @Inject()(
-    mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
-)(implicit ec: ExecutionContext)
-  extends CacheRepositoryProvider("awrs-short-lived-cache", mongoComponent, timestampSupport) {
-
-  override protected def ttl: Duration = appConfig.mongoShortLivedCacheTtl
-}
-
-@Singleton
-class AwrsApiShortLivedCacheRepositoryProvider @Inject()(
-    mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
-)(implicit ec: ExecutionContext)
-  extends CacheRepositoryProvider("awrs-api-short-lived-cache", mongoComponent, timestampSupport) {
-
-  override protected def ttl: Duration = appConfig.mongoShortLivedCacheTtl
 }
 
 class MongoModule extends Module {

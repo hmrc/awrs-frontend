@@ -35,7 +35,7 @@ class CacheRepository(
     collectionName = collectionName,
     ttl = ttl,
     timestampSupport = timestampSupport,
-    cacheIdType = CacheRepository.IdIsTheKey
+    cacheIdType = CacheIdType.SimpleCacheId
   )
 
   def get[T: Reads](id: String, dataKey: DataKey[T]): Future[Option[T]] =
@@ -49,10 +49,4 @@ class CacheRepository(
 
   def deleteById(id: String): Future[Unit] =
     cacheRepo.deleteEntity(id)
-}
-
-object CacheRepository {
-  private object IdIsTheKey extends CacheIdType[String] {
-    override def run: String => String = identity
-  }
 }
