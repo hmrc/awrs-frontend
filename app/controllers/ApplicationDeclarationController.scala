@@ -19,7 +19,7 @@ package controllers
 import _root_.models.FormBundleStatus._
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.AwrsDataCacheConnector
+import services.AwrsDataCacheService
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import exceptions._
 import forms.ApplicationDeclarationForm._
@@ -42,7 +42,7 @@ class ApplicationDeclarationController @Inject()(enrolService: EnrolService,
                                                  val authConnector: DefaultAuthConnector,
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
-                                                 val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
+                                                 val mainStoreSave4LaterCacheService: AwrsDataCacheService,
                                                  implicit val applicationConfig: ApplicationConfig,
                                                  template: views.html.awrs_application_declaration) extends FrontendController(mcc) with AwrsController with DataCacheService {
 

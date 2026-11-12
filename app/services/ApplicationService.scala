@@ -18,7 +18,7 @@ package services
 
 import _root_.models._
 import audit.Auditable
-import connectors.{AWRSConnector, AwrsDataCacheConnector}
+import connectors.AWRSConnector
 import controllers.auth.StandardAuthRetrievals
 import exceptions.{InvalidStateException, ResubmissionException}
 import forms.AwrsFormFields
@@ -40,7 +40,7 @@ class ApplicationService @Inject()(awrsConnector: AWRSConnector,
                                    val keyStoreService: KeyStoreService,
                                    val auditable: Auditable,
                                    val accountUtils: AccountUtils,
-                                   val mainStoreSave4LaterConnector: AwrsDataCacheConnector) extends AwrsAPI5Helper with DataCacheService with LoggingUtils {
+                                   val mainStoreSave4LaterCacheService: AwrsDataCacheService) extends AwrsAPI5Helper with DataCacheService with LoggingUtils {
 
   val maxSuppliers = 5
 

@@ -39,7 +39,7 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_trading_name = app.injector.instanceOf[views.html.awrs_trading_name]
-  val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
+  val tradingDateController: TradingNameController = new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, mockAppConfig, template) {
       override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -52,7 +52,7 @@ class TradingNameViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
     )
     when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(NewApplicationMode))
-    when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMainStoreSave4LaterCacheService.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
     setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
   }

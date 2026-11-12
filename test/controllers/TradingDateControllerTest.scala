@@ -46,7 +46,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
 
   val tradingDateController: TradingDateController =
     new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService,
-      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
+      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, mockAppConfig, template) {
     override val signInUrl = "/sign-in"
   }
 
@@ -76,7 +76,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           fetchNewApplicationType = testNewApplicationType
         )
         setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
 
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -103,7 +103,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           fetchNewApplicationType = testNewApplicationType
         )
         setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
 
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -128,7 +128,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
           fetchNewApplicationType = testNewApplicationType
         )
         setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -158,7 +158,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
             fetchNewApplicationType = testNewApplicationType
           )
           setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
-          when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
           when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -187,7 +187,7 @@ class TradingDateControllerTest extends AwrsUnitTestTraits
             fetchNewApplicationType = testNewApplicationType
           )
           setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(false)))
-          when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
           when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))

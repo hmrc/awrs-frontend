@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package services
 
 import models.CacheMap
 import play.api.libs.json
@@ -27,16 +27,16 @@ import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class AwrsDataCacheConnector @Inject()(@Named("awrs") override val cacheRepository: CacheRepository)
-  extends Save4LaterConnector
+class AwrsDataCacheService @Inject()(@Named("awrs") override val cacheRepository: CacheRepository)
+  extends Save4LaterCacheService
 
-class AwrsApiDataCacheConnector @Inject()(@Named("awrs-api") override val cacheRepository: CacheRepository)
-  extends Save4LaterConnector
+class AwrsApiDataCacheService @Inject()(@Named("awrs-api") override val cacheRepository: CacheRepository)
+  extends Save4LaterCacheService
 
-class AwrsKeyStoreConnector @Inject()(@Named("session") override val cacheRepository: CacheRepository)
-  extends KeyStoreConnector
+class AwrsKeyStoreCacheService @Inject()(@Named("session") override val cacheRepository: CacheRepository)
+  extends KeyStoreCacheService
 
-trait KeyStoreConnector {
+trait KeyStoreCacheService {
 
   val cacheRepository: CacheRepository
 
@@ -52,7 +52,7 @@ trait KeyStoreConnector {
     cacheRepository.deleteById(SessionCacheId.from(hc))
 }
 
-trait Save4LaterConnector {
+trait Save4LaterCacheService {
 
   val cacheRepository: CacheRepository
 

@@ -43,7 +43,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
   val mockTemplate: awrs_already_starting_trading = app.injector.instanceOf[views.html.awrs_already_starting_trading]
 
   val alreadyStartingTradingController: AlreadyStartingTradingController =
-    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, mockTemplate) {
+    new AlreadyStartingTradingController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, mockAppConfig, mockTemplate) {
     override val signInUrl = "/sign-in"
   }
 
@@ -74,7 +74,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
           fetchNewApplicationType = testNewApplicationType
         )
         setupMockKeyStoreService(fetchAlreadyTrading = Future.successful(Some(true)))
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("No", None))))
 
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -102,7 +102,7 @@ class AlreadyStartingTradingControllerTest extends AwrsUnitTestTraits
           fetchNewApplicationType = testNewApplicationType
         )
         setupMockKeyStoreService()
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
 
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))

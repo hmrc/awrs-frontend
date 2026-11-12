@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package services
 
 import models._
 import org.mockito.Mockito._
@@ -28,13 +28,13 @@ import utils.TestUtil._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
+class Save4LaterCacheServiceSpec extends AwrsUnitTestTraits {
 
   implicit val format: Format[BusinessCustomerDetails] = BusinessCustomerDetails.formats
 
   val mockShortLivedCacheRepo: CacheRepository = mock[CacheRepository]
 
-  val testSave4LaterConnector: Save4LaterConnector = new Save4LaterConnector() {
+  val testSave4LaterCacheService: Save4LaterCacheService = new Save4LaterCacheService() {
     override val cacheRepository: CacheRepository = mockShortLivedCacheRepo
   }
 
@@ -49,7 +49,7 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
       when(mockShortLivedCacheRepo.get[BusinessCustomerDetails](testUtr, DataKey[BusinessCustomerDetails](key)))
         .thenReturn(Future.successful(Some(reviewDetails)))
 
-      val result = testSave4LaterConnector.fetchData4Later[BusinessCustomerDetails](testUtr, key)
+      val result = testSave4LaterCacheService.fetchData4Later[BusinessCustomerDetails](testUtr, key)
       await(result) mustBe Some(reviewDetails)
     }
 
@@ -58,7 +58,7 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
       when(mockShortLivedCacheRepo.put[BusinessCustomerDetails](testUtr, DataKey[BusinessCustomerDetails](key), reviewDetails))
         .thenReturn(Future.successful(reviewDetails))
 
-      val result = testSave4LaterConnector.saveData4Later(testUtr, key, reviewDetails)
+      val result = testSave4LaterCacheService.saveData4Later(testUtr, key, reviewDetails)
       await(result).get mustBe reviewDetails
     }
 
@@ -66,7 +66,7 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
       when(mockShortLivedCacheRepo.findById(testUtr))
         .thenReturn(Future.successful(Some(testCacheItem)))
 
-      val result = testSave4LaterConnector.fetchAll(testUtr)
+      val result = testSave4LaterCacheService.fetchAll(testUtr)
 
       await(result).get.toString must include("BC_Business_Details")
       await(result).get.toString must include("Supplier")
@@ -76,7 +76,7 @@ class Save4LaterConnectorSpec extends AwrsUnitTestTraits {
       when(mockShortLivedCacheRepo.deleteById("TEST"))
         .thenReturn(Future.successful(()))
 
-      val result = testSave4LaterConnector.removeAll("TEST")
+      val result = testSave4LaterCacheService.removeAll("TEST")
       await(result) mustBe (())
     }
 

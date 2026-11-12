@@ -66,8 +66,8 @@ class ConfirmationControllerTest extends AwrsUnitTestTraits
         beforeEach()
         setupMockKeyStoreServiceWithOnly(fetchIsNewBusiness = None)
 
-        reset(mockMainStoreSave4LaterConnector)
-        when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        reset(mockMainStoreSave4LaterCacheService)
+        when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Option(NewAWBusiness(if (bool) "No" else "Yes", None))))
         test(bool)
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package services
 
 import models._
 import org.mockito.Mockito._
@@ -28,13 +28,13 @@ import utils.TestUtil._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
+class KeyStoreCacheServiceSpec extends AwrsUnitTestTraits {
 
   implicit val format: Format[SubscriptionStatusType] = SubscriptionStatusType.formats
 
   val mockSessionCacheRepo: CacheRepository = mock[CacheRepository]
 
-  val testKeyStoreConnector: KeyStoreConnector = new KeyStoreConnector() {
+  val testKeyStoreCacheService: KeyStoreCacheService = new KeyStoreCacheService() {
     override val cacheRepository: CacheRepository = mockSessionCacheRepo
   }
 
@@ -43,12 +43,12 @@ class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
     reset(mockSessionCacheRepo)
   }
 
-  "KeyStoreConnector" must {
+  "KeyStore" must {
     "fetch saved data from keystore" in {
       when(mockSessionCacheRepo.get[SubscriptionStatusType]("", DataKey[SubscriptionStatusType](testUtr)))
         .thenReturn(Future.successful(Some(testSubscriptionStatusTypePendingGroup)))
 
-      val result = testKeyStoreConnector.fetchDataFromKeystore[SubscriptionStatusType](testUtr)
+      val result = testKeyStoreCacheService.fetchDataFromKeystore[SubscriptionStatusType](testUtr)
       await(result) mustBe Some(testSubscriptionStatusTypePendingGroup)
     }
 
@@ -56,7 +56,7 @@ class KeyStoreConnectorSpec extends AwrsUnitTestTraits {
       when(mockSessionCacheRepo.put[SubscriptionStatusType]("", DataKey[SubscriptionStatusType](testUtr), testSubscriptionStatusTypePendingGroup))
         .thenReturn(Future.successful(testSubscriptionStatusTypePendingGroup))
 
-      val result = testKeyStoreConnector.saveDataToKeystore[SubscriptionStatusType](testUtr, testSubscriptionStatusTypePendingGroup)
+      val result = testKeyStoreCacheService.saveDataToKeystore[SubscriptionStatusType](testUtr, testSubscriptionStatusTypePendingGroup)
       val cacheMap = await(result)
 
       cacheMap.id mustBe ""

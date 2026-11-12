@@ -47,7 +47,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
 
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
     mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, templateError, templateViewApp)
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, mockAppConfig, templateError, templateViewApp)
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
                        businessCustomerDetails: Option[BusinessCustomerDetails] = None,

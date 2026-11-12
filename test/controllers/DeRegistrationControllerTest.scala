@@ -74,8 +74,8 @@ class DeRegistrationControllerTest extends MockAuthConnector with MockKeyStoreSe
     reset(mockApi10)
     reset(mockTaxEnrolmentsConnector)
     reset(mockAccountUtils)
-    reset(mockMainStoreSave4LaterConnector)
-    reset(mockApiSave4LaterConnector)
+    reset(mockMainStoreSave4LaterCacheService)
+    reset(mockApiSave4LaterCacheService)
     setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
     super.beforeEach()
   }

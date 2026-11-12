@@ -59,7 +59,7 @@
 //
 //  val testTradingNameController: TradingNameController =
 //    new TradingNameController(mockMCC, testSave4LaterService, testKeyStoreService, mockBusinessDetailsService,
-//      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
+//      mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, mockAppConfig, template) {
 //    override val signInUrl = "/sign-in"
 //  }
 //
@@ -88,7 +88,7 @@
 //          fetchBusinessDetails = testBusinessDetails(),
 //          fetchNewApplicationType = testNewApplicationType
 //        )
-//        when(mockMainStoreSave4LaterConnector.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+//        when(mockMainStoreSave4LaterCacheService.fetchData4Later[BusinessNameDetails](ArgumentMatchers.any(), ArgumentMatchers.eq("businessNameDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 //          .thenReturn(Future.successful(Option(BusinessNameDetails(Some("test"), None, None))))
 //
 //        val res = testTradingNameController.showTradingName(false)

@@ -35,14 +35,14 @@ class TradingDateViewTest extends AwrsUnitTestTraits with ServicesUnitTestFixtur
 
   val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val template: awrs_trading_date  = app.injector.instanceOf[views.html.awrs_trading_date]
-  val tradingDateController: TradingDateController = new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector, mockAppConfig, template) {
+  val tradingDateController: TradingDateController = new TradingDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService, testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, mockAppConfig, template) {
       override val signInUrl: String = applicationConfig.signIn
   }
 
   def setupMocks(): Unit = {
     when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(NewApplicationMode))
-    when(mockMainStoreSave4LaterConnector.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMainStoreSave4LaterCacheService.fetchData4Later[NewAWBusiness](ArgumentMatchers.any(), ArgumentMatchers.eq("tradingStartDetails"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Option(NewAWBusiness("Yes", None))))
   }
 
