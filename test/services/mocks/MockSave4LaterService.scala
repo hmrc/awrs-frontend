@@ -16,8 +16,7 @@
 
 package services.mocks
 
-import connectors.Save4LaterConnector
-import connectors.mock.MockSave4LaterConnector
+import services.Save4LaterCacheService
 import models.BusinessDetailsEntityTypes._
 import models._
 import org.mockito.ArgumentMatchers
@@ -34,14 +33,14 @@ import utils.TestUtil._
 import scala.concurrent.Future
 
 trait MockSave4LaterService extends AwrsUnitTestTraits
-  with MockSave4LaterConnector {
+  with MockSave4LaterCacheService {
 
   import MockSave4LaterService._
 
-  val testSave4LaterService = new Save4LaterService(mockMainStoreSave4LaterConnector, mockApiSave4LaterConnector, mockAccountUtils)
+  val testSave4LaterService = new Save4LaterService(mockMainStoreSave4LaterCacheService, mockApiSave4LaterCacheService, mockAccountUtils)
 
   // children must not override this method, update here when Save4LaterService changes
-  protected final def mockFetchFromSave4Later[T](key: String, config: MockConfiguration[Future[Option[T]]])(implicit connector: Save4LaterConnector): Unit =
+  protected final def mockFetchFromSave4Later[T](key: String, config: MockConfiguration[Future[Option[T]]])(implicit connector: Save4LaterCacheService): Unit =
   config ifConfiguredThen (dataToReturn => when(connector.fetchData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(dataToReturn))
 
   // children must not override this method, update here when Save4LaterService changes
@@ -53,16 +52,16 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
       }
     }
 
-    when(mockMainStoreSave4LaterConnector.saveData4Later(any(), any(), any())(any(), any(), any())).thenAnswer(defaultSaveMock)
-    when(mockApiSave4LaterConnector.saveData4Later(any(), any(), any())(any(), any(), any())).thenAnswer(defaultSaveMock)
+    when(mockMainStoreSave4LaterCacheService.saveData4Later(any(), any(), any())(any(), any(), any())).thenAnswer(defaultSaveMock)
+    when(mockApiSave4LaterCacheService.saveData4Later(any(), any(), any())(any(), any(), any())).thenAnswer(defaultSaveMock)
   }
 
   // internal function for this trait only, must not be made visable to children
-  private final def verifySave4LaterFetch[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterConnector): Unit =
+  private final def verifySave4LaterFetch[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterCacheService): Unit =
   someCount ifDefinedThen (count => verify(connector, times(count)).fetchData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
   // internal function for this trait only, must not be made visable to children
-  private final def verifySave4LaterSave[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterConnector): Unit =
+  private final def verifySave4LaterSave[T](key: String, someCount: Option[Int])(implicit connector: Save4LaterCacheService): Unit =
   someCount ifDefinedThen (count => verify(connector, times(count)).saveData4Later[T](ArgumentMatchers.any(), ArgumentMatchers.eq(key), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 
   // children can override in order to customise their default settings
@@ -129,7 +128,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                           fetchAll: MockConfiguration[Future[Option[CacheMap]]] = DoNotConfigure,
                                                           removeAll: MockConfiguration[Future[Unit]] = DoNotConfigure
                                                         ): Unit = {
-    implicit val connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
+    implicit val connector: Save4LaterCacheService = mockMainStoreSave4LaterCacheService
 
     mockFetchFromSave4Later(applicationStatusName, fetchApplicationStatus)
     mockFetchFromSave4Later(businessTypeName, fetchBusinessType)
@@ -173,7 +172,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                              fetchBusinessDetailsSupport: MockConfiguration[Future[Option[BusinessDetailsSupport]]] = DoNotConfigure,
                                                              removeAll: MockConfiguration[Future[Unit]] = DoNotConfigure
                                                            ): Unit = {
-    implicit val connector: Save4LaterConnector = mockApiSave4LaterConnector
+    implicit val connector: Save4LaterCacheService = mockApiSave4LaterCacheService
 
     mockFetchFromSave4Later(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     mockFetchFromSave4Later(businessDetailsSupportName, fetchBusinessDetailsSupport)
@@ -220,7 +219,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                removeAll: Option[Int] = None
                                              ): Unit = {
 
-    implicit val connector: Save4LaterConnector = mockMainStoreSave4LaterConnector
+    implicit val connector: Save4LaterCacheService = mockMainStoreSave4LaterCacheService
 
     verifySave4LaterFetch(businessTypeName, fetchBusinessType)
     verifySave4LaterSave(businessTypeName, saveBusinessType)
@@ -268,7 +267,7 @@ trait MockSave4LaterService extends AwrsUnitTestTraits
                                                   removeAll: Option[Int] = None
                                                 ): Unit = {
 
-    implicit val connector: Save4LaterConnector = mockApiSave4LaterConnector
+    implicit val connector: Save4LaterCacheService = mockApiSave4LaterCacheService
 
     verifySave4LaterFetch(subscriptionTypeFrontEndName, fetchSubscriptionTypeFrontEnd)
     verifySave4LaterSave(subscriptionTypeFrontEndName, saveSubscriptionTypeFrontEnd)

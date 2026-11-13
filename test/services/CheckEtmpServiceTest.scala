@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{AWRSConnector, Save4LaterConnector}
+import connectors.AWRSConnector
 import controllers.auth.StandardAuthRetrievals
 import models._
 import org.mockito.ArgumentMatchers
@@ -42,7 +42,7 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
   val mockAwrsConnector: AWRSConnector = mock[AWRSConnector]
   val mockSave4LaterService: Save4LaterService = mock[Save4LaterService]
   val mockEnrolService: EnrolService = mock[EnrolService]
-  val mockSave4LaterConnector: Save4LaterConnector = mock[Save4LaterConnector]
+  val mockSave4LaterCacheService: Save4LaterCacheService = mock[Save4LaterCacheService]
   val mockAccountUtils: AccountUtils = mock[AccountUtils]
   val testAuthRetrievals: StandardAuthRetrievals = TestUtil.defaultAuthRetrieval
   val testBusinessCustomerDetails: BusinessCustomerDetails = BusinessCustomerDetails("ACME", Some("SOP"), BCAddress("line1", "line2", Option("line3"), Option("line4"), Option("postcode"), Option("country")), "sap123", "safe123", false, Some("agent123"))
@@ -51,7 +51,7 @@ class CheckEtmpServiceTest extends PlaySpec with MockitoSugar with BeforeAndAfte
 
   override def beforeEach(): Unit = {
     reset(mockAwrsConnector)
-    reset(mockSave4LaterConnector)
+    reset(mockSave4LaterCacheService)
     reset(mockAccountUtils)
     reset(mockSave4LaterService)
 

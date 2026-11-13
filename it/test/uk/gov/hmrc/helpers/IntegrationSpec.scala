@@ -22,7 +22,8 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.libs.ws.{WSCookie, WSRequest}
 import play.api.mvc.{Cookie, Session, SessionCookieBaker}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits, Injecting}
-import repositories.SessionCacheRepository
+import play.api.inject.BindingKey
+import repositories.{CacheRepository, SessionCacheId}
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.helpers.application.IntegrationApplication
 import uk.gov.hmrc.helpers.http.StubbedBasicHttpCalls
@@ -44,14 +45,14 @@ trait IntegrationSpec
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  protected lazy val sessionCacheRepository: SessionCacheRepository =
-    app.injector.instanceOf[SessionCacheRepository]
+  protected lazy val sessionCacheRepository: CacheRepository =
+    app.injector.instanceOf[CacheRepository](BindingKey(classOf[CacheRepository]).qualifiedWith("session"))
 
   protected val cacheHeaderCarrier: HeaderCarrier =
     HeaderCarrier(sessionId = Some(HcSessionId("mock-sessionid")))
 
   protected def clearSessionCache(): Unit =
-    await(sessionCacheRepository.deleteFromSession(cacheHeaderCarrier))
+    await(sessionCacheRepository.deleteById(SessionCacheId.from(cacheHeaderCarrier)))
 
   def mockSessionCookie: WSCookie = {
 

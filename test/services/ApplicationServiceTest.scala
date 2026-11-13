@@ -56,7 +56,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
     super.beforeEach()
 
     reset(mockAccountUtils)
-    reset(mockKeyStoreConnector)
+    reset(mockKeyStoreCacheService)
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
       .thenReturn(true)
   }
@@ -141,7 +141,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   lazy val feModel: AWRSFEModel = api6LTDJson.as[AWRSFEModel]
   lazy val cachedSubscription: SubscriptionTypeFrontEnd = feModel.subscriptionTypeFrontEnd
 
-  val testApplicationService: ApplicationService = new ApplicationService(mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterConnector)
+  val testApplicationService: ApplicationService = new ApplicationService(mockAWRSConnector, mockEmailService, testSave4LaterService, testKeyStoreService, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService)
 
   "Application Service" must {
     "getRegistrationReferenceNumber must return left when given self heal case " in {

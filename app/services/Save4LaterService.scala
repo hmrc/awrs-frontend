@@ -16,7 +16,6 @@
 
 package services
 
-import connectors.{AwrsApiDataCacheConnector, AwrsDataCacheConnector, Save4LaterConnector}
 import controllers.auth.StandardAuthRetrievals
 import models._
 import services.DataCacheKeys._
@@ -31,33 +30,33 @@ import scala.language.implicitConversions
 trait Save4LaterUtil {
 
   val accountUtils: AccountUtils
-  val save4LaterConnector: Save4LaterConnector
+  val save4LaterCacheService: Save4LaterCacheService
 
   @inline def fetchData4Later[T](formId: String, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, formats: play.api.libs.json.Format[T], ec: ExecutionContext): Future[Option[T]] = {
-    save4LaterConnector.fetchData4Later[T](accountUtils.getUtr(authRetrievals), formId)
+    save4LaterCacheService.fetchData4Later[T](accountUtils.getUtr(authRetrievals), formId)
   }
 
   @inline def saveData4Later[T](formId: String, data: T, authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, formats: play.api.libs.json.Format[T], ec: ExecutionContext): Future[T] =
-    save4LaterConnector.saveData4Later[T](accountUtils.getUtr(authRetrievals), formId, data) map (_.get)
+    save4LaterCacheService.saveData4Later[T](accountUtils.getUtr(authRetrievals), formId, data) map (_.get)
 
   @inline def fetchAll(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
-    save4LaterConnector.fetchAll(accountUtils.getUtr(authRetrievals))
+    save4LaterCacheService.fetchAll(accountUtils.getUtr(authRetrievals))
 
   @inline def removeAll(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    save4LaterConnector.removeAll(accountUtils.getUtr(authRetrievals))
+    save4LaterCacheService.removeAll(accountUtils.getUtr(authRetrievals))
 }
 
-class Save4LaterService @Inject()(mainStoreSave4LaterConnector: AwrsDataCacheConnector,
-                                  apiSave4LaterConnector: AwrsApiDataCacheConnector,
+class Save4LaterService @Inject()(mainStoreSave4LaterCacheService: AwrsDataCacheService,
+                                  apiSave4LaterCacheService: AwrsApiDataCacheService,
                                   accUtils: AccountUtils) {
 
   implicit def convertUtil[T](f: Option[T]): T = f.get
 
-  val mainStore: MainStore = new MainStore(accUtils, mainStoreSave4LaterConnector)
+  val mainStore: MainStore = new MainStore(accUtils, mainStoreSave4LaterCacheService)
 
   lazy val api: APIStore = new APIStore {
     override val accountUtils: AccountUtils = accUtils
-    override val save4LaterConnector: Save4LaterConnector = apiSave4LaterConnector
+    override val save4LaterCacheService: Save4LaterCacheService = apiSave4LaterCacheService
   }
 
   trait APIStore extends Save4LaterUtil {
@@ -93,7 +92,7 @@ class Save4LaterService @Inject()(mainStoreSave4LaterConnector: AwrsDataCacheCon
 }
 
 class MainStore @Inject()(val accountUtils: AccountUtils,
-                          val save4LaterConnector: Save4LaterConnector) extends Save4LaterUtil {
+                          val save4LaterCacheService: Save4LaterCacheService) extends Save4LaterUtil {
 
   @inline def saveBusinessType(businessTypeData: BusinessType, authRetrievals: StandardAuthRetrievals)
                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessType] =

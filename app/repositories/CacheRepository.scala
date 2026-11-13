@@ -16,37 +16,37 @@
 
 package repositories
 
-import config.ApplicationConfig
 import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey, MongoCacheRepository}
+import uk.gov.hmrc.mongo.cache.{CacheItem, CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 
+import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 
-class ShortLivedCacheRepository(
+class CacheRepository(
     collectionName: String,
+    ttl: Duration,
     mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
+    timestampSupport: TimestampSupport
 )(implicit ec: ExecutionContext) {
 
   private val cacheRepo = new MongoCacheRepository[String](
     mongoComponent = mongoComponent,
     collectionName = collectionName,
-    ttl = appConfig.mongoSessionTtl,
+    ttl = ttl,
     timestampSupport = timestampSupport,
-    cacheIdType = UTRCacheId
+    cacheIdType = CacheIdType.SimpleCacheId
   )
 
-  def fetchData4Later[T: Reads](utr: String, dataKey: DataKey[T]): Future[Option[T]] =
-    cacheRepo.get[T](utr)(dataKey)
+  def get[T: Reads](id: String, dataKey: DataKey[T]): Future[Option[T]] =
+    cacheRepo.get[T](id)(dataKey)
 
-  def saveData4Later[T: Writes](utr: String, dataKey: DataKey[T], data: T): Future[Option[T]] =
-    cacheRepo.put[T](utr)(dataKey, data).map(_ => Some(data))
+  def put[T: Writes](id: String, dataKey: DataKey[T], data: T): Future[T] =
+    cacheRepo.put[T](id)(dataKey, data).map(_ => data)
 
-  def fetchAll(utr: String): Future[Option[CacheItem]] =
-    cacheRepo.findById(utr)
+  def findById(id: String): Future[Option[CacheItem]] =
+    cacheRepo.findById(id)
 
-  def removeAll(utr: String): Future[Unit] =
-    cacheRepo.deleteEntity(utr)
+  def deleteById(id: String): Future[Unit] =
+    cacheRepo.deleteEntity(id)
 }

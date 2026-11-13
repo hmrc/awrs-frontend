@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package connectors.mock
+package services.mocks
 
-import connectors.AwrsKeyStoreConnector
+import services.AwrsKeyStoreCacheService
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 
 
-trait MockKeyStoreConnector extends AwrsUnitTestTraits {
+trait MockKeyStoreCacheService extends AwrsUnitTestTraits {
   // need to be lazy incase of overrides
-  lazy val mockKeyStoreConnector: AwrsKeyStoreConnector = mock[AwrsKeyStoreConnector]
+  lazy val mockKeyStoreCacheService: AwrsKeyStoreCacheService = mock[AwrsKeyStoreCacheService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockKeyStoreConnector)
+    reset(mockKeyStoreCacheService)
   }
 }

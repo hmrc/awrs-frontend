@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package connectors.mock
+package services.mocks
 
-import connectors.{AwrsApiDataCacheConnector, AwrsDataCacheConnector}
+import services.{AwrsApiDataCacheService, AwrsDataCacheService}
 import org.mockito.Mockito._
 import utils.AwrsUnitTestTraits
 
-trait MockSave4LaterConnector extends AwrsUnitTestTraits {
+trait MockSave4LaterCacheService extends AwrsUnitTestTraits {
   // need to be lazy in case of overrides
-  lazy val mockMainStoreSave4LaterConnector: AwrsDataCacheConnector = mock[AwrsDataCacheConnector]
-  lazy val mockApiSave4LaterConnector: AwrsApiDataCacheConnector = mock[AwrsApiDataCacheConnector]
+  lazy val mockMainStoreSave4LaterCacheService: AwrsDataCacheService = mock[AwrsDataCacheService]
+  lazy val mockApiSave4LaterCacheService: AwrsApiDataCacheService = mock[AwrsApiDataCacheService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockMainStoreSave4LaterConnector)
-    reset(mockApiSave4LaterConnector)
+    reset(mockMainStoreSave4LaterCacheService)
+    reset(mockApiSave4LaterCacheService)
   }
 }

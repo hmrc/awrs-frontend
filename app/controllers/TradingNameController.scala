@@ -18,7 +18,7 @@ package controllers
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.AwrsDataCacheConnector
+import services.AwrsDataCacheService
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.TradingNameForm._
@@ -44,7 +44,7 @@ class TradingNameController @Inject()(val mcc: MessagesControllerComponents,
                                       val authConnector: DefaultAuthConnector,
                                       val auditable: Auditable,
                                       val accountUtils: AccountUtils,
-                                      val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
+                                      val mainStoreSave4LaterCacheService: AwrsDataCacheService,
                                       implicit val applicationConfig: ApplicationConfig,
                                       template: views.html.awrs_trading_name) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 

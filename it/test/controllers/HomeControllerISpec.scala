@@ -38,8 +38,8 @@ class HomeControllerISpec extends IntegrationSpec with AuthHelpers with Matchers
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    await(shortLivedCacheRepository.removeAll(saUtr))
-    await(apiShortLivedCacheRepository.removeAll(saUtr))
+    await(shortLivedCacheRepository.deleteById(saUtr))
+    await(apiShortLivedCacheRepository.deleteById(saUtr))
     clearSessionCache()
   }
   val AWRS_SERVICE_NAME = "HMRC-AWRS-ORG"

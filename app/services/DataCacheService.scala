@@ -16,7 +16,6 @@
 
 package services
 
-import connectors.AwrsDataCacheConnector
 import controllers.auth.StandardAuthRetrievals
 import uk.gov.hmrc.http.HeaderCarrier
 import models.CacheMap
@@ -29,10 +28,10 @@ trait DataCacheService {
   val accountUtils: AccountUtils
   val keyStoreService: KeyStoreService
   val save4LaterService: Save4LaterService
-  val mainStoreSave4LaterConnector: AwrsDataCacheConnector
+  val mainStoreSave4LaterCacheService: AwrsDataCacheService
 
   def backUpSave4LaterInKeyStore(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
-    keyStoreService.saveSave4LaterBackup(save4LaterConnector = mainStoreSave4LaterConnector, authRetrievals, accountUtils)
+    keyStoreService.saveSave4LaterBackup(save4LaterCacheService = mainStoreSave4LaterCacheService, authRetrievals, accountUtils)
 
   def fetchMainStore(authRetrievals: StandardAuthRetrievals)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[CacheMap]] =
     save4LaterService.mainStore.fetchAll(authRetrievals) flatMap {

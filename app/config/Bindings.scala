@@ -19,12 +19,10 @@ package config
 import connectors.{BusinessMatchingConnector, BusinessMatchingConnectorImpl}
 import play.api.inject.{Binding, Module, bind => playBind}
 import play.api.{Configuration, Environment}
-import repositories.ShortLivedCacheRepository
-import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
+import repositories.{AwrsApiShortLivedCacheRepositoryProvider, AwrsShortLivedCacheRepositoryProvider, CacheRepository, SessionCacheRepositoryProvider}
+import uk.gov.hmrc.mongo.TimestampSupport
 
 import java.time.Instant
-import javax.inject.{Inject, Provider, Singleton}
-import scala.concurrent.ExecutionContext
 
 class Bindings extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -34,36 +32,19 @@ class Bindings extends Module {
   }
 }
 
-@Singleton
-class AwrsShortLivedCacheRepositoryProvider @Inject()(
-    mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
-)(implicit ec: ExecutionContext) extends Provider[ShortLivedCacheRepository] {
-  override def get(): ShortLivedCacheRepository =
-    new ShortLivedCacheRepository("awrs-short-lived-cache", mongoComponent, timestampSupport, appConfig)
-}
-
-@Singleton
-class AwrsApiShortLivedCacheRepositoryProvider @Inject()(
-    mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
-)(implicit ec: ExecutionContext) extends Provider[ShortLivedCacheRepository] {
-  override def get(): ShortLivedCacheRepository =
-    new ShortLivedCacheRepository("awrs-api-short-lived-cache", mongoComponent, timestampSupport, appConfig)
-}
-
 class MongoModule extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
       playBind(classOf[TimestampSupport]).toInstance(new TimestampSupport {
         override def timestamp(): Instant = Instant.now()
       }),
-      playBind(classOf[ShortLivedCacheRepository])
+      playBind(classOf[CacheRepository])
+        .qualifiedWith("session")
+        .toProvider(classOf[SessionCacheRepositoryProvider]),
+      playBind(classOf[CacheRepository])
         .qualifiedWith("awrs")
         .toProvider(classOf[AwrsShortLivedCacheRepositoryProvider]),
-      playBind(classOf[ShortLivedCacheRepository])
+      playBind(classOf[CacheRepository])
         .qualifiedWith("awrs-api")
         .toProvider(classOf[AwrsApiShortLivedCacheRepositoryProvider])
     )

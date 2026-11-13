@@ -18,7 +18,7 @@ package controllers
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.AwrsDataCacheConnector
+import services.AwrsDataCacheService
 import controllers.auth.StandardAuthRetrievals
 import controllers.util.{JourneyPage, RedirectParam, SaveAndRoutable}
 import forms.AWRSEnums.BooleanRadioEnum
@@ -43,7 +43,7 @@ class AlreadyStartingTradingController @Inject()(val mcc: MessagesControllerComp
                                                  val authConnector: DefaultAuthConnector,
                                                  val auditable: Auditable,
                                                  val accountUtils: AccountUtils,
-                                                 val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
+                                                 val mainStoreSave4LaterCacheService: AwrsDataCacheService,
                                                  implicit val applicationConfig: ApplicationConfig,
                                                  template: views.html.awrs_already_starting_trading) extends FrontendController(mcc) with JourneyPage with SaveAndRoutable with DataCacheService {
 

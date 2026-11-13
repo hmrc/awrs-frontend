@@ -18,7 +18,7 @@ package controllers
 
 import audit.Auditable
 import config.ApplicationConfig
-import connectors.AwrsDataCacheConnector
+import services.AwrsDataCacheService
 import controllers.auth.{AwrsController, StandardAuthRetrievals}
 import controllers.util.UnSubmittedBannerUtil
 import javax.inject.Inject
@@ -50,7 +50,7 @@ class ViewApplicationController @Inject()(mcc: MessagesControllerComponents,
                                           val authConnector: DefaultAuthConnector,
                                           val auditable: Auditable,
                                           val accountUtils: AccountUtils,
-                                          val mainStoreSave4LaterConnector: AwrsDataCacheConnector,
+                                          val mainStoreSave4LaterCacheService: AwrsDataCacheService,
                                           implicit val applicationConfig: ApplicationConfig,
                                           templateError: views.html.awrs_application_error,
                                           templateViewApp: views.html.view_application.awrs_view_application) extends FrontendController(mcc) with AwrsController with UnSubmittedBannerUtil with DataCacheService {
