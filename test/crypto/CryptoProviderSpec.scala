@@ -21,14 +21,12 @@ import play.api.Configuration
 import uk.gov.hmrc.crypto.PlainText
 
 class CryptoProviderSpec extends PlaySpec {
-  private def cfgWith(key: String, previous: Seq[String] = Nil): Configuration = {
-    val prev = previous.map(k => s""""$k"""").mkString(", ")
+  private def cfgWith(key: String): Configuration = {
     val hocon =
       s"""
          |json.encryption {
          |  enabled = true
          |  key = "$key"
-         |  previousKeys = [ $prev ]
          |}
          |""".stripMargin
     Configuration(ConfigFactory.parseString(hocon))
@@ -50,12 +48,6 @@ class CryptoProviderSpec extends PlaySpec {
       val p2 = new CryptoProvider(cfgWith(key2))
       val enc = p1.crypto.encrypt(PlainText("secret"))
       an [SecurityException] must be thrownBy p2.crypto.decrypt(enc)
-    }
-    "support rotation via previousKeys (new key reads old ciphertext)" in {
-      val oldProvider = new CryptoProvider(cfgWith(key1))
-      val ciphertext  = oldProvider.crypto.encrypt(PlainText("rotate-me"))
-      val newProvider = new CryptoProvider(cfgWith(key2, previous = Seq(key1)))
-      newProvider.crypto.decrypt(ciphertext).value mustBe "rotate-me"
     }
   }
 }

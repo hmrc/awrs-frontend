@@ -17,6 +17,7 @@
 package repositories
 
 import config.ApplicationConfig
+import crypto.MongoCrypto
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 
 import javax.inject.{Inject, Provider, Singleton}
@@ -26,22 +27,24 @@ import scala.concurrent.duration.Duration
 abstract class CacheRepositoryProvider(
     collectionName: String,
     mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport
+    timestampSupport: TimestampSupport,
+    mongoCrypto: MongoCrypto
 )(implicit ec: ExecutionContext) extends Provider[CacheRepository] {
 
   protected def ttl: Duration
 
   override def get(): CacheRepository =
-    new CacheRepository(collectionName, ttl, mongoComponent, timestampSupport)
+    new CacheRepository(collectionName, ttl, mongoComponent, timestampSupport, mongoCrypto)
 }
 
 @Singleton
 class SessionCacheRepositoryProvider @Inject()(
     mongoComponent: MongoComponent,
     timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
+    appConfig: ApplicationConfig,
+    mongoCrypto: MongoCrypto
 )(implicit ec: ExecutionContext)
-  extends CacheRepositoryProvider("sessions", mongoComponent, timestampSupport) {
+  extends CacheRepositoryProvider("sessions", mongoComponent, timestampSupport, mongoCrypto) {
 
   override protected def ttl: Duration = appConfig.mongoSessionTtl
 }
@@ -50,9 +53,10 @@ class SessionCacheRepositoryProvider @Inject()(
 class AwrsShortLivedCacheRepositoryProvider @Inject()(
     mongoComponent: MongoComponent,
     timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
+    appConfig: ApplicationConfig,
+    mongoCrypto: MongoCrypto
 )(implicit ec: ExecutionContext)
-  extends CacheRepositoryProvider("awrs-short-lived-cache", mongoComponent, timestampSupport) {
+  extends CacheRepositoryProvider("awrs-short-lived-cache", mongoComponent, timestampSupport, mongoCrypto) {
 
   override protected def ttl: Duration = appConfig.mongoShortLivedCacheTtl
 }
@@ -61,9 +65,10 @@ class AwrsShortLivedCacheRepositoryProvider @Inject()(
 class AwrsApiShortLivedCacheRepositoryProvider @Inject()(
     mongoComponent: MongoComponent,
     timestampSupport: TimestampSupport,
-    appConfig: ApplicationConfig
+    appConfig: ApplicationConfig,
+    mongoCrypto: MongoCrypto
 )(implicit ec: ExecutionContext)
-  extends CacheRepositoryProvider("awrs-api-short-lived-cache", mongoComponent, timestampSupport) {
+  extends CacheRepositoryProvider("awrs-api-short-lived-cache", mongoComponent, timestampSupport, mongoCrypto) {
 
   override protected def ttl: Duration = appConfig.mongoShortLivedCacheTtl
 }
