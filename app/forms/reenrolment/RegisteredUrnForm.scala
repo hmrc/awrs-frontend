@@ -16,13 +16,13 @@
 
 package forms.reenrolment
 
-import forms.prevalidation._
+import forms.prevalidation.*
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
-import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
+import forms.validation.util.MappingUtilAPI.{compulsoryText, toStringFormatter}
 import models.AwrsEnrolmentUrn
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 
 object RegisteredUrnForm  {
@@ -50,7 +50,7 @@ object RegisteredUrnForm  {
 
   lazy val awrsEnrolmentUrnValidationForm: Form[AwrsEnrolmentUrn] = Form(mapping(
     awrsUrn -> compulsoryQueryField.toStringFormatter
-  )(AwrsEnrolmentUrn.apply)(AwrsEnrolmentUrn.unapply))
+  )(AwrsEnrolmentUrn.apply)(enrolmentUrn => Some(enrolmentUrn.awrsUrn)))
 
   lazy val awrsEnrolmentUrnForm: PrevalidationAPI[AwrsEnrolmentUrn] = PreprocessedForm(
     awrsEnrolmentUrnValidationForm,

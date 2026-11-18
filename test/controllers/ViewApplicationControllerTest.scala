@@ -18,19 +18,19 @@ package controllers
 
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
-import models.BusinessDetailsEntityTypes._
+import models.BusinessDetailsEntityTypes.*
 import models.{ApplicationDeclaration, Suppliers, _}
 import org.jsoup.Jsoup
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.ServicesUnitTestFixture
 import services.mocks.{MockKeyStoreService, MockSave4LaterService}
 import models.CacheMap
 import utils.AwrsUnitTestTraits
-import utils.TestConstants._
-import utils.TestUtil._
+import utils.TestConstants.*
+import utils.TestUtil.*
 import views.html.awrs_application_error
 import views.html.view_application.awrs_view_application
 
@@ -47,7 +47,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
 
   val testViewApplicationController: ViewApplicationController = new ViewApplicationController(
     mockMCC, mockApplicationService, mockIndexService, testKeyStoreService, testSave4LaterService, mockDeEnrolService,
-    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, mockAppConfig, templateError, templateViewApp)
+    mockAuthConnector, mockAuditable, mockAccountUtils, mockMainStoreSave4LaterCacheService, templateError, templateViewApp)(using mockAppConfig)
 
   def getCustomizedMap(businessType: Option[BusinessType] = testBusinessDetailsEntityTypes(CorporateBody),
                        businessCustomerDetails: Option[BusinessCustomerDetails] = None,
@@ -80,7 +80,7 @@ class ViewApplicationControllerTest extends AwrsUnitTestTraits
     CacheMap(id, cacheMap)
   }
 
-  def prepMap[T](key: String, optionParam: Option[T])(implicit format: Format[T]): Map[String, JsValue] =
+  def prepMap[T](key: String, optionParam: Option[T])(using format: Format[T]): Map[String, JsValue] =
     optionParam match {
       case Some(param) => Map[String, JsValue](key -> Json.toJson(param))
       case _ => Map[String, JsValue]()

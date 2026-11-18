@@ -16,12 +16,11 @@
 
 package forms.test.util
 
-import forms.validation.util.ErrorMessageInterpreter._
+import forms.validation.util.ErrorMessageInterpreter.*
 import forms.validation.util.{FieldError, MessageLookup, SummaryError}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import utils.AwrsUnitTestTraits
-import scala.language.implicitConversions
 
 trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI with TestUtilAPI with MockitoSugar {
 
@@ -38,7 +37,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
     * val newId = prefix attach fieldId
     * // this returns "myprefix.myId"
     */
-  implicit def formatId(idPrefix: IdPrefix = None): FieldNameUtilAPI = new FieldNameUtilAPI {
+  given formatId: Conversion[IdPrefix, FieldNameUtilAPI] = (idPrefix: IdPrefix) => new FieldNameUtilAPI {
     def attach(fieldId: String): String = if (idPrefix.prefix.nonEmpty) f"${idPrefix.prefix.get}.$fieldId" else fieldId
 
     def attachToAll(fieldIds: Set[String]): Set[String] = fieldIds.map(fieldId => this.attach(fieldId))
@@ -80,7 +79,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
   }
 
   def assertFieldError(formWithErrors: Form[_], fieldId: String, expected: FieldError): Unit = {
-    import forms.prevalidation._
+    import forms.prevalidation.*
     val fieldError = getFieldErrors(formWithErrors(fieldId), formWithErrors)
     withClue(f"The following test is conducted for the field: '$fieldId'\n") {
       withClue(f"The current form error is'\n${formWithErrors.errors}\n") {
@@ -128,7 +127,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
   }
 
   def assertSummaryError(formWithErrors: Form[_], fieldId: String, expected: SummaryError): Unit = {
-    import forms.prevalidation._
+    import forms.prevalidation.*
     val summaryErrors = getSummaryErrors(formWithErrors)
     val summaryErrorStrs = summaryErrors.map(err => err.anchor + trimBothAndCompressFunc(err.toString()))
 
@@ -378,8 +377,8 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
     }
   }
 
-  implicit def singleFieldTestFunctions(fieldIdString: String)(implicit form: Form[_]): ImplicitSingleFieldTestAPI = new ImplicitSingleFieldTestAPI {
-    override implicit val fieldId: String = fieldIdString
+  given singleFieldTestFunctions(using form: Form[_]): Conversion[String, ImplicitSingleFieldTestAPI] = (fieldIdString: String) => new ImplicitSingleFieldTestAPI {
+    override val fieldId: String = fieldIdString
 
     def assertFieldIsCompulsory(config: CompulsoryFieldValidationExpectations): Unit =
       assertFieldIsCompulsoryWhen(Map[String, String](), config)
@@ -454,9 +453,9 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
       conditions.foreach(condition => assertDateFieldIsIgnoredWhen(condition, config))
   }
 
-  implicit def crossFieldTestFunctions(fieldIdsString: Set[String])(implicit form: Form[_]): ImplicitCrossFieldTestAPI = new ImplicitCrossFieldTestAPI {
+  given crossFieldTestFunctions(using form: Form[_]): Conversion[Set[String], ImplicitCrossFieldTestAPI] = (fieldIdsString: Set[String]) => new ImplicitCrossFieldTestAPI {
 
-    override implicit val fieldIds: Set[String] = fieldIdsString
+    override val fieldIds: Set[String] = fieldIdsString
 
     private def commonTestForAnswered(testData: Map[String, String], config: CrossFieldValidationExpectations): Unit = {
       val formWithErrors = form.bind(testData)
@@ -514,7 +513,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
     def assertAllFieldsCannotBeAnsweredWithInvalidIsIgnoredWhen(conditions: Set[Map[String, String]], config: CrossFieldValidationExpectations, invalidAnswer: String): Unit =
       conditions.foreach(condition => assertAllFieldsCannotBeAnsweredWithInvalidIsIgnoredWhen(condition, config, invalidAnswer))
   }
-  def compulsoryFieldTest[T](fieldId: String, maxLength: Int, precondition: Map[String, String] = Map())(implicit form: Form[T]): Unit = {
+  def compulsoryFieldTest[T](fieldId: String, maxLength: Int, precondition: Map[String, String] = Map())(using form: Form[T]): Unit = {
     val emptyForm = form.bind(Map(fieldId -> "") ++ precondition)
     val longForm = form.bind(Map(fieldId -> "a" * 11) ++ precondition)
     val invalidForm = form.bind(Map(fieldId -> "α") ++ precondition)
@@ -527,7 +526,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
     assert(messages(invalidForm.errors(fieldId).head.message) == messages("awrs.generic.error.character_invalid", ""))
   }
 
-  def ignoredFieldTest[T](fieldId: String, precondition: Map[String, String])(implicit form: Form[T]): Unit = {
+  def ignoredFieldTest[T](fieldId: String, precondition: Map[String, String])(using form: Form[T]): Unit = {
     val emptyForm = form.bind(Map(fieldId -> "") ++ precondition)
     val longForm = form.bind(Map(fieldId -> "a" * 11) ++ precondition)
     val invalidForm = form.bind(Map(fieldId -> "α") ++ precondition)
@@ -537,7 +536,7 @@ trait AwrsFormTestUtils extends AwrsUnitTestTraits with FormValidationTestAPI wi
     assert(forms.forall(form => !form(fieldId).hasErrors))
   }
 
-  def optionalFieldTest[T](fieldId: String, maxLength: Int, precondition: Map[String, String] = Map())(implicit form: Form[T]): Unit = {
+  def optionalFieldTest[T](fieldId: String, maxLength: Int, precondition: Map[String, String] = Map())(using form: Form[T]): Unit = {
     val emptyForm = form.bind(Map(fieldId -> "") ++ precondition)
     val longForm = form.bind(Map(fieldId -> "a" * 11) ++ precondition)
     val invalidForm = form.bind(Map(fieldId -> "α") ++ precondition)

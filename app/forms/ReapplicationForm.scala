@@ -16,9 +16,9 @@
 
 package forms
 
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.NamedMappingAndUtil.*
 import models.ReapplicationConfirmation
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.{Form, Mapping}
 
 object ReapplicationForm {
@@ -30,5 +30,5 @@ object ReapplicationForm {
 
   val reapplicationForm = Form(mapping(
       answer -> answer_compulsory
-    )(ReapplicationConfirmation.apply)(ReapplicationConfirmation.unapply))
+    )(ReapplicationConfirmation.apply)(confirmation => Some(confirmation.answer)))
 }

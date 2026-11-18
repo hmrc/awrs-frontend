@@ -21,20 +21,20 @@ import connectors.AWRSConnector
 import connectors.mock.MockAuthConnector
 import controllers.auth.StandardAuthRetrievals
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.MockKeyStoreService
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
-import utils.TestConstants._
+import utils.TestConstants.*
 import utils.TestUtil
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
-  import MockKeyStoreService._
+  import MockKeyStoreService.*
 
   lazy val mockAWRSConnector: AWRSConnector = mock[AWRSConnector]
   val testAwrsAPI10: AwrsAPI10 = new AwrsAPI10(mockAccountUtils, mockAWRSConnector, testKeyStoreService)
@@ -44,7 +44,7 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
     reset(mockAWRSConnector)
   }
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
+  given fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,
@@ -55,8 +55,7 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
     )
   }
 
-  def mockAPI10(deRegSuccess: Boolean = true,
-                deRegistrationCorrupt: Boolean = false): Unit = {
+  def mockAPI10(deRegSuccess: Boolean = true): Unit = {
 
     val deRegSuccessData = deRegSuccess match {
       case true => deRegistrationSuccessData
@@ -68,10 +67,9 @@ class AwrsAPI10Test extends MockKeyStoreService with MockAuthConnector {
   def mocks(haveDeRegDate: Boolean = true,
             haveDeRegReason: Boolean = true,
             deRegSuccess: Boolean = true,
-            deRegistrationCorrupt: Boolean = false,
             awrsNo: Boolean = true): Unit = {
     setupMockKeyStoreServiceForDeRegistrationOrWithdrawal(haveDeRegDate = haveDeRegDate, haveDeRegReason = haveDeRegReason)
-    mockAPI10(deRegSuccess = deRegSuccess, deRegistrationCorrupt = deRegistrationCorrupt)
+    mockAPI10(deRegSuccess = deRegSuccess)
 
     when(mockAccountUtils.hasAwrs(ArgumentMatchers.any()))
       .thenReturn(awrsNo)

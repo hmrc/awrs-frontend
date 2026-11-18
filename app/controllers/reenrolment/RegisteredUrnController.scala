@@ -37,16 +37,16 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
                                          val authConnector: DefaultAuthConnector,
                                          val auditable: Auditable,
                                          val accountUtils: AccountUtils,
-                                         implicit val applicationConfig: ApplicationConfig,
                                          registeredUrnService: RegisteredUrnService,
-                                         template: views.html.reenrolment.awrs_registered_urn)
+                                         template: views.html.reenrolment.awrs_registered_urn
+                                        )(using val applicationConfig: ApplicationConfig)
     extends FrontendController(mcc)
     with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String             = applicationConfig.signIn
 
-  def showArwsUrnPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showArwsUrnPage: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
           keyStoreService.fetchAwrsEnrolmentUrn flatMap {
@@ -57,7 +57,7 @@ class RegisteredUrnController @Inject() (mcc: MessagesControllerComponents,
     }
   }
 
-  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
           awrsEnrolmentUrnForm

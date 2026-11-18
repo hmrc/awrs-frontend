@@ -40,15 +40,15 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
                                          val accountUtils: AccountUtils,
                                          enrolService: EnrolService,
                                          enrolmentStoreProxyService: EnrolmentStoreProxyService,
-                                         implicit val applicationConfig: ApplicationConfig,
-                                         template: views.html.reenrolment.awrs_registered_utr)
+                                         template: views.html.reenrolment.awrs_registered_utr
+                                        )(using val applicationConfig: ApplicationConfig)
     extends FrontendController(mcc)
     with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String             = applicationConfig.signIn
 
-  def showArwsUtrPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showArwsUtrPage: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)
@@ -63,7 +63,7 @@ class RegisteredUtrController @Inject() (mcc: MessagesControllerComponents,
   private def getOrThrow[T](x: Option[T]): T =
     x.fold(throw new RuntimeException(s"No value found for ${x.getClass.getName} in keystore - exiting re-enrolment journey"))(identity)
 
-  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         val isSA = accountUtils.isSaAccount(ar.enrolments).getOrElse(false)

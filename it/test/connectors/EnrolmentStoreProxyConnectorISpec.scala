@@ -20,14 +20,14 @@ import models.reenrolment.{AwrsKnownFacts, EnrolledUserIds, Enrolment, Identifie
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status.OK
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.api.test.Injecting
 import uk.gov.hmrc.helpers.IntegrationSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import models.reenrolment.KnownFactsResponse._
+import models.reenrolment.KnownFactsResponse.*
 
 class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting with Matchers {
 
@@ -57,8 +57,8 @@ class EnrolmentStoreProxyConnectorISpec extends IntegrationSpec with Injecting w
       stubbedGet(es0Url, responseStatus, responseString.getOrElse(""))
     }
 
-    def testCall(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
-      connector.queryForPrincipalGroupIdOfAWRSEnrolment(awrsRef)(headerCarrier, implicitly)
+    def testCall(using headerCarrier: HeaderCarrier): Future[Option[String]] = {
+      connector.queryForPrincipalGroupIdOfAWRSEnrolment(awrsRef)(headerCarrier, summon)
     }
 
     "return EnrolmentSuccessResponse when ES20 returns successful response" in {

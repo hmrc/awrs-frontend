@@ -46,7 +46,7 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
   val testModelMapping: Mapping[TestModel] = mapping(
     "field1" -> text,
     "field2" -> text,
-    "field3" -> text)(TestModel.apply)(TestModel.unapply)
+    "field3" -> text)(TestModel.apply)(testModel => Some(Tuple.fromProductTyped(testModel)))
 
   "The Message Handler" must {
 
@@ -224,7 +224,7 @@ class ErrorMessageLookupTest extends AwrsUnitTestTraits {
 
     "embedded messages are extracted correctly" when {
 
-      import forms.validation.util.ErrorMessageLookup._
+      import forms.validation.util.ErrorMessageLookup.*
 
       "simple usage in field error message " in {
         val msgKey = "empty"

@@ -21,5 +21,5 @@ import play.api.libs.json.{Json, Reads}
 case class PrincipalGroups(principalGroupIds: Seq[String])
 
 object PrincipalGroups {
-  implicit val reads: Reads[PrincipalGroups] = Json.reads[PrincipalGroups]
+  given reads: Reads[PrincipalGroups] = Json.reads[PrincipalGroups]
 }

@@ -16,18 +16,19 @@
 
 package services
 
-import _root_.models.BusinessDetailsEntityTypes._
+import _root_.models.BusinessDetailsEntityTypes.*
 import exceptions.{InvalidStateException, ResubmissionException}
-import models._
+import models.*
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.libs.json.Json
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import services.DataCacheKeys._
+import services.DataCacheKeys.*
 import models.CacheMap
-import utils.AwrsTestJson._
-import utils.TestConstants._
-import utils.TestUtil._
+import utils.AwrsTestJson.*
+import utils.TestConstants.*
+import utils.TestUtil.*
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -1098,14 +1099,14 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
       "return false if no section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = soleTraderSubscriptionTypeFrontEnd)
-        val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
+        val result = testApplicationService.hasAPI5ApplicationChanged(TestUtil.defaultAuthRetrieval)
         await(result) mustBe false
       }
 
       "return true if any section has changed" in {
         setupMockSave4LaterService(fetchAll = matchingSoleTraderCacheMap)
         setupMockApiSave4LaterService(fetchSubscriptionTypeFrontEnd = differentSoleTraderSubscriptionTypeFrontEnd)
-        val result = testApplicationService.hasAPI5ApplicationChanged(testUtr, TestUtil.defaultAuthRetrieval)
+        val result = testApplicationService.hasAPI5ApplicationChanged(TestUtil.defaultAuthRetrieval)
         await(result) mustBe true
       }
     }
@@ -1272,7 +1273,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   def sendWithAuthorisedUser(test: Future[Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]] => Any): Unit = {
     setupMockSave4LaterService(fetchAll = cachedData())
     setupMockAWRSConnectorWithOnly(submitAWRSData = Right(subscribeSuccessResponse))
-    implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
+    given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     when(mockEmailService.sendConfirmationEmail(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     val result = testApplicationService.sendApplication(TestUtil.defaultAuthRetrieval)
     test(result)
@@ -1282,7 +1283,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
   def sendWithAuthorisedUserSelfHeal(test: Future[Either[SelfHealSubscriptionResponse, SuccessfulSubscriptionResponse]] => Any): Unit = {
     setupMockSave4LaterService(fetchAll = cachedData())
     setupMockAWRSConnectorWithOnly(submitAWRSData = Left(selfHealSuccessResponse))
-    implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
+    given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     when(mockEmailService.sendConfirmationEmail(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
     val result = testApplicationService.sendApplication(TestUtil.defaultAuthRetrieval)
     test(result)
@@ -1301,7 +1302,7 @@ class ApplicationServiceTest extends AwrsUnitTestTraits
 
     setupMockApiSave4LaterServiceWithOnly(fetchSubscriptionTypeFrontEnd = cachedSub)
     setupMockAWRSConnectorWithOnly(updateAWRSData = subscribeUpdateSuccessResponse)
-    implicit val request = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
+    given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AwrsSessionKeys.sessionBusinessName -> "test business")
     val result = testApplicationService.updateApplication(TestUtil.defaultAuthRetrieval)
     test(result)
   }

@@ -44,7 +44,7 @@
 //import play.api.i18n.{Messages, MessagesApi}
 //import play.api.test.FakeRequest
 //import utils.AwrsFieldConfig
-//import utils.TestConstants._
+//import utils.TestConstants.*
 //
 //class BusinessDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsFieldConfig with AwrsFormTestUtils {
 //  lazy val forms = (entity: String, hasAwrs: Boolean) => BusinessDetailsForm.businessDetailsForm(entity, hasAwrs).form

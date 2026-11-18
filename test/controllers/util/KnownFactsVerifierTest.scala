@@ -16,7 +16,7 @@
 
 package controllers.util
 
-import models.reenrolment._
+import models.reenrolment.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite

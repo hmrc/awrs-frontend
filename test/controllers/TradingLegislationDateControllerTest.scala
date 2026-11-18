@@ -18,14 +18,14 @@ package controllers
 
 import builders.SessionBuilder
 import forms.TradingLegislationDateForm
-import models._
+import models.*
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.ServicesUnitTestFixture
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
 import views.html.awrs_legislation_date
@@ -45,7 +45,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
   val tradingLegislationDateController: TradingLegislationDateController =
     new TradingLegislationDateController(mockMCC, testSave4LaterService, mockBusinessDetailsService,
       testKeyStoreService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils,
-      mockMainStoreSave4LaterCacheService, mockAppConfig, template) {
+      mockMainStoreSave4LaterCacheService, template)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 
@@ -110,7 +110,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingLegislationDateController.saveAndContinue()
+        val res = tradingLegislationDateController.saveAndContinue
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303
@@ -135,7 +135,7 @@ class TradingLegislationDateControllerTest extends AwrsUnitTestTraits
         when(mockBusinessDetailsService.businessDetailsPageRenderMode(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(NewApplicationMode))
 
-        val res = tradingLegislationDateController.saveAndContinue()
+        val res = tradingLegislationDateController.saveAndContinue
           .apply(SessionBuilder.updateRequestWithSession(fakeRequest.withMethod("POST"), userId, businessType))
 
         status(res) mustBe 303

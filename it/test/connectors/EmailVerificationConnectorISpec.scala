@@ -19,11 +19,11 @@ package connectors
 import org.scalatest.matchers.must.Matchers
 import play.api.http.Status.{BAD_REQUEST => _, INTERNAL_SERVER_ERROR => _, NOT_FOUND => _, OK => _, SERVICE_UNAVAILABLE => _}
 import play.api.mvc.AnyContentAsEmpty
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.api.test.{FakeRequest, Injecting}
 import uk.gov.hmrc.helpers.IntegrationSpec
-import uk.gov.hmrc.http._
-import utils.TestConstants._
+import uk.gov.hmrc.http.*
+import utils.TestConstants.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -33,7 +33,7 @@ class EmailVerificationConnectorISpec extends IntegrationSpec with Injecting wit
   val connector: EmailVerificationConnector = inject[EmailVerificationConnector]
 
   // these values doesn't really matter since the call itself is mocked
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   lazy val sendEmailURI: String = s"${connector.baseURI}${connector.sendEmail}"
   lazy val verifiyEmailURI: String = s"${connector.baseURI}${connector.verifyEmail}"
@@ -42,7 +42,7 @@ class EmailVerificationConnectorISpec extends IntegrationSpec with Injecting wit
 
   "sendVerificationEmail" must {
 
-    def testPostCall(implicit  hc: HeaderCarrier): Future[Boolean] = connector.sendVerificationEmail(testEmail)
+    def testPostCall(using  hc: HeaderCarrier): Future[Boolean] = connector.sendVerificationEmail(testEmail)
 
     "return success equals true, for successful created email sending" in {
       mockPostResponse(sendEmailURI, CREATED)

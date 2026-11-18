@@ -16,13 +16,13 @@
 
 package services
 
-import _root_.models._
+import _root_.models.*
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import services.mocks.MockSave4LaterService
 import utils.{AwrsUnitTestTraits, TestUtil}
-import utils.TestUtil._
+import utils.TestUtil.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

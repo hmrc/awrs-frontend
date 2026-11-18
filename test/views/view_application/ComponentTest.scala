@@ -29,8 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import play.twirl.api.TwirlHelperImports.twirlJavaCollectionToScala
+import play.api.test.Helpers.*
 import services.Save4LaterService
 import services.mocks.MockSave4LaterService
 import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
@@ -40,11 +39,12 @@ import views.html.awrs_business_directors
 import scala.language.implicitConversions
 
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters.*
 
 class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with MockAuthConnector with MockSave4LaterService {
 
   // implicit parameters required by the save4later calls, the actual values are not important as these calls are mocked
-  implicit lazy val fakeRequest: FakeRequest[AnyContent] = {
+  given fakeRequest: FakeRequest[AnyContent] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       "sessionId" -> sessionId,
@@ -60,8 +60,8 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
                                  override val authConnector: DefaultAuthConnector,
                                  override val auditable: Auditable,
                                  override val accountUtils: AccountUtils,
-                                 override implicit val applicationConfig: ApplicationConfig,
-                                 val template: views.html.awrs_business_directors) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, applicationConfig, template) {
+                                 override val applicationConfig: ApplicationConfig,
+                                 val template: views.html.awrs_business_directors) extends BusinessDirectorsController(mcc, save4LaterService, mockDeEnrolService, authConnector, auditable, accountUtils, template)(using applicationConfig) {
 
     def show(rowTitle: String, content: Option[String]*): Action[AnyContent] = Action.async {
       request =>
@@ -71,7 +71,7 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
           restrictedAccessCheck {
             // Run sbt test in terminal to compile tests and generate TableRowTestPage, otherwise it will show up red here
             Future.successful(Ok(views.html.view_application.TableRowTestPage(rowTitle, content: _*)(messages)))
-          }(request, ar, implicitly, implicitly)
+          }(request, ar, summon, summon)
         }(request, ec, hc, messages)
     }
   }
@@ -83,7 +83,7 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
       override val signInUrl = "/sign-in"
     }
 
-  implicit def conv(str: String): Option[String] = Some(str)
+  given conv: Conversion[String, Option[String]] = (str: String) => Some(str)
 
   "row helper" must {
 
@@ -109,7 +109,7 @@ class ComponentTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach w
       val ps = trs.get(0).getElementsByTag("td").get(1).getElementsByTag("p")
       ps.size() mustBe expPSize
 
-      ps.map(x => x.text()) mustBe expectations.lines
+      ps.asScala.map(_.text()) mustBe expectations.lines
     }
 
     def runTests(testCases: TestCase*): Unit = {

@@ -26,9 +26,9 @@ case class Enrolment(identifiers: Seq[Identifier], verifiers: Seq[Verifier])
 case class KnownFactsResponse(service: String, enrolments: Seq[Enrolment])
 
 object KnownFactsResponse {
-  implicit val formats: OFormat[SuccessfulSubscriptionResponse] = Json.format[SuccessfulSubscriptionResponse]
-  implicit val identifierReads: OFormat[Identifier] = Json.format[Identifier]
-  implicit val verifierReads: OFormat[Verifier] = Json.format[Verifier]
-  implicit val enrolmentReads: OFormat[Enrolment] = Json.format[Enrolment]
-  implicit val responseReads: OFormat[KnownFactsResponse] = Json.format[KnownFactsResponse]
+  given formats: OFormat[SuccessfulSubscriptionResponse] = Json.format[SuccessfulSubscriptionResponse]
+  given identifierReads: OFormat[Identifier] = Json.format[Identifier]
+  given verifierReads: OFormat[Verifier] = Json.format[Verifier]
+  given enrolmentReads: OFormat[Enrolment] = Json.format[Enrolment]
+  given responseReads: OFormat[KnownFactsResponse] = Json.format[KnownFactsResponse]
 }

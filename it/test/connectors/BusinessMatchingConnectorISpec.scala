@@ -17,14 +17,14 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{postRequestedFor, urlMatching}
-import models._
+import models.*
 import org.scalatest.matchers.must.Matchers
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.api.test.Injecting
 import uk.gov.hmrc.helpers.IntegrationSpec
 import uk.gov.hmrc.http.{BadRequestException, InternalServerException, ServiceUnavailableException}
 import utils.AwrsTestJson.{matchFailureResponseJson, matchSuccessResponseJson}
-import utils.TestConstants._
+import utils.TestConstants.*
 import utils.TestUtil
 
 import scala.concurrent.ExecutionContext.Implicits.global

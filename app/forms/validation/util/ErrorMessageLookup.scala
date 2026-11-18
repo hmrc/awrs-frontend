@@ -28,16 +28,16 @@ import play.api.i18n.Messages
   * This API currently does not support different locales
   */
 trait ErrorMessageLookup {
-  def messageLookup(lookup: MessageLookup)(implicit messages: Messages): String
+  def messageLookup(lookup: MessageLookup)(using messages: Messages): String
 }
 
 
 
 object ErrorMessageLookup extends ErrorMessageLookup {
 
-  @inline def messageLookup(lookup: MessageLookup)(implicit messages: Messages): String = messageLookup(lookup.msgKey, lookup.msgArgs)
+  @inline def messageLookup(lookup: MessageLookup)(using messages: Messages): String = messageLookup(lookup.msgKey, lookup.msgArgs)
 
-  private def messageLookup(key: String, params: MessageArguments)(implicit messages: Messages): String =
+  private def messageLookup(key: String, params: MessageArguments)(using messages: Messages): String =
     messages(key, MessageArguments({
       for (param <- params.args) yield {
         param match {

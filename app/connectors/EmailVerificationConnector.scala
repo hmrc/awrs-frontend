@@ -21,6 +21,7 @@ import config.ApplicationConfig
 import models._
 import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
@@ -30,8 +31,8 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailVerificationConnector @Inject()(http: HttpClientV2,
-                                           val auditable: Auditable,
-                                           implicit val applicationConfig: ApplicationConfig
+                                           val auditable: Auditable)(
+                                           using val applicationConfig: ApplicationConfig
                                           ) extends LoggingUtils {
 
   lazy val serviceURL: String = applicationConfig.servicesConfig.baseUrl("email-verification")

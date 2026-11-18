@@ -35,10 +35,10 @@ class GroupDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
-                                           implicit val applicationConfig: ApplicationConfig,
-                                           template: views.html.awrs_group_declaration) extends FrontendController(mcc) with AwrsController {
+                                           template: views.html.awrs_group_declaration
+                                          )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   def showGroupDeclaration: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>

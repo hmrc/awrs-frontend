@@ -21,11 +21,11 @@ import scala.language.implicitConversions
 
 
 trait ImplicitConversions {
-  implicit def optionUtil[T, S <: T](data: S): Option[T] = Some(data)
-
-  implicit def futureUtil[T, S <: T](data: S): Future[T] = Future.successful(data)
-
-  implicit def futureUtil2[T, S <: T](data: S): Future[Option[T]] = Future.successful(Some(data))
+  given optionUtil[T, S <: T]: Conversion[S, Option[T]] = (data: S) => Some(data)
+  
+  given futureUtil[T, S <: T]: Conversion[S, Future[T]] = (data: S) => Future.successful(data)
+  
+  given futureUtil2[T, S <: T]: Conversion[S, Future[Option[T]]] = (data: S) => Future.successful(Some(data))
 }
 
 object ImplicitConversions extends ImplicitConversions

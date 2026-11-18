@@ -16,16 +16,16 @@
 
 package forms
 
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.Products
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{Form, Mapping}
 import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 object ProductsForm extends AwrsFieldConfig {
 
@@ -63,6 +63,6 @@ object ProductsForm extends AwrsFieldConfig {
     "otherMainCustomers" -> (otherMainCustomers_compulsory iff mainCustomerOtherIsSelected),
     "productType" -> compulsoryStringList("productType", "awrs.additional_information.error.type_of_product"),
     "otherProductType" -> (otherProductType_compulsory iff productTypeIsSelected)
-  )(Products.apply)(Products.unapply))
+  )(Products.apply)(products => Some(Tuple.fromProductTyped(products))))
 
 }

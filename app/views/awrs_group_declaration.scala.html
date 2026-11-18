@@ -15,7 +15,7 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.html.components._
@@ -29,7 +29,7 @@
 
 @(groupDeclarationForm: Form[models.GroupDeclaration])(implicit request: Request[_], messages: Messages, applicationConfig: ApplicationConfig)
 
-@implicitFormInstance = @{
+@implicitFormInstance: Option[Form[_]] = @{
     Some(groupDeclarationForm)
 }
 

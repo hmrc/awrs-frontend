@@ -26,10 +26,10 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.mocks.MockSave4LaterService
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsSessionKeys, AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_additional_premises
 
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
   with MockSave4LaterService with MockAuthConnector {
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
 
   val mockTemplate: awrs_additional_premises = app.injector.instanceOf[views.html.awrs_additional_premises]
 
@@ -56,7 +56,7 @@ class AdditionalPremisesControllerTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[AdditionalBusinessPremises](FakeRequest(), BusinessPremisesForm.businessPremisesValidationForm, premises)
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig, mockTemplate) {
+    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockTemplate)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

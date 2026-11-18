@@ -16,21 +16,21 @@
 
 package forms.submapping
 
-import forms.helper.FormHelper._
-import forms.test.util._
-import forms.validation.util.ErrorMessagesUtilAPI._
+import forms.helper.FormHelper.*
+import forms.test.util.*
+import forms.validation.util.ErrorMessagesUtilAPI.*
 import forms.validation.util.FieldError
 import models.TupleDate
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.Valid
 import play.api.data.{Form, Mapping}
 
 
 class TupleDateMappingTest extends PlaySpec with MockitoSugar with AwrsFormTestUtils {
 
-  import TupleDateMapping._
+  import TupleDateMapping.*
 
   private val earliestDate = "01/04/2016"
 
@@ -59,10 +59,10 @@ class TupleDateMappingTest extends PlaySpec with MockitoSugar with AwrsFormTestU
       isTooLateCheck = if(!newBusiness) Some(isTooLate) else None
     )
 
-  private implicit val testForm: Form[TestForm] = Form(mapping(
+  private given testForm: Form[TestForm] = Form(mapping(
     "newBusTrue" -> testDate_compulsory(true),
     "newBusFalse" -> testDate_compulsory(false)
-  )(TestForm.apply)(TestForm.unapply))
+  )(TestForm.apply)(testForm => Some(Tuple.fromProductTyped(testForm))))
 
   "tupleDate_compulsory sub mapping" must {
     "Correctly validate 'tupleDate' for new business (started trading after 31st March 2016)" in {

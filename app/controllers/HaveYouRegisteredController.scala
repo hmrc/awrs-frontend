@@ -36,14 +36,14 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
                                             val accountUtils: AccountUtils,
                                             val deEnrolService: DeEnrolService,
                                             val auditable: Auditable,
-                                            implicit val applicationConfig: ApplicationConfig,
-                                            template: views.html.awrs_have_you_registered) extends FrontendController(mcc) with AwrsController{
+                                            template: views.html.awrs_have_you_registered
+                                           )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController{
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
 
-  def showHaveYouRegisteredPage(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showHaveYouRegisteredPage: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         keyStoreService.fetchHaveYouRegistered flatMap {
@@ -54,7 +54,7 @@ class HaveYouRegisteredController @Inject()(val mcc: MessagesControllerComponent
     }
   }
 
-  def saveAndContinue(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def saveAndContinue: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         haveYouRegisteredForm.bindFromRequest().fold(

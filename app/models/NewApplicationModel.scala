@@ -31,5 +31,5 @@ object NewApplicationType {
     }
   }
 
-  implicit val formats: OFormat[NewApplicationType] = Json.format[NewApplicationType]
+  given formats: OFormat[NewApplicationType] = Json.format[NewApplicationType]
 }

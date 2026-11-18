@@ -48,26 +48,21 @@ class EnrolService @Inject()(taxEnrolmentsConnector: TaxEnrolmentsConnector,
         taxEnrolmentsConnector.enrol(requestPayload, groupId, awrsRef, auditMap)
       case _ ~ None =>
         Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
-      case Some(Credentials(_, _)) ~ _ =>
-        Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
       case _ =>
         Future.failed(new InternalServerException("Failed to enrol - user had unknown credentials"))
     }
   }
 
-  private[services] def createVerifiers(utr: Option[String], businessType: String, postcode: String) = {
+  private[services] def createVerifiers(utr: Option[String], businessType: String, postcode: String): List[Verifier] = {
 
-    val postCodeVerifier =
-      List(
-        Verifier("Postcode", postcode)
-    )
+    val postCodeVerifier = List(Verifier("Postcode", postcode))
 
       utr match {
         case Some(utr) => businessType match {
           case "SOP" => postCodeVerifier :+ Verifier("SAUTR", utr)
-          case _ => postCodeVerifier :+ Verifier("CTUTR", utr)
+          case _     => postCodeVerifier :+ Verifier("CTUTR", utr)
         }
-        case _ => postCodeVerifier
+        case _         => postCodeVerifier
       }
   }
 }

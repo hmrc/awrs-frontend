@@ -16,14 +16,14 @@
 
 package forms
 
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.NamedMappingAndUtil.*
 import models.DeleteConfirmation
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object DeleteConfirmationForm {
 
   val deleteConfirmationForm = Form(mapping(
     "deleteConfirmation" -> yesNoQuestion_compulsory(fieldId = "deleteConfirmation", errorMessageId = "awrs.delete.confirmation.error.empty")
-  )(DeleteConfirmation.apply)(DeleteConfirmation.unapply))
+  )(DeleteConfirmation.apply)(deleteConfirmation => Some(deleteConfirmation.deleteConfirmation)))
 }

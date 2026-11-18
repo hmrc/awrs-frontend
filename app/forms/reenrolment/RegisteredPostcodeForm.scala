@@ -16,13 +16,13 @@
 
 package forms.reenrolment
 
-import forms.prevalidation._
+import forms.prevalidation.*
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter}
 import forms.validation.util.ErrorMessagesUtilAPI.simpleFieldIsEmptyConstraintParameter
-import forms.validation.util.MappingUtilAPI.{MappingUtil, compulsoryText}
+import forms.validation.util.MappingUtilAPI.{compulsoryText, toStringFormatter}
 import models.AwrsPostcodeModel
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import utils.AwrsValidator
 
@@ -51,7 +51,7 @@ object RegisteredPostcodeForm extends AwrsValidator{
 
   lazy val awrsRegisteredPostcodeValidationForm: Form[AwrsPostcodeModel] = Form(mapping(
     registeredPostcode -> compulsoryQueryField.toStringFormatter
-  )(AwrsPostcodeModel.apply)(AwrsPostcodeModel.unapply))
+  )(AwrsPostcodeModel.apply)(model => Some(model.registeredPostcode)))
 
   lazy val awrsRegisteredPostcodeForm: PrevalidationAPI[AwrsPostcodeModel] = PreprocessedForm(
     awrsRegisteredPostcodeValidationForm,

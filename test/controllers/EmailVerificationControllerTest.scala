@@ -20,14 +20,14 @@ import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{MessagesControllerComponents, Result}
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.EmailVerificationService
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
-import utils.TestConstants._
+import utils.TestConstants.*
 import utils.TestUtil.{testBusinessContactsDefault, testBusinessCustomerDetails}
 import views.html.{awrs_email_verification_error, awrs_email_verification_success}
 
@@ -45,17 +45,15 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
   val mockTemplateError: awrs_email_verification_error = app.injector.instanceOf[views.html.awrs_email_verification_error]
 
   val testEmailVerificationControllerEmailEnabled: EmailVerificationController =
-    new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig,
-      mockTemplateError, mockTemplate) {
-      override lazy val signInUrl: String = applicationConfig.signIn
+    new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector,
+      mockTemplateError, mockTemplate)(using mockAppConfig) {
       override lazy val isEmailVerificationEnabled = true
   }
 
   val testEmailVerificationControllerEmailNotEnabled: EmailVerificationController =
-    new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector, mockAppConfig,
-      mockTemplateError, mockTemplate) {
+    new EmailVerificationController(mockMCC, mockEmailVerificationService, mockAuditable, mockAccountUtils, mockDeEnrolService, testSave4LaterService, mockAuthConnector,
+      mockTemplateError, mockTemplate)(using mockAppConfig) {
       override lazy val isEmailVerificationEnabled = false
-      override lazy val signInUrl: String = applicationConfig.signIn
   }
 
   "Page load for Authorised users" must {
@@ -152,13 +150,13 @@ class EmailVerificationControllerTest extends AwrsUnitTestTraits
     setAuthMocks()
     when(mockEmailVerificationService.sendVerificationEmail(ArgumentMatchers.eq(testEmail))(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(isVerified))
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = testEmailVerificationControllerEmailEnabled.resend().apply(request)
+    val result = testEmailVerificationControllerEmailEnabled.resend.apply(request)
     test(result)
   }
 
   def showSuccess(test: Future[Result] => Any): Unit = {
     val request = SessionBuilder.buildRequestWithSession(userId)
-    val result = testEmailVerificationControllerEmailEnabled.showSuccess().apply(request)
+    val result = testEmailVerificationControllerEmailEnabled.showSuccess.apply(request)
     test(result)
   }
 

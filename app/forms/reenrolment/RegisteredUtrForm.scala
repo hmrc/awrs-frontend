@@ -16,11 +16,11 @@
 
 package forms.reenrolment
 
-import forms.prevalidation._
+import forms.prevalidation.*
 import forms.validation.util.UTRValidator
 import models.AwrsEnrolmentUtr
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object RegisteredUtrForm {
 
@@ -31,7 +31,7 @@ object RegisteredUtrForm {
       .verifying("awrs.reenrolment.registered_utr.error", urn => {
           UTRValidator.validateUTR(trimAllFunc(urn))
       })
-  )(AwrsEnrolmentUtr.apply)(AwrsEnrolmentUtr.unapply))
+  )(AwrsEnrolmentUtr.apply)(enrolmentUtr => Some(enrolmentUtr.utr)))
 
   lazy val awrsEnrolmentUtrForm: PrevalidationAPI[AwrsEnrolmentUtr] = PreprocessedForm(
     awrsEnrolmentUtrValidationForm,

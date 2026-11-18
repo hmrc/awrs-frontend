@@ -18,11 +18,11 @@ package forms
 
 import forms.AWRSEnums.BooleanCheckboxEnum
 import forms.validation.util.ConstraintUtil.CompulsoryBooleanMappingParameter
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
 import models.GroupDeclaration
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object GroupDeclarationForm {
 
@@ -37,6 +37,6 @@ object GroupDeclarationForm {
 
   val groupDeclarationForm = Form(mapping(
     "groupRepConfirmation" -> groupRepConfirmation_compulsory
-  )(GroupDeclaration.apply)(GroupDeclaration.unapply))
+  )(GroupDeclaration.apply)(groupDeclaration => Some(groupDeclaration.groupRepConfirmation)))
 
 }

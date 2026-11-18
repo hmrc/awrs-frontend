@@ -19,17 +19,17 @@ package forms
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.ProductsForm.addressLineLen
-import forms.test.util._
+import forms.test.util.*
 import forms.validation.util.FieldError
 import models.AdditionalBusinessPremises
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
-import utils.TestConstants._
+import utils.TestConstants.*
 
 class BusinessPremisesFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form: Form[AdditionalBusinessPremises] = BusinessPremisesForm.businessPremisesForm.form
+  given mockConfig: ApplicationConfig = mockAppConfig
+  given form: Form[AdditionalBusinessPremises] = BusinessPremisesForm.businessPremisesForm.form
 
   "Form validation" must {
     "display the correct validation errors for additionalPremises" in {

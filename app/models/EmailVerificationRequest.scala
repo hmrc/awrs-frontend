@@ -21,5 +21,5 @@ import play.api.libs.json._
 case class EmailVerificationRequest(email: String, templateId: String, templateParameters: Option[Map[String, String]], linkExpiryDuration: String, continueUrl: String)
 
 object EmailVerificationRequest {
-  implicit val formats: Format[EmailVerificationRequest] = Json.format[EmailVerificationRequest]
+  given formats: Format[EmailVerificationRequest] = Json.format[EmailVerificationRequest]
 }

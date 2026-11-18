@@ -17,15 +17,15 @@
 package forms.submapping
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI.{MappingUtil, _}
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.AwrsPostcodeModel
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Mapping}
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 import utils.{AwrsFieldConfig, CountryCodes}
 
 object AddressMapping extends AwrsFieldConfig {
@@ -144,7 +144,7 @@ object AddressMapping extends AwrsFieldConfig {
     "postcode" -> postcode_compulsory(prefixRefNameInErrorMessage, canBeForeignAddress),
     "addressCountry" -> addressCountry_compulsory(prefix, canBeForeignAddress, countryCodes),
     "addressCountryCode" -> addressCountryCode_compulsory(canBeForeignAddress)
-  )(Address.apply)(Address.unapply)
+  )(Address.apply)(address => Some(Tuple.fromProductTyped(address)))
 
   def ukAddress_compulsory(prefix: String = "", prefixRefNameInErrorMessage: String = " ", countryCodes: CountryCodes): Mapping[Address] =
     addressMapping(prefix, prefixRefNameInErrorMessage, canBeForeignAddress = false, countryCodes)
@@ -152,12 +152,11 @@ object AddressMapping extends AwrsFieldConfig {
   def ukOrForeignAddressMapping(prefix: String = "", prefixRefNameInErrorMessage: String = " ", countryCodes: CountryCodes): Mapping[Address] =
     addressMapping(prefix, prefixRefNameInErrorMessage, canBeForeignAddress = true, countryCodes)
 
-  implicit class AddressUtil(addressMapping: Mapping[Address]) {
+  extension (addressMapping: Mapping[Address])
     def toOptionalAddressMapping: Mapping[Option[Address]] = {
       addressMapping.transform[Option[Address]](
         (value: Address) => Some(value),
         (value: Option[Address]) => value.getOrElse(Address("", "", Some(""), Some(""), Some(""), Some(""), Some("")))
       )
     }
-  }
 }

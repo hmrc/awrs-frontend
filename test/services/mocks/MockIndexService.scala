@@ -17,7 +17,7 @@
 package services.mocks
 
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import services.IndexService
 import utils.AwrsUnitTestTraits
 import view_models.{IndexViewModel, SectionModel, SectionComplete}
@@ -33,7 +33,7 @@ trait MockIndexService extends AwrsUnitTestTraits {
     reset(mockIndexService)
   }
 
-  import MockIndexService._
+  import MockIndexService.*
 
   protected final def setupMockIndexService(showOneViewLink: Boolean = defaultTrueBoolean,
                                             showContinueButton: Boolean = defaultTrueBoolean,

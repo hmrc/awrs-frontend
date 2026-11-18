@@ -18,7 +18,7 @@ package forms.validation.util
 
 import org.scalatest.verbs.MustVerb
 import org.scalatest.wordspec.AnyWordSpecLike
-import utils.TestUtil.convertToAnyMustWrapper
+import utils.TestUtil.*
 
 class UTRValidatorTest extends AnyWordSpecLike with MustVerb {
   "UTRValidator" should {

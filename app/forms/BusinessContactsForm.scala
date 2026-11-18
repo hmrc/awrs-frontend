@@ -18,13 +18,13 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.prevalidation._
-import forms.submapping.AddressMapping._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.prevalidation.*
+import forms.submapping.AddressMapping.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.BusinessContacts
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object BusinessContactsForm {
 
@@ -38,7 +38,7 @@ object BusinessContactsForm {
   private val contactAddress_compulsory = yesNoQuestion_compulsory("contactAddressSame", "awrs.business_contacts.error.contact_address_same_empty")
   private val whenContactAddressNo = whenAnswerToFieldIs("contactAddressSame", BooleanRadioEnum.No.toString)(_)
 
-  def businessContactsValidationForm(implicit applicationConfig: ApplicationConfig): Form[BusinessContacts] = {
+  def businessContactsValidationForm(using applicationConfig: ApplicationConfig): Form[BusinessContacts] = {
     Form(mapping(
       contactFirstName -> firstName_compulsory(contactFirstName),
       contactLastName -> lastName_compulsory(contactLastName),
@@ -47,9 +47,9 @@ object BusinessContactsForm {
       contactAddressSame -> contactAddress_compulsory,
       contactAddress -> (ukAddress_compulsory(prefix = contactAddress, "", applicationConfig.countryCodes).toOptionalAddressMapping iff whenContactAddressNo),
       "modelVersion" -> ignored[String](BusinessContacts.latestModelVersion)
-    )(BusinessContacts.apply)(BusinessContacts.unapply))
+    )(BusinessContacts.apply)(businessContacts => Some(Tuple.fromProductTyped(businessContacts))))
   }
 
-  def businessContactsForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[BusinessContacts] = PreprocessedForm(businessContactsValidationForm)
+  def businessContactsForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[BusinessContacts] = PreprocessedForm(businessContactsValidationForm)
 
 }

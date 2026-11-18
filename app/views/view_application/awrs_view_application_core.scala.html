@@ -18,11 +18,12 @@
 @import config.ApplicationConfig
 @import uk.gov.hmrc.auth.core.Enrolment
 @import views.view_application.helpers.ViewApplicationType
+@import _root_.utils.CacheUtil.*
 
 @(cache: models.CacheMap, status: String, enrolments: Set[Enrolment], accountUtils: AccountUtils)(implicit viewApplicationType: ViewApplicationType, request: Request[AnyContent], messages : Messages, applicationConfig: ApplicationConfig)
 
 @import services.DataCacheKeys._
-@import views.html.helpers._
+@import views.html.helpers.{given, *}
 @import views.html.view_application.subviews._
 @import views.view_application.ViewApplicationHelper._
 
@@ -37,7 +38,7 @@
     }
 }
 
-@getHeading = @{ sectionName: String => messages(getSectionDisplayName(sectionName, businessLegalEntity)) }
+@getHeading = @{ (sectionName: String) => messages(getSectionDisplayName(sectionName, businessLegalEntity)) }
 <div class="alert alert--info alert--info__light banner" role="alert">
     <p class="govuk-body alert__message">@messages("awrs.view_application.status_colon") @status</p>
 </div>

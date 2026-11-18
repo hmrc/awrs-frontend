@@ -19,9 +19,9 @@ package services
 import connectors.EmailVerificationConnector
 import utils.AwrsUnitTestTraits
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
-import utils.TestUtil._
-import utils.TestConstants._
+import org.mockito.Mockito.*
+import utils.TestUtil.*
+import utils.TestConstants.*
 
 import scala.concurrent.Future
 

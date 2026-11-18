@@ -19,17 +19,17 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.AdditionalPremisesController
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.JourneyConstants
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
+import utils.TestUtil.*
 import views.html.awrs_additional_premises
 
 import scala.concurrent.Future
@@ -45,7 +45,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
   lazy val testList = List(testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("Yes")), testPremises(Some("No")))
 
   val testAdditionalPremisesController: AdditionalPremisesController =
-    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, mockAppConfig, template) {
+    new AdditionalPremisesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAccountUtils, mockAuthConnector, mockAuditable, template)(using mockAppConfig) {
       override val signInUrl = "/sign-in"
     }
 
@@ -87,7 +87,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
     "post linear jouney" must {
       "edit mode" must {
         "display h1 with correct premises number when editing a record" in {
-          for ((premises, index) <- testList.zipWithIndex) {
+          for ((_, index) <- testList.zipWithIndex) {
             val id = index + 1
             showPremises(id, isLinearMode = false, isNewRecord = false) {
               result =>
@@ -133,7 +133,7 @@ class AdditionalPremisesViewTest extends AwrsUnitTestTraits
               isLinear =>
                 s"see a progress message for the isLinearJourney is set to $isLinear" in {
                   val test: Future[Result] => Unit = result => {
-                    implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                    given doc: Document = Jsoup.parse(contentAsString(result))
                     testId(shouldExist = true)(targetFieldId = "progress-text")
                     val journey = JourneyConstants.getJourney(legalEntity)
                     val expectedSectionNumber = journey.indexOf(additionalBusinessPremisesName) + 1

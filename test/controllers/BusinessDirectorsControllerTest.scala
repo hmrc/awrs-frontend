@@ -20,12 +20,12 @@ import builders.SessionBuilder
 import models.{BusinessDirector, BusinessDirectors, CompanyNames}
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
-import utils.TestConstants._
-import utils.TestUtil._
+import utils.TestConstants.*
+import utils.TestUtil.*
 import views.html.awrs_business_directors
 
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ class BusinessDirectorsControllerTest extends AwrsUnitTestTraits
   val mockTemplate: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl = "/sign-in"
   }
 

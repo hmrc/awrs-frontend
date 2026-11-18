@@ -21,7 +21,7 @@
 
 @(businessType: Option[String], sectionName: Option[String])(implicit viewApplicationType: ViewApplicationType = LinearViewMode, messages: Messages)
 @{
-    (isEditMode, isOneViewMode, sectionName) match {
+    (isEditMode(), isOneViewMode(), sectionName) match {
         case (_, false, Some(secName)) => {
             val (sectionIndex, totalSections, messageKey) = JourneyConstants.getJourneyProgress(businessType, secName)
             <span id="progress-text" class="govuk-caption-xl">{messages("awrs.generic.section_progress", sectionIndex, totalSections, messages(messageKey))}</span>

@@ -19,7 +19,7 @@ package controllers.reenrolment
 import builders.SessionBuilder
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
 import views.html.reenrolment.awrs_view_enrolments
@@ -30,26 +30,25 @@ class ViewEnrolmentsControllerTest extends AwrsUnitTestTraits with ServicesUnitT
 
   val testViewEnrolmentController: ViewEnrolmentsController = new ViewEnrolmentsController(
     mockMCC,
-    mockAppConfig,
     mockDeEnrolService,
     mockAuthConnector,
     mockAuditable,
     mockAccountUtils,
     template
-  )
+  )(using mockAppConfig)
 
   "ViewEnrolmentsController" must {
 
     "show the View Enrolment page" in {
       setAuthMocks()
-      val res = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testViewEnrolmentController.showViewEnrolmentsPage.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
 
     "contain a button linking to the Business Tax Account page" in {
       setAuthMocks()
 
-      val res     = testViewEnrolmentController.showViewEnrolmentsPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res     = testViewEnrolmentController.showViewEnrolmentsPage.apply(SessionBuilder.buildRequestWithSession(userId))
       val content = contentAsString(res)
 
       content must include(s"""<a href="" role="button" class="govuk-button" id="bta-redirect-link" data-module="govuk-button">""")

@@ -21,10 +21,10 @@ import org.mockito.ArgumentMatchers
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.apis.mocks.MockAwrsAPI5
-import utils.AwrsTestJson._
+import utils.AwrsTestJson.*
 import utils.{AwrsUnitTestTraits, TestUtil}
-import utils.TestUtil._
-import org.mockito.Mockito._
+import utils.TestUtil.*
+import org.mockito.Mockito.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class AwrsAPI5Test extends AwrsUnitTestTraits
   with MockAwrsAPI5 {
 
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  given request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
 
   "API 5" must {

@@ -21,5 +21,5 @@ import play.api.libs.json._
 case class HaveYouRegisteredModel(hasUserRegistered: Option[Boolean])
 
 object HaveYouRegisteredModel {
-  implicit val formats: OFormat[HaveYouRegisteredModel] = Json.format[HaveYouRegisteredModel]
+  given formats: OFormat[HaveYouRegisteredModel] = Json.format[HaveYouRegisteredModel]
 }
