@@ -16,7 +16,8 @@
 
 package repositories
 
-import play.api.libs.json.{Reads, Writes}
+import crypto.MongoCrypto
+import play.api.libs.json.{JsObject, JsValue, Reads, Writes}
 import uk.gov.hmrc.mongo.cache.{CacheItem, CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
 
@@ -27,7 +28,8 @@ class CacheRepository(
     collectionName: String,
     ttl: Duration,
     mongoComponent: MongoComponent,
-    timestampSupport: TimestampSupport
+    timestampSupport: TimestampSupport,
+    mongoCrypto: MongoCrypto
 )(implicit ec: ExecutionContext) {
 
   private val cacheRepo = new MongoCacheRepository[String](
@@ -39,13 +41,15 @@ class CacheRepository(
   )
 
   def get[T: Reads](id: String, dataKey: DataKey[T]): Future[Option[T]] =
-    cacheRepo.get[T](id)(dataKey)
+    cacheRepo.get[JsValue](id)(DataKey[JsValue](dataKey.unwrap)).map(_.map(mongoCrypto.decrypt(_).as[T]))
 
   def put[T: Writes](id: String, dataKey: DataKey[T], data: T): Future[T] =
-    cacheRepo.put[T](id)(dataKey, data).map(_ => data)
+    cacheRepo.put[JsValue](id)(DataKey[JsValue](dataKey.unwrap), mongoCrypto.encrypt(data)).map(_ => data)
 
   def findById(id: String): Future[Option[CacheItem]] =
-    cacheRepo.findById(id)
+    cacheRepo.findById(id).map(_.map { cacheItem =>
+      cacheItem.copy(data = JsObject(cacheItem.data.fields.map { case (key, value) => key -> mongoCrypto.decrypt(value) }))
+    })
 
   def deleteById(id: String): Future[Unit] =
     cacheRepo.deleteEntity(id)
