@@ -16,6 +16,7 @@
 
 package repositories
 
+import org.mongodb.scala.SingleObservableFuture
 import org.mongodb.scala.model.Filters
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers

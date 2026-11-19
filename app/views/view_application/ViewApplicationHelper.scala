@@ -17,8 +17,6 @@
 package views.view_application
 
 import services.DataCacheKeys._
-import models.CacheMap
-import utils.CacheUtil
 import views.view_application.helpers.SubViewTemplateHelper._
 import views.view_application.helpers.ViewApplicationType
 
@@ -26,17 +24,15 @@ object ViewApplicationHelper {
 
   val NoneBreakingSpace = "\u00A0"
 
-  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
 
-  implicit class OptionStringUtil(someStr: Option[String]) {
+  extension (someStr: Option[String])
     def `+`(anotherSomeStr: Option[String]): Option[String] = (someStr, anotherSomeStr) match {
       case (None, None) => None
       case _ =>
         Some(someStr.fold("")(x => x) + anotherSomeStr.fold("")(x => x))
     }
-  }
 
-  implicit class StringUtil(str: String) {
+  extension (str: String)
     // This class is created because:
     // " " + Some(string) will return " Some(string)"
     // This is due to + being defined in the String class itself and hence will take precedence over any definitions
@@ -46,7 +42,6 @@ object ViewApplicationHelper {
       case None => Some(str)
       case _    => Some(str + anotherSomeStr.fold("")(x => x))
     }
-  }
 
   def countContent(rows: Iterable[Option[String]]): Int =
     rows.foldLeft(0)(

@@ -29,14 +29,14 @@ case class ContactDetails(phoneNumber: Option[String] = None,
                           emailAddress: Option[String] = None)
 
 object ContactDetails {
-  implicit val formats: OFormat[ContactDetails] = Json.format[ContactDetails]
+  given formats: OFormat[ContactDetails] = Json.format[ContactDetails]
 }
 
 
 case class OrganisationName(organisationName: String)
 
 object OrganisationName {
-  implicit val formats: OFormat[OrganisationName] = Json.format[OrganisationName]
+  given formats: OFormat[OrganisationName] = Json.format[OrganisationName]
 }
 
 case class UpdateRegistrationDetailsRequest(isAnIndividual: Boolean,
@@ -50,5 +50,5 @@ case class UpdateRegistrationDetailsRequest(isAnIndividual: Boolean,
 }
 
 object UpdateRegistrationDetailsRequest {
-  implicit val formats: OFormat[UpdateRegistrationDetailsRequest] = Json.format[UpdateRegistrationDetailsRequest]
+  given formats: OFormat[UpdateRegistrationDetailsRequest] = Json.format[UpdateRegistrationDetailsRequest]
 }

@@ -24,7 +24,7 @@ case class EnrolledUserIds(
 
 object EnrolledUserIds {
 
-  implicit val format: OFormat[EnrolledUserIds] =
+  given format: OFormat[EnrolledUserIds] =
     Json.format[EnrolledUserIds]
 
 }

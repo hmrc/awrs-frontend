@@ -18,11 +18,11 @@ package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.validation.util.ConstraintUtil.CompulsoryBooleanMappingParameter
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.WithdrawalConfirmation
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object WithdrawalConfirmationForm {
 
@@ -33,6 +33,6 @@ object WithdrawalConfirmationForm {
 
   val withdrawalConfirmation = Form(mapping(
     fieldId -> yesNoQuestion_compulsory(fieldId = fieldId, errorMessageId = "awrs.withdrawal.confirmation.error.empty")
-    )(WithdrawalConfirmation.apply)(WithdrawalConfirmation.unapply))
+    )(WithdrawalConfirmation.apply)(withdrawalConfirmation => Some(withdrawalConfirmation.confirmation)))
 
 }

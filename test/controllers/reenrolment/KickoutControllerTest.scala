@@ -19,7 +19,7 @@ package controllers.reenrolment
 import builders.SessionBuilder
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.ServicesUnitTestFixture
 import utils.AwrsUnitTestTraits
 import views.html.reenrolment.awrs_reenrolment_kickout
@@ -32,19 +32,18 @@ class KickoutControllerTest extends AwrsUnitTestTraits
 
   val testKickOutController: KickoutController = new KickoutController(
     mockMCC,
-    mockAppConfig,
     mockDeEnrolService,
     mockAuthConnector,
     mockAccountUtils,
     mockAuditable,
     template
-  )
+  )(using mockAppConfig)
 
   "KickOutController" must {
 
     "show the Kickout page" in {
       setAuthMocks()
-      val res = testKickOutController.showKickOutPage().apply(SessionBuilder.buildRequestWithSession(userId))
+      val res = testKickOutController.showKickOutPage.apply(SessionBuilder.buildRequestWithSession(userId))
       status(res) mustBe 200
     }
   }

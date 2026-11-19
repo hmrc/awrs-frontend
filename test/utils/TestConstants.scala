@@ -55,7 +55,7 @@ object TestConstants {
     // function used to create a random string using only values within a specified char set
     def randomString(length: Int, chars: Seq[Char]): String = {
       val tmpList = List.range(0, length)
-      val charList = tmpList.map { e => chars(Random.nextInt(chars.length)) }
+      val charList = tmpList.map { _ => chars(Random.nextInt(chars.length)) }
       charList.mkString
     }
 

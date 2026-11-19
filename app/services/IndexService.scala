@@ -25,17 +25,16 @@ import javax.inject.Inject
 import services.DataCacheKeys._
 import uk.gov.hmrc.http.HeaderCarrier
 import models.CacheMap
-import utils.{AccountUtils, CacheUtil}
+import utils.AccountUtils
+import utils.CacheUtil.*
 import view_models._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndexService @Inject()(dataCacheService: Save4LaterService,
-                             applicationService: ApplicationService,
+class IndexService @Inject()(applicationService: ApplicationService,
                              accountUtils: AccountUtils) {
-  implicit val cacheUtil: CacheMap => CacheUtil.CacheHelper = CacheUtil.cacheUtil
 
-  implicit class OptionUtil[T](option: Option[T]) {
+  extension [T](option: Option[T])
     // internal function used to determine if suppliers or premises has any entries or if the user has chosen "No" when
     // they answered
     // haveAny needs to be a call by name function so that it is not evaluated on input. otherwise if the list is empty
@@ -68,7 +67,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
       case x => Some(x)
     }
 
-  }
+  
 
   def showContinueButton(indexViewModel: IndexViewModel): Boolean = {
     val listWithoutEdited = indexViewModel.sectionModels.filterNot(_.status.equals(SectionEdited))
@@ -120,7 +119,7 @@ class IndexService @Inject()(dataCacheService: Save4LaterService,
 
         val businessDetailsHref = sectionHref(cacheMap, TradingNameController.showTradingName(true), cache =>
           (cache.getBusinessNameDetails, cache.getTradingStartDetails) match {
-            case (Some(_), Some(td)) => ViewApplicationController.viewSection(businessDetailsName)
+            case (Some(_), Some(_)) => ViewApplicationController.viewSection(businessDetailsName)
             case _ => TradingNameController.showTradingName(true)
           }
         )

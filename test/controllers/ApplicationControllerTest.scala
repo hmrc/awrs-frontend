@@ -21,7 +21,7 @@ import connectors.mock.MockAuthConnector
 import org.jsoup.Jsoup
 import org.mockito.Mockito.when
 import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.AwrsUnitTestTraits
 import views.html.timed_out
 
@@ -34,7 +34,7 @@ class ApplicationControllerTest
   val mockTemplate: timed_out = app.injector.instanceOf[views.html.timed_out]
 
   val testApplicationController =
-    new ApplicationController(mockMCC, mockTemplate, mockAppConfig)
+    new ApplicationController(mockMCC, mockTemplate)(using mockAppConfig)
 
   "Authorised users" must {
     "be redirected to feedback-survey page" in {
@@ -57,7 +57,7 @@ class ApplicationControllerTest
   "timedout users" must {
     "should see timed out page" in {
       val result = testApplicationController
-        .timedOut()
+        .timedOut
         .apply(SessionBuilder.buildRequestWithSession(userId))
       val document = Jsoup.parse(contentAsString(result))
       document.getElementsByTag("h1").text must be("awrs.application_timeout.heading")

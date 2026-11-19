@@ -19,16 +19,16 @@ package models
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
-import BusinessDetailsEntityTypes._
+import BusinessDetailsEntityTypes.{given, *}
 
 class BusinessEntityTest extends PlaySpec with MockitoSugar {
   "BusinessEntity" must {
     "transform the enums correctly back and forth to json" in {
       values.foreach { eValue =>
         val js = writer.writes(eValue)
-        val `enum` = reader.reads(js)
-        enum.isSuccess mustBe true
-        enum.get mustBe eValue
+        val result = reader.reads(js)
+        result.isSuccess mustBe true
+        result.get mustBe eValue
       }
     }
   }

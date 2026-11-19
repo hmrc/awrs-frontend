@@ -18,18 +18,18 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.prevalidation._
-import forms.submapping.AddressMapping._
-import forms.validation.util.ConstraintUtil._
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.prevalidation.*
+import forms.submapping.AddressMapping.*
+import forms.validation.util.ConstraintUtil.*
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.Supplier
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{Form, Mapping}
 import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 object SupplierAddressesForm extends AwrsFieldConfig {
   private val addressPrefix = "supplierAddress"
@@ -66,7 +66,7 @@ object SupplierAddressesForm extends AwrsFieldConfig {
       isInvalidErrMessage = "awrs.generic.error.vrn_invalid"
     )
 
-  def supplierAddressesValidationForm(implicit applicationConfig: ApplicationConfig): Form[Supplier] = Form(
+  def supplierAddressesValidationForm(using applicationConfig: ApplicationConfig): Form[Supplier] = Form(
     mapping(
       "alcoholSupplier" -> alcoholSupplier_compulsory,
       "supplierName" -> (supplierName_compulsory iff whenThereAreAlcoholSuppliers),
@@ -75,10 +75,10 @@ object SupplierAddressesForm extends AwrsFieldConfig {
       "vatRegistered" -> (vatRegistered_compulsory() iff whenThereAreUkAlcoholSuppliers),
       vatNumber -> (vatNumber_compulsory iff whenSupplierIsVatRegistered),
       "additionalSupplier" -> (additionalSupplier_compulsory iff (whenThereAreAlcoholSuppliers &&& whenIsUkSupplierAnswered))
-    )(Supplier.apply)(Supplier.unapply)
+    )(Supplier.apply)(supplier => Some(Tuple.fromProductTyped(supplier)))
   )
 
-  def supplierAddressesForm(implicit applicationConfig: ApplicationConfig): PrevalidationAPI[Supplier] = {
+  def supplierAddressesForm(using applicationConfig: ApplicationConfig): PrevalidationAPI[Supplier] = {
     PreprocessedForm(supplierAddressesValidationForm)
   }
 }

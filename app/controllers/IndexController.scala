@@ -27,6 +27,7 @@ import services.{ApplicationService, DeEnrolService, IndexService, Save4LaterSer
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AccountUtils, AwrsSessionKeys}
+import utils.SessionUtil.*
 
 import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,13 +41,12 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
                                 val authConnector: DefaultAuthConnector,
                                 val auditable: Auditable,
                                 val accountUtils: AccountUtils,
-                                implicit val applicationConfig: ApplicationConfig,
-                                template: views.html.awrs_index) extends FrontendController(mcc) with AwrsController {
+                                template: views.html.awrs_index)(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
-  def showIndex(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showIndex: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
         request.session.get("businessType").fold("")(x => x) match {
@@ -59,7 +59,7 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
               businessPartnerDetails <- save4LaterService.mainStore.fetchBusinessCustomerDetails(ar)
               subscriptionStatus <- api9.getSubscriptionStatusFromCache
               awrsDataMap <- save4LaterService.mainStore.fetchAll(ar)
-              applicationChangeFlag <- applicationService.hasAPI5ApplicationChanged(accountUtils.getUtr(ar), ar)
+              applicationChangeFlag <- applicationService.hasAPI5ApplicationChanged(ar)
               sectionStatus <- indexService.getStatus(awrsDataMap, businessType, ar)
             } yield {
               val allSectionCompletedFlag = indexService.showContinueButton(sectionStatus)
@@ -93,15 +93,15 @@ class IndexController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def showLastLocation(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showLastLocation: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        Future.successful(Redirect(sessionUtil(request).getPreviousLocation.fold("/alcohol-wholesale-scheme/index")(x => x)))
+        Future.successful(Redirect(request.getPreviousLocation.fold("/alcohol-wholesale-scheme/index")(x => x)))
       }
     }
   }
 
-  def unauthorised(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def unauthorised: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction {
       _ => Future.successful(Unauthorized(applicationConfig.templateUnauthorised()))
     }

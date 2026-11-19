@@ -25,7 +25,8 @@ class SupplierAddressesViewTest extends ViewTestFixture {
 
   val templateSupplierAddresses: views.html.awrs_supplier_addresses = app.injector.instanceOf[views.html.awrs_supplier_addresses]
 
-  val htmlContent: HtmlFormat.Appendable = templateSupplierAddresses.apply(supplierAddressesForm(mockAppConfig).form, 1, isNewRecord = true, countryList = Seq(("String", "String"))) (fakeRequest, viewApplicationType = LinearViewMode, messages, mockAppConfig)
+  val htmlContent: HtmlFormat.Appendable = templateSupplierAddresses.apply(
+    supplierAddressesForm(using mockAppConfig).form, 1, isNewRecord = true, countryList = Seq(("String", "String"))) (fakeRequest, viewApplicationType = LinearViewMode, messages, mockAppConfig)
 
   "the supplier addresses page" must {
 

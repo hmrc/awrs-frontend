@@ -25,10 +25,10 @@ import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.ServicesUnitTestFixture
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.html.awrs_supplier_addresses
 
@@ -37,7 +37,7 @@ import scala.concurrent.Future
 class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   with ServicesUnitTestFixture {
 
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
+  given mockConfig: ApplicationConfig = mockAppConfig
   val template: awrs_supplier_addresses = app.injector.instanceOf[views.html.awrs_supplier_addresses]
 
   def testRequest(supplier: Supplier): FakeRequest[AnyContentAsFormUrlEncoded] =
@@ -47,7 +47,8 @@ class SupplierAddressesControllerTest extends AwrsUnitTestTraits
   val supplierPage2URL: String = supplierPageURL(2)
 
   val testSupplierAddressesController: SupplierAddressesController = new SupplierAddressesController(
-    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, mockAppConfig, template) {
+    mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, template
+  )(using mockAppConfig) {
     override val signInUrl: String = "/sign-in"
     override val countryList: Seq[(String, String)] = Seq()
   }

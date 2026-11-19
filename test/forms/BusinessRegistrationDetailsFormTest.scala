@@ -17,7 +17,7 @@
 package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.BusinessRegistrationDetailsForm._
+import forms.BusinessRegistrationDetailsForm.*
 import forms.test.util.{ExpectedFieldIsEmpty, _}
 import forms.validation.util.FieldError
 import models.BusinessRegistrationDetails
@@ -25,7 +25,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 import play.api.test.FakeRequest
-import utils.TestConstants._
+import utils.TestConstants.*
 import utils.TestUtil
 
 class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  with AwrsFormTestUtils {
@@ -78,7 +78,7 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
 
   "Business registration details form" must {
     entities.foreach { entity =>
-      implicit lazy val form: Form[BusinessRegistrationDetails] = forms(entity)
+      given form: Form[BusinessRegistrationDetails] = forms(entity)
 
       lazy val targetIds: Set[String] = (entity: @unchecked) match {
         case SoleTrader => soleTraderIds
@@ -242,8 +242,8 @@ class BusinessRegistrationDetailsFormTest extends PlaySpec with MockitoSugar  wi
       val fakeRequest = FakeRequest()
       val preProcessedForm = businessRegistrationDetailsForm(entityType)
       val request = TestUtil.populateFakeRequest(fakeRequest, preProcessedForm.form, testData)
-      preProcessedForm.bindFromRequest()(request).fold(
-        formWithErrors => {
+      preProcessedForm.bindFromRequest()(using request).fold(
+        _ => {
             fail("This form must have been valid")
         },
         valid => test(valid)

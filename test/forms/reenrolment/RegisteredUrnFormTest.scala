@@ -25,7 +25,7 @@ import play.api.data.Form
 class RegisteredUrnFormTest extends PlaySpec  with AwrsFormTestUtils {
 
   "AwrsEnrolmentUrnForm" should {
-    implicit val form: Form[AwrsEnrolmentUrn] = awrsEnrolmentUrnForm.form
+    given form: Form[AwrsEnrolmentUrn] = awrsEnrolmentUrnForm.form
     val fieldId = "awrsUrn"
     val fieldNameInErrorMessage = "awrsUrn field"
 

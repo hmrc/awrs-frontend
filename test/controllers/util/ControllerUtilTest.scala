@@ -24,11 +24,11 @@ import forms.AWRSEnums.BooleanRadioEnum
 import models.{Address, BCAddress}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import play.api.mvc.Results
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.view_application.helpers.{EditSectionOnlyMode, LinearViewMode, ViewApplicationType}
 
@@ -84,7 +84,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits with MockAuthConnector {
         viewMode,
         messages,
         mockAppConfig,
-        implicitly
+        summon
       )
 
     "display a new page with id = 1 when no data is cached and id = 1 is requested" in {
@@ -378,7 +378,7 @@ class ControllerUtilTest extends AwrsUnitTestTraits with MockAuthConnector {
         viewMode,
         messages,
         mockAppConfig,
-        implicitly
+        summon
       )
 
 

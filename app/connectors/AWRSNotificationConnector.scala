@@ -22,6 +22,7 @@ import controllers.auth.StandardAuthRetrievals
 import models._
 import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.libs.ws.*
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import utils.{AccountUtils, LoggingUtils}

@@ -17,19 +17,19 @@
 package forms
 
 import forms.AWRSEnums.DeRegistrationReasonEnum
-import forms.helper.FormHelper._
-import forms.prevalidation._
-import forms.submapping.TupleDateMapping._
+import forms.helper.FormHelper.*
+import forms.prevalidation.*
+import forms.submapping.TupleDateMapping.*
 import forms.validation.util.ConstraintUtil.{CompulsoryEnumMappingParameter, CompulsoryTextFieldMappingParameter, FieldFormatConstraintParameter, FieldMaxLengthConstraintParameter, FormData}
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.{DeRegistrationConfirmation, DeRegistrationDate, DeRegistrationReason, TupleDate}
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{FieldMapping, Form, Mapping}
 import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -61,7 +61,7 @@ object DeRegistrationForm {
 
   val deRegistrationForm: Form[DeRegistrationDate] = Form(mapping(
     "proposedEndDate" -> testDate_compulsory
-  )(DeRegistrationDate.apply)(DeRegistrationDate.unapply))
+  )(DeRegistrationDate.apply)(deregistrationDate => Some(deregistrationDate.proposedEndDate)))
 
 }
 
@@ -95,7 +95,7 @@ object DeRegistrationReasonForm extends AwrsFieldConfig {
   val deRegistrationReasonValidationForm: Form[DeRegistrationReason] = Form(mapping(
     deRegistrationReasonId -> deRegistrationReason_compulsory,
     deRegReasonOtherId -> (otherReason_compulsory iff whenOtherReasonIsSelected)
-  )(DeRegistrationReason.apply)(DeRegistrationReason.unapply))
+  )(DeRegistrationReason.apply)(reason => Some(Tuple.fromProductTyped(reason))))
 
   val deRegistrationReasonForm: PrevalidationAPI[DeRegistrationReason] = PreprocessedForm(deRegistrationReasonValidationForm)
 
@@ -105,6 +105,6 @@ object DeRegistrationConfirmationForm {
 
   val deRegistrationConfirmationForm = Form(mapping(
     "deRegistrationConfirmation" -> yesNoQuestion_compulsory(fieldId = "deRegistrationConfirmation", errorMessageId = "awrs.de_registration.confirmation.error.empty")
-  )(DeRegistrationConfirmation.apply)(DeRegistrationConfirmation.unapply))
+  )(DeRegistrationConfirmation.apply)(confirmation => Some(confirmation.deRegistrationConfirmation)))
 
 }

@@ -18,15 +18,15 @@ package forms
 
 import forms.AWRSEnums.BooleanRadioEnum
 import forms.validation.util.ConstraintUtil.{CompulsoryTextFieldMappingParameter, _}
-import forms.validation.util.ErrorMessagesUtilAPI._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
+import forms.validation.util.ErrorMessagesUtilAPI.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
 import models.TradingActivity
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.validation.{Invalid, Valid}
 import play.api.data.{Form, Forms, Mapping}
 import utils.AwrsFieldConfig
-import utils.AwrsValidator._
+import utils.AwrsValidator.*
 
 object TradingActivityForm extends AwrsFieldConfig {
 
@@ -72,6 +72,6 @@ object TradingActivityForm extends AwrsFieldConfig {
     "doYouExportAlcohol" -> yesNoQuestion_compulsory("doYouExportAlcohol", "awrs.additional_information.error.do_you_export_alcohol"),
     "exportLocation" -> (compulsoryOptStringList("exportLocation", "awrs.additional_information.error.export_location") iff doYouExportAlcoholIsYes),
     "thirdPartyStorage" -> yesNoQuestion_compulsory("thirdPartyStorage", "awrs.additional_information.error.third_party_storage")
-  )(TradingActivity.apply)(TradingActivity.unapply))
+  )(TradingActivity.apply)(tradingActivity => Some(Tuple.fromProductTyped(tradingActivity))))
 
 }

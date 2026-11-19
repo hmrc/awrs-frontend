@@ -17,7 +17,7 @@
 package uk.gov.hmrc.helpers.application
 
 import play.api.inject.BindingKey
-import play.api.libs.json._
+import play.api.libs.json.*
 import repositories.CacheRepository
 import uk.gov.hmrc.helpers.IntegrationSpec
 import uk.gov.hmrc.mongo.cache.DataKey
@@ -30,7 +30,7 @@ trait S4LStub extends IntegrationSpec {
   lazy val apiShortLivedCacheRepository: CacheRepository =
     app.injector.instanceOf[CacheRepository](BindingKey(classOf[CacheRepository]).qualifiedWith("awrs-api"))
 
-  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, scenarioState: Option[(String, String, String)] = None, api: Boolean = false): Unit = {
+  def stubS4LGet(id: String, key: String = "", data: Option[JsObject] = None, api: Boolean = false): Unit = {
     data.foreach { d =>
       if (api) {
         await(apiShortLivedCacheRepository.put[JsObject](id, DataKey[JsObject](key), d))

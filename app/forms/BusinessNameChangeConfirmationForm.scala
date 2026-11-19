@@ -16,15 +16,15 @@
 
 package forms
 
-import forms.validation.util.NamedMappingAndUtil._
-import models._
+import forms.validation.util.NamedMappingAndUtil.*
+import models.*
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object BusinessNameChangeConfirmationForm {
 
   val businessNameChangeConfirmationForm: Form[BusinessNameChangeConfirmation] = Form(mapping(
     "businessNameChangeConfirmation" -> yesNoQuestion_compulsory(fieldId = "businessNameChangeConfirmation", errorMessageId = "awrs.business_name_change.error.empty")
-  )(BusinessNameChangeConfirmation.apply)(BusinessNameChangeConfirmation.unapply))
+  )(BusinessNameChangeConfirmation.apply)(confirmation => Some(confirmation.businessNameChangeConfirmation)))
 
 }

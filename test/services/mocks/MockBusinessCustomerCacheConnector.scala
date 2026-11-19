@@ -19,9 +19,9 @@ package services.mocks
 import connectors.BusinessCustomerCacheConnector
 import models.BusinessCustomerDetails
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
+import utils.TestUtil.*
 
 import scala.concurrent.Future
 
@@ -35,7 +35,7 @@ trait MockBusinessCustomerCacheConnector extends AwrsUnitTestTraits {
     reset(mockBusinessCustomerCacheConnector)
   }
 
-  import MockBusinessCustomerCacheConnector._
+  import MockBusinessCustomerCacheConnector.*
 
   protected final def setupMockBusinessCustomerCacheConnector(getReviewBusinessDetails: Option[BusinessCustomerDetails] = defaultBusinessCustomerDetails): Unit =
     when(mockBusinessCustomerCacheConnector.getReviewBusinessDetails[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(getReviewBusinessDetails))

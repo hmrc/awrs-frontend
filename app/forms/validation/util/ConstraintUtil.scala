@@ -32,11 +32,11 @@ object ConstraintUtil {
 
   type FormQuery = FormData => Boolean
 
-  implicit def castSingleToSet[A](value: A): Set[A] = Set(value)
+  given castSingleToSet[A]: Conversion[A, Set[A]] = (value: A) => Set(value)
+  
+  given castToOptionPreCondition: Conversion[FormQuery, Option[FormQuery]] = (preCondition: FormQuery) => Some(preCondition)
 
-  implicit def castToOptionPreCondition(preCondition: FormQuery): Option[FormQuery] = Some(preCondition)
-
-  implicit class PostConstraintsUtil[A](c: Constraint[A]) {
+  extension [A](c: Constraint[A]) 
     def andThen(c2: Constraint[A]): Constraint[A] =
       Constraint[A]({
         (a: A) =>
@@ -45,9 +45,8 @@ object ConstraintUtil {
             case f: Invalid => f
           }
       })
-  }
 
-  implicit class PreConstraintsUtil[A](cond: A => Boolean) {
+  extension [A](cond: A => Boolean) 
     def preCondition(c: Constraint[A]): Constraint[A] =
       Constraint[A]({
         (a: A) =>
@@ -56,10 +55,9 @@ object ConstraintUtil {
             case false => Valid
           }
       })
-  }
 
   // used to combine (data) => conditions together
-  implicit class PreconditionFunctionUtil(c: FormQuery) {
+  extension (c: FormQuery) 
     def unary_! : FormQuery =
       (data: FormData) => !c(data)
 
@@ -68,13 +66,12 @@ object ConstraintUtil {
 
     def `|||`(c2: FormQuery): FormQuery =
       (data: FormData) => c(data) || c2(data)
-  }
 
 
   // always valid is required in case an empty sequence is passed in
-  def alwaysValidConstraint[A]: Constraint[A] = Constraint[A]((a: A) => Valid)
+  def alwaysValidConstraint[A]: Constraint[A] = Constraint[A]((_: A) => Valid)
 
-  def andThenSeqChain[A](seq: Seq[Constraint[A]]): Constraint[A] = seq.foldLeft(alwaysValidConstraint[A])(_ andThen _)
+  def andThenSeqChain[A](seq: Seq[Constraint[A]]): Constraint[A] = seq.foldLeft(alwaysValidConstraint[A])((c1, c2) => c1.andThen(c2))
 
   // generic validation functions
   private val fieldIsNotEmptyValidationFunction = (field: String, invalid: ValidationResult) =>
@@ -100,7 +97,8 @@ object ConstraintUtil {
   case class FieldFormatConstraintParameter(patternMatch: (String) => ValidationResult)
 
   object FieldFormatConstraintParameter {
-    implicit def castSingleToSeq(value: FieldFormatConstraintParameter): Seq[FieldFormatConstraintParameter] = Seq(value)
+    given castSingleToSeq: Conversion[FieldFormatConstraintParameter, Seq[FieldFormatConstraintParameter]] =
+      (value: FieldFormatConstraintParameter) => Seq(value)
   }
 
   // used to apply on mappings
@@ -133,9 +131,10 @@ object ConstraintUtil {
   case class MaxLengthConstraintDefinition[A <: FieldMaxLengthConstraintParameter](get: A) extends MaxLengthConstraintOption[A]
 
   case class MaxLengthConstraintIsHandledByTheRegEx() extends MaxLengthConstraintOption[Nothing]
-
-  implicit def castToOption(param: FieldMaxLengthConstraintParameter): MaxLengthConstraintOption[FieldMaxLengthConstraintParameter] = MaxLengthConstraintDefinition(param)
-
+  
+  given castToOption: Conversion[FieldMaxLengthConstraintParameter, MaxLengthConstraintOption[FieldMaxLengthConstraintParameter]] = 
+    (param: FieldMaxLengthConstraintParameter) => MaxLengthConstraintDefinition(param)
+    
   case class CompulsoryTextFieldMappingParameter(empty: FieldIsEmptyConstraintParameter,
                                                  maxLengthValidation: MaxLengthConstraintOption[FieldMaxLengthConstraintParameter],
                                                  formatValidations: Seq[FieldFormatConstraintParameter]) extends TextFieldMappingTrait[String]
@@ -154,7 +153,7 @@ object ConstraintUtil {
   case class CompulsoryListMappingParameter[T](mapping: Mapping[T],
                                                emptyErrorMsg: Invalid) extends ValidationMappingTrait[Mapping[T]]
 
-  private def noConstraint[A] = Constraint[A] { ignore: A => Valid }
+  private def noConstraint[A] = Constraint[A] { (_: A) => Valid }
 
   // sub constraints for text fields
   private def fieldMustNotBeEmptyConstraint[A](config: FieldIsEmptyConstraintParameter): Constraint[A] =
@@ -210,7 +209,7 @@ object ConstraintUtil {
     )
 
   def compulsaryListConstraint(errMsgId: => Invalid): Constraint[List[String]] =
-    Constraint[List[String]]({ model: List[String] =>
+    Constraint[List[String]]({ (model: List[String]) =>
       model.nonEmpty && !model.contains("") match {
         case true => Valid
         case false => errMsgId
@@ -218,7 +217,7 @@ object ConstraintUtil {
     })
 
   def compulsaryOptListConstraint(errMsgId: => Invalid): Constraint[Option[List[String]]] =
-    Constraint[Option[List[String]]]({ model: Option[List[String]] =>
+    Constraint[Option[List[String]]]({ (model: Option[List[String]]) =>
       model match {
         case Some(mod) => mod.nonEmpty && !mod.contains("") match {
           case true => Valid

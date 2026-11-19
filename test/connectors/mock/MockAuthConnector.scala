@@ -17,10 +17,10 @@
 package connectors.mock
 
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.stubbing.OngoingStubbing
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.{AccountUtils, AwrsUnitTestTraits, TestUtil}
 

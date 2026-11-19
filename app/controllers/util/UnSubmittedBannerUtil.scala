@@ -50,7 +50,7 @@ trait UnSubmittedBannerUtil {
                               (implicit request: Request[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[UnSubmittedChangesBannerParam]] = {
     if (accountUtils.hasAwrs(authRetrievals.enrolments)) {
       val businessType = request.session.get(AwrsSessionKeys.sessionBusinessType).fold("")(x => x)
-      applicationService.hasAPI5ApplicationChanged(accountUtils.getUtr(authRetrievals), authRetrievals).flatMap {
+      applicationService.hasAPI5ApplicationChanged(authRetrievals).flatMap {
         case false => Future.successful(None)
         case true =>
           for {

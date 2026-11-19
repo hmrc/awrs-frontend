@@ -41,10 +41,10 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
                                            val authConnector: DefaultAuthConnector,
                                            val auditable: Auditable,
                                            val accountUtils: AccountUtils,
-                                           implicit val applicationConfig: ApplicationConfig,
-                                           template: views.html.awrs_partner_member_details) extends FrontendController(mcc) with JourneyPage with Deletable[Partners, Partner] with SaveAndRoutable {
+                                           template: views.html.awrs_partner_member_details
+                                          )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with JourneyPage with Deletable[Partners, Partner] with SaveAndRoutable {
 
-  override implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   val signInUrl: String = applicationConfig.signIn
 
   //fetch function
@@ -54,7 +54,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
 
   override val listToListObj: List[Partner] => Partners = (partnerDetails: List[Partner]) => Partners(partnerDetails)
   override val listObjToList: Partners => List[Partner] = (partnerDetails: Partners) => partnerDetails.partners
-  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(partnersName)
+  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(partnersName)
   override val section: String = partnersName
   override val deleteHeadingParameter: String = "awrs.view_application.partner"
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.BusinessPartnersController.actionDelete(id)
@@ -64,7 +64,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
   def showPartnerMemberDetails(id: Int, isLinearMode: Boolean, isNewRecord: Boolean): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authorisedAction { implicit ar =>
       restrictedAccessCheck {
-        implicit val viewApplicationType: ViewApplicationType = if (isLinearMode) {
+        given viewApplicationType: ViewApplicationType = if (isLinearMode) {
           LinearViewMode
         } else {
           EditSectionOnlyMode
@@ -104,7 +104,7 @@ class BusinessPartnersController @Inject()(val mcc:MessagesControllerComponents,
            isNewRecord: Boolean,
            authRetrievals: StandardAuthRetrievals)
           (implicit request: Request[AnyContent]): Future[Result] = {
-    implicit val viewMode: ViewApplicationType = viewApplicationType
+    given viewMode: ViewApplicationType = viewApplicationType
     partnershipDetailsForm.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(template(formWithErrors, id, isNewRecord))),
       partnerData => {

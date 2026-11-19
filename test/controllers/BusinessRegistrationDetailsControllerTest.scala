@@ -18,18 +18,18 @@ package controllers
 
 import builders.SessionBuilder
 import forms.BusinessRegistrationDetailsForm
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.{BusinessMatchingService, ServicesUnitTestFixture}
-import utils.TestConstants._
-import utils.TestUtil._
+import utils.TestConstants.*
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
 import views.html.awrs_business_registration_details
@@ -48,7 +48,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
     new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService,
-      testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, mockTemplate) {
+      testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockTemplate)(using mockAppConfig) {
     override val signInUrl: String = applicationConfig.signIn
   }
 
@@ -105,7 +105,7 @@ class BusinessRegistrationDetailsControllerTest extends AwrsUnitTestTraits
       setAuthMocks(mockAccountUtils = Some(mockAccountUtils))
       when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testNonMatchingUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(false))
       when(mockBusinessMatchingService.isValidMatchedGroupUtr(ArgumentMatchers.eq(testUtr), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(true))
-      val result = testBusinessRegistrationDetailsController.saveAndReturn().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
+      val result = testBusinessRegistrationDetailsController.saveAndReturn.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId, testBusinessCustomerDetails(legalEntity).businessType.get))
       test(result)
     }
 

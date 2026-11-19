@@ -19,7 +19,7 @@ package views
 import builders.SessionBuilder
 import controllers.BusinessRegistrationDetailsController
 import forms.BusinessRegistrationDetailsForm
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers
@@ -27,10 +27,10 @@ import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.{BusinessMatchingService, JourneyConstants, ServicesUnitTestFixture}
-import utils.TestUtil._
+import utils.TestUtil.*
 import utils.{AwrsUnitTestTraits, TestUtil}
 import views.Configuration.NewApplicationMode
 import views.html.awrs_business_registration_details
@@ -48,7 +48,9 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
     TestUtil.populateFakeRequest[BusinessRegistrationDetails](FakeRequest(), BusinessRegistrationDetailsForm.businessRegistrationDetailsValidationForm(entityType), businessRegDetails)
 
   val testBusinessRegistrationDetailsController: BusinessRegistrationDetailsController =
-    new BusinessRegistrationDetailsController(mockMCC, mockBusinessMatchingService, mockBusinessDetailsService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+    new BusinessRegistrationDetailsController(
+      mockMCC, mockBusinessMatchingService, mockBusinessDetailsService, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template
+    )(using mockAppConfig) {
       override val signInUrl: String = applicationConfig.signIn
     }
 
@@ -105,7 +107,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
       s"Display the selection of Ids for $entity" in {
         val ids = getIds(entity)
         val test: Future[Result] => Unit = result => {
-          implicit val doc: Document = Jsoup.parse(contentAsString(result))
+          given doc: Document = Jsoup.parse(contentAsString(result))
+
           testId(shouldExist = ids.utr)(targetFieldId = "utr")
           testId(shouldExist = ids.crn)(targetFieldId = "companyRegDetails.companyRegistrationNumber")
           testId(shouldExist = ids.nino)(targetFieldId = "NINO")
@@ -133,7 +136,8 @@ class BusinessRegistrationDetailsViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
+
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(businessRegistrationDetailsName) + 1

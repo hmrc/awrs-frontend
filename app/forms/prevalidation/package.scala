@@ -20,7 +20,7 @@ import play.api.data.Form
 
 package object prevalidation {
 
-  import TrimOption._
+  import TrimOption.*
 
   val defaultTrims: Map[String, TrimOption] = Map[String, TrimOption](
     "NINO" -> all,
@@ -35,7 +35,7 @@ package object prevalidation {
     "postcode" -> all
   )
 
-  import CaseOption._
+  import CaseOption.*
 
   val defaultCases: Map[String, CaseOption] = Map[String, CaseOption](
     "NINO" -> upper,

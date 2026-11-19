@@ -21,17 +21,17 @@ import connectors.mock.MockAuthConnector
 import connectors.{AddressLookupConnector, AddressLookupErrorResponse, AddressLookupSuccessResponse}
 import models.{Address, AddressAudit, AddressAudits}
 import org.mockito.ArgumentMatchers.{any, eq => mockEq}
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.address.client.v1.RecordSet
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import org.scalatestplus.play.PlaySpec
-import utils.TestConstants._
+import utils.TestConstants.*
 
 import scala.concurrent.Future
 
@@ -147,7 +147,7 @@ class AddressLookupControllerTest extends PlaySpec with MockitoSugar with Before
       SessionBuilder.buildRequestWithSession(userId).withJsonBody(Json.toJson(addressAudits))
     }
 
-    val result = testAddressLookupController.auditAddress().apply(fakeRequest)
+    val result = testAddressLookupController.auditAddress.apply(fakeRequest)
     test(result)
   }
 }

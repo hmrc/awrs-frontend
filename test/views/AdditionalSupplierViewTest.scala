@@ -19,18 +19,18 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.SupplierAddressesController
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.JourneyConstants
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
-import utils.TestConstants._
-import utils.TestUtil._
+import utils.TestConstants.*
+import utils.TestUtil.*
 import views.html.awrs_supplier_addresses
 
 import scala.concurrent.Future
@@ -44,7 +44,9 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
   lazy val testList = List(testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("Yes")), testSupplier(Some("No")))
 
   val testSupplierAddressesController: SupplierAddressesController =
-    new SupplierAddressesController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, mockAppConfig, template) {
+    new SupplierAddressesController(
+      mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockCountryCodes, template
+    )(using mockAppConfig) {
     override val signInUrl: String = "/sign-in"
     override val countryList: Seq[(String, String)] = Seq()
   }
@@ -116,7 +118,7 @@ class AdditionalSupplierViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(suppliersName) + 1

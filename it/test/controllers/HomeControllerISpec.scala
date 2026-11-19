@@ -21,7 +21,7 @@ import controllers.routes
 import models.AwrsUsers
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.helpers.application.S4LStub

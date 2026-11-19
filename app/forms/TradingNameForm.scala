@@ -16,12 +16,12 @@
 
 package forms
 
-import forms.prevalidation._
-import forms.validation.util.MappingUtilAPI._
-import forms.validation.util.NamedMappingAndUtil._
-import models._
+import forms.prevalidation.*
+import forms.validation.util.MappingUtilAPI.*
+import forms.validation.util.NamedMappingAndUtil.*
+import models.*
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.*
 
 object TradingNameForm {
 
@@ -49,7 +49,7 @@ object TradingNameForm {
         businessName -> (companyName_compulsory() iff ids.contains(businessName)),
         doYouHaveTradingName -> doYouHaveTradingName_compulsory(),
         tradingName -> (tradingName_compulsory iff whenDoYouHaveTradingNameIsAnsweredYes)
-      )(BusinessNameDetails.apply)(BusinessNameDetails.unapply)
+      )(BusinessNameDetails.apply)(details => Some(Tuple.fromProductTyped(details)))
     )
   }
 

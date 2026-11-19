@@ -30,19 +30,19 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredPostcodeController @Inject()(mcc: MessagesControllerComponents,
-                                             implicit val applicationConfig: ApplicationConfig,
                                              val authConnector: DefaultAuthConnector,
                                              val accountUtils: AccountUtils,
                                              val deEnrolService: DeEnrolService,
                                              val auditable: Auditable,
                                              keyStoreService: KeyStoreService,
-                                             template: views.html.reenrolment.awrs_registered_postcode) extends FrontendController(mcc) with AwrsController {
+                                             template: views.html.reenrolment.awrs_registered_postcode
+                                            )(using val applicationConfig: ApplicationConfig) extends FrontendController(mcc) with AwrsController {
 
 
   val signInUrl: String = applicationConfig.signIn
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
-  def showPostCode(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def showPostCode: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     enrolmentEligibleAuthorisedAction { implicit ar =>
       restrictedAccessCheck {
         keyStoreService.fetchAwrsRegisteredPostcode map {

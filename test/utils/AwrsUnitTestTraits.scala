@@ -21,13 +21,13 @@ import config.ApplicationConfig
 import connectors.EnrolmentStoreProxyConnector
 import org.jsoup.nodes.Document
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.{Assertion, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.Helpers.{defaultAwaitTimeout, stubBodyParser, stubControllerComponents, stubMessages, stubMessagesApi, await => helperAwait}
 import services.{BusinessDetailsService, BusinessMatchingService, DeEnrolService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -114,13 +114,13 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   lazy val partnerEntities = List("Partnership", "LLP", "LLP_GRP")
   lazy val groupEntities = List("LTD_GRP", "LLP_GRP")
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
+  
+  given convertToOption[T]: Conversion[T, Option[T]] = (value: T) => Some(value)
 
-  implicit def convertToOption[T](value: T): Option[T] = Some(value)
-
-  implicit def convertToFuture[T](value: T): Future[Option[T]] = Future.successful(value)
-
-  implicit def convertToFuture[T](err: Throwable): Future[Option[T]] = Future.failed(err)
+  given convertToFuture[T]: Conversion[T, Future[Option[T]]] = (value: T) => Future.successful(value)
+  
+  given convertErrorToFuture[T]: Conversion[Throwable, Future[Option[T]]] = (err: Throwable) => Future.failed(err)
 
   // used to help mock setup functions to clarify if certain results must be mocked.
   sealed trait MockConfiguration[+A] {
@@ -138,16 +138,16 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
   case class Configure[A](config: A) extends MockConfiguration[A]
 
   case object DoNotConfigure extends MockConfiguration[Nothing]
-
-  implicit def convertToMockConfiguration[T](value: T): MockConfiguration[T] = Configure(value)
-
-  implicit def convertToMockConfiguration2[T](value: T): MockConfiguration[Option[T]] = Configure(value)
-
-  implicit def convertToMockConfiguration3[T](value: T): MockConfiguration[Future[T]] = Configure(Future.successful(value))
-
-  implicit def convertToMockConfiguration4[T](value: T): MockConfiguration[Future[Option[T]]] = Configure(Future.successful(Some(value)))
-
-  implicit def convertToMockConfiguration5[T](err: Throwable): MockConfiguration[Future[Option[T]]] = Configure(err)
+  
+  given convertToMockConfiguration[T]: Conversion[T, MockConfiguration[T]] = (value: T) => Configure(value)
+  
+  given convertToMockConfiguration2[T]: Conversion[T, MockConfiguration[Option[T]]] = (value: T) => Configure(value)
+  
+  given convertToMockConfiguration3[T]: Conversion[T, MockConfiguration[Future[T]]] = (value: T) => Configure(Future.successful((value)))
+  
+  given convertToMockConfiguration4[T]: Conversion[T, MockConfiguration[Future[Option[T]]]] = (value: T) => Configure(Future.successful(Some(value)))
+  
+  given convertToMockConfiguration5[T]: Conversion[Throwable, MockConfiguration[Future[Option[T]]]] = (err: Throwable) => Configure(err)
 
 
   // used to for mock setup functions to specify the location of the data,
@@ -159,13 +159,12 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
 
   case object NotCachedLocally extends CacheConfigurationLocation
 
-  implicit class VerificationUtil(someCount: Option[Int]) {
+  extension (someCount: Option[Int])
     // util function designed for aiding verify functions
     def ifDefinedThen(action: Int => Unit): Unit = someCount match {
       case Some(count) => action(count)
       case _ =>
     }
-  }
 
   case class Ids(utr: Boolean, nino: Boolean, crn: Boolean, vrn: Boolean)
 
@@ -175,12 +174,12 @@ trait AwrsUnitTestTraits extends PlaySpec with MockitoSugar with BeforeAndAfterE
     case _ => Ids(utr = true, nino = false, crn = true, vrn = true)
   }
 
-  def testId(shouldExist: Boolean)(targetFieldId: String)(implicit doc: Document): Assertion = shouldExist match {
+  def testId(shouldExist: Boolean)(targetFieldId: String)(using doc: Document): Assertion = shouldExist match {
     case false => doc.getElementById(targetFieldId) mustBe null
     case true => doc.getElementById(targetFieldId) must not be null
   }
 
-  def testText(expectedText: String)(targetFieldId: String)(implicit doc: Document): Assertion = {
+  def testText(expectedText: String)(targetFieldId: String)(using doc: Document): Assertion = {
     doc.getElementById(targetFieldId).text mustBe expectedText
   }
 

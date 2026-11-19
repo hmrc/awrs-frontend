@@ -18,19 +18,19 @@ package forms
 
 import config.ApplicationConfig
 import forms.AWRSEnums.BooleanRadioEnum
-import forms.test.util._
+import forms.test.util.*
 import models.BusinessContacts
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 import utils.AwrsFieldConfig
-import utils.TestConstants._
+import utils.TestConstants.*
 
 class BusinessContactFormTest extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AwrsFormTestUtils with AwrsFieldConfig {
-  implicit val mockConfig: ApplicationConfig = mockAppConfig
-  implicit lazy val form: Form[BusinessContacts] = BusinessContactsForm.businessContactsForm.form
+  given mockConfig: ApplicationConfig = mockAppConfig
+  given form: Form[BusinessContacts] = BusinessContactsForm.businessContactsForm.form
 
   override def beforeEach(): Unit = {
     when(mockAppConfig.countryCodes)

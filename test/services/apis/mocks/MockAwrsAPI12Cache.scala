@@ -17,7 +17,7 @@
 package services.apis.mocks
 
 import connectors.mock.MockAWRSNotificationConnector
-import models.StatusContactType._
+import models.StatusContactType.*
 import models.{StatusContactType, StatusNotification, ViewedStatusResponse}
 import services.apis.AwrsAPI12Cache
 import services.mocks.MockKeyStoreService
@@ -26,7 +26,7 @@ import utils.{AwrsUnitTestTraits, TestUtil}
 
 trait MockAwrsAPI12Cache extends AwrsUnitTestTraits with MockKeyStoreService with MockAWRSNotificationConnector {
 
-  import MockAwrsAPI12Cache._
+  import MockAwrsAPI12Cache.*
 
   val testAPI12Cache = new AwrsAPI12Cache(mockAWRSNotificationConnector, testKeyStoreService)
 

@@ -19,17 +19,17 @@ package views
 import builders.SessionBuilder
 import connectors.mock.MockAuthConnector
 import controllers.BusinessDirectorsController
-import models._
+import models.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.mvc.Result
-import play.api.test.Helpers._
-import services.DataCacheKeys._
+import play.api.test.Helpers.*
+import services.DataCacheKeys.*
 import services.JourneyConstants
 import services.mocks.MockSave4LaterService
 import utils.AwrsUnitTestTraits
-import utils.TestUtil._
+import utils.TestUtil.*
 import views.html.awrs_business_directors
 import scala.language.implicitConversions
 
@@ -40,12 +40,13 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
 
   val template: awrs_business_directors = app.injector.instanceOf[views.html.awrs_business_directors]
 
-  implicit def businessDirectorWrapper(listOfDirectors: List[BusinessDirector]): Option[BusinessDirectors] = Some(BusinessDirectors(listOfDirectors))
-
+  given businessDirectorWrapper: Conversion[List[BusinessDirector], Option[BusinessDirectors]] = 
+    (listOfDirectors: List[BusinessDirector]) => Some(BusinessDirectors(listOfDirectors))
+  
   lazy val testList: BusinessDirectors = BusinessDirectors(List(testBusinessDirectorPerson, testBusinessDirectorPerson, testBusinessDirectorCompany, testBusinessDirectorCompany))
 
   val testBusinessDirectorsController: BusinessDirectorsController =
-    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, mockAppConfig, template) {
+    new BusinessDirectorsController(mockMCC, testSave4LaterService, mockDeEnrolService, mockAuthConnector, mockAuditable, mockAccountUtils, template)(using mockAppConfig) {
       override val signInUrl = "/sign-in"
     }
 
@@ -140,7 +141,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
 
     // when viewing the pages, the first page must be the same as all other pages
     "display the page correctly in edit mode when viewing existing records" in {
-      for ((director, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
+      for ((_, index) <- testList.getOrElse(BusinessDirectors(List())).directors.zipWithIndex) {
         val id = index + 1
         showDirector(id, isLinearMode = false, isNewRecord = false) {
           result =>
@@ -179,7 +180,7 @@ class BusinessDirectorsViewTest extends AwrsUnitTestTraits
             isLinear =>
               s"see a progress message for the isLinearJourney is set to $isLinear" in {
                 val test: Future[Result] => Unit = result => {
-                  implicit val doc: Document = Jsoup.parse(contentAsString(result))
+                  given doc: Document = Jsoup.parse(contentAsString(result))
                   testId(shouldExist = true)(targetFieldId = "progress-text")
                   val journey = JourneyConstants.getJourney(legalEntity)
                   val expectedSectionNumber = journey.indexOf(businessDirectorsName) + 1
