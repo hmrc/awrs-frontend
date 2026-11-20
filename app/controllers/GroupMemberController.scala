@@ -55,7 +55,7 @@ class GroupMemberController @Inject()(val mcc: MessagesControllerComponents,
 
   override val listToListObj: List[GroupMember] => GroupMembers = (groupMemberDetails: List[GroupMember]) => GroupMembers(groupMemberDetails)
   override val listObjToList: GroupMembers => List[GroupMember] = (groupMemberDetails: GroupMembers) => groupMemberDetails.members
-  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(groupMembersName)
+  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(groupMembersName)
   override val section: String = groupMembersName
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.GroupMemberController.actionDelete(id)
   override val deleteHeadingParameter: String = "awrs.view_application.group"
