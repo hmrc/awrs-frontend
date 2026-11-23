@@ -46,7 +46,7 @@ trait Deletable[C, T] extends FrontendController with AwrsController {
 
   val listToListObj: ListToListObj[T, C]
   val listObjToList: ListObjToList[C, T]
-  val backCall: Call
+  def backCall: Call
   val section: String
   val deleteHeadingParameter: String
   val deleteFormAction: Int => Call

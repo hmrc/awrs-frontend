@@ -59,7 +59,7 @@ class SupplierAddressesController @Inject()(val mcc: MessagesControllerComponent
 
   override val listToListObj: List[Supplier] => Suppliers = (suppliers: List[Supplier]) => Suppliers(suppliers)
   override val listObjToList: Suppliers => List[Supplier] = (suppliers: Suppliers) => suppliers.suppliers
-  override val backCall: Call = controllers.routes.ViewApplicationController.viewSection(suppliersName)
+  override lazy val backCall: Call = controllers.routes.ViewApplicationController.viewSection(suppliersName)
   override val section: String = suppliersName
   override val deleteFormAction: Int => Call = (id: Int) => controllers.routes.SupplierAddressesController.actionDelete(id)
   override val deleteHeadingParameter: String = "awrs.view_application.supplier"
